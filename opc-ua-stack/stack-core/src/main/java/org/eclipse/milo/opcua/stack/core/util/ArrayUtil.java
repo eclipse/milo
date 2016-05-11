@@ -1,0 +1,130 @@
+/*
+ * Copyright (c) 2016 Kevin Herron
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ * 	http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ */
+
+package org.eclipse.milo.opcua.stack.core.util;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
+import com.google.common.base.Preconditions;
+import com.google.common.primitives.Ints;
+
+public class ArrayUtil {
+
+    /**
+     * Flatten a multi-dimensional array into a one-dimensional array.
+     *
+     * @param array the array to flatten.
+     * @return a 1-dimensional array.
+     */
+    public static Object flatten(Object array) {
+        Preconditions.checkArgument(array.getClass().isArray(), "array");
+
+        Class<?> type = getType(array);
+        int[] dimensions = getDimensions(array);
+        int length = length(dimensions);
+
+        Object flattened = Array.newInstance(type, length);
+
+        flatten(array, flattened, dimensions, 0);
+
+        return flattened;
+    }
+
+    private static void flatten(Object array, Object flattened, int[] dimensions, int offset) {
+        if (dimensions.length == 1) {
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object element = Array.get(array, i);
+                Array.set(flattened, i + offset, element);
+            }
+        } else {
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object a = Array.get(array, i);
+                flatten(a, flattened, tail, offset + i * length(tail));
+            }
+        }
+    }
+
+    /**
+     * Un-flatten a one-dimensional array into an multi-dimensional array based on the provided dimensions.
+     *
+     * @param array      the 1-dimensional array to un-flatten.
+     * @param dimensions the dimensions to un-flatten to.
+     * @return a multi-dimensional array of the provided dimensions.
+     */
+    public static Object unflatten(Object array, int[] dimensions) {
+        Class<?> type = getType(array);
+
+        return unflatten(type, array, dimensions, 0);
+    }
+
+    private static Object unflatten(Class<?> type, Object array, int[] dimensions, int offset) {
+        if (dimensions.length == 1) {
+            Object a = Array.newInstance(type, dimensions[0]);
+
+            for (int i = 0; i < dimensions[0]; i++) {
+                Array.set(a, i, Array.get(array, offset + i));
+            }
+
+            return a;
+        } else {
+            Object a = Array.newInstance(type, dimensions);
+
+            int[] tail = Arrays.copyOfRange(dimensions, 1, dimensions.length);
+
+            for (int i = 0; i < dimensions[0]; i++) {
+                Object element = unflatten(type, array, tail, offset + i * length(tail));
+                Array.set(a, i, element);
+            }
+
+            return a;
+        }
+    }
+
+    public static int[] getDimensions(Object array) {
+        int[] dimensions = new int[0];
+        Class<?> type = array.getClass();
+
+        while (type.isArray()) {
+            int length = array != null ? Array.getLength(array) : 0;
+            dimensions = Ints.concat(dimensions, new int[]{length});
+
+            array = length > 0 ? Array.get(array, 0) : null;
+            type = type.getComponentType();
+        }
+
+        return dimensions;
+    }
+
+    public static Class<?> getType(Object array) {
+        Class<?> type = array.getClass();
+
+        while (type.isArray()) {
+            type = type.getComponentType();
+        }
+
+        return type;
+    }
+
+
+    private static int length(int[] tail) {
+        int product = 1;
+        for (int aTail : tail) {
+            product *= aTail;
+        }
+        return product;
+    }
+
+}
