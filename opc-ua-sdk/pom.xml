@@ -37,6 +37,9 @@
                     <version>0.7.7-SNAPSHOT</version>
                     <configuration>
                         <append>true</append>
+                        <excludes>
+                            <exclude>**/Identifiers</exclude>
+                        </excludes>
                     </configuration>
                     <executions>
                         <execution>
