@@ -250,8 +250,7 @@ public class UaTcpStackClient implements UaStackClient {
             requestHeader.getTimeoutHint().longValue() : DEFAULT_TIMEOUT_MS;
 
         Timeout timeout = wheelTimer.newTimeout(t -> {
-            timeouts.remove(requestHandle);
-            if (!t.isCancelled()) {
+            if (timeouts.remove(requestHandle) != null && !t.isCancelled()) {
                 CompletableFuture<UaResponseMessage> f = pending.remove(requestHandle);
                 if (f != null) {
                     String message = "request timed out after " + timeoutHint + "ms";
