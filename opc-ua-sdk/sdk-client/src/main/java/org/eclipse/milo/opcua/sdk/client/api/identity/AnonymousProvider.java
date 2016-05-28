@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.client.api.identity;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
@@ -30,19 +31,16 @@ import org.jooq.lambda.tuple.Tuple2;
 public class AnonymousProvider implements IdentityProvider {
 
     @Override
-    public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
-                                                                     ByteString serverNonce) throws Exception {
+    public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(
+        EndpointDescription endpoint,
+        ByteString serverNonce) throws Exception {
 
-        String policyId = Arrays.stream(endpoint.getUserIdentityTokens())
+        Optional<UserTokenPolicy> policy = Arrays.stream(endpoint.getUserIdentityTokens())
             .filter(t -> t.getTokenType() == UserTokenType.Anonymous)
-            .findFirst()
-            .map(policy -> {
-                String id = policy.getPolicyId();
+            .findFirst();
 
-                // treat a null id as empty string
-                // else this becomes an empty Optional.
-                return id == null ? "" : id;
-            })
+        String policyId = policy
+            .map(UserTokenPolicy::getPolicyId)
             .orElseThrow(() -> new Exception("no anonymous token policy found"));
 
         return new Tuple2<>(new AnonymousIdentityToken(policyId), new SignatureData());

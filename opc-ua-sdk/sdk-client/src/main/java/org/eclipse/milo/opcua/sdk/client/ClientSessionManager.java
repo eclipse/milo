@@ -667,7 +667,9 @@ class ClientSessionManager {
 
         SecurityAlgorithm signatureAlgorithm = secureChannel.getSecurityPolicy().getAsymmetricSignatureAlgorithm();
 
-        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
+        if (secureChannel.getSecurityPolicy() == SecurityPolicy.None) {
+            return new SignatureData();
+        } else {
             try {
                 PrivateKey privateKey = secureChannel.getKeyPair().getPrivate();
 
@@ -679,9 +681,9 @@ class ClientSessionManager {
             } catch (Throwable t) {
                 logger.warn("Asymmetric signing failed: {}", t.getMessage(), t);
             }
-        }
 
-        return new SignatureData(signatureAlgorithm.getUri(), ByteString.of(signature));
+            return new SignatureData(signatureAlgorithm.getUri(), ByteString.of(signature));
+        }
     }
 
     private class InactivityHandler extends ChannelInboundHandlerAdapter {
