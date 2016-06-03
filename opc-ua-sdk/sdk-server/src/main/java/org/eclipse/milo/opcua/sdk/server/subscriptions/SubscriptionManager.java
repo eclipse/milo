@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -314,7 +315,8 @@ public class SubscriptionManager {
                 throw new UaException(StatusCodes.Bad_NothingToDo);
             }
 
-            List<BaseMonitoredItem<?>> createdItems = newArrayListWithCapacity(itemsToCreate.length);
+            List<BaseMonitoredItem<?>> createdItems =
+                Collections.synchronizedList(newArrayListWithCapacity(itemsToCreate.length));
 
             List<PendingItemCreation> pending = Arrays.stream(itemsToCreate)
                 .map(PendingItemCreation::new)
@@ -544,7 +546,8 @@ public class SubscriptionManager {
                 .map(PendingItemModification::new)
                 .collect(toList());
 
-            List<BaseMonitoredItem<?>> modifiedItems = newArrayListWithCapacity(itemsToModify.length);
+            List<BaseMonitoredItem<?>> modifiedItems =
+                Collections.synchronizedList(newArrayListWithCapacity(itemsToModify.length));
 
             /*
              * Modify requested items and prepare results.
