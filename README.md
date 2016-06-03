@@ -7,6 +7,7 @@ Gitter: [![Join the chat at https://gitter.im/eclipse/milo](https://badges.gitte
 
 Mailing list: https://dev.eclipse.org/mailman/listinfo/milo-dev
 
+Stack Overflow tag: [milo](http://stackoverflow.com/questions/tagged/milo)
 
 ## Maven
 
