@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.core.model;
 
+import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
@@ -22,6 +23,10 @@ public final class BasicProperty<T> implements Property<T> {
     private final NodeId dataType;
     private final Integer valueRank;
     private final Class<T> javaType;
+
+    public BasicProperty(QualifiedName browseName, NodeId dataType, ValueRank valueRank, Class<T> javaType) {
+        this(browseName, dataType, valueRank.getValue(), javaType);
+    }
 
     public BasicProperty(QualifiedName browseName, NodeId dataType, Integer valueRank, Class<T> javaType) {
         this.browseName = browseName;
