@@ -34,7 +34,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.7-SNAPSHOT</version>
+                    <version>0.7.7.201606060606</version>
                     <configuration>
                         <append>true</append>
                         <excludes>
