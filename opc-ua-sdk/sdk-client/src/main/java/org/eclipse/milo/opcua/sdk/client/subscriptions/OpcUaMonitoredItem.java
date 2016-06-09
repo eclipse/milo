@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
@@ -28,8 +29,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaMonitoredItem implements UaMonitoredItem {
 
-    private volatile Consumer<DataValue> valueConsumer;
-    private volatile Consumer<Variant[]> eventConsumer;
+    private volatile BiConsumer<UaMonitoredItem, DataValue> valueConsumer;
+    private volatile BiConsumer<UaMonitoredItem, Variant[]> eventConsumer;
 
     private volatile StatusCode statusCode;
     private volatile double revisedSamplingInterval = 0.0;
@@ -41,14 +42,15 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     private final ReadValueId readValueId;
     private final UInteger monitoredItemId;
 
-    public OpcUaMonitoredItem(UInteger clientHandle,
-                              ReadValueId readValueId,
-                              UInteger monitoredItemId,
-                              StatusCode statusCode,
-                              double revisedSamplingInterval,
-                              UInteger revisedQueueSize,
-                              ExtensionObject filterResult,
-                              MonitoringMode monitoringMode) {
+    public OpcUaMonitoredItem(
+        UInteger clientHandle,
+        ReadValueId readValueId,
+        UInteger monitoredItemId,
+        StatusCode statusCode,
+        double revisedSamplingInterval,
+        UInteger revisedQueueSize,
+        ExtensionObject filterResult,
+        MonitoringMode monitoringMode) {
 
         this.clientHandle = clientHandle;
         this.readValueId = readValueId;
@@ -101,13 +103,23 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     }
 
     @Override
-    public void setValueConsumer(Consumer<DataValue> valueConsumer) {
-        this.valueConsumer = valueConsumer;
+    public void setValueConsumer(Consumer<DataValue> consumer) {
+        this.valueConsumer = (item, value) -> consumer.accept(value);
     }
 
     @Override
-    public void setEventConsumer(Consumer<Variant[]> eventConsumer) {
-        this.eventConsumer = eventConsumer;
+    public void setValueConsumer(BiConsumer<UaMonitoredItem, DataValue> valueBiConsumer) {
+        this.valueConsumer = valueBiConsumer;
+    }
+
+    @Override
+    public void setEventConsumer(Consumer<Variant[]> consumer) {
+        this.eventConsumer = (item, event) -> consumer.accept(event);
+    }
+
+    @Override
+    public void setEventConsumer(BiConsumer<UaMonitoredItem, Variant[]> eventBiConsumer) {
+        this.eventConsumer = eventBiConsumer;
     }
 
     void setStatusCode(StatusCode statusCode) {
@@ -131,13 +143,13 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     }
 
     void onValueArrived(DataValue value) {
-        Consumer<DataValue> c = valueConsumer;
-        if (c != null) c.accept(value);
+        BiConsumer<UaMonitoredItem, DataValue> c = valueConsumer;
+        if (c != null) c.accept(this, value);
     }
 
     void onEventArrived(Variant[] values) {
-        Consumer<Variant[]> c = eventConsumer;
-        if (c != null) c.accept(values);
+        BiConsumer<UaMonitoredItem, Variant[]> c = eventConsumer;
+        if (c != null) c.accept(this, values);
     }
 
 }
