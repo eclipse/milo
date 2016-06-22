@@ -45,10 +45,9 @@ public class HelloMessage {
     /**
      * @param protocolVersion   the latest version of the OPC UA TCP protocol supported by the Client.
      * @param receiveBufferSize the largest MessageChunk that the sender (Client) can receive. This value shall be
-     *                          greater than 8192 bytes.
+     *                          greater than or equal to 8192 bytes.
      * @param sendBufferSize    the largest MessageChunk that the sender (Client) will send. This value shall be
-     *                          greater
-     *                          than 8192 bytes.
+     *                          greater than or equal to 8192 bytes.
      * @param maxMessageSize    the maximum size for any response Message. The Message size is calculated using the
      *                          unencrypted Message body. A value of zero indicates that the Client has no limit.
      * @param maxChunkCount     the maximum number of chunks in any response Message. A value of zero indicates that
