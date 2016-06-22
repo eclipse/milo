@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.util.Map;
@@ -55,8 +56,16 @@ public class CryptoRestrictions {
                 final Class<?> cryptoPermissions = Class.forName("javax.crypto.CryptoPermissions");
                 final Class<?> cryptoAllPermission = Class.forName("javax.crypto.CryptoAllPermission");
 
+                // Private? No big deal...
                 final Field isRestrictedField = jceSecurity.getDeclaredField("isRestricted");
                 isRestrictedField.setAccessible(true);
+
+                // Final? Let's remove that...
+                final Field modifiersField = Field.class.getDeclaredField("modifiers");
+                modifiersField.setAccessible(true);
+                modifiersField.setInt(isRestrictedField, isRestrictedField.getModifiers() & ~Modifier.FINAL);
+
+                // isRestricted = false
                 isRestrictedField.set(null, false);
 
                 final Field defaultPolicyField = jceSecurity.getDeclaredField("defaultPolicy");
