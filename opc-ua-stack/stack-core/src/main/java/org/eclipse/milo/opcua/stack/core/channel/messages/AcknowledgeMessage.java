@@ -39,10 +39,10 @@ public class AcknowledgeMessage {
      * @param protocolVersion   The latest version of the OPC UA TCP protocol supported by the Server.
      * @param receiveBufferSize The largest MessageChunk that the sender can receive. This value shall not be larger
      *                          than what the Client requested in the Hello Message. This value shall be greater than
-     *                          8192 bytes.
+     *                          or equal to 8192 bytes.
      * @param sendBufferSize    The largest MessageChunk that the sender will send. This value shall not be larger than
-     *                          what the Client requested in the Hello Message. This value shall be greater than 8192
-     *                          bytes.
+     *                          what the Client requested in the Hello Message. This value shall be greater than or
+     *                          equal to 8192 bytes.
      * @param maxMessageSize    The maximum size for any request Message. The maximum size for any request Message. The
      *                          Client shall abort the Message with a Bad_RequestTooLarge StatusCode if a request
      *                          Message exceeds this value. The Message size is calculated using the unencrypted Message
@@ -56,11 +56,11 @@ public class AcknowledgeMessage {
                               @UInt32Primitive long maxMessageSize,
                               @UInt32Primitive long maxChunkCount) {
 
-        Preconditions.checkArgument(receiveBufferSize > 8192,
-            "receiverBufferSize must be greater than 8192");
+        Preconditions.checkArgument(receiveBufferSize >= 8192,
+            "receiverBufferSize must be greater than or equal to 8192");
 
-        Preconditions.checkArgument(sendBufferSize > 8192,
-            "sendBufferSize must be greater than 8192");
+        Preconditions.checkArgument(sendBufferSize >= 8192,
+            "sendBufferSize must be greater than or equal to 8192");
 
         this.protocolVersion = protocolVersion;
         this.receiveBufferSize = receiveBufferSize;
