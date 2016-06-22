@@ -16,12 +16,15 @@ package org.eclipse.milo.opcua.stack;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import com.beust.jcommander.internal.Lists;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHandler;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -59,6 +62,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertThrows;
 
 public class ClientServerTest extends SecurityFixture {
 
@@ -366,6 +370,44 @@ public class ClientServerTest extends SecurityFixture {
         logger.info("sending request: {}", request);
         UaResponseMessage response1 = client.sendRequest(request).get();
         logger.info("got response: {}", response1);
+    }
+
+    @Test
+    public void testClientTimeout() throws Exception {
+        EndpointDescription endpoint = endpoints[0];
+
+        logger.info("SecurityPolicy={}, MessageSecurityMode={}",
+            SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri()), endpoint.getSecurityMode());
+
+        UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
+            .setEndpoint(endpoint)
+            .setKeyPair(clientKeyPair)
+            .setCertificate(clientCertificate)
+            .build();
+
+        UaTcpStackClient client = new UaTcpStackClient(config);
+
+        server.addRequestHandler(TestStackRequest.class, service -> {
+            // intentionally do nothing so the request can timeout
+            logger.info("received {}; ignoring...", service.getRequest());
+        });
+
+        RequestHeader header = new RequestHeader(
+            NodeId.NULL_VALUE, DateTime.now(),
+            uint(0),
+            uint(0),
+            null,
+            uint(1000), // timeout
+            null
+        );
+
+        TestStackRequest request = new TestStackRequest(header, uint(0), 0, new Variant(42));
+
+        assertThrows(ExecutionException.class, () -> {
+            UaResponseMessage response = client.sendRequest(request).get();
+
+            logger.info("response={}", response);
+        });
     }
 
     private UaTcpStackClient createClient(EndpointDescription endpoint) throws UaException {
