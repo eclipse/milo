@@ -121,20 +121,29 @@ public class AsymmetricSecurityHeader {
     public static AsymmetricSecurityHeader decode(ByteBuf buffer) {
         /* SecurityPolicyUri */
         int securityPolicyUriLength = buffer.readInt();
+        byte[] securityPolicyUriBytes = new byte[securityPolicyUriLength];
+        buffer.readBytes(securityPolicyUriBytes);
+
         String securityPolicyUri = new String(
-            buffer.readBytes(securityPolicyUriLength).array(),
+            securityPolicyUriBytes,
             Charset.forName("UTF-8")
         );
 
         /* SenderCertificate */
         int senderCertificateLength = buffer.readInt();
-        byte[] senderCertificate = senderCertificateLength >= 0 ?
-            buffer.readBytes(senderCertificateLength).array() : null;
+        byte[] senderCertificate = null;
+        if (senderCertificateLength >= 0) {
+            senderCertificate = new byte[senderCertificateLength];
+            buffer.readBytes(senderCertificate);
+        }
 
         /* ReceiverCertificateThumbprint */
         int thumbprintLength = buffer.readInt();
-        byte[] receiverCertificateThumbprint = thumbprintLength >= 0 ?
-            buffer.readBytes(thumbprintLength).array() : null;
+        byte[] receiverCertificateThumbprint = null;
+        if (thumbprintLength >= 0) {
+            receiverCertificateThumbprint = new byte[thumbprintLength];
+            buffer.readBytes(receiverCertificateThumbprint);
+        }
 
         return new AsymmetricSecurityHeader(
             securityPolicyUri,
