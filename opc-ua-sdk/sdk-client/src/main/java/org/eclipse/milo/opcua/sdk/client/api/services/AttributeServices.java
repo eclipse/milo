@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.services;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -86,6 +87,25 @@ public interface AttributeServices {
             return read(maxAge, timestampsToReturn, stream.collect(Collectors.toList()))
                 .thenApply(r -> newArrayList(r.getResults()));
         }
+    }
+
+    /**
+     * This service is used to read the value attribute of a single Node.
+     *
+     * @param maxAge             the requested max age of the value, in milliseconds. If maxAge is set to 0, the Server
+     *                           shall attempt to read a new value from the data source. If maxAge is set to the max
+     *                           Int32 value or greater, the Server shall attempt to get a cached value. Negative values
+     *                           are invalid for maxAge.
+     * @param timestampsToReturn the requested {@link TimestampsToReturn}.
+     * @param nodeId             the {@link NodeId} identifying the node to read.
+     * @return a {@link CompletableFuture} containing the {@link DataValue}.
+     */
+    default CompletableFuture<DataValue> readValue(double maxAge,
+                                                   TimestampsToReturn timestampsToReturn,
+                                                   NodeId nodeId) {
+
+        return readValues(maxAge, timestampsToReturn, Collections.singletonList(nodeId))
+            .thenApply(r -> r.get(0));
     }
 
     /**
