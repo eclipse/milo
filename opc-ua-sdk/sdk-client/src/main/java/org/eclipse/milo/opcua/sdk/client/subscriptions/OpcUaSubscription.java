@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
@@ -29,20 +30,25 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
+import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class OpcUaSubscription implements UaSubscription {
 
     private final Map<UInteger, OpcUaMonitoredItem> itemsByClientHandle = Maps.newConcurrentMap();
     private final Map<UInteger, OpcUaMonitoredItem> itemsByServerHandle = Maps.newConcurrentMap();
+
+    private final AsyncSemaphore notificationSemaphore = new AsyncSemaphore(1);
 
     private volatile long lastSequenceNumber = 0L;
     private volatile double revisedPublishingInterval = 0.0;
@@ -57,13 +63,15 @@ public class OpcUaSubscription implements UaSubscription {
     private final OpcUaClient client;
     private final UInteger subscriptionId;
 
-    public OpcUaSubscription(OpcUaClient client, UInteger subscriptionId,
-                             double revisedPublishingInterval,
-                             UInteger revisedLifetimeCount,
-                             UInteger revisedMaxKeepAliveCount,
-                             UInteger maxNotificationsPerPublish,
-                             boolean publishingEnabled,
-                             UByte priority) {
+    public OpcUaSubscription(
+        OpcUaClient client,
+        UInteger subscriptionId,
+        double revisedPublishingInterval,
+        UInteger revisedLifetimeCount,
+        UInteger revisedMaxKeepAliveCount,
+        UInteger maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        UByte priority) {
 
         this.client = client;
         this.subscriptionId = subscriptionId;
@@ -76,17 +84,20 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
-    public CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(TimestampsToReturn timestampsToReturn,
-                                                                         List<MonitoredItemCreateRequest> itemsToCreate) {
+    public CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(
+        TimestampsToReturn timestampsToReturn,
+        List<MonitoredItemCreateRequest> itemsToCreate) {
 
-        return client.createMonitoredItems(
+        CompletableFuture<CreateMonitoredItemsResponse> future = client.createMonitoredItems(
             subscriptionId,
             timestampsToReturn,
-            itemsToCreate).thenApply(response -> {
+            itemsToCreate
+        );
 
-            List<UaMonitoredItem> createdItems = newArrayList();
-
+        return future.thenApply(response -> {
             MonitoredItemCreateResult[] results = response.getResults();
+
+            List<UaMonitoredItem> createdItems = newArrayListWithCapacity(itemsToCreate.size());
 
             for (int i = 0; i < itemsToCreate.size(); i++) {
                 MonitoredItemCreateRequest request = itemsToCreate.get(i);
@@ -111,6 +122,34 @@ public class OpcUaSubscription implements UaSubscription {
             }
 
             return createdItems;
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(
+        TimestampsToReturn timestampsToReturn,
+        List<MonitoredItemCreateRequest> itemsToCreate,
+        BiConsumer<UaMonitoredItem, Integer> itemCreationCallback) {
+
+        return notificationSemaphore.acquire().thenCompose(permit -> {
+            CompletableFuture<List<UaMonitoredItem>> itemsFuture =
+                createMonitoredItems(timestampsToReturn, itemsToCreate);
+
+            return itemsFuture.whenComplete((items, ex) -> {
+                try {
+                    if (items != null) {
+                        for (int i = 0; i < items.size(); i++) {
+                            UaMonitoredItem item = items.get(i);
+
+                            if (item.getStatusCode().isGood()) {
+                                itemCreationCallback.accept(item, i);
+                            }
+                        }
+                    }
+                } finally {
+                    permit.release();
+                }
+            });
         });
     }
 
@@ -247,6 +286,10 @@ public class OpcUaSubscription implements UaSubscription {
     @Override
     public ImmutableList<UaMonitoredItem> getMonitoredItems() {
         return ImmutableList.copyOf(itemsByClientHandle.values());
+    }
+
+    AsyncSemaphore getNotificationSemaphore() {
+        return notificationSemaphore;
     }
 
     Map<UInteger, OpcUaMonitoredItem> getItemsByClientHandle() {
