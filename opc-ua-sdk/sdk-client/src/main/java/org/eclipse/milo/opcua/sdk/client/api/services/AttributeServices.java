@@ -161,6 +161,18 @@ public interface AttributeServices {
                 .thenApply(response -> newArrayList(response.getResults()));
         }
     }
+    
+    /**
+     * This service is used to write to the value attribute of one node.
+     *
+     * @param nodeId the {@link NodeId} identifying the node to write to.
+     * @param value  the {@link DataValue} to write.
+     * @return a {@link CompletableFuture} containing the result for the write.
+     */
+    default CompletableFuture<StatusCode> writeValue(NodeId nodeId, DataValue value) {
+        return write(Collections.singletonList(new WriteValue(nodeId, uint(13), null, value)))
+            .thenApply(response -> response.getResults()[0]);
+    }
 
     /**
      * This Service is used to read historical values or Events of one or more Nodes.
