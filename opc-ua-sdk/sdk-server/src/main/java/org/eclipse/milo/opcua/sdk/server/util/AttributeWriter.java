@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -455,9 +455,7 @@ public class AttributeWriter {
                 /*
                  * Writing a ByteString to a UByte[] is explicitly allowed by the spec.
                  */
-                boolean byteStringToByteArray = (o instanceof ByteString && expected == UByte.class);
-
-                if (byteStringToByteArray) {
+                if (o instanceof ByteString && expected == UByte.class) {
                     ByteString byteString = (ByteString) o;
 
                     return new DataValue(
@@ -465,6 +463,9 @@ public class AttributeWriter {
                         value.getStatusCode(),
                         value.getSourceTime(),
                         value.getServerTime());
+                } else if (expected == Variant.class) {
+                    // allow to write anything to a Variant
+                    return value;
                 } else {
                     throw new UaException(StatusCodes.Bad_TypeMismatch);
                 }
