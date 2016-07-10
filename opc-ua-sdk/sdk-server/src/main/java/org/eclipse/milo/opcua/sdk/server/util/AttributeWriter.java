@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.util;
@@ -82,7 +82,11 @@ public class AttributeWriter {
         writeNode(ns, node, attributeId, value);
     }
 
-    private static void writeNode(NamespaceManager ns, Node node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeNode(NamespaceManager ns,
+                                  Node node,
+                                  AttributeId attributeId,
+                                  DataValue value) throws UaException {
+
         switch (node.getNodeClass()) {
             case DataType:
                 writeDataTypeAttribute(ns, (DataTypeNode) node, attributeId, value);
@@ -117,7 +121,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeNodeAttribute(NamespaceManager ns, Node node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeNodeAttribute(NamespaceManager ns,
+                                           Node node,
+                                           AttributeId attributeId,
+                                           DataValue value) throws UaException {
+
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
 
@@ -183,7 +191,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeDataTypeAttribute(NamespaceManager ns, DataTypeNode node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeDataTypeAttribute(NamespaceManager ns,
+                                               DataTypeNode node,
+                                               AttributeId attributeId,
+                                               DataValue value) throws UaException {
+
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
 
@@ -201,7 +213,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeMethodAttribute(NamespaceManager ns, MethodNode node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeMethodAttribute(NamespaceManager ns,
+                                             MethodNode node,
+                                             AttributeId attributeId,
+                                             DataValue value) throws UaException {
+
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
 
@@ -227,7 +243,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeObjectAttribute(NamespaceManager ns, ObjectNode node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeObjectAttribute(NamespaceManager ns,
+                                             ObjectNode node,
+                                             AttributeId attributeId,
+                                             DataValue value) throws UaException {
+
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
 
@@ -245,7 +265,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeObjectTypeAttribute(NamespaceManager ns, ObjectTypeNode node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeObjectTypeAttribute(NamespaceManager ns,
+                                                 ObjectTypeNode node,
+                                                 AttributeId attributeId,
+                                                 DataValue value) throws UaException {
+
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
 
@@ -263,7 +287,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeReferenceTypeAttribute(NamespaceManager ns, ReferenceTypeNode node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeReferenceTypeAttribute(NamespaceManager ns,
+                                                    ReferenceTypeNode node,
+                                                    AttributeId attributeId,
+                                                    DataValue value) throws UaException {
+
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
 
@@ -297,7 +325,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeVariableAttribute(NamespaceManager ns, VariableNode node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeVariableAttribute(NamespaceManager ns,
+                                               VariableNode node,
+                                               AttributeId attributeId,
+                                               DataValue value) throws UaException {
+
         EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(node.getAccessLevel());
 
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
@@ -376,7 +408,11 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeVariableTypeAttribute(NamespaceManager ns, VariableTypeNode node, AttributeId attributeId, DataValue value) throws UaException {
+    private static void writeVariableTypeAttribute(NamespaceManager ns,
+                                                   VariableTypeNode node,
+                                                   AttributeId attributeId,
+                                                   DataValue value) throws UaException {
+
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
 
@@ -436,7 +472,10 @@ public class AttributeWriter {
         }
     }
 
-    private static DataValue validateDataType(NamespaceManager ns, ExpandedNodeId dataType, DataValue value) throws UaException {
+    private static DataValue validateDataType(NamespaceManager ns,
+                                              ExpandedNodeId dataType,
+                                              DataValue value) throws UaException {
+
         Variant variant = value.getValue();
         if (variant == null) return value;
 
@@ -475,7 +514,10 @@ public class AttributeWriter {
         return value;
     }
 
-    private static void validateArrayType(int valueRank, Optional<UInteger[]> arrayDimensionsOpt, DataValue value) throws UaException {
+    private static void validateArrayType(int valueRank,
+                                          Optional<UInteger[]> arrayDimensionsOpt,
+                                          DataValue value) throws UaException {
+
         Variant variant = value.getValue();
         if (variant == null) return;
 

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -57,24 +57,27 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
     private volatile UByte eventNotifier = ubyte(0);
 
-    public UaObjectNode(UaNodeManager nodeManager,
-                        NodeId nodeId,
-                        QualifiedName browseName,
-                        LocalizedText displayName) {
+    public UaObjectNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName) {
 
         super(nodeManager, nodeId, NodeClass.Object, browseName, displayName);
     }
 
-    public UaObjectNode(UaNodeManager nodeManager,
-                        NodeId nodeId,
-                        QualifiedName browseName,
-                        LocalizedText displayName,
-                        Optional<LocalizedText> description,
-                        Optional<UInteger> writeMask,
-                        Optional<UInteger> userWriteMask,
-                        UByte eventNotifier) {
+    public UaObjectNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        Optional<LocalizedText> description,
+        Optional<UInteger> writeMask,
+        Optional<UInteger> userWriteMask,
+        UByte eventNotifier) {
 
-        super(nodeManager, nodeId, NodeClass.Object, browseName, displayName, description, writeMask, userWriteMask);
+        super(nodeManager, nodeId, NodeClass.Object,
+            browseName, displayName, description, writeMask, userWriteMask);
 
         this.eventNotifier = eventNotifier;
     }

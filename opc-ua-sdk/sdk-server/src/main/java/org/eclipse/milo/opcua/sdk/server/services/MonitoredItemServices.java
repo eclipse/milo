@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.services;
@@ -43,35 +43,45 @@ public class MonitoredItemServices implements MonitoredItemServiceSet {
     }
 
     @Override
-    public void onCreateMonitoredItems(ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) {
+    public void onCreateMonitoredItems(
+        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) {
+
         createMonitoredItemsMetric.record(service);
 
         subscriptionManager.createMonitoredItems(service);
     }
 
     @Override
-    public void onModifyMonitoredItems(ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) {
+    public void onModifyMonitoredItems(
+        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) {
+
         modifyMonitoredItemsMetric.record(service);
 
         subscriptionManager.modifyMonitoredItems(service);
     }
 
     @Override
-    public void onDeleteMonitoredItems(ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) {
+    public void onDeleteMonitoredItems(
+        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) {
+
         deleteMonitoredItemsMetric.record(service);
 
         subscriptionManager.deleteMonitoredItems(service);
     }
 
     @Override
-    public void onSetMonitoringMode(ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) {
+    public void onSetMonitoringMode(
+        ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) {
+
         setMonitoringModeMetric.record(service);
 
         subscriptionManager.setMonitoringMode(service);
     }
 
     @Override
-    public void onSetTriggering(ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) throws UaException {
+    public void onSetTriggering(
+        ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) throws UaException {
+
         setTriggeringMetric.record(service);
 
         subscriptionManager.setTriggering(service);

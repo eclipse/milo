@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.api;
@@ -22,12 +22,12 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static java.util.stream.Collectors.toList;
 

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.client.api.services;
@@ -93,7 +93,7 @@ public interface SubscriptionServices {
      * @param subscriptionIds   the server-assigned identifiers for the subscriptions to transfer.
      * @param sendInitialValues if {@code true}, the first Publish response after the TransferSubscriptions service
      *                          call shall contain the current values of all monitored items in the
-     *                          subscription where the {@link MonitoringMode} is set to {@link MonitoringMode#Reporting}.
+     *                          subscription where the {@link MonitoringMode} is {@link MonitoringMode#Reporting}.
      * @return a {@link CompletableFuture} containing the {@link TransferSubscriptionsResponse}.
      */
     CompletableFuture<TransferSubscriptionsResponse> transferSubscriptions(List<UInteger> subscriptionIds,

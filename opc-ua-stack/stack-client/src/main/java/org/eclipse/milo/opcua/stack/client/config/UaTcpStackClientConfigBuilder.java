@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.client.config;
@@ -108,7 +108,9 @@ public class UaTcpStackClientConfigBuilder {
         return this;
     }
 
-    public UaTcpStackClientConfigBuilder setSecureChannelReauthenticationEnabled(boolean secureChannelReauthenticationEnabled) {
+    public UaTcpStackClientConfigBuilder setSecureChannelReauthenticationEnabled(
+        boolean secureChannelReauthenticationEnabled) {
+
         this.secureChannelReauthenticationEnabled = secureChannelReauthenticationEnabled;
         return this;
     }
@@ -159,19 +161,20 @@ public class UaTcpStackClientConfigBuilder {
 
         private final boolean secureChannelReauthenticationEnabled;
 
-        public UaTcpStackClientConfigImpl(@Nullable String endpointUrl,
-                                          @Nullable EndpointDescription endpoint,
-                                          @Nullable KeyPair keyPair,
-                                          @Nullable X509Certificate certificate,
-                                          LocalizedText applicationName,
-                                          String applicationUri,
-                                          String productUri,
-                                          ChannelConfig channelConfig,
-                                          UInteger channelLifetime,
-                                          ExecutorService executor,
-                                          NioEventLoopGroup eventLoop,
-                                          HashedWheelTimer wheelTimer,
-                                          boolean secureChannelReauthenticationEnabled) {
+        public UaTcpStackClientConfigImpl(
+            @Nullable String endpointUrl,
+            @Nullable EndpointDescription endpoint,
+            @Nullable KeyPair keyPair,
+            @Nullable X509Certificate certificate,
+            LocalizedText applicationName,
+            String applicationUri,
+            String productUri,
+            ChannelConfig channelConfig,
+            UInteger channelLifetime,
+            ExecutorService executor,
+            NioEventLoopGroup eventLoop,
+            HashedWheelTimer wheelTimer,
+            boolean secureChannelReauthenticationEnabled) {
 
             this.endpointUrl = endpointUrl;
             this.endpoint = endpoint;

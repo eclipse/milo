@@ -6,10 +6,11 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *    http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *    http://www.eclipse.org/org/documents/edl-v10.html.
  */
+
 package org.eclipse.milo.examples.server;
 
 import java.lang.reflect.Array;
@@ -194,15 +195,15 @@ public class ExampleNamespace implements Namespace {
             Variant variant = new Variant(array);
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
-                    .setNodeId(new NodeId(namespaceIndex, "HelloWorld/" + name))
-                    .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                    .setBrowseName(new QualifiedName(namespaceIndex, name))
-                    .setDisplayName(LocalizedText.english(name))
-                    .setDataType(typeId)
-                    .setTypeDefinition(Identifiers.BaseDataVariableType)
-                    .setValueRank(ValueRank.OneDimension.getValue())
-                    .setArrayDimensions(new UInteger[]{uint(0)})
-                    .build();
+                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/" + name))
+                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setDisplayName(LocalizedText.english(name))
+                .setDataType(typeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .setValueRank(ValueRank.OneDimension.getValue())
+                .setArrayDimensions(new UInteger[]{uint(0)})
+                .build();
 
             node.setValue(new DataValue(variant));
 
@@ -217,7 +218,8 @@ public class ExampleNamespace implements Namespace {
             .setNodeId(new NodeId(namespaceIndex, "HelloWorld/sqrt(x)"))
             .setBrowseName(new QualifiedName(namespaceIndex, "sqrt(x)"))
             .setDisplayName(new LocalizedText(null, "sqrt(x)"))
-            .setDescription(LocalizedText.english("Returns the correctly rounded positive square root of a double value."))
+            .setDescription(
+                LocalizedText.english("Returns the correctly rounded positive square root of a double value."))
             .build();
 
 

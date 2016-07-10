@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.channel;
@@ -76,7 +76,7 @@ public class ChunkDecoder {
         boolean signed = delegate.isSigningEnabled(channel);
 
         for (ByteBuf chunkBuffer : chunkBuffers) {
-            char chunkType = (char) chunkBuffer.getByte(3);
+            final char chunkType = (char) chunkBuffer.getByte(3);
 
             chunkBuffer.skipBytes(SecureMessageHeader.SECURE_MESSAGE_HEADER_SIZE);
 
@@ -93,8 +93,8 @@ public class ChunkDecoder {
                 delegate.verifyChunk(channel, chunkBuffer);
             }
 
-            int paddingSize = encrypted ? getPaddingSize(cipherTextBlockSize, signatureSize, chunkBuffer) : 0;
-            int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingSize;
+            final int paddingSize = encrypted ? getPaddingSize(cipherTextBlockSize, signatureSize, chunkBuffer) : 0;
+            final int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingSize;
 
             chunkBuffer.readerIndex(encryptedStart);
 
@@ -216,7 +216,8 @@ public class ChunkDecoder {
         @Override
         public Cipher getCipher(SecureChannel channel) throws UaException {
             try {
-                String transformation = channel.getSecurityPolicy().getAsymmetricEncryptionAlgorithm().getTransformation();
+                String transformation = channel.getSecurityPolicy()
+                    .getAsymmetricEncryptionAlgorithm().getTransformation();
                 Cipher cipher = Cipher.getInstance(transformation);
                 cipher.init(Cipher.DECRYPT_MODE, channel.getKeyPair().getPrivate());
                 return cipher;
@@ -305,7 +306,9 @@ public class ChunkDecoder {
                     logger.debug("Attempting to use SecuritySecrets from previousTokenId={}", previousTokenId);
 
                     if (receivedTokenId != previousTokenId) {
-                        logger.warn("receivedTokenId={} did not match previousTokenId={}", receivedTokenId, previousTokenId);
+                        logger.warn(
+                            "receivedTokenId={} did not match previousTokenId={}",
+                            receivedTokenId, previousTokenId);
 
                         throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown,
                             "unknown secure channel token: " + receivedTokenId);
@@ -321,7 +324,9 @@ public class ChunkDecoder {
         @Override
         public Cipher getCipher(SecureChannel channel) throws UaException {
             try {
-                String transformation = channel.getSecurityPolicy().getSymmetricEncryptionAlgorithm().getTransformation();
+                String transformation = channel.getSecurityPolicy()
+                    .getSymmetricEncryptionAlgorithm().getTransformation();
+
                 ChannelSecurity.SecretKeys decryptionKeys = channel.getDecryptionKeys(securitySecrets);
 
                 SecretKeySpec keySpec = new SecretKeySpec(decryptionKeys.getEncryptionKey(), "AES");

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
@@ -533,7 +533,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                             );
 
                             subscription.getNotificationListeners().forEach(
-                                listener -> listener.onKeepAliveNotification(subscription, notificationMessage.getPublishTime())
+                                listener -> listener.onKeepAliveNotification(
+                                    subscription, notificationMessage.getPublishTime())
                             );
                         } else {
                             if (!subscription.getNotificationListeners().isEmpty()) {
@@ -541,7 +542,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                                     ImmutableList.builder();
 
                                 for (MonitoredItemNotification n : dcn.getMonitoredItems()) {
-                                    UaMonitoredItem item = subscription.getItemsByClientHandle().get(n.getClientHandle());
+                                    UaMonitoredItem item = subscription
+                                        .getItemsByClientHandle().get(n.getClientHandle());
+
                                     if (item != null) {
                                         builder.add(new Tuple2<>(item, n.getValue()));
                                     }

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
@@ -180,7 +180,8 @@ public final class ExpandedNodeId {
 
         return Objects.equal(serverIndex, that.serverIndex) &&
             Objects.equal(nodeId.getIdentifier(), that.nodeId.getIdentifier()) &&
-            (Objects.equal(namespaceUri, that.namespaceUri) || Objects.equal(nodeId.getNamespaceIndex(), that.nodeId.getNamespaceIndex()));
+            (Objects.equal(namespaceUri, that.namespaceUri) ||
+                Objects.equal(nodeId.getNamespaceIndex(), that.nodeId.getNamespaceIndex()));
     }
 
     @Override
@@ -236,6 +237,9 @@ public final class ExpandedNodeId {
                 if (bs.isNull()) sb.append("b=");
                 else sb.append("b=").append(DatatypeConverter.printBase64Binary(bs.bytes()));
                 break;
+
+            default:
+                throw new IllegalStateException("IdType " + nodeId.getType());
         }
 
         return sb.toString();
@@ -265,13 +269,18 @@ public final class ExpandedNodeId {
 
             switch (nodeId.getType()) {
                 case Guid:
-                    return new ExpandedNodeId(namespaceIndex, (UUID) identifier, namespaceUri, serverIndex);
+                    return new ExpandedNodeId(
+                        namespaceIndex, (UUID) identifier, namespaceUri, serverIndex);
                 case Numeric:
-                    return new ExpandedNodeId(namespaceIndex, ((UInteger) identifier).intValue(), namespaceUri, serverIndex);
+                    return new ExpandedNodeId(
+                        namespaceIndex, ((UInteger) identifier).intValue(), namespaceUri, serverIndex);
                 case Opaque:
-                    return new ExpandedNodeId(namespaceIndex, (ByteString) identifier, namespaceUri, serverIndex);
+                    return new ExpandedNodeId(
+                        namespaceIndex, (ByteString) identifier, namespaceUri, serverIndex);
                 case String:
-                    return new ExpandedNodeId(namespaceIndex, (String) identifier, namespaceUri, serverIndex);
+                    return new ExpandedNodeId(
+                        namespaceIndex, (String) identifier, namespaceUri, serverIndex);
+
                 default:
                     throw new IllegalStateException("IdType " + nodeId.getType());
             }

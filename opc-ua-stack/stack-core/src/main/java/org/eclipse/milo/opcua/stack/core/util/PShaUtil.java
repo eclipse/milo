@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.util;
@@ -48,7 +48,7 @@ public class PShaUtil {
         try {
             Mac mac = Mac.getInstance(transformation);
 
-            byte[] tempBytes = P_hash(transformation, secret, seed, mac, offset + length);
+            byte[] tempBytes = hash(transformation, secret, seed, mac, offset + length);
             byte[] key = new byte[length];
 
             System.arraycopy(tempBytes, offset, key, 0, key.length);
@@ -59,21 +59,26 @@ public class PShaUtil {
         }
     }
 
-    private static byte[] P_hash(String transformation, byte[] secret, byte[] seed, Mac mac, int required) throws Exception {
+    private static byte[] hash(String transformation,
+                               byte[] secret,
+                               byte[] seed,
+                               Mac mac,
+                               int required) throws Exception {
+
         byte[] out = new byte[required];
         int offset = 0;
         int toCopy;
-        byte[] A = seed;
+        byte[] a = seed;
         byte[] tmp;
 
         while (required > 0) {
             SecretKeySpec key = new SecretKeySpec(secret, transformation);
             mac.init(key);
-            mac.update(A);
-            A = mac.doFinal();
+            mac.update(a);
+            a = mac.doFinal();
             mac.reset();
             mac.init(key);
-            mac.update(A);
+            mac.update(a);
             mac.update(seed);
             tmp = mac.doFinal();
             toCopy = min(required, tmp.length);

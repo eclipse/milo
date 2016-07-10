@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server;
@@ -210,7 +210,9 @@ public class SessionManager implements
 
     //region Session Services
     @Override
-    public void onCreateSession(ServiceRequest<CreateSessionRequest, CreateSessionResponse> serviceRequest) throws UaException {
+    public void onCreateSession(
+        ServiceRequest<CreateSessionRequest, CreateSessionResponse> serviceRequest) throws UaException {
+
         CreateSessionRequest request = serviceRequest.getRequest();
 
         long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
@@ -222,12 +224,17 @@ public class SessionManager implements
         ByteString serverNonce = NonceUtil.generateNonce(32);
         NodeId authenticationToken = new NodeId(0, NonceUtil.generateNonce(32));
         long maxRequestMessageSize = serviceRequest.getServer().getChannelConfig().getMaxMessageSize();
-        double revisedSessionTimeout = Math.max(5000, Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout()));
+        double revisedSessionTimeout = Math.max(
+            5000,
+            Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout())
+        );
 
         ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
         SecurityPolicy securityPolicy = secureChannel.getSecurityPolicy();
 
-        ByteString serverCertificate = serviceRequest.getSecureChannel().getEndpointDescription().getServerCertificate();
+        ByteString serverCertificate = serviceRequest
+            .getSecureChannel().getEndpointDescription().getServerCertificate();
+
         SignedSoftwareCertificate[] serverSoftwareCertificates = server.getSoftwareCertificates();
 
         EndpointDescription[] serverEndpoints = Arrays.stream(server.getEndpointDescriptions())
@@ -349,7 +356,9 @@ public class SessionManager implements
     }
 
     @Override
-    public void onActivateSession(ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> serviceRequest) throws UaException {
+    public void onActivateSession(
+        ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> serviceRequest) throws UaException {
+
         ActivateSessionRequest request = serviceRequest.getRequest();
 
         ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
@@ -462,7 +471,8 @@ public class SessionManager implements
 
             session.setClientCertificateBytes(secureChannel.getRemoteCertificateBytes());
 
-            StatusCode[] results = new StatusCode[clientSoftwareCertificates != null ? clientSoftwareCertificates.length : 0];
+            int length = clientSoftwareCertificates != null ? clientSoftwareCertificates.length : 0;
+            StatusCode[] results = new StatusCode[length];
             Arrays.fill(results, StatusCode.GOOD);
 
             ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -602,7 +612,9 @@ public class SessionManager implements
     }
 
     @Override
-    public void onHistoryUpdate(ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service) throws UaException {
+    public void onHistoryUpdate(
+        ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getAttributeServices().onHistoryUpdate(service);
@@ -625,21 +637,28 @@ public class SessionManager implements
     }
 
     @Override
-    public void onTranslateBrowsePaths(ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> service) throws UaException {
+    public void onTranslateBrowsePaths(
+        ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> service)
+        throws UaException {
+
         Session session = session(service);
 
         session.getViewServices().onTranslateBrowsePaths(service);
     }
 
     @Override
-    public void onRegisterNodes(ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> service) throws UaException {
+    public void onRegisterNodes(
+        ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getViewServices().onRegisterNodes(service);
     }
 
     @Override
-    public void onUnregisterNodes(ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> service) throws UaException {
+    public void onUnregisterNodes(
+        ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getViewServices().onUnregisterNodes(service);
@@ -655,7 +674,9 @@ public class SessionManager implements
     }
 
     @Override
-    public void onAddReferences(ServiceRequest<AddReferencesRequest, AddReferencesResponse> service) throws UaException {
+    public void onAddReferences(
+        ServiceRequest<AddReferencesRequest, AddReferencesResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getNodeManagementServices().onAddReferences(service);
@@ -669,7 +690,9 @@ public class SessionManager implements
     }
 
     @Override
-    public void onDeleteReferences(ServiceRequest<DeleteReferencesRequest, DeleteReferencesResponse> service) throws UaException {
+    public void onDeleteReferences(
+        ServiceRequest<DeleteReferencesRequest, DeleteReferencesResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getNodeManagementServices().onDeleteReferences(service);
@@ -678,21 +701,27 @@ public class SessionManager implements
 
     //region Subscription Services
     @Override
-    public void onCreateSubscription(ServiceRequest<CreateSubscriptionRequest, CreateSubscriptionResponse> service) throws UaException {
+    public void onCreateSubscription(
+        ServiceRequest<CreateSubscriptionRequest, CreateSubscriptionResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getSubscriptionServices().onCreateSubscription(service);
     }
 
     @Override
-    public void onModifySubscription(ServiceRequest<ModifySubscriptionRequest, ModifySubscriptionResponse> service) throws UaException {
+    public void onModifySubscription(
+        ServiceRequest<ModifySubscriptionRequest, ModifySubscriptionResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getSubscriptionServices().onModifySubscription(service);
     }
 
     @Override
-    public void onSetPublishingMode(ServiceRequest<SetPublishingModeRequest, SetPublishingModeResponse> service) throws UaException {
+    public void onSetPublishingMode(
+        ServiceRequest<SetPublishingModeRequest, SetPublishingModeResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getSubscriptionServices().onSetPublishingMode(service);
@@ -713,14 +742,18 @@ public class SessionManager implements
     }
 
     @Override
-    public void onTransferSubscriptions(ServiceRequest<TransferSubscriptionsRequest, TransferSubscriptionsResponse> service) throws UaException {
+    public void onTransferSubscriptions(
+        ServiceRequest<TransferSubscriptionsRequest, TransferSubscriptionsResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getSubscriptionServices().onTransferSubscriptions(service);
     }
 
     @Override
-    public void onDeleteSubscriptions(ServiceRequest<DeleteSubscriptionsRequest, DeleteSubscriptionsResponse> service) throws UaException {
+    public void onDeleteSubscriptions(
+        ServiceRequest<DeleteSubscriptionsRequest, DeleteSubscriptionsResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getSubscriptionServices().onDeleteSubscriptions(service);
@@ -729,35 +762,45 @@ public class SessionManager implements
 
     //region MonitoredItem Services
     @Override
-    public void onCreateMonitoredItems(ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) throws UaException {
+    public void onCreateMonitoredItems(
+        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getMonitoredItemServices().onCreateMonitoredItems(service);
     }
 
     @Override
-    public void onModifyMonitoredItems(ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) throws UaException {
+    public void onModifyMonitoredItems(
+        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getMonitoredItemServices().onModifyMonitoredItems(service);
     }
 
     @Override
-    public void onSetMonitoringMode(ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) throws UaException {
+    public void onSetMonitoringMode(
+        ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getMonitoredItemServices().onSetMonitoringMode(service);
     }
 
     @Override
-    public void onSetTriggering(ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) throws UaException {
+    public void onSetTriggering(
+        ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getMonitoredItemServices().onSetTriggering(service);
     }
 
     @Override
-    public void onDeleteMonitoredItems(ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) throws UaException {
+    public void onDeleteMonitoredItems(
+        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) throws UaException {
+
         Session session = session(service);
 
         session.getMonitoredItemServices().onDeleteMonitoredItems(service);

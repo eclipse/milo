@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.client.config;
@@ -68,8 +68,8 @@ public interface UaTcpStackClientConfig {
     LocalizedText getApplicationName();
 
     /**
-     * @return a URI for the client's application instance. This should be the same as the URI in the client certificate, if
-     * present.
+     * @return a URI for the client's application instance. This should be the same as the URI in the client
+     * certificate, if present.
      */
     String getApplicationUri();
 

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.util;
@@ -55,18 +55,20 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     private final List<Argument> outputArguments;
     private final Object annotatedObject;
 
-    public AnnotationBasedInvocationHandler(UaNodeManager nodeManager,
-                                            Argument[] inputArguments,
-                                            Argument[] outputArguments,
-                                            Object annotatedObject) {
+    public AnnotationBasedInvocationHandler(
+        UaNodeManager nodeManager,
+        Argument[] inputArguments,
+        Argument[] outputArguments,
+        Object annotatedObject) {
 
         this(nodeManager, Lists.newArrayList(inputArguments), Lists.newArrayList(outputArguments), annotatedObject);
     }
 
-    public AnnotationBasedInvocationHandler(UaNodeManager nodeManager,
-                                            List<Argument> inputArguments,
-                                            List<Argument> outputArguments,
-                                            Object annotatedObject) {
+    public AnnotationBasedInvocationHandler(
+        UaNodeManager nodeManager,
+        List<Argument> inputArguments,
+        List<Argument> outputArguments,
+        Object annotatedObject) {
 
         this.nodeManager = nodeManager;
         this.inputArguments = inputArguments;
@@ -134,8 +136,9 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
             try {
                 Object[] parameters = new Object[1 + inputs.length + outputs.length];
 
-                org.eclipse.milo.opcua.sdk.server.model.UaObjectNode objectNode = (org.eclipse.milo.opcua.sdk.server.model.UaObjectNode) nodeManager.getNode(objectId)
-                    .orElseThrow(() -> new Exception("owner Object node found"));
+                org.eclipse.milo.opcua.sdk.server.model.UaObjectNode objectNode =
+                    (org.eclipse.milo.opcua.sdk.server.model.UaObjectNode) nodeManager.getNode(objectId)
+                        .orElseThrow(() -> new Exception("owner Object node found"));
 
                 InvocationContext context = new InvocationContextImpl(objectNode, future, inputArgumentResults, latch);
 
@@ -185,7 +188,8 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     }
 
 
-    public static AnnotationBasedInvocationHandler fromAnnotatedObject(UaNodeManager nodeManager, Object annotatedObject) throws Exception {
+    public static AnnotationBasedInvocationHandler fromAnnotatedObject(
+        UaNodeManager nodeManager, Object annotatedObject) throws Exception {
         // TODO Make this work when parameter types are not built-in types
 
         Method annotatedMethod = Arrays.stream(annotatedObject.getClass().getMethods())
@@ -306,10 +310,11 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
         private final StatusCode[] inputArgumentResults;
         private final CountDownLatch latch;
 
-        private InvocationContextImpl(org.eclipse.milo.opcua.sdk.server.model.UaObjectNode objectNode,
-                                      CompletableFuture<CallMethodResult> future,
-                                      StatusCode[] inputArgumentResults,
-                                      CountDownLatch latch) {
+        private InvocationContextImpl(
+            org.eclipse.milo.opcua.sdk.server.model.UaObjectNode objectNode,
+            CompletableFuture<CallMethodResult> future,
+            StatusCode[] inputArgumentResults,
+            CountDownLatch latch) {
 
             this.objectNode = objectNode;
             this.inputArgumentResults = inputArgumentResults;

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.items;
@@ -49,18 +49,20 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
     private volatile DataChangeFilter filter = null;
     private volatile ExtensionObject filterResult = null;
 
-    public MonitoredDataItem(UInteger id,
-                             UInteger subscriptionId,
-                             ReadValueId readValueId,
-                             MonitoringMode monitoringMode,
-                             TimestampsToReturn timestamps,
-                             UInteger clientHandle,
-                             double samplingInterval,
-                             ExtensionObject filter,
-                             UInteger queueSize,
-                             boolean discardOldest) throws UaException {
+    public MonitoredDataItem(
+        UInteger id,
+        UInteger subscriptionId,
+        ReadValueId readValueId,
+        MonitoringMode monitoringMode,
+        TimestampsToReturn timestamps,
+        UInteger clientHandle,
+        double samplingInterval,
+        ExtensionObject filter,
+        UInteger queueSize,
+        boolean discardOldest) throws UaException {
 
-        super(id, subscriptionId, readValueId, monitoringMode, timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
+        super(id, subscriptionId, readValueId, monitoringMode,
+            timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
 
         installFilter(filter);
     }

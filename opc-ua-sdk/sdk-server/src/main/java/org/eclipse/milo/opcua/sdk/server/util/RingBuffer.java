@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.util;
@@ -86,7 +86,7 @@ public class RingBuffer<E> {
         if (count <= 0) {
             throw new NoSuchElementException();
         } else {
-            E e = buffer[read];
+            final E e = buffer[read];
             buffer[read] = null;
             read = (read + 1) % maxSize;
             count -= 1;

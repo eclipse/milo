@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.util;
@@ -34,7 +34,7 @@ public class SignatureUtil {
      * @param privateKey        the {@link PrivateKey} to sign with.
      * @param buffers           the data to sign.
      * @return the signature bytes.
-     * @throws UaException
+     * @throws UaException if the signature fails for any reason.
      */
     public static byte[] sign(SecurityAlgorithm securityAlgorithm,
                               PrivateKey privateKey,
@@ -64,7 +64,7 @@ public class SignatureUtil {
      * @param secretKey         the secret key.
      * @param buffers           the buffers to use.
      * @return the computed HMAC.
-     * @throws UaException
+     * @throws UaException if the HMAC operation fails for any reason.
      */
     public static byte[] hmac(SecurityAlgorithm securityAlgorithm,
                               byte[] secretKey,

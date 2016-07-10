@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
@@ -86,21 +86,20 @@ public final class ExtensionObject {
                     return (T) decoded;
                 }
             }
-        }
 
-        throw new RuntimeException("encodingType=" + bodyType);
+            default:
+                throw new IllegalStateException("unknown body type: " + bodyType);
+        }
     }
 
     public static ExtensionObject encode(UaStructure structure) throws UaSerializationException {
         return encodeAsByteString(structure, structure.getBinaryEncodingId());
     }
 
-    public static ExtensionObject encodeAsByteString(Object object, NodeId encodingTypeId) throws UaSerializationException {
-        return encodeAsByteString(object, encodingTypeId, DataTypeEncoding.OPC_UA);
-    }
+    public static ExtensionObject encodeAsByteString(Object object,
+                                                     NodeId encodingTypeId) throws UaSerializationException {
 
-    public static ExtensionObject encodeAsXmlElement(Object object, NodeId encodingTypeId) throws UaSerializationException {
-        return encodeAsXmlElement(object, encodingTypeId, DataTypeEncoding.OPC_UA);
+        return encodeAsByteString(object, encodingTypeId, DataTypeEncoding.OPC_UA);
     }
 
     public static ExtensionObject encodeAsByteString(Object object,
@@ -110,6 +109,12 @@ public final class ExtensionObject {
         ByteString encoded = context.encodeToByteString(object, encodingTypeId);
 
         return new ExtensionObject(encoded, encodingTypeId);
+    }
+
+    public static ExtensionObject encodeAsXmlElement(Object object,
+                                                     NodeId encodingTypeId) throws UaSerializationException {
+
+        return encodeAsXmlElement(object, encodingTypeId, DataTypeEncoding.OPC_UA);
     }
 
     public static ExtensionObject encodeAsXmlElement(Object object,

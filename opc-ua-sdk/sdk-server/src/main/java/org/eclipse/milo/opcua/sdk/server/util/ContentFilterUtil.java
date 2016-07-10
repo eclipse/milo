@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.util;
@@ -46,12 +46,6 @@ public class ContentFilterUtil {
         }
     }
 
-    private SimpleAttributeOperand[] extract(ExtensionObject[] operandXos) {
-        return Arrays.stream(operandXos)
-            .map(xo -> (SimpleAttributeOperand) xo.decode())
-            .toArray(SimpleAttributeOperand[]::new);
-    }
-
     private boolean apply(FilterOperator operator, FilterOperand[] operands) {
         if (operator == FilterOperator.Equals) {
             SimpleAttributeOperand op0 = (SimpleAttributeOperand) operands[0];
@@ -64,6 +58,12 @@ public class ContentFilterUtil {
         }
 
         return false;
+    }
+
+    private SimpleAttributeOperand[] extract(ExtensionObject[] operandXos) {
+        return Arrays.stream(operandXos)
+            .map(xo -> (SimpleAttributeOperand) xo.decode())
+            .toArray(SimpleAttributeOperand[]::new);
     }
 
     private static class EqualsOperator {

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
@@ -83,7 +83,11 @@ public interface ServerNode extends Node {
      * @param indexRange the index range to read. Must be a parseable by {@link NumericRange}.
      * @return the value of the specified attribute.
      */
-    default DataValue readAttribute(int attribute, @Nullable TimestampsToReturn timestamps, @Nullable String indexRange) {
+    default DataValue readAttribute(
+        int attribute,
+        @Nullable TimestampsToReturn timestamps,
+        @Nullable String indexRange) {
+
         return AttributeId.from(attribute)
             .map(attributeId -> readAttribute(attributeId, timestamps, indexRange))
             .orElse(new DataValue(StatusCodes.Bad_AttributeIdInvalid));
@@ -113,7 +117,11 @@ public interface ServerNode extends Node {
      * @param indexRange  the index range to read. Must be a parseable by {@link NumericRange}.
      * @return the value of the specified attribute.
      */
-    default DataValue readAttribute(AttributeId attributeId, @Nullable TimestampsToReturn timestamps, @Nullable String indexRange) {
+    default DataValue readAttribute(
+        AttributeId attributeId,
+        @Nullable TimestampsToReturn timestamps,
+        @Nullable String indexRange) {
+
         return AttributeReader.readAttribute(this, attributeId, timestamps, indexRange);
     }
 
@@ -124,9 +132,14 @@ public interface ServerNode extends Node {
      * @param attribute  the id of the attribute to write.
      * @param value      the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
-     * @throws UaException
+     * @throws UaException if writing to the attribute fails.
      */
-    default void writeAttribute(NamespaceManager ns, UInteger attribute, DataValue value, String indexRange) throws UaException {
+    default void writeAttribute(
+        NamespaceManager ns,
+        UInteger attribute,
+        DataValue value,
+        String indexRange) throws UaException {
+
         writeAttribute(ns, attribute.intValue(), value, indexRange);
     }
 
@@ -137,9 +150,14 @@ public interface ServerNode extends Node {
      * @param attribute  the id of the attribute to write.
      * @param value      the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
-     * @throws UaException
+     * @throws UaException if writing to the attribute fails.
      */
-    default void writeAttribute(NamespaceManager ns, int attribute, DataValue value, String indexRange) throws UaException {
+    default void writeAttribute(
+        NamespaceManager ns,
+        int attribute,
+        DataValue value,
+        String indexRange) throws UaException {
+
         Optional<AttributeId> attributeId = AttributeId.from(attribute);
 
         if (attributeId.isPresent()) {
@@ -156,9 +174,14 @@ public interface ServerNode extends Node {
      * @param attributeId the {@link AttributeId} of the attribute to write.
      * @param value       the {@link DataValue} write.
      * @param indexRange  the index range to write. Must be a parseable by {@link NumericRange}.
-     * @throws UaException
+     * @throws UaException if writing to the attribute fails.
      */
-    default void writeAttribute(NamespaceManager ns, AttributeId attributeId, DataValue value, String indexRange) throws UaException {
+    default void writeAttribute(
+        NamespaceManager ns,
+        AttributeId attributeId,
+        DataValue value,
+        String indexRange) throws UaException {
+
         AttributeWriter.writeAttribute(ns, this, attributeId, value, indexRange);
     }
 

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.client.api.services;
@@ -38,9 +38,10 @@ public interface MonitoredItemServices {
      * @param itemsToCreate      a list of monitored items to be created and assigned to the specified subscription.
      * @return a {@link CompletableFuture} containing the {@link CreateMonitoredItemsResponse}.
      */
-    CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItems(UInteger subscriptionId,
-                                                                         TimestampsToReturn timestampsToReturn,
-                                                                         List<MonitoredItemCreateRequest> itemsToCreate);
+    CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItems(
+        UInteger subscriptionId,
+        TimestampsToReturn timestampsToReturn,
+        List<MonitoredItemCreateRequest> itemsToCreate);
 
     /**
      * This service is used to modify monitored items of a subscription.
@@ -50,9 +51,10 @@ public interface MonitoredItemServices {
      * @param itemsToModify      a list of monitored items to modify.
      * @return a {@link CompletableFuture} containing the {@link ModifyMonitoredItemsResponse}.
      */
-    CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItems(UInteger subscriptionId,
-                                                                         TimestampsToReturn timestampsToReturn,
-                                                                         List<MonitoredItemModifyRequest> itemsToModify);
+    CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItems(
+        UInteger subscriptionId,
+        TimestampsToReturn timestampsToReturn,
+        List<MonitoredItemModifyRequest> itemsToModify);
 
     /**
      * This service is used to remove one or more monitored items of a subscription.

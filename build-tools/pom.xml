@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.eclipse.milo</groupId>
+    <artifactId>build-tools</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <name>Eclipse Milo Build Tools</name>
+    <description>Build tools for the Eclipse Milo project.</description>
+    <url>https://github.com/eclipse/milo</url>
+
+    <scm>
+        <url>https://github.com/eclipse/milo</url>
+        <connection>scm:git:git://github.com/eclipse/milo.git</connection>
+        <developerConnection>scm:git:git@github.com:eclipse/milo.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>kevinherron</id>
+            <name>Kevin Herron</name>
+            <email>kevinherron@gmail.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Eclipse Public License 1.0</name>
+            <url>https://eclipse.org/org/documents/epl-v10.php</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>Eclipse Distribution License 1.0</name>
+            <url>https://eclipse.org/org/documents/edl-v10.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+</project>

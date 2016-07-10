@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.application.services;
@@ -23,11 +23,15 @@ import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ServiceUnsupport
 
 public interface TestServiceSet {
 
-    default void onTestStack(ServiceRequest<TestStackRequest, TestStackResponse> serviceRequest) throws UaException {
+    default void onTestStack(
+        ServiceRequest<TestStackRequest, TestStackResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(Bad_ServiceUnsupported);
     }
 
-    default void onTestStackEx(ServiceRequest<TestStackExRequest, TestStackExResponse> serviceRequest) throws UaException {
+    default void onTestStackEx(
+        ServiceRequest<TestStackExRequest, TestStackExResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(Bad_ServiceUnsupported);
     }
 

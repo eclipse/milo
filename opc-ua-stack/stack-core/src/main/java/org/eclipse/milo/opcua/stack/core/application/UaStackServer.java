@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.application;
@@ -104,8 +104,8 @@ public interface UaStackServer {
 
     CompletableFuture<Unit> closeSecureChannel(ServerSecureChannel secureChannel);
 
-    <T extends UaRequestMessage, U extends UaResponseMessage>
-    void addRequestHandler(Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler);
+    <T extends UaRequestMessage, U extends UaResponseMessage> void addRequestHandler(
+        Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler);
 
     /**
      * Add an endpoint with the given security configuration. A certificate must be provided for secure endpoints.

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.services;
@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.WriteContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -40,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.groupingBy;
@@ -93,9 +93,7 @@ public class AttributeServices implements AttributeServiceSet {
             futures.add(pending.getFuture());
         }
 
-		/*
-         * Group PendingReads by namespace and call read for each.
-		 */
+        // Group PendingReads by namespace and call read for each.
 
         Map<UShort, List<PendingRead>> byNamespace = pendingReads.stream()
             .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
@@ -129,9 +127,7 @@ public class AttributeServices implements AttributeServiceSet {
             });
         });
 
-		/*
-         * When all PendingReads have been completed send a ReadResponse with the values.
-		 */
+        // When all PendingReads have been completed send a ReadResponse with the values.
 
         FutureUtils.sequence(futures).thenAcceptAsync(values -> {
             ResponseHeader header = service.createResponseHeader();

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.application.services;
@@ -34,11 +34,15 @@ public interface AttributeServiceSet {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> serviceRequest) throws UaException {
+    default void onHistoryRead(
+        ServiceRequest<HistoryReadRequest, HistoryReadResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onHistoryUpdate(ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> serviceRequest) throws UaException {
+    default void onHistoryUpdate(
+        ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
