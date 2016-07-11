@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
@@ -50,6 +51,25 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
     private OpcUaServerConfigLimits limits =
         new OpcUaServerConfigLimits() {
         };
+        
+    public OpcUaServerConfigBuilder() {
+    }
+
+    public OpcUaServerConfigBuilder(OpcUaServerConfigBuilder other) {
+        this(Objects.requireNonNull(other).build());
+    }
+    
+    public OpcUaServerConfigBuilder(OpcUaServerConfig other) {
+        super(other);
+        
+        this.hostname = other.getHostname();
+        this.bindAddresses = newArrayList(other.getBindAddresses());
+        this.bindPort = other.getBindPort();
+        this.securityPolicies = EnumSet.copyOf(other.getSecurityPolicies());
+        this.identityValidator = other.getIdentityValidator();
+        this.buildInfo = other.getBuildInfo();
+        this.limits = other.getLimits();
+    }
 
     public OpcUaServerConfigBuilder setHostname(String hostname) {
         this.hostname = hostname;
