@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
@@ -44,6 +46,30 @@ public class UaTcpStackServerConfigBuilder {
     private List<UserTokenPolicy> userTokenPolicies = new ArrayList<>();
     private List<SignedSoftwareCertificate> softwareCertificates = new ArrayList<>();
 
+    public UaTcpStackServerConfigBuilder() {
+    }
+    
+    public UaTcpStackServerConfigBuilder(UaTcpStackServerConfigBuilder other) {
+        this(other.build());
+    }
+    
+    public UaTcpStackServerConfigBuilder(UaTcpStackServerConfig other) {
+        this.serverName = other.getServerName();
+        this.applicationName = other.getApplicationName();
+        this.applicationUri = other.getApplicationUri();
+        this.productUri = other.getProductUri();
+        this.channelConfig = other.getChannelConfig();
+        this.strictEndpointUrlsEnabled = other.isStrictEndpointUrlsEnabled();
+        this.certificateManager = other.getCertificateManager();
+        this.certificateValidator = other.getCertificateValidator();
+        this.executor = other.getExecutor();
+        this.userTokenPolicies = other.getUserTokenPolicies() != null ?
+            new ArrayList<>(other.getUserTokenPolicies()) :
+            null;
+        this.softwareCertificates = other.getSoftwareCertificates() != null ?
+            new ArrayList<>(other.getSoftwareCertificates()) :
+            null;
+    }
 
     public UaTcpStackServerConfigBuilder setServerName(String serverName) {
         this.serverName = serverName;
