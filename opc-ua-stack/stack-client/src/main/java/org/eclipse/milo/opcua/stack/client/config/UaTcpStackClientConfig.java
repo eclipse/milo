@@ -17,6 +17,7 @@ import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
@@ -114,8 +115,58 @@ public interface UaTcpStackClientConfig {
      */
     boolean isSecureChannelReauthenticationEnabled();
 
+    /**
+     * @return a new {@link UaTcpStackClientConfigBuilder}.
+     */
     static UaTcpStackClientConfigBuilder builder() {
         return new UaTcpStackClientConfigBuilder();
+    }
+
+    /**
+     * Copy the values from an existing {@link UaTcpStackClientConfig} into a new {@link UaTcpStackClientConfigBuilder}.
+     * This builder can be used to make any desired modifications before invoking
+     * {@link UaTcpStackClientConfigBuilder#build()} to produce a new config.
+     *
+     * @param config the {@link UaTcpStackClientConfig} to copy from.
+     * @return a {@link UaTcpStackClientConfigBuilder} pre-populated with values from {@code config}.
+     */
+    static UaTcpStackClientConfigBuilder copy(UaTcpStackClientConfig config) {
+        UaTcpStackClientConfigBuilder builder = new UaTcpStackClientConfigBuilder();
+
+        config.getEndpointUrl().ifPresent(builder::setEndpointUrl);
+        config.getEndpoint().ifPresent(builder::setEndpoint);
+        config.getKeyPair().ifPresent(builder::setKeyPair);
+        config.getCertificate().ifPresent(builder::setCertificate);
+        builder.setApplicationName(config.getApplicationName());
+        builder.setApplicationUri(config.getApplicationUri());
+        builder.setProductUri(config.getProductUri());
+        builder.setChannelConfig(config.getChannelConfig());
+        builder.setChannelLifetime(config.getChannelLifetime());
+        builder.setExecutor(config.getExecutor());
+        builder.setEventLoop(config.getEventLoop());
+        builder.setWheelTimer(config.getWheelTimer());
+        builder.setSecureChannelReauthenticationEnabled(config.isSecureChannelReauthenticationEnabled());
+
+        return builder;
+    }
+
+    /**
+     * Copy the values from an existing {@link UaTcpStackClientConfig} into a new {@link UaTcpStackClientConfigBuilder}
+     * and then submit the builder to the provided consumer for modification.
+     *
+     * @param config   the {@link UaTcpStackClientConfig} to copy from.
+     * @param consumer a {@link Consumer} that may modify the builder.
+     * @return a {@link UaTcpStackClientConfig} built from the builder provided to {@code consumer}.
+     */
+    static UaTcpStackClientConfig copy(
+        UaTcpStackClientConfig config,
+        Consumer<UaTcpStackClientConfigBuilder> consumer) {
+
+        UaTcpStackClientConfigBuilder builder = copy(config);
+
+        consumer.accept(builder);
+
+        return builder.build();
     }
 
 }

@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.api.config;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
@@ -95,6 +96,61 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
      */
     static OpcUaServerConfigBuilder builder() {
         return new OpcUaServerConfigBuilder();
+    }
+
+    /**
+     * Copy the values from an existing {@link OpcUaServerConfig} into a new {@link OpcUaServerConfigBuilder}. This
+     * builder can be used to make any desired modifications before invoking {@link OpcUaServerConfigBuilder#build()}
+     * to produce a new config.
+     *
+     * @param config the {@link OpcUaServerConfig} to copy from.
+     * @return a {@link OpcUaServerConfigBuilder} pre-populated with values from {@code config}.
+     */
+    static OpcUaServerConfigBuilder copy(OpcUaServerConfig config) {
+        OpcUaServerConfigBuilder builder = new OpcUaServerConfigBuilder();
+
+        // UaTcpStackServerConfig values
+        builder.setServerName(config.getServerName());
+        builder.setApplicationName(config.getApplicationName());
+        builder.setApplicationUri(config.getApplicationUri());
+        builder.setProductUri(config.getProductUri());
+        builder.setCertificateManager(config.getCertificateManager());
+        builder.setCertificateValidator(config.getCertificateValidator());
+        builder.setExecutor(config.getExecutor());
+        builder.setUserTokenPolicies(config.getUserTokenPolicies());
+        builder.setSoftwareCertificates(config.getSoftwareCertificates());
+        builder.setChannelConfig(config.getChannelConfig());
+        builder.setStrictEndpointUrlsEnabled(config.isStrictEndpointUrlsEnabled());
+
+        // OpcUaServerConfig values
+        builder.setSecurityPolicies(config.getSecurityPolicies());
+        builder.setHostname(config.getHostname());
+        builder.setBindAddresses(config.getBindAddresses());
+        builder.setBindPort(config.getBindPort());
+        builder.setIdentityValidator(config.getIdentityValidator());
+        builder.setBuildInfo(config.getBuildInfo());
+        builder.setLimits(config.getLimits());
+
+        return builder;
+    }
+
+    /**
+     * Copy the values from an existing {@link OpcUaServerConfig} into a new {@link OpcUaServerConfigBuilder} and then
+     * submit the builder to the provided consumer for modification.
+     *
+     * @param config   the {@link OpcUaServerConfig} to copy from.
+     * @param consumer a {@link Consumer} that may modify the builder.
+     * @return a {@link OpcUaServerConfig} built from the builder provided to {@code consumer}.
+     */
+    static OpcUaServerConfig copy(
+        OpcUaServerConfig config,
+        Consumer<OpcUaServerConfigBuilder> consumer) {
+
+        OpcUaServerConfigBuilder builder = copy(config);
+
+        consumer.accept(builder);
+
+        return builder.build();
     }
 
 }
