@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -22,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
@@ -33,6 +35,7 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -210,30 +213,43 @@ public class OpcUaClientIT {
         // create a subscription and a monitored item
         UaSubscription subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
 
-        ReadValueId readValueId = new ReadValueId(
-            Identifiers.Server_ServerStatus_CurrentTime,
-            AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
+        List<MonitoredItemCreateRequest> requests = new ArrayList<>();
 
-        MonitoringParameters parameters = new MonitoringParameters(
-            uint(1),    // client handle
-            1000.0,     // sampling interval
-            null,       // no (default) filter
-            uint(10),   // queue size
-            true);      // discard oldest
+        for (int i = 0; i < 10; i++) {
+            ReadValueId readValueId = new ReadValueId(
+                Identifiers.Server_ServerStatus_State,
+                AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
 
-        MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(
-            readValueId, MonitoringMode.Reporting, parameters);
+            MonitoringParameters parameters = new MonitoringParameters(
+                uint(i),    // client handle
+                1000.0,     // sampling interval
+                null,       // no (default) filter
+                uint(10),   // queue size
+                true);      // discard oldest
+
+            MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(
+                readValueId, MonitoringMode.Reporting, parameters);
+
+            requests.add(request);
+        }
+
+        @SuppressWarnings("unchecked")
+        CompletableFuture<DataValue>[] cfs = new CompletableFuture[10];
+
+        for (int i = 0; i < 10; i++) {
+            CompletableFuture<DataValue> f = new CompletableFuture<>();
+            f.thenAccept(value -> logger.info("received {}", value));
+            cfs[i] = f;
+        }
+
+        BiConsumer<UaMonitoredItem, Integer> callback =
+            (item, idx) -> item.setValueConsumer(cfs[idx]::complete);
 
         List<UaMonitoredItem> items = subscription
-            .createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
+            .createMonitoredItems(TimestampsToReturn.Both, requests, callback).get();
 
-        // do something with the value updates
-        UaMonitoredItem item = items.get(0);
-
-        CompletableFuture<DataValue> f = new CompletableFuture<>();
-        item.setValueConsumer(f::complete);
-
-        assertNotNull(f.get(5, TimeUnit.SECONDS));
+        assertTrue(items.stream().allMatch(item -> item.getStatusCode().isGood()));
+        assertNotNull(FutureUtils.sequence(cfs).get(5, TimeUnit.SECONDS));
     }
 
     @Test(enabled = false)
