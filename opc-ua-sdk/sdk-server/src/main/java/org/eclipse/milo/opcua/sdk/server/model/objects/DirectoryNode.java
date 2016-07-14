@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.core.model.objects.DirectoryType;
 import org.eclipse.milo.opcua.sdk.core.model.objects.FolderType;
 import org.eclipse.milo.opcua.sdk.core.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.util.UaObjectType;
+import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;

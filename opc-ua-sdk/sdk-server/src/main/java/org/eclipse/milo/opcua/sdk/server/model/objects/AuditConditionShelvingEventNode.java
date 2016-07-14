@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.core.model.objects.AuditConditionShelvingEvent
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyNode;
-import org.eclipse.milo.opcua.sdk.server.util.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;

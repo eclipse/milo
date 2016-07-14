@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.model.objects;
 
 import java.util.Optional;
 
+import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.core.model.objects.BaseObjectType;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -23,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.server.util.UaObjectNode(typeName = "0:BaseObjectType")
+@UaObjectNode(typeName = "0:BaseObjectType")
 public class BaseObjectNode extends org.eclipse.milo.opcua.sdk.server.model.UaObjectNode implements BaseObjectType {
 
     public BaseObjectNode(

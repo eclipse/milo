@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.model.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.SamplingIntervalDiagnosticsArrayNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.ServerDiagnosticsSummaryNode;
 import org.eclipse.milo.opcua.sdk.server.model.variables.SubscriptionDiagnosticsArrayNode;
-import org.eclipse.milo.opcua.sdk.server.util.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
