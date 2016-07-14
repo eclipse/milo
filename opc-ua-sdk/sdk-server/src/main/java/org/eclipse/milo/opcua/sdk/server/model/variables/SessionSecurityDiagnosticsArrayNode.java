@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.eclipse.milo.opcua.sdk.core.model.variables.SessionSecurityDiagnosticsArrayType;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.util.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;

@@ -196,8 +196,8 @@ public class VariableNodeFactory {
         return new NodeId(nodeId.getNamespaceIndex(), nodeId.getIdentifier() + "." + toAppend);
     }
 
-    private org.eclipse.milo.opcua.sdk.server.util.UaVariableNode variableAnnotation(final String typeName) {
-        return new org.eclipse.milo.opcua.sdk.server.util.UaVariableNode() {
+    private org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode variableAnnotation(final String typeName) {
+        return new org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode() {
             @Override
             public String typeName() {
                 return typeName;
@@ -205,7 +205,7 @@ public class VariableNodeFactory {
 
             @Override
             public Class<? extends Annotation> annotationType() {
-                return org.eclipse.milo.opcua.sdk.server.util.UaVariableNode.class;
+                return org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode.class;
             }
         };
     }

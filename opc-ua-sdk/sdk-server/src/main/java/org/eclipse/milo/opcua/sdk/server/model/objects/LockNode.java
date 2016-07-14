@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.model.objects.LockType;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.util.UaObjectType;
+import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;

@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.model.variables;
 
 import java.util.Optional;
 
+import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.core.model.variables.BaseVariableType;
 import org.eclipse.milo.opcua.sdk.core.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
@@ -25,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.server.util.UaVariableNode(typeName = "0:BaseVariableType")
+@UaVariableNode(typeName = "0:BaseVariableType")
 public class BaseVariableNode extends org.eclipse.milo.opcua.sdk.server.model.UaVariableNode implements BaseVariableType {
 
     public BaseVariableNode(
