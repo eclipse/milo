@@ -115,7 +115,7 @@ public interface UaSubscriptionManager {
          * @param subscription the {@link UaSubscription} that received the keep-alive.
          * @param publishTime  the time the server published the keep-alive.
          */
-        default void onKeepAlive(UaSubscription subscription, DateTime publishTime) {};
+        default void onKeepAlive(UaSubscription subscription, DateTime publishTime) {}
 
         /**
          * A status change notification was received.
@@ -123,7 +123,7 @@ public interface UaSubscriptionManager {
          * @param subscription the {@link UaSubscription} that received the status change.
          * @param status       the new subscription status.
          */
-        default void onStatusChanged(UaSubscription subscription, StatusCode status) {};
+        default void onStatusChanged(UaSubscription subscription, StatusCode status) {}
 
         /**
          * A publish failure has occurred.
@@ -132,7 +132,7 @@ public interface UaSubscriptionManager {
          *
          * @param exception the cause of the failure.
          */
-        default void onPublishFailure(UaException exception) {};
+        default void onPublishFailure(UaException exception) {}
 
         /**
          * Attempts to recover missed notification data have failed.
@@ -142,7 +142,7 @@ public interface UaSubscriptionManager {
          *
          * @param subscription the subscription that missed notification data.
          */
-        default void onNotificationDataLost(UaSubscription subscription) {};
+        default void onNotificationDataLost(UaSubscription subscription) {}
 
         /**
          * A new {@link UaSession} was established, and upon attempting to transfer an existing subscription to this
@@ -153,7 +153,7 @@ public interface UaSubscriptionManager {
          * @param subscription the {@link UaSubscription} that could not be transferred.
          * @param statusCode   the {@link StatusCode} for the transfer failure.
          */
-        default void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {};
+        default void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {}
 
     }
 
