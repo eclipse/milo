@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.config;
 
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
@@ -52,8 +53,67 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
      */
     IdentityProvider getIdentityProvider();
 
+    /**
+     * @return a new {@link OpcUaClientConfigBuilder}.
+     */
     static OpcUaClientConfigBuilder builder() {
         return new OpcUaClientConfigBuilder();
+    }
+
+    /**
+     * Copy the values from an existing {@link OpcUaClientConfig} into a new {@link OpcUaClientConfigBuilder}. This
+     * builder can be used to make any desired modifications before invoking {@link OpcUaClientConfigBuilder#build()}
+     * to produce a new config.
+     *
+     * @param config the {@link OpcUaClientConfig} to copy from.
+     * @return a {@link OpcUaClientConfigBuilder} pre-populated with values from {@code config}.
+     */
+    static OpcUaClientConfigBuilder copy(OpcUaClientConfig config) {
+        OpcUaClientConfigBuilder builder = new OpcUaClientConfigBuilder();
+
+        // UaTcpStackClientConfig values
+        config.getEndpointUrl().ifPresent(builder::setEndpointUrl);
+        config.getEndpoint().ifPresent(builder::setEndpoint);
+        config.getKeyPair().ifPresent(builder::setKeyPair);
+        config.getCertificate().ifPresent(builder::setCertificate);
+        builder.setApplicationName(config.getApplicationName());
+        builder.setApplicationUri(config.getApplicationUri());
+        builder.setProductUri(config.getProductUri());
+        builder.setChannelConfig(config.getChannelConfig());
+        builder.setChannelLifetime(config.getChannelLifetime());
+        builder.setExecutor(config.getExecutor());
+        builder.setEventLoop(config.getEventLoop());
+        builder.setWheelTimer(config.getWheelTimer());
+        builder.setSecureChannelReauthenticationEnabled(config.isSecureChannelReauthenticationEnabled());
+
+        // OpcUaClientConfig values
+        builder.setSessionName(config.getSessionName());
+        builder.setSessionTimeout(config.getSessionTimeout());
+        builder.setRequestTimeout(config.getRequestTimeout());
+        builder.setMaxResponseMessageSize(config.getMaxResponseMessageSize());
+        builder.setMaxPendingPublishRequests(config.getMaxPendingPublishRequests());
+        builder.setIdentityProvider(config.getIdentityProvider());
+
+        return builder;
+    }
+
+    /**
+     * Copy the values from an existing {@link OpcUaClientConfig} into a new {@link OpcUaClientConfigBuilder} and then
+     * submit the builder to the provided consumer for modification.
+     *
+     * @param config   the {@link OpcUaClientConfig} to copy from.
+     * @param consumer a {@link Consumer} that may modify the builder.
+     * @return a {@link OpcUaClientConfig} built from the builder provided to {@code consumer}.
+     */
+    static OpcUaClientConfig copy(
+        OpcUaClientConfig config,
+        Consumer<OpcUaClientConfigBuilder> consumer) {
+
+        OpcUaClientConfigBuilder builder = copy(config);
+
+        consumer.accept(builder);
+
+        return builder.build();
     }
 
 }
