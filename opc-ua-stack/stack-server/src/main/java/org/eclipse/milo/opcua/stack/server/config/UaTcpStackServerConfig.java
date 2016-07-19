@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.server.config;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
@@ -96,8 +97,56 @@ public interface UaTcpStackServerConfig {
      */
     boolean isStrictEndpointUrlsEnabled();
 
+    /**
+     * @return a new {@link UaTcpStackServerConfigBuilder}.
+     */
     static UaTcpStackServerConfigBuilder builder() {
         return new UaTcpStackServerConfigBuilder();
+    }
+
+    /**
+     * Copy the values from an existing {@link UaTcpStackServerConfig} into a new {@link UaTcpStackServerConfigBuilder}.
+     * This builder can be used to make any desired modifications before invoking
+     * {@link UaTcpStackServerConfigBuilder#build()} to produce a new config.
+     *
+     * @param config the {@link UaTcpStackServerConfig} to copy from.
+     * @return a {@link UaTcpStackServerConfigBuilder} pre-populated with values from {@code config}.
+     */
+    static UaTcpStackServerConfigBuilder copy(UaTcpStackServerConfig config) {
+        UaTcpStackServerConfigBuilder builder = new UaTcpStackServerConfigBuilder();
+
+        builder.setServerName(config.getServerName());
+        builder.setApplicationName(config.getApplicationName());
+        builder.setApplicationUri(config.getApplicationUri());
+        builder.setProductUri(config.getProductUri());
+        builder.setCertificateManager(config.getCertificateManager());
+        builder.setCertificateValidator(config.getCertificateValidator());
+        builder.setExecutor(config.getExecutor());
+        builder.setUserTokenPolicies(config.getUserTokenPolicies());
+        builder.setSoftwareCertificates(config.getSoftwareCertificates());
+        builder.setChannelConfig(config.getChannelConfig());
+        builder.setStrictEndpointUrlsEnabled(config.isStrictEndpointUrlsEnabled());
+
+        return builder;
+    }
+
+    /**
+     * Copy the values from an existing {@link UaTcpStackServerConfig} into a new {@link UaTcpStackServerConfigBuilder}
+     * and then submit the builder to the provided consumer for modification.
+     *
+     * @param config   the {@link UaTcpStackServerConfig} to copy from.
+     * @param consumer a {@link Consumer} that may modify the builder.
+     * @return a {@link UaTcpStackServerConfig} built from the builder provided to {@code consumer}.
+     */
+    static UaTcpStackServerConfig copy(
+        UaTcpStackServerConfig config,
+        Consumer<UaTcpStackServerConfigBuilder> consumer) {
+
+        UaTcpStackServerConfigBuilder builder = copy(config);
+
+        consumer.accept(builder);
+
+        return builder.build();
     }
 
 }
