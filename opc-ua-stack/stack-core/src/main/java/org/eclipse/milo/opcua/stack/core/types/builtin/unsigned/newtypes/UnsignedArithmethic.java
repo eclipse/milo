@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Jens Reimann
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,17 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
-import java.math.BigInteger;
+public interface UnsignedArithmethic<T extends UnsignedArithmethic<T>> {
+    public abstract T plus(T value);
 
-/**
- * Base type for the UA unsigned types.
- */
-public abstract class UnsignedNumber extends Number {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * @return the value this {@link UnsignedNumber} as a {@link BigInteger}.
-     */
-    public abstract BigInteger bigIntegerValue();
+    public abstract T minus(T value);
 }
