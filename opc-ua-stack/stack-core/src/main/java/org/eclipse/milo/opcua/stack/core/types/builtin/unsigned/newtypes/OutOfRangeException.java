@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Jens Reimann
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,17 +13,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
-import java.math.BigInteger;
-
-/**
- * Base type for the UA unsigned types.
- */
-public abstract class UnsignedNumber extends Number {
-
+public class OutOfRangeException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * @return the value this {@link UnsignedNumber} as a {@link BigInteger}.
-     */
-    public abstract BigInteger bigIntegerValue();
+    OutOfRangeException(final Object value, final Object minimum, final Object maximum) {
+        super(String.format("Value of out of range : %s : [%s, %s]", value, minimum, maximum));
+    }
 }
