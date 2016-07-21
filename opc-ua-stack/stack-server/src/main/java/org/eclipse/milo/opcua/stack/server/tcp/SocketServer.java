@@ -124,6 +124,11 @@ public class SocketServer {
                 logger.debug("Removed server at path: \"{}\"", key);
             }
         });
+
+        if (servers.isEmpty()) {
+            removeSocketServer(this);
+            shutdown();
+        }
     }
 
     /**
@@ -158,11 +163,15 @@ public class SocketServer {
     }
 
     public SocketAddress getLocalAddress() {
-        return channel != null ? channel.localAddress() : null;
+        final Channel ch = channel;
+        return ch != null ? ch.localAddress() : null;
     }
 
     public void shutdown() {
-        if (channel != null) channel.close();
+        if (channel != null) {
+            channel.close();
+            channel = null;
+        }
     }
 
     /**
@@ -200,23 +209,35 @@ public class SocketServer {
     }
 
     public static synchronized SocketServer boundTo(InetSocketAddress address) throws Exception {
-        if (socketServers.containsKey(address)) {
-            return socketServers.get(address);
+        if (SOCKET_SERVERS.containsKey(address)) {
+            return SOCKET_SERVERS.get(address);
         } else {
             SocketServer server = new SocketServer(address);
             server.bind();
 
-            socketServers.put(address, server);
+            SOCKET_SERVERS.put(address, server);
 
             return server;
         }
     }
 
-    public static synchronized void shutdownAll() {
-        socketServers.values().forEach(SocketServer::shutdown);
-        socketServers.clear();
+    private static void removeSocketServer(SocketServer server) {
+        Iterator<SocketServer> iterator = SOCKET_SERVERS.values().iterator();
+
+        while (iterator.hasNext()) {
+            SocketServer next = iterator.next();
+            if (next == server) {
+                iterator.remove();
+                break;
+            }
+        }
     }
 
-    private static final Map<InetSocketAddress, SocketServer> socketServers = Maps.newConcurrentMap();
+    public static synchronized void shutdownAll() {
+        SOCKET_SERVERS.values().forEach(SocketServer::shutdown);
+        SOCKET_SERVERS.clear();
+    }
+
+    static final Map<InetSocketAddress, SocketServer> SOCKET_SERVERS = Maps.newConcurrentMap();
 
 }
