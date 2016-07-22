@@ -43,6 +43,7 @@
     <modules>
         <module>opc-ua-stack</module>
         <module>opc-ua-sdk</module>
+        <module>examples</module>
     </modules>
 
     <properties>
