@@ -22,6 +22,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
@@ -45,8 +46,8 @@ public class ClientServerExample {
     public ClientServerExample() throws Exception {
         KeyStoreLoader loader = new KeyStoreLoader().load();
 
-        ServerExample server = new ServerExample(loader.getServerCertificate(), loader.getServerKeyPair());
-        server.startup();
+        ServerExample serverExample = new ServerExample(loader.getServerCertificate(), loader.getServerKeyPair());
+        serverExample.startup();
 
         ClientExample client = new ClientExample(loader.getClientCertificate(), loader.getClientKeyPair());
 
@@ -77,8 +78,12 @@ public class ClientServerExample {
         CompletableFuture<?> all = CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[futures.size()]));
 
         all.whenComplete((r, ex) -> {
-            client.disconnect();
-            server.shutdown();
+            try {
+                client.disconnect().get();
+                serverExample.shutdown();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
 
             Stack.releaseSharedResources();
         });

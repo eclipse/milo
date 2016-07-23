@@ -23,8 +23,6 @@ import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHandler;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -47,12 +45,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
 import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
-import org.eclipse.milo.opcua.stack.server.tcp.SocketServer;
+import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -100,7 +98,7 @@ public class ClientServerTest extends SecurityFixture {
 
     private UaTcpStackServer server;
 
-    @BeforeTest
+    @BeforeSuite
     public void setUpClientServer() throws Exception {
         super.setUp();
 
@@ -135,14 +133,15 @@ public class ClientServerTest extends SecurityFixture {
             service.setResponse(new TestStackResponse(header, request.getInput()));
         });
 
-        server.startup();
+        server.startup().get();
 
         endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12685/test").get();
     }
 
-    @AfterTest
+    @AfterSuite
     public void tearDownClientServer() throws Exception {
-        SocketServer.shutdownAll();
+        server.shutdown().get();
+        SocketServers.shutdownAll().get();
         Stack.sharedEventLoop().shutdownGracefully();
     }
 

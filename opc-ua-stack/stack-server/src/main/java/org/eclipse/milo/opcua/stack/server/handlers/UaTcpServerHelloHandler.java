@@ -16,6 +16,8 @@ package org.eclipse.milo.opcua.stack.server.handlers;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
@@ -35,7 +37,6 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.HelloMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
-import org.eclipse.milo.opcua.stack.server.tcp.SocketServer;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,10 +47,10 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final SocketServer socketServer;
+    private final Function<String, Optional<UaTcpStackServer>> serverLookup;
 
-    public UaTcpServerHelloHandler(SocketServer socketServer) {
-        this.socketServer = socketServer;
+    public UaTcpServerHelloHandler(Function<String, Optional<UaTcpStackServer>> serverLookup) {
+        this.serverLookup = serverLookup;
     }
 
     @Override
@@ -77,14 +78,13 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
     private void onHello(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
         logger.debug("[remote={}] Received Hello message.", ctx.channel().remoteAddress());
 
-        HelloMessage hello = TcpMessageDecoder.decodeHello(buffer);
+        final HelloMessage hello = TcpMessageDecoder.decodeHello(buffer);
 
-        UaTcpStackServer server = socketServer.getServer(hello.getEndpointUrl());
-
-        if (server == null) {
-            throw new UaException(StatusCodes.Bad_TcpEndpointUrlInvalid,
-                "unrecognized endpoint url: " + hello.getEndpointUrl());
-        }
+        UaTcpStackServer server = serverLookup.apply(hello.getEndpointUrl()).orElseThrow(
+            () -> new UaException(
+                StatusCodes.Bad_TcpEndpointUrlInvalid,
+                "unrecognized endpoint url: " + hello.getEndpointUrl())
+        );
 
         ctx.channel().attr(ENDPOINT_URL_KEY).set(hello.getEndpointUrl());
 
