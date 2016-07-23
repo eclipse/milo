@@ -21,9 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -70,6 +72,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.server.Endpoint;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 import org.slf4j.Logger;
@@ -138,26 +142,26 @@ public class UaTcpStackServer implements UaStackServer {
     }
 
     @Override
-    public void startup() {
-        for (Endpoint endpoint : endpoints) {
-            try {
-                URI endpointUri = endpoint.getEndpointUri();
-                String bindAddress = endpoint.getBindAddress().orElse(endpointUri.getHost());
+    public CompletableFuture<UaTcpStackServer> startup() {
+        Stream<CompletableFuture<Unit>> stream = endpoints.stream().map(endpoint -> {
+            URI endpointUri = endpoint.getEndpointUri();
+            String bindAddress = endpoint.getBindAddress().orElse(endpointUri.getHost());
+            int bindPort = endpointUri.getPort();
 
-                SocketServer socketServer = SocketServer.boundTo(bindAddress, endpointUri.getPort());
-                socketServer.setStrictEndpointUrlsEnabled(config.isStrictEndpointUrlsEnabled());
+            CompletableFuture<Unit> future = SocketServers.bindServer(this, bindAddress, bindPort);
 
-                logger.info("{} bound to {} [{}/{}]",
-                    endpoint.getEndpointUri(), socketServer.getLocalAddress(),
+            future.thenRun(() -> {
+                logger.info("{} bound to {}:{} [{}/{}]",
+                    endpoint.getEndpointUri(), bindAddress, bindPort,
                     endpoint.getSecurityPolicy(), endpoint.getMessageSecurity());
 
                 addDiscoveryUrl(endpointUri);
+            });
 
-                socketServer.addServer(this);
-            } catch (Exception e) {
-                logger.error("Error binding {}: {}.", endpoint, e.getMessage(), e);
-            }
-        }
+            return future;
+        });
+
+        return FutureUtils.sequence(stream).thenApply(v -> UaTcpStackServer.this);
     }
 
     private void addDiscoveryUrl(URI endpointUri) {
@@ -178,21 +182,25 @@ public class UaTcpStackServer implements UaStackServer {
     }
 
     @Override
-    public void shutdown() {
-        for (Endpoint endpoint : endpoints) {
+    public CompletableFuture<UaTcpStackServer> shutdown() {
+        Stream<CompletableFuture<Unit>> stream = endpoints.stream().map(endpoint -> {
             URI endpointUri = endpoint.getEndpointUri();
-            String address = endpoint.getBindAddress().orElse(endpointUri.getHost());
+            String bindAddress = endpoint.getBindAddress().orElse(endpointUri.getHost());
+            int bindPort = endpointUri.getPort();
 
-            try {
-                SocketServer socketServer = SocketServer.boundTo(address, endpointUri.getPort());
-                socketServer.removeServer(this);
-            } catch (Exception e) {
-                logger.error("Error getting SocketServer for {}: {}.", endpoint, e.getMessage(), e);
-            }
-        }
+            return SocketServers.unbindServer(this, bindAddress, bindPort);
+        });
 
-        List<ServerSecureChannel> copy = newArrayList(secureChannels.values());
-        copy.forEach(this::closeSecureChannel);
+        return FutureUtils.sequence(stream)
+            .thenCompose(ignored -> {
+                List<ServerSecureChannel> channels = newArrayList(secureChannels.values());
+
+                Stream<CompletableFuture<Unit>> futures =
+                    channels.stream().map(this::closeSecureChannel);
+
+                return FutureUtils.sequence(futures);
+            })
+            .thenApply(ignored -> UaTcpStackServer.this);
     }
 
     public void receiveRequest(ServiceRequest<UaRequestMessage, UaResponseMessage> serviceRequest) {
@@ -323,7 +331,7 @@ public class UaTcpStackServer implements UaStackServer {
     }
 
     @Override
-    public void closeSecureChannel(ServerSecureChannel secureChannel) {
+    public CompletableFuture<Unit> closeSecureChannel(ServerSecureChannel secureChannel) {
         long channelId = secureChannel.getChannelId();
 
         if (secureChannels.remove(channelId) != null) {
@@ -331,9 +339,14 @@ public class UaTcpStackServer implements UaStackServer {
         }
 
         Channel channel = secureChannel.attr(BoundChannelKey).get();
+
         if (channel != null) {
             logger.debug("Closing secure channel id={}, bound channel: {}", channelId, channel);
-            channel.close();
+            CompletableFuture<Unit> closeFuture = new CompletableFuture<>();
+            channel.close().addListener(future -> closeFuture.complete(Unit.VALUE));
+            return closeFuture;
+        } else {
+            return CompletableFuture.completedFuture(Unit.VALUE);
         }
     }
 

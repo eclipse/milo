@@ -17,6 +17,7 @@ import java.io.File;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
@@ -67,12 +68,12 @@ public class ServerExample {
         });
     }
 
-    public void startup() {
-        server.startup();
+    public void startup() throws ExecutionException, InterruptedException {
+        server.startup().get();
     }
 
-    public void shutdown() {
-        server.shutdown();
+    public void shutdown() throws ExecutionException, InterruptedException {
+        server.shutdown().get();
     }
 
 }

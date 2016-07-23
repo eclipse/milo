@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -195,12 +196,12 @@ public class OpcUaServer {
         return hostnames;
     }
 
-    public void startup() {
-        stackServer.startup();
+    public CompletableFuture<OpcUaServer> startup() {
+        return stackServer.startup().thenApply(ignored -> OpcUaServer.this);
     }
 
-    public void shutdown() {
-        stackServer.shutdown();
+    public CompletableFuture<OpcUaServer> shutdown() {
+        return stackServer.shutdown().thenApply(ignored -> OpcUaServer.this);
     }
 
     private static String endpointUrl(String hostname, int port, String serverName) {
