@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.WriteContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;

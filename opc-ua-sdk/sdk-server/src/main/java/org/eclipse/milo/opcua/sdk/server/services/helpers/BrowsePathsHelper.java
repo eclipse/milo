@@ -49,7 +49,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.sdk.server.util.FutureUtils.sequence;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
