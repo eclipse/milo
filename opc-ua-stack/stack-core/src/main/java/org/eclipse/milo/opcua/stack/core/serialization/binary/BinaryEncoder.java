@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
 
 public class BinaryEncoder implements UaEncoder {
 
+    private static final DelegateRegistry.Instance DELEGATE_REGISTRY = DelegateRegistry.getInstance();
+
     private volatile ByteBuf buffer;
 
     private final int maxArrayLength;
@@ -589,7 +591,7 @@ public class BinaryEncoder implements UaEncoder {
 
     @Override
     public <T extends UaStructure> void encodeMessage(String field, T message) throws UaSerializationException {
-        EncoderDelegate<T> delegate = DelegateRegistry.getEncoder(message.getBinaryEncodingId());
+        EncoderDelegate<T> delegate = DELEGATE_REGISTRY.getEncoder(message.getBinaryEncodingId());
 
         encodeNodeId(null, message.getBinaryEncodingId());
 
@@ -601,7 +603,7 @@ public class BinaryEncoder implements UaEncoder {
         if (value == null) {
             encodeInt32(null, -1);
         } else {
-            EncoderDelegate<T> delegate = DelegateRegistry.getEncoder(value);
+            EncoderDelegate<T> delegate = DELEGATE_REGISTRY.getEncoder(value);
 
             delegate.encode(value, this);
         }
@@ -609,7 +611,7 @@ public class BinaryEncoder implements UaEncoder {
 
     @Override
     public <T extends UaSerializable> void encodeSerializable(String field, T value) throws UaSerializationException {
-        EncoderDelegate<T> delegate = DelegateRegistry.getEncoder(value);
+        EncoderDelegate<T> delegate = DELEGATE_REGISTRY.getEncoder(value);
 
         delegate.encode(value, this);
     }

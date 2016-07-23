@@ -33,11 +33,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 
 public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
+    private static final DelegateRegistry.Instance DELEGATE_REGISTRY = DelegateRegistry.getInstance();
+
     private final ByteBufAllocator allocator = ByteBufAllocator.DEFAULT;
 
     @Override
     public ByteString encodeToByteString(Object object, NodeId encodingTypeId) {
-        EncoderDelegate<Object> delegate = DelegateRegistry.getEncoder(encodingTypeId);
+        EncoderDelegate<Object> delegate = DELEGATE_REGISTRY.getEncoder(encodingTypeId);
 
         ByteBuf buffer = allocator.buffer().order(ByteOrder.LITTLE_ENDIAN);
 
@@ -55,7 +57,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
     @Override
     public Object decodeFromByteString(ByteString encoded, NodeId encodingTypeId) {
-        DecoderDelegate<Object> delegate = DelegateRegistry.getDecoder(encodingTypeId);
+        DecoderDelegate<Object> delegate = DELEGATE_REGISTRY.getDecoder(encodingTypeId);
 
         byte[] bs = encoded.bytes();
         if (bs == null) bs = new byte[0];
@@ -73,7 +75,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
     @Override
     public XmlElement encodeToXmlElement(Object object, NodeId encodingTypeId) {
         try {
-            EncoderDelegate<Object> delegate = DelegateRegistry.getEncoder(encodingTypeId);
+            EncoderDelegate<Object> delegate = DELEGATE_REGISTRY.getEncoder(encodingTypeId);
 
             StringWriter stringWriter = new StringWriter();
 
@@ -91,7 +93,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
     @Override
     public Object decodeFromXmlElement(XmlElement encoded, NodeId encodingTypeId) {
         try {
-            DecoderDelegate<Object> delegate = DelegateRegistry.getDecoder(encodingTypeId);
+            DecoderDelegate<Object> delegate = DELEGATE_REGISTRY.getDecoder(encodingTypeId);
 
             XmlDecoder decoder = new XmlDecoder();
             decoder.setInput(new StringReader(encoded.getFragment()));

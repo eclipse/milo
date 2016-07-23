@@ -53,6 +53,8 @@ import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 
 public class BinaryDecoder implements UaDecoder {
 
+    private static final DelegateRegistry.Instance DELEGATE_REGISTRY = DelegateRegistry.getInstance();
+
     private volatile ByteBuf buffer;
 
     private final int maxArrayLength;
@@ -361,21 +363,21 @@ public class BinaryDecoder implements UaDecoder {
     public <T extends UaStructure> T decodeMessage(String field) throws UaSerializationException {
         NodeId encodingId = decodeNodeId(null);
 
-        DecoderDelegate<?> delegate = DelegateRegistry.getDecoder(encodingId);
+        DecoderDelegate<?> delegate = DELEGATE_REGISTRY.getDecoder(encodingId);
 
         return (T) delegate.decode(this);
     }
 
     @Override
     public <T extends UaEnumeration> T decodeEnumeration(String field, Class<T> clazz) throws UaSerializationException {
-        DecoderDelegate<T> delegate = DelegateRegistry.getDecoder(clazz);
+        DecoderDelegate<T> delegate = DELEGATE_REGISTRY.getDecoder(clazz);
 
         return delegate.decode(this);
     }
 
     @Override
     public <T extends UaSerializable> T decodeSerializable(String field, Class<T> clazz) throws UaSerializationException {
-        DecoderDelegate<T> delegate = DelegateRegistry.getDecoder(clazz);
+        DecoderDelegate<T> delegate = DELEGATE_REGISTRY.getDecoder(clazz);
 
         return delegate.decode(this);
     }
