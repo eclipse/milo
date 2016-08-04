@@ -14,8 +14,13 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
 import java.math.BigInteger;
+import javax.annotation.Nonnull;
 
-public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, UnsignedArithmethic<UInt8> {
+import com.google.common.base.Preconditions;
+
+import static com.google.common.base.Preconditions.checkArgument;
+
+public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, UnsignedArithmetic<UInt8> {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,50 +32,8 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
 
     private final short value;
 
-    /**
-     * @deprecated use {@link UInt8#valueOf(byte)}
-     * @param value
-     */
-    @Deprecated
-    public UInt8(final byte value) {
-        this.value = (short) (value & 0xFF);
-    }
-
-    private UInt8(final short value) {
-        if (value < MIN_VALUE || value > MAX_VALUE) {
-            throw new OutOfRangeException(value, MIN_VALUE, MAX_VALUE);
-        }
+    private UInt8(short value) {
         this.value = value;
-    }
-
-    private UInt8(final int value) {
-        if (value < MIN_VALUE || value > MAX_VALUE) {
-            throw new OutOfRangeException(value, MIN_VALUE, MAX_VALUE);
-        }
-        this.value = (short) value;
-    }
-
-    private UInt8(final long value) {
-        if (value < MIN_VALUE || value > MAX_VALUE) {
-            throw new OutOfRangeException(value, MIN_VALUE, MAX_VALUE);
-        }
-        this.value = (short) value;
-    }
-
-    public static UInt8 valueOf(final byte value) {
-        return new UInt8(value);
-    }
-
-    public static UInt8 valueOf(final short value) {
-        return new UInt8(value);
-    }
-
-    public static UInt8 valueOf(final int value) {
-        return new UInt8(value);
-    }
-
-    public static UInt8 valueOf(final long value) {
-        return new UInt8(value);
     }
 
     @Override
@@ -79,8 +42,17 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
     }
 
     @Override
-    public BigInteger bigIntegerValue() {
-        return BigInteger.valueOf(this.value);
+    public UInt8 plus(@Nonnull final UInt8 other) {
+        Preconditions.checkNotNull(other);
+
+        return valueOf(this.value + other.value);
+    }
+
+    @Override
+    public UInt8 minus(@Nonnull final UInt8 other) {
+        Preconditions.checkNotNull(other);
+
+        return valueOf(this.value - other.value);
     }
 
     @Override
@@ -104,6 +76,11 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
     }
 
     @Override
+    public BigInteger bigIntegerValue() {
+        return BigInteger.valueOf(this.value);
+    }
+
+    @Override
     public boolean equals(final Object other) {
         if (!(other instanceof UInt8)) {
             return false;
@@ -121,13 +98,25 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
         return Integer.toUnsignedString(this.value);
     }
 
-    @Override
-    public UInt8 plus(final UInt8 other) {
-        return valueOf(this.value + other.value);
+    public static UInt8 valueOf(final long value) {
+        checkArgument(
+            value >= MIN_VALUE && value <= MAX_VALUE,
+            "value (%s) must be greater than 0 and less than %s",
+            value,
+            MAX_VALUE
+        );
+
+        return new UInt8((short) (value & 0xFF));
     }
 
-    @Override
-    public UInt8 minus(final UInt8 other) {
-        return valueOf(this.value - other.value);
+    public static UInt8 valueOf(@Nonnull final String string) {
+        return valueOf(string, 10);
     }
+
+    public static UInt8 valueOf(@Nonnull final String string, final int radix) {
+        short value = Short.parseShort(string, radix);
+
+        return valueOf(value);
+    }
+
 }

@@ -10,14 +10,14 @@ import javax.annotation.Nonnull;
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.UnsignedInts;
 
-public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, UnsignedArithmethic<UInt32> {
+public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, UnsignedArithmetic<UInt32> {
 
     private static final long serialVersionUID = 1L;
 
-    public static final UInt32 ZERO = fromIntBits(0);
-    public static final UInt32 ONE = fromIntBits(1);
+    public static final UInt32 ZERO = new UInt32(0);
+    public static final UInt32 ONE = new UInt32(1);
     public static final UInt32 MIN_VALUE = ZERO;
-    public static final UInt32 MAX_VALUE = fromIntBits(-1);
+    public static final UInt32 MAX_VALUE = new UInt32(-1);
 
     private final int value;
 
@@ -29,14 +29,14 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
     public UInt32 plus(@Nonnull final UInt32 other) {
         Preconditions.checkNotNull(other);
 
-        return fromIntBits(this.value + other.value);
+        return valueOf(this.value + other.value);
     }
 
     @Override
     public UInt32 minus(@Nonnull final UInt32 other) {
         Preconditions.checkNotNull(other);
 
-        return fromIntBits(this.value - other.value);
+        return valueOf(this.value - other.value);
     }
 
     @Override
@@ -89,10 +89,6 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
         return UnsignedInts.toString(this.value);
     }
 
-    public static UInt32 fromIntBits(final int bits) {
-        return new UInt32(bits);
-    }
-
     public static UInt32 valueOf(final long value) {
         checkArgument(
             (value & 0xFFFFFFFFL) == value,
@@ -101,7 +97,7 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
             MAX_VALUE
         );
 
-        return fromIntBits((int) value);
+        return new UInt32((int) value);
     }
 
     public static UInt32 valueOf(@Nonnull final BigInteger value) {
@@ -113,7 +109,7 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
             MAX_VALUE
         );
 
-        return fromIntBits(value.intValue());
+        return new UInt32(value.intValue());
     }
 
     public static UInt32 valueOf(@Nonnull final String string) {
@@ -123,7 +119,7 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
     public static UInt32 valueOf(@Nonnull final String string, final int radix) {
         final int value = UnsignedInts.parseUnsignedInt(string, radix);
 
-        return fromIntBits(value);
+        return valueOf(value);
     }
 
 }

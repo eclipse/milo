@@ -13,8 +13,10 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
-public interface UnsignedArithmethic<T extends UnsignedArithmethic<T>> {
-    public abstract T plus(T value);
+public interface UnsignedArithmetic<T extends UnsignedArithmetic<T>> {
 
-    public abstract T minus(T value);
+    T plus(T value);
+
+    T minus(T value);
+
 }

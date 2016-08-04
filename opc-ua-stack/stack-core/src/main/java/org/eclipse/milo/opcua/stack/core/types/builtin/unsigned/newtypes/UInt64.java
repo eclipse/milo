@@ -1,7 +1,6 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
 import java.math.BigInteger;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -9,7 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.UnsignedLongs;
 
-public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, UnsignedArithmethic<UInt64> {
+public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, UnsignedArithmetic<UInt64> {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,14 +29,14 @@ public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, Unsign
     public UInt64 plus(@Nonnull final UInt64 other) {
         Preconditions.checkNotNull(other);
 
-        return fromLongBits(this.value + other.value);
+        return valueOf(this.value + other.value);
     }
 
     @Override
     public UInt64 minus(@Nonnull final UInt64 other) {
         Preconditions.checkNotNull(other);
 
-        return fromLongBits(this.value - other.value);
+        return valueOf(this.value - other.value);
     }
 
     @Override
@@ -96,14 +95,10 @@ public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, Unsign
         return UnsignedLongs.toString(this.value);
     }
 
-    public static UInt64 fromLongBits(final long bits) {
-        return new UInt64(bits);
-    }
-
     public static UInt64 valueOf(final long value) {
         Preconditions.checkArgument(value >= 0, "value (%s) must be greater than 0", value);
 
-        return fromLongBits(value);
+        return new UInt64(value);
     }
 
     public static UInt64 valueOf(@Nonnull final BigInteger value) {
@@ -115,7 +110,7 @@ public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, Unsign
             MAX_VALUE
         );
 
-        return fromLongBits(value.longValue());
+        return new UInt64(value.longValue());
     }
 
     public static UInt64 valueOf(@Nonnull final String s) {
@@ -125,7 +120,7 @@ public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, Unsign
     public static UInt64 valueOf(@Nonnull final String s, final int radix) {
         final long value = UnsignedLongs.parseUnsignedLong(s, radix);
 
-        return fromLongBits(value);
+        return new UInt64(value);
     }
 
 }
