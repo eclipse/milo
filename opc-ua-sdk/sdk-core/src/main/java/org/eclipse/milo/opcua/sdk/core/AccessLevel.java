@@ -25,7 +25,9 @@ public enum AccessLevel {
     CurrentWrite(0x02),
     HistoryRead(0x04),
     HistoryWrite(0x08),
-    SemanticChange(0x10);
+    SemanticChange(0x10),
+    StatusWrite(0x20),
+    TimestampWrite(0x40);
 
     public static final ImmutableSet<AccessLevel> NONE = ImmutableSet.of();
     public static final ImmutableSet<AccessLevel> READ_ONLY = ImmutableSet.of(CurrentRead);
