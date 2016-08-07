@@ -26,4 +26,5 @@ public abstract class UnsignedNumber extends Number {
      * @return the value this {@link UnsignedNumber} as a {@link BigInteger}.
      */
     public abstract BigInteger bigIntegerValue();
+
 }

@@ -21,15 +21,15 @@ public class Unsigned {
     }
 
     public static UInt16 uint16(short value) {
-        return null; // TODO
+        return UInt16.valueOf(value);
     }
 
     public static UInt16 uint16(int value) {
-        return null; // TODO
+        return UInt16.valueOf(value);
     }
 
     public static UInt16 uint16(long value) {
-        return null; // TODO
+        return UInt16.valueOf(value);
     }
 
     public static UInt32 uint32(int value) {
@@ -44,7 +44,7 @@ public class Unsigned {
         return UInt64.valueOf(value);
     }
 
-    public static UInt64 uintt64(BigInteger value) {
+    public static UInt64 uint64(BigInteger value) {
         return UInt64.valueOf(value);
     }
 

@@ -1,14 +1,13 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.math.BigInteger;
-
 import javax.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.UnsignedInts;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, UnsignedArithmetic<UInt32> {
 
@@ -16,8 +15,8 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
 
     public static final UInt32 ZERO = new UInt32(0);
     public static final UInt32 ONE = new UInt32(1);
-    public static final UInt32 MIN_VALUE = ZERO;
-    public static final UInt32 MAX_VALUE = new UInt32(-1);
+    public static final UInt32 MIN = ZERO;
+    public static final UInt32 MAX = new UInt32(-1);
 
     private final int value;
 
@@ -27,15 +26,11 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
 
     @Override
     public UInt32 plus(@Nonnull final UInt32 other) {
-        Preconditions.checkNotNull(other);
-
         return valueOf(this.value + other.value);
     }
 
     @Override
     public UInt32 minus(@Nonnull final UInt32 other) {
-        Preconditions.checkNotNull(other);
-
         return valueOf(this.value - other.value);
     }
 
@@ -92,9 +87,8 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
     public static UInt32 valueOf(final long value) {
         checkArgument(
             (value & 0xFFFFFFFFL) == value,
-            "value (%s) must be greater than 0 and less than %s",
-            value,
-            MAX_VALUE
+            "value (%s) must be greater than %s and less than %s",
+            value, MIN, MAX
         );
 
         return new UInt32((int) value);
@@ -104,9 +98,8 @@ public class UInt32 extends UnsignedNumber implements Comparable<UInt32>, Unsign
         checkNotNull(value);
         checkArgument(
             value.signum() >= 0 && value.bitLength() <= Integer.SIZE,
-            "value (%s) must be greater than 0 and less than %s",
-            value,
-            MAX_VALUE
+            "value (%s) must be greater than %s and less than %s",
+            value, MIN, MAX
         );
 
         return new UInt32(value.intValue());

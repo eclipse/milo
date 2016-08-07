@@ -12,10 +12,13 @@ public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, Unsign
 
     private static final long serialVersionUID = 1L;
 
+    private static final long MIN_VALUE = 0L;
+    private static final long MAX_VALUE = -1L;
+
     public static final UInt64 ZERO = new UInt64(0);
     public static final UInt64 ONE = new UInt64(1);
-    public static final UInt64 MIN_VALUE = ZERO;
-    public static final UInt64 MAX_VALUE = new UInt64(-1L);
+    public static final UInt64 MIN = ZERO;
+    public static final UInt64 MAX = new UInt64(-1L);
 
     private static final long UNSIGNED_MASK = 0x7FFFFFFFFFFFFFFFL;
 
@@ -27,15 +30,11 @@ public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, Unsign
 
     @Override
     public UInt64 plus(@Nonnull final UInt64 other) {
-        Preconditions.checkNotNull(other);
-
         return valueOf(this.value + other.value);
     }
 
     @Override
     public UInt64 minus(@Nonnull final UInt64 other) {
-        Preconditions.checkNotNull(other);
-
         return valueOf(this.value - other.value);
     }
 
@@ -105,9 +104,8 @@ public class UInt64 extends UnsignedNumber implements Comparable<UInt64>, Unsign
         Preconditions.checkNotNull(value);
         Preconditions.checkArgument(
             value.signum() >= 0 && value.bitLength() <= Long.SIZE,
-            "value (%s) must be greater than 0 and less than %s",
-            value,
-            MAX_VALUE
+            "value (%s) must be greater than %s and less than %s",
+            value, MIN, MAX
         );
 
         return new UInt64(value.longValue());

@@ -16,8 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 import java.math.BigInteger;
 import javax.annotation.Nonnull;
 
-import com.google.common.base.Preconditions;
-
 import static com.google.common.base.Preconditions.checkArgument;
 
 public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, UnsignedArithmetic<UInt8> {
@@ -43,15 +41,11 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
 
     @Override
     public UInt8 plus(@Nonnull final UInt8 other) {
-        Preconditions.checkNotNull(other);
-
         return valueOf(this.value + other.value);
     }
 
     @Override
     public UInt8 minus(@Nonnull final UInt8 other) {
-        Preconditions.checkNotNull(other);
-
         return valueOf(this.value - other.value);
     }
 
@@ -82,10 +76,7 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
 
     @Override
     public boolean equals(final Object other) {
-        if (!(other instanceof UInt8)) {
-            return false;
-        }
-        return this.value == ((UInt8) other).value;
+        return other instanceof UInt8 && this.value == ((UInt8) other).value;
     }
 
     @Override
@@ -101,9 +92,8 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
     public static UInt8 valueOf(final long value) {
         checkArgument(
             value >= MIN_VALUE && value <= MAX_VALUE,
-            "value (%s) must be greater than 0 and less than %s",
-            value,
-            MAX_VALUE
+            "value (%s) must be greater than %s and less than %s",
+            value, MIN_VALUE, MAX_VALUE
         );
 
         return new UInt8((short) (value & 0xFF));
@@ -114,7 +104,7 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
     }
 
     public static UInt8 valueOf(@Nonnull final String string, final int radix) {
-        short value = Short.parseShort(string, radix);
+        int value = Integer.parseUnsignedInt(string, radix);
 
         return valueOf(value);
     }
