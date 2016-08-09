@@ -14,6 +14,7 @@ package org.eclipse.milo.examples.helloworld;
 
 import java.util.Random;
 
+import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.attached.UaVariableNode;
@@ -27,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Files.createTempDir;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
@@ -36,11 +38,12 @@ public class HelloWorld {
 
     public static void main(String[] args) throws Exception {
         // Start server
+        final String serverName = "hello-world";
 
-        int port = 12686;
-        String serverName = "test-server";
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
-            .setBindPort(port)
+            .setApplicationUri("urn:eclipse:milo:hello-world:server")
+            .setBindAddresses(newArrayList("localhost"))
+            .setBindPort(12686)
             .setCertificateManager(new DefaultCertificateManager())
             .setCertificateValidator(new DefaultCertificateValidator(createTempDir()))
             .setServerName(serverName)
@@ -50,16 +53,15 @@ public class HelloWorld {
         OpcUaServer server = new OpcUaServer(serverConfig);
 
         server.getNamespaceManager().registerAndAdd(
-            "urn:eclipse:milo:opcua:test-namespace",
-            idx -> new HelloNamespace());
+            HelloNamespace.NAMESPACE_URI,
+            idx -> new HelloNamespace(server, idx));
 
         server.startup();
 
 
         // Start client
-
         EndpointDescription[] endpoints = UaTcpStackClient
-            .getEndpoints("opc.tcp://localhost:" + port + "/" + serverName).get();
+            .getEndpoints("opc.tcp://localhost:12686/" + serverName).get();
 
         EndpointDescription endpoint = stream(endpoints)
             .findFirst()
@@ -72,24 +74,22 @@ public class HelloWorld {
         OpcUaClient client = new OpcUaClient(clientConfig);
 
 
-        // Read value
-
-        NodeId nodeId = new NodeId(2, "/foo/bar/baz");
+        // Read and write a node
+        NodeId nodeId = new NodeId(2, "HelloWorld/Int32");
         UaVariableNode node = client.getAddressSpace().getVariableNode(nodeId);
+
+        // Read value
         Object value = node.readValueAttribute().get();
+        System.out.println("Value before write: " + value);
 
-
-        // Write value
-
+        // Write new value
         DataValue newValue = new DataValue(new Variant(new Random().nextInt()));
         node.writeValue(newValue).get();
+        System.out.println("Wrote value: " + newValue.getValue());
+
+        // Read value again
         Object valueAfter = node.readValueAttribute().get();
-
-
-        // Print results
-
-        System.out.println("Node value before update:\t" + value);
-        System.out.println("Node value after update:\t" + valueAfter);
+        System.out.println("Value after write: " + valueAfter);
     }
 
 }
