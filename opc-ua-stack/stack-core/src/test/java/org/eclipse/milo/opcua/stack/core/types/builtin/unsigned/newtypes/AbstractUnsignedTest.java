@@ -14,11 +14,13 @@ package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
 import org.testng.Assert;
 
-public abstract class AbstractUnsingedTest {
+public abstract class AbstractUnsignedTest {
 
-    protected static <T extends UnsignedNumber & Comparable<T>> void assertCompare(final T a,
-                                                                                   final T b,
-                                                                                   final int compare) {
+    protected static <T extends UnsignedNumber & Comparable<T>> void assertCompare(
+        final T a,
+        final T b,
+        final int compare) {
+
         final int result = a.compareTo(b);
 
         if (compare == 0) {

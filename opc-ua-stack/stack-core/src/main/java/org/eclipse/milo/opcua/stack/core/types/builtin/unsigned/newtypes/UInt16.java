@@ -14,6 +14,8 @@ public class UInt16 extends UnsignedNumber implements Comparable<UInt16>, Unsign
     private static final int MIN_VALUE = 0x00;
     private static final int MAX_VALUE = 0xFFFF;
 
+    public static final UInt16 ZERO = valueOf(0);
+    public static final UInt16 ONE = valueOf(1);
     public static final UInt16 MIN = valueOf(MIN_VALUE);
     public static final UInt16 MAX = valueOf(MAX_VALUE);
 

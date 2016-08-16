@@ -25,6 +25,8 @@ public final class UInt8 extends UnsignedNumber implements Comparable<UInt8>, Un
     private static final short MIN_VALUE = 0x00;
     private static final short MAX_VALUE = 0xFF;
 
+    public static final UInt8 ZERO = valueOf(0);
+    public static final UInt8 ONE = valueOf(1);
     public static final UInt8 MIN = valueOf(MIN_VALUE);
     public static final UInt8 MAX = valueOf(MAX_VALUE);
 

@@ -12,12 +12,12 @@
  */
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
+import org.testng.annotations.Test;
+
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotEquals;
 
-import org.testng.annotations.Test;
-
-public class UInt8Test extends AbstractUnsingedTest {
+public class UInt8Test extends AbstractUnsignedTest {
 
     @Test
     public void testValueOfByteSuccess() {

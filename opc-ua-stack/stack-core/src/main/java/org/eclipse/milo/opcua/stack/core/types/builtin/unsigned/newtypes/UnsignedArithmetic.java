@@ -15,8 +15,8 @@ package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.newtypes;
 
 public interface UnsignedArithmetic<T extends UnsignedArithmetic<T>> {
 
-    T plus(T value);
+    T plus(T value) throws OutOfRangeException;
 
-    T minus(T value);
+    T minus(T value) throws OutOfRangeException;
 
 }
