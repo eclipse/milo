@@ -13,19 +13,24 @@
 package org.eclipse.milo.examples.client.server;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.examples.client.server.methods.SqrtMethod;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.model.UaFolderNode;
+import org.eclipse.milo.opcua.sdk.server.model.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.model.UaNode;
 import org.eclipse.milo.opcua.sdk.server.model.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -94,6 +99,8 @@ public class ExampleNamespace implements Namespace {
 
             // Add the rest of the nodes
             addNodes(folderNode);
+
+            addMethodNode(folderNode);
         } catch (UaException e) {
             logger.error("Error adding nodes: {}", e.getMessage(), e);
         }
@@ -155,6 +162,38 @@ public class ExampleNamespace implements Namespace {
             server.getNodeManager().addNode(node);
 
             folderNode.addOrganizes(node);
+        }
+    }
+
+    private void addMethodNode(UaFolderNode folderNode) {
+        UaMethodNode methodNode = UaMethodNode.builder(server.getNodeManager())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/sqrt(x)"))
+            .setBrowseName(new QualifiedName(namespaceIndex, "sqrt(x)"))
+            .setDisplayName(new LocalizedText(null, "sqrt(x)"))
+            .setDescription(LocalizedText.english("Returns the correctly rounded positive square root of a double value."))
+            .build();
+
+
+        try {
+            AnnotationBasedInvocationHandler invocationHandler =
+                AnnotationBasedInvocationHandler.fromAnnotatedObject(
+                    server.getNodeManager(), new SqrtMethod());
+
+            methodNode.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+            methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+            methodNode.setInvocationHandler(invocationHandler);
+
+            server.getNodeManager().addNode(methodNode);
+
+            folderNode.addReference(new Reference(
+                folderNode.getNodeId(),
+                Identifiers.HasComponent,
+                methodNode.getNodeId().expanded(),
+                methodNode.getNodeClass(),
+                true
+            ));
+        } catch (Exception e) {
+            logger.error("Error creating sqrt() method.", e);
         }
     }
 
@@ -246,4 +285,17 @@ public class ExampleNamespace implements Namespace {
         subscriptionModel.onMonitoringModeChanged(monitoredItems);
     }
 
+    @Override
+    public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
+        Optional<UaNode> node = server.getNodeManager().getNode(methodId);
+
+        return node.flatMap(n -> {
+            if (n instanceof UaMethodNode) {
+                return ((UaMethodNode) n).getInvocationHandler();
+            } else {
+                return Optional.empty();
+            }
+        });
+    }
+    
 }
