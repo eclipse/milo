@@ -10,7 +10,7 @@
  * and the Eclipse Distribution License is available at
  * 	http://www.eclipse.org/org/documents/edl-v10.html.
  */
-package org.eclipse.milo.examples.client.server;
+package org.eclipse.milo.examples.server;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
-import org.eclipse.milo.examples.client.server.methods.SqrtMethod;
+import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -297,5 +297,5 @@ public class ExampleNamespace implements Namespace {
             }
         });
     }
-    
+
 }

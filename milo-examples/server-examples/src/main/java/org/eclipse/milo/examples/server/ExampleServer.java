@@ -1,4 +1,4 @@
-package org.eclipse.milo.examples.client.server;
+package org.eclipse.milo.examples.server;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
