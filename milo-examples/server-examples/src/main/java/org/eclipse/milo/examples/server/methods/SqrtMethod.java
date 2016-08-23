@@ -1,4 +1,4 @@
-package org.eclipse.milo.examples.client.server.methods;
+package org.eclipse.milo.examples.server.methods;
 
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;

@@ -14,7 +14,7 @@
 
     <modules>
         <module>client-examples</module>
-        <module>helloworld</module>
+        <module>server-examples</module>
     </modules>
 
 </project>
