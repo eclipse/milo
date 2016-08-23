@@ -10,22 +10,27 @@
  * and the Eclipse Distribution License is available at
  * 	http://www.eclipse.org/org/documents/edl-v10.html.
  */
-package org.eclipse.milo.examples.helloworld;
+package org.eclipse.milo.examples.server;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.model.UaFolderNode;
+import org.eclipse.milo.opcua.sdk.server.model.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.model.UaNode;
 import org.eclipse.milo.opcua.sdk.server.model.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -53,7 +58,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class HelloNamespace implements Namespace {
+public class ExampleNamespace implements Namespace {
 
     public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
@@ -64,7 +69,7 @@ public class HelloNamespace implements Namespace {
     private final OpcUaServer server;
     private final UShort namespaceIndex;
 
-    public HelloNamespace(OpcUaServer server, UShort namespaceIndex) {
+    public ExampleNamespace(OpcUaServer server, UShort namespaceIndex) {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
 
@@ -94,6 +99,8 @@ public class HelloNamespace implements Namespace {
 
             // Add the rest of the nodes
             addNodes(folderNode);
+
+            addMethodNode(folderNode);
         } catch (UaException e) {
             logger.error("Error adding nodes: {}", e.getMessage(), e);
         }
@@ -155,6 +162,38 @@ public class HelloNamespace implements Namespace {
             server.getNodeManager().addNode(node);
 
             folderNode.addOrganizes(node);
+        }
+    }
+
+    private void addMethodNode(UaFolderNode folderNode) {
+        UaMethodNode methodNode = UaMethodNode.builder(server.getNodeManager())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/sqrt(x)"))
+            .setBrowseName(new QualifiedName(namespaceIndex, "sqrt(x)"))
+            .setDisplayName(new LocalizedText(null, "sqrt(x)"))
+            .setDescription(LocalizedText.english("Returns the correctly rounded positive square root of a double value."))
+            .build();
+
+
+        try {
+            AnnotationBasedInvocationHandler invocationHandler =
+                AnnotationBasedInvocationHandler.fromAnnotatedObject(
+                    server.getNodeManager(), new SqrtMethod());
+
+            methodNode.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+            methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+            methodNode.setInvocationHandler(invocationHandler);
+
+            server.getNodeManager().addNode(methodNode);
+
+            folderNode.addReference(new Reference(
+                folderNode.getNodeId(),
+                Identifiers.HasComponent,
+                methodNode.getNodeId().expanded(),
+                methodNode.getNodeClass(),
+                true
+            ));
+        } catch (Exception e) {
+            logger.error("Error creating sqrt() method.", e);
         }
     }
 
@@ -244,6 +283,19 @@ public class HelloNamespace implements Namespace {
     @Override
     public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
         subscriptionModel.onMonitoringModeChanged(monitoredItems);
+    }
+
+    @Override
+    public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
+        Optional<UaNode> node = server.getNodeManager().getNode(methodId);
+
+        return node.flatMap(n -> {
+            if (n instanceof UaMethodNode) {
+                return ((UaMethodNode) n).getInvocationHandler();
+            } else {
+                return Optional.empty();
+            }
+        });
     }
 
 }

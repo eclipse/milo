@@ -13,7 +13,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>helloworld</module>
+        <module>client-examples</module>
+        <module>server-examples</module>
     </modules>
 
 </project>
