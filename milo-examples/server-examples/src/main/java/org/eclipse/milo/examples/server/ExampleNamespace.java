@@ -12,6 +12,7 @@
  */
 package org.eclipse.milo.examples.server;
 
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,6 +22,7 @@ import com.google.common.collect.Lists;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
@@ -33,6 +35,7 @@ import org.eclipse.milo.opcua.sdk.server.model.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -45,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -141,6 +145,21 @@ public class ExampleNamespace implements Namespace {
         {"XmlElement", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
     };
 
+    private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
+        {"BoolArray", Identifiers.Boolean, false},
+        {"ByteArray", Identifiers.Byte, ubyte(0)},
+        {"DoubleArray", Identifiers.Double, 3.14d},
+        {"FloatArray", Identifiers.Float, 3.14f},
+        {"Int16Array", Identifiers.Int16, (short) 16},
+        {"Int32Array", Identifiers.Int32, 32},
+        {"Int64Array", Identifiers.Int64, 64L},
+        {"SByteArray", Identifiers.SByte, (byte) 0x00},
+        {"StringArray", Identifiers.String, "string value"},
+        {"UInt16Array", Identifiers.UInt16, ushort(16)},
+        {"UInt32Array", Identifiers.UInt32, uint(32)},
+        {"UInt64Array", Identifiers.UInt64, ulong(64L)},
+    };
+
 
     private void addNodes(UaFolderNode folderNode) {
         for (Object[] os : STATIC_SCALAR_NODES) {
@@ -156,6 +175,34 @@ public class ExampleNamespace implements Namespace {
                 .setDataType(typeId)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
                 .build();
+
+            node.setValue(new DataValue(variant));
+
+            server.getNodeManager().addNode(node);
+
+            folderNode.addOrganizes(node);
+        }
+
+        for (Object[] os : STATIC_ARRAY_NODES) {
+            String name = (String) os[0];
+            NodeId typeId = (NodeId) os[1];
+            Object value = os[2];
+            Object array = Array.newInstance(value.getClass(), 4);
+            for (int i = 0; i < 4; i++) {
+                Array.set(array, i, value);
+            }
+            Variant variant = new Variant(array);
+
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+                    .setNodeId(new NodeId(namespaceIndex, "HelloWorld/" + name))
+                    .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                    .setBrowseName(new QualifiedName(namespaceIndex, name))
+                    .setDisplayName(LocalizedText.english(name))
+                    .setDataType(typeId)
+                    .setTypeDefinition(Identifiers.BaseDataVariableType)
+                    .setValueRank(ValueRank.OneDimension.getValue())
+                    .setArrayDimensions(new UInteger[]{uint(0)})
+                    .build();
 
             node.setValue(new DataValue(variant));
 
@@ -253,6 +300,12 @@ public class ExampleNamespace implements Namespace {
                     );
 
                     results.add(StatusCode.GOOD);
+
+                    logger.info(
+                        "Wrote value {} to {} attribute of {}",
+                        writeValue.getValue().getValue(),
+                        AttributeId.from(writeValue.getAttributeId()),
+                        node.getNodeId());
                 } catch (UaException e) {
                     logger.error("Unable to write value={}", writeValue.getValue(), e);
                     results.add(e.getStatusCode());
