@@ -142,7 +142,6 @@ public class ClientServerTest extends SecurityFixture {
     public void tearDownClientServer() throws Exception {
         server.shutdown().get();
         SocketServers.shutdownAll().get();
-        Stack.sharedEventLoop().shutdownGracefully();
     }
 
     @Test(dataProvider = "getVariants")
