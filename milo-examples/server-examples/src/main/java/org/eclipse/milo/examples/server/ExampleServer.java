@@ -18,6 +18,8 @@ public class ExampleServer {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ExampleServer server = new ExampleServer();
 
+        server.startup().get();
+
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> future.complete(null)));
@@ -27,7 +29,7 @@ public class ExampleServer {
 
     private final OpcUaServer server;
 
-    public ExampleServer() {
+    public ExampleServer() throws ExecutionException, InterruptedException {
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setBindAddresses(newArrayList("localhost"))
@@ -43,16 +45,18 @@ public class ExampleServer {
         server.getNamespaceManager().registerAndAdd(
             ExampleNamespace.NAMESPACE_URI,
             idx -> new ExampleNamespace(server, idx));
-
-        server.startup();
     }
 
     public OpcUaServer getServer() {
         return server;
     }
 
-    public void shutdown() {
-        server.shutdown();
+    public CompletableFuture<OpcUaServer> startup() {
+        return server.startup();
+    }
+
+    public CompletableFuture<OpcUaServer> shutdown() {
+        return server.shutdown();
     }
 
 }

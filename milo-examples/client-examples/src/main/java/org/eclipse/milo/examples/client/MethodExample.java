@@ -1,6 +1,7 @@
 package org.eclipse.milo.examples.client;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -13,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class MethodExample implements ClientExample {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         MethodExample example = new MethodExample();
 
         new ClientExampleRunner(example).run();

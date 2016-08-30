@@ -35,7 +35,6 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
-import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -57,7 +56,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.server.tcp.SocketServer;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterTest;
@@ -141,7 +141,7 @@ public class OpcUaClientIT {
             TestNamespace.NAMESPACE_URI,
             idx -> new TestNamespace(server, idx));
 
-        server.startup();
+        server.startup().get();
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
 
@@ -160,7 +160,7 @@ public class OpcUaClientIT {
     }
 
     @AfterTest
-    public void stopClientAndServer() {
+    public void stopClientAndServer() throws ExecutionException, InterruptedException {
         logger.info("stopClientAndServer()");
 
         try {
@@ -168,8 +168,8 @@ public class OpcUaClientIT {
         } catch (InterruptedException | ExecutionException e) {
             logger.warn("Error disconnecting client.", e);
         }
-        server.shutdown();
-        SocketServer.shutdownAll();
+        server.shutdown().get();
+        SocketServers.shutdownAll().get();
     }
 
     @Test
