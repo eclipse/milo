@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.application;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
@@ -75,12 +76,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 public interface UaStackServer {
 
-    void startup();
+    CompletableFuture<? extends UaStackServer> startup();
 
-    void shutdown();
+    CompletableFuture<? extends UaStackServer> shutdown();
 
     CertificateManager getCertificateManager();
 
@@ -100,7 +102,7 @@ public interface UaStackServer {
 
     ServerSecureChannel openSecureChannel();
 
-    void closeSecureChannel(ServerSecureChannel secureChannel);
+    CompletableFuture<Unit> closeSecureChannel(ServerSecureChannel secureChannel);
 
     <T extends UaRequestMessage, U extends UaResponseMessage>
     void addRequestHandler(Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler);

@@ -31,10 +31,11 @@ public class ClientExampleRunner {
 
     private final ClientExample clientExample;
 
-    public ClientExampleRunner(ClientExample clientExample) {
+    public ClientExampleRunner(ClientExample clientExample) throws ExecutionException, InterruptedException {
         this.clientExample = clientExample;
 
         exampleServer = new ExampleServer();
+        exampleServer.startup().get();
     }
 
     private OpcUaClient createClient() throws Exception {
@@ -68,7 +69,7 @@ public class ClientExampleRunner {
             if (client != null) {
                 try {
                     client.disconnect().get();
-                    exampleServer.shutdown();
+                    exampleServer.shutdown().get();
                     Stack.releaseSharedResources();
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);

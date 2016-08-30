@@ -33,7 +33,6 @@ import org.eclipse.milo.opcua.sdk.server.model.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.model.UaNode;
 import org.eclipse.milo.opcua.sdk.server.model.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -54,6 +53,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

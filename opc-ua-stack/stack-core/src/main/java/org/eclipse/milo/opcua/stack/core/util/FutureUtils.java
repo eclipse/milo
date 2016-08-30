@@ -11,17 +11,24 @@
  * 	http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.server.util;
+package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.IntFunction;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class FutureUtils {
+
+    public static <T> CompletableFuture<List<T>> sequence(Stream<CompletableFuture<T>> stream) {
+        return sequence(stream.collect(Collectors.toList()));
+    }
 
     public static <T> CompletableFuture<List<T>> sequence(List<CompletableFuture<T>> futures) {
         if (futures.isEmpty()) {

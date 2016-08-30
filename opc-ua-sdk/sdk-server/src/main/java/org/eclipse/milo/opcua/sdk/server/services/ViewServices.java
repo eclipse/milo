@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.ViewManager.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowsePathsHelper;
-import org.eclipse.milo.opcua.sdk.server.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.sdk.server.util.PendingBrowse;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
