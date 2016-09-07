@@ -13,22 +13,22 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
-
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.eclipse.milo.opcua.stack.core.util.ClassEnumerator.getClassesForPackage;
 
 public class DelegateRegistry {
 
@@ -118,16 +118,15 @@ public class DelegateRegistry {
     }
 
     private static void loadGeneratedClasses(ClassLoader classLoader) throws IOException, ClassNotFoundException {
-        ClassPath classPath = ClassPath.from(classLoader);
+        List<Class<?>> structures = getClassesForPackage(OpenSecureChannelResponse.class.getPackage());
 
-        ImmutableSet<ClassInfo> structures =
-            classPath.getTopLevelClasses("org.eclipse.milo.opcua.stack.core.types.structured");
+        List<Class<?>> enumerations = getClassesForPackage(NodeClass.class.getPackage());
 
-        ImmutableSet<ClassInfo> enumerations =
-            classPath.getTopLevelClasses("org.eclipse.milo.opcua.stack.core.types.enumerated");
+        Set<Class<?>> totalClasses = new HashSet();
+        totalClasses.addAll(structures);
+        totalClasses.addAll(enumerations);
 
-        for (ClassInfo classInfo : Sets.union(structures, enumerations)) {
-            Class<?> clazz = classInfo.load();
+        for (Class<?> clazz :  totalClasses) {
             Class.forName(clazz.getName(), true, classLoader);
         }
     }
