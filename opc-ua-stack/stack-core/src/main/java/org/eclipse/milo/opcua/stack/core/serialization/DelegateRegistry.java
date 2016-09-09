@@ -13,22 +13,14 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DelegateRegistry {
 
@@ -57,34 +49,7 @@ public class DelegateRegistry {
         Instance instance = INSTANCE_REF.get();
 
         if (instance == null) {
-            /*
-             * Reflect-o-magically find all generated structured and enumerated types and force their static initialization
-             * blocks to run, registering their encode/decode methods with the delegate registry.
-             */
-            Logger logger = LoggerFactory.getLogger(DelegateRegistry.class);
-
-            ClassLoader classLoader = Stack.getCustomClassLoader()
-                .orElse(DelegateRegistry.class.getClassLoader());
-
-            try {
-                loadGeneratedClasses(classLoader);
-            } catch (Exception e1) {
-                // Temporarily set the thread context ClassLoader to our
-                // ClassLoader and try loading the classes one more time.
-
-                Thread thread = Thread.currentThread();
-                ClassLoader contextClassLoader = thread.getContextClassLoader();
-
-                thread.setContextClassLoader(classLoader);
-
-                try {
-                    loadGeneratedClasses(classLoader);
-                } catch (Exception e2) {
-                    logger.error("Error loading generated classes.", e2);
-                } finally {
-                    thread.setContextClassLoader(contextClassLoader);
-                }
-            }
+            DelegateRegistryInitializer.initialize();
 
             instance = new Instance(
                 ENCODERS_BY_CLASS,
@@ -101,6 +66,15 @@ public class DelegateRegistry {
         }
     }
 
+    public static synchronized <T> void register(
+        EncoderDelegate<T> encoder,
+        DecoderDelegate<T> decoder,
+        Class<T> clazz, NodeId... ids) {
+
+        registerEncoder(encoder, clazz, ids);
+        registerDecoder(decoder, clazz, ids);
+    }
+
     public static synchronized <T> void registerEncoder(EncoderDelegate<T> delegate, Class<T> clazz, NodeId... ids) {
         ENCODERS_BY_CLASS.put(clazz, delegate);
 
@@ -114,21 +88,6 @@ public class DelegateRegistry {
 
         if (ids != null) {
             Arrays.stream(ids).forEach(id -> DECODERS_BY_ID.put(id, delegate));
-        }
-    }
-
-    private static void loadGeneratedClasses(ClassLoader classLoader) throws IOException, ClassNotFoundException {
-        ClassPath classPath = ClassPath.from(classLoader);
-
-        ImmutableSet<ClassInfo> structures =
-            classPath.getTopLevelClasses("org.eclipse.milo.opcua.stack.core.types.structured");
-
-        ImmutableSet<ClassInfo> enumerations =
-            classPath.getTopLevelClasses("org.eclipse.milo.opcua.stack.core.types.enumerated");
-
-        for (ClassInfo classInfo : Sets.union(structures, enumerations)) {
-            Class<?> clazz = classInfo.load();
-            Class.forName(clazz.getName(), true, classLoader);
         }
     }
 
@@ -164,9 +123,15 @@ public class DelegateRegistry {
 
         @SuppressWarnings("unchecked")
         public <T> EncoderDelegate<T> getEncoder(Class<?> clazz) throws UaSerializationException {
-            try {
-                return (EncoderDelegate<T>) encodersByClass.get(clazz);
-            } catch (NullPointerException e) {
+            EncoderDelegate<?> encoderDelegate = encodersByClass.get(clazz);
+
+            if (encoderDelegate != null) {
+                try {
+                    return (EncoderDelegate<T>) encoderDelegate;
+                } catch (Exception e) {
+                    throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                }
+            } else {
                 throw new UaSerializationException(StatusCodes.Bad_EncodingError,
                     "no encoder registered for class=" + clazz);
             }
@@ -174,9 +139,15 @@ public class DelegateRegistry {
 
         @SuppressWarnings("unchecked")
         public <T> EncoderDelegate<T> getEncoder(NodeId encodingId) throws UaSerializationException {
-            try {
-                return (EncoderDelegate<T>) encodersById.get(encodingId);
-            } catch (NullPointerException e) {
+            EncoderDelegate<?> encoderDelegate = encodersById.get(encodingId);
+
+            if (encoderDelegate != null) {
+                try {
+                    return (EncoderDelegate<T>) encoderDelegate;
+                } catch (Exception e) {
+                    throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+                }
+            } else {
                 throw new UaSerializationException(StatusCodes.Bad_EncodingError,
                     "no encoder registered for encodingId=" + encodingId);
             }
@@ -194,9 +165,15 @@ public class DelegateRegistry {
 
         @SuppressWarnings("unchecked")
         public <T> DecoderDelegate<T> getDecoder(Class<T> clazz) throws UaSerializationException {
-            try {
-                return (DecoderDelegate<T>) decodersByClass.get(clazz);
-            } catch (NullPointerException e) {
+            DecoderDelegate<?> decoderDelegate = decodersByClass.get(clazz);
+
+            if (decoderDelegate != null) {
+                try {
+                    return (DecoderDelegate<T>) decoderDelegate;
+                } catch (Exception e) {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                }
+            } else {
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError,
                     "no decoder registered for class=" + clazz);
             }
@@ -204,14 +181,18 @@ public class DelegateRegistry {
 
         @SuppressWarnings("unchecked")
         public <T> DecoderDelegate<T> getDecoder(NodeId encodingId) {
-            DecoderDelegate<T> decoder = (DecoderDelegate<T>) decodersById.get(encodingId);
+            DecoderDelegate<?> decoderDelegate = decodersById.get(encodingId);
 
-            if (decoder == null) {
+            if (decoderDelegate != null) {
+                try {
+                    return (DecoderDelegate<T>) decoderDelegate;
+                } catch (Exception e) {
+                    throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+                }
+            } else {
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError,
                     "no decoder registered for encodingId=" + encodingId);
             }
-
-            return decoder;
         }
 
     }
