@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Arrays;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
@@ -47,6 +48,16 @@ public final class ByteString {
         return bytes;
     }
 
+    @Nonnull
+    public byte[] bytesOrElse(@Nonnull byte[] other) {
+        return bytes != null ? bytes : other;
+    }
+
+    @Nonnull
+    public byte[] bytesOrEmpty() {
+        return bytesOrElse(new byte[0]);
+    }
+
     @Nullable
     public UByte[] uBytes() {
         if (bytes == null) return null;
@@ -56,6 +67,18 @@ public final class ByteString {
             bs[i] = Unsigned.ubyte(bytes[i]);
         }
         return bs;
+    }
+
+    @Nonnull
+    public UByte[] uBytesOrElse(@Nonnull UByte[] other) {
+        UByte[] ubs = uBytes();
+
+        return ubs != null ? ubs : other;
+    }
+
+    @Nonnull
+    public UByte[] uBytesOrEmpty() {
+        return uBytesOrElse(new UByte[0]);
     }
 
     public byte byteAt(int index) {

@@ -13,6 +13,9 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -28,13 +31,16 @@ import java.util.function.BiConsumer;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
+import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.attached.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
+import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -83,7 +89,7 @@ public class OpcUaClientIT {
     public void startClientAndServer() throws Exception {
         logger.info("startClientAndServer()");
 
-        UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
+        UsernameIdentityValidator usernameValidator = new UsernameIdentityValidator(
             true, // allow anonymous access
             challenge -> {
                 String user0 = "user";
@@ -104,9 +110,12 @@ public class OpcUaClientIT {
             }
         );
 
+        X509IdentityValidator x509IdentityValidator = new X509IdentityValidator(c -> true);
+
         List<UserTokenPolicy> userTokenPolicies = newArrayList(
             OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS,
-            OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME
+            OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME,
+            OpcUaServerConfig.USER_TOKEN_POLICY_X509
         );
 
         KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -131,7 +140,7 @@ public class OpcUaClientIT {
             .setProductUri("urn:digitalpetri:opcua:sdk")
             .setServerName("test-server")
             .setUserTokenPolicies(userTokenPolicies)
-            .setIdentityValidator(identityValidator)
+            .setIdentityValidator(new CompositeValidator(usernameValidator, x509IdentityValidator))
             .build();
 
         server = new OpcUaServer(serverConfig);
@@ -361,8 +370,6 @@ public class OpcUaClientIT {
 
     /**
      * Test using a username and password long enough that the encryption requires multiple ciphertext blocks.
-     *
-     * @throws Exception
      */
     @Test
     public void testUsernamePassword_MultiBlock() throws Exception {
@@ -385,6 +392,45 @@ public class OpcUaClientIT {
             .setEndpoint(endpoint)
             .setRequestTimeout(uint(60000))
             .setIdentityProvider(new UsernameProvider(user, pass))
+            .build();
+
+        OpcUaClient client = new OpcUaClient(clientConfig);
+
+        client.connect().get();
+    }
+
+    @Test
+    public void testX509IdentityProvider_NoSecurity() throws Exception {
+        testX509IdentityProvider(SecurityPolicy.None);
+    }
+
+    @Test
+    public void testX509IdentityProvider_Basic128() throws Exception {
+        testX509IdentityProvider(SecurityPolicy.Basic128Rsa15);
+    }
+
+    private void testX509IdentityProvider(SecurityPolicy securityPolicy) throws Exception {
+        logger.info("testX509IdentityProvider({})", securityPolicy);
+
+        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(
+            "opc.tcp://localhost:12686/test-server").get();
+
+        EndpointDescription endpoint = Arrays.stream(endpoints)
+            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+
+        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+        keyStore.load(getClass().getClassLoader().getResourceAsStream("test-identity.pfx"), "password".toCharArray());
+
+        X509Certificate certificate = (X509Certificate) keyStore.getCertificate("identity");
+        PrivateKey privateKey = (PrivateKey) keyStore.getKey("identity", "password".toCharArray());
+
+        OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
+            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
+            .setApplicationUri("urn:digitalpetri:opcua:client")
+            .setEndpoint(endpoint)
+            .setRequestTimeout(uint(60000))
+            .setIdentityProvider(new X509IdentityProvider(certificate, privateKey))
             .build();
 
         OpcUaClient client = new OpcUaClient(clientConfig);
