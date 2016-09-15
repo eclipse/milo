@@ -150,8 +150,10 @@ public final class NodeId {
 
     public boolean isNull() {
         return namespaceIndex.intValue() == 0 &&
-            (NULL_NUMERIC.equals(this) || NULL_STRING.equals(this) ||
-                NULL_GUID.equals(this) || NULL_OPAQUE.equals(this));
+            (NULL_NUMERIC.equals(this)
+                || NULL_STRING.equals(this)
+                || NULL_GUID.equals(this)
+                || NULL_OPAQUE.equals(this));
     }
 
     public boolean isNotNull() {
@@ -209,73 +211,73 @@ public final class NodeId {
         return sb.toString();
     }
 
-    // TODO Re-write this crap... or at the very least write some good unit tests.
-
-    private static final Pattern INT_INT = Pattern.compile("ns=(\\d*);i=(\\d*)");
+    private static final Pattern NS_INT = Pattern.compile("ns=(\\d*);i=(\\d*)");
     private static final Pattern NONE_INT = Pattern.compile("i=(\\d*)");
 
-    private static final Pattern INT_STRING = Pattern.compile("ns=(\\d*);s=(.*)");
+    private static final Pattern NS_STRING = Pattern.compile("ns=(\\d*);s=(.*)");
     private static final Pattern NONE_STRING = Pattern.compile("s=(.*)");
 
-    private static final Pattern INT_GUID = Pattern.compile("ns=(\\d*);g=([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
+    private static final Pattern NS_GUID = Pattern.compile("ns=(\\d*);g=([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
     private static final Pattern NONE_GUID = Pattern.compile("g=([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})");
 
-    private static final Pattern INT_OPAQUE = Pattern.compile("ns=(\\d*);b=([0-9a-zA-Z\\+/=]*)");
-    private static final Pattern NONE_OPAQUE = Pattern.compile("b=([0-9a-zA-Z\\+/=]*)");
+    private static final Pattern NS_OPAQUE = Pattern.compile("ns=(\\d*);b=([0-9a-zA-Z+/=]*)");
+    private static final Pattern NONE_OPAQUE = Pattern.compile("b=([0-9a-zA-Z+/=]*)");
 
     public static NodeId parse(@Nonnull String s) {
         Matcher m;
 
-        m = NONE_STRING.matcher(s);
-        if (m.matches()) {
-            String obj = m.group(1);
-            return new NodeId(ushort(0), obj);
-        }
+        if (s.startsWith("ns=")) {
+            m = NS_INT.matcher(s);
+            if (m.matches()) {
+                Integer nsi = Integer.valueOf(m.group(1));
+                Integer obj = Integer.valueOf(m.group(2));
+                return new NodeId(ushort(nsi), uint(obj));
+            }
 
-        m = NONE_INT.matcher(s);
-        if (m.matches()) {
-            Integer obj = Integer.valueOf(m.group(1));
-            return new NodeId(ushort(0), uint(obj));
-        }
+            m = NS_STRING.matcher(s);
+            if (m.matches()) {
+                Integer nsi = Integer.valueOf(m.group(1));
+                String obj = m.group(2);
+                return new NodeId(ushort(nsi), obj);
+            }
 
-        m = NONE_GUID.matcher(s);
-        if (m.matches()) {
-            UUID obj = UUID.fromString(m.group(1));
-            return new NodeId(ushort(0), obj);
-        }
+            m = NS_GUID.matcher(s);
+            if (m.matches()) {
+                Integer nsi = Integer.valueOf(m.group(1));
+                UUID obj = UUID.fromString(m.group(2));
+                return new NodeId(ushort(nsi), obj);
+            }
 
-        m = NONE_OPAQUE.matcher(s);
-        if (m.matches()) {
-            byte[] obj = DatatypeConverter.parseBase64Binary(m.group(1));
-            return new NodeId(ushort(0), ByteString.of(obj));
-        }
+            m = NS_OPAQUE.matcher(s);
+            if (m.matches()) {
+                Integer nsi = Integer.valueOf(m.group(1));
+                byte[] obj = DatatypeConverter.parseBase64Binary(m.group(2));
+                return new NodeId(ushort(nsi), ByteString.of(obj));
+            }
+        } else {
+            m = NONE_STRING.matcher(s);
+            if (m.matches()) {
+                String obj = m.group(1);
+                return new NodeId(ushort(0), obj);
+            }
 
-        m = INT_INT.matcher(s);
-        if (m.matches()) {
-            Integer nsi = Integer.valueOf(m.group(1));
-            Integer obj = Integer.valueOf(m.group(2));
-            return new NodeId(ushort(nsi), uint(obj));
-        }
+            m = NONE_INT.matcher(s);
+            if (m.matches()) {
+                Integer obj = Integer.valueOf(m.group(1));
+                return new NodeId(ushort(0), uint(obj));
+            }
 
-        m = INT_STRING.matcher(s);
-        if (m.matches()) {
-            Integer nsi = Integer.valueOf(m.group(1));
-            String obj = m.group(2);
-            return new NodeId(ushort(nsi), obj);
-        }
+            m = NONE_GUID.matcher(s);
+            if (m.matches()) {
+                UUID obj = UUID.fromString(m.group(1));
+                return new NodeId(ushort(0), obj);
+            }
 
-        m = INT_GUID.matcher(s);
-        if (m.matches()) {
-            Integer nsi = Integer.valueOf(m.group(1));
-            UUID obj = UUID.fromString(m.group(2));
-            return new NodeId(ushort(nsi), obj);
-        }
-
-        m = INT_OPAQUE.matcher(s);
-        if (m.matches()) {
-            Integer nsi = Integer.valueOf(m.group(1));
-            byte[] obj = DatatypeConverter.parseBase64Binary(m.group(2));
-            return new NodeId(ushort(nsi), ByteString.of(obj));
+            m = NONE_OPAQUE.matcher(s);
+            if (m.matches()) {
+                byte[] obj = DatatypeConverter.parseBase64Binary(m.group(1));
+                return new NodeId(ushort(0), ByteString.of(obj));
+            }
         }
 
         throw new UaRuntimeException(StatusCodes.Bad_NodeIdInvalid);
