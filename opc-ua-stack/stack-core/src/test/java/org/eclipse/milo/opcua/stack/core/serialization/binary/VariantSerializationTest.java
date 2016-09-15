@@ -13,6 +13,11 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
+import java.nio.ByteOrder;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -23,6 +28,9 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 public class VariantSerializationTest extends BinarySerializationFixture {
 
@@ -89,6 +97,21 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         Variant decoded = decoder.decodeVariant(null);
 
         assertEquals(decoded, expected);
+    }
+
+    @Test(description = "Test that a Variant containing a null array encoded with a negative array size to indicate a null value decodes properly.")
+    public void testNullArrayEncodedWithNegativeArraySize() {
+        ByteBuf buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+
+        buffer.writeByte(BuiltinDataType.Int16.getTypeId() | (1 << 7));
+        buffer.writeInt(-1);
+
+        BinaryDecoder decoder = new BinaryDecoder().setBuffer(buffer);
+
+        Variant v = decoder.decodeVariant(null);
+
+        assertNotNull(v);
+        assertNull(v.getValue());
     }
 
 }
