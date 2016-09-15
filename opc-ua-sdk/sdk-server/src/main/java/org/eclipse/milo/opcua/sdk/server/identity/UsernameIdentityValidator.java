@@ -25,10 +25,11 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
-public class UsernameIdentityValidator extends IdentityValidator {
+public class UsernameIdentityValidator extends AbstractIdentityValidator {
 
     private final boolean allowAnonymous;
     private final Predicate<AuthenticationChallenge> predicate;
@@ -41,8 +42,12 @@ public class UsernameIdentityValidator extends IdentityValidator {
     }
 
     @Override
-    public Object validateAnonymousToken(AnonymousIdentityToken token, UserTokenPolicy tokenPolicy,
-                                         SecureChannel channel, Session session) throws UaException {
+    public Object validateAnonymousToken(
+        SecureChannel channel,
+        Session session,
+        AnonymousIdentityToken token,
+        UserTokenPolicy tokenPolicy,
+        SignatureData tokenSignature) throws UaException {
 
         if (allowAnonymous) {
             return String.format("anonymous_%s_%s",
@@ -53,17 +58,20 @@ public class UsernameIdentityValidator extends IdentityValidator {
     }
 
     @Override
-    public Object validateUsernameToken(UserNameIdentityToken token,
-                                        UserTokenPolicy tokenPolicy,
-                                        SecureChannel channel,
-                                        Session session) throws UaException {
+    public Object validateUsernameToken(
+        SecureChannel channel,
+        Session session,
+        UserNameIdentityToken token,
+        UserTokenPolicy tokenPolicy,
+        SignatureData tokenSignature) throws UaException {
 
-        return validateUserNameIdentityToken(token, channel, session);
+        return validateUserNameIdentityToken(channel, session, token);
     }
 
-    private String validateUserNameIdentityToken(UserNameIdentityToken token,
-                                                 SecureChannel channel,
-                                                 Session session) throws UaException {
+    private String validateUserNameIdentityToken(
+        SecureChannel channel,
+        Session session,
+        UserNameIdentityToken token) throws UaException {
 
         SecurityPolicy securityPolicy = channel.getSecurityPolicy();
         String username = token.getUserName();

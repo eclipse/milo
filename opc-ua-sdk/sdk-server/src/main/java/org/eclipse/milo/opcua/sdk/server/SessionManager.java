@@ -58,7 +58,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
@@ -88,7 +87,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.IssuedIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
@@ -120,11 +118,9 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -374,7 +370,12 @@ public class SessionManager implements
                      * Identity change
                      */
                     Object tokenObject = request.getUserIdentityToken().decode();
-                    Object identityObject = validateIdentityToken(secureChannel, session, tokenObject);
+                    Object identityObject = validateIdentityToken(
+                        secureChannel,
+                        session,
+                        tokenObject,
+                        request.getUserTokenSignature()
+                    );
                     session.setIdentityObject(identityObject);
 
                     StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
@@ -403,7 +404,12 @@ public class SessionManager implements
                     }
 
                     Object tokenObject = request.getUserIdentityToken().decode();
-                    Object identityObject = validateIdentityToken(secureChannel, session, tokenObject);
+                    Object identityObject = validateIdentityToken(
+                        secureChannel,
+                        session,
+                        tokenObject,
+                        request.getUserTokenSignature()
+                    );
 
                     if (identityObject.equals(session.getIdentityObject()) &&
                         certificateBytes.equals(session.getClientCertificateBytes())) {
@@ -443,7 +449,12 @@ public class SessionManager implements
             }
 
             Object tokenObject = request.getUserIdentityToken().decode();
-            Object identityObject = validateIdentityToken(secureChannel, session, tokenObject);
+            Object identityObject = validateIdentityToken(
+                secureChannel,
+                session,
+                tokenObject,
+                request.getUserTokenSignature()
+            );
             session.setIdentityObject(identityObject);
 
             createdSessions.remove(authToken);
@@ -469,26 +480,23 @@ public class SessionManager implements
         }
     }
 
-    private Object validateIdentityToken(ServerSecureChannel secureChannel, Session session, Object tokenObject) throws UaException {
+    private Object validateIdentityToken(
+        ServerSecureChannel channel,
+        Session session,
+        Object tokenObject,
+        SignatureData tokenSignature) throws UaException {
+
         IdentityValidator identityValidator = server.getConfig().getIdentityValidator();
         UserTokenPolicy tokenPolicy = validatePolicyId(tokenObject);
 
-        if (tokenObject instanceof AnonymousIdentityToken) {
-            AnonymousIdentityToken token = (AnonymousIdentityToken) tokenObject;
-
-            return identityValidator.validateAnonymousToken(token, tokenPolicy, secureChannel, session);
-        } else if (tokenObject instanceof UserNameIdentityToken) {
-            UserNameIdentityToken token = (UserNameIdentityToken) tokenObject;
-
-            return identityValidator.validateUsernameToken(token, tokenPolicy, secureChannel, session);
-        } else if (tokenObject instanceof X509IdentityToken) {
-            X509IdentityToken token = (X509IdentityToken) tokenObject;
-
-            return identityValidator.validateX509Token(token, tokenPolicy, secureChannel, session);
-        } else if (tokenObject instanceof IssuedIdentityToken) {
-            IssuedIdentityToken token = (IssuedIdentityToken) tokenObject;
-
-            return identityValidator.validateIssuedIdentityToken(token, tokenPolicy, secureChannel, session);
+        if (tokenObject instanceof UserIdentityToken) {
+            return identityValidator.validateIdentityToken(
+                channel,
+                session,
+                (UserIdentityToken) tokenObject,
+                tokenPolicy,
+                tokenSignature
+            );
         } else {
             throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
         }
