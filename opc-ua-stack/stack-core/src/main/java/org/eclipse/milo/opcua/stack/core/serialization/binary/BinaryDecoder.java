@@ -317,20 +317,30 @@ public class BinaryDecoder implements UaDecoder {
             boolean arrayEncoded = (encodingMask & 0x80) == 0x80;
 
             if (arrayEncoded) {
-                int length = decodeInt32(null);
                 Class<?> backingClass = TypeUtil.getBackingClass(typeId);
-                Object flatArray = Array.newInstance(backingClass, length);
+                int length = decodeInt32(null);
 
-                for (int i = 0; i < length; i++) {
-                    Object element = decodeBuiltinType(typeId);
+                if (length == -1) {
+                    return new Variant(null);
+                } else {
+                    if (length > maxArrayLength) {
+                        throw new UaSerializationException(
+                            StatusCodes.Bad_EncodingLimitsExceeded, "max array length exceeded");
+                    }
 
-                    Array.set(flatArray, i, element);
+                    Object flatArray = Array.newInstance(backingClass, length);
+
+                    for (int i = 0; i < length; i++) {
+                        Object element = decodeBuiltinType(typeId);
+
+                        Array.set(flatArray, i, element);
+                    }
+
+                    int[] dimensions = dimensionsEncoded ? decodeDimensions() : new int[]{length};
+                    Object array = dimensions.length > 1 ? ArrayUtil.unflatten(flatArray, dimensions) : flatArray;
+
+                    return new Variant(array);
                 }
-
-                int[] dimensions = dimensionsEncoded ? decodeDimensions() : new int[]{length};
-                Object array = dimensions.length > 1 ? ArrayUtil.unflatten(flatArray, dimensions) : flatArray;
-
-                return new Variant(array);
             } else {
                 Object value = decodeBuiltinType(typeId);
 
