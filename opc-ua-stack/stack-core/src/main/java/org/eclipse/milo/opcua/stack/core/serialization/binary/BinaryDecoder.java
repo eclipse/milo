@@ -324,8 +324,8 @@ public class BinaryDecoder implements UaDecoder {
                     return new Variant(null);
                 } else {
                     if (length > maxArrayLength) {
-                        throw new UaSerializationException(
-                            StatusCodes.Bad_EncodingLimitsExceeded, "max array length exceeded");
+                        throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
+                            String.format("max array length exceeded (length=%s, max=%s)", length, maxArrayLength));
                     }
 
                     Object flatArray = Array.newInstance(backingClass, length);
@@ -398,11 +398,11 @@ public class BinaryDecoder implements UaDecoder {
         int length = decodeInt32(null);
 
         if (length == -1) {
-            return (T[]) Array.newInstance(clazz, 0);
+            return null;
         } else {
             if (length > maxArrayLength) {
                 throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
-                    "max array length exceeded");
+                    String.format("max array length exceeded (length=%s, max=%s)", length, maxArrayLength));
             }
 
             Object array = Array.newInstance(clazz, length);
@@ -421,11 +421,11 @@ public class BinaryDecoder implements UaDecoder {
         int length = decodeInt32(null);
 
         if (length == -1) {
-            return (T[]) Array.newInstance(clazz, 0);
+            return null;
         } else {
             if (length > maxArrayLength) {
                 throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
-                    String.format("max array length exceeded (length=%s, max=%s", length, maxArrayLength));
+                    String.format("max array length exceeded (length=%s, max=%s)", length, maxArrayLength));
             }
 
             T[] array = (T[]) Array.newInstance(clazz, length);
