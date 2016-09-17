@@ -248,7 +248,7 @@ public class XmlDecoderTest {
     public void testDecodeReferenceDescription() throws XMLStreamException {
         XmlDecoder decoder = new XmlDecoder();
         String xmlString = 
-            "<ReferenceDescription><ReferenceTypeId><Identifier>ns=0;i=46</Identifier></ReferenceTypeId><IsForward>true</IsForward><NodeId><Identifier>svr=0;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>0</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale></Locale><Text>Auditing</Text></DisplayName><NodeClass>Variable</NodeClass><TypeDefinition><Identifier>svr=0;i=68</Identifier></TypeDefinition></ReferenceDescription>";
+            "<ReferenceDescription><ReferenceTypeId><Identifier>ns=0;i=46</Identifier></ReferenceTypeId><IsForward>true</IsForward><NodeId><Identifier>svr=0;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>0</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale></Locale><Text>Auditing</Text></DisplayName><NodeClass>Variable_2</NodeClass><TypeDefinition><Identifier>svr=0;i=68</Identifier></TypeDefinition></ReferenceDescription>";
 
         decoder.setInput(new ByteArrayInputStream(xmlString.getBytes()));
         decoder.skipElement();
@@ -275,7 +275,7 @@ public class XmlDecoderTest {
         assertEquals(typeDefinition, ExpandedNodeId.parse("svr=0;i=68"));
 
         xmlString =
-                "<ReferenceDescription><ReferenceTypeId><Identifier>ns=4;i=46</Identifier></ReferenceTypeId><IsForward>false</IsForward><NodeId><Identifier>svr=4;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>6</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale>en</Locale><Text>Auditing</Text></DisplayName><NodeClass>Unspecified</NodeClass><TypeDefinition><Identifier>svr=4;i=68</Identifier></TypeDefinition></ReferenceDescription>";
+                "<ReferenceDescription><ReferenceTypeId><Identifier>ns=4;i=46</Identifier></ReferenceTypeId><IsForward>false</IsForward><NodeId><Identifier>svr=4;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>6</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale>en</Locale><Text>Auditing</Text></DisplayName><NodeClass>Unspecified_0</NodeClass><TypeDefinition><Identifier>svr=4;i=68</Identifier></TypeDefinition></ReferenceDescription>";
 
         decoder.setInput(new ByteArrayInputStream(xmlString.getBytes()));
         decoder.skipElement();

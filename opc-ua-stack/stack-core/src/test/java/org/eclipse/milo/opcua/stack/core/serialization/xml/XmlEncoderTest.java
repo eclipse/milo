@@ -65,7 +65,7 @@ public class XmlEncoderTest {
         assertTrue(output.contains("<NodeId><Identifier>svr=0;i=2994</Identifier></NodeId>"));
         assertTrue(output.contains("<BrowseName><NamespaceIndex>0</NamespaceIndex><Name>Auditing</Name></BrowseName>"));
         assertTrue(output.contains("<DisplayName>") && output.contains("<Text>Auditing</Text>"));
-        assertTrue(output.contains("<NodeClass>Variable</NodeClass>"));
+        assertTrue(output.contains("<NodeClass>Variable_2</NodeClass>"));
         assertTrue(output.contains("<TypeDefinition><Identifier>svr=0;i=68</Identifier></TypeDefinition>"));
 
 
