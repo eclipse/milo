@@ -19,6 +19,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -294,11 +295,11 @@ public class XmlDecoder implements UaDecoder {
             String text = LocalizedText.NULL_VALUE.getText();
             
             if (nextStartElement("Locale")) {
-                locale = readElementText(LocalizedText.NULL_VALUE.getLocale());
+                locale = readElementText().orElse(LocalizedText.NULL_VALUE.getLocale());
             }
 
             if (nextStartElement("Text")) {
-                text = readElementText(LocalizedText.NULL_VALUE.getText());
+                text = readElementText().orElse(LocalizedText.NULL_VALUE.getText());
             }
 
             requireNextEndElement(field);
@@ -753,13 +754,12 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    private String readElementText(String replacement) throws UaSerializationException {
+    private Optional<String> readElementText() throws UaSerializationException {
         try {
             if (!streamReader.isStartElement() && !streamReader.isEndElement()) {
-                return replacement;
+                return Optional.empty();
             }
-            String elementText = streamReader.getElementText();
-            return elementText != null ? elementText : replacement;
+            return Optional.ofNullable(streamReader.getElementText());
         } catch (XMLStreamException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }
