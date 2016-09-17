@@ -30,7 +30,6 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertNull;
 
 public class XmlDecoderTest {
 
@@ -249,7 +248,7 @@ public class XmlDecoderTest {
     public void testDecodeReferenceDescription() throws XMLStreamException {
         XmlDecoder decoder = new XmlDecoder();
         String xmlString = 
-            "<ReferenceDescription><ReferenceTypeId><Identifier>ns=0;i=46</Identifier></ReferenceTypeId><IsForward>true</IsForward><NodeId><Identifier>svr=0;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>0</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale></Locale><Text>Auditing</Text></DisplayName><TypeDefinition><Identifier>svr=0;i=68</Identifier></TypeDefinition></ReferenceDescription>";
+            "<ReferenceDescription><ReferenceTypeId><Identifier>ns=0;i=46</Identifier></ReferenceTypeId><IsForward>true</IsForward><NodeId><Identifier>svr=0;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>0</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale></Locale><Text>Auditing</Text></DisplayName><NodeClass>Variable</NodeClass><TypeDefinition><Identifier>svr=0;i=68</Identifier></TypeDefinition></ReferenceDescription>";
 
         decoder.setInput(new ByteArrayInputStream(xmlString.getBytes()));
         decoder.skipElement();
@@ -270,13 +269,13 @@ public class XmlDecoderTest {
         assertEquals(displayName, new LocalizedText("", "Auditing"));
 
         NodeClass nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        assertNull(nodeClass);
+        assertEquals(nodeClass, NodeClass.Variable);
 
         ExpandedNodeId typeDefinition = decoder.decodeExpandedNodeId("TypeDefinition");
         assertEquals(typeDefinition, ExpandedNodeId.parse("svr=0;i=68"));
 
         xmlString =
-                "<ReferenceDescription><ReferenceTypeId><Identifier>ns=4;i=46</Identifier></ReferenceTypeId><IsForward>false</IsForward><NodeId><Identifier>svr=4;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>6</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale>en</Locale><Text>Auditing</Text></DisplayName><TypeDefinition><Identifier>svr=4;i=68</Identifier></TypeDefinition></ReferenceDescription>";
+                "<ReferenceDescription><ReferenceTypeId><Identifier>ns=4;i=46</Identifier></ReferenceTypeId><IsForward>false</IsForward><NodeId><Identifier>svr=4;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>6</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale>en</Locale><Text>Auditing</Text></DisplayName><NodeClass>Unspecified</NodeClass><TypeDefinition><Identifier>svr=4;i=68</Identifier></TypeDefinition></ReferenceDescription>";
 
         decoder.setInput(new ByteArrayInputStream(xmlString.getBytes()));
         decoder.skipElement();
@@ -297,7 +296,7 @@ public class XmlDecoderTest {
         assertEquals(displayName, LocalizedText.english("Auditing"));
 
         nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        assertNull(nodeClass);
+        assertEquals(nodeClass, NodeClass.Unspecified);
 
         typeDefinition = decoder.decodeExpandedNodeId("TypeDefinition");
         assertEquals(typeDefinition, ExpandedNodeId.parse("svr=4;i=68"));
