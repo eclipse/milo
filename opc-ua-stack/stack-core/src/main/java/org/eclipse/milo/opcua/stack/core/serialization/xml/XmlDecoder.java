@@ -19,6 +19,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -82,6 +83,10 @@ public class XmlDecoder implements UaDecoder {
         return this;
     }
 
+    public void skipElement() throws XMLStreamException {
+        streamReader.nextTag();
+    }
+    
     @Override
     public Boolean decodeBoolean(String field) throws UaSerializationException {
         return parseElement(field, Boolean::valueOf);
@@ -221,7 +226,24 @@ public class XmlDecoder implements UaDecoder {
 
     @Override
     public ExpandedNodeId decodeExpandedNodeId(String field) {
-        return null;
+      requireNextStartElement(field);
+
+      ExpandedNodeId nodeId;
+
+      if (nextStartElement("Identifier")) {
+          try {
+              String text = streamReader.getElementText();
+              nodeId = ExpandedNodeId.parse(text);
+
+              requireNextEndElement(field);
+          } catch (XMLStreamException e) {
+              throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+          }
+      } else {
+          nodeId = ExpandedNodeId.NULL_VALUE;
+      }
+
+      return nodeId;
     }
 
     @Override
@@ -271,15 +293,13 @@ public class XmlDecoder implements UaDecoder {
         if (nextStartElement(field)) {
             String locale = LocalizedText.NULL_VALUE.getLocale();
             String text = LocalizedText.NULL_VALUE.getText();
-
+            
             if (nextStartElement("Locale")) {
-                locale = decodeString(null);
-                requireNextEndElement("Locale");
+                locale = readElementText().orElse(LocalizedText.NULL_VALUE.getLocale());
             }
 
             if (nextStartElement("Text")) {
-                text = decodeString(null);
-                requireNextEndElement("Text");
+                text = readElementText().orElse(LocalizedText.NULL_VALUE.getText());
             }
 
             requireNextEndElement(field);
@@ -734,4 +754,14 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
+    private Optional<String> readElementText() throws UaSerializationException {
+        try {
+            if (!streamReader.isStartElement() && !streamReader.isEndElement()) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(streamReader.getElementText());
+        } catch (XMLStreamException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
 }
