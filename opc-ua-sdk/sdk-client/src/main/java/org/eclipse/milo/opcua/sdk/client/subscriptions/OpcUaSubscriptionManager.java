@@ -521,7 +521,13 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                         if (notificationCount == 0) {
                             subscriptionListeners.forEach(
-                                l -> l.onKeepAlive(subscription, notificationMessage.getPublishTime()));
+                                listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
+                            );
+                        } else {
+                            subscriptionListeners.forEach(
+                                listener -> listener.onDataChangeNotification(
+                                    subscription, dcn, notificationMessage.getPublishTime())
+                            );
                         }
                     } else if (o instanceof EventNotificationList) {
                         EventNotificationList enl = (EventNotificationList) o;
@@ -533,12 +539,19 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                             OpcUaMonitoredItem item = items.get(efl.getClientHandle());
                             if (item != null) item.onEventArrived(efl.getEventFields());
                         }
+
+                        subscriptionListeners.forEach(
+                            listener -> listener.onEventNotification(
+                                subscription, enl, notificationMessage.getPublishTime())
+                        );
                     } else if (o instanceof StatusChangeNotification) {
                         StatusChangeNotification scn = (StatusChangeNotification) o;
 
                         logger.debug("StatusChangeNotification: {}", scn.getStatus());
 
-                        subscriptionListeners.forEach(l -> l.onStatusChanged(subscription, scn.getStatus()));
+                        subscriptionListeners.forEach(
+                            listener -> listener.onStatusChanged(subscription, scn.getStatus())
+                        );
 
                         if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {
                             subscriptions.remove(subscription.getSubscriptionId());

@@ -51,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
@@ -250,6 +251,46 @@ public class OpcUaClientIT {
 
         assertTrue(items.stream().allMatch(item -> item.getStatusCode().isGood()));
         assertNotNull(FutureUtils.sequence(cfs).get(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testSubscribe_DataChangeNotification() throws Exception {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        // create a subscription and a monitored item
+        UaSubscription subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
+
+        client.getSubscriptionManager().addSubscriptionListener(new UaSubscriptionManager.SubscriptionListener() {
+            @Override
+            public void onDataChangeNotification(UaSubscription subscription,
+                                                 DataChangeNotification notification,
+                                                 DateTime publishTime) {
+
+                Arrays.stream(notification.getMonitoredItems()).forEach(min ->
+                    logger.info("clientHandle={}, value={}", min.getClientHandle(), min.getValue())
+                );
+
+                future.complete(null);
+            }
+        });
+
+        ReadValueId readValueId = new ReadValueId(
+            Identifiers.Server_ServerStatus_State,
+            AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
+
+        MonitoringParameters parameters = new MonitoringParameters(
+            uint(1),    // client handle
+            1000.0,     // sampling interval
+            null,       // no (default) filter
+            uint(10),   // queue size
+            true);      // discard oldest
+
+        MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(
+            readValueId, MonitoringMode.Reporting, parameters);
+
+        subscription.createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
+
+        future.get(5, TimeUnit.SECONDS);
     }
 
     @Test(enabled = false)
