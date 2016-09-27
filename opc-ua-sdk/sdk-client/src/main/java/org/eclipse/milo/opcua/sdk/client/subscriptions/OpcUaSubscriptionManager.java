@@ -543,11 +543,14 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                                     }
                                 }
 
+                                ImmutableList<UaMonitoredItem> itemList = itemsBuilder.build();
+                                ImmutableList<DataValue> valueList = valuesBuilder.build();
+
                                 subscription.getNotificationListeners().forEach(
                                     listener -> listener.onDataChangeNotification(
                                         subscription,
-                                        itemsBuilder.build(),
-                                        valuesBuilder.build(),
+                                        itemList,
+                                        valueList,
                                         notificationMessage.getPublishTime()
                                     )
                                 );
@@ -576,11 +579,14 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                                 }
                             }
 
+                            ImmutableList<UaMonitoredItem> itemList = itemsBuilder.build();
+                            ImmutableList<Variant[]> fieldsList = fieldsBuilder.build();
+
                             subscription.getNotificationListeners().forEach(
                                 listener -> listener.onEventNotification(
                                     subscription,
-                                    itemsBuilder.build(),
-                                    fieldsBuilder.build(),
+                                    itemList,
+                                    fieldsList,
                                     notificationMessage.getPublishTime()
                                 )
                             );
