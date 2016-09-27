@@ -28,14 +28,17 @@ import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.SessionActivityListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
@@ -523,11 +526,32 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                             subscriptionListeners.forEach(
                                 listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
                             );
-                        } else {
-                            subscriptionListeners.forEach(
-                                listener -> listener.onDataChangeNotification(
-                                    subscription, dcn, notificationMessage.getPublishTime())
+
+                            subscription.getNotificationListeners().forEach(
+                                listener -> listener.onKeepAliveNotification(subscription, notificationMessage.getPublishTime())
                             );
+                        } else {
+                            if (!subscription.getNotificationListeners().isEmpty()) {
+                                ImmutableList.Builder<UaMonitoredItem> itemsBuilder = ImmutableList.builder();
+                                ImmutableList.Builder<DataValue> valuesBuilder = ImmutableList.builder();
+
+                                for (MonitoredItemNotification n : dcn.getMonitoredItems()) {
+                                    UaMonitoredItem item = subscription.getItemsByClientHandle().get(n.getClientHandle());
+                                    if (item != null) {
+                                        itemsBuilder.add(item);
+                                        valuesBuilder.add(n.getValue());
+                                    }
+                                }
+
+                                subscription.getNotificationListeners().forEach(
+                                    listener -> listener.onDataChangeNotification(
+                                        subscription,
+                                        itemsBuilder.build(),
+                                        valuesBuilder.build(),
+                                        notificationMessage.getPublishTime()
+                                    )
+                                );
+                            }
                         }
                     } else if (o instanceof EventNotificationList) {
                         EventNotificationList enl = (EventNotificationList) o;
@@ -540,10 +564,27 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                             if (item != null) item.onEventArrived(efl.getEventFields());
                         }
 
-                        subscriptionListeners.forEach(
-                            listener -> listener.onEventNotification(
-                                subscription, enl, notificationMessage.getPublishTime())
-                        );
+                        if (!subscription.getNotificationListeners().isEmpty()) {
+                            ImmutableList.Builder<UaMonitoredItem> itemsBuilder = ImmutableList.builder();
+                            ImmutableList.Builder<Variant[]> fieldsBuilder = ImmutableList.builder();
+
+                            for (EventFieldList efl : enl.getEvents()) {
+                                UaMonitoredItem item = subscription.getItemsByClientHandle().get(efl.getClientHandle());
+                                if (item != null) {
+                                    itemsBuilder.add(item);
+                                    fieldsBuilder.add(efl.getEventFields());
+                                }
+                            }
+
+                            subscription.getNotificationListeners().forEach(
+                                listener -> listener.onEventNotification(
+                                    subscription,
+                                    itemsBuilder.build(),
+                                    fieldsBuilder.build(),
+                                    notificationMessage.getPublishTime()
+                                )
+                            );
+                        }
                     } else if (o instanceof StatusChangeNotification) {
                         StatusChangeNotification scn = (StatusChangeNotification) o;
 
@@ -551,6 +592,10 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                         subscriptionListeners.forEach(
                             listener -> listener.onStatusChanged(subscription, scn.getStatus())
+                        );
+
+                        subscription.getNotificationListeners().forEach(
+                            listener -> listener.onStatusChangedNotification(subscription, scn.getStatus())
                         );
 
                         if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {

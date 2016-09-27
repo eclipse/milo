@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
+import com.codepoetics.protonpack.StreamUtils;
+import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
@@ -35,6 +37,7 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.util.StreamUtil;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -260,15 +263,19 @@ public class OpcUaClientIT {
         // create a subscription and a monitored item
         UaSubscription subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
 
-        client.getSubscriptionManager().addSubscriptionListener(new UaSubscriptionManager.SubscriptionListener() {
+        subscription.addNotificationListener(new UaSubscription.NotificationListener() {
             @Override
             public void onDataChangeNotification(UaSubscription subscription,
-                                                 DataChangeNotification notification,
+                                                 ImmutableList<UaMonitoredItem> items,
+                                                 ImmutableList<DataValue> valueChanges,
                                                  DateTime publishTime) {
 
-                Arrays.stream(notification.getMonitoredItems()).forEach(min ->
-                    logger.info("clientHandle={}, value={}", min.getClientHandle(), min.getValue())
-                );
+                for (int i = 0; i < items.size(); i++) {
+                    UaMonitoredItem item = items.get(i);
+                    DataValue value = valueChanges.get(i);
+
+                    logger.info("item={}, value={}", item.getReadValueId().getNodeId(), value);
+                }
 
                 future.complete(null);
             }

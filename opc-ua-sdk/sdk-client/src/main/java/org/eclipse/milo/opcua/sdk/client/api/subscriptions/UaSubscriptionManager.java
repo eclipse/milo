@@ -22,8 +22,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeNotification;
-import org.eclipse.milo.opcua.stack.core.types.structured.EventNotificationList;
 
 public interface UaSubscriptionManager {
 
@@ -110,34 +108,6 @@ public interface UaSubscriptionManager {
     void removeSubscriptionListener(SubscriptionListener listener);
 
     interface SubscriptionListener {
-
-        /**
-         * A {@link DataChangeNotification} for a {@link UaSubscription} has arrived.
-         * <p>
-         * This callback is invoked after all individual item callbacks and is offered as an alternative to defining
-         * callbacks on a per-item basis. Its use is not required.
-         *
-         * @param subscription the {@link UaSubscription} that received the notification.
-         * @param notification the {@link DataChangeNotification}.
-         * @param publishTime  the time on the server at which this notification was published.
-         */
-        default void onDataChangeNotification(UaSubscription subscription,
-                                              DataChangeNotification notification,
-                                              DateTime publishTime) {}
-
-        /**
-         * An {@link EventNotificationList} for a {@link UaSubscription} has arrived.
-         * <p>
-         * This callback is invoked after all individual item callbacks and is offered as an alternative to defining
-         * callbacks on a per-item basis. Its use is not required.
-         *
-         * @param subscription the {@link UaSubscription} that received the notification.
-         * @param notification the {@link EventNotificationList}.
-         * @param publishTime  the time on the server at which this notification was published.
-         */
-        default void onEventNotification(UaSubscription subscription,
-                                         EventNotificationList notification,
-                                         DateTime publishTime) {}
 
         /**
          * A keep-alive message was received.
