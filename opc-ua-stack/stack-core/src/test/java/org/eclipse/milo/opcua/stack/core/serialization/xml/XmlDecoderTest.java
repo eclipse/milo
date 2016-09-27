@@ -18,8 +18,12 @@ import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import javax.xml.stream.XMLStreamException;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
@@ -218,4 +222,85 @@ public class XmlDecoderTest {
         System.out.println(value);
     }
 
+    @Test
+    public void testDecodeNodeId() throws XMLStreamException {
+        XmlDecoder decoder = new XmlDecoder();
+
+        decoder.setInput(new ByteArrayInputStream("<ReferenceTypeId><Identifier>ns=0;i=46</Identifier></ReferenceTypeId>".getBytes()));
+
+        NodeId nodeId = decoder.decodeNodeId("ReferenceTypeId");
+        assertEquals(nodeId, NodeId.parse("ns=0;i=46"));
+    }
+    
+    @Test
+    public void testDecodeExpandedNodeId() throws XMLStreamException {
+        XmlDecoder decoder = new XmlDecoder();
+
+        decoder.setInput(new ByteArrayInputStream("<NodeId><Identifier>svr=0;i=2994</Identifier></NodeId>".getBytes()));
+
+        ExpandedNodeId nodeId = decoder.decodeExpandedNodeId("NodeId");
+        assertEquals(nodeId, ExpandedNodeId.parse("svr=0;i=2994"));
+        
+
+    }
+    
+    @Test
+    public void testDecodeReferenceDescription() throws XMLStreamException {
+        XmlDecoder decoder = new XmlDecoder();
+        String xmlString = 
+            "<ReferenceDescription><ReferenceTypeId><Identifier>ns=0;i=46</Identifier></ReferenceTypeId><IsForward>true</IsForward><NodeId><Identifier>svr=0;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>0</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale></Locale><Text>Auditing</Text></DisplayName><NodeClass>Variable_2</NodeClass><TypeDefinition><Identifier>svr=0;i=68</Identifier></TypeDefinition></ReferenceDescription>";
+
+        decoder.setInput(new ByteArrayInputStream(xmlString.getBytes()));
+        decoder.skipElement();
+        
+        NodeId referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+        assertEquals(referenceTypeId, NodeId.parse("ns=0;i=46"));
+        
+        Boolean isForward = decoder.decodeBoolean("IsForward");
+        assertTrue(isForward);
+        
+        ExpandedNodeId nodeId = decoder.decodeExpandedNodeId("NodeId");
+        assertEquals(nodeId, ExpandedNodeId.parse("svr=0;i=2994"));
+        
+        QualifiedName browseName = decoder.decodeQualifiedName("BrowseName");
+        assertEquals(browseName, QualifiedName.parse("0:Auditing"));
+        
+        LocalizedText displayName = decoder.decodeLocalizedText("DisplayName");
+        assertEquals(displayName, new LocalizedText("", "Auditing"));
+
+        NodeClass nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
+        assertEquals(nodeClass, NodeClass.Variable);
+
+        ExpandedNodeId typeDefinition = decoder.decodeExpandedNodeId("TypeDefinition");
+        assertEquals(typeDefinition, ExpandedNodeId.parse("svr=0;i=68"));
+
+        xmlString =
+                "<ReferenceDescription><ReferenceTypeId><Identifier>ns=4;i=46</Identifier></ReferenceTypeId><IsForward>false</IsForward><NodeId><Identifier>svr=4;i=2994</Identifier></NodeId><BrowseName><NamespaceIndex>6</NamespaceIndex><Name>Auditing</Name></BrowseName><DisplayName><Locale>en</Locale><Text>Auditing</Text></DisplayName><NodeClass>Unspecified_0</NodeClass><TypeDefinition><Identifier>svr=4;i=68</Identifier></TypeDefinition></ReferenceDescription>";
+
+        decoder.setInput(new ByteArrayInputStream(xmlString.getBytes()));
+        decoder.skipElement();
+
+        referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
+        assertEquals(referenceTypeId, NodeId.parse("ns=4;i=46"));
+
+        isForward = decoder.decodeBoolean("IsForward");
+        assertFalse(isForward);
+
+        nodeId = decoder.decodeExpandedNodeId("NodeId");
+        assertEquals(nodeId, ExpandedNodeId.parse("svr=4;i=2994"));
+
+        browseName = decoder.decodeQualifiedName("BrowseName");
+        assertEquals(browseName, QualifiedName.parse("6:Auditing"));
+
+        displayName = decoder.decodeLocalizedText("DisplayName");
+        assertEquals(displayName, LocalizedText.english("Auditing"));
+
+        nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
+        assertEquals(nodeClass, NodeClass.Unspecified);
+
+        typeDefinition = decoder.decodeExpandedNodeId("TypeDefinition");
+        assertEquals(typeDefinition, ExpandedNodeId.parse("svr=4;i=68"));
+
+    }
+    
 }
