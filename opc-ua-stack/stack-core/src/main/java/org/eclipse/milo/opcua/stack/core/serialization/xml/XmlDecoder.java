@@ -628,8 +628,12 @@ public class XmlDecoder implements UaDecoder {
     @Override
     public <T extends UaEnumeration> T decodeEnumeration(String field, Class<T> clazz) throws UaSerializationException {
         return parseElement(field, content -> {
-            int seperator = content.lastIndexOf('_');
-            return (T) Enum.valueOf(clazz.asSubclass(Enum.class), seperator < 1 ? content : content.substring(0, seperator));
+            int separator = content.lastIndexOf('_');
+            String name = separator < 1 ? content : content.substring(0, separator);
+
+            Object enumInstance = Enum.valueOf(clazz.asSubclass(Enum.class), name);
+
+            return clazz.cast(enumInstance);
         });
     }
 
