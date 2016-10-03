@@ -18,13 +18,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import com.google.common.collect.ImmutableList;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
+import org.jooq.lambda.tuple.Tuple2;
 
 public interface UaSubscription {
 
@@ -144,5 +148,68 @@ public interface UaSubscription {
      * @return a {@link CompletableFuture} containing a {@link StatusCode} representing the result of this operation.
      */
     CompletableFuture<StatusCode> setPublishingMode(boolean publishingEnabled);
+
+    /**
+     * Add a {@link NotificationListener}.
+     *
+     * @param listener the {@link NotificationListener} to add.
+     */
+    void addNotificationListener(NotificationListener listener);
+
+    /**
+     * Remove a {@link NotificationListener}.
+     *
+     * @param listener the {@link NotificationListener} to remove.
+     */
+    void removeNotificationListener(NotificationListener listener);
+
+
+    interface NotificationListener {
+
+        /**
+         * A notification containing data value changes for this {@link UaSubscription} has arrived.
+         * <p>
+         * This callback is invoked after all individual item callbacks and is offered as an alternative to defining
+         * callbacks on a per-item basis. Its use is not required.
+         *
+         * @param subscription the {@link UaSubscription} that received the notification.
+         * @param itemValues   the {@link UaMonitoredItem}s and their corresponding value change.
+         * @param publishTime  the time on the server at which this notification was published.
+         */
+        default void onDataChangeNotification(UaSubscription subscription,
+                                              ImmutableList<Tuple2<UaMonitoredItem, DataValue>> itemValues,
+                                              DateTime publishTime) {}
+
+        /**
+         * A notification containing events for this {@link UaSubscription} has arrived.
+         * <p>
+         * This callback is invoked after all individual item callbacks and is offered as an alternative to defining
+         * callbacks on a per-item basis. Its use is not required.
+         *
+         * @param subscription the {@link UaSubscription} that received the notification.
+         * @param itemEvents   the {@link UaMonitoredItem}s and their corresponding event fields.
+         * @param publishTime  the time on the server at which this notification was published.
+         */
+        default void onEventNotification(UaSubscription subscription,
+                                         ImmutableList<Tuple2<UaMonitoredItem, Variant[]>> itemEvents,
+                                         DateTime publishTime) {}
+
+        /**
+         * A keep-alive message was received.
+         *
+         * @param subscription the {@link UaSubscription} that received the keep-alive.
+         * @param publishTime  the time the server published the keep-alive.
+         */
+        default void onKeepAliveNotification(UaSubscription subscription, DateTime publishTime) {}
+
+        /**
+         * A status change notification was received.
+         *
+         * @param subscription the {@link UaSubscription} that received the status change.
+         * @param status       the new subscription status.
+         */
+        default void onStatusChangedNotification(UaSubscription subscription, StatusCode status) {}
+
+    }
 
 }

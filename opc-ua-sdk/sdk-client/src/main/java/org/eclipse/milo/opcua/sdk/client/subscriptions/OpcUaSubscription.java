@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,8 @@ public class OpcUaSubscription implements UaSubscription {
 
     private final Map<UInteger, OpcUaMonitoredItem> itemsByClientHandle = Maps.newConcurrentMap();
     private final Map<UInteger, OpcUaMonitoredItem> itemsByServerHandle = Maps.newConcurrentMap();
+
+    private final List<NotificationListener> notificationListeners = new CopyOnWriteArrayList<>();
 
     private final AsyncSemaphore notificationSemaphore = new AsyncSemaphore(1);
 
@@ -286,6 +289,20 @@ public class OpcUaSubscription implements UaSubscription {
     @Override
     public ImmutableList<UaMonitoredItem> getMonitoredItems() {
         return ImmutableList.copyOf(itemsByClientHandle.values());
+    }
+
+    @Override
+    public void addNotificationListener(NotificationListener listener) {
+        notificationListeners.add(listener);
+    }
+
+    @Override
+    public void removeNotificationListener(NotificationListener listener) {
+        notificationListeners.remove(listener);
+    }
+
+    List<NotificationListener> getNotificationListeners() {
+        return notificationListeners;
     }
 
     AsyncSemaphore getNotificationSemaphore() {

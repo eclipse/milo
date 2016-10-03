@@ -28,14 +28,17 @@ import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.SessionActivityListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
+import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
@@ -52,6 +55,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusChangeNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -521,7 +525,34 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                         if (notificationCount == 0) {
                             subscriptionListeners.forEach(
-                                l -> l.onKeepAlive(subscription, notificationMessage.getPublishTime()));
+                                listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
+                            );
+
+                            subscription.getNotificationListeners().forEach(
+                                listener -> listener.onKeepAliveNotification(subscription, notificationMessage.getPublishTime())
+                            );
+                        } else {
+                            if (!subscription.getNotificationListeners().isEmpty()) {
+                                ImmutableList.Builder<Tuple2<UaMonitoredItem, DataValue>> builder =
+                                    ImmutableList.builder();
+
+                                for (MonitoredItemNotification n : dcn.getMonitoredItems()) {
+                                    UaMonitoredItem item = subscription.getItemsByClientHandle().get(n.getClientHandle());
+                                    if (item != null) {
+                                        builder.add(new Tuple2<>(item, n.getValue()));
+                                    }
+                                }
+
+                                ImmutableList<Tuple2<UaMonitoredItem, DataValue>> itemValues = builder.build();
+
+                                subscription.getNotificationListeners().forEach(
+                                    listener -> listener.onDataChangeNotification(
+                                        subscription,
+                                        itemValues,
+                                        notificationMessage.getPublishTime()
+                                    )
+                                );
+                            }
                         }
                     } else if (o instanceof EventNotificationList) {
                         EventNotificationList enl = (EventNotificationList) o;
@@ -533,12 +564,39 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                             OpcUaMonitoredItem item = items.get(efl.getClientHandle());
                             if (item != null) item.onEventArrived(efl.getEventFields());
                         }
+
+                        if (!subscription.getNotificationListeners().isEmpty()) {
+                            ImmutableList.Builder<Tuple2<UaMonitoredItem, Variant[]>> builder = ImmutableList.builder();
+
+                            for (EventFieldList efl : enl.getEvents()) {
+                                UaMonitoredItem item = subscription.getItemsByClientHandle().get(efl.getClientHandle());
+                                if (item != null) {
+                                    builder.add(new Tuple2<>(item, efl.getEventFields()));
+                                }
+                            }
+
+                            ImmutableList<Tuple2<UaMonitoredItem, Variant[]>> itemEvents = builder.build();
+
+                            subscription.getNotificationListeners().forEach(
+                                listener -> listener.onEventNotification(
+                                    subscription,
+                                    itemEvents,
+                                    notificationMessage.getPublishTime()
+                                )
+                            );
+                        }
                     } else if (o instanceof StatusChangeNotification) {
                         StatusChangeNotification scn = (StatusChangeNotification) o;
 
                         logger.debug("StatusChangeNotification: {}", scn.getStatus());
 
-                        subscriptionListeners.forEach(l -> l.onStatusChanged(subscription, scn.getStatus()));
+                        subscriptionListeners.forEach(
+                            listener -> listener.onStatusChanged(subscription, scn.getStatus())
+                        );
+
+                        subscription.getNotificationListeners().forEach(
+                            listener -> listener.onStatusChangedNotification(subscription, scn.getStatus())
+                        );
 
                         if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {
                             subscriptions.remove(subscription.getSubscriptionId());

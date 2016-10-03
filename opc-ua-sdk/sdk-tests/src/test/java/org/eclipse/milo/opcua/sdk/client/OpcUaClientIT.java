@@ -28,6 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
+import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
@@ -64,6 +65,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
+import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterTest;
@@ -259,6 +261,49 @@ public class OpcUaClientIT {
 
         assertTrue(items.stream().allMatch(item -> item.getStatusCode().isGood()));
         assertNotNull(FutureUtils.sequence(cfs).get(5, TimeUnit.SECONDS));
+    }
+
+    @Test
+    public void testSubscribe_DataChangeNotification() throws Exception {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        // create a subscription and a monitored item
+        UaSubscription subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
+
+        subscription.addNotificationListener(new UaSubscription.NotificationListener() {
+            @Override
+            public void onDataChangeNotification(UaSubscription subscription,
+                                                 ImmutableList<Tuple2<UaMonitoredItem, DataValue>> itemValues,
+                                                 DateTime publishTime) {
+
+                for (Tuple2<UaMonitoredItem, DataValue> itemValue : itemValues) {
+                    UaMonitoredItem item = itemValue.v1();
+                    DataValue value = itemValue.v2();
+
+                    logger.info("item={}, value={}", item.getReadValueId().getNodeId(), value);
+                }
+
+                future.complete(null);
+            }
+        });
+
+        ReadValueId readValueId = new ReadValueId(
+            Identifiers.Server_ServerStatus_State,
+            AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
+
+        MonitoringParameters parameters = new MonitoringParameters(
+            uint(1),    // client handle
+            1000.0,     // sampling interval
+            null,       // no (default) filter
+            uint(10),   // queue size
+            true);      // discard oldest
+
+        MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(
+            readValueId, MonitoringMode.Reporting, parameters);
+
+        subscription.createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
+
+        future.get(5, TimeUnit.SECONDS);
     }
 
     @Test(enabled = false)
