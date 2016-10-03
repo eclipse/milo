@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRequest;
+import org.jooq.lambda.tuple.Tuple2;
 
 public interface UaSubscription {
 
@@ -172,13 +173,11 @@ public interface UaSubscription {
          * callbacks on a per-item basis. Its use is not required.
          *
          * @param subscription the {@link UaSubscription} that received the notification.
-         * @param items        the {@link UaMonitoredItem}s that received change notifications.
-         * @param valueChanges the {@link DataValue}s for each item that changed.
+         * @param itemValues   the {@link UaMonitoredItem}s and their corresponding value change.
          * @param publishTime  the time on the server at which this notification was published.
          */
         default void onDataChangeNotification(UaSubscription subscription,
-                                              ImmutableList<UaMonitoredItem> items,
-                                              ImmutableList<DataValue> valueChanges,
+                                              ImmutableList<Tuple2<UaMonitoredItem, DataValue>> itemValues,
                                               DateTime publishTime) {}
 
         /**
@@ -188,13 +187,11 @@ public interface UaSubscription {
          * callbacks on a per-item basis. Its use is not required.
          *
          * @param subscription the {@link UaSubscription} that received the notification.
-         * @param items        the {@link UaMonitoredItem}s that received change notifications.
-         * @param eventFields  the {@link Variant}s corresponding to the event fields for each item.
+         * @param itemEvents   the {@link UaMonitoredItem}s and their corresponding event fields.
          * @param publishTime  the time on the server at which this notification was published.
          */
         default void onEventNotification(UaSubscription subscription,
-                                         ImmutableList<UaMonitoredItem> items,
-                                         ImmutableList<Variant[]> eventFields,
+                                         ImmutableList<Tuple2<UaMonitoredItem, Variant[]>> itemEvents,
                                          DateTime publishTime) {}
 
         /**

@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
-import com.codepoetics.protonpack.StreamUtils;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
@@ -37,7 +36,6 @@ import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
-import org.eclipse.milo.opcua.sdk.server.util.StreamUtil;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -54,7 +52,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.structured.DataChangeNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
@@ -62,6 +59,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
+import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterTest;
@@ -266,13 +264,12 @@ public class OpcUaClientIT {
         subscription.addNotificationListener(new UaSubscription.NotificationListener() {
             @Override
             public void onDataChangeNotification(UaSubscription subscription,
-                                                 ImmutableList<UaMonitoredItem> items,
-                                                 ImmutableList<DataValue> valueChanges,
+                                                 ImmutableList<Tuple2<UaMonitoredItem, DataValue>> itemValues,
                                                  DateTime publishTime) {
 
-                for (int i = 0; i < items.size(); i++) {
-                    UaMonitoredItem item = items.get(i);
-                    DataValue value = valueChanges.get(i);
+                for (Tuple2<UaMonitoredItem, DataValue> itemValue : itemValues) {
+                    UaMonitoredItem item = itemValue.v1();
+                    DataValue value = itemValue.v2();
 
                     logger.info("item={}, value={}", item.getReadValueId().getNodeId(), value);
                 }
