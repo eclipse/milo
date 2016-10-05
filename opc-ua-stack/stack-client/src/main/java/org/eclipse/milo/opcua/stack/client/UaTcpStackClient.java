@@ -174,6 +174,12 @@ public class UaTcpStackClient implements UaStackClient {
 
                     logger.debug("Write failed, requestHandle={}", requestHandle, cause);
                 }
+            } else {
+                if (logger.isTraceEnabled()) {
+                    logger.trace(
+                        "writeAndFlush succeeded for request={}, requestHandle={}",
+                        request.getClass().getSimpleName(), requestHeader.getRequestHandle());
+                }
             }
         });
 
