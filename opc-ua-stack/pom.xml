@@ -71,7 +71,7 @@
 
                                 <!-- enforce JVM vendor package as optional -->
                                 <Import-Package>
-                                    *,sun.misc.*;resolution:=optional,sun.nio.ch;resolution:=optional,sun.security.*;resolution:=optional
+                                    *,sun.security.*;resolution:=optional
                                 </Import-Package>
 
                                 <!-- override "internal" private package convention -->
