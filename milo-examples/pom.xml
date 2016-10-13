@@ -16,5 +16,15 @@
         <module>client-examples</module>
         <module>server-examples</module>
     </modules>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <!-- configuration inherited from pluginManagement -->
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
