@@ -211,6 +211,13 @@
                                     <supportedProjectType>jar</supportedProjectType>
                                     <supportedProjectType>bundle</supportedProjectType>
                                 </supportedProjectTypes>
+                                <instructions>
+                                    <Import-Package>
+                                        com.sun.management.*;resolution:=optional,
+                                        !javax.annotation.*,
+                                        *
+                                    </Import-Package>
+                                </instructions>
                             </configuration>
                         </execution>
                     </executions>
