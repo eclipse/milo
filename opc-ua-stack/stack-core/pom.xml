@@ -64,8 +64,8 @@
                 <configuration>
                     <instructions>
                         <Import-Package>
-                            *,
-                            sun.security.*;resolution:=optional
+                            sun.security.*;resolution:=optional,
+                            *
                         </Import-Package>
                     </instructions>
                 </configuration>
