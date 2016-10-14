@@ -412,13 +412,17 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         subscription.setLastSequenceNumber(sequenceNumber);
 
-        synchronized (acknowledgements) {
-            for (UInteger available : response.getAvailableSequenceNumbers()) {
-                acknowledgements.add(new SubscriptionAcknowledgement(subscriptionId, available));
+        UInteger[] availableSequenceNumbers = response.getAvailableSequenceNumbers();
+
+        if (availableSequenceNumbers != null && availableSequenceNumbers.length > 0) {
+            synchronized (acknowledgements) {
+                for (UInteger available : availableSequenceNumbers) {
+                    acknowledgements.add(new SubscriptionAcknowledgement(subscriptionId, available));
+                }
             }
 
             if (logger.isDebugEnabled()) {
-                String[] seqStrings = Arrays.stream(response.getAvailableSequenceNumbers())
+                String[] seqStrings = Arrays.stream(availableSequenceNumbers)
                     .map(sequence -> String.format("id=%s/seq=%s", subscriptionId, sequence))
                     .toArray(String[]::new);
 
