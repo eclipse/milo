@@ -462,7 +462,7 @@ public class SessionManager implements
 
             session.setClientCertificateBytes(secureChannel.getRemoteCertificateBytes());
 
-            StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
+            StatusCode[] results = new StatusCode[clientSoftwareCertificates != null ? clientSoftwareCertificates.length : 0];
             Arrays.fill(results, StatusCode.GOOD);
 
             ByteString serverNonce = NonceUtil.generateNonce(32);
