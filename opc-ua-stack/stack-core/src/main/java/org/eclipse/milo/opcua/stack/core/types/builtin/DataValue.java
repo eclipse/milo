@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.util.Objects;
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
@@ -121,6 +122,24 @@ public final class DataValue {
         }
 
         return helper.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataValue dataValue = (DataValue) o;
+        return Objects.equals(value, dataValue.value) &&
+            Objects.equals(status, dataValue.status) &&
+            Objects.equals(sourceTime, dataValue.sourceTime) &&
+            Objects.equals(sourcePicoseconds, dataValue.sourcePicoseconds) &&
+            Objects.equals(serverTime, dataValue.serverTime) &&
+            Objects.equals(serverPicoseconds, dataValue.serverPicoseconds);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, status, sourceTime, sourcePicoseconds, serverTime, serverPicoseconds);
     }
 
     /**
