@@ -93,10 +93,10 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class SubscriptionManager {
 
@@ -900,27 +900,29 @@ public class SubscriptionManager {
         }
 
         SubscriptionAcknowledgement[] acknowledgements = request.getSubscriptionAcknowledgements();
-        StatusCode[] results = new StatusCode[acknowledgements.length];
 
-        for (int i = 0; i < acknowledgements.length; i++) {
-            SubscriptionAcknowledgement acknowledgement = acknowledgements[i];
+        if (acknowledgements != null) {
+            StatusCode[] results = new StatusCode[acknowledgements.length];
 
+            for (int i = 0; i < acknowledgements.length; i++) {
+                SubscriptionAcknowledgement acknowledgement = acknowledgements[i];
 
-            UInteger sequenceNumber = acknowledgement.getSequenceNumber();
-            UInteger subscriptionId = acknowledgement.getSubscriptionId();
+                UInteger sequenceNumber = acknowledgement.getSequenceNumber();
+                UInteger subscriptionId = acknowledgement.getSubscriptionId();
 
-            logger.debug("Acknowledging sequenceNumber={} on subscriptionId={}", sequenceNumber, subscriptionId);
+                logger.debug("Acknowledging sequenceNumber={} on subscriptionId={}", sequenceNumber, subscriptionId);
 
-            Subscription subscription = subscriptions.get(subscriptionId);
+                Subscription subscription = subscriptions.get(subscriptionId);
 
-            if (subscription == null) {
-                results[i] = new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid);
-            } else {
-                results[i] = subscription.acknowledge(sequenceNumber);
+                if (subscription == null) {
+                    results[i] = new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid);
+                } else {
+                    results[i] = subscription.acknowledge(sequenceNumber);
+                }
             }
-        }
 
-        acknowledgeResults.put(request.getRequestHeader().getRequestHandle(), results);
+            acknowledgeResults.put(request.getRequestHeader().getRequestHandle(), results);
+        }
 
         publishQueue.addRequest(service);
     }
