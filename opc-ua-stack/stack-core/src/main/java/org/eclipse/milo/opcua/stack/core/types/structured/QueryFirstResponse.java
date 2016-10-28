@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -57,12 +59,15 @@ public class QueryFirstResponse implements UaResponseMessage {
 
     public ResponseHeader getResponseHeader() { return _responseHeader; }
 
+    @Nullable
     public QueryDataSet[] getQueryDataSets() { return _queryDataSets; }
 
     public ByteString getContinuationPoint() { return _continuationPoint; }
 
+    @Nullable
     public ParsingResult[] getParsingResults() { return _parsingResults; }
 
+    @Nullable
     public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
 
     public ContentFilterResult getFilterResult() { return _filterResult; }

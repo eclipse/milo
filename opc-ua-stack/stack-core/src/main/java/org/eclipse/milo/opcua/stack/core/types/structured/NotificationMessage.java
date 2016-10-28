@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -51,6 +53,7 @@ public class NotificationMessage implements UaStructure {
 
     public DateTime getPublishTime() { return _publishTime; }
 
+    @Nullable
     public ExtensionObject[] getNotificationData() { return _notificationData; }
 
     @Override

@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -176,6 +178,7 @@ public class SessionDiagnosticsDataType implements UaStructure {
 
     public String getEndpointUrl() { return _endpointUrl; }
 
+    @Nullable
     public String[] getLocaleIds() { return _localeIds; }
 
     public Double getActualSessionTimeout() { return _actualSessionTimeout; }

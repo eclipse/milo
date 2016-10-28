@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -52,10 +54,13 @@ public class CallMethodResult implements UaStructure {
 
     public StatusCode getStatusCode() { return _statusCode; }
 
+    @Nullable
     public StatusCode[] getInputArgumentResults() { return _inputArgumentResults; }
 
+    @Nullable
     public DiagnosticInfo[] getInputArgumentDiagnosticInfos() { return _inputArgumentDiagnosticInfos; }
 
+    @Nullable
     public Variant[] getOutputArguments() { return _outputArguments; }
 
     @Override

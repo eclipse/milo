@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -52,6 +54,7 @@ public class SimpleAttributeOperand extends FilterOperand {
 
     public NodeId getTypeDefinitionId() { return _typeDefinitionId; }
 
+    @Nullable
     public QualifiedName[] getBrowsePath() { return _browsePath; }
 
     public UInteger getAttributeId() { return _attributeId; }

@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -42,6 +44,7 @@ public class EventFilter extends MonitoringFilter {
         this._whereClause = _whereClause;
     }
 
+    @Nullable
     public SimpleAttributeOperand[] getSelectClauses() { return _selectClauses; }
 
     public ContentFilter getWhereClause() { return _whereClause; }

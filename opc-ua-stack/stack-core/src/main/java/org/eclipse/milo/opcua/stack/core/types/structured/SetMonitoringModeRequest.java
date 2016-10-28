@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -55,6 +57,7 @@ public class SetMonitoringModeRequest implements UaRequestMessage {
 
     public MonitoringMode getMonitoringMode() { return _monitoringMode; }
 
+    @Nullable
     public UInteger[] getMonitoredItemIds() { return _monitoredItemIds; }
 
     @Override

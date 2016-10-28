@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -49,6 +51,7 @@ public class FindServersOnNetworkResponse implements UaResponseMessage {
 
     public DateTime getLastCounterResetTime() { return _lastCounterResetTime; }
 
+    @Nullable
     public ServerOnNetwork[] getServers() { return _servers; }
 
     @Override

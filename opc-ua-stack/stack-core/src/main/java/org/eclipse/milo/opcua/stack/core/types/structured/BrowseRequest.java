@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -54,6 +56,7 @@ public class BrowseRequest implements UaRequestMessage {
 
     public UInteger getRequestedMaxReferencesPerNode() { return _requestedMaxReferencesPerNode; }
 
+    @Nullable
     public BrowseDescription[] getNodesToBrowse() { return _nodesToBrowse; }
 
     @Override

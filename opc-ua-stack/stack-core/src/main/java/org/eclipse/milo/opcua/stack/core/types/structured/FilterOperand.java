@@ -32,7 +32,6 @@ public class FilterOperand implements UaStructure {
     public FilterOperand() {
     }
 
-
     @Override
     public NodeId getTypeId() { return TypeId; }
 

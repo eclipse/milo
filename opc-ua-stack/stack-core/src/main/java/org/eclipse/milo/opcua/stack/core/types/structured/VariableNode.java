@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -72,6 +74,7 @@ public class VariableNode extends InstanceNode {
 
     public Integer getValueRank() { return _valueRank; }
 
+    @Nullable
     public UInteger[] getArrayDimensions() { return _arrayDimensions; }
 
     public UByte getAccessLevel() { return _accessLevel; }

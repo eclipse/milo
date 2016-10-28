@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -49,6 +51,7 @@ public class DeleteMonitoredItemsRequest implements UaRequestMessage {
 
     public UInteger getSubscriptionId() { return _subscriptionId; }
 
+    @Nullable
     public UInteger[] getMonitoredItemIds() { return _monitoredItemIds; }
 
     @Override

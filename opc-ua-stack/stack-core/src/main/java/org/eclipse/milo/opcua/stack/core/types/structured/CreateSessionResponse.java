@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -79,8 +81,10 @@ public class CreateSessionResponse implements UaResponseMessage {
 
     public ByteString getServerCertificate() { return _serverCertificate; }
 
+    @Nullable
     public EndpointDescription[] getServerEndpoints() { return _serverEndpoints; }
 
+    @Nullable
     public SignedSoftwareCertificate[] getServerSoftwareCertificates() { return _serverSoftwareCertificates; }
 
     public SignatureData getServerSignature() { return _serverSignature; }

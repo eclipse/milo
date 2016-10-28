@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -43,8 +45,10 @@ public class DataChangeNotification extends NotificationData {
         this._diagnosticInfos = _diagnosticInfos;
     }
 
+    @Nullable
     public MonitoredItemNotification[] getMonitoredItems() { return _monitoredItems; }
 
+    @Nullable
     public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
 
     @Override
