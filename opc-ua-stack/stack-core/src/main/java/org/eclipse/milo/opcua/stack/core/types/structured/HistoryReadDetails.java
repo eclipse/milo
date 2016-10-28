@@ -32,7 +32,6 @@ public class HistoryReadDetails implements UaStructure {
     public HistoryReadDetails() {
     }
 
-
     @Override
     public NodeId getTypeId() { return TypeId; }
 

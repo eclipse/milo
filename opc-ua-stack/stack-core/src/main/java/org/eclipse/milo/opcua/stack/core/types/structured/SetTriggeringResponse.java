@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -54,12 +56,16 @@ public class SetTriggeringResponse implements UaResponseMessage {
 
     public ResponseHeader getResponseHeader() { return _responseHeader; }
 
+    @Nullable
     public StatusCode[] getAddResults() { return _addResults; }
 
+    @Nullable
     public DiagnosticInfo[] getAddDiagnosticInfos() { return _addDiagnosticInfos; }
 
+    @Nullable
     public StatusCode[] getRemoveResults() { return _removeResults; }
 
+    @Nullable
     public DiagnosticInfo[] getRemoveDiagnosticInfos() { return _removeDiagnosticInfos; }
 
     @Override

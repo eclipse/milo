@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -85,6 +87,7 @@ public class SoftwareCertificate implements UaStructure {
 
     public DateTime getIssueDate() { return _issueDate; }
 
+    @Nullable
     public SupportedProfile[] getSupportedProfiles() { return _supportedProfiles; }
 
     @Override

@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -54,12 +56,16 @@ public class TrustListDataType implements UaStructure {
 
     public UInteger getSpecifiedLists() { return _specifiedLists; }
 
+    @Nullable
     public ByteString[] getTrustedCertificates() { return _trustedCertificates; }
 
+    @Nullable
     public ByteString[] getTrustedCrls() { return _trustedCrls; }
 
+    @Nullable
     public ByteString[] getIssuerCertificates() { return _issuerCertificates; }
 
+    @Nullable
     public ByteString[] getIssuerCrls() { return _issuerCrls; }
 
     @Override

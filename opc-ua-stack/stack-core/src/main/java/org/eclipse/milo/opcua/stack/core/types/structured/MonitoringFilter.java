@@ -32,7 +32,6 @@ public class MonitoringFilter implements UaStructure {
     public MonitoringFilter() {
     }
 
-
     @Override
     public NodeId getTypeId() { return TypeId; }
 

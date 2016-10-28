@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -48,8 +50,10 @@ public class SetMonitoringModeResponse implements UaResponseMessage {
 
     public ResponseHeader getResponseHeader() { return _responseHeader; }
 
+    @Nullable
     public StatusCode[] getResults() { return _results; }
 
+    @Nullable
     public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
 
     @Override

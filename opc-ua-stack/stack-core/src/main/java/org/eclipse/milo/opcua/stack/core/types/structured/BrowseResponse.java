@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -47,8 +49,10 @@ public class BrowseResponse implements UaResponseMessage {
 
     public ResponseHeader getResponseHeader() { return _responseHeader; }
 
+    @Nullable
     public BrowseResult[] getResults() { return _results; }
 
+    @Nullable
     public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
 
     @Override

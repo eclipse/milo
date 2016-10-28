@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -47,6 +49,7 @@ public class TransferSubscriptionsRequest implements UaRequestMessage {
 
     public RequestHeader getRequestHeader() { return _requestHeader; }
 
+    @Nullable
     public UInteger[] getSubscriptionIds() { return _subscriptionIds; }
 
     public Boolean getSendInitialValues() { return _sendInitialValues; }

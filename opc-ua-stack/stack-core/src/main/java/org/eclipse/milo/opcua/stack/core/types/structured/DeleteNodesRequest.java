@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -43,6 +45,7 @@ public class DeleteNodesRequest implements UaRequestMessage {
 
     public RequestHeader getRequestHeader() { return _requestHeader; }
 
+    @Nullable
     public DeleteNodesItem[] getNodesToDelete() { return _nodesToDelete; }
 
     @Override

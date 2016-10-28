@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -58,6 +60,7 @@ public class QueryFirstRequest implements UaRequestMessage {
 
     public ViewDescription getView() { return _view; }
 
+    @Nullable
     public NodeTypeDescription[] getNodeTypes() { return _nodeTypes; }
 
     public ContentFilter getFilter() { return _filter; }

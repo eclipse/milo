@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -53,6 +55,7 @@ public class NodeReference implements UaStructure {
 
     public Boolean getIsForward() { return _isForward; }
 
+    @Nullable
     public NodeId[] getReferencedNodeIds() { return _referencedNodeIds; }
 
     @Override

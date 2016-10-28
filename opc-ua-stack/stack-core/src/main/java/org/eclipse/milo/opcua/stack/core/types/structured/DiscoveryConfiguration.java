@@ -32,7 +32,6 @@ public class DiscoveryConfiguration implements UaStructure {
     public DiscoveryConfiguration() {
     }
 
-
     @Override
     public NodeId getTypeId() { return TypeId; }
 

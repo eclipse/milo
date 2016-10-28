@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -47,6 +49,7 @@ public class QueryNextResponse implements UaResponseMessage {
 
     public ResponseHeader getResponseHeader() { return _responseHeader; }
 
+    @Nullable
     public QueryDataSet[] getQueryDataSets() { return _queryDataSets; }
 
     public ByteString getRevisedContinuationPoint() { return _revisedContinuationPoint; }
