@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class AttachedNode implements UaNode {
 
@@ -93,7 +94,7 @@ public class AttachedNode implements UaNode {
                 client.read(0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
 
             return future.thenApply(response -> {
-                DataValue value = response.getResults()[0];
+                DataValue value = l(response.getResults()).get(0);
 
                 if (attributeId != AttributeId.Value) {
                     nodeCache.putAttribute(nodeId, attributeId, value);
@@ -144,7 +145,7 @@ public class AttachedNode implements UaNode {
             nodeId, attributeId.uid(), null, value);
 
         return client.write(newArrayList(writeValue)).thenApply(response -> {
-            StatusCode statusCode = response.getResults()[0];
+            StatusCode statusCode = l(response.getResults()).get(0);
 
             if (statusCode.isGood()) {
                 nodeCache.invalidate(nodeId, attributeId);

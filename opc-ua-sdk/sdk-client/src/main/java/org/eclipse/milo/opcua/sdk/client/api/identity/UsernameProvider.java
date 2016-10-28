@@ -20,6 +20,7 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import javax.crypto.Cipher;
 
@@ -41,6 +42,8 @@ import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+
 /**
  * An {@link IdentityProvider} that will choose the first available username+password {@link UserTokenPolicy}.
  */
@@ -60,7 +63,9 @@ public class UsernameProvider implements IdentityProvider {
     public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
                                                                      ByteString serverNonce) throws Exception {
 
-        UserTokenPolicy tokenPolicy = Arrays.stream(endpoint.getUserIdentityTokens())
+        List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
+
+        UserTokenPolicy tokenPolicy = userIdentityTokens.stream()
             .filter(t -> t.getTokenType() == UserTokenType.UserName)
             .findFirst().orElseThrow(() -> new Exception("no username token policy found"));
 

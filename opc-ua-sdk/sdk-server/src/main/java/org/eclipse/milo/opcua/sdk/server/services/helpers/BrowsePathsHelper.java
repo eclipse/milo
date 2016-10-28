@@ -51,6 +51,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class BrowsePathsHelper {
@@ -68,14 +69,14 @@ public class BrowsePathsHelper {
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
 
-        BrowsePath[] browsePaths = service.getRequest().getBrowsePaths();
+        List<BrowsePath> browsePaths = l(service.getRequest().getBrowsePaths());
 
-        if (browsePaths.length >
+        if (browsePaths.size() >
             server.getConfig().getLimits().getMaxNodesPerTranslateBrowsePathsToNodeIds().intValue()) {
 
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
         } else {
-            List<CompletableFuture<BrowsePathResult>> futures = newArrayListWithCapacity(browsePaths.length);
+            List<CompletableFuture<BrowsePathResult>> futures = newArrayListWithCapacity(browsePaths.size());
 
             for (BrowsePath browsePath : browsePaths) {
                 futures.add(translate(browsePath));
@@ -97,7 +98,7 @@ public class BrowsePathsHelper {
         NodeId startingNode = browsePath.getStartingNode();
         RelativePath relativePath = browsePath.getRelativePath();
 
-        follow(startingNode, newArrayList(relativePath.getElements())).whenComplete((targets, ex) -> {
+        follow(startingNode, l(relativePath.getElements())).whenComplete((targets, ex) -> {
             if (targets != null) {
                 BrowsePathResult result;
 

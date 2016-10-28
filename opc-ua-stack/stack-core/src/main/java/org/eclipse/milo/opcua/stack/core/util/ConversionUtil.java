@@ -14,7 +14,12 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 public class ConversionUtil {
 
@@ -27,8 +32,16 @@ public class ConversionUtil {
         return (T[]) array;
     }
 
+    public static <T> List<T> toList(T[] array) {
+        return array != null ? Arrays.asList(array) : Collections.emptyList();
+    }
+
     public static <T> T[] a(List<T> list, Class<T> c) {
         return toArray(list, c);
+    }
+
+    public static <T> List<T> l(T[] array) {
+        return toList(array);
     }
 
 }

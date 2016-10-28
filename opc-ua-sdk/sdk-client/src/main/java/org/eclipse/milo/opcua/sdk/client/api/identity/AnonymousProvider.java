@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.client.api.identity;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
@@ -23,6 +24,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.jooq.lambda.tuple.Tuple2;
+
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 /**
  * An {@link IdentityProvider} that will choose the first available anonymous {@link UserTokenPolicy}.
@@ -34,7 +37,9 @@ public class AnonymousProvider implements IdentityProvider {
         EndpointDescription endpoint,
         ByteString serverNonce) throws Exception {
 
-        return Arrays.stream(endpoint.getUserIdentityTokens())
+        List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
+
+        return userIdentityTokens.stream()
             .filter(t -> t.getTokenType() == UserTokenType.Anonymous)
             .findFirst()
             .map(policy -> {

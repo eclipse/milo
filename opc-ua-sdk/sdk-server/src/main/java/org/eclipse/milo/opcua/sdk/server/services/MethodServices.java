@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class MethodServices implements MethodServiceSet {
 
@@ -53,7 +54,8 @@ public class MethodServices implements MethodServiceSet {
 
         CallRequest request = service.getRequest();
 
-        List<PendingCall> pendingCalls = Arrays.stream(request.getMethodsToCall())
+        List<PendingCall> pendingCalls = l(request.getMethodsToCall())
+            .stream()
             .map(PendingCall::new)
             .collect(Collectors.toList());
 

@@ -37,8 +37,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public interface AttributeServices {
 
@@ -85,7 +85,7 @@ public interface AttributeServices {
                 (nId, aId) -> new ReadValueId(nId, aId, null, QualifiedName.NULL_VALUE));
 
             return read(maxAge, timestampsToReturn, stream.collect(Collectors.toList()))
-                .thenApply(r -> newArrayList(r.getResults()));
+                .thenApply(r -> l(r.getResults()));
         }
     }
 
@@ -129,7 +129,7 @@ public interface AttributeServices {
             .collect(Collectors.toList());
 
         return read(maxAge, timestampsToReturn, readValueIds)
-            .thenApply(r -> newArrayList(r.getResults()));
+            .thenApply(r -> l(r.getResults()));
     }
 
     /**
@@ -158,7 +158,7 @@ public interface AttributeServices {
                 (nodeId, value) -> new WriteValue(nodeId, uint(13), null, value));
 
             return write(stream.collect(Collectors.toList()))
-                .thenApply(response -> newArrayList(response.getResults()));
+                .thenApply(response -> l(response.getResults()));
         }
     }
     
@@ -171,7 +171,7 @@ public interface AttributeServices {
      */
     default CompletableFuture<StatusCode> writeValue(NodeId nodeId, DataValue value) {
         return write(Collections.singletonList(new WriteValue(nodeId, uint(13), null, value)))
-            .thenApply(response -> response.getResults()[0]);
+            .thenApply(response -> l(response.getResults()).get(0));
     }
 
     /**

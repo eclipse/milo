@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultAddressSpace implements AddressSpace {
 
@@ -63,7 +64,7 @@ public class DefaultAddressSpace implements AddressSpace {
             client.read(0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
 
         return future.thenCompose(response -> {
-            DataValue value = response.getResults()[0];
+            DataValue value = l(response.getResults()).get(0);
             NodeClass nodeClass = (NodeClass) value.getValue().getValue();
 
             if (nodeClass != null) {

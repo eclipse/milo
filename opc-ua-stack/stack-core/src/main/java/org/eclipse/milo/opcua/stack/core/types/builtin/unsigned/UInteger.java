@@ -16,6 +16,7 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned;
 
 import java.io.ObjectStreamException;
+import javax.annotation.Nonnull;
 
 /**
  * The <code>unsigned int</code> type
@@ -306,7 +307,7 @@ public final class UInteger extends UNumber implements Comparable<UInteger> {
     }
 
     @Override
-    public int compareTo(UInteger o) {
+    public int compareTo(@Nonnull UInteger o) {
         return (value < o.value ? -1 : (value == o.value ? 0 : 1));
     }
 

@@ -96,6 +96,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class SubscriptionManager {
@@ -208,17 +209,17 @@ public class SubscriptionManager {
 
     public void deleteSubscription(ServiceRequest<DeleteSubscriptionsRequest, DeleteSubscriptionsResponse> service) {
         DeleteSubscriptionsRequest request = service.getRequest();
-        UInteger[] subscriptionIds = request.getSubscriptionIds();
+        List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
-        if (subscriptionIds.length == 0) {
+        if (subscriptionIds.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);
             return;
         }
 
-        StatusCode[] results = new StatusCode[subscriptionIds.length];
+        StatusCode[] results = new StatusCode[subscriptionIds.size()];
 
-        for (int i = 0; i < subscriptionIds.length; i++) {
-            Subscription subscription = subscriptions.remove(subscriptionIds[i]);
+        for (int i = 0; i < subscriptionIds.size(); i++) {
+            Subscription subscription = subscriptions.remove(subscriptionIds.get(i));
 
             if (subscription != null) {
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
@@ -276,11 +277,12 @@ public class SubscriptionManager {
 
     public void setPublishingMode(ServiceRequest<SetPublishingModeRequest, SetPublishingModeResponse> service) {
         SetPublishingModeRequest request = service.getRequest();
-        UInteger[] subscriptionIds = request.getSubscriptionIds();
-        StatusCode[] results = new StatusCode[subscriptionIds.length];
+        List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
-        for (int i = 0; i < subscriptionIds.length; i++) {
-            Subscription subscription = subscriptions.get(subscriptionIds[i]);
+        StatusCode[] results = new StatusCode[subscriptionIds.size()];
+
+        for (int i = 0; i < subscriptionIds.size(); i++) {
+            Subscription subscription = subscriptions.get(subscriptionIds.get(i));
             if (subscription == null) {
                 results[i] = new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid);
             } else {
@@ -305,7 +307,7 @@ public class SubscriptionManager {
         try {
             Subscription subscription = subscriptions.get(subscriptionId);
             TimestampsToReturn timestamps = service.getRequest().getTimestampsToReturn();
-            MonitoredItemCreateRequest[] itemsToCreate = service.getRequest().getItemsToCreate();
+            List<MonitoredItemCreateRequest> itemsToCreate = l(service.getRequest().getItemsToCreate());
 
             if (subscription == null) {
                 throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
@@ -313,14 +315,14 @@ public class SubscriptionManager {
             if (timestamps == null) {
                 throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
             }
-            if (itemsToCreate.length == 0) {
+            if (itemsToCreate.isEmpty()) {
                 throw new UaException(StatusCodes.Bad_NothingToDo);
             }
 
             List<BaseMonitoredItem<?>> createdItems =
-                Collections.synchronizedList(newArrayListWithCapacity(itemsToCreate.length));
+                Collections.synchronizedList(newArrayListWithCapacity(itemsToCreate.size()));
 
-            List<PendingItemCreation> pending = Arrays.stream(itemsToCreate)
+            List<PendingItemCreation> pending = itemsToCreate.stream()
                 .map(PendingItemCreation::new)
                 .collect(toList());
 
@@ -534,7 +536,7 @@ public class SubscriptionManager {
         try {
             Subscription subscription = subscriptions.get(subscriptionId);
             TimestampsToReturn timestamps = service.getRequest().getTimestampsToReturn();
-            MonitoredItemModifyRequest[] itemsToModify = service.getRequest().getItemsToModify();
+            List<MonitoredItemModifyRequest> itemsToModify = l(service.getRequest().getItemsToModify());
 
             if (subscription == null) {
                 throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
@@ -542,16 +544,16 @@ public class SubscriptionManager {
             if (timestamps == null) {
                 throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
             }
-            if (itemsToModify.length == 0) {
+            if (itemsToModify.isEmpty()) {
                 throw new UaException(StatusCodes.Bad_NothingToDo);
             }
 
-            List<PendingItemModification> pending = Arrays.stream(itemsToModify)
+            List<PendingItemModification> pending = itemsToModify.stream()
                 .map(PendingItemModification::new)
                 .collect(toList());
 
             List<BaseMonitoredItem<?>> modifiedItems =
-                Collections.synchronizedList(newArrayListWithCapacity(itemsToModify.length));
+                Collections.synchronizedList(newArrayListWithCapacity(itemsToModify.size()));
 
             /*
              * Modify requested items and prepare results.
@@ -755,21 +757,21 @@ public class SubscriptionManager {
 
         try {
             Subscription subscription = subscriptions.get(subscriptionId);
-            UInteger[] itemsToDelete = service.getRequest().getMonitoredItemIds();
+            List<UInteger> itemsToDelete = l(service.getRequest().getMonitoredItemIds());
 
             if (subscription == null) {
                 throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
             }
-            if (itemsToDelete.length == 0) {
+            if (itemsToDelete.isEmpty()) {
                 throw new UaException(StatusCodes.Bad_NothingToDo);
             }
 
-            StatusCode[] deleteResults = new StatusCode[itemsToDelete.length];
-            List<BaseMonitoredItem<?>> deletedItems = newArrayListWithCapacity(itemsToDelete.length);
+            StatusCode[] deleteResults = new StatusCode[itemsToDelete.size()];
+            List<BaseMonitoredItem<?>> deletedItems = newArrayListWithCapacity(itemsToDelete.size());
 
             synchronized (subscription) {
-                for (int i = 0; i < itemsToDelete.length; i++) {
-                    UInteger itemId = itemsToDelete[i];
+                for (int i = 0; i < itemsToDelete.size(); i++) {
+                    UInteger itemId = itemsToDelete.get(i);
                     BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
 
                     if (item == null) {
@@ -833,12 +835,12 @@ public class SubscriptionManager {
 
         try {
             Subscription subscription = subscriptions.get(subscriptionId);
-            UInteger[] itemsToModify = request.getMonitoredItemIds();
+            List<UInteger> itemsToModify = l(request.getMonitoredItemIds());
 
             if (subscription == null) {
                 throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
             }
-            if (itemsToModify.length == 0) {
+            if (itemsToModify.isEmpty()) {
                 throw new UaException(StatusCodes.Bad_NothingToDo);
             }
 
@@ -847,11 +849,11 @@ public class SubscriptionManager {
              */
 
             MonitoringMode monitoringMode = request.getMonitoringMode();
-            StatusCode[] results = new StatusCode[itemsToModify.length];
-            List<BaseMonitoredItem<?>> modified = newArrayListWithCapacity(itemsToModify.length);
+            StatusCode[] results = new StatusCode[itemsToModify.size()];
+            List<BaseMonitoredItem<?>> modified = newArrayListWithCapacity(itemsToModify.size());
 
-            for (int i = 0; i < itemsToModify.length; i++) {
-                UInteger itemId = itemsToModify[i];
+            for (int i = 0; i < itemsToModify.size(); i++) {
+                UInteger itemId = itemsToModify.get(i);
                 BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
 
                 if (item != null) {
@@ -974,15 +976,14 @@ public class SubscriptionManager {
             return;
         }
 
-        if (request.getLinksToAdd().length == 0 && request.getLinksToRemove().length == 0) {
+        UInteger triggerId = request.getTriggeringItemId();
+        List<UInteger> linksToAdd = l(request.getLinksToAdd());
+        List<UInteger> linksToRemove = l(request.getLinksToRemove());
+
+        if (linksToAdd.isEmpty() && linksToRemove.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);
             return;
         }
-
-        UInteger triggerId = request.getTriggeringItemId();
-        UInteger[] linksToAdd = request.getLinksToAdd();
-        UInteger[] linksToRemove = request.getLinksToRemove();
-
 
         synchronized (subscription) {
             Map<UInteger, BaseMonitoredItem<?>> itemsById = subscription.getMonitoredItems();
@@ -993,7 +994,7 @@ public class SubscriptionManager {
                 return;
             }
 
-            List<StatusCode> removeResults = Arrays.stream(linksToRemove)
+            List<StatusCode> removeResults = linksToRemove.stream()
                 .map(linkedItemId -> {
                     BaseMonitoredItem<?> item = itemsById.get(linkedItemId);
                     if (item != null) {
@@ -1008,7 +1009,7 @@ public class SubscriptionManager {
                 })
                 .collect(toList());
 
-            List<StatusCode> addResults = Arrays.stream(linksToAdd)
+            List<StatusCode> addResults = linksToAdd.stream()
                 .map(linkedItemId -> {
                     BaseMonitoredItem<?> linkedItem = itemsById.get(linkedItemId);
                     if (linkedItem != null) {
