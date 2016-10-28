@@ -129,6 +129,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class SessionManager implements
     AttributeServiceSet,
@@ -364,7 +365,7 @@ public class SessionManager implements
         ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
         long secureChannelId = secureChannel.getChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
-        SignedSoftwareCertificate[] clientSoftwareCertificates = request.getClientSoftwareCertificates();
+        List<SignedSoftwareCertificate> clientSoftwareCertificates = l(request.getClientSoftwareCertificates());
 
         Session session = createdSessions.get(authToken);
 
@@ -387,7 +388,7 @@ public class SessionManager implements
                     );
                     session.setIdentityObject(identityObject);
 
-                    StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
+                    StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
                     Arrays.fill(results, StatusCode.GOOD);
 
                     ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -428,7 +429,7 @@ public class SessionManager implements
                         logger.debug("Session id={} is now associated with secureChannelId={}",
                             session.getSessionId(), secureChannelId);
 
-                        StatusCode[] results = new StatusCode[clientSoftwareCertificates.length];
+                        StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
                         Arrays.fill(results, StatusCode.GOOD);
 
                         ByteString serverNonce = NonceUtil.generateNonce(32);
@@ -471,8 +472,7 @@ public class SessionManager implements
 
             session.setClientCertificateBytes(secureChannel.getRemoteCertificateBytes());
 
-            int length = clientSoftwareCertificates != null ? clientSoftwareCertificates.length : 0;
-            StatusCode[] results = new StatusCode[length];
+            StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
             Arrays.fill(results, StatusCode.GOOD);
 
             ByteString serverNonce = NonceUtil.generateNonce(32);

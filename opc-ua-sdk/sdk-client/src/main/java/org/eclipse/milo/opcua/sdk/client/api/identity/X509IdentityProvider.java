@@ -16,7 +16,7 @@ package org.eclipse.milo.opcua.sdk.client.api.identity;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -30,6 +30,8 @@ import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class X509IdentityProvider implements IdentityProvider {
 
@@ -47,7 +49,9 @@ public class X509IdentityProvider implements IdentityProvider {
     public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
                                                                      ByteString serverNonce) throws Exception {
 
-        UserTokenPolicy tokenPolicy = Arrays.stream(endpoint.getUserIdentityTokens())
+        List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
+
+        UserTokenPolicy tokenPolicy = userIdentityTokens.stream()
             .filter(t -> t.getTokenType() == UserTokenType.Certificate)
             .findFirst().orElseThrow(() -> new Exception("no x509 certificate token policy found"));
 

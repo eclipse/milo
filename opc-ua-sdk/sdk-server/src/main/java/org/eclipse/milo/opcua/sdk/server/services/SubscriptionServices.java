@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsR
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class SubscriptionServices implements SubscriptionServiceSet {
 
@@ -92,9 +93,9 @@ public class SubscriptionServices implements SubscriptionServiceSet {
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
         TransferSubscriptionsRequest request = service.getRequest();
-        UInteger[] subscriptionIds = request.getSubscriptionIds();
+        List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
-        if (subscriptionIds.length == 0) {
+        if (subscriptionIds.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);
             return;
         }

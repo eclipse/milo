@@ -35,6 +35,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+
 /**
  * Provides a "fallback" server for when a UA TCP Hello contains an unknown endpoint URL.
  */
@@ -120,7 +122,7 @@ public class FallbackServer {
             FindServersRequest request = service.getRequest();
 
             List<ApplicationDescription> servers = new ArrayList<>();
-            List<String> serverUris = Lists.newArrayList(request.getServerUris());
+            List<String> serverUris = l(request.getServerUris());
 
             for (UaTcpStackServer server : registered) {
                 ApplicationDescription description = server.getApplicationDescription();

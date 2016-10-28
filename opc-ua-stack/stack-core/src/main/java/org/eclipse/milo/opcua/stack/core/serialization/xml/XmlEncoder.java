@@ -355,7 +355,8 @@ public class XmlEncoder implements UaEncoder {
 
     @Override
     public <T extends UaEnumeration> void encodeEnumeration(String field, T value) throws UaSerializationException {
-        writeValue(field, value == null ? null : value.toString() + "_" + value.getValue());
+        String s = value == null ? null : value.toString() + "_" + value.getValue();
+        writeValue(field, s != null ? s : "");
     }
 
     @Override

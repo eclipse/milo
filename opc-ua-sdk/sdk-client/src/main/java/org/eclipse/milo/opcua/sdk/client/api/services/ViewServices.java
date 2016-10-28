@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public interface ViewServices {
 
@@ -71,7 +72,7 @@ public interface ViewServices {
      */
     default CompletableFuture<List<BrowseResult>> browse(List<BrowseDescription> nodesToBrowse) {
         return browse(new ViewDescription(NodeId.NULL_VALUE, DateTime.MIN_VALUE, uint(0)), uint(0), nodesToBrowse)
-            .thenApply(r -> newArrayList(r.getResults()));
+            .thenApply(r -> l(r.getResults()));
     }
 
     /**

@@ -25,6 +25,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+
 public class MethodExample implements ClientExample {
 
     public static void main(String[] args) throws Exception {
@@ -62,7 +64,7 @@ public class MethodExample implements ClientExample {
             StatusCode statusCode = result.getStatusCode();
 
             if (statusCode.isGood()) {
-                Double value = (Double) result.getOutputArguments()[0].getValue();
+                Double value = (Double) l(result.getOutputArguments()).get(0).getValue();
                 return CompletableFuture.completedFuture(value);
             } else {
                 CompletableFuture<Double> f = new CompletableFuture<>();

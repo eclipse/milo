@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
 
 public class BrowseExample implements ClientExample {
 
@@ -64,7 +66,9 @@ public class BrowseExample implements ClientExample {
         try {
             BrowseResult browseResult = client.browse(browse).get();
 
-            for (ReferenceDescription rd : browseResult.getReferences()) {
+            List<ReferenceDescription> references = toList(browseResult.getReferences());
+
+            for (ReferenceDescription rd : references) {
                 logger.info("{} Node={}", indent, rd.getBrowseName().getName());
 
                 // recursively browse to children

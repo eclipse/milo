@@ -53,6 +53,7 @@ import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class ViewServices implements ViewServiceSet {
 
@@ -73,14 +74,15 @@ public class ViewServices implements ViewServiceSet {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        if (request.getNodesToBrowse().length > server.getConfig().getLimits().getMaxNodesPerBrowse().intValue()) {
+        List<BrowseDescription> nodesToBrowse = l(request.getNodesToBrowse());
+
+        if (nodesToBrowse.size() > server.getConfig().getLimits().getMaxNodesPerBrowse().intValue()) {
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
             return;
         }
 
-        BrowseDescription[] nodesToBrowse = request.getNodesToBrowse();
-        List<PendingBrowse> pendingBrowses = newArrayListWithCapacity(nodesToBrowse.length);
-        List<CompletableFuture<BrowseResult>> futures = newArrayListWithCapacity(nodesToBrowse.length);
+        List<PendingBrowse> pendingBrowses = newArrayListWithCapacity(nodesToBrowse.size());
+        List<CompletableFuture<BrowseResult>> futures = newArrayListWithCapacity(nodesToBrowse.size());
 
         for (BrowseDescription browseDescription : nodesToBrowse) {
             PendingBrowse pending = new PendingBrowse(browseDescription);
@@ -161,19 +163,19 @@ public class ViewServices implements ViewServiceSet {
 
         RegisterNodesRequest request = service.getRequest();
 
-        NodeId[] nodeIds = request.getNodesToRegister();
+        List<NodeId> nodeIds = l(request.getNodesToRegister());
 
-        if (nodeIds.length == 0) {
+        if (nodeIds.isEmpty()) {
             throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
-        if (nodeIds.length > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
+        if (nodeIds.size() > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
         service.setResponse(new RegisterNodesResponse(
             service.createResponseHeader(StatusCode.GOOD),
-            nodeIds
+            a(nodeIds, NodeId.class)
         ));
     }
 
@@ -185,13 +187,13 @@ public class ViewServices implements ViewServiceSet {
 
         UnregisterNodesRequest request = service.getRequest();
 
-        NodeId[] nodeIds = request.getNodesToUnregister();
+        List<NodeId> nodeIds = l(request.getNodesToUnregister());
 
-        if (nodeIds.length == 0) {
+        if (nodeIds.isEmpty()) {
             throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
-        if (nodeIds.length > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
+        if (nodeIds.size() > server.getConfig().getLimits().getMaxNodesPerRegisterNodes().intValue()) {
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 

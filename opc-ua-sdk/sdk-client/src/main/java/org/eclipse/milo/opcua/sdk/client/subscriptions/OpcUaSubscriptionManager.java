@@ -62,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
@@ -508,17 +509,19 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         subscription.getNotificationSemaphore().acquire().thenAccept(permit -> deliveryQueue.submit(() -> {
             try {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
+                List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
 
-                for (ExtensionObject xo : notificationMessage.getNotificationData()) {
+                for (ExtensionObject xo : notificationData) {
                     Object o = xo.decode();
 
                     if (o instanceof DataChangeNotification) {
                         DataChangeNotification dcn = (DataChangeNotification) o;
-                        int notificationCount = dcn.getMonitoredItems().length;
+                        List<MonitoredItemNotification> monitoredItems = l(dcn.getMonitoredItems());
+                        int notificationCount = monitoredItems.size();
 
                         logger.debug("Received {} MonitoredItemNotifications", notificationCount);
 
-                        for (MonitoredItemNotification min : dcn.getMonitoredItems()) {
+                        for (MonitoredItemNotification min : monitoredItems) {
                             logger.trace("MonitoredItemNotification: clientHandle={}, value={}",
                                 min.getClientHandle(), min.getValue());
 
@@ -541,7 +544,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                                 ImmutableList.Builder<Tuple2<UaMonitoredItem, DataValue>> builder =
                                     ImmutableList.builder();
 
-                                for (MonitoredItemNotification n : dcn.getMonitoredItems()) {
+                                for (MonitoredItemNotification n : monitoredItems) {
                                     UaMonitoredItem item = subscription
                                         .getItemsByClientHandle().get(n.getClientHandle());
 
@@ -563,8 +566,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                         }
                     } else if (o instanceof EventNotificationList) {
                         EventNotificationList enl = (EventNotificationList) o;
+                        List<EventFieldList> events = l(enl.getEvents());
 
-                        for (EventFieldList efl : enl.getEvents()) {
+                        for (EventFieldList efl : events) {
                             logger.trace("EventFieldList: clientHandle={}, values={}",
                                 efl.getClientHandle(), Arrays.toString(efl.getEventFields()));
 
@@ -575,7 +579,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                         if (!subscription.getNotificationListeners().isEmpty()) {
                             ImmutableList.Builder<Tuple2<UaMonitoredItem, Variant[]>> builder = ImmutableList.builder();
 
-                            for (EventFieldList efl : enl.getEvents()) {
+                            for (EventFieldList efl : events) {
                                 UaMonitoredItem item = subscription.getItemsByClientHandle().get(efl.getClientHandle());
                                 if (item != null) {
                                     builder.add(new Tuple2<>(item, efl.getEventFields()));
