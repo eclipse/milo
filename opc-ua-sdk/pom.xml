@@ -14,7 +14,7 @@
 
     <properties>
         <metrics.version>3.1.2</metrics.version>
-        <protonpack.version>1.8</protonpack.version>
+        <protonpack.version>1.10</protonpack.version>
         <reflections.version>0.9.10</reflections.version>
         <slf4j.version>1.7.21</slf4j.version>
         <testng.version>6.9.10</testng.version>
@@ -75,12 +75,6 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <!-- configuration inherited from pluginManagement -->
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <!-- configuration inherited from pluginManagement -->
             </plugin>
@@ -92,9 +86,26 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <X-SDK-Version>${project.version}</X-SDK-Version>
+                        </manifestEntries>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.3</version>
+                <version>3.0.4</version>
                 <configuration>
                     <excludeFilterFile>${basedir}/../findbugs-exclude.xml</excludeFilterFile>
                 </configuration>
