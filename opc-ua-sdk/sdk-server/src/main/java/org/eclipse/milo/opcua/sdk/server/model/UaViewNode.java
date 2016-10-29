@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -35,17 +35,19 @@ public class UaViewNode extends UaNode implements ViewNode {
     private volatile boolean containsNoLoops;
     private volatile UByte eventNotifier;
 
-    public UaViewNode(UaNodeManager nodeManager,
-                      NodeId nodeId,
-                      QualifiedName browseName,
-                      LocalizedText displayName,
-                      Optional<LocalizedText> description,
-                      Optional<UInteger> writeMask,
-                      Optional<UInteger> userWriteMask,
-                      boolean containsNoLoops,
-                      UByte eventNotifier) {
+    public UaViewNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        Optional<LocalizedText> description,
+        Optional<UInteger> writeMask,
+        Optional<UInteger> userWriteMask,
+        boolean containsNoLoops,
+        UByte eventNotifier) {
 
-        super(nodeManager, nodeId, NodeClass.View, browseName, displayName, description, writeMask, userWriteMask);
+        super(nodeManager, nodeId, NodeClass.View,
+            browseName, displayName, description, writeMask, userWriteMask);
 
         this.containsNoLoops = containsNoLoops;
         this.eventNotifier = eventNotifier;

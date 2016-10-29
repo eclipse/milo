@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.application.services;
@@ -32,19 +32,28 @@ public interface ViewServiceSet {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onBrowseNext(ServiceRequest<BrowseNextRequest, BrowseNextResponse> serviceRequest) throws UaException {
+    default void onBrowseNext(
+        ServiceRequest<BrowseNextRequest, BrowseNextResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onTranslateBrowsePaths(ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> serviceRequest) throws UaException {
+    default void onTranslateBrowsePaths(
+        ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> serviceRequest)
+        throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onRegisterNodes(ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> serviceRequest) throws UaException {
+    default void onRegisterNodes(
+        ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onUnregisterNodes(ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> serviceRequest) throws UaException {
+    default void onUnregisterNodes(
+        ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.server;
@@ -32,11 +32,12 @@ public class Endpoint {
     private final X509Certificate certificate;
     private final String bindAddress;
 
-    public Endpoint(@Nonnull URI endpointUri,
-                    @Nullable String bindAddress,
-                    @Nullable X509Certificate certificate,
-                    @Nonnull SecurityPolicy securityPolicy,
-                    @Nonnull MessageSecurityMode messageSecurity) {
+    public Endpoint(
+        @Nonnull URI endpointUri,
+        @Nullable String bindAddress,
+        @Nullable X509Certificate certificate,
+        @Nonnull SecurityPolicy securityPolicy,
+        @Nonnull MessageSecurityMode messageSecurity) {
 
         checkNotNull(endpointUri);
         checkNotNull(securityPolicy);
@@ -81,6 +82,7 @@ public class Endpoint {
                 break;
             default:
                 securityLevel |= 0x20;
+                break;
         }
 
         switch (securityPolicy) {
@@ -95,6 +97,8 @@ public class Endpoint {
                 break;
             case None:
                 securityLevel |= 0x01;
+                break;
+            default:
                 break;
         }
 

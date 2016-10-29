@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.application.services;
@@ -28,23 +28,33 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 
 public interface MonitoredItemServiceSet {
 
-    default void onCreateMonitoredItems(ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> serviceRequest) throws UaException {
+    default void onCreateMonitoredItems(
+        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onModifyMonitoredItems(ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> serviceRequest) throws UaException {
+    default void onModifyMonitoredItems(
+        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onDeleteMonitoredItems(ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> serviceRequest) throws UaException {
+    default void onDeleteMonitoredItems(
+        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onSetMonitoringMode(ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> serviceRequest) throws UaException {
+    default void onSetMonitoringMode(
+        ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onSetTriggering(ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> serviceRequest) throws UaException {
+    default void onSetTriggering(
+        ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> serviceRequest) throws UaException {
+
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

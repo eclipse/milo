@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -23,7 +23,12 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaFolderNode extends UaObjectNode {
 
-    public UaFolderNode(UaNodeManager nodeManager, NodeId nodeId, QualifiedName browseName, LocalizedText displayName) {
+    public UaFolderNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName) {
+
         super(nodeManager, nodeId, browseName, displayName);
 
         addReference(new Reference(

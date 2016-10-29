@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.services;
@@ -49,14 +49,18 @@ public class NodeManagementServices implements NodeManagementServiceSet {
     }
 
     @Override
-    public void onAddReferences(ServiceRequest<AddReferencesRequest, AddReferencesResponse> service) throws UaException {
+    public void onAddReferences(
+        ServiceRequest<AddReferencesRequest, AddReferencesResponse> service) throws UaException {
+
         addReferencesMetric.record(service);
 
         service.setServiceFault(Bad_ServiceUnsupported);
     }
 
     @Override
-    public void onDeleteReferences(ServiceRequest<DeleteReferencesRequest, DeleteReferencesResponse> service) throws UaException {
+    public void onDeleteReferences(
+        ServiceRequest<DeleteReferencesRequest, DeleteReferencesResponse> service) throws UaException {
+
         deleteReferencesMetric.record(service);
 
         service.setServiceFault(Bad_ServiceUnsupported);

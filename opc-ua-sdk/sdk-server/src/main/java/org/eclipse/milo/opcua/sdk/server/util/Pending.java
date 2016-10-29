@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.util;
@@ -22,12 +22,12 @@ public interface Pending<I, O> {
     /**
      * @return The {@link CompletableFuture} to complete when the result is ready.
      */
-    public abstract CompletableFuture<O> getFuture();
+    CompletableFuture<O> getFuture();
 
     /**
      * @return The input parameter to the pending operation.
      */
-    public abstract I getInput();
+    I getInput();
 
     /**
      * Builds a {@link CompletableFuture} suitable for use as a completion callback. When completed, each of the
@@ -42,12 +42,14 @@ public interface Pending<I, O> {
      * @return A {@link CompletableFuture} that, when completed, then completes each of the given {@link Pending}'s
      * {@link CompletableFuture}.
      */
-    public static <I, O> CompletableFuture<List<O>> callback(List<? extends Pending<I, O>> pending) {
+    static <I, O> CompletableFuture<List<O>> callback(List<? extends Pending<I, O>> pending) {
         CompletableFuture<List<O>> future = new CompletableFuture<>();
 
         future.thenAccept(results -> {
             if (results.size() != pending.size()) {
-                String message = String.format("result size (%s) does not match pending size (%s)", results.size(), pending.size());
+                String message = String.format(
+                    "result size (%s) does not match pending size (%s)",
+                    results.size(), pending.size());
                 throw new RuntimeException(message);
             }
 

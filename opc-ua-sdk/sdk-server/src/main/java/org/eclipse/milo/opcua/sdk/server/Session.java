@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server;
@@ -208,17 +208,23 @@ public class Session implements SessionServiceSet {
 
     //region Session Services
     @Override
-    public void onCreateSession(ServiceRequest<CreateSessionRequest, CreateSessionResponse> req) throws UaException {
+    public void onCreateSession(
+        ServiceRequest<CreateSessionRequest, CreateSessionResponse> req) throws UaException {
+
         throw new UaException(StatusCodes.Bad_InternalError);
     }
 
     @Override
-    public void onActivateSession(ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> req) throws UaException {
+    public void onActivateSession(
+        ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> req) throws UaException {
+
         throw new UaException(StatusCodes.Bad_InternalError);
     }
 
     @Override
-    public void onCloseSession(ServiceRequest<CloseSessionRequest, CloseSessionResponse> serviceRequest) throws UaException {
+    public void onCloseSession(
+        ServiceRequest<CloseSessionRequest, CloseSessionResponse> serviceRequest) throws UaException {
+
         close(serviceRequest.getRequest().getDeleteSubscriptions());
 
         serviceRequest.setResponse(new CloseSessionResponse(serviceRequest.createResponseHeader()));

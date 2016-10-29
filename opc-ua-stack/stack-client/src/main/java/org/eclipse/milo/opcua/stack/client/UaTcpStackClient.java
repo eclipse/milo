@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.client;
@@ -128,7 +128,9 @@ public class UaTcpStackClient implements UaStackClient {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends UaResponseMessage> CompletionStage<T> sendRequest(UaRequestMessage request, ClientSecureChannel sc) {
+    private <T extends UaResponseMessage> CompletionStage<T> sendRequest(UaRequestMessage request,
+                                                                         ClientSecureChannel sc) {
+
         Channel channel = sc.getChannel();
 
         CompletableFuture<T> future = new CompletableFuture<>();
@@ -202,7 +204,10 @@ public class UaTcpStackClient implements UaStackClient {
     }
 
     @SuppressWarnings("unchecked")
-    private void sendRequests(List<? extends UaRequestMessage> requests, List<CompletableFuture<? extends UaResponseMessage>> futures, ClientSecureChannel sc) {
+    private void sendRequests(List<? extends UaRequestMessage> requests,
+                              List<CompletableFuture<? extends UaResponseMessage>> futures,
+                              ClientSecureChannel sc) {
+
         Channel channel = sc.getChannel();
         Iterator<? extends UaRequestMessage> requestIterator = requests.iterator();
         Iterator<CompletableFuture<? extends UaResponseMessage>> futureIterator = futures.iterator();

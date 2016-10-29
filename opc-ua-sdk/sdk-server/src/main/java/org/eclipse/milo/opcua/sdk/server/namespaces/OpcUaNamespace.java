@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.namespaces;
@@ -141,13 +141,15 @@ public class OpcUaNamespace implements Namespace {
 
     @Override
     public void write(WriteContext context, List<WriteValue> writeValues) {
-        List<StatusCode> results = writeValues.stream().map(value -> {
-            if (nodeManager.containsKey(value.getNodeId())) {
-                return new StatusCode(StatusCodes.Bad_NotWritable);
-            } else {
-                return new StatusCode(StatusCodes.Bad_NodeIdUnknown);
-            }
-        }).collect(toList());
+        List<StatusCode> results = writeValues.stream()
+            .map(value -> {
+                if (nodeManager.containsKey(value.getNodeId())) {
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
+                } else {
+                    return new StatusCode(StatusCodes.Bad_NodeIdUnknown);
+                }
+            })
+            .collect(toList());
 
         context.complete(results);
     }
@@ -252,8 +254,6 @@ public class OpcUaNamespace implements Namespace {
     }
 
     private void configureServerObject() {
-        OpcUaServerConfigLimits limits = server.getConfig().getLimits();
-
         ServerNode serverNode = (ServerNode) nodeManager.get(Identifiers.Server);
 
         replaceServerArrayNode();
@@ -280,6 +280,7 @@ public class OpcUaNamespace implements Namespace {
         };
         nodeManager.put(Identifiers.Server_ServerStatus_CurrentTime, derivedCurrentTime);
 
+        final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
         ServerCapabilitiesNode serverCapabilities = serverNode.getServerCapabilitiesNode();
         serverCapabilities.setLocaleIdArray(new String[]{Locale.ENGLISH.getLanguage()});
         serverCapabilities.setMaxArrayLength(limits.getMaxArrayLength());
@@ -289,19 +290,19 @@ public class OpcUaNamespace implements Namespace {
         serverCapabilities.setMaxStringLength(limits.getMaxStringLength());
         serverCapabilities.setMinSupportedSampleRate(limits.getMinSupportedSampleRate());
 
-        OperationLimitsNode operationLimits = serverCapabilities.getOperationLimitsNode();
-        operationLimits.setMaxMonitoredItemsPerCall(limits.getMaxMonitoredItemsPerCall());
-        operationLimits.setMaxNodesPerBrowse(limits.getMaxNodesPerBrowse());
-        operationLimits.setMaxNodesPerHistoryReadData(limits.getMaxNodesPerHistoryReadData());
-        operationLimits.setMaxNodesPerHistoryReadEvents(limits.getMaxNodesPerHistoryReadEvents());
-        operationLimits.setMaxNodesPerHistoryUpdateData(limits.getMaxNodesPerHistoryUpdateData());
-        operationLimits.setMaxNodesPerHistoryUpdateEvents(limits.getMaxNodesPerHistoryUpdateEvents());
-        operationLimits.setMaxNodesPerMethodCall(limits.getMaxNodesPerMethodCall());
-        operationLimits.setMaxNodesPerNodeManagement(limits.getMaxNodesPerNodeManagement());
-        operationLimits.setMaxNodesPerRead(limits.getMaxNodesPerRead());
-        operationLimits.setMaxNodesPerRegisterNodes(limits.getMaxNodesPerRegisterNodes());
-        operationLimits.setMaxNodesPerTranslateBrowsePathsToNodeIds(limits.getMaxNodesPerTranslateBrowsePathsToNodeIds());
-        operationLimits.setMaxNodesPerWrite(limits.getMaxNodesPerWrite());
+        OperationLimitsNode limitsNode = serverCapabilities.getOperationLimitsNode();
+        limitsNode.setMaxMonitoredItemsPerCall(limits.getMaxMonitoredItemsPerCall());
+        limitsNode.setMaxNodesPerBrowse(limits.getMaxNodesPerBrowse());
+        limitsNode.setMaxNodesPerHistoryReadData(limits.getMaxNodesPerHistoryReadData());
+        limitsNode.setMaxNodesPerHistoryReadEvents(limits.getMaxNodesPerHistoryReadEvents());
+        limitsNode.setMaxNodesPerHistoryUpdateData(limits.getMaxNodesPerHistoryUpdateData());
+        limitsNode.setMaxNodesPerHistoryUpdateEvents(limits.getMaxNodesPerHistoryUpdateEvents());
+        limitsNode.setMaxNodesPerMethodCall(limits.getMaxNodesPerMethodCall());
+        limitsNode.setMaxNodesPerNodeManagement(limits.getMaxNodesPerNodeManagement());
+        limitsNode.setMaxNodesPerRead(limits.getMaxNodesPerRead());
+        limitsNode.setMaxNodesPerRegisterNodes(limits.getMaxNodesPerRegisterNodes());
+        limitsNode.setMaxNodesPerTranslateBrowsePathsToNodeIds(limits.getMaxNodesPerTranslateBrowsePathsToNodeIds());
+        limitsNode.setMaxNodesPerWrite(limits.getMaxNodesPerWrite());
 
         serverNode.getServerRedundancyNode().setRedundancySupport(RedundancySupport.None);
 

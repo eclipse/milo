@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -78,7 +78,10 @@ public class VariableNodeFactory {
         return create(nodeId, typeDefinitionId, UaVariableNode.class);
     }
 
-    public <T extends VariableNode> T create(NodeId nodeId, NodeId typeDefinitionId, Class<T> clazz) throws UaRuntimeException {
+    public <T extends VariableNode> T create(NodeId nodeId,
+                                             NodeId typeDefinitionId,
+                                             Class<T> clazz) throws UaRuntimeException {
+
         UaVariableTypeNode typeDefinitionNode = (UaVariableTypeNode) nodeManager.getNode(typeDefinitionId)
             .orElseThrow(() ->
                 new UaRuntimeException(
@@ -162,13 +165,13 @@ public class VariableNodeFactory {
                 "unknown variable type: " + browseName));
 
         try {
-            Class[] UA_VARIABLE_NODE_CTOR_PARAMS = {
+            Class[] uaVariableNodeCtorParams = {
                 UaNodeManager.class,
                 NodeId.class,
                 VariableTypeNode.class
             };
 
-            Constructor<?> ctor = clazz.getDeclaredConstructor(UA_VARIABLE_NODE_CTOR_PARAMS);
+            Constructor<?> ctor = clazz.getDeclaredConstructor(uaVariableNodeCtorParams);
 
             Object[] initArgs = {
                 nodeManager,

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -65,24 +65,26 @@ public abstract class UaNode implements ServerNode {
     private volatile Optional<UInteger> writeMask;
     private volatile Optional<UInteger> userWriteMask;
 
-    protected UaNode(UaNodeManager nodeManager,
-                     NodeId nodeId,
-                     NodeClass nodeClass,
-                     QualifiedName browseName,
-                     LocalizedText displayName) {
+    protected UaNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName) {
 
-        this(nodeManager, nodeId, nodeClass, browseName, displayName,
-            Optional.empty(), Optional.empty(), Optional.empty());
+        this(nodeManager, nodeId, nodeClass, browseName,
+            displayName, Optional.empty(), Optional.empty(), Optional.empty());
     }
 
-    protected UaNode(UaNodeManager nodeManager,
-                     NodeId nodeId,
-                     NodeClass nodeClass,
-                     QualifiedName browseName,
-                     LocalizedText displayName,
-                     Optional<LocalizedText> description,
-                     Optional<UInteger> writeMask,
-                     Optional<UInteger> userWriteMask) {
+    protected UaNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        NodeClass nodeClass,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        Optional<LocalizedText> description,
+        Optional<UInteger> writeMask,
+        Optional<UInteger> userWriteMask) {
 
         this.nodeManager = nodeManager;
 

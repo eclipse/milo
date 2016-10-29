@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
@@ -107,9 +107,10 @@ public interface UaSubscription {
      * @param itemCreationCallback callback to be invoked for each successfully created {@link UaMonitoredItem}.
      * @return a list of {@link UaMonitoredItem}s.
      */
-    CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(TimestampsToReturn timestampsToReturn,
-                                                                  List<MonitoredItemCreateRequest> itemsToCreate,
-                                                                  BiConsumer<UaMonitoredItem, Integer> itemCreationCallback);
+    CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(
+        TimestampsToReturn timestampsToReturn,
+        List<MonitoredItemCreateRequest> itemsToCreate,
+        BiConsumer<UaMonitoredItem, Integer> itemCreationCallback);
 
     /**
      * Modify one or more {@link UaMonitoredItem}s.

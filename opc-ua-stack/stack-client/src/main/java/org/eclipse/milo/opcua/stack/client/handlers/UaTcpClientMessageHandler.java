@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.client.handlers;
@@ -122,7 +122,10 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                 if (awaitingHandshake != null) {
                     channel.attr(UaTcpClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).remove();
 
-                    logger.debug("{} message(s) queued before handshake completed; sending now.", awaitingHandshake.size());
+                    logger.debug(
+                        "{} message(s) queued before handshake completed; sending now.",
+                        awaitingHandshake.size());
+
                     awaitingHandshake.forEach(channel::writeAndFlush);
                 }
             });
@@ -429,7 +432,10 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                         throw new UaServiceFaultException(serviceFault);
                     }
                 } catch (MessageAbortedException e) {
-                    logger.error("Received message abort chunk; error={}, reason={}", e.getStatusCode(), e.getMessage());
+                    logger.error(
+                        "Received message abort chunk; error={}, reason={}",
+                        e.getStatusCode(), e.getMessage());
+
                     ctx.close();
                 } catch (Throwable t) {
                     logger.error("Error decoding OpenSecureChannelResponse: {}", t.getMessage(), t);
@@ -530,7 +536,9 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                         logger.warn("No UaRequestFuture for requestId={}", chunkDecoder.getLastRequestId());
                     }
                 } catch (MessageAbortedException e) {
-                    logger.debug("Received message abort chunk; error={}, reason={}", e.getStatusCode(), e.getMessage());
+                    logger.debug(
+                        "Received message abort chunk; error={}, reason={}",
+                        e.getStatusCode(), e.getMessage());
 
                     UaRequestFuture request = pending.remove(chunkDecoder.getLastRequestId());
 

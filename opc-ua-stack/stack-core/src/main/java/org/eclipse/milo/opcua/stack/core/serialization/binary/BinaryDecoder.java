@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
@@ -289,7 +289,9 @@ public class BinaryDecoder implements UaDecoder {
 
             return new ExtensionObject(xmlElement, encodingTypeId);
         } else {
-            throw new UaSerializationException(StatusCodes.Bad_DecodingError, "unknown ExtensionObject encoding: " + encoding);
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "unknown ExtensionObject encoding: " + encoding);
         }
     }
 
@@ -364,7 +366,15 @@ public class BinaryDecoder implements UaDecoder {
             StatusCode innerStatusCode = ((mask & 0x20) == 0x20) ? decodeStatusCode(null) : null;
             DiagnosticInfo innerDiagnosticInfo = ((mask & 0x40) == 0x40) ? decodeDiagnosticInfo(null) : null;
 
-            return new DiagnosticInfo(namespaceUri, symbolicId, locale, localizedText, additionalInfo, innerStatusCode, innerDiagnosticInfo);
+            return new DiagnosticInfo(
+                namespaceUri,
+                symbolicId,
+                locale,
+                localizedText,
+                additionalInfo,
+                innerStatusCode,
+                innerDiagnosticInfo
+            );
         }
     }
 
@@ -379,14 +389,18 @@ public class BinaryDecoder implements UaDecoder {
     }
 
     @Override
-    public <T extends UaEnumeration> T decodeEnumeration(String field, Class<T> clazz) throws UaSerializationException {
+    public <T extends UaEnumeration> T decodeEnumeration(String field,
+                                                         Class<T> clazz) throws UaSerializationException {
+
         DecoderDelegate<T> delegate = DELEGATE_REGISTRY.getDecoder(clazz);
 
         return delegate.decode(this);
     }
 
     @Override
-    public <T extends UaSerializable> T decodeSerializable(String field, Class<T> clazz) throws UaSerializationException {
+    public <T extends UaSerializable> T decodeSerializable(String field,
+                                                           Class<T> clazz) throws UaSerializationException {
+
         DecoderDelegate<T> delegate = DELEGATE_REGISTRY.getDecoder(clazz);
 
         return delegate.decode(this);
@@ -394,7 +408,10 @@ public class BinaryDecoder implements UaDecoder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] decodeArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException {
+    public <T> T[] decodeArray(String field,
+                               Function<String, T> decoder,
+                               Class<T> clazz) throws UaSerializationException {
+
         int length = decodeInt32(null);
 
         if (length == -1) {
@@ -417,7 +434,10 @@ public class BinaryDecoder implements UaDecoder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T[] decodeArray(String field, BiFunction<String, Class<T>, T> decoder, Class<T> clazz) throws UaSerializationException {
+    public <T> T[] decodeArray(String field,
+                               BiFunction<String, Class<T>, T> decoder,
+                               Class<T> clazz) throws UaSerializationException {
+
         int length = decodeInt32(null);
 
         if (length == -1) {

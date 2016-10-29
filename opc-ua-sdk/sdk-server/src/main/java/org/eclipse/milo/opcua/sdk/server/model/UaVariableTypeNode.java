@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -38,20 +38,22 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     private volatile Optional<UInteger[]> arrayDimensions;
     private volatile boolean isAbstract;
 
-    public UaVariableTypeNode(UaNodeManager nodeManager,
-                              NodeId nodeId,
-                              QualifiedName browseName,
-                              LocalizedText displayName,
-                              Optional<LocalizedText> description,
-                              Optional<UInteger> writeMask,
-                              Optional<UInteger> userWriteMask,
-                              Optional<DataValue> value,
-                              NodeId dataType,
-                              int valueRank,
-                              Optional<UInteger[]> arrayDimensions,
-                              boolean isAbstract) {
+    public UaVariableTypeNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        Optional<LocalizedText> description,
+        Optional<UInteger> writeMask,
+        Optional<UInteger> userWriteMask,
+        Optional<DataValue> value,
+        NodeId dataType,
+        int valueRank,
+        Optional<UInteger[]> arrayDimensions,
+        boolean isAbstract) {
 
-        super(nodeManager, nodeId, NodeClass.VariableType, browseName, displayName, description, writeMask, userWriteMask);
+        super(nodeManager, nodeId, NodeClass.VariableType,
+            browseName, displayName, description, writeMask, userWriteMask);
 
         this.value = value;
         this.dataType = dataType;

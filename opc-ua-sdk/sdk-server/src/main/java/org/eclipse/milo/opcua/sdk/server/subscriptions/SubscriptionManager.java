@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
@@ -296,7 +296,9 @@ public class SubscriptionManager {
         service.setResponse(response);
     }
 
-    public void createMonitoredItems(ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) {
+    public void createMonitoredItems(
+        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) {
+
         CreateMonitoredItemsRequest request = service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 
@@ -523,7 +525,9 @@ public class SubscriptionManager {
         }
     }
 
-    public void modifyMonitoredItems(ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) {
+    public void modifyMonitoredItems(
+        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) {
+
         ModifyMonitoredItemsRequest request = service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 
@@ -743,7 +747,9 @@ public class SubscriptionManager {
         }
     }
 
-    public void deleteMonitoredItems(ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) {
+    public void deleteMonitoredItems(
+        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) {
+
         DeleteMonitoredItemsRequest request = service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 

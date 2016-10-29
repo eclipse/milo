@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.channel;
@@ -51,27 +51,30 @@ public class ChunkEncoder {
         this.parameters = parameters;
     }
 
-    public List<ByteBuf> encodeAsymmetric(SecureChannel channel,
-                                          MessageType messageType,
-                                          ByteBuf messageBuffer,
-                                          long requestId) throws UaException {
+    public List<ByteBuf> encodeAsymmetric(
+        SecureChannel channel,
+        MessageType messageType,
+        ByteBuf messageBuffer,
+        long requestId) throws UaException {
 
         return encode(asymmetricDelegate, channel, messageType, messageBuffer, requestId);
     }
 
-    public List<ByteBuf> encodeSymmetric(SecureChannel channel,
-                                         MessageType messageType,
-                                         ByteBuf messageBuffer,
-                                         long requestId) throws UaException {
+    public List<ByteBuf> encodeSymmetric(
+        SecureChannel channel,
+        MessageType messageType,
+        ByteBuf messageBuffer,
+        long requestId) throws UaException {
 
         return encode(symmetricDelegate, channel, messageType, messageBuffer, requestId);
     }
 
-    private List<ByteBuf> encode(Delegate delegate,
-                                 SecureChannel channel,
-                                 MessageType messageType,
-                                 ByteBuf messageBuffer,
-                                 long requestId) throws UaException {
+    private List<ByteBuf> encode(
+        Delegate delegate,
+        SecureChannel channel,
+        MessageType messageType,
+        ByteBuf messageBuffer,
+        long requestId) throws UaException {
 
         List<ByteBuf> chunks = new ArrayList<>();
 
@@ -93,9 +96,12 @@ public class ChunkEncoder {
             int bodySize = Math.min(messageBuffer.readableBytes(), maxBodySize);
 
             int paddingSize = encrypted ?
-                plainTextBlockSize - (SequenceHeader.SEQUENCE_HEADER_SIZE + bodySize + signatureSize + paddingOverhead) % plainTextBlockSize : 0;
+                plainTextBlockSize -
+                    (SequenceHeader.SEQUENCE_HEADER_SIZE + bodySize + signatureSize + paddingOverhead) %
+                        plainTextBlockSize : 0;
 
-            int plainTextContentSize = SequenceHeader.SEQUENCE_HEADER_SIZE + bodySize + signatureSize + paddingSize + paddingOverhead;
+            int plainTextContentSize = SequenceHeader.SEQUENCE_HEADER_SIZE +
+                bodySize + signatureSize + paddingSize + paddingOverhead;
 
             assert (plainTextContentSize % plainTextBlockSize == 0);
 
@@ -150,7 +156,9 @@ public class ChunkEncoder {
                 try {
                     int blockCount = chunkBuffer.readableBytes() / plainTextBlockSize;
 
-                    ByteBuffer chunkNioBuffer = chunkBuffer.nioBuffer(chunkBuffer.readerIndex(), blockCount * cipherTextBlockSize);
+                    ByteBuffer chunkNioBuffer = chunkBuffer.nioBuffer(
+                        chunkBuffer.readerIndex(), blockCount * cipherTextBlockSize);
+
                     ByteBuf copyBuffer = chunkBuffer.copy();
                     ByteBuffer plainTextNioBuffer = copyBuffer.nioBuffer();
 
@@ -203,9 +211,9 @@ public class ChunkEncoder {
 
         if (cipherTextBlockSize > 256) {
             // Replace the last byte with the MSB of the 2-byte padding length
-            int paddingLengthMSB = paddingSize >> 8;
+            int paddingLengthMsb = paddingSize >> 8;
             buffer.writerIndex(buffer.writerIndex() - 1);
-            buffer.writeByte(paddingLengthMSB);
+            buffer.writeByte(paddingLengthMsb);
         }
     }
 
@@ -248,7 +256,8 @@ public class ChunkEncoder {
             assert (remoteCertificate != null);
 
             try {
-                String transformation = channel.getSecurityPolicy().getAsymmetricEncryptionAlgorithm().getTransformation();
+                String transformation = channel.getSecurityPolicy()
+                    .getAsymmetricEncryptionAlgorithm().getTransformation();
                 Cipher cipher = Cipher.getInstance(transformation);
                 cipher.init(Cipher.ENCRYPT_MODE, remoteCertificate.getPublicKey());
                 return cipher;
@@ -335,7 +344,8 @@ public class ChunkEncoder {
         @Override
         public Cipher getAndInitializeCipher(SecureChannel channel) throws UaException {
             try {
-                String transformation = channel.getSecurityPolicy().getSymmetricEncryptionAlgorithm().getTransformation();
+                String transformation = channel.getSecurityPolicy()
+                    .getSymmetricEncryptionAlgorithm().getTransformation();
                 ChannelSecurity.SecretKeys secretKeys = channel.getEncryptionKeys(securitySecrets);
 
                 SecretKeySpec keySpec = new SecretKeySpec(secretKeys.getEncryptionKey(), "AES");

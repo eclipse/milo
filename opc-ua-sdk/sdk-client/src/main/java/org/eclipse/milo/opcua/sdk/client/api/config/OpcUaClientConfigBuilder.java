@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.client.api.config;
@@ -145,7 +145,9 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     }
 
     @Override
-    public OpcUaClientConfigBuilder setSecureChannelReauthenticationEnabled(boolean secureChannelReauthenticationEnabled) {
+    public OpcUaClientConfigBuilder setSecureChannelReauthenticationEnabled(
+        boolean secureChannelReauthenticationEnabled) {
+
         super.setSecureChannelReauthenticationEnabled(secureChannelReauthenticationEnabled);
         return this;
     }

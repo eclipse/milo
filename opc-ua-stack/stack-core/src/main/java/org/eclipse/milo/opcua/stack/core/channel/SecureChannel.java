@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.channel;
@@ -104,6 +104,8 @@ public interface SecureChannel {
                 case Rsa15:
                 case RsaOaep:
                     return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8;
+                default:
+                    return 1;
             }
         }
 
@@ -118,6 +120,8 @@ public interface SecureChannel {
                 case Rsa15:
                 case RsaOaep:
                     return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8;
+                default:
+                    return 1;
             }
         }
 
@@ -133,6 +137,8 @@ public interface SecureChannel {
                     return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 11;
                 case RsaOaep:
                     return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 42;
+                default:
+                    return 1;
             }
         }
 
@@ -148,6 +154,8 @@ public interface SecureChannel {
                     return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 11;
                 case RsaOaep:
                     return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 42;
+                default:
+                    return 1;
             }
         }
 
@@ -197,6 +205,8 @@ public interface SecureChannel {
                 case Aes128:
                 case Aes256:
                     return 16;
+                default:
+                    return 1;
             }
         }
 
@@ -211,6 +221,8 @@ public interface SecureChannel {
                 case Aes128:
                 case Aes256:
                     return 16;
+                default:
+                    return 1;
             }
         }
 

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.services.helpers;
@@ -49,9 +49,9 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class BrowsePathsHelper {
 
@@ -164,15 +164,15 @@ public class BrowsePathsHelper {
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
-                    /* Filter for references of the requested type or its subtype, if allowed... */
+                /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
                     r.getReferenceTypeId().equals(referenceTypeId) ||
                     (includeSubtypes && r.subtypeOf(referenceTypeId, server.getReferenceTypes())))
 
-                    /* Filter for reference direction... */
+                /* Filter for reference direction... */
                 .filter(r -> r.isInverse() == element.getIsInverse())
 
-                    /* Map to target ExpandedNodeId... */
+                /* Map to target ExpandedNodeId... */
                 .map(Reference::getTargetNodeId)
                 .collect(toList());
 
@@ -201,15 +201,15 @@ public class BrowsePathsHelper {
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
-                    /* Filter for references of the requested type or its subtype, if allowed... */
+                /* Filter for references of the requested type or its subtype, if allowed... */
                 .filter(r -> referenceTypeId.isNull() ||
                     r.getReferenceTypeId().equals(referenceTypeId) ||
                     (includeSubtypes && r.subtypeOf(referenceTypeId, server.getReferenceTypes())))
 
-                    /* Filter for reference direction... */
+                /* Filter for reference direction... */
                 .filter(r -> r.isInverse() == element.getIsInverse())
 
-                    /* Map to target ExpandedNodeId... */
+                /* Map to target ExpandedNodeId... */
                 .map(Reference::getTargetNodeId)
                 .collect(toList());
 
@@ -233,21 +233,23 @@ public class BrowsePathsHelper {
         List<CompletableFuture<List<DataValue>>> futures = newArrayListWithCapacity(targetNodeIds.size());
 
         for (ExpandedNodeId xni : targetNodeIds) {
-            CompletableFuture<List<DataValue>> future = xni.local().map(nodeId -> {
-                Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
+            CompletableFuture<List<DataValue>> future = xni.local()
+                .map(nodeId -> {
+                    Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
 
-                ReadValueId readValueId = new ReadValueId(
-                    nodeId, AttributeId.BrowseName.uid(), null, QualifiedName.NULL_VALUE);
+                    ReadValueId readValueId = new ReadValueId(
+                        nodeId, AttributeId.BrowseName.uid(), null, QualifiedName.NULL_VALUE);
 
-                CompletableFuture<List<DataValue>> readFuture = new CompletableFuture<>();
+                    CompletableFuture<List<DataValue>> readFuture = new CompletableFuture<>();
 
-                ReadContext context = new ReadContext(
-                    server, null, readFuture, new DiagnosticsContext<>());
+                    ReadContext context = new ReadContext(
+                        server, null, readFuture, new DiagnosticsContext<>());
 
-                namespace.read(context, 0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
+                    namespace.read(context, 0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
 
-                return readFuture;
-            }).orElse(completedFuture(newArrayList(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
+                    return readFuture;
+                })
+                .orElse(completedFuture(newArrayList(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
 
             futures.add(future);
         }

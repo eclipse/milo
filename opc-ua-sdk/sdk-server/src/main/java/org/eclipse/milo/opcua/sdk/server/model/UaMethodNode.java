@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -50,17 +50,19 @@ public class UaMethodNode extends UaNode implements MethodNode {
     private volatile boolean executable;
     private volatile boolean userExecutable;
 
-    public UaMethodNode(UaNodeManager nodeManager,
-                        NodeId nodeId,
-                        QualifiedName browseName,
-                        LocalizedText displayName,
-                        Optional<LocalizedText> description,
-                        Optional<UInteger> writeMask,
-                        Optional<UInteger> userWriteMask,
-                        boolean executable,
-                        boolean userExecutable) {
+    public UaMethodNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        Optional<LocalizedText> description,
+        Optional<UInteger> writeMask,
+        Optional<UInteger> userWriteMask,
+        boolean executable,
+        boolean userExecutable) {
 
-        super(nodeManager, nodeId, NodeClass.Method, browseName, displayName, description, writeMask, userWriteMask);
+        super(nodeManager, nodeId, NodeClass.Method,
+            browseName, displayName, description, writeMask, userWriteMask);
 
         this.executable = executable;
         this.userExecutable = userExecutable;

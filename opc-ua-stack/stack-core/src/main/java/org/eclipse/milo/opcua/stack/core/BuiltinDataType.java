@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core;
@@ -98,13 +98,21 @@ public enum BuiltinDataType {
      */
     public static int getBuiltinTypeId(Class<?> backingClass) {
         if (backingClass.isPrimitive()) {
-            if (backingClass == boolean.class) backingClass = Boolean.class;
-            else if (backingClass == byte.class) backingClass = Byte.class;
-            else if (backingClass == short.class) backingClass = Short.class;
-            else if (backingClass == int.class) backingClass = Integer.class;
-            else if (backingClass == long.class) backingClass = Long.class;
-            else if (backingClass == float.class) backingClass = Float.class;
-            else if (backingClass == double.class) backingClass = Double.class;
+            if (backingClass == boolean.class) {
+                backingClass = Boolean.class;
+            } else if (backingClass == byte.class) {
+                backingClass = Byte.class;
+            } else if (backingClass == short.class) {
+                backingClass = Short.class;
+            } else if (backingClass == int.class) {
+                backingClass = Integer.class;
+            } else if (backingClass == long.class) {
+                backingClass = Long.class;
+            } else if (backingClass == float.class) {
+                backingClass = Float.class;
+            } else if (backingClass == double.class) {
+                backingClass = Double.class;
+            }
         }
 
         return BackingClassesById.inverse().get(backingClass);
