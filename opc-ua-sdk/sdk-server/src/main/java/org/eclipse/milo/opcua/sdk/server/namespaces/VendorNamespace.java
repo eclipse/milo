@@ -180,6 +180,19 @@ public class VendorNamespace implements Namespace {
             };
             systemCpuLoad.setDataType(Identifiers.Double);
 
+            UaVariableNode availableProcessors = new UaVariableNode(
+                nodeManager,
+                new NodeId(1, "VendorServerInfo/AvailableProcessors"),
+                new QualifiedName(1, "AvailableProcessors"),
+                LocalizedText.english("AvailableProcessors")) {
+
+                @Override
+                public DataValue getValue() {
+                    return new DataValue(new Variant(Runtime.getRuntime().availableProcessors()));
+                }
+            };
+            availableProcessors.setDataType(Identifiers.Int32);
+
             UaVariableNode usedMemory = new UaVariableNode(
                 nodeManager,
                 new NodeId(1, "VendorServerInfo/UsedMemory"),
@@ -243,6 +256,7 @@ public class VendorNamespace implements Namespace {
 
             vendorServerInfo.addComponent(processCpuLoad);
             vendorServerInfo.addComponent(systemCpuLoad);
+            vendorServerInfo.addComponent(availableProcessors);
             vendorServerInfo.addComponent(usedMemory);
             vendorServerInfo.addComponent(maxMemory);
             vendorServerInfo.addComponent(osName);
