@@ -22,7 +22,7 @@ import java.security.cert.X509Certificate;
 
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.BeforeSuite;
 
 public abstract class SecurityFixture {
 
@@ -41,7 +41,7 @@ public abstract class SecurityFixture {
     protected volatile CertificateManager serverCertificateManager;
     protected volatile CertificateValidator serverCertificateValidator;
 
-    @BeforeTest
+    @BeforeSuite
     public void setUp() throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
