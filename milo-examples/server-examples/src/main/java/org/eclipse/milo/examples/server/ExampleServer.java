@@ -20,6 +20,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Files.createTempDir;
@@ -45,6 +46,7 @@ public class ExampleServer {
     public ExampleServer() throws ExecutionException, InterruptedException {
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri("urn:eclipse:milo:examples:server")
+            .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
             .setBindAddresses(newArrayList("localhost"))
             .setBindPort(12686)
             .setCertificateManager(new DefaultCertificateManager())
