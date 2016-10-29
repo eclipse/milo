@@ -17,8 +17,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -46,6 +49,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     private BuildInfo buildInfo = new BuildInfo(
         "", "", "", "", "", DateTime.MIN_VALUE);
+
+    private Function<String, Set<String>> hostnameResolver = OpcUaServer::getHostnames;
 
     private OpcUaServerConfigLimits limits =
         new OpcUaServerConfigLimits() {
@@ -83,6 +88,11 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     public OpcUaServerConfigBuilder setLimits(OpcUaServerConfigLimits limits) {
         this.limits = limits;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setHostnameResolver(Function<String, Set<String>> hostnameResolver) {
+        this.hostnameResolver = hostnameResolver;
         return this;
     }
 
@@ -163,7 +173,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             securityPolicies,
             identityValidator,
             buildInfo,
-            limits
+            limits,
+            hostnameResolver
         );
     }
 
@@ -187,6 +198,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         private final IdentityValidator identityValidator;
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
+        private final Function<String, Set<String>> hostnameResolver;
 
         public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
                                      String hostname,
@@ -195,7 +207,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
                                      EnumSet<SecurityPolicy> securityPolicies,
                                      IdentityValidator identityValidator,
                                      BuildInfo buildInfo,
-                                     OpcUaServerConfigLimits limits) {
+                                     OpcUaServerConfigLimits limits,
+                                     Function<String, Set<String>> hostnameResolver) {
 
             this.stackServerConfig = stackServerConfig;
 
@@ -206,6 +219,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             this.identityValidator = identityValidator;
             this.buildInfo = buildInfo;
             this.limits = limits;
+            this.hostnameResolver = hostnameResolver;
         }
 
         @Override
@@ -296,6 +310,11 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         @Override
         public boolean isStrictEndpointUrlsEnabled() {
             return stackServerConfig.isStrictEndpointUrlsEnabled();
+        }
+
+        @Override
+        public Function<String, Set<String>> getHostnameResolver() {
+            return hostnameResolver;
         }
 
     }
