@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -88,31 +88,34 @@ public class UaVariableNode extends UaNode implements VariableNode {
         setArrayDimensions(variableTypeNode.getArrayDimensions());
     }
 
-    public UaVariableNode(UaNodeManager nodeManager,
-                          NodeId nodeId,
-                          QualifiedName browseName,
-                          LocalizedText displayName) {
+    public UaVariableNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName) {
 
         super(nodeManager, nodeId, NodeClass.Variable, browseName, displayName);
     }
 
-    public UaVariableNode(UaNodeManager nodeManager,
-                          NodeId nodeId,
-                          QualifiedName browseName,
-                          LocalizedText displayName,
-                          Optional<LocalizedText> description,
-                          Optional<UInteger> writeMask,
-                          Optional<UInteger> userWriteMask,
-                          DataValue value,
-                          NodeId dataType,
-                          Integer valueRank,
-                          Optional<UInteger[]> arrayDimensions,
-                          UByte accessLevel,
-                          UByte userAccessLevel,
-                          Optional<Double> minimumSamplingInterval,
-                          boolean historizing) {
+    public UaVariableNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        Optional<LocalizedText> description,
+        Optional<UInteger> writeMask,
+        Optional<UInteger> userWriteMask,
+        DataValue value,
+        NodeId dataType,
+        Integer valueRank,
+        Optional<UInteger[]> arrayDimensions,
+        UByte accessLevel,
+        UByte userAccessLevel,
+        Optional<Double> minimumSamplingInterval,
+        boolean historizing) {
 
-        super(nodeManager, nodeId, NodeClass.Variable, browseName, displayName, description, writeMask, userWriteMask);
+        super(nodeManager, nodeId, NodeClass.Variable,
+            browseName, displayName, description, writeMask, userWriteMask);
 
         this.value = value;
         this.dataType = dataType;

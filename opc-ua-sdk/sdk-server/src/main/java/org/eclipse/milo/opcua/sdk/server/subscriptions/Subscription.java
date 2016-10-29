@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
@@ -464,7 +464,8 @@ public class Subscription {
 
         service.setResponse(response);
 
-        logger.debug("[id={}] returning {} DataChangeNotification(s) and {} EventNotificationList(s) sequenceNumber={}.",
+        logger.debug(
+            "[id={}] returning {} DataChangeNotification(s) and {} EventNotificationList(s) sequenceNumber={}.",
             subscriptionId, dataNotifications.size(), eventNotifications.size(), sequenceNumber);
     }
 
@@ -551,12 +552,19 @@ public class Subscription {
         logger.trace("[id={}] onPublish(), state={}, keep-alive={}, lifetime={}",
             subscriptionId, state, keepAliveCounter, lifetimeCounter);
 
-        if (state == State.Normal) publishHandler.whenNormal(service);
-        else if (state == State.KeepAlive) publishHandler.whenKeepAlive(service);
-        else if (state == State.Late) publishHandler.whenLate(service);
-        else if (state == State.Closing) publishHandler.whenClosing(service);
-        else if (state == State.Closed) publishHandler.whenClosed(service);
-        else throw new RuntimeException("Unhandled subscription state: " + state);
+        if (state == State.Normal) {
+            publishHandler.whenNormal(service);
+        } else if (state == State.KeepAlive) {
+            publishHandler.whenKeepAlive(service);
+        } else if (state == State.Late) {
+            publishHandler.whenLate(service);
+        } else if (state == State.Closing) {
+            publishHandler.whenClosing(service);
+        } else if (state == State.Closed) {
+            publishHandler.whenClosed(service);
+        } else {
+            throw new RuntimeException("Unhandled subscription state: " + state);
+        }
     }
 
     /**
@@ -568,11 +576,17 @@ public class Subscription {
         logger.trace("[id={}] onPublishingTimer(), state={}, keep-alive={}, lifetime={}",
             subscriptionId, state, keepAliveCounter, lifetimeCounter);
 
-        if (state == State.Normal) timerHandler.whenNormal();
-        else if (state == State.KeepAlive) timerHandler.whenKeepAlive();
-        else if (state == State.Late) timerHandler.whenLate();
-        else if (state == State.Closed) logger.debug("[id={}] onPublish(), state={}", subscriptionId, state); // No-op.
-        else throw new RuntimeException("unhandled subscription state: " + state);
+        if (state == State.Normal) {
+            timerHandler.whenNormal();
+        } else if (state == State.KeepAlive) {
+            timerHandler.whenKeepAlive();
+        } else if (state == State.Late) {
+            timerHandler.whenLate();
+        } else if (state == State.Closed) {
+            logger.debug("[id={}] onPublish(), state={}", subscriptionId, state); // No-op.
+        } else {
+            throw new RuntimeException("unhandled subscription state: " + state);
+        }
     }
 
     synchronized void startPublishingTimer() {
@@ -618,12 +632,11 @@ public class Subscription {
         private void whenNormal(ServiceRequest<PublishRequest, PublishResponse> service) {
             boolean publishingEnabled = Subscription.this.publishingEnabled;
 
-            /* Subscription State Table Row 4 */
             if (!publishingEnabled || (publishingEnabled && !moreNotifications)) {
+                /* Subscription State Table Row 4 */
                 publishQueue().addRequest(service);
-            }
-            /* Subscription State Table Row 5 */
-            else if (publishingEnabled && moreNotifications) {
+            } else if (publishingEnabled && moreNotifications) {
+                /* Subscription State Table Row 5 */
                 resetLifetimeCounter();
                 returnNotifications(service);
                 messageSent = true;
@@ -636,16 +649,15 @@ public class Subscription {
             boolean publishingEnabled = Subscription.this.publishingEnabled;
             boolean notificationsAvailable = notificationsAvailable();
 
-            /* Subscription State Table Row 10 */
             if (publishingEnabled && (notificationsAvailable || moreNotifications)) {
+                /* Subscription State Table Row 10 */
                 setState(State.Normal);
                 resetLifetimeCounter();
                 returnNotifications(service);
                 messageSent = true;
-            }
-            /* Subscription State Table Row 11 */
-            else if (!publishingEnabled ||
+            } else if (!publishingEnabled ||
                 (publishingEnabled && !notificationsAvailable && !moreNotifications)) {
+                /* Subscription State Table Row 11 */
                 setState(State.KeepAlive);
                 resetLifetimeCounter();
                 returnKeepAlive(service);
@@ -677,8 +689,8 @@ public class Subscription {
             boolean publishingEnabled = Subscription.this.publishingEnabled;
             boolean notificationsAvailable = notificationsAvailable();
 
-            /* Subscription State Table Row 6 */
             if (publishRequestQueued && publishingEnabled && notificationsAvailable) {
+                /* Subscription State Table Row 6 */
                 Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
                     Optional.ofNullable(publishQueue().poll());
 
@@ -690,10 +702,9 @@ public class Subscription {
                 } else {
                     whenNormal();
                 }
-            }
-            /* Subscription State Table Row 7 */
-            else if (publishRequestQueued && !messageSent &&
+            } else if (publishRequestQueued && !messageSent &&
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
+                /* Subscription State Table Row 7 */
                 Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
                     Optional.ofNullable(publishQueue().poll());
 
@@ -705,16 +716,14 @@ public class Subscription {
                 } else {
                     whenNormal();
                 }
-            }
-            /* Subscription State Table Row 8 */
-            else if (!publishRequestQueued && (!messageSent || (publishingEnabled && notificationsAvailable))) {
+            } else if (!publishRequestQueued && (!messageSent || (publishingEnabled && notificationsAvailable))) {
+                /* Subscription State Table Row 8 */
                 setState(State.Late);
                 startPublishingTimer();
 
                 publishQueue().addSubscription(Subscription.this);
-            }
-            /* Subscription State Table Row 9 */
-            else if (messageSent && (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
+            } else if (messageSent && (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
+                /* Subscription State Table Row 9 */
                 setState(State.KeepAlive);
                 resetKeepAliveCounter();
                 startPublishingTimer();
@@ -733,8 +742,8 @@ public class Subscription {
             boolean notificationsAvailable = notificationsAvailable();
             boolean publishRequestQueued = publishQueue().isNotEmpty();
 
-            /* Subscription State Table Row 14 */
             if (publishingEnabled && notificationsAvailable && publishRequestQueued) {
+                /* Subscription State Table Row 14 */
                 Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
                     Optional.ofNullable(publishQueue().poll());
 
@@ -747,10 +756,9 @@ public class Subscription {
                 } else {
                     whenKeepAlive();
                 }
-            }
-            /* Subscription State Table Row 15 */
-            else if (publishRequestQueued && keepAliveCounter == 1 &&
+            } else if (publishRequestQueued && keepAliveCounter == 1 &&
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
+                /* Subscription State Table Row 15 */
 
                 Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
                     Optional.ofNullable(publishQueue().poll());
@@ -763,18 +771,16 @@ public class Subscription {
                 } else {
                     whenKeepAlive();
                 }
-            }
-            /* Subscription State Table Row 16 */
-            else if (keepAliveCounter > 1 &&
+            } else if (keepAliveCounter > 1 &&
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
+                /* Subscription State Table Row 16 */
 
                 keepAliveCounter--;
                 startPublishingTimer();
-            }
-            /* Subscription State Table Row 17 */
-            else if (!publishRequestQueued &&
+            } else if (!publishRequestQueued &&
                 (keepAliveCounter == 1 ||
                     (keepAliveCounter > 1 && publishingEnabled && notificationsAvailable))) {
+                /* Subscription State Table Row 17 */
 
                 setState(State.Late);
                 startPublishingTimer();

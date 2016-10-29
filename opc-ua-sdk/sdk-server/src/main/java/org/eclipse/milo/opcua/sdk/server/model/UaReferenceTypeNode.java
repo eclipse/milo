@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.model;
@@ -35,18 +35,20 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     private volatile boolean symmetric;
     private volatile Optional<LocalizedText> inverseName;
 
-    public UaReferenceTypeNode(UaNodeManager nodeManager,
-                               NodeId nodeId,
-                               QualifiedName browseName,
-                               LocalizedText displayName,
-                               Optional<LocalizedText> description,
-                               Optional<UInteger> writeMask,
-                               Optional<UInteger> userWriteMask,
-                               boolean isAbstract,
-                               boolean symmetric,
-                               Optional<LocalizedText> inverseName) {
+    public UaReferenceTypeNode(
+        UaNodeManager nodeManager,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        Optional<LocalizedText> description,
+        Optional<UInteger> writeMask,
+        Optional<UInteger> userWriteMask,
+        boolean isAbstract,
+        boolean symmetric,
+        Optional<LocalizedText> inverseName) {
 
-        super(nodeManager, nodeId, NodeClass.ReferenceType, browseName, displayName, description, writeMask, userWriteMask);
+        super(nodeManager, nodeId, NodeClass.ReferenceType,
+            browseName, displayName, description, writeMask, userWriteMask);
 
         this.isAbstract = isAbstract;
         this.symmetric = symmetric;

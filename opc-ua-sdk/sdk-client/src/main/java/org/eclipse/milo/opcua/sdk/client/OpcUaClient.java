@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.client;
@@ -453,9 +453,10 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItems(UInteger subscriptionId,
-                                                                                TimestampsToReturn timestampsToReturn,
-                                                                                List<MonitoredItemCreateRequest> itemsToCreate) {
+    public CompletableFuture<CreateMonitoredItemsResponse> createMonitoredItems(
+        UInteger subscriptionId,
+        TimestampsToReturn timestampsToReturn,
+        List<MonitoredItemCreateRequest> itemsToCreate) {
 
         return getSession().thenCompose(session -> {
             CreateMonitoredItemsRequest request = new CreateMonitoredItemsRequest(
@@ -469,9 +470,10 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItems(UInteger subscriptionId,
-                                                                                TimestampsToReturn timestampsToReturn,
-                                                                                List<MonitoredItemModifyRequest> itemsToModify) {
+    public CompletableFuture<ModifyMonitoredItemsResponse> modifyMonitoredItems(
+        UInteger subscriptionId,
+        TimestampsToReturn timestampsToReturn,
+        List<MonitoredItemModifyRequest> itemsToModify) {
 
         return getSession().thenCompose(session -> {
             ModifyMonitoredItemsRequest request = new ModifyMonitoredItemsRequest(

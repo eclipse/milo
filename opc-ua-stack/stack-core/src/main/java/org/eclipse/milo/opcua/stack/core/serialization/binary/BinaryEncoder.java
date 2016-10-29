@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
@@ -307,7 +307,9 @@ public class BinaryEncoder implements UaEncoder {
             buffer.writeShort(namespaceIndex);
             encodeByteString(null, identifier);
         } else {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, "invalid identifier: " + value.getIdentifier());
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "invalid identifier: " + value.getIdentifier());
         }
     }
 
@@ -367,7 +369,9 @@ public class BinaryEncoder implements UaEncoder {
             buffer.writeShort(namespaceIndex);
             encodeByteString(null, identifier);
         } else {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, "invalid identifier: " + value.getIdentifier());
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "invalid identifier: " + value.getIdentifier());
         }
 
         if (namespaceUri != null && namespaceUri.length() > 0) {
@@ -450,6 +454,9 @@ public class BinaryEncoder implements UaEncoder {
 
                     break;
                 }
+
+                default:
+                    throw new IllegalStateException("unknown body type: " + value.getBodyType());
             }
         }
     }
@@ -617,7 +624,10 @@ public class BinaryEncoder implements UaEncoder {
     }
 
     @Override
-    public <T> void encodeArray(String field, T[] values, BiConsumer<String, T> consumer) throws UaSerializationException {
+    public <T> void encodeArray(
+        String field, T[] values,
+        BiConsumer<String, T> consumer) throws UaSerializationException {
+
         if (values == null) {
             buffer.writeInt(-1);
         } else {

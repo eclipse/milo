@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.server.handlers;
@@ -377,7 +377,11 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         sendOpenSecureChannelResponse(ctx, requestId, response);
     }
 
-    private void sendOpenSecureChannelResponse(ChannelHandlerContext ctx, long requestId, OpenSecureChannelResponse response) {
+    private void sendOpenSecureChannelResponse(
+        ChannelHandlerContext ctx,
+        long requestId,
+        OpenSecureChannelResponse response) {
+
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.buffer();
 

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.core.util;
@@ -57,22 +57,6 @@ public class ManifestUtil {
         return attributes;
     }
 
-    private static Set<URI> uris() {
-        try {
-            Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources("META-INF/MANIFEST.MF");
-
-            Set<URI> uris = new HashSet<>();
-            while (resources.hasMoreElements()) {
-                uris.add(resources.nextElement().toURI());
-            }
-
-            return uris;
-        } catch (Throwable t) {
-            logger.error("uris() failed", t);
-            return Collections.emptySet();
-        }
-    }
-
     private static Map<String, String> load(URL url) throws IOException {
         return load(url.openStream());
     }
@@ -99,6 +83,23 @@ public class ManifestUtil {
         }
 
         return props;
+    }
+
+    private static Set<URI> uris() {
+        try {
+            Enumeration<URL> resources = Thread.currentThread()
+                .getContextClassLoader().getResources("META-INF/MANIFEST.MF");
+
+            Set<URI> uris = new HashSet<>();
+            while (resources.hasMoreElements()) {
+                uris.add(resources.nextElement().toURI());
+            }
+
+            return uris;
+        } catch (Throwable t) {
+            logger.error("uris() failed", t);
+            return Collections.emptySet();
+        }
     }
 
 }

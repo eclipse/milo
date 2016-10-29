@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.items;
@@ -28,14 +28,14 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
-public abstract class BaseMonitoredItem<ValueType> implements MonitoredItem {
+public abstract class BaseMonitoredItem<T> implements MonitoredItem {
 
     private static final int MAX_QUEUE_SIZE = 0xFFFF;
 
     protected volatile Map<UInteger, BaseMonitoredItem<?>> triggeredItems;
     protected volatile boolean triggered = false;
 
-    protected volatile RingBuffer<ValueType> queue;
+    protected volatile RingBuffer<T> queue;
 
     protected volatile long clientHandle;
     protected volatile int queueSize;
@@ -48,15 +48,16 @@ public abstract class BaseMonitoredItem<ValueType> implements MonitoredItem {
     protected volatile MonitoringMode monitoringMode;
     protected volatile TimestampsToReturn timestamps;
 
-    protected BaseMonitoredItem(UInteger id,
-                                UInteger subscriptionId,
-                                ReadValueId readValueId,
-                                MonitoringMode monitoringMode,
-                                TimestampsToReturn timestamps,
-                                UInteger clientHandle,
-                                double samplingInterval,
-                                UInteger queueSize,
-                                boolean discardOldest) {
+    protected BaseMonitoredItem(
+        UInteger id,
+        UInteger subscriptionId,
+        ReadValueId readValueId,
+        MonitoringMode monitoringMode,
+        TimestampsToReturn timestamps,
+        UInteger clientHandle,
+        double samplingInterval,
+        UInteger queueSize,
+        boolean discardOldest) {
 
         this.id = id;
         this.subscriptionId = subscriptionId;
@@ -117,7 +118,7 @@ public abstract class BaseMonitoredItem<ValueType> implements MonitoredItem {
         if (queueSize.intValue() != this.queueSize) {
             setQueueSize(queueSize);
 
-            RingBuffer<ValueType> oldQueue = queue;
+            RingBuffer<T> oldQueue = queue;
             queue = new RingBuffer<>(this.queueSize);
 
             while (oldQueue.size() > 0) {
@@ -126,7 +127,7 @@ public abstract class BaseMonitoredItem<ValueType> implements MonitoredItem {
         }
     }
 
-    protected abstract void enqueue(ValueType value);
+    protected abstract void enqueue(T value);
 
     public void setMonitoringMode(MonitoringMode monitoringMode) {
         this.monitoringMode = monitoringMode;
@@ -190,6 +191,6 @@ public abstract class BaseMonitoredItem<ValueType> implements MonitoredItem {
 
     protected abstract void installFilter(ExtensionObject filterXo) throws UaException;
 
-    protected abstract UaStructure wrapQueueValue(ValueType value);
+    protected abstract UaStructure wrapQueueValue(T value);
 
 }

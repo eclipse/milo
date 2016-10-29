@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.util;
@@ -173,7 +173,8 @@ public class AttributeReader {
         }
     }
 
-    private static DataValue readReferenceTypeAttribute(ReferenceTypeNode node, AttributeId attributeId) throws UaException {
+    private static DataValue readReferenceTypeAttribute(ReferenceTypeNode node,
+                                                        AttributeId attributeId) throws UaException {
         switch (attributeId) {
             case IsAbstract:
                 return dv(node.getIsAbstract());
@@ -227,7 +228,8 @@ public class AttributeReader {
         }
     }
 
-    private static DataValue readVariableTypeAttribute(VariableTypeNode node, AttributeId attributeId) throws UaException {
+    private static DataValue readVariableTypeAttribute(VariableTypeNode node,
+                                                       AttributeId attributeId) throws UaException {
         switch (attributeId) {
             case Value:
                 return node.getValue().orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.util;
@@ -92,11 +92,13 @@ public class SubscriptionModel {
             .filter(DataItem::isSamplingEnabled)
             .collect(Collectors.groupingBy(DataItem::getSamplingInterval));
 
-        List<ScheduledUpdate> updates = bySamplingInterval.keySet().stream().map(samplingInterval -> {
-            List<DataItem> items = bySamplingInterval.get(samplingInterval);
+        List<ScheduledUpdate> updates = bySamplingInterval.keySet().stream()
+            .map(samplingInterval -> {
+                List<DataItem> items = bySamplingInterval.get(samplingInterval);
 
-            return new ScheduledUpdate(samplingInterval, items);
-        }).collect(Collectors.toList());
+                return new ScheduledUpdate(samplingInterval, items);
+            })
+            .collect(Collectors.toList());
 
         schedule.forEach(ScheduledUpdate::cancel);
         schedule.clear();

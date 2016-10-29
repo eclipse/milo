@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.stack.server.tcp;
@@ -208,10 +208,11 @@ public class UaTcpStackServer implements UaStackServer {
 
         serviceRequest.getFuture().whenComplete((response, throwable) -> {
             long requestId = serviceRequest.getRequestId();
+            UaRequestMessage request = serviceRequest.getRequest();
 
             ServiceResponse serviceResponse = response != null ?
-                new ServiceResponse(serviceRequest.getRequest(), requestId, response) :
-                new ServiceResponse(serviceRequest.getRequest(), requestId, serviceRequest.createServiceFault(throwable));
+                new ServiceResponse(request, requestId, response) :
+                new ServiceResponse(request, requestId, serviceRequest.createServiceFault(throwable));
 
             ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
             boolean secureChannelValid = secureChannels.containsKey(secureChannel.getChannelId());
@@ -384,8 +385,9 @@ public class UaTcpStackServer implements UaStackServer {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends UaRequestMessage, U extends UaResponseMessage>
-    void addRequestHandler(Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler) {
+    public <T extends UaRequestMessage, U extends UaResponseMessage> void addRequestHandler(
+        Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler) {
+
         ServiceRequestHandler<UaRequestMessage, UaResponseMessage> handler =
             (ServiceRequestHandler<UaRequestMessage, UaResponseMessage>) requestHandler;
 

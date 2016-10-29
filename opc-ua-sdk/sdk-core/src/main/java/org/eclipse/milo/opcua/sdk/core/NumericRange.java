@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.core;
@@ -51,7 +51,7 @@ public final class NumericRange {
         return bounds.length;
     }
 
-    private Bounds getBounds(int dimension) {
+    private Bounds getDimensionBounds(int dimension) {
         return bounds[dimension - 1];
     }
 
@@ -119,8 +119,9 @@ public final class NumericRange {
 
     private static Object readFromValueAtRange(Object array, NumericRange range, int dimension) throws UaException {
         int dimensionCount = range.getDimensionCount();
-        Bounds bounds = range.getBounds(dimension);
-        int low = bounds.low, high = bounds.high;
+        Bounds bounds = range.getDimensionBounds(dimension);
+        int low = bounds.low;
+        int high = bounds.high;
         int len = high - low + 1;
 
         if (dimension == dimensionCount) {
@@ -159,7 +160,10 @@ public final class NumericRange {
         }
     }
 
-    public static Object writeToValueAtRange(Variant currentVariant, Variant updateVariant, NumericRange range) throws UaException {
+    public static Object writeToValueAtRange(Variant currentVariant,
+                                             Variant updateVariant,
+                                             NumericRange range) throws UaException {
+
         Object current = currentVariant.getValue();
         Object update = updateVariant.getValue();
 
@@ -174,10 +178,15 @@ public final class NumericRange {
         }
     }
 
-    private static Object writeToValueAtRange(Object current, Object update, NumericRange range, int dimension) throws UaException {
+    private static Object writeToValueAtRange(Object current,
+                                              Object update,
+                                              NumericRange range,
+                                              int dimension) throws UaException {
+
         int dimensionCount = range.getDimensionCount();
-        Bounds bounds = range.getBounds(dimension);
-        int low = bounds.low, high = bounds.high;
+        Bounds bounds = range.getDimensionBounds(dimension);
+        int low = bounds.low;
+        int high = bounds.high;
 
         if (dimension == dimensionCount) {
             if (current.getClass().isArray()) {

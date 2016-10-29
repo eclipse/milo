@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.client;
@@ -252,6 +252,42 @@ class ClientSessionManager {
         }
     }
 
+    private void closeSession(Closing closingState, CompletableFuture<OpcUaSession> sessionFuture) {
+        sessionFuture.whenComplete((session, ex) -> {
+            if (session != null) {
+                UaTcpStackClient stackClient = client.getStackClient();
+
+                RequestHeader requestHeader = new RequestHeader(
+                    session.getAuthenticationToken(),
+                    DateTime.now(),
+                    client.nextRequestHandle(),
+                    uint(0),
+                    null,
+                    uint(5000),
+                    null
+                );
+
+                CloseSessionRequest request = new CloseSessionRequest(requestHeader, true);
+
+                logger.debug("Sending CloseSessionRequest...");
+
+                stackClient.<CloseSessionResponse>sendRequest(request).whenCompleteAsync((csr, ex2) -> {
+                    if (ex2 != null) {
+                        logger.debug("CloseSession failed: {}", ex2.getMessage(), ex2);
+                    } else {
+                        logger.debug("Session closed: {}", session.getSessionId());
+                    }
+
+                    state.compareAndSet(closingState, new Inactive());
+                    closingState.closeFuture.complete(session);
+                });
+            } else {
+                state.compareAndSet(closingState, new Inactive());
+                closingState.closeFuture.completeExceptionally(ex);
+            }
+        });
+    }
+
     private void notifySessionActive(OpcUaSession session) {
         listeners.forEach(listener -> {
             try {
@@ -275,24 +311,28 @@ class ClientSessionManager {
     private void createSession(Creating creatingState) {
         UaTcpStackClient stackClient = client.getStackClient();
 
-        String serverUri = stackClient.getEndpoint().flatMap(e -> {
-            String gatewayServerUri = e.getServer().getGatewayServerUri();
-            if (gatewayServerUri != null && !gatewayServerUri.isEmpty()) {
-                return Optional.ofNullable(e.getServer().getApplicationUri());
-            } else {
-                return Optional.empty();
-            }
-        }).orElse(null);
+        String serverUri = stackClient.getEndpoint()
+            .flatMap(e -> {
+                String gatewayServerUri = e.getServer().getGatewayServerUri();
+                if (gatewayServerUri != null && !gatewayServerUri.isEmpty()) {
+                    return Optional.ofNullable(e.getServer().getApplicationUri());
+                } else {
+                    return Optional.empty();
+                }
+            })
+            .orElse(null);
 
         ByteString clientNonce = NonceUtil.generateNonce(32);
 
-        ByteString clientCertificate = stackClient.getConfig().getCertificate().map(c -> {
-            try {
-                return ByteString.of(c.getEncoded());
-            } catch (CertificateEncodingException e) {
-                return ByteString.NULL_VALUE;
-            }
-        }).orElse(ByteString.NULL_VALUE);
+        ByteString clientCertificate = stackClient.getConfig().getCertificate()
+            .map(c -> {
+                try {
+                    return ByteString.of(c.getEncoded());
+                } catch (CertificateEncodingException e) {
+                    return ByteString.NULL_VALUE;
+                }
+            })
+            .orElse(ByteString.NULL_VALUE);
 
         CreateSessionRequest request = new CreateSessionRequest(
             client.newRequestHeader(),
@@ -604,42 +644,6 @@ class ClientSessionManager {
                             sessionFuture.completeExceptionally(ex));
                     }
                 }
-            }
-        });
-    }
-
-    private void closeSession(Closing closingState, CompletableFuture<OpcUaSession> sessionFuture) {
-        sessionFuture.whenComplete((session, ex) -> {
-            if (session != null) {
-                UaTcpStackClient stackClient = client.getStackClient();
-
-                RequestHeader requestHeader = new RequestHeader(
-                    session.getAuthenticationToken(),
-                    DateTime.now(),
-                    client.nextRequestHandle(),
-                    uint(0),
-                    null,
-                    uint(5000),
-                    null
-                );
-
-                CloseSessionRequest request = new CloseSessionRequest(requestHeader, true);
-
-                logger.debug("Sending CloseSessionRequest...");
-
-                stackClient.<CloseSessionResponse>sendRequest(request).whenCompleteAsync((csr, ex2) -> {
-                    if (ex2 != null) {
-                        logger.debug("CloseSession failed: {}", ex2.getMessage(), ex2);
-                    } else {
-                        logger.debug("Session closed: {}", session.getSessionId());
-                    }
-
-                    state.compareAndSet(closingState, new Inactive());
-                    closingState.closeFuture.complete(session);
-                });
-            } else {
-                state.compareAndSet(closingState, new Inactive());
-                closingState.closeFuture.completeExceptionally(ex);
             }
         });
     }

@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.services.helpers;
@@ -27,7 +27,6 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -52,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
+import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.jooq.lambda.tuple.Tuple3;
 
@@ -85,10 +85,11 @@ public class BrowseHelper {
         }
     }
 
-    public static CompletableFuture<BrowseResult> browse(OpcUaServer server,
-                                                         ViewDescription view,
-                                                         UInteger maxReferencesPerNode,
-                                                         BrowseDescription browseDescription) {
+    public static CompletableFuture<BrowseResult> browse(
+        OpcUaServer server,
+        ViewDescription view,
+        UInteger maxReferencesPerNode,
+        BrowseDescription browseDescription) {
 
         Browse browse = new Browse(
             server,
@@ -173,10 +174,12 @@ public class BrowseHelper {
                     BrowseContinuationPoint c = new BrowseContinuationPoint(references, max);
                     server.getBrowseContinuationPoints().put(c.identifier, c);
 
-                    return new BrowseResult(StatusCode.GOOD, c.identifier, current.toArray(new ReferenceDescription[current.size()]));
+                    return new BrowseResult(
+                        StatusCode.GOOD, c.identifier, current.toArray(new ReferenceDescription[current.size()]));
                 }
             } else {
-                return new BrowseResult(StatusCode.GOOD, null, references.toArray(new ReferenceDescription[references.size()]));
+                return new BrowseResult(
+                    StatusCode.GOOD, null, references.toArray(new ReferenceDescription[references.size()]));
             }
         }
 

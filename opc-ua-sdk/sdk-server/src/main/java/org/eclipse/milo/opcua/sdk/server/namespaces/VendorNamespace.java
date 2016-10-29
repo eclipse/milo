@@ -6,9 +6,9 @@
  * and Eclipse Distribution License v1.0 which accompany this distribution.
  *
  * The Eclipse Public License is available at
- * 	http://www.eclipse.org/legal/epl-v10.html
+ *   http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
- * 	http://www.eclipse.org/org/documents/edl-v10.html.
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
 package org.eclipse.milo.opcua.sdk.server.namespaces;
@@ -92,7 +92,12 @@ public class VendorNamespace implements Namespace {
     }
 
     @Override
-    public void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds) {
+    public void read(
+        ReadContext context,
+        Double maxAge,
+        TimestampsToReturn timestamps,
+        List<ReadValueId> readValueIds) {
+
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId id : readValueIds) {
@@ -110,13 +115,15 @@ public class VendorNamespace implements Namespace {
 
     @Override
     public void write(WriteContext context, List<WriteValue> writeValues) {
-        List<StatusCode> results = writeValues.stream().map(value -> {
-            if (nodeManager.containsKey(value.getNodeId())) {
-                return new StatusCode(StatusCodes.Bad_NotWritable);
-            } else {
-                return new StatusCode(StatusCodes.Bad_NodeIdUnknown);
-            }
-        }).collect(toList());
+        List<StatusCode> results = writeValues.stream()
+            .map(value -> {
+                if (nodeManager.containsKey(value.getNodeId())) {
+                    return new StatusCode(StatusCodes.Bad_NotWritable);
+                } else {
+                    return new StatusCode(StatusCodes.Bad_NodeIdUnknown);
+                }
+            })
+            .collect(toList());
 
         context.complete(results);
     }
