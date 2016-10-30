@@ -29,7 +29,7 @@
 
     <licenses>
         <license>
-            <name>Eclipse Public License 1.0</name>e
+            <name>Eclipse Public License 1.0</name>
             <url>https://eclipse.org/org/documents/epl-v10.php</url>
             <distribution>repo</distribution>
         </license>
