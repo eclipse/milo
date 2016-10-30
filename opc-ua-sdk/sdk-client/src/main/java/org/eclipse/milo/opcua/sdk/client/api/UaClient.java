@@ -13,12 +13,9 @@
 
 package org.eclipse.milo.opcua.sdk.client.api;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.AddressSpace;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.services.AttributeServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.MethodServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.MonitoredItemServices;
@@ -78,15 +75,5 @@ public interface UaClient extends AttributeServices,
      * @return a {@link CompletableFuture} holding the response.
      */
     <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request);
-
-    /**
-     * Send multiple {@link UaRequestMessage}s.
-     *
-     * @param requests the requests to send.
-     * @param futures  the {@link CompletableFuture}s to complete when responses arrive.
-     */
-    void sendRequests(List<? extends UaRequestMessage> requests,
-                      List<CompletableFuture<? extends UaResponseMessage>> futures);
-
 
 }
