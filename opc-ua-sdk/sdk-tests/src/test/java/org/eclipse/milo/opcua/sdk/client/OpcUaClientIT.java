@@ -33,7 +33,7 @@ import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.attached.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
@@ -187,10 +187,10 @@ public class OpcUaClientIT {
     public void testRead() throws Exception {
         logger.info("testRead()");
 
-        UaVariableNode currentTimeNode = client.getAddressSpace()
-            .getVariableNode(Identifiers.Server_ServerStatus_CurrentTime);
+        VariableNode currentTimeNode = client.getAddressSpace()
+            .createVariableNode(Identifiers.Server_ServerStatus_CurrentTime);
 
-        assertNotNull(currentTimeNode.readValueAttribute().get());
+        assertNotNull(currentTimeNode.getValue().get());
     }
 
     @Test
@@ -199,10 +199,10 @@ public class OpcUaClientIT {
 
         NodeId nodeId = new NodeId(2, "/Static/AllProfiles/Scalar/Int32");
 
-        UaVariableNode variableNode = client.getAddressSpace().getVariableNode(nodeId);
+        VariableNode variableNode = client.getAddressSpace().createVariableNode(nodeId);
 
         // read the existing value
-        Object valueBefore = variableNode.readValueAttribute().get();
+        Object valueBefore = variableNode.getValue().get();
         assertNotNull(valueBefore);
 
         // write a new random value
@@ -211,7 +211,7 @@ public class OpcUaClientIT {
         assertTrue(writeStatus.isGood());
 
         // read the value again
-        Object valueAfter = variableNode.readValueAttribute().get();
+        Object valueAfter = variableNode.getValue().get();
         assertNotNull(valueAfter);
 
         assertNotEquals(valueBefore, valueAfter);
@@ -563,10 +563,10 @@ public class OpcUaClientIT {
 
         OpcUaClient client = new OpcUaClient(clientConfig);
 
-        UaVariableNode currentTimeNode = client.getAddressSpace()
-            .getVariableNode(Identifiers.Server_ServerStatus_CurrentTime);
+        VariableNode currentTimeNode = client.getAddressSpace()
+            .createVariableNode(Identifiers.Server_ServerStatus_CurrentTime);
 
-        assertNotNull(currentTimeNode.readValueAttribute().get());
+        assertNotNull(currentTimeNode.getValue().get());
 
         // Kill the session. Client can't and won't be notified of this.
         logger.info("killing session...");
@@ -576,7 +576,7 @@ public class OpcUaClientIT {
         // Expect the next action to fail because the session is no longer valid.
         try {
             logger.info("reading, expecting failure...");
-            currentTimeNode.readValueAttribute().get();
+            currentTimeNode.getValue().get();
         } catch (Throwable t) {
             StatusCode statusCode = UaServiceFaultException.extract(t)
                 .map(UaException::getStatusCode)
@@ -592,7 +592,7 @@ public class OpcUaClientIT {
         client.connect().get();
 
         logger.info("reading, expecting success...");
-        assertNotNull(currentTimeNode.readValueAttribute().get());
+        assertNotNull(currentTimeNode.getValue().get());
 
         client.disconnect().get();
     }
