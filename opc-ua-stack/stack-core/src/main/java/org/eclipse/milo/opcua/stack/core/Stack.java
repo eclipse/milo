@@ -170,11 +170,29 @@ public final class Stack {
 
         if (SCHEDULED_EXECUTOR_SERVICE != null) {
             SCHEDULED_EXECUTOR_SERVICE.shutdown();
-            SCHEDULED_EXECUTOR_SERVICE = null;
         }
 
         if (EXECUTOR_SERVICE != null) {
             EXECUTOR_SERVICE.shutdown();
+        }
+
+        if (SCHEDULED_EXECUTOR_SERVICE != null) {
+            try {
+                SCHEDULED_EXECUTOR_SERVICE.awaitTermination(timeout, unit);
+            } catch (InterruptedException e) {
+                LoggerFactory.getLogger(Stack.class)
+                    .warn("Interrupted awaiting scheduled executor service shutdown.", e);
+            }
+            SCHEDULED_EXECUTOR_SERVICE = null;
+        }
+
+        if (EXECUTOR_SERVICE != null) {
+            try {
+                EXECUTOR_SERVICE.awaitTermination(timeout, unit);
+            } catch (InterruptedException e) {
+                LoggerFactory.getLogger(Stack.class)
+                    .warn("Interrupted awaiting executor service shutdown.", e);
+            }
             EXECUTOR_SERVICE = null;
         }
 
