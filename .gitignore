@@ -9,6 +9,7 @@
 .settings/
 .project
 .classpath
+.checkstyle
 
 # IntelliJ #
 *.iml

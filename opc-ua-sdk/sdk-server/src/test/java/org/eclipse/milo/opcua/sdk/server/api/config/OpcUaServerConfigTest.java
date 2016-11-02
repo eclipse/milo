@@ -25,7 +25,7 @@ public class OpcUaServerConfigTest {
             .setHostname("testHostname")
             .setBindAddresses(Lists.newArrayList("127.0.0.1", "0.0.0.0"))
             .setBindPort(12345)
-            .setIdentityValidator(new AnonymousIdentityValidator())
+            .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))
             .setLimits(new OpcUaServerConfigLimits() {})
             .build();

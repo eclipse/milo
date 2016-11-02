@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,8 +20,20 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 
-public class AnonymousIdentityValidator extends AbstractIdentityValidator {
+public final class AnonymousIdentityValidator extends AbstractIdentityValidator {
 
+    /**
+     * A static instance implementing AnonymousIdentityValidator
+     */
+    public static final IdentityValidator INSTANCE = new AnonymousIdentityValidator();
+    
+    /**
+     * @deprecated Use {@link #INSTANCE} instead 
+     */
+    @Deprecated
+    public AnonymousIdentityValidator() {
+    }
+    
     @Override
     public Object validateAnonymousToken(
         SecureChannel channel,
