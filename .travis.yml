@@ -1,6 +1,16 @@
 language: java
 
+sudo: false
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+    - $HOME/.m2
+
 jdk:
   - oraclejdk8
 
-script: mvn clean verify
+script: mvn clean install
