@@ -13,8 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.items;
 
-import org.eclipse.milo.opcua.sdk.core.model.objects.BaseEventType;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
+import org.eclipse.milo.opcua.sdk.server.model.types.objects.BaseEventType;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;

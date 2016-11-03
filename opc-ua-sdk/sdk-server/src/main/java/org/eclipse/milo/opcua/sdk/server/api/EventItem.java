@@ -14,7 +14,7 @@
 package org.eclipse.milo.opcua.sdk.server.api;
 
 import com.google.common.eventbus.Subscribe;
-import org.eclipse.milo.opcua.sdk.core.model.objects.BaseEventType;
+import org.eclipse.milo.opcua.sdk.server.model.types.objects.BaseEventType;
 
 public interface EventItem extends MonitoredItem {
 
