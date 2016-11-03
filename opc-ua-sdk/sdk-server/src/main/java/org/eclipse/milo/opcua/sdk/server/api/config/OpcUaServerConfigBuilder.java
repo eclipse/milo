@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -42,7 +42,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
     private List<String> bindAddresses = newArrayList("0.0.0.0");
     private int bindPort = Stack.DEFAULT_PORT;
     private EnumSet<SecurityPolicy> securityPolicies = EnumSet.of(SecurityPolicy.None);
-    private IdentityValidator identityValidator = new AnonymousIdentityValidator();
+    private IdentityValidator identityValidator = AnonymousIdentityValidator.INSTANCE;
 
     private BuildInfo buildInfo = new BuildInfo(
         "", "", "", "", "", DateTime.MIN_VALUE);
