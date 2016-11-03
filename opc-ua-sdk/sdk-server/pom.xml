@@ -57,19 +57,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <!-- configuration inherited rom pluginManagement -->
-                <configuration>
-                    <excludes>
-                        <exclude>**/Ua*Loader.*</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
