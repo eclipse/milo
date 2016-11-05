@@ -21,6 +21,11 @@ import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Files.createTempDir;
@@ -60,6 +65,22 @@ public class ExampleServer {
         server.getNamespaceManager().registerAndAdd(
             ExampleNamespace.NAMESPACE_URI,
             idx -> new ExampleNamespace(server, idx));
+
+        server.getServer().addRequestHandler(TestStackRequest.class, service -> {
+            TestStackRequest request = service.getRequest();
+
+            ResponseHeader header = service.createResponseHeader();
+
+            service.setResponse(new TestStackResponse(header, request.getInput()));
+        });
+
+        server.getServer().addRequestHandler(TestStackExRequest.class, service -> {
+            TestStackExRequest request = service.getRequest();
+
+            ResponseHeader header = service.createResponseHeader();
+
+            service.setResponse(new TestStackExResponse(header, request.getInput()));
+        });
     }
 
     public OpcUaServer getServer() {
