@@ -13,19 +13,22 @@
 
 package org.eclipse.milo.examples.server;
 
+import java.io.File;
+import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
+import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Files.createTempDir;
@@ -34,7 +37,7 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 
 public class ExampleServer {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
+    public static void main(String[] args) throws Exception {
         ExampleServer server = new ExampleServer();
 
         server.startup().get();
@@ -48,16 +51,32 @@ public class ExampleServer {
 
     private final OpcUaServer server;
 
-    public ExampleServer() throws ExecutionException, InterruptedException {
+    public ExampleServer() throws Exception {
+        KeyStoreLoader loader = new KeyStoreLoader().load();
+
+        DefaultCertificateManager certificateManager = new DefaultCertificateManager(
+            loader.getServerKeyPair(),
+            loader.getServerCertificate()
+        );
+
+        File tempDir = createTempDir();
+
+        LoggerFactory.getLogger(getClass())
+            .info("security temp dir: {}", tempDir.getAbsolutePath());
+
+        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(tempDir);
+
+
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
             .setBindAddresses(newArrayList("localhost"))
             .setBindPort(12686)
-            .setCertificateManager(new DefaultCertificateManager())
-            .setCertificateValidator(new DefaultCertificateValidator(createTempDir()))
+            .setCertificateManager(certificateManager)
+            .setCertificateValidator(certificateValidator)
             .setServerName("example")
             .setUserTokenPolicies(singletonList(USER_TOKEN_POLICY_ANONYMOUS))
+            .setSecurityPolicies(EnumSet.of(SecurityPolicy.None, SecurityPolicy.Basic128Rsa15))
             .build();
 
         server = new OpcUaServer(serverConfig);
