@@ -1,4 +1,6 @@
 # Eclipse Milo
+[![Build status](https://travis-ci.org/eclipse/milo.svg?branch=master)](https://travis-ci.org/eclipse/milo)
+
 Milo is an open-source implementation of OPC-UA. It includes a high-performance stack (channels, serialization, data structures, security) as well as client and server SDKs built on top of the stack.
 
 While this project has existed for some time, it is new to the Eclipse foundation and is therefore considered to be in [incubation](https://eclipse.org/projects/dev_process/development_process.php#6_2_3_Incubation). While in incubation it will continue to use `0.x.x` versions. An initial release and graduation from the incubation phase is planned for the end of this year, after the OPC interop event in Nuremberg.
