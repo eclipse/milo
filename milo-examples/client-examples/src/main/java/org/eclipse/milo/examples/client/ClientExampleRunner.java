@@ -44,7 +44,7 @@ public class ClientExampleRunner {
 
     private final ClientExample clientExample;
 
-    public ClientExampleRunner(ClientExample clientExample) throws ExecutionException, InterruptedException {
+    public ClientExampleRunner(ClientExample clientExample) throws Exception {
         this.clientExample = clientExample;
 
         exampleServer = new ExampleServer();
