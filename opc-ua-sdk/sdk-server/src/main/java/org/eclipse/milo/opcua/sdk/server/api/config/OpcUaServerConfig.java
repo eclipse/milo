@@ -15,7 +15,9 @@ package org.eclipse.milo.opcua.sdk.server.api.config;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
@@ -106,6 +108,12 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     OpcUaServerConfigLimits getLimits();
 
     /**
+     * @return the lookup function that resolves a bind address to one or more hostnames which will be used to build a
+     * list of endpoints for the server.
+     */
+    Function<String, Set<String>> getHostnameResolver();
+
+    /**
      * @return a {@link OpcUaServerConfigBuilder}.
      */
     static OpcUaServerConfigBuilder builder() {
@@ -144,6 +152,7 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
         builder.setIdentityValidator(config.getIdentityValidator());
         builder.setBuildInfo(config.getBuildInfo());
         builder.setLimits(config.getLimits());
+        builder.setHostnameResolver(config.getHostnameResolver());
 
         return builder;
     }
