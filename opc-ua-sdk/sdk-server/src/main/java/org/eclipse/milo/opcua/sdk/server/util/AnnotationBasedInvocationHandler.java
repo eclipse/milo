@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -136,8 +137,8 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
             try {
                 Object[] parameters = new Object[1 + inputs.length + outputs.length];
 
-                org.eclipse.milo.opcua.sdk.server.model.UaObjectNode objectNode =
-                    (org.eclipse.milo.opcua.sdk.server.model.UaObjectNode) nodeManager.getNode(objectId)
+                UaObjectNode objectNode =
+                    (UaObjectNode) nodeManager.getNode(objectId)
                         .orElseThrow(() -> new Exception("owner Object node found"));
 
                 InvocationContext context = new InvocationContextImpl(objectNode, future, inputArgumentResults, latch);
@@ -272,7 +273,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     }
 
     public static interface InvocationContext {
-        org.eclipse.milo.opcua.sdk.server.model.UaObjectNode getObjectNode();
+        UaObjectNode getObjectNode();
 
         void setFailure(UaException failure);
     }
@@ -305,13 +306,13 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     }
 
     private static class InvocationContextImpl implements InvocationContext {
-        private final org.eclipse.milo.opcua.sdk.server.model.UaObjectNode objectNode;
+        private final UaObjectNode objectNode;
         private final CompletableFuture<CallMethodResult> future;
         private final StatusCode[] inputArgumentResults;
         private final CountDownLatch latch;
 
         private InvocationContextImpl(
-            org.eclipse.milo.opcua.sdk.server.model.UaObjectNode objectNode,
+            UaObjectNode objectNode,
             CompletableFuture<CallMethodResult> future,
             StatusCode[] inputArgumentResults,
             CountDownLatch latch) {
@@ -323,7 +324,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
         }
 
         @Override
-        public org.eclipse.milo.opcua.sdk.server.model.UaObjectNode getObjectNode() {
+        public UaObjectNode getObjectNode() {
             return objectNode;
         }
 

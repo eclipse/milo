@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -71,7 +72,7 @@ public class AttributeWriterTest {
     private void testWriteConversion(
         Variant value,
         NodeId dataType,
-        Consumer<org.eclipse.milo.opcua.sdk.server.model.UaVariableNode> nodeCustomizer) throws UaException {
+        Consumer<UaVariableNode> nodeCustomizer) throws UaException {
 
         testWriteConversion(new DataValue(value), dataType, nodeCustomizer);
 
@@ -80,9 +81,9 @@ public class AttributeWriterTest {
     private void testWriteConversion(
         DataValue value,
         NodeId dataType,
-        Consumer<org.eclipse.milo.opcua.sdk.server.model.UaVariableNode> nodeCustomizer) throws UaException {
+        Consumer<UaVariableNode> nodeCustomizer) throws UaException {
 
-        final org.eclipse.milo.opcua.sdk.server.model.UaVariableNode varNode = createMockNode("test", node -> {
+        final UaVariableNode varNode = createMockNode("test", node -> {
             node.setAccessLevel(Unsigned.ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)));
             if (nodeCustomizer != null) {
                 nodeCustomizer.accept(node);
@@ -96,16 +97,16 @@ public class AttributeWriterTest {
         AttributeWriter.writeAttribute(null, varNode, AttributeId.Value, value, null);
     }
 
-    private org.eclipse.milo.opcua.sdk.server.model.UaVariableNode createMockNode(
+    private UaVariableNode createMockNode(
         String id,
-        Consumer<org.eclipse.milo.opcua.sdk.server.model.UaVariableNode> nodeCustomizer) {
+        Consumer<UaVariableNode> nodeCustomizer) {
 
         final NodeId nodeId = new NodeId(0, id);
 
         final QualifiedName browseName = new QualifiedName(0, id);
         final LocalizedText displayName = LocalizedText.english(id);
 
-        final org.eclipse.milo.opcua.sdk.server.model.UaVariableNode node = new org.eclipse.milo.opcua.sdk.server.model.UaVariableNode(
+        final UaVariableNode node = new UaVariableNode(
             null, nodeId, browseName, displayName);
 
         if (nodeCustomizer != null) {

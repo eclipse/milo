@@ -17,8 +17,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.sdk.core.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeWriter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;

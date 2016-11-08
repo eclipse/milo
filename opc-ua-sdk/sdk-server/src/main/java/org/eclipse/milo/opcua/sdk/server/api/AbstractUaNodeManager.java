@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.ForwardingConcurrentMap;
 import com.google.common.collect.MapMaker;
-import org.eclipse.milo.opcua.sdk.server.model.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public abstract class AbstractUaNodeManager extends ForwardingConcurrentMap<NodeId, UaNode> implements UaNodeManager {
