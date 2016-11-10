@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -31,7 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 
-@UaVariableNode(typeName = "0:SessionSecurityDiagnosticsType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:SessionSecurityDiagnosticsType")
 public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode implements SessionSecurityDiagnosticsType {
 
     public SessionSecurityDiagnosticsNode(
@@ -64,7 +63,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         SessionSecurityDiagnosticsDataType value = new SessionSecurityDiagnosticsDataType(
             getSessionId(),
             getClientUserIdOfSession(),
@@ -78,6 +77,27 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof SessionSecurityDiagnosticsDataType) {
+            SessionSecurityDiagnosticsDataType v = (SessionSecurityDiagnosticsDataType) o;
+
+            setSessionId(v.getSessionId());
+            setClientUserIdOfSession(v.getClientUserIdOfSession());
+            setClientUserIdHistory(v.getClientUserIdHistory());
+            setAuthenticationMechanism(v.getAuthenticationMechanism());
+            setEncoding(v.getEncoding());
+            setTransportProtocol(v.getTransportProtocol());
+            setSecurityMode(v.getSecurityMode());
+            setSecurityPolicyUri(v.getSecurityPolicyUri());
+            setClientCertificate(v.getClientCertificate());
+        }
     }
 
     @Override

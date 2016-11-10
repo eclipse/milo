@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -28,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaVariableNode(typeName = "0:TransitionVariableType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:TransitionVariableType")
 public class TransitionVariableNode extends BaseDataVariableNode implements TransitionVariableType {
 
     public TransitionVariableNode(
