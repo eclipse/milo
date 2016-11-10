@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -70,6 +72,7 @@ public class ApplicationDescription implements UaStructure {
 
     public String getDiscoveryProfileUri() { return _discoveryProfileUri; }
 
+    @Nullable
     public String[] getDiscoveryUrls() { return _discoveryUrls; }
 
     @Override

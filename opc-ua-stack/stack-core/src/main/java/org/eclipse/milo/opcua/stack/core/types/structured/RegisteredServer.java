@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -65,12 +67,14 @@ public class RegisteredServer implements UaStructure {
 
     public String getProductUri() { return _productUri; }
 
+    @Nullable
     public LocalizedText[] getServerNames() { return _serverNames; }
 
     public ApplicationType getServerType() { return _serverType; }
 
     public String getGatewayServerUri() { return _gatewayServerUri; }
 
+    @Nullable
     public String[] getDiscoveryUrls() { return _discoveryUrls; }
 
     public String getSemaphoreFilePath() { return _semaphoreFilePath; }

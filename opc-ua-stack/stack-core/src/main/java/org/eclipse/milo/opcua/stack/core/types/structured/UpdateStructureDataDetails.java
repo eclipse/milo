@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -46,6 +48,7 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails {
 
     public PerformUpdateType getPerformInsertReplace() { return _performInsertReplace; }
 
+    @Nullable
     public DataValue[] getUpdateValues() { return _updateValues; }
 
     @Override

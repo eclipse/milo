@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -39,6 +41,7 @@ public class EventNotificationList extends NotificationData {
         this._events = _events;
     }
 
+    @Nullable
     public EventFieldList[] getEvents() { return _events; }
 
     @Override

@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -44,6 +46,7 @@ public class BrowsePathResult implements UaStructure {
 
     public StatusCode getStatusCode() { return _statusCode; }
 
+    @Nullable
     public BrowsePathTarget[] getTargets() { return _targets; }
 
     @Override

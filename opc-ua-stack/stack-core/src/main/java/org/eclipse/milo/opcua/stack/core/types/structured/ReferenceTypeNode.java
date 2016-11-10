@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -52,6 +54,7 @@ public class ReferenceTypeNode extends TypeNode {
         this._inverseName = _inverseName;
     }
 
+    @Nullable
     public ReferenceNode[] getReferences() { return _references; }
 
     public Boolean getIsAbstract() { return _isAbstract; }

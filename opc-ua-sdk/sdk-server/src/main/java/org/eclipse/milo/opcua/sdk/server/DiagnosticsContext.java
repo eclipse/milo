@@ -13,7 +13,9 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
@@ -36,14 +38,18 @@ public class DiagnosticsContext<T> {
     }
 
     public DiagnosticInfo[] getDiagnosticInfos(T[] ts) {
+        return getDiagnosticInfos(Arrays.asList(ts));
+    }
+
+    public DiagnosticInfo[] getDiagnosticInfos(List<T> ts) {
         if (diagnosticsMap.isEmpty()) {
             return new DiagnosticInfo[0];
         } else {
-            DiagnosticInfo[] diagnostics = new DiagnosticInfo[ts.length];
+            DiagnosticInfo[] diagnostics = new DiagnosticInfo[ts.size()];
 
-            for (int i = 0; i < ts.length; i++) {
+            for (int i = 0; i < ts.size(); i++) {
                 DiagnosticInfo diagnosticInfo = diagnosticsMap.getOrDefault(
-                    ts[i], DiagnosticInfo.NULL_VALUE);
+                    ts.get(i), DiagnosticInfo.NULL_VALUE);
 
                 diagnostics[i] = diagnosticInfo;
             }

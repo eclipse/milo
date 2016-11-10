@@ -46,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class AnnotationBasedInvocationHandler implements MethodInvocationHandler {
 
@@ -93,22 +94,22 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     public void invoke(CallMethodRequest request, CompletableFuture<CallMethodResult> future) {
         NodeId objectId = request.getObjectId();
 
-        Variant[] inputVariants = request.getInputArguments();
+        List<Variant> inputVariants = l(request.getInputArguments());
 
-        if (inputVariants.length != inputArguments.size()) {
+        if (inputVariants.size() != inputArguments.size()) {
             future.complete(new CallMethodResult(
                 new StatusCode(StatusCodes.Bad_ArgumentsMissing),
                 new StatusCode[0], new DiagnosticInfo[0], new Variant[0]
             ));
         }
 
-        Object[] inputs = new Object[inputVariants.length];
-        StatusCode[] inputArgumentResults = new StatusCode[inputVariants.length];
+        Object[] inputs = new Object[inputVariants.size()];
+        StatusCode[] inputArgumentResults = new StatusCode[inputVariants.size()];
 
-        for (int i = 0; i < inputVariants.length; i++) {
+        for (int i = 0; i < inputVariants.size(); i++) {
             Argument argument = inputArguments.get(i);
 
-            Variant variant = inputVariants[i];
+            Variant variant = inputVariants.get(i);
 
             boolean dataTypeMatch = variant.getDataType()
                 .map(type -> type.equals(argument.getDataType()))

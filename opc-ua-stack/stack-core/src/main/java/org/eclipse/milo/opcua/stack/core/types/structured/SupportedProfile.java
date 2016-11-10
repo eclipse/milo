@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -65,6 +67,7 @@ public class SupportedProfile implements UaStructure {
 
     public ComplianceLevel getComplianceLevel() { return _complianceLevel; }
 
+    @Nullable
     public String[] getUnsupportedUnitIds() { return _unsupportedUnitIds; }
 
     @Override

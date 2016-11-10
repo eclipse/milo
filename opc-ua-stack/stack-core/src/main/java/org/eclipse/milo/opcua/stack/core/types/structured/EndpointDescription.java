@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -72,6 +74,7 @@ public class EndpointDescription implements UaStructure {
 
     public String getSecurityPolicyUri() { return _securityPolicyUri; }
 
+    @Nullable
     public UserTokenPolicy[] getUserIdentityTokens() { return _userIdentityTokens; }
 
     public String getTransportProfileUri() { return _transportProfileUri; }

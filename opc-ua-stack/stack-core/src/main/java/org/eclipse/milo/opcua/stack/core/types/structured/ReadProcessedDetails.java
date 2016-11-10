@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -58,6 +60,7 @@ public class ReadProcessedDetails extends HistoryReadDetails {
 
     public Double getProcessingInterval() { return _processingInterval; }
 
+    @Nullable
     public NodeId[] getAggregateType() { return _aggregateType; }
 
     public AggregateConfiguration getAggregateConfiguration() { return _aggregateConfiguration; }

@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -50,6 +52,7 @@ public class QueryDataSet implements UaStructure {
 
     public ExpandedNodeId getTypeDefinitionNode() { return _typeDefinitionNode; }
 
+    @Nullable
     public Variant[] getValues() { return _values; }
 
     @Override

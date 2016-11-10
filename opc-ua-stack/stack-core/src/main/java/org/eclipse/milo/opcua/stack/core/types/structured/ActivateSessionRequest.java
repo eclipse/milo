@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -58,8 +60,10 @@ public class ActivateSessionRequest implements UaRequestMessage {
 
     public SignatureData getClientSignature() { return _clientSignature; }
 
+    @Nullable
     public SignedSoftwareCertificate[] getClientSoftwareCertificates() { return _clientSoftwareCertificates; }
 
+    @Nullable
     public String[] getLocaleIds() { return _localeIds; }
 
     public ExtensionObject getUserIdentityToken() { return _userIdentityToken; }

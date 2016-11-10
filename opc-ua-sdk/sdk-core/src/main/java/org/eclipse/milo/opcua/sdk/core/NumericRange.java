@@ -141,7 +141,7 @@ public final class NumericRange {
                 return s.substring(low, high + 1);
             } else if (array instanceof ByteString) {
                 ByteString bs = (ByteString) array;
-                byte[] copy = Arrays.copyOfRange(bs.bytes(), low, high + 1);
+                byte[] copy = Arrays.copyOfRange(bs.bytesOrEmpty(), low, high + 1);
                 return new ByteString(copy);
             } else {
                 throw new UaException(StatusCodes.Bad_IndexRangeNoData);

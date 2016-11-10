@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -39,6 +41,7 @@ public class HistoryData implements UaStructure {
         this._dataValues = _dataValues;
     }
 
+    @Nullable
     public DataValue[] getDataValues() { return _dataValues; }
 
     @Override

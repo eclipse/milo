@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -54,8 +56,10 @@ public class ActivateSessionResponse implements UaResponseMessage {
 
     public ByteString getServerNonce() { return _serverNonce; }
 
+    @Nullable
     public StatusCode[] getResults() { return _results; }
 
+    @Nullable
     public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
 
     @Override
