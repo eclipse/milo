@@ -55,12 +55,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <!-- configuration inherited from pluginManagement -->
-            </plugin>
         </plugins>
     </build>
 
