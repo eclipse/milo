@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -76,6 +77,17 @@ public class BrowseDescription implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NodeId", _nodeId)
+            .add("BrowseDirection", _browseDirection)
+            .add("ReferenceTypeId", _referenceTypeId)
+            .add("IncludeSubtypes", _includeSubtypes)
+            .add("NodeClassMask", _nodeClassMask)
+            .add("ResultMask", _resultMask)
+            .toString();
+    }
 
     public static void encode(BrowseDescription browseDescription, UaEncoder encoder) {
         encoder.encodeNodeId("NodeId", browseDescription._nodeId);

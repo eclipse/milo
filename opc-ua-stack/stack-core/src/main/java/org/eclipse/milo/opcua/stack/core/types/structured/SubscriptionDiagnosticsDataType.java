@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -201,6 +202,42 @@ public class SubscriptionDiagnosticsDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("SessionId", _sessionId)
+            .add("SubscriptionId", _subscriptionId)
+            .add("Priority", _priority)
+            .add("PublishingInterval", _publishingInterval)
+            .add("MaxKeepAliveCount", _maxKeepAliveCount)
+            .add("MaxLifetimeCount", _maxLifetimeCount)
+            .add("MaxNotificationsPerPublish", _maxNotificationsPerPublish)
+            .add("PublishingEnabled", _publishingEnabled)
+            .add("ModifyCount", _modifyCount)
+            .add("EnableCount", _enableCount)
+            .add("DisableCount", _disableCount)
+            .add("RepublishRequestCount", _republishRequestCount)
+            .add("RepublishMessageRequestCount", _republishMessageRequestCount)
+            .add("RepublishMessageCount", _republishMessageCount)
+            .add("TransferRequestCount", _transferRequestCount)
+            .add("TransferredToAltClientCount", _transferredToAltClientCount)
+            .add("TransferredToSameClientCount", _transferredToSameClientCount)
+            .add("PublishRequestCount", _publishRequestCount)
+            .add("DataChangeNotificationsCount", _dataChangeNotificationsCount)
+            .add("EventNotificationsCount", _eventNotificationsCount)
+            .add("NotificationsCount", _notificationsCount)
+            .add("LatePublishRequestCount", _latePublishRequestCount)
+            .add("CurrentKeepAliveCount", _currentKeepAliveCount)
+            .add("CurrentLifetimeCount", _currentLifetimeCount)
+            .add("UnacknowledgedMessageCount", _unacknowledgedMessageCount)
+            .add("DiscardedMessageCount", _discardedMessageCount)
+            .add("MonitoredItemCount", _monitoredItemCount)
+            .add("DisabledMonitoredItemCount", _disabledMonitoredItemCount)
+            .add("MonitoringQueueOverflowCount", _monitoringQueueOverflowCount)
+            .add("NextSequenceNumber", _nextSequenceNumber)
+            .add("EventQueueOverFlowCount", _eventQueueOverFlowCount)
+            .toString();
+    }
 
     public static void encode(SubscriptionDiagnosticsDataType subscriptionDiagnosticsDataType, UaEncoder encoder) {
         encoder.encodeNodeId("SessionId", subscriptionDiagnosticsDataType._sessionId);

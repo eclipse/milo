@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -56,6 +57,13 @@ public class BrowsePathTarget implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("TargetId", _targetId)
+            .add("RemainingPathIndex", _remainingPathIndex)
+            .toString();
+    }
 
     public static void encode(BrowsePathTarget browsePathTarget, UaEncoder encoder) {
         encoder.encodeExpandedNodeId("TargetId", browsePathTarget._targetId);

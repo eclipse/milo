@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -60,6 +61,13 @@ public class HistoryModifiedData extends HistoryData {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("DataValues", _dataValues)
+            .add("ModificationInfos", _modificationInfos)
+            .toString();
+    }
 
     public static void encode(HistoryModifiedData historyModifiedData, UaEncoder encoder) {
         encoder.encodeArray("DataValues", historyModifiedData._dataValues, encoder::encodeDataValue);

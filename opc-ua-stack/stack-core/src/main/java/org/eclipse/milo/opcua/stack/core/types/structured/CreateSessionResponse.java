@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -100,6 +101,21 @@ public class CreateSessionResponse implements UaResponseMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ResponseHeader", _responseHeader)
+            .add("SessionId", _sessionId)
+            .add("AuthenticationToken", _authenticationToken)
+            .add("RevisedSessionTimeout", _revisedSessionTimeout)
+            .add("ServerNonce", _serverNonce)
+            .add("ServerCertificate", _serverCertificate)
+            .add("ServerEndpoints", _serverEndpoints)
+            .add("ServerSoftwareCertificates", _serverSoftwareCertificates)
+            .add("ServerSignature", _serverSignature)
+            .add("MaxRequestMessageSize", _maxRequestMessageSize)
+            .toString();
+    }
 
     public static void encode(CreateSessionResponse createSessionResponse, UaEncoder encoder) {
         encoder.encodeSerializable("ResponseHeader", createSessionResponse._responseHeader != null ? createSessionResponse._responseHeader : new ResponseHeader());

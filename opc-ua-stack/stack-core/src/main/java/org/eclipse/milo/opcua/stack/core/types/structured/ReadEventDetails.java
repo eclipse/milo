@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -67,6 +68,15 @@ public class ReadEventDetails extends HistoryReadDetails {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NumValuesPerNode", _numValuesPerNode)
+            .add("StartTime", _startTime)
+            .add("EndTime", _endTime)
+            .add("Filter", _filter)
+            .toString();
+    }
 
     public static void encode(ReadEventDetails readEventDetails, UaEncoder encoder) {
         encoder.encodeUInt32("NumValuesPerNode", readEventDetails._numValuesPerNode);

@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -89,6 +90,20 @@ public class EndpointConfiguration implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("OperationTimeout", _operationTimeout)
+            .add("UseBinaryEncoding", _useBinaryEncoding)
+            .add("MaxStringLength", _maxStringLength)
+            .add("MaxByteStringLength", _maxByteStringLength)
+            .add("MaxArrayLength", _maxArrayLength)
+            .add("MaxMessageSize", _maxMessageSize)
+            .add("MaxBufferSize", _maxBufferSize)
+            .add("ChannelLifetime", _channelLifetime)
+            .add("SecurityTokenLifetime", _securityTokenLifetime)
+            .toString();
+    }
 
     public static void encode(EndpointConfiguration endpointConfiguration, UaEncoder encoder) {
         encoder.encodeInt32("OperationTimeout", endpointConfiguration._operationTimeout);

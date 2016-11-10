@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -79,6 +80,17 @@ public class ActivateSessionRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("ClientSignature", _clientSignature)
+            .add("ClientSoftwareCertificates", _clientSoftwareCertificates)
+            .add("LocaleIds", _localeIds)
+            .add("UserIdentityToken", _userIdentityToken)
+            .add("UserTokenSignature", _userTokenSignature)
+            .toString();
+    }
 
     public static void encode(ActivateSessionRequest activateSessionRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", activateSessionRequest._requestHeader != null ? activateSessionRequest._requestHeader : new RequestHeader());

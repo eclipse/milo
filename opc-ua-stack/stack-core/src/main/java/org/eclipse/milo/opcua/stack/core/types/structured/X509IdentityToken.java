@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -51,6 +52,13 @@ public class X509IdentityToken extends UserIdentityToken {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("PolicyId", _policyId)
+            .add("CertificateData", _certificateData)
+            .toString();
+    }
 
     public static void encode(X509IdentityToken x509IdentityToken, UaEncoder encoder) {
         encoder.encodeString("PolicyId", x509IdentityToken._policyId);

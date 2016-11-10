@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -66,6 +67,15 @@ public class OpenSecureChannelResponse implements UaResponseMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ResponseHeader", _responseHeader)
+            .add("ServerProtocolVersion", _serverProtocolVersion)
+            .add("SecurityToken", _securityToken)
+            .add("ServerNonce", _serverNonce)
+            .toString();
+    }
 
     public static void encode(OpenSecureChannelResponse openSecureChannelResponse, UaEncoder encoder) {
         encoder.encodeSerializable("ResponseHeader", openSecureChannelResponse._responseHeader != null ? openSecureChannelResponse._responseHeader : new ResponseHeader());

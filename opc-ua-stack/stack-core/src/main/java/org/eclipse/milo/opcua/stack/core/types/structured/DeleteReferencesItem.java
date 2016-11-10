@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -70,6 +71,16 @@ public class DeleteReferencesItem implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("SourceNodeId", _sourceNodeId)
+            .add("ReferenceTypeId", _referenceTypeId)
+            .add("IsForward", _isForward)
+            .add("TargetNodeId", _targetNodeId)
+            .add("DeleteBidirectional", _deleteBidirectional)
+            .toString();
+    }
 
     public static void encode(DeleteReferencesItem deleteReferencesItem, UaEncoder encoder) {
         encoder.encodeNodeId("SourceNodeId", deleteReferencesItem._sourceNodeId);

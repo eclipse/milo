@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -79,6 +80,17 @@ public class SupportedProfile implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("OrganizationUri", _organizationUri)
+            .add("ProfileId", _profileId)
+            .add("ComplianceTool", _complianceTool)
+            .add("ComplianceDate", _complianceDate)
+            .add("ComplianceLevel", _complianceLevel)
+            .add("UnsupportedUnitIds", _unsupportedUnitIds)
+            .toString();
+    }
 
     public static void encode(SupportedProfile supportedProfile, UaEncoder encoder) {
         encoder.encodeString("OrganizationUri", supportedProfile._organizationUri);

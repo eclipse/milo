@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -90,6 +91,19 @@ public class RegisteredServer implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ServerUri", _serverUri)
+            .add("ProductUri", _productUri)
+            .add("ServerNames", _serverNames)
+            .add("ServerType", _serverType)
+            .add("GatewayServerUri", _gatewayServerUri)
+            .add("DiscoveryUrls", _discoveryUrls)
+            .add("SemaphoreFilePath", _semaphoreFilePath)
+            .add("IsOnline", _isOnline)
+            .toString();
+    }
 
     public static void encode(RegisteredServer registeredServer, UaEncoder encoder) {
         encoder.encodeString("ServerUri", registeredServer._serverUri);

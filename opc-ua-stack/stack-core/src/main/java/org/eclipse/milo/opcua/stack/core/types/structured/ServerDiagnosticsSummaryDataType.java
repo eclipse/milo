@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -105,6 +106,23 @@ public class ServerDiagnosticsSummaryDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ServerViewCount", _serverViewCount)
+            .add("CurrentSessionCount", _currentSessionCount)
+            .add("CumulatedSessionCount", _cumulatedSessionCount)
+            .add("SecurityRejectedSessionCount", _securityRejectedSessionCount)
+            .add("RejectedSessionCount", _rejectedSessionCount)
+            .add("SessionTimeoutCount", _sessionTimeoutCount)
+            .add("SessionAbortCount", _sessionAbortCount)
+            .add("CurrentSubscriptionCount", _currentSubscriptionCount)
+            .add("CumulatedSubscriptionCount", _cumulatedSubscriptionCount)
+            .add("PublishingIntervalCount", _publishingIntervalCount)
+            .add("SecurityRejectedRequestsCount", _securityRejectedRequestsCount)
+            .add("RejectedRequestsCount", _rejectedRequestsCount)
+            .toString();
+    }
 
     public static void encode(ServerDiagnosticsSummaryDataType serverDiagnosticsSummaryDataType, UaEncoder encoder) {
         encoder.encodeUInt32("ServerViewCount", serverDiagnosticsSummaryDataType._serverViewCount);

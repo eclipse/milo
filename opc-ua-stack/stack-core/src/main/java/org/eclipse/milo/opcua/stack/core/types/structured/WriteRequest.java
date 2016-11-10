@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -57,6 +58,13 @@ public class WriteRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("NodesToWrite", _nodesToWrite)
+            .toString();
+    }
 
     public static void encode(WriteRequest writeRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", writeRequest._requestHeader != null ? writeRequest._requestHeader : new RequestHeader());

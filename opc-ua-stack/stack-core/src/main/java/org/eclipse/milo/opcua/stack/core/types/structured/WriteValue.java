@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -66,6 +67,15 @@ public class WriteValue implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NodeId", _nodeId)
+            .add("AttributeId", _attributeId)
+            .add("IndexRange", _indexRange)
+            .add("Value", _value)
+            .toString();
+    }
 
     public static void encode(WriteValue writeValue, UaEncoder encoder) {
         encoder.encodeNodeId("NodeId", writeValue._nodeId);

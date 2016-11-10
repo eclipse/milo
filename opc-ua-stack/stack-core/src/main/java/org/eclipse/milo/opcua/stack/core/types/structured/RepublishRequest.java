@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -60,6 +61,14 @@ public class RepublishRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("SubscriptionId", _subscriptionId)
+            .add("RetransmitSequenceNumber", _retransmitSequenceNumber)
+            .toString();
+    }
 
     public static void encode(RepublishRequest republishRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", republishRequest._requestHeader != null ? republishRequest._requestHeader : new RequestHeader());
