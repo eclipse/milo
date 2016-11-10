@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
@@ -518,7 +519,7 @@ public class SessionManager implements
             String policyId = token.getPolicyId();
 
             for (UserTokenPolicy policy : server.getUserTokenPolicies()) {
-                if (policyId.equals(policy.getPolicyId())) {
+                if (Objects.equal(policyId, policy.getPolicyId())) {
                     return policy;
                 }
             }
