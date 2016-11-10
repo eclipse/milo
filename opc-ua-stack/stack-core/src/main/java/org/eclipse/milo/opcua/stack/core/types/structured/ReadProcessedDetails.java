@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -74,6 +75,16 @@ public class ReadProcessedDetails extends HistoryReadDetails {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("StartTime", _startTime)
+            .add("EndTime", _endTime)
+            .add("ProcessingInterval", _processingInterval)
+            .add("AggregateType", _aggregateType)
+            .add("AggregateConfiguration", _aggregateConfiguration)
+            .toString();
+    }
 
     public static void encode(ReadProcessedDetails readProcessedDetails, UaEncoder encoder) {
         encoder.encodeDateTime("StartTime", readProcessedDetails._startTime);

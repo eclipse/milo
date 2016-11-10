@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -41,6 +42,11 @@ public class MonitoringFilterResult implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .toString();
+    }
 
     public static void encode(MonitoringFilterResult monitoringFilterResult, UaEncoder encoder) {
     }

@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -82,6 +83,17 @@ public class ResponseHeader implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("Timestamp", _timestamp)
+            .add("RequestHandle", _requestHandle)
+            .add("ServiceResult", _serviceResult)
+            .add("ServiceDiagnostics", _serviceDiagnostics)
+            .add("StringTable", _stringTable)
+            .add("AdditionalHeader", _additionalHeader)
+            .toString();
+    }
 
     public static void encode(ResponseHeader responseHeader, UaEncoder encoder) {
         encoder.encodeDateTime("Timestamp", responseHeader._timestamp);

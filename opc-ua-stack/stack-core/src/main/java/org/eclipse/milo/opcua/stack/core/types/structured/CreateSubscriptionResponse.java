@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -70,6 +71,16 @@ public class CreateSubscriptionResponse implements UaResponseMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ResponseHeader", _responseHeader)
+            .add("SubscriptionId", _subscriptionId)
+            .add("RevisedPublishingInterval", _revisedPublishingInterval)
+            .add("RevisedLifetimeCount", _revisedLifetimeCount)
+            .add("RevisedMaxKeepAliveCount", _revisedMaxKeepAliveCount)
+            .toString();
+    }
 
     public static void encode(CreateSubscriptionResponse createSubscriptionResponse, UaEncoder encoder) {
         encoder.encodeSerializable("ResponseHeader", createSubscriptionResponse._responseHeader != null ? createSubscriptionResponse._responseHeader : new ResponseHeader());

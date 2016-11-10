@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -66,6 +67,15 @@ public class AggregateFilter extends MonitoringFilter {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("StartTime", _startTime)
+            .add("AggregateType", _aggregateType)
+            .add("ProcessingInterval", _processingInterval)
+            .add("AggregateConfiguration", _aggregateConfiguration)
+            .toString();
+    }
 
     public static void encode(AggregateFilter aggregateFilter, UaEncoder encoder) {
         encoder.encodeDateTime("StartTime", aggregateFilter._startTime);

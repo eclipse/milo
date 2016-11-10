@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -57,6 +58,13 @@ public class TranslateBrowsePathsToNodeIdsRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("BrowsePaths", _browsePaths)
+            .toString();
+    }
 
     public static void encode(TranslateBrowsePathsToNodeIdsRequest translateBrowsePathsToNodeIdsRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", translateBrowsePathsToNodeIdsRequest._requestHeader != null ? translateBrowsePathsToNodeIdsRequest._requestHeader : new RequestHeader());

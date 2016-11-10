@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -54,6 +55,13 @@ public class RegisterServerRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("Server", _server)
+            .toString();
+    }
 
     public static void encode(RegisterServerRequest registerServerRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", registerServerRequest._requestHeader != null ? registerServerRequest._requestHeader : new RequestHeader());

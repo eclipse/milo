@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -54,6 +55,13 @@ public class XVType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("X", _x)
+            .add("Value", _value)
+            .toString();
+    }
 
     public static void encode(XVType xVType, UaEncoder encoder) {
         encoder.encodeDouble("X", xVType._x);

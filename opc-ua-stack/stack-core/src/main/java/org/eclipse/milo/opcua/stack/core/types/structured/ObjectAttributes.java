@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -53,6 +54,17 @@ public class ObjectAttributes extends NodeAttributes {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("SpecifiedAttributes", _specifiedAttributes)
+            .add("DisplayName", _displayName)
+            .add("Description", _description)
+            .add("WriteMask", _writeMask)
+            .add("UserWriteMask", _userWriteMask)
+            .add("EventNotifier", _eventNotifier)
+            .toString();
+    }
 
     public static void encode(ObjectAttributes objectAttributes, UaEncoder encoder) {
         encoder.encodeUInt32("SpecifiedAttributes", objectAttributes._specifiedAttributes);

@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -57,6 +58,13 @@ public class RegisterNodesResponse implements UaResponseMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ResponseHeader", _responseHeader)
+            .add("RegisteredNodeIds", _registeredNodeIds)
+            .toString();
+    }
 
     public static void encode(RegisterNodesResponse registerNodesResponse, UaEncoder encoder) {
         encoder.encodeSerializable("ResponseHeader", registerNodesResponse._responseHeader != null ? registerNodesResponse._responseHeader : new ResponseHeader());

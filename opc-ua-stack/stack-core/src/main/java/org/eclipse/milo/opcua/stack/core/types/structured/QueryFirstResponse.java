@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -81,6 +82,17 @@ public class QueryFirstResponse implements UaResponseMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ResponseHeader", _responseHeader)
+            .add("QueryDataSets", _queryDataSets)
+            .add("ContinuationPoint", _continuationPoint)
+            .add("ParsingResults", _parsingResults)
+            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("FilterResult", _filterResult)
+            .toString();
+    }
 
     public static void encode(QueryFirstResponse queryFirstResponse, UaEncoder encoder) {
         encoder.encodeSerializable("ResponseHeader", queryFirstResponse._responseHeader != null ? queryFirstResponse._responseHeader : new ResponseHeader());

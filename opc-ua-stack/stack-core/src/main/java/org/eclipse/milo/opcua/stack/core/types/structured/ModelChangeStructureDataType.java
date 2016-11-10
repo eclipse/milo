@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -60,6 +61,14 @@ public class ModelChangeStructureDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("Affected", _affected)
+            .add("AffectedType", _affectedType)
+            .add("Verb", _verb)
+            .toString();
+    }
 
     public static void encode(ModelChangeStructureDataType modelChangeStructureDataType, UaEncoder encoder) {
         encoder.encodeNodeId("Affected", modelChangeStructureDataType._affected);

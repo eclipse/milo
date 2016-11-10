@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -65,6 +66,15 @@ public class RelativePathElement implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ReferenceTypeId", _referenceTypeId)
+            .add("IsInverse", _isInverse)
+            .add("IncludeSubtypes", _includeSubtypes)
+            .add("TargetName", _targetName)
+            .toString();
+    }
 
     public static void encode(RelativePathElement relativePathElement, UaEncoder encoder) {
         encoder.encodeNodeId("ReferenceTypeId", relativePathElement._referenceTypeId);

@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -99,6 +100,21 @@ public class SoftwareCertificate implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ProductName", _productName)
+            .add("ProductUri", _productUri)
+            .add("VendorName", _vendorName)
+            .add("VendorProductCertificate", _vendorProductCertificate)
+            .add("SoftwareVersion", _softwareVersion)
+            .add("BuildNumber", _buildNumber)
+            .add("BuildDate", _buildDate)
+            .add("IssuedBy", _issuedBy)
+            .add("IssueDate", _issueDate)
+            .add("SupportedProfiles", _supportedProfiles)
+            .toString();
+    }
 
     public static void encode(SoftwareCertificate softwareCertificate, UaEncoder encoder) {
         encoder.encodeString("ProductName", softwareCertificate._productName);

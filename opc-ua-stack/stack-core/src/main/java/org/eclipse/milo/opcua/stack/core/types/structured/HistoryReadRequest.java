@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -74,6 +75,16 @@ public class HistoryReadRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("HistoryReadDetails", _historyReadDetails)
+            .add("TimestampsToReturn", _timestampsToReturn)
+            .add("ReleaseContinuationPoints", _releaseContinuationPoints)
+            .add("NodesToRead", _nodesToRead)
+            .toString();
+    }
 
     public static void encode(HistoryReadRequest historyReadRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", historyReadRequest._requestHeader != null ? historyReadRequest._requestHeader : new RequestHeader());
