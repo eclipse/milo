@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -25,6 +26,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
 
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+
 public class ContentFilterUtil {
 
     /*
@@ -34,10 +37,10 @@ public class ContentFilterUtil {
      */
 
     public void apply(ContentFilter filter) throws UaException {
-        ContentFilterElement[] elements = filter.getElements();
+        List<ContentFilterElement> elements = l(filter.getElements());
 
-        for (int i = 0; i < elements.length; i++) {
-            ContentFilterElement element = elements[i];
+        for (int i = 0; i < elements.size(); i++) {
+            ContentFilterElement element = elements.get(i);
 
             FilterOperator operator = element.getFilterOperator();
             SimpleAttributeOperand[] operands = extract(element.getFilterOperands());

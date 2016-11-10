@@ -32,7 +32,6 @@ public class Union implements UaStructure {
     public Union() {
     }
 
-
     @Override
     public NodeId getTypeId() { return TypeId; }
 

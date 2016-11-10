@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -43,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class OpcUaSubscription implements UaSubscription {
 
@@ -98,13 +98,13 @@ public class OpcUaSubscription implements UaSubscription {
         );
 
         return future.thenApply(response -> {
-            MonitoredItemCreateResult[] results = response.getResults();
+            List<MonitoredItemCreateResult> results = l(response.getResults());
 
             List<UaMonitoredItem> createdItems = newArrayListWithCapacity(itemsToCreate.size());
 
             for (int i = 0; i < itemsToCreate.size(); i++) {
                 MonitoredItemCreateRequest request = itemsToCreate.get(i);
-                MonitoredItemCreateResult result = results[i];
+                MonitoredItemCreateResult result = results.get(i);
 
                 OpcUaMonitoredItem item = new OpcUaMonitoredItem(
                     request.getRequestedParameters().getClientHandle(),
@@ -166,11 +166,11 @@ public class OpcUaSubscription implements UaSubscription {
         return future.thenApply(response -> {
             List<StatusCode> statusCodes = newArrayList();
 
-            MonitoredItemModifyResult[] results = response.getResults();
+            List<MonitoredItemModifyResult> results = l(response.getResults());
 
-            for (int i = 0; i < results.length; i++) {
+            for (int i = 0; i < results.size(); i++) {
                 MonitoredItemModifyRequest request = itemsToModify.get(i);
-                MonitoredItemModifyResult result = results[i];
+                MonitoredItemModifyResult result = results.get(i);
                 StatusCode statusCode = result.getStatusCode();
 
                 OpcUaMonitoredItem item = itemsByServerHandle.get(request.getMonitoredItemId());
@@ -197,14 +197,14 @@ public class OpcUaSubscription implements UaSubscription {
             .collect(Collectors.toList());
 
         return client.deleteMonitoredItems(subscriptionId, monitoredItemIds).thenApply(response -> {
-            StatusCode[] results = response.getResults();
+            List<StatusCode> results = l(response.getResults());
 
             for (UaMonitoredItem item : itemsToDelete) {
                 itemsByClientHandle.remove(item.getClientHandle());
                 itemsByServerHandle.remove(item.getMonitoredItemId());
             }
 
-            return Arrays.asList(results);
+            return results;
         });
     }
 
@@ -221,19 +221,19 @@ public class OpcUaSubscription implements UaSubscription {
             client.setMonitoringMode(subscriptionId, monitoringMode, monitoredItemIds);
 
         return future.thenApply(response -> {
-            StatusCode[] results = response.getResults();
+            List<StatusCode> results = l(response.getResults());
 
             for (int i = 0; i < monitoredItemIds.size(); i++) {
                 UInteger id = monitoredItemIds.get(i);
                 OpcUaMonitoredItem item = itemsByServerHandle.get(id);
 
-                StatusCode result = results[i];
+                StatusCode result = results.get(i);
                 if (result.isGood() && item != null) {
                     item.setMonitoringMode(monitoringMode);
                 }
             }
 
-            return Arrays.asList(results);
+            return results;
         });
     }
 
@@ -241,7 +241,7 @@ public class OpcUaSubscription implements UaSubscription {
     public CompletableFuture<StatusCode> setPublishingMode(boolean publishingEnabled) {
         return client.setPublishingMode(publishingEnabled, newArrayList(subscriptionId))
             .thenApply(response -> {
-                StatusCode statusCode = response.getResults()[0];
+                StatusCode statusCode = l(response.getResults()).get(0);
 
                 if (statusCode.isGood()) {
                     setPublishingEnabled(publishingEnabled);

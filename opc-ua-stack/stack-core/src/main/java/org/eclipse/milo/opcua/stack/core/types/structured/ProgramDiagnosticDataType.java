@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -78,8 +80,10 @@ public class ProgramDiagnosticDataType implements UaStructure {
 
     public NodeId getLastMethodSessionId() { return _lastMethodSessionId; }
 
+    @Nullable
     public Argument[] getLastMethodInputArguments() { return _lastMethodInputArguments; }
 
+    @Nullable
     public Argument[] getLastMethodOutputArguments() { return _lastMethodOutputArguments; }
 
     public DateTime getLastMethodCallTime() { return _lastMethodCallTime; }

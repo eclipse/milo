@@ -45,6 +45,7 @@ import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class AttributeServices implements AttributeServiceSet {
 
@@ -62,12 +63,14 @@ public class AttributeServices implements AttributeServiceSet {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        if (request.getNodesToRead().length == 0) {
+        List<ReadValueId> nodesToRead = l(request.getNodesToRead());
+
+        if (nodesToRead.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);
             return;
         }
 
-        if (request.getNodesToRead().length > server.getConfig().getLimits().getMaxNodesPerRead().longValue()) {
+        if (nodesToRead.size() > server.getConfig().getLimits().getMaxNodesPerRead().longValue()) {
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
             return;
         }
@@ -82,9 +85,9 @@ public class AttributeServices implements AttributeServiceSet {
             return;
         }
 
-        ReadValueId[] nodesToRead = request.getNodesToRead();
-        List<PendingRead> pendingReads = newArrayListWithCapacity(nodesToRead.length);
-        List<CompletableFuture<DataValue>> futures = newArrayListWithCapacity(nodesToRead.length);
+
+        List<PendingRead> pendingReads = newArrayListWithCapacity(nodesToRead.size());
+        List<CompletableFuture<DataValue>> futures = newArrayListWithCapacity(nodesToRead.size());
 
         for (ReadValueId id : nodesToRead) {
             PendingRead pending = new PendingRead(id);
@@ -153,19 +156,20 @@ public class AttributeServices implements AttributeServiceSet {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        if (request.getNodesToWrite().length == 0) {
+        List<WriteValue> nodesToWrite = l(request.getNodesToWrite());
+
+        if (nodesToWrite.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);
             return;
         }
 
-        if (request.getNodesToWrite().length > server.getConfig().getLimits().getMaxNodesPerWrite().intValue()) {
+        if (nodesToWrite.size() > server.getConfig().getLimits().getMaxNodesPerWrite().intValue()) {
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
             return;
         }
 
-        WriteValue[] nodesToWrite = request.getNodesToWrite();
-        List<PendingWrite> pendingWrites = newArrayListWithCapacity(nodesToWrite.length);
-        List<CompletableFuture<StatusCode>> futures = newArrayListWithCapacity(nodesToWrite.length);
+        List<PendingWrite> pendingWrites = newArrayListWithCapacity(nodesToWrite.size());
+        List<CompletableFuture<StatusCode>> futures = newArrayListWithCapacity(nodesToWrite.size());
 
         for (WriteValue value : nodesToWrite) {
             PendingWrite pending = new PendingWrite(value);

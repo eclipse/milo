@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -48,8 +50,10 @@ public class ContentFilterElementResult implements UaStructure {
 
     public StatusCode getStatusCode() { return _statusCode; }
 
+    @Nullable
     public StatusCode[] getOperandStatusCodes() { return _operandStatusCodes; }
 
+    @Nullable
     public DiagnosticInfo[] getOperandDiagnosticInfos() { return _operandDiagnosticInfos; }
 
     @Override

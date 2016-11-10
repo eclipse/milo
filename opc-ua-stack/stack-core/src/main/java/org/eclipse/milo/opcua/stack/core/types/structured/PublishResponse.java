@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -63,14 +65,17 @@ public class PublishResponse implements UaResponseMessage {
 
     public UInteger getSubscriptionId() { return _subscriptionId; }
 
+    @Nullable
     public UInteger[] getAvailableSequenceNumbers() { return _availableSequenceNumbers; }
 
     public Boolean getMoreNotifications() { return _moreNotifications; }
 
     public NotificationMessage getNotificationMessage() { return _notificationMessage; }
 
+    @Nullable
     public StatusCode[] getResults() { return _results; }
 
+    @Nullable
     public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
 
     @Override

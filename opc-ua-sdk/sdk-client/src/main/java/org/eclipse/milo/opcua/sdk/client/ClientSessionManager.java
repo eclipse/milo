@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 class ClientSessionManager {
 
@@ -576,10 +577,10 @@ class ClientSessionManager {
             CompletableFuture<OpcUaSession> sessionFuture = transferringState.sessionFuture;
 
             if (tsr != null) {
-                TransferResult[] results = tsr.getResults();
+                List<TransferResult> results = l(tsr.getResults());
 
-                for (int i = 0; i < results.length; i++) {
-                    TransferResult result = results[i];
+                for (int i = 0; i < results.size(); i++) {
+                    TransferResult result = results.get(i);
 
                     if (!result.getStatusCode().isGood()) {
                         UaSubscription subscription = subscriptions.get(i);
@@ -594,7 +595,7 @@ class ClientSessionManager {
                 if (logger.isDebugEnabled()) {
                     Stream<UInteger> subscriptionIds = subscriptions.stream()
                         .map(UaSubscription::getSubscriptionId);
-                    Stream<StatusCode> statusCodes = Arrays.stream(results)
+                    Stream<StatusCode> statusCodes = results.stream()
                         .map(TransferResult::getStatusCode);
 
                     String[] ss = StreamUtils.zip(

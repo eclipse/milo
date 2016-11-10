@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -43,6 +45,7 @@ public class ReadAtTimeDetails extends HistoryReadDetails {
         this._useSimpleBounds = _useSimpleBounds;
     }
 
+    @Nullable
     public DateTime[] getReqTimes() { return _reqTimes; }
 
     public Boolean getUseSimpleBounds() { return _useSimpleBounds; }

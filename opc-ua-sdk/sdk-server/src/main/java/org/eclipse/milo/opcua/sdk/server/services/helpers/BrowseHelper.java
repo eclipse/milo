@@ -58,6 +58,7 @@ import org.jooq.lambda.tuple.Tuple3;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.browseResultMasks;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.nodeClasses;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class BrowseHelper {
 
@@ -76,7 +77,9 @@ public class BrowseHelper {
 
         BrowseNextRequest request = service.getRequest();
 
-        if (request.getContinuationPoints().length >
+        List<ByteString> continuationPoints = l(request.getContinuationPoints());
+
+        if (continuationPoints.size() >
             server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
 
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
