@@ -38,7 +38,6 @@ import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.io.Files.createTempDir;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
 
@@ -68,12 +67,12 @@ public class ExampleServer {
             loader.getServerCertificate()
         );
 
-        File tempDir = createTempDir();
+        File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
 
         LoggerFactory.getLogger(getClass())
-            .info("security temp dir: {}", tempDir.getAbsolutePath());
+            .info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
-        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(tempDir);
+        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
 
         UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
             true,
