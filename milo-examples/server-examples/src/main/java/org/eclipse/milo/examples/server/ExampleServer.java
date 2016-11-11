@@ -14,7 +14,6 @@
 package org.eclipse.milo.examples.server;
 
 import java.io.File;
-import java.security.MessageDigest;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
 
@@ -22,7 +21,6 @@ import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -77,8 +75,8 @@ public class ExampleServer {
         UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
             true,
             authChallenge ->
-                MessageDigest.isEqual("user".getBytes(), authChallenge.getUsername().getBytes()) &&
-                    MessageDigest.isEqual("password".getBytes(), authChallenge.getPassword().getBytes())
+                "user".equals(authChallenge.getUsername()) &&
+                    "password".equals(authChallenge.getPassword())
         );
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
@@ -91,11 +89,12 @@ public class ExampleServer {
                     "urn:eclipse:milo:example-server",
                     "eclipse",
                     "eclipse milo example server",
-                    Stack.VERSION,
+                    OpcUaServer.SDK_VERSION,
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
             .setIdentityValidator(identityValidator)
+            .setProductUri("urn:eclipse:milo:example-server")
             .setServerName("example")
             .setSecurityPolicies(
                 EnumSet.of(
