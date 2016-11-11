@@ -19,10 +19,13 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExResponse;
@@ -72,6 +75,13 @@ public class ExampleServer {
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
             .setBindAddresses(newArrayList("localhost"))
             .setBindPort(12686)
+            .setBuildInfo(
+                new BuildInfo(
+                    "urn:eclipse:milo:example-server",
+                    "eclipse",
+                    "eclipse milo example server",
+                    Stack.VERSION,
+                    "", DateTime.now()))
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
             .setServerName("example")
