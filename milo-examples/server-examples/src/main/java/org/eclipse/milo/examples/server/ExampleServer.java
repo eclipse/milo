@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
+import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -55,6 +56,8 @@ public class ExampleServer {
     private final OpcUaServer server;
 
     public ExampleServer() throws Exception {
+        CryptoRestrictions.remove();
+
         KeyStoreLoader loader = new KeyStoreLoader().load();
 
         DefaultCertificateManager certificateManager = new DefaultCertificateManager(
@@ -86,7 +89,12 @@ public class ExampleServer {
             .setCertificateValidator(certificateValidator)
             .setServerName("example")
             .setUserTokenPolicies(singletonList(USER_TOKEN_POLICY_ANONYMOUS))
-            .setSecurityPolicies(EnumSet.of(SecurityPolicy.None, SecurityPolicy.Basic128Rsa15))
+            .setSecurityPolicies(
+                EnumSet.of(
+                    SecurityPolicy.None,
+                    SecurityPolicy.Basic128Rsa15,
+                    SecurityPolicy.Basic256,
+                    SecurityPolicy.Basic256Sha256))
             .build();
 
         server = new OpcUaServer(serverConfig);
