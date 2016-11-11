@@ -14,11 +14,14 @@
 package org.eclipse.milo.examples.server;
 
 import java.io.File;
+import java.security.MessageDigest;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
+import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
@@ -36,8 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.Files.createTempDir;
-import static java.util.Collections.singletonList;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
+import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
 
 public class ExampleServer {
 
@@ -72,11 +75,17 @@ public class ExampleServer {
 
         DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(tempDir);
 
+        UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
+            true,
+            authChallenge ->
+                MessageDigest.isEqual("user".getBytes(), authChallenge.getUsername().getBytes()) &&
+                    MessageDigest.isEqual("password".getBytes(), authChallenge.getPassword().getBytes())
+        );
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
-            .setBindAddresses(newArrayList("localhost"))
+            .setBindAddresses(newArrayList("0.0.0.0"))
             .setBindPort(12686)
             .setBuildInfo(
                 new BuildInfo(
@@ -87,14 +96,18 @@ public class ExampleServer {
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
+            .setIdentityValidator(identityValidator)
             .setServerName("example")
-            .setUserTokenPolicies(singletonList(USER_TOKEN_POLICY_ANONYMOUS))
             .setSecurityPolicies(
                 EnumSet.of(
                     SecurityPolicy.None,
                     SecurityPolicy.Basic128Rsa15,
                     SecurityPolicy.Basic256,
                     SecurityPolicy.Basic256Sha256))
+            .setUserTokenPolicies(
+                ImmutableList.of(
+                    USER_TOKEN_POLICY_ANONYMOUS,
+                    USER_TOKEN_POLICY_USERNAME))
             .build();
 
         server = new OpcUaServer(serverConfig);
