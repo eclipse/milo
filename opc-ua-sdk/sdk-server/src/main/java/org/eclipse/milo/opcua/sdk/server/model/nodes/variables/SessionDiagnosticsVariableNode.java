@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -32,7 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 
-@UaVariableNode(typeName = "0:SessionDiagnosticsVariableType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:SessionDiagnosticsVariableType")
 public class SessionDiagnosticsVariableNode extends BaseDataVariableNode implements SessionDiagnosticsVariableType {
 
     public SessionDiagnosticsVariableNode(
@@ -65,7 +64,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         SessionDiagnosticsDataType value = new SessionDiagnosticsDataType(
             getSessionId(),
             getSessionName(),
@@ -113,6 +112,61 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof SessionDiagnosticsDataType) {
+            SessionDiagnosticsDataType v = (SessionDiagnosticsDataType) o;
+
+            setSessionId(v.getSessionId());
+            setSessionName(v.getSessionName());
+            setClientDescription(v.getClientDescription());
+            setServerUri(v.getServerUri());
+            setEndpointUrl(v.getEndpointUrl());
+            setLocaleIds(v.getLocaleIds());
+            setActualSessionTimeout(v.getActualSessionTimeout());
+            setMaxResponseMessageSize(v.getMaxResponseMessageSize());
+            setClientConnectionTime(v.getClientConnectionTime());
+            setClientLastContactTime(v.getClientLastContactTime());
+            setCurrentSubscriptionsCount(v.getCurrentSubscriptionsCount());
+            setCurrentMonitoredItemsCount(v.getCurrentMonitoredItemsCount());
+            setCurrentPublishRequestsInQueue(v.getCurrentPublishRequestsInQueue());
+            setTotalRequestCount(v.getTotalRequestCount());
+            setUnauthorizedRequestCount(v.getUnauthorizedRequestCount());
+            setReadCount(v.getReadCount());
+            setHistoryReadCount(v.getHistoryReadCount());
+            setWriteCount(v.getWriteCount());
+            setHistoryUpdateCount(v.getHistoryUpdateCount());
+            setCallCount(v.getCallCount());
+            setCreateMonitoredItemsCount(v.getCreateMonitoredItemsCount());
+            setModifyMonitoredItemsCount(v.getModifyMonitoredItemsCount());
+            setSetMonitoringModeCount(v.getSetMonitoringModeCount());
+            setSetTriggeringCount(v.getSetTriggeringCount());
+            setDeleteMonitoredItemsCount(v.getDeleteMonitoredItemsCount());
+            setCreateSubscriptionCount(v.getCreateSubscriptionCount());
+            setModifySubscriptionCount(v.getModifySubscriptionCount());
+            setSetPublishingModeCount(v.getSetPublishingModeCount());
+            setPublishCount(v.getPublishCount());
+            setRepublishCount(v.getRepublishCount());
+            setTransferSubscriptionsCount(v.getTransferSubscriptionsCount());
+            setDeleteSubscriptionsCount(v.getDeleteSubscriptionsCount());
+            setAddNodesCount(v.getAddNodesCount());
+            setAddReferencesCount(v.getAddReferencesCount());
+            setDeleteNodesCount(v.getDeleteNodesCount());
+            setDeleteReferencesCount(v.getDeleteReferencesCount());
+            setBrowseCount(v.getBrowseCount());
+            setBrowseNextCount(v.getBrowseNextCount());
+            setTranslateBrowsePathsToNodeIdsCount(v.getTranslateBrowsePathsToNodeIdsCount());
+            setQueryFirstCount(v.getQueryFirstCount());
+            setQueryNextCount(v.getQueryNextCount());
+            setRegisterNodesCount(v.getRegisterNodesCount());
+            setUnregisterNodesCount(v.getUnregisterNodesCount());
+        }
     }
 
     @Override

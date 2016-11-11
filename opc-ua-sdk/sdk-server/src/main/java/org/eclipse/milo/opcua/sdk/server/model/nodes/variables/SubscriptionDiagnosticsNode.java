@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -29,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
-@UaVariableNode(typeName = "0:SubscriptionDiagnosticsType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:SubscriptionDiagnosticsType")
 public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements SubscriptionDiagnosticsType {
 
     public SubscriptionDiagnosticsNode(
@@ -62,7 +61,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         SubscriptionDiagnosticsDataType value = new SubscriptionDiagnosticsDataType(
             getSessionId(),
             getSubscriptionId(),
@@ -98,6 +97,49 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof SubscriptionDiagnosticsDataType) {
+            SubscriptionDiagnosticsDataType v = (SubscriptionDiagnosticsDataType) o;
+
+            setSessionId(v.getSessionId());
+            setSubscriptionId(v.getSubscriptionId());
+            setPriority(v.getPriority());
+            setPublishingInterval(v.getPublishingInterval());
+            setMaxKeepAliveCount(v.getMaxKeepAliveCount());
+            setMaxLifetimeCount(v.getMaxLifetimeCount());
+            setMaxNotificationsPerPublish(v.getMaxNotificationsPerPublish());
+            setPublishingEnabled(v.getPublishingEnabled());
+            setModifyCount(v.getModifyCount());
+            setEnableCount(v.getEnableCount());
+            setDisableCount(v.getDisableCount());
+            setRepublishRequestCount(v.getRepublishRequestCount());
+            setRepublishMessageRequestCount(v.getRepublishMessageRequestCount());
+            setRepublishMessageCount(v.getRepublishMessageCount());
+            setTransferRequestCount(v.getTransferRequestCount());
+            setTransferredToAltClientCount(v.getTransferredToAltClientCount());
+            setTransferredToSameClientCount(v.getTransferredToSameClientCount());
+            setPublishRequestCount(v.getPublishRequestCount());
+            setDataChangeNotificationsCount(v.getDataChangeNotificationsCount());
+            setEventNotificationsCount(v.getEventNotificationsCount());
+            setNotificationsCount(v.getNotificationsCount());
+            setLatePublishRequestCount(v.getLatePublishRequestCount());
+            setCurrentKeepAliveCount(v.getCurrentKeepAliveCount());
+            setCurrentLifetimeCount(v.getCurrentLifetimeCount());
+            setUnacknowledgedMessageCount(v.getUnacknowledgedMessageCount());
+            setDiscardedMessageCount(v.getDiscardedMessageCount());
+            setMonitoredItemCount(v.getMonitoredItemCount());
+            setDisabledMonitoredItemCount(v.getDisabledMonitoredItemCount());
+            setMonitoringQueueOverflowCount(v.getMonitoringQueueOverflowCount());
+            setNextSequenceNumber(v.getNextSequenceNumber());
+            setEventQueueOverFlowCount(v.getEventQueueOverFlowCount());
+        }
     }
 
     @Override
