@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -60,6 +61,14 @@ public class MonitoredItemCreateRequest implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ItemToMonitor", _itemToMonitor)
+            .add("MonitoringMode", _monitoringMode)
+            .add("RequestedParameters", _requestedParameters)
+            .toString();
+    }
 
     public static void encode(MonitoredItemCreateRequest monitoredItemCreateRequest, UaEncoder encoder) {
         encoder.encodeSerializable("ItemToMonitor", monitoredItemCreateRequest._itemToMonitor != null ? monitoredItemCreateRequest._itemToMonitor : new ReadValueId());

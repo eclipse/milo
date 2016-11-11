@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -59,6 +60,21 @@ public class MethodNode extends InstanceNode {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NodeId", _nodeId)
+            .add("NodeClass", _nodeClass)
+            .add("BrowseName", _browseName)
+            .add("DisplayName", _displayName)
+            .add("Description", _description)
+            .add("WriteMask", _writeMask)
+            .add("UserWriteMask", _userWriteMask)
+            .add("References", _references)
+            .add("Executable", _executable)
+            .add("UserExecutable", _userExecutable)
+            .toString();
+    }
 
     public static void encode(MethodNode methodNode, UaEncoder encoder) {
         encoder.encodeNodeId("NodeId", methodNode._nodeId);

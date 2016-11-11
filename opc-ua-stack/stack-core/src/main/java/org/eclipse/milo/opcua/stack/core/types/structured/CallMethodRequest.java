@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -63,6 +64,14 @@ public class CallMethodRequest implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ObjectId", _objectId)
+            .add("MethodId", _methodId)
+            .add("InputArguments", _inputArguments)
+            .toString();
+    }
 
     public static void encode(CallMethodRequest callMethodRequest, UaEncoder encoder) {
         encoder.encodeNodeId("ObjectId", callMethodRequest._objectId);

@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -81,6 +82,18 @@ public class CreateSubscriptionRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("RequestedPublishingInterval", _requestedPublishingInterval)
+            .add("RequestedLifetimeCount", _requestedLifetimeCount)
+            .add("RequestedMaxKeepAliveCount", _requestedMaxKeepAliveCount)
+            .add("MaxNotificationsPerPublish", _maxNotificationsPerPublish)
+            .add("PublishingEnabled", _publishingEnabled)
+            .add("Priority", _priority)
+            .toString();
+    }
 
     public static void encode(CreateSubscriptionRequest createSubscriptionRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", createSubscriptionRequest._requestHeader != null ? createSubscriptionRequest._requestHeader : new RequestHeader());

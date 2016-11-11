@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -264,6 +265,54 @@ public class SessionDiagnosticsDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("SessionId", _sessionId)
+            .add("SessionName", _sessionName)
+            .add("ClientDescription", _clientDescription)
+            .add("ServerUri", _serverUri)
+            .add("EndpointUrl", _endpointUrl)
+            .add("LocaleIds", _localeIds)
+            .add("ActualSessionTimeout", _actualSessionTimeout)
+            .add("MaxResponseMessageSize", _maxResponseMessageSize)
+            .add("ClientConnectionTime", _clientConnectionTime)
+            .add("ClientLastContactTime", _clientLastContactTime)
+            .add("CurrentSubscriptionsCount", _currentSubscriptionsCount)
+            .add("CurrentMonitoredItemsCount", _currentMonitoredItemsCount)
+            .add("CurrentPublishRequestsInQueue", _currentPublishRequestsInQueue)
+            .add("TotalRequestCount", _totalRequestCount)
+            .add("UnauthorizedRequestCount", _unauthorizedRequestCount)
+            .add("ReadCount", _readCount)
+            .add("HistoryReadCount", _historyReadCount)
+            .add("WriteCount", _writeCount)
+            .add("HistoryUpdateCount", _historyUpdateCount)
+            .add("CallCount", _callCount)
+            .add("CreateMonitoredItemsCount", _createMonitoredItemsCount)
+            .add("ModifyMonitoredItemsCount", _modifyMonitoredItemsCount)
+            .add("SetMonitoringModeCount", _setMonitoringModeCount)
+            .add("SetTriggeringCount", _setTriggeringCount)
+            .add("DeleteMonitoredItemsCount", _deleteMonitoredItemsCount)
+            .add("CreateSubscriptionCount", _createSubscriptionCount)
+            .add("ModifySubscriptionCount", _modifySubscriptionCount)
+            .add("SetPublishingModeCount", _setPublishingModeCount)
+            .add("PublishCount", _publishCount)
+            .add("RepublishCount", _republishCount)
+            .add("TransferSubscriptionsCount", _transferSubscriptionsCount)
+            .add("DeleteSubscriptionsCount", _deleteSubscriptionsCount)
+            .add("AddNodesCount", _addNodesCount)
+            .add("AddReferencesCount", _addReferencesCount)
+            .add("DeleteNodesCount", _deleteNodesCount)
+            .add("DeleteReferencesCount", _deleteReferencesCount)
+            .add("BrowseCount", _browseCount)
+            .add("BrowseNextCount", _browseNextCount)
+            .add("TranslateBrowsePathsToNodeIdsCount", _translateBrowsePathsToNodeIdsCount)
+            .add("QueryFirstCount", _queryFirstCount)
+            .add("QueryNextCount", _queryNextCount)
+            .add("RegisterNodesCount", _registerNodesCount)
+            .add("UnregisterNodesCount", _unregisterNodesCount)
+            .toString();
+    }
 
     public static void encode(SessionDiagnosticsDataType sessionDiagnosticsDataType, UaEncoder encoder) {
         encoder.encodeNodeId("SessionId", sessionDiagnosticsDataType._sessionId);

@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -61,6 +62,14 @@ public class ModificationInfo implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ModificationTime", _modificationTime)
+            .add("UpdateType", _updateType)
+            .add("UserName", _userName)
+            .toString();
+    }
 
     public static void encode(ModificationInfo modificationInfo, UaEncoder encoder) {
         encoder.encodeDateTime("ModificationTime", modificationInfo._modificationTime);

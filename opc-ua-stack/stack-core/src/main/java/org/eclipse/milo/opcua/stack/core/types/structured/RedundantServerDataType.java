@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -61,6 +62,14 @@ public class RedundantServerDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ServerId", _serverId)
+            .add("ServiceLevel", _serviceLevel)
+            .add("ServerState", _serverState)
+            .toString();
+    }
 
     public static void encode(RedundantServerDataType redundantServerDataType, UaEncoder encoder) {
         encoder.encodeString("ServerId", redundantServerDataType._serverId);

@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -82,6 +83,18 @@ public class RequestHeader implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("AuthenticationToken", _authenticationToken)
+            .add("Timestamp", _timestamp)
+            .add("RequestHandle", _requestHandle)
+            .add("ReturnDiagnostics", _returnDiagnostics)
+            .add("AuditEntryId", _auditEntryId)
+            .add("TimeoutHint", _timeoutHint)
+            .add("AdditionalHeader", _additionalHeader)
+            .toString();
+    }
 
     public static void encode(RequestHeader requestHeader, UaEncoder encoder) {
         encoder.encodeNodeId("AuthenticationToken", requestHeader._authenticationToken);

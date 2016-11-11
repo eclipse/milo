@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -92,6 +93,24 @@ public class VariableAttributes extends NodeAttributes {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("SpecifiedAttributes", _specifiedAttributes)
+            .add("DisplayName", _displayName)
+            .add("Description", _description)
+            .add("WriteMask", _writeMask)
+            .add("UserWriteMask", _userWriteMask)
+            .add("Value", _value)
+            .add("DataType", _dataType)
+            .add("ValueRank", _valueRank)
+            .add("ArrayDimensions", _arrayDimensions)
+            .add("AccessLevel", _accessLevel)
+            .add("UserAccessLevel", _userAccessLevel)
+            .add("MinimumSamplingInterval", _minimumSamplingInterval)
+            .add("Historizing", _historizing)
+            .toString();
+    }
 
     public static void encode(VariableAttributes variableAttributes, UaEncoder encoder) {
         encoder.encodeUInt32("SpecifiedAttributes", variableAttributes._specifiedAttributes);

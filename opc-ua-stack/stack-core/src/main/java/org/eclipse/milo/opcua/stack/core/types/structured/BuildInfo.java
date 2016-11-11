@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -75,6 +76,17 @@ public class BuildInfo implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ProductUri", _productUri)
+            .add("ManufacturerName", _manufacturerName)
+            .add("ProductName", _productName)
+            .add("SoftwareVersion", _softwareVersion)
+            .add("BuildNumber", _buildNumber)
+            .add("BuildDate", _buildDate)
+            .toString();
+    }
 
     public static void encode(BuildInfo buildInfo, UaEncoder encoder) {
         encoder.encodeString("ProductUri", buildInfo._productUri);

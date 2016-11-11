@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -54,6 +55,13 @@ public class DeleteEventDetails extends HistoryUpdateDetails {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NodeId", _nodeId)
+            .add("EventIds", _eventIds)
+            .toString();
+    }
 
     public static void encode(DeleteEventDetails deleteEventDetails, UaEncoder encoder) {
         encoder.encodeNodeId("NodeId", deleteEventDetails._nodeId);

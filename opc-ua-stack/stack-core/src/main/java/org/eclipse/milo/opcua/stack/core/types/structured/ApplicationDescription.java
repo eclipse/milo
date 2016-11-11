@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -84,6 +85,18 @@ public class ApplicationDescription implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ApplicationUri", _applicationUri)
+            .add("ProductUri", _productUri)
+            .add("ApplicationName", _applicationName)
+            .add("ApplicationType", _applicationType)
+            .add("GatewayServerUri", _gatewayServerUri)
+            .add("DiscoveryProfileUri", _discoveryProfileUri)
+            .add("DiscoveryUrls", _discoveryUrls)
+            .toString();
+    }
 
     public static void encode(ApplicationDescription applicationDescription, UaEncoder encoder) {
         encoder.encodeString("ApplicationUri", applicationDescription._applicationUri);

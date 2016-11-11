@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -72,6 +73,16 @@ public class ReadRawModifiedDetails extends HistoryReadDetails {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("IsReadModified", _isReadModified)
+            .add("StartTime", _startTime)
+            .add("EndTime", _endTime)
+            .add("NumValuesPerNode", _numValuesPerNode)
+            .add("ReturnBounds", _returnBounds)
+            .toString();
+    }
 
     public static void encode(ReadRawModifiedDetails readRawModifiedDetails, UaEncoder encoder) {
         encoder.encodeBoolean("IsReadModified", readRawModifiedDetails._isReadModified);

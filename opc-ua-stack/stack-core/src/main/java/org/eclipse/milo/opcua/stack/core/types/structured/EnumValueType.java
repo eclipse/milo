@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -60,6 +61,14 @@ public class EnumValueType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("Value", _value)
+            .add("DisplayName", _displayName)
+            .add("Description", _description)
+            .toString();
+    }
 
     public static void encode(EnumValueType enumValueType, UaEncoder encoder) {
         encoder.encodeInt64("Value", enumValueType._value);

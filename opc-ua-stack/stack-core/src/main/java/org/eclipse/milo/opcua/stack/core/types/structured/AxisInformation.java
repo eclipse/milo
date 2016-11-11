@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -74,6 +75,16 @@ public class AxisInformation implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("EngineeringUnits", _engineeringUnits)
+            .add("EURange", _eURange)
+            .add("Title", _title)
+            .add("AxisScaleType", _axisScaleType)
+            .add("AxisSteps", _axisSteps)
+            .toString();
+    }
 
     public static void encode(AxisInformation axisInformation, UaEncoder encoder) {
         encoder.encodeSerializable("EngineeringUnits", axisInformation._engineeringUnits != null ? axisInformation._engineeringUnits : new EUInformation());

@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -71,6 +72,16 @@ public class MonitoringParameters implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ClientHandle", _clientHandle)
+            .add("SamplingInterval", _samplingInterval)
+            .add("Filter", _filter)
+            .add("QueueSize", _queueSize)
+            .add("DiscardOldest", _discardOldest)
+            .toString();
+    }
 
     public static void encode(MonitoringParameters monitoringParameters, UaEncoder encoder) {
         encoder.encodeUInt32("ClientHandle", monitoringParameters._clientHandle);
