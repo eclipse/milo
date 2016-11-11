@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -66,6 +67,15 @@ public class ChannelSecurityToken implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ChannelId", _channelId)
+            .add("TokenId", _tokenId)
+            .add("CreatedAt", _createdAt)
+            .add("RevisedLifetime", _revisedLifetime)
+            .toString();
+    }
 
     public static void encode(ChannelSecurityToken channelSecurityToken, UaEncoder encoder) {
         encoder.encodeUInt32("ChannelId", channelSecurityToken._channelId);

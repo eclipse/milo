@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -94,6 +95,20 @@ public class SessionSecurityDiagnosticsDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("SessionId", _sessionId)
+            .add("ClientUserIdOfSession", _clientUserIdOfSession)
+            .add("ClientUserIdHistory", _clientUserIdHistory)
+            .add("AuthenticationMechanism", _authenticationMechanism)
+            .add("Encoding", _encoding)
+            .add("TransportProtocol", _transportProtocol)
+            .add("SecurityMode", _securityMode)
+            .add("SecurityPolicyUri", _securityPolicyUri)
+            .add("ClientCertificate", _clientCertificate)
+            .toString();
+    }
 
     public static void encode(SessionSecurityDiagnosticsDataType sessionSecurityDiagnosticsDataType, UaEncoder encoder) {
         encoder.encodeNodeId("SessionId", sessionSecurityDiagnosticsDataType._sessionId);

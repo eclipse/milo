@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -55,6 +56,13 @@ public class OptionSet implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("Value", _value)
+            .add("ValidBits", _validBits)
+            .toString();
+    }
 
     public static void encode(OptionSet optionSet, UaEncoder encoder) {
         encoder.encodeByteString("Value", optionSet._value);

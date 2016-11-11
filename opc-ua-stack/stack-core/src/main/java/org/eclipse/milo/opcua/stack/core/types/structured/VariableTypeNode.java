@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -78,6 +79,24 @@ public class VariableTypeNode extends TypeNode {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NodeId", _nodeId)
+            .add("NodeClass", _nodeClass)
+            .add("BrowseName", _browseName)
+            .add("DisplayName", _displayName)
+            .add("Description", _description)
+            .add("WriteMask", _writeMask)
+            .add("UserWriteMask", _userWriteMask)
+            .add("References", _references)
+            .add("Value", _value)
+            .add("DataType", _dataType)
+            .add("ValueRank", _valueRank)
+            .add("ArrayDimensions", _arrayDimensions)
+            .add("IsAbstract", _isAbstract)
+            .toString();
+    }
 
     public static void encode(VariableTypeNode variableTypeNode, UaEncoder encoder) {
         encoder.encodeNodeId("NodeId", variableTypeNode._nodeId);

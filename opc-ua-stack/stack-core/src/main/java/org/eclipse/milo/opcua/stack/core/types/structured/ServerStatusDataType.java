@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -78,6 +79,17 @@ public class ServerStatusDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("StartTime", _startTime)
+            .add("CurrentTime", _currentTime)
+            .add("State", _state)
+            .add("BuildInfo", _buildInfo)
+            .add("SecondsTillShutdown", _secondsTillShutdown)
+            .add("ShutdownReason", _shutdownReason)
+            .toString();
+    }
 
     public static void encode(ServerStatusDataType serverStatusDataType, UaEncoder encoder) {
         encoder.encodeDateTime("StartTime", serverStatusDataType._startTime);

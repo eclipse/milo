@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -78,6 +79,17 @@ public class OpenSecureChannelRequest implements UaRequestMessage {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("RequestHeader", _requestHeader)
+            .add("ClientProtocolVersion", _clientProtocolVersion)
+            .add("RequestType", _requestType)
+            .add("SecurityMode", _securityMode)
+            .add("ClientNonce", _clientNonce)
+            .add("RequestedLifetime", _requestedLifetime)
+            .toString();
+    }
 
     public static void encode(OpenSecureChannelRequest openSecureChannelRequest, UaEncoder encoder) {
         encoder.encodeSerializable("RequestHeader", openSecureChannelRequest._requestHeader != null ? openSecureChannelRequest._requestHeader : new RequestHeader());

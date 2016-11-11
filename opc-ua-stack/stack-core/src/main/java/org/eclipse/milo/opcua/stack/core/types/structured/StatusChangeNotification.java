@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -57,6 +58,13 @@ public class StatusChangeNotification extends NotificationData {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("Status", _status)
+            .add("DiagnosticInfo", _diagnosticInfo)
+            .toString();
+    }
 
     public static void encode(StatusChangeNotification statusChangeNotification, UaEncoder encoder) {
         encoder.encodeStatusCode("Status", statusChangeNotification._status);

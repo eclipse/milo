@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -77,6 +78,16 @@ public class TrustListDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("SpecifiedLists", _specifiedLists)
+            .add("TrustedCertificates", _trustedCertificates)
+            .add("TrustedCrls", _trustedCrls)
+            .add("IssuerCertificates", _issuerCertificates)
+            .add("IssuerCrls", _issuerCrls)
+            .toString();
+    }
 
     public static void encode(TrustListDataType trustListDataType, UaEncoder encoder) {
         encoder.encodeUInt32("SpecifiedLists", trustListDataType._specifiedLists);

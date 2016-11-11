@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -90,6 +91,19 @@ public class EndpointDescription implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("EndpointUrl", _endpointUrl)
+            .add("Server", _server)
+            .add("ServerCertificate", _serverCertificate)
+            .add("SecurityMode", _securityMode)
+            .add("SecurityPolicyUri", _securityPolicyUri)
+            .add("UserIdentityTokens", _userIdentityTokens)
+            .add("TransportProfileUri", _transportProfileUri)
+            .add("SecurityLevel", _securityLevel)
+            .toString();
+    }
 
     public static void encode(EndpointDescription endpointDescription, UaEncoder encoder) {
         encoder.encodeString("EndpointUrl", endpointDescription._endpointUrl);

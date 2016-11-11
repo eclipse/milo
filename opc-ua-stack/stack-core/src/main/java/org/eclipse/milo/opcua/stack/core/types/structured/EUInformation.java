@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -65,6 +66,15 @@ public class EUInformation implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NamespaceUri", _namespaceUri)
+            .add("UnitId", _unitId)
+            .add("DisplayName", _displayName)
+            .add("Description", _description)
+            .toString();
+    }
 
     public static void encode(EUInformation eUInformation, UaEncoder encoder) {
         encoder.encodeString("NamespaceUri", eUInformation._namespaceUri);

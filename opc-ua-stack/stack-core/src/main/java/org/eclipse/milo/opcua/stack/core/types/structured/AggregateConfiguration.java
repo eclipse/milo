@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -70,6 +71,16 @@ public class AggregateConfiguration implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("UseServerCapabilitiesDefaults", _useServerCapabilitiesDefaults)
+            .add("TreatUncertainAsBad", _treatUncertainAsBad)
+            .add("PercentDataBad", _percentDataBad)
+            .add("PercentDataGood", _percentDataGood)
+            .add("UseSlopedExtrapolation", _useSlopedExtrapolation)
+            .toString();
+    }
 
     public static void encode(AggregateConfiguration aggregateConfiguration, UaEncoder encoder) {
         encoder.encodeBoolean("UseServerCapabilitiesDefaults", aggregateConfiguration._useServerCapabilitiesDefaults);

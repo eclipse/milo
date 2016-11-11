@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -56,6 +57,13 @@ public class StatusResult implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("StatusCode", _statusCode)
+            .add("DiagnosticInfo", _diagnosticInfo)
+            .toString();
+    }
 
     public static void encode(StatusResult statusResult, UaEncoder encoder) {
         encoder.encodeStatusCode("StatusCode", statusResult._statusCode);

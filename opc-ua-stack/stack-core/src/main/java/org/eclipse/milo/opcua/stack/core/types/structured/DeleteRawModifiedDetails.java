@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -61,6 +62,15 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("NodeId", _nodeId)
+            .add("IsDeleteModified", _isDeleteModified)
+            .add("StartTime", _startTime)
+            .add("EndTime", _endTime)
+            .toString();
+    }
 
     public static void encode(DeleteRawModifiedDetails deleteRawModifiedDetails, UaEncoder encoder) {
         encoder.encodeNodeId("NodeId", deleteRawModifiedDetails._nodeId);

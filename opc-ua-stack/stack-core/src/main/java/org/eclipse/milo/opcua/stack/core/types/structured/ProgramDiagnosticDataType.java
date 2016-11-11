@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -99,6 +100,21 @@ public class ProgramDiagnosticDataType implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("CreateSessionId", _createSessionId)
+            .add("CreateClientName", _createClientName)
+            .add("InvocationCreationTime", _invocationCreationTime)
+            .add("LastTransitionTime", _lastTransitionTime)
+            .add("LastMethodCall", _lastMethodCall)
+            .add("LastMethodSessionId", _lastMethodSessionId)
+            .add("LastMethodInputArguments", _lastMethodInputArguments)
+            .add("LastMethodOutputArguments", _lastMethodOutputArguments)
+            .add("LastMethodCallTime", _lastMethodCallTime)
+            .add("LastMethodReturnStatus", _lastMethodReturnStatus)
+            .toString();
+    }
 
     public static void encode(ProgramDiagnosticDataType programDiagnosticDataType, UaEncoder encoder) {
         encoder.encodeNodeId("CreateSessionId", programDiagnosticDataType._createSessionId);

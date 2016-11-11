@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
@@ -83,6 +84,18 @@ public class AddNodesItem implements UaStructure {
     @Override
     public NodeId getXmlEncodingId() { return XmlEncodingId; }
 
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("ParentNodeId", _parentNodeId)
+            .add("ReferenceTypeId", _referenceTypeId)
+            .add("RequestedNewNodeId", _requestedNewNodeId)
+            .add("BrowseName", _browseName)
+            .add("NodeClass", _nodeClass)
+            .add("NodeAttributes", _nodeAttributes)
+            .add("TypeDefinition", _typeDefinition)
+            .toString();
+    }
 
     public static void encode(AddNodesItem addNodesItem, UaEncoder encoder) {
         encoder.encodeExpandedNodeId("ParentNodeId", addNodesItem._parentNodeId);
