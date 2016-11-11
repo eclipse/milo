@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -29,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
 
-@UaVariableNode(typeName = "0:SamplingIntervalDiagnosticsType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:SamplingIntervalDiagnosticsType")
 public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implements SamplingIntervalDiagnosticsType {
 
     public SamplingIntervalDiagnosticsNode(
@@ -62,7 +61,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         SamplingIntervalDiagnosticsDataType value = new SamplingIntervalDiagnosticsDataType(
             getSamplingInterval(),
             getSampledMonitoredItemsCount(),
@@ -71,6 +70,22 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof SamplingIntervalDiagnosticsDataType) {
+            SamplingIntervalDiagnosticsDataType v = (SamplingIntervalDiagnosticsDataType) o;
+
+            setSamplingInterval(v.getSamplingInterval());
+            setSampledMonitoredItemsCount(v.getMonitoredItemCount());
+            setMaxSampledMonitoredItemsCount(v.getMaxMonitoredItemCount());
+            setDisabledMonitoredItemsSamplingCount(v.getDisabledMonitoredItemCount());
+        }
     }
 
     @Override

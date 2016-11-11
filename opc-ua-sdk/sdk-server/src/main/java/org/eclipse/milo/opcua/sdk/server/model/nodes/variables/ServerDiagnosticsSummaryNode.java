@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -29,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 
-@UaVariableNode(typeName = "0:ServerDiagnosticsSummaryType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:ServerDiagnosticsSummaryType")
 public class ServerDiagnosticsSummaryNode extends BaseDataVariableNode implements ServerDiagnosticsSummaryType {
 
     public ServerDiagnosticsSummaryNode(
@@ -62,7 +61,7 @@ public class ServerDiagnosticsSummaryNode extends BaseDataVariableNode implement
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         ServerDiagnosticsSummaryDataType value = new ServerDiagnosticsSummaryDataType(
             getServerViewCount(),
             getCurrentSessionCount(),
@@ -79,6 +78,30 @@ public class ServerDiagnosticsSummaryNode extends BaseDataVariableNode implement
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof ServerDiagnosticsSummaryDataType) {
+            ServerDiagnosticsSummaryDataType v = (ServerDiagnosticsSummaryDataType) o;
+
+            setServerViewCount(v.getServerViewCount());
+            setCurrentSessionCount(v.getCurrentSessionCount());
+            setCumulatedSessionCount(v.getCumulatedSessionCount());
+            setSecurityRejectedSessionCount(v.getSecurityRejectedSessionCount());
+            setRejectedSessionCount(v.getRejectedSessionCount());
+            setSessionTimeoutCount(v.getSessionTimeoutCount());
+            setSessionAbortCount(v.getSessionAbortCount());
+            setPublishingIntervalCount(v.getPublishingIntervalCount());
+            setCurrentSubscriptionCount(v.getCurrentSubscriptionCount());
+            setCumulatedSubscriptionCount(v.getCumulatedSubscriptionCount());
+            setSecurityRejectedRequestsCount(v.getSecurityRejectedRequestsCount());
+            setRejectedRequestsCount(v.getRejectedRequestsCount());
+        }
     }
 
     @Override

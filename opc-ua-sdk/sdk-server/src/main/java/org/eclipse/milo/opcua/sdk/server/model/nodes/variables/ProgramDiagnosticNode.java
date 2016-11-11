@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -32,7 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
 
-@UaVariableNode(typeName = "0:ProgramDiagnosticType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:ProgramDiagnosticType")
 public class ProgramDiagnosticNode extends BaseDataVariableNode implements ProgramDiagnosticType {
 
     public ProgramDiagnosticNode(
@@ -65,11 +64,23 @@ public class ProgramDiagnosticNode extends BaseDataVariableNode implements Progr
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         ProgramDiagnosticDataType value = new ProgramDiagnosticDataType(
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof ProgramDiagnosticDataType) {
+            ProgramDiagnosticDataType v = (ProgramDiagnosticDataType) o;
+
+        }
     }
 
     @Override

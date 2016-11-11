@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -32,7 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 
-@UaVariableNode(typeName = "0:ServerStatusType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:ServerStatusType")
 public class ServerStatusNode extends BaseDataVariableNode implements ServerStatusType {
 
     public ServerStatusNode(
@@ -65,7 +64,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         ServerStatusDataType value = new ServerStatusDataType(
             getStartTime(),
             getCurrentTime(),
@@ -76,6 +75,24 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof ServerStatusDataType) {
+            ServerStatusDataType v = (ServerStatusDataType) o;
+
+            setStartTime(v.getStartTime());
+            setCurrentTime(v.getCurrentTime());
+            setState(v.getState());
+            setBuildInfo(v.getBuildInfo());
+            setSecondsTillShutdown(v.getSecondsTillShutdown());
+            setShutdownReason(v.getShutdownReason());
+        }
     }
 
     @Override

@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -30,7 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 
-@UaVariableNode(typeName = "0:BuildInfoType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:BuildInfoType")
 public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType {
 
     public BuildInfoNode(
@@ -63,7 +62,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     @Override
-    public DataValue getValue() {
+    public synchronized DataValue getValue() {
         BuildInfo value = new BuildInfo(
             getProductUri(),
             getManufacturerName(),
@@ -74,6 +73,24 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
         );
 
         return new DataValue(new Variant(value));
+    }
+
+    @Override
+    public synchronized void setValue(DataValue value) {
+        super.setValue(value);
+
+        Object o = value.getValue().getValue();
+
+        if (o instanceof BuildInfo) {
+            BuildInfo v = (BuildInfo) o;
+
+            setProductUri(v.getProductUri());
+            setManufacturerName(v.getManufacturerName());
+            setProductName(v.getProductName());
+            setSoftwareVersion(v.getSoftwareVersion());
+            setBuildNumber(v.getBuildNumber());
+            setBuildDate(v.getBuildDate());
+        }
     }
 
     @Override
