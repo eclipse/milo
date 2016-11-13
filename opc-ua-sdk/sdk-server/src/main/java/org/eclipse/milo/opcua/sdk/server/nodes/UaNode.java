@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -49,10 +50,13 @@ public abstract class UaNode implements ServerNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UaNode.class);
 
+    private static final AttributeDelegate DEFAULT_ATTRIBUTE_DELEGATE = new AttributeDelegateAdapter();
+
     private final AtomicInteger refCount = new AtomicInteger(0);
 
     private final List<Reference> references = new CopyOnWriteArrayList<>();
 
+    private AttributeDelegate attributeDelegate = DEFAULT_ATTRIBUTE_DELEGATE; // TODO setter, synchronization
     private List<WeakReference<AttributeObserver>> observers;
 
     private final UaNodeManager nodeManager;
@@ -418,6 +422,16 @@ public abstract class UaNode implements ServerNode {
                 iterator.remove();
             }
         }
+    }
+
+    @Override
+    public DataValue getAttribute(AttributeId attributeId) throws UaException {
+        return attributeDelegate.getAttribute(this, attributeId);
+    }
+
+    @Override
+    public void setAttribute(AttributeId attributeId, DataValue value) throws UaException {
+        attributeDelegate.setAttribute(this, attributeId, value);
     }
 
 }

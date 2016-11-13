@@ -47,8 +47,8 @@ public class UaMethodNode extends UaNode implements MethodNode {
 
     private volatile Optional<MethodInvocationHandler> handler = Optional.empty();
 
-    private volatile boolean executable;
-    private volatile boolean userExecutable;
+    private volatile Boolean executable;
+    private volatile Boolean userExecutable;
 
     public UaMethodNode(
         UaNodeManager nodeManager,
@@ -58,8 +58,8 @@ public class UaMethodNode extends UaNode implements MethodNode {
         Optional<LocalizedText> description,
         Optional<UInteger> writeMask,
         Optional<UInteger> userWriteMask,
-        boolean executable,
-        boolean userExecutable) {
+        Boolean executable,
+        Boolean userExecutable) {
 
         super(nodeManager, nodeId, NodeClass.Method,
             browseName, displayName, description, writeMask, userWriteMask);
@@ -79,14 +79,14 @@ public class UaMethodNode extends UaNode implements MethodNode {
     }
 
     @Override
-    public synchronized void setExecutable(boolean executable) {
+    public synchronized void setExecutable(Boolean executable) {
         this.executable = executable;
 
         fireAttributeChanged(AttributeId.Executable, executable);
     }
 
     @Override
-    public synchronized void setUserExecutable(boolean userExecutable) {
+    public synchronized void setUserExecutable(Boolean userExecutable) {
         this.userExecutable = userExecutable;
 
         fireAttributeChanged(AttributeId.UserExecutable, userExecutable);

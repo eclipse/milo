@@ -11,18 +11,16 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.server.api.nodes;
+package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 
-public interface ViewNode extends Node {
+public interface AttributeDelegate {
 
-    Boolean getContainsNoLoops();
+    DataValue getAttribute(UaNode node, AttributeId attributeId) throws UaException;
 
-    UByte getEventNotifier();
-
-    void setContainsNoLoops(Boolean containsNoLoops);
-
-    void setEventNotifier(UByte eventNotifier);
+    void setAttribute(UaNode node, AttributeId attributeId, DataValue value) throws UaException;
 
 }

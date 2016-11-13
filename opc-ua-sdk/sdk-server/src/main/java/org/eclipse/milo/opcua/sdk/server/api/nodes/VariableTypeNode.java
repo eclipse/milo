@@ -35,10 +35,10 @@ public interface VariableTypeNode extends Node {
 
     void setDataType(NodeId dataType);
 
-    void setValueRank(int valueRank);
+    void setValueRank(Integer valueRank);
 
     void setArrayDimensions(Optional<UInteger[]> arrayDimensions);
 
-    void setIsAbstract(boolean isAbstract);
+    void setIsAbstract(Boolean isAbstract);
 
 }

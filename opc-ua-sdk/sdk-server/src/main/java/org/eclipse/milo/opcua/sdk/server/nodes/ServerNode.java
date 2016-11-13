@@ -185,4 +185,8 @@ public interface ServerNode extends Node {
         AttributeWriter.writeAttribute(ns, this, attributeId, value, indexRange);
     }
 
+    DataValue getAttribute(AttributeId attributeId) throws UaException;
+
+    void setAttribute(AttributeId attributeId, DataValue value) throws UaException;
+
 }

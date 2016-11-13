@@ -25,9 +25,9 @@ public interface ReferenceTypeNode extends Node {
 
     Optional<LocalizedText> getInverseName();
 
-    void setIsAbstract(boolean isAbstract);
+    void setIsAbstract(Boolean isAbstract);
 
-    void setSymmetric(boolean isSymmetric);
+    void setSymmetric(Boolean isSymmetric);
 
     void setInverseName(Optional<LocalizedText> inverseName);
 

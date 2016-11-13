@@ -13,10 +13,12 @@
 
 package org.eclipse.milo.opcua.sdk.server.util;
 
+import java.util.EnumSet;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.sdk.core.WriteMask;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
@@ -25,6 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -32,14 +35,17 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class AttributeReader {
 
     private static final Supplier<UaException> ATTRIBUTE_ID_INVALID_EXCEPTION =
         () -> new UaException(StatusCodes.Bad_AttributeIdInvalid);
 
-    public static DataValue readAttribute(Node node,
+    public static DataValue readAttribute(ServerNode node,
                                           AttributeId attributeId,
                                           @Nullable TimestampsToReturn timestamps,
                                           @Nullable String indexRange) {
@@ -70,28 +76,28 @@ public class AttributeReader {
         }
     }
 
-    private static DataValue readAttribute(Node node, AttributeId attributeId) throws UaException {
+    private static DataValue readAttribute(ServerNode node, AttributeId attributeId) throws UaException {
         switch (node.getNodeClass()) {
             case DataType:
-                return readDataTypeAttribute((DataTypeNode) node, attributeId);
+                return readDataTypeAttribute((ServerNode & DataTypeNode) node, attributeId);
 
             case Method:
-                return readMethodAttribute((MethodNode) node, attributeId);
+                return readMethodAttribute((ServerNode & MethodNode) node, attributeId);
 
             case Object:
-                return readObjectAttribute((ObjectNode) node, attributeId);
+                return readObjectAttribute((ServerNode & ObjectNode) node, attributeId);
 
             case ObjectType:
-                return readObjectTypeAttribute((ObjectTypeNode) node, attributeId);
+                return readObjectTypeAttribute((ServerNode & ObjectTypeNode) node, attributeId);
 
             case ReferenceType:
-                return readReferenceTypeAttribute((ReferenceTypeNode) node, attributeId);
+                return readReferenceTypeAttribute((ServerNode & ReferenceTypeNode) node, attributeId);
 
             case Variable:
-                return readVariableAttribute((VariableNode) node, attributeId);
+                return readVariableAttribute((ServerNode & VariableNode) node, attributeId);
 
             case VariableType:
-                return readVariableTypeAttribute((VariableTypeNode) node, attributeId);
+                return readVariableTypeAttribute((ServerNode & VariableTypeNode) node, attributeId);
 
             default:
                 throw new UaException(StatusCodes.Bad_NodeClassInvalid);
@@ -100,6 +106,9 @@ public class AttributeReader {
     }
 
     private static DataValue readNodeAttribute(Node node, AttributeId attributeId) throws UaException {
+        UInteger writeMask = node.getWriteMask().orElse(uint(0));
+        EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
+
         switch (attributeId) {
             case NodeId:
                 return dv(node.getNodeId());
@@ -191,14 +200,12 @@ public class AttributeReader {
         }
     }
 
-    private static DataValue readVariableAttribute(VariableNode node, AttributeId attributeId) throws UaException {
+    private static <T extends ServerNode & VariableNode>
+    DataValue readVariableAttribute(T node, AttributeId attributeId) throws UaException {
+
         switch (attributeId) {
             case Value:
-                return new DataValue(
-                    node.getValue().getValue(),
-                    node.getValue().getStatusCode(),
-                    node.getValue().getSourceTime(),
-                    DateTime.now());
+                return node.getAttribute(AttributeId.Value);
 
             case DataType:
                 return dv(node.getDataType());

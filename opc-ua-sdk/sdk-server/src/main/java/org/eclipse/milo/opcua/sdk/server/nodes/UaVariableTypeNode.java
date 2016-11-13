@@ -34,9 +34,9 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 
     private volatile Optional<DataValue> value;
     private volatile NodeId dataType;
-    private volatile int valueRank;
+    private volatile Integer valueRank;
     private volatile Optional<UInteger[]> arrayDimensions;
-    private volatile boolean isAbstract;
+    private volatile Boolean isAbstract;
 
     public UaVariableTypeNode(
         UaNodeManager nodeManager,
@@ -48,9 +48,9 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         Optional<UInteger> userWriteMask,
         Optional<DataValue> value,
         NodeId dataType,
-        int valueRank,
+        Integer valueRank,
         Optional<UInteger[]> arrayDimensions,
-        boolean isAbstract) {
+        Boolean isAbstract) {
 
         super(nodeManager, nodeId, NodeClass.VariableType,
             browseName, displayName, description, writeMask, userWriteMask);
@@ -102,7 +102,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     @Override
-    public synchronized void setValueRank(int valueRank) {
+    public synchronized void setValueRank(Integer valueRank) {
         this.valueRank = valueRank;
 
         fireAttributeChanged(AttributeId.ValueRank, valueRank);
@@ -116,7 +116,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     @Override
-    public synchronized void setIsAbstract(boolean isAbstract) {
+    public synchronized void setIsAbstract(Boolean isAbstract) {
         this.isAbstract = isAbstract;
 
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);

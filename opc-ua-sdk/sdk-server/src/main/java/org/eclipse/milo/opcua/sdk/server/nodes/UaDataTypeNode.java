@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
@@ -33,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
 
 public class UaDataTypeNode extends UaNode implements DataTypeNode {
 
-    private final AtomicBoolean isAbstract;
+    private volatile Boolean isAbstract;
 
     public UaDataTypeNode(
         UaNodeManager nodeManager,
@@ -48,17 +47,17 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         super(nodeManager, nodeId, NodeClass.DataType,
             browseName, displayName, description, writeMask, userWriteMask);
 
-        this.isAbstract = new AtomicBoolean(isAbstract);
+        this.isAbstract = isAbstract;
     }
 
     @Override
     public Boolean getIsAbstract() {
-        return isAbstract.get();
+        return isAbstract;
     }
 
     @Override
-    public synchronized void setIsAbstract(boolean isAbstract) {
-        this.isAbstract.set(isAbstract);
+    public synchronized void setIsAbstract(Boolean isAbstract) {
+        this.isAbstract = isAbstract;
 
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
     }
