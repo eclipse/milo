@@ -74,9 +74,15 @@ public class ExampleServer {
 
         UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
             true,
-            authChallenge ->
-                ("user".equals(authChallenge.getUsername()) || "admin".equals(authChallenge.getUsername()))
-                    && "password".equals(authChallenge.getPassword())
+            authChallenge -> {
+                String username = authChallenge.getUsername();
+                String password = authChallenge.getPassword();
+
+                boolean userOk = "user".equals(username) && "password1".equals(password);
+                boolean adminOk = "admin".equals(username) && "password2".equals(password);
+            
+                return userOk || adminOk;
+            }
         );
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
