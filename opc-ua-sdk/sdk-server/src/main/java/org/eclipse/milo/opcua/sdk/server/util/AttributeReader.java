@@ -205,7 +205,11 @@ public class AttributeReader {
 
         switch (attributeId) {
             case Value:
-                return node.getAttribute(AttributeId.Value);
+                return new DataValue(
+                    node.getValue().getValue(),
+                    node.getValue().getStatusCode(),
+                    node.getValue().getSourceTime(),
+                    DateTime.now());
 
             case DataType:
                 return dv(node.getDataType());

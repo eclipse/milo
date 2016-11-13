@@ -25,10 +25,14 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegateAdapter;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -172,6 +176,7 @@ public class ExampleNamespace implements Namespace {
     private void addVariableNodes(UaFolderNode rootNode) {
         addArrayNodes(rootNode);
         addScalarNodes(rootNode);
+        addAdminWritableNodes(rootNode);
     }
 
     private void addArrayNodes(UaFolderNode rootNode) {
@@ -243,6 +248,66 @@ public class ExampleNamespace implements Namespace {
             server.getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
         }
+    }
+
+    private void addAdminWritableNodes(UaFolderNode rootNode) {
+        UaFolderNode adminFolder = new UaFolderNode(
+            server.getNodeManager(),
+            new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanWrite"),
+            new QualifiedName(namespaceIndex, "OnlyAdminCanWrite"),
+            LocalizedText.english("OnlyAdminCanWrite")
+        );
+
+        server.getNodeManager().addNode(adminFolder);
+        rootNode.addOrganizes(adminFolder);
+
+        String name = "String";
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanWrite/" + name))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setDisplayName(LocalizedText.english(name))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        node.setValue(new DataValue(new Variant("hello, admin")));
+
+        node.setAttributeDelegate(new AttributeDelegateAdapter() {
+            @Override
+            protected void setVariableAttribute(
+                AttributeContext context,
+                VariableNode node,
+                AttributeId attributeId,
+                DataValue value) throws UaException {
+
+                if (attributeId == AttributeId.Value) {
+                    Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
+
+                    // no session means the write is "internal", allow it...
+                    boolean userCanWrite = identity.map("admin"::equals).orElse(true);
+
+                    if (userCanWrite) {
+                        logger.info(
+                            "Allowing user '{}' access writing to {} of {}",
+                            identity, attributeId, node.getNodeId());
+
+                        node.setValue(value);
+                    } else {
+                        logger.info(
+                            "Denying user '{}' access writing to {} of {}",
+                            identity, attributeId, node.getNodeId());
+
+                        throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                    }
+                } else {
+                    super.setVariableAttribute(context, node, attributeId, value);
+                }
+            }
+        });
+
+        server.getNodeManager().addNode(node);
+        adminFolder.addOrganizes(node);
     }
 
     private void addMethodNode(UaFolderNode folderNode) {
@@ -327,7 +392,7 @@ public class ExampleNamespace implements Namespace {
             if (node != null) {
                 try {
                     node.writeAttribute(
-                        server.getNamespaceManager(),
+                        new AttributeDelegate.AttributeContext(context),
                         writeValue.getAttributeId(),
                         writeValue.getValue(),
                         writeValue.getIndexRange()

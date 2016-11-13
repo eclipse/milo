@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
@@ -56,7 +57,9 @@ public abstract class UaNode implements ServerNode {
 
     private final List<Reference> references = new CopyOnWriteArrayList<>();
 
-    private AttributeDelegate attributeDelegate = DEFAULT_ATTRIBUTE_DELEGATE; // TODO setter, synchronization
+    private final AtomicReference<AttributeDelegate> attributeDelegate =
+        new AtomicReference<>(DEFAULT_ATTRIBUTE_DELEGATE);
+
     private List<WeakReference<AttributeObserver>> observers;
 
     private final UaNodeManager nodeManager;
@@ -424,14 +427,22 @@ public abstract class UaNode implements ServerNode {
         }
     }
 
-    @Override
-    public DataValue getAttribute(AttributeId attributeId) throws UaException {
-        return attributeDelegate.getAttribute(this, attributeId);
+    public void setAttributeDelegate(AttributeDelegate attributeDelegate) {
+        this.attributeDelegate.set(attributeDelegate);
     }
 
     @Override
-    public void setAttribute(AttributeId attributeId, DataValue value) throws UaException {
-        attributeDelegate.setAttribute(this, attributeId, value);
+    public DataValue getAttribute(AttributeId attributeId) throws UaException {
+
+        return attributeDelegate.get().getAttribute(null, this, attributeId); // TODO context
+    }
+
+    @Override
+    public void setAttribute(AttributeDelegate.AttributeContext context,
+                             AttributeId attributeId,
+                             DataValue value) throws UaException {
+
+        attributeDelegate.get().setAttribute(context, this, attributeId, value);
     }
 
 }

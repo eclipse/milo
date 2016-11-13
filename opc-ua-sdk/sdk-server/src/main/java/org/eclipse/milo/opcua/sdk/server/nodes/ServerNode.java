@@ -128,32 +128,32 @@ public interface ServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param ns         the {@link NamespaceManager}.
+     * @param context    the {@link NamespaceManager}.
      * @param attribute  the id of the attribute to write.
      * @param value      the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        NamespaceManager ns,
+        AttributeDelegate.AttributeContext context,
         UInteger attribute,
         DataValue value,
         String indexRange) throws UaException {
 
-        writeAttribute(ns, attribute.intValue(), value, indexRange);
+        writeAttribute(context, attribute.intValue(), value, indexRange);
     }
 
     /**
      * Write to the specified attribute.
      *
-     * @param ns         the {@link NamespaceManager}.
+     * @param context    the {@link NamespaceManager}.
      * @param attribute  the id of the attribute to write.
      * @param value      the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        NamespaceManager ns,
+        AttributeDelegate.AttributeContext context,
         int attribute,
         DataValue value,
         String indexRange) throws UaException {
@@ -161,7 +161,7 @@ public interface ServerNode extends Node {
         Optional<AttributeId> attributeId = AttributeId.from(attribute);
 
         if (attributeId.isPresent()) {
-            writeAttribute(ns, attributeId.get(), value, indexRange);
+            writeAttribute(context, attributeId.get(), value, indexRange);
         } else {
             throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
         }
@@ -170,23 +170,25 @@ public interface ServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param ns          the {@link NamespaceManager}.
+     * @param context     the {@link NamespaceManager}.
      * @param attributeId the {@link AttributeId} of the attribute to write.
      * @param value       the {@link DataValue} write.
      * @param indexRange  the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        NamespaceManager ns,
+        AttributeDelegate.AttributeContext context,
         AttributeId attributeId,
         DataValue value,
         String indexRange) throws UaException {
 
-        AttributeWriter.writeAttribute(ns, this, attributeId, value, indexRange);
+        AttributeWriter.writeAttribute(context, this, attributeId, value, indexRange);
     }
 
     DataValue getAttribute(AttributeId attributeId) throws UaException;
 
-    void setAttribute(AttributeId attributeId, DataValue value) throws UaException;
+    void setAttribute(AttributeDelegate.AttributeContext context,
+                      AttributeId attributeId,
+                      DataValue value) throws UaException;
 
 }

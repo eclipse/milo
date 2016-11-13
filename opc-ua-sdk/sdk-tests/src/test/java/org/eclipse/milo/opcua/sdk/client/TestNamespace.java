@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -170,7 +171,7 @@ public class TestNamespace implements Namespace {
                     .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
                 node.writeAttribute(
-                    server.getNamespaceManager(),
+                    new AttributeDelegate.AttributeContext(context),
                     writeValue.getAttributeId().intValue(),
                     writeValue.getValue(),
                     writeValue.getIndexRange());

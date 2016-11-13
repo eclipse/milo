@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.Optional;
 
+import org.eclipse.milo.opcua.sdk.server.api.AttributeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
@@ -33,21 +34,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 public class AttributeDelegateAdapter implements AttributeDelegate {
 
     @Override
-    public DataValue getAttribute(UaNode node, AttributeId attributeId) throws UaException {
+    public DataValue getAttribute(
+        AttributeContext context,
+        UaNode node,
+        AttributeId attributeId) throws UaException {
+
         return null;
     }
 
     @Override
-    public void setAttribute(UaNode node, AttributeId attributeId, DataValue value) throws UaException {
+    public void setAttribute(
+        AttributeContext context,
+        UaNode node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
+
         switch (node.getNodeClass()) {
             case DataType:
-                setDataTypeAttribute((DataTypeNode) node, attributeId, value);
+                setDataTypeAttribute(context, (DataTypeNode) node, attributeId, value);
                 break;
             case Method:
-                setMethodAttribute((MethodNode) node, attributeId, value);
+                setMethodAttribute(context, (MethodNode) node, attributeId, value);
                 break;
             case Object:
-                setObjectAttribute((ObjectNode) node, attributeId, value);
+                setObjectAttribute(context, (ObjectNode) node, attributeId, value);
                 break;
             case ObjectType:
                 setObjectTypeAttribute((ObjectTypeNode) node, attributeId, value);
@@ -56,7 +66,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                 setReferenceTypeAttribute((ReferenceTypeNode) node, attributeId, value);
                 break;
             case Variable:
-                setVariableAttribute((VariableNode) node, attributeId, value);
+                setVariableAttribute(context, (VariableNode) node, attributeId, value);
                 break;
             case VariableType:
                 setVariableTypeAttribute((VariableTypeNode) node, attributeId, value);
@@ -100,7 +110,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
     }
 
     protected void setDataTypeAttribute(
-        DataTypeNode node,
+        AttributeContext context, DataTypeNode node,
         AttributeId attributeId,
         DataValue value) throws UaException {
 
@@ -115,7 +125,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
     }
 
     protected void setMethodAttribute(
-        MethodNode node,
+        AttributeContext context, MethodNode node,
         AttributeId attributeId,
         DataValue value) throws UaException {
 
@@ -133,7 +143,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
     }
 
     protected void setObjectAttribute(
-        ObjectNode node,
+        AttributeContext context, ObjectNode node,
         AttributeId attributeId,
         DataValue value) throws UaException {
 
@@ -184,6 +194,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
     }
 
     protected void setVariableAttribute(
+        AttributeContext context,
         VariableNode node,
         AttributeId attributeId,
         DataValue value) throws UaException {

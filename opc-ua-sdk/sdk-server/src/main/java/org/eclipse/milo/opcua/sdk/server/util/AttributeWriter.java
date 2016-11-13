@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -47,7 +48,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class AttributeWriter {
 
-    public static void writeAttribute(NamespaceManager ns,
+    public static void writeAttribute(AttributeDelegate.AttributeContext context,
                                       ServerNode node,
                                       AttributeId attributeId,
                                       DataValue value,
@@ -78,41 +79,41 @@ public class AttributeWriter {
             (sourceTime == null || sourceTime.isNull()) ? DateTime.now() : sourceTime,
             (serverTime == null || serverTime.isNull()) ? DateTime.now() : serverTime);
 
-        writeNode(ns, node, attributeId, value);
+        writeNode(context, node, attributeId, value);
     }
 
-    private static void writeNode(NamespaceManager ns,
+    private static void writeNode(AttributeDelegate.AttributeContext context,
                                   ServerNode node,
                                   AttributeId attributeId,
                                   DataValue value) throws UaException {
 
         switch (node.getNodeClass()) {
             case DataType:
-                writeDataTypeAttribute(ns, (ServerNode & DataTypeNode) node, attributeId, value);
+                writeDataTypeAttribute(context, (ServerNode & DataTypeNode) node, attributeId, value);
                 break;
 
             case Method:
-                writeMethodAttribute(ns, (ServerNode & MethodNode) node, attributeId, value);
+                writeMethodAttribute(context, (ServerNode & MethodNode) node, attributeId, value);
                 break;
 
             case Object:
-                writeObjectAttribute(ns, (ServerNode & ObjectNode) node, attributeId, value);
+                writeObjectAttribute(context, (ServerNode & ObjectNode) node, attributeId, value);
                 break;
 
             case ObjectType:
-                writeObjectTypeAttribute(ns, (ServerNode & ObjectTypeNode) node, attributeId, value);
+                writeObjectTypeAttribute(context, (ServerNode & ObjectTypeNode) node, attributeId, value);
                 break;
 
             case ReferenceType:
-                writeReferenceTypeAttribute(ns, (ServerNode & ReferenceTypeNode) node, attributeId, value);
+                writeReferenceTypeAttribute(context, (ServerNode & ReferenceTypeNode) node, attributeId, value);
                 break;
 
             case Variable:
-                writeVariableAttribute(ns, (ServerNode & VariableNode) node, attributeId, value);
+                writeVariableAttribute(context, (ServerNode & VariableNode) node, attributeId, value);
                 break;
 
             case VariableType:
-                writeVariableTypeAttribute(ns, (ServerNode & VariableTypeNode) node, attributeId, value);
+                writeVariableTypeAttribute(context, (ServerNode & VariableTypeNode) node, attributeId, value);
                 break;
 
             default:
@@ -120,7 +121,7 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeNodeAttribute(NamespaceManager ns,
+    private static void writeNodeAttribute(AttributeDelegate.AttributeContext context,
                                            ServerNode node,
                                            AttributeId attributeId,
                                            DataValue value) throws UaException {
@@ -131,7 +132,7 @@ public class AttributeWriter {
         switch (attributeId) {
             case NodeId:
                 if (writeMasks.contains(WriteMask.NodeId)) {
-                    node.setAttribute(AttributeId.NodeId, value);
+                    node.setAttribute(context, AttributeId.NodeId, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -139,7 +140,7 @@ public class AttributeWriter {
 
             case NodeClass:
                 if (writeMasks.contains(WriteMask.NodeClass)) {
-                    node.setAttribute(AttributeId.NodeClass, value);
+                    node.setAttribute(context, AttributeId.NodeClass, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -147,7 +148,7 @@ public class AttributeWriter {
 
             case BrowseName:
                 if (writeMasks.contains(WriteMask.BrowseName)) {
-                    node.setAttribute(AttributeId.BrowseName, value);
+                    node.setAttribute(context, AttributeId.BrowseName, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -155,7 +156,7 @@ public class AttributeWriter {
 
             case DisplayName:
                 if (writeMasks.contains(WriteMask.DisplayName)) {
-                    node.setAttribute(AttributeId.DisplayName, value);
+                    node.setAttribute(context, AttributeId.DisplayName, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -163,7 +164,7 @@ public class AttributeWriter {
 
             case Description:
                 if (writeMasks.contains(WriteMask.Description)) {
-                    node.setAttribute(AttributeId.Description, value);
+                    node.setAttribute(context, AttributeId.Description, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -171,7 +172,7 @@ public class AttributeWriter {
 
             case WriteMask:
                 if (writeMasks.contains(WriteMask.WriteMask)) {
-                    node.setAttribute(AttributeId.WriteMask, value);
+                    node.setAttribute(context, AttributeId.WriteMask, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -179,7 +180,7 @@ public class AttributeWriter {
 
             case UserWriteMask:
                 if (writeMasks.contains(WriteMask.UserWriteMask)) {
-                    node.setAttribute(AttributeId.UserWriteMask, value);
+                    node.setAttribute(context, AttributeId.UserWriteMask, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -191,7 +192,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & DataTypeNode>
-    void writeDataTypeAttribute(NamespaceManager ns,
+    void writeDataTypeAttribute(AttributeDelegate.AttributeContext context,
                                 T node,
                                 AttributeId attributeId,
                                 DataValue value) throws UaException {
@@ -202,19 +203,19 @@ public class AttributeWriter {
         switch (attributeId) {
             case IsAbstract:
                 if (writeMasks.contains(WriteMask.IsAbstract)) {
-                    node.setAttribute(AttributeId.IsAbstract, value);
+                    node.setAttribute(context, AttributeId.IsAbstract, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
                 break;
 
             default:
-                writeNodeAttribute(ns, node, attributeId, value);
+                writeNodeAttribute(context, node, attributeId, value);
         }
     }
 
     private static <T extends ServerNode & MethodNode>
-    void writeMethodAttribute(NamespaceManager ns,
+    void writeMethodAttribute(AttributeDelegate.AttributeContext context,
                               T node,
                               AttributeId attributeId,
                               DataValue value) throws UaException {
@@ -225,7 +226,7 @@ public class AttributeWriter {
         switch (attributeId) {
             case Executable:
                 if (writeMasks.contains(WriteMask.Executable)) {
-                    node.setAttribute(AttributeId.Executable, value);
+                    node.setAttribute(context, AttributeId.Executable, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -233,19 +234,19 @@ public class AttributeWriter {
 
             case UserExecutable:
                 if (writeMasks.contains(WriteMask.UserExecutable)) {
-                    node.setAttribute(AttributeId.UserExecutable, value);
+                    node.setAttribute(context, AttributeId.UserExecutable, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
                 break;
 
             default:
-                writeNodeAttribute(ns, node, attributeId, value);
+                writeNodeAttribute(context, node, attributeId, value);
         }
     }
 
     private static <T extends ServerNode & ObjectNode>
-    void writeObjectAttribute(NamespaceManager ns,
+    void writeObjectAttribute(AttributeDelegate.AttributeContext context,
                               T node,
                               AttributeId attributeId,
                               DataValue value) throws UaException {
@@ -256,19 +257,19 @@ public class AttributeWriter {
         switch (attributeId) {
             case EventNotifier:
                 if (writeMasks.contains(WriteMask.EventNotifier)) {
-                    node.setAttribute(AttributeId.EventNotifier, value);
+                    node.setAttribute(context, AttributeId.EventNotifier, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
                 break;
 
             default:
-                writeNodeAttribute(ns, node, attributeId, value);
+                writeNodeAttribute(context, node, attributeId, value);
         }
     }
 
     private static <T extends ServerNode & ObjectTypeNode>
-    void writeObjectTypeAttribute(NamespaceManager ns,
+    void writeObjectTypeAttribute(AttributeDelegate.AttributeContext context,
                                   T node,
                                   AttributeId attributeId,
                                   DataValue value) throws UaException {
@@ -279,19 +280,19 @@ public class AttributeWriter {
         switch (attributeId) {
             case IsAbstract:
                 if (writeMasks.contains(WriteMask.IsAbstract)) {
-                    node.setAttribute(AttributeId.IsAbstract, value);
+                    node.setAttribute(context, AttributeId.IsAbstract, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
                 break;
 
             default:
-                writeNodeAttribute(ns, node, attributeId, value);
+                writeNodeAttribute(context, node, attributeId, value);
         }
     }
 
     private static <T extends ServerNode & ReferenceTypeNode>
-    void writeReferenceTypeAttribute(NamespaceManager ns,
+    void writeReferenceTypeAttribute(AttributeDelegate.AttributeContext context,
                                      T node,
                                      AttributeId attributeId,
                                      DataValue value) throws UaException {
@@ -302,7 +303,7 @@ public class AttributeWriter {
         switch (attributeId) {
             case IsAbstract:
                 if (writeMasks.contains(WriteMask.IsAbstract)) {
-                    node.setAttribute(AttributeId.IsAbstract, value);
+                    node.setAttribute(context, AttributeId.IsAbstract, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -310,7 +311,7 @@ public class AttributeWriter {
 
             case Symmetric:
                 if (writeMasks.contains(WriteMask.Symmetric)) {
-                    node.setAttribute(AttributeId.Symmetric, value);
+                    node.setAttribute(context, AttributeId.Symmetric, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -318,19 +319,19 @@ public class AttributeWriter {
 
             case InverseName:
                 if (writeMasks.contains(WriteMask.InverseName)) {
-                    node.setAttribute(AttributeId.InverseName, value);
+                    node.setAttribute(context, AttributeId.InverseName, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
                 break;
 
             default:
-                writeNodeAttribute(ns, node, attributeId, value);
+                writeNodeAttribute(context, node, attributeId, value);
         }
     }
 
     private static <T extends ServerNode & VariableNode>
-    void writeVariableAttribute(NamespaceManager ns,
+    void writeVariableAttribute(AttributeDelegate.AttributeContext context,
                                 T node,
                                 AttributeId attributeId,
                                 DataValue value) throws UaException {
@@ -343,10 +344,10 @@ public class AttributeWriter {
         switch (attributeId) {
             case Value:
                 if (accessLevels.contains(AccessLevel.CurrentWrite)) {
-                    value = validateDataType(ns, node.getDataType().expanded(), value);
+                    value = validateDataType(context.getServer().getNamespaceManager(), node.getDataType().expanded(), value);
                     validateArrayType(node.getValueRank(), node.getArrayDimensions(), value);
 
-                    node.setAttribute(AttributeId.Value, value);
+                    node.setAttribute(context, AttributeId.Value, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -354,7 +355,7 @@ public class AttributeWriter {
 
             case DataType:
                 if (writeMasks.contains(WriteMask.DataType)) {
-                    node.setAttribute(AttributeId.DataType, value);
+                    node.setAttribute(context, AttributeId.DataType, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -362,7 +363,7 @@ public class AttributeWriter {
 
             case ValueRank:
                 if (writeMasks.contains(WriteMask.ValueRank)) {
-                    node.setAttribute(AttributeId.ValueRank, value);
+                    node.setAttribute(context, AttributeId.ValueRank, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -370,7 +371,7 @@ public class AttributeWriter {
 
             case ArrayDimensions:
                 if (writeMasks.contains(WriteMask.ArrayDimensions)) {
-                    node.setAttribute(AttributeId.ArrayDimensions, value);
+                    node.setAttribute(context, AttributeId.ArrayDimensions, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -378,7 +379,7 @@ public class AttributeWriter {
 
             case AccessLevel:
                 if (writeMasks.contains(WriteMask.AccessLevel)) {
-                    node.setAttribute(AttributeId.AccessLevel, value);
+                    node.setAttribute(context, AttributeId.AccessLevel, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -386,7 +387,7 @@ public class AttributeWriter {
 
             case UserAccessLevel:
                 if (writeMasks.contains(WriteMask.UserAccessLevel)) {
-                    node.setAttribute(AttributeId.UserAccessLevel, value);
+                    node.setAttribute(context, AttributeId.UserAccessLevel, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -394,7 +395,7 @@ public class AttributeWriter {
 
             case MinimumSamplingInterval:
                 if (writeMasks.contains(WriteMask.MinimumSamplingInterval)) {
-                    node.setAttribute(AttributeId.MinimumSamplingInterval, value);
+                    node.setAttribute(context, AttributeId.MinimumSamplingInterval, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -402,19 +403,19 @@ public class AttributeWriter {
 
             case Historizing:
                 if (writeMasks.contains(WriteMask.Historizing)) {
-                    node.setAttribute(AttributeId.Historizing, value);
+                    node.setAttribute(context, AttributeId.Historizing, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
                 break;
 
             default:
-                writeNodeAttribute(ns, node, attributeId, value);
+                writeNodeAttribute(context, node, attributeId, value);
         }
     }
 
     private static <T extends ServerNode & VariableTypeNode>
-    void writeVariableTypeAttribute(NamespaceManager ns,
+    void writeVariableTypeAttribute(AttributeDelegate.AttributeContext context,
                                     T node,
                                     AttributeId attributeId,
                                     DataValue value) throws UaException {
@@ -425,10 +426,10 @@ public class AttributeWriter {
         switch (attributeId) {
             case Value:
                 if (writeMasks.contains(WriteMask.ValueForVariableType)) {
-                    value = validateDataType(ns, node.getDataType().expanded(), value);
+                    value = validateDataType(context.getServer().getNamespaceManager(), node.getDataType().expanded(), value);
                     validateArrayType(node.getValueRank(), node.getArrayDimensions(), value);
 
-                    node.setAttribute(AttributeId.Value, value);
+                    node.setAttribute(context, AttributeId.Value, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -436,7 +437,7 @@ public class AttributeWriter {
 
             case DataType:
                 if (writeMasks.contains(WriteMask.DataType)) {
-                    node.setAttribute(AttributeId.DataType, value);
+                    node.setAttribute(context, AttributeId.DataType, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -444,7 +445,7 @@ public class AttributeWriter {
 
             case ValueRank:
                 if (writeMasks.contains(WriteMask.ValueRank)) {
-                    node.setAttribute(AttributeId.ValueRank, value);
+                    node.setAttribute(context, AttributeId.ValueRank, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
@@ -452,14 +453,14 @@ public class AttributeWriter {
 
             case IsAbstract:
                 if (writeMasks.contains(WriteMask.IsAbstract)) {
-                    node.setAttribute(AttributeId.IsAbstract, value);
+                    node.setAttribute(context, AttributeId.IsAbstract, value);
                 } else {
                     throw new UaException(StatusCodes.Bad_NotWritable);
                 }
                 break;
 
             default:
-                writeNodeAttribute(ns, node, attributeId, value);
+                writeNodeAttribute(context, node, attributeId, value);
         }
     }
 
