@@ -67,6 +67,54 @@ public class ExampleNamespace implements Namespace {
 
     public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
+    private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
+        {"Boolean", Identifiers.Boolean, new Variant(false)},
+        {"Byte", Identifiers.Byte, new Variant(ubyte(0x00))},
+        {"SByte", Identifiers.SByte, new Variant((byte) 0x00)},
+        {"Int16", Identifiers.Int16, new Variant((short) 16)},
+        {"Int32", Identifiers.Int32, new Variant(32)},
+        {"Int64", Identifiers.Int64, new Variant(64L)},
+        {"UInt16", Identifiers.UInt16, new Variant(ushort(16))},
+        {"UInt32", Identifiers.UInt32, new Variant(uint(32))},
+        {"UInt64", Identifiers.UInt64, new Variant(ulong(64L))},
+        {"Float", Identifiers.Float, new Variant(3.14f)},
+        {"Double", Identifiers.Double, new Variant(3.14d)},
+        {"String", Identifiers.String, new Variant("string value")},
+        {"DateTime", Identifiers.DateTime, new Variant(DateTime.now())},
+        {"Guid", Identifiers.Guid, new Variant(UUID.randomUUID())},
+        {"ByteString", Identifiers.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
+        {"XmlElement", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
+        {"LocalizedText", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
+        {"QualifiedName", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
+        {"NodeId", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))},
+
+        {"Duration", Identifiers.Duration, new Variant(1.0)},
+        {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
+    };
+
+    private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
+        {"BooleanArray", Identifiers.Boolean, false},
+        {"ByteArray", Identifiers.Byte, ubyte(0)},
+        {"SByteArray", Identifiers.SByte, (byte) 0x00},
+        {"Int16Array", Identifiers.Int16, (short) 16},
+        {"Int32Array", Identifiers.Int32, 32},
+        {"Int64Array", Identifiers.Int64, 64L},
+        {"UInt16Array", Identifiers.UInt16, ushort(16)},
+        {"UInt32Array", Identifiers.UInt32, uint(32)},
+        {"UInt64Array", Identifiers.UInt64, ulong(64L)},
+        {"FloatArray", Identifiers.Float, 3.14f},
+        {"DoubleArray", Identifiers.Double, 3.14d},
+        {"StringArray", Identifiers.String, "string value"},
+        {"DateTimeArray", Identifiers.DateTime, new Variant(DateTime.now())},
+        {"GuidArray", Identifiers.Guid, new Variant(UUID.randomUUID())},
+        {"ByteStringArray", Identifiers.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
+        {"XmlElementArray", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
+        {"LocalizedTextArray", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
+        {"QualifiedNameArray", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
+        {"NodeIdArray", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))}
+    };
+
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final SubscriptionModel subscriptionModel;
@@ -103,7 +151,7 @@ public class ExampleNamespace implements Namespace {
             );
 
             // Add the rest of the nodes
-            addNodes(folderNode);
+            addVariableNodes(folderNode);
 
             addMethodNode(folderNode);
         } catch (UaException e) {
@@ -121,75 +169,21 @@ public class ExampleNamespace implements Namespace {
         return NAMESPACE_URI;
     }
 
+    private void addVariableNodes(UaFolderNode rootNode) {
+        addArrayNodes(rootNode);
+        addScalarNodes(rootNode);
+    }
 
-    private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
-        {"Boolean", Identifiers.Boolean, new Variant(false)},
-        {"Byte", Identifiers.Byte, new Variant(ubyte(0x00))},
-        {"SByte", Identifiers.SByte, new Variant((byte) 0x00)},
-        {"Int16", Identifiers.Int16, new Variant((short) 16)},
-        {"Int32", Identifiers.Int32, new Variant(32)},
-        {"Int64", Identifiers.Int64, new Variant(64L)},
-        {"UInt16", Identifiers.UInt16, new Variant(ushort(16))},
-        {"UInt32", Identifiers.UInt32, new Variant(uint(32))},
-        {"UInt64", Identifiers.UInt64, new Variant(ulong(64L))},
-        {"Float", Identifiers.Float, new Variant(3.14f)},
-        {"Double", Identifiers.Double, new Variant(3.14d)},
-        {"String", Identifiers.String, new Variant("string value")},
-        {"DateTime", Identifiers.DateTime, new Variant(DateTime.now())},
-        {"Guid", Identifiers.Guid, new Variant(UUID.randomUUID())},
-        {"ByteString", Identifiers.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
-        {"XmlElement", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
-        {"LocalizedText", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
-        {"QualifiedName", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
+    private void addArrayNodes(UaFolderNode rootNode) {
+        UaFolderNode arrayTypesFolder = new UaFolderNode(
+            server.getNodeManager(),
+            new NodeId(namespaceIndex, "HelloWorld/ArrayTypes"),
+            new QualifiedName(namespaceIndex, "ArrayTypes"),
+            LocalizedText.english("ArrayTypes")
+        );
 
-        {"Duration", Identifiers.Duration, new Variant(1.0)},
-        {"NodeId", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))},
-        {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
-    };
-
-    private static final Object[][] STATIC_ARRAY_NODES = new Object[][]{
-        {"BooleanArray", Identifiers.Boolean, false},
-        {"ByteArray", Identifiers.Byte, ubyte(0)},
-        {"SByteArray", Identifiers.SByte, (byte) 0x00},
-        {"Int16Array", Identifiers.Int16, (short) 16},
-        {"Int32Array", Identifiers.Int32, 32},
-        {"Int64Array", Identifiers.Int64, 64L},
-        {"UInt16Array", Identifiers.UInt16, ushort(16)},
-        {"UInt32Array", Identifiers.UInt32, uint(32)},
-        {"UInt64Array", Identifiers.UInt64, ulong(64L)},
-        {"FloatArray", Identifiers.Float, 3.14f},
-        {"DoubleArray", Identifiers.Double, 3.14d},
-        {"StringArray", Identifiers.String, "string value"},
-        {"DateTimeArray", Identifiers.DateTime, new Variant(DateTime.now())},
-        {"GuidArray", Identifiers.Guid, new Variant(UUID.randomUUID())},
-        {"ByteStringArray", Identifiers.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
-        {"XmlElementArray", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
-        {"LocalizedTextArray", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
-        {"QualifiedNameArray", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
-    };
-
-
-    private void addNodes(UaFolderNode folderNode) {
-        for (Object[] os : STATIC_SCALAR_NODES) {
-            String name = (String) os[0];
-            NodeId typeId = (NodeId) os[1];
-            Variant variant = (Variant) os[2];
-
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
-                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/" + name))
-                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
-                .setDisplayName(LocalizedText.english(name))
-                .setDataType(typeId)
-                .setTypeDefinition(Identifiers.BaseDataVariableType)
-                .build();
-
-            node.setValue(new DataValue(variant));
-
-            server.getNodeManager().addNode(node);
-
-            folderNode.addOrganizes(node);
-        }
+        server.getNodeManager().addNode(arrayTypesFolder);
+        rootNode.addOrganizes(arrayTypesFolder);
 
         for (Object[] os : STATIC_ARRAY_NODES) {
             String name = (String) os[0];
@@ -202,7 +196,7 @@ public class ExampleNamespace implements Namespace {
             Variant variant = new Variant(array);
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
-                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/" + name))
+                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/ArrayTypes/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))
@@ -215,8 +209,39 @@ public class ExampleNamespace implements Namespace {
             node.setValue(new DataValue(variant));
 
             server.getNodeManager().addNode(node);
+            arrayTypesFolder.addOrganizes(node);
+        }
+    }
 
-            folderNode.addOrganizes(node);
+    private void addScalarNodes(UaFolderNode rootNode) {
+        UaFolderNode scalarTypesFolder = new UaFolderNode(
+            server.getNodeManager(),
+            new NodeId(namespaceIndex, "HelloWorld/ScalarTypes"),
+            new QualifiedName(namespaceIndex, "ScalarTypes"),
+            LocalizedText.english("ScalarTypes")
+        );
+
+        server.getNodeManager().addNode(scalarTypesFolder);
+        rootNode.addOrganizes(scalarTypesFolder);
+
+        for (Object[] os : STATIC_SCALAR_NODES) {
+            String name = (String) os[0];
+            NodeId typeId = (NodeId) os[1];
+            Variant variant = (Variant) os[2];
+
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/ScalarTypes/" + name))
+                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setDisplayName(LocalizedText.english(name))
+                .setDataType(typeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build();
+
+            node.setValue(new DataValue(variant));
+
+            server.getNodeManager().addNode(node);
+            scalarTypesFolder.addOrganizes(node);
         }
     }
 
