@@ -61,13 +61,13 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
         if (accessLevels.contains(AccessLevel.CurrentRead)) {
             logger.info(
                 "Allowing user '{}' access reading Value of {}",
-                identity, node.getNodeId());
+                identity.orElse("internal"), node.getNodeId());
 
             return node.getValue();
         } else {
             logger.info(
                 "Denying user '{}' access reading Value of {}",
-                identity, node.getNodeId());
+                identity.orElse("internal"), node.getNodeId());
 
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
         }
@@ -82,13 +82,13 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
         if (accessLevels.contains(AccessLevel.CurrentWrite)) {
             logger.info(
                 "Allowing user '{}' access writing to Value of {}",
-                identity, node.getNodeId());
+                identity.orElse("internal"), node.getNodeId());
 
             node.setValue(value);
         } else {
             logger.info(
                 "Denying user '{}' access writing to Value of {}",
-                identity, node.getNodeId());
+                identity.orElse("internal"), node.getNodeId());
 
             throw new UaException(StatusCodes.Bad_UserAccessDenied);
         }
