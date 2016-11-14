@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -196,11 +195,11 @@ public class AttributeWriter {
         }
     }
 
-    private static <T extends ServerNode & DataTypeNode>
-    void writeDataTypeAttribute(AttributeContext context,
-                                T node,
-                                AttributeId attributeId,
-                                DataValue value) throws UaException {
+    private static <T extends ServerNode & DataTypeNode> void writeDataTypeAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
 
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
@@ -219,11 +218,11 @@ public class AttributeWriter {
         }
     }
 
-    private static <T extends ServerNode & MethodNode>
-    void writeMethodAttribute(AttributeContext context,
-                              T node,
-                              AttributeId attributeId,
-                              DataValue value) throws UaException {
+    private static <T extends ServerNode & MethodNode> void writeMethodAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
 
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
@@ -250,11 +249,11 @@ public class AttributeWriter {
         }
     }
 
-    private static <T extends ServerNode & ObjectNode>
-    void writeObjectAttribute(AttributeContext context,
-                              T node,
-                              AttributeId attributeId,
-                              DataValue value) throws UaException {
+    private static <T extends ServerNode & ObjectNode> void writeObjectAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
 
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
@@ -273,11 +272,11 @@ public class AttributeWriter {
         }
     }
 
-    private static <T extends ServerNode & ObjectTypeNode>
-    void writeObjectTypeAttribute(AttributeContext context,
-                                  T node,
-                                  AttributeId attributeId,
-                                  DataValue value) throws UaException {
+    private static <T extends ServerNode & ObjectTypeNode> void writeObjectTypeAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
 
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
@@ -296,11 +295,11 @@ public class AttributeWriter {
         }
     }
 
-    private static <T extends ServerNode & ReferenceTypeNode>
-    void writeReferenceTypeAttribute(AttributeContext context,
-                                     T node,
-                                     AttributeId attributeId,
-                                     DataValue value) throws UaException {
+    private static <T extends ServerNode & ReferenceTypeNode> void writeReferenceTypeAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
 
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
@@ -335,11 +334,11 @@ public class AttributeWriter {
         }
     }
 
-    private static <T extends ServerNode & VariableNode>
-    void writeVariableAttribute(AttributeContext context,
-                                T node,
-                                AttributeId attributeId,
-                                DataValue value) throws UaException {
+    private static <T extends ServerNode & VariableNode> void writeVariableAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
 
         EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(node.getAccessLevel());
 
@@ -349,7 +348,11 @@ public class AttributeWriter {
         switch (attributeId) {
             case Value:
                 if (accessLevels.contains(AccessLevel.CurrentWrite)) {
-                    value = validateDataType(context.getServer().getNamespaceManager(), node.getDataType().expanded(), value);
+                    value = validateDataType(
+                        node.getDataType().expanded(),
+                        value
+                    );
+
                     validateArrayType(node.getValueRank(), node.getArrayDimensions(), value);
 
                     node.setAttribute(context, AttributeId.Value, value);
@@ -419,11 +422,11 @@ public class AttributeWriter {
         }
     }
 
-    private static <T extends ServerNode & VariableTypeNode>
-    void writeVariableTypeAttribute(AttributeContext context,
-                                    T node,
-                                    AttributeId attributeId,
-                                    DataValue value) throws UaException {
+    private static <T extends ServerNode & VariableTypeNode> void writeVariableTypeAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
 
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
         EnumSet<WriteMask> writeMasks = WriteMask.fromMask(writeMask);
@@ -431,7 +434,11 @@ public class AttributeWriter {
         switch (attributeId) {
             case Value:
                 if (writeMasks.contains(WriteMask.ValueForVariableType)) {
-                    value = validateDataType(context.getServer().getNamespaceManager(), node.getDataType().expanded(), value);
+                    value = validateDataType(
+                        node.getDataType().expanded(),
+                        value
+                    );
+
                     validateArrayType(node.getValueRank(), node.getArrayDimensions(), value);
 
                     node.setAttribute(context, AttributeId.Value, value);
@@ -469,9 +476,7 @@ public class AttributeWriter {
         }
     }
 
-    private static DataValue validateDataType(NamespaceManager ns,
-                                              ExpandedNodeId dataType,
-                                              DataValue value) throws UaException {
+    static DataValue validateDataType(ExpandedNodeId dataType, DataValue value) throws UaException {
 
         Variant variant = value.getValue();
         if (variant == null) return value;

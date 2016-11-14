@@ -33,7 +33,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class AttributeWriterTest {
-
+    
     @Test
     public void testVariantToVariant() throws UaException {
         testWriteConversion(new Variant("String"), null, null);

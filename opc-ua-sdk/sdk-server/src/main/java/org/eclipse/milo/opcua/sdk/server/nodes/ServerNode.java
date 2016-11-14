@@ -30,22 +30,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 public interface ServerNode extends Node {
 
-//    /**
-//     * @param attributeId the id of the attribute in question.
-//     * @return {@code true} if this {@link Node} has the attribute identified by {@code attributeId}.
-//     */
-//    default boolean hasAttribute(int attributeId) {
-//        return StatusCodes.Bad_AttributeIdInvalid != readAttribute(attributeId).getStatusCode().getValue();
-//    }
-//
-//    /**
-//     * @param attributeId the id of the attribute in question.
-//     * @return {@code true} if this {@link Node} has the attribute identified by {@code attributeId}.
-//     */
-//    default boolean hasAttribute(UInteger attributeId) {
-//        return hasAttribute(attributeId.intValue());
-//    }
-
     /**
      * Read the specified attribute.
      * <p>

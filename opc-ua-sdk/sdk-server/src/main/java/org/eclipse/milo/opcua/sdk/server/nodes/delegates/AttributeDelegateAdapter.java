@@ -110,7 +110,11 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
         }
     }
 
-    protected DataValue getBaseAttribute(AttributeContext context, Node node, AttributeId attributeId) throws UaException {
+    protected DataValue getBaseAttribute(
+        AttributeContext context,
+        Node node,
+        AttributeId attributeId) throws UaException {
+
         switch (attributeId) {
             case NodeId:
                 return AttributeUtil.dv(node.getNodeId());

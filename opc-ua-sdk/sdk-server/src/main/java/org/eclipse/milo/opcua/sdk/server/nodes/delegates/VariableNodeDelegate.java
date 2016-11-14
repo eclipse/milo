@@ -45,7 +45,11 @@ public class VariableNodeDelegate implements AttributeDelegate {
     }
 
     @Override
-    public DataValue getAttribute(AttributeContext context, UaNode node, AttributeId attributeId) throws UaException {
+    public DataValue getAttribute(
+        AttributeContext context,
+        UaNode node,
+        AttributeId attributeId) throws UaException {
+
         if (node instanceof VariableNode) {
             VariableNode vNode = (VariableNode) node;
 
@@ -94,7 +98,12 @@ public class VariableNodeDelegate implements AttributeDelegate {
     }
 
     @Override
-    public void setAttribute(AttributeContext context, UaNode node, AttributeId attributeId, DataValue value) throws UaException {
+    public void setAttribute(
+        AttributeContext context,
+        UaNode node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
+
         if (node instanceof VariableNode) {
             VariableNode vNode = (VariableNode) node;
 
@@ -139,67 +148,99 @@ public class VariableNodeDelegate implements AttributeDelegate {
         }
     }
 
-    protected DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+    protected DataValue getValue(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getValue();
     }
 
-    protected NodeId getDataType(AttributeContext context, VariableNode node) throws UaException {
+    protected NodeId getDataType(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getDataType();
     }
 
-    protected Integer getValueRank(AttributeContext context, VariableNode node) throws UaException {
+    protected Integer getValueRank(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getValueRank();
     }
 
-    protected Optional<UInteger[]> getArrayDimensions(AttributeContext context, VariableNode node) throws UaException {
+    protected Optional<UInteger[]> getArrayDimensions(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getArrayDimensions();
     }
 
-    protected UByte getAccessLevel(AttributeContext context, VariableNode node) throws UaException {
+    protected UByte getAccessLevel(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getAccessLevel();
     }
 
-    protected UByte getUserAccessLevel(AttributeContext context, VariableNode node) throws UaException {
+    protected UByte getUserAccessLevel(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getUserAccessLevel();
     }
 
-    protected Optional<Double> getMinimumSamplingInterval(AttributeContext context, VariableNode node) throws UaException {
+    protected Optional<Double> getMinimumSamplingInterval(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getMinimumSamplingInterval();
     }
 
-    protected Boolean getHistorizing(AttributeContext context, VariableNode node) throws UaException {
+    protected Boolean getHistorizing(
+        AttributeContext context, VariableNode node) throws UaException {
+
         return node.getHistorizing();
     }
 
-    protected void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
+    protected void setValue(
+        AttributeContext context, VariableNode node, DataValue value) throws UaException {
+
         node.setValue(value);
     }
 
-    protected void setDataType(AttributeContext context, VariableNode node, NodeId dataType) throws UaException {
+    protected void setDataType(
+        AttributeContext context, VariableNode node, NodeId dataType) throws UaException {
+
         node.setDataType(dataType);
     }
 
-    protected void setValueRank(AttributeContext context, VariableNode node, Integer valueRank) throws UaException {
+    protected void setValueRank(
+        AttributeContext context, VariableNode node, Integer valueRank) throws UaException {
+
         node.setValueRank(valueRank);
     }
 
-    protected void setArrayDimensions(AttributeContext context, VariableNode node, UInteger[] arrayDimensions) throws UaException {
+    protected void setArrayDimensions(
+        AttributeContext context, VariableNode node, UInteger[] arrayDimensions) throws UaException {
+
         node.setArrayDimensions(Optional.ofNullable(arrayDimensions));
     }
 
-    protected void setAccessLevel(AttributeContext context, VariableNode node, UByte accessLevel) throws UaException {
+    protected void setAccessLevel(
+        AttributeContext context, VariableNode node, UByte accessLevel) throws UaException {
+
         node.setAccessLevel(accessLevel);
     }
 
-    protected void setUserAccessLevel(AttributeContext context, VariableNode node, UByte userAccessLevel) throws UaException {
+    protected void setUserAccessLevel(
+        AttributeContext context, VariableNode node, UByte userAccessLevel) throws UaException {
+
         node.setUserAccessLevel(userAccessLevel);
     }
 
-    protected void setMinimumSamplingInterval(AttributeContext context, VariableNode node, Double minimumSamplingInterval) throws UaException {
+    protected void setMinimumSamplingInterval(
+        AttributeContext context, VariableNode node, Double minimumSamplingInterval) throws UaException {
+
         node.setMinimumSamplingInterval(Optional.ofNullable(minimumSamplingInterval));
     }
 
-    protected void setHistorizing(AttributeContext context, VariableNode node, Boolean historizing) throws UaException {
+    protected void setHistorizing(
+        AttributeContext context, VariableNode node, Boolean historizing) throws UaException {
+
         node.setHistorizing(historizing);
     }
 

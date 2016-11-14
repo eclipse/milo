@@ -212,8 +212,10 @@ public class AttributeReader {
         }
     }
 
-    private static <T extends ServerNode & VariableNode>
-    DataValue readVariableAttribute(AttributeContext context, T node, AttributeId attributeId) throws UaException {
+    private static <T extends ServerNode & VariableNode> DataValue readVariableAttribute(
+        AttributeContext context,
+        T node,
+        AttributeId attributeId) throws UaException {
 
         switch (attributeId) {
             case Value:
