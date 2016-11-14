@@ -664,7 +664,7 @@ public class StatusCodes {
     @Description("The aggregate configuration is not valid for specified node.")
     public static final long Bad_AggregateConfigurationRejected = 0x80DA0000L;
 
-    @Description("The request pecifies fields which are not valid for the EventType or cannot be saved by the historian.")
+    @Description("The request specifies fields which are not valid for the EventType or cannot be saved by the historian.")
     public static final long Good_DataIgnored = 0x00D90000L;
 
     @Description("The request was rejected by the server because it did not meet the criteria set by the server.")

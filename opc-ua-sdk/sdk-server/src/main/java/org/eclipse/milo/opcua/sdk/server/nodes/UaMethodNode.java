@@ -28,7 +28,6 @@ import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
-import org.eclipse.milo.opcua.sdk.server.util.StreamUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -41,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import static org.eclipse.milo.opcua.sdk.core.Reference.ALWAYS_GENERATES_EVENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
+import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class UaMethodNode extends UaNode implements MethodNode {
@@ -95,7 +95,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> StreamUtil.opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
@@ -114,7 +114,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     public List<Node> getAlwaysGeneratesEventNodes() {
         return getReferences().stream()
             .filter(ALWAYS_GENERATES_EVENT_PREDICATE)
-            .flatMap(r -> StreamUtil.opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 

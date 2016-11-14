@@ -16,14 +16,13 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
+import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.AddressSpace;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.NodeCache;
-import org.eclipse.milo.opcua.sdk.client.nodes.DefaultAddressSpace;
-import org.eclipse.milo.opcua.sdk.client.nodes.DefaultNodeCache;
+import org.eclipse.milo.opcua.sdk.client.api.model.TypeRegistryInitializer;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
@@ -115,6 +114,8 @@ public class OpcUaClient implements UaClient {
 
     private final AddressSpace addressSpace;
     private final NodeCache nodeCache = new DefaultNodeCache();
+    private final TypeRegistry typeRegistry = new TypeRegistry();
+
     private final OpcUaSubscriptionManager subscriptionManager;
 
     private final UaTcpStackClient stackClient;
@@ -133,6 +134,8 @@ public class OpcUaClient implements UaClient {
 
         addressSpace = new DefaultAddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
+
+        TypeRegistryInitializer.initialize(typeRegistry);
     }
 
     @Override
@@ -152,6 +155,10 @@ public class OpcUaClient implements UaClient {
     @Override
     public AddressSpace getAddressSpace() {
         return addressSpace;
+    }
+
+    TypeRegistry getTypeRegistry() {
+        return typeRegistry;
     }
 
     /**
@@ -550,7 +557,12 @@ public class OpcUaClient implements UaClient {
         return f;
     }
 
-    @Override
+    /**
+     * Send multiple {@link UaRequestMessage}s.
+     *
+     * @param requests the requests to send.
+     * @param futures  the {@link CompletableFuture}s to complete when responses arrive.
+     */
     public void sendRequests(List<? extends UaRequestMessage> requests,
                              List<CompletableFuture<? extends UaResponseMessage>> futures) {
 
