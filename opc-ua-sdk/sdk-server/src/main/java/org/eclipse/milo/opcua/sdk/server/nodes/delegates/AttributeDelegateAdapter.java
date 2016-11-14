@@ -39,7 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 public class AttributeDelegateAdapter implements AttributeDelegate {
 
-    private static final Supplier<UaException> ATTRIBUTE_ID_INVALID_EXCEPTION =
+    protected static final Supplier<UaException> ATTRIBUTE_ID_INVALID_EXCEPTION =
         () -> new UaException(StatusCodes.Bad_AttributeIdInvalid);
 
     @Override
