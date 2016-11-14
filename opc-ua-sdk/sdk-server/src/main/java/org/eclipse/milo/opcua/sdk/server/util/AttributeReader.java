@@ -27,6 +27,8 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -45,12 +47,13 @@ public class AttributeReader {
     private static final Supplier<UaException> ATTRIBUTE_ID_INVALID_EXCEPTION =
         () -> new UaException(StatusCodes.Bad_AttributeIdInvalid);
 
-    public static DataValue readAttribute(ServerNode node,
+    public static DataValue readAttribute(AttributeContext context,
+                                          ServerNode node,
                                           AttributeId attributeId,
                                           @Nullable TimestampsToReturn timestamps,
                                           @Nullable String indexRange) {
         try {
-            DataValue value = readAttribute(node, attributeId);
+            DataValue value = readAttribute(context, node, attributeId);
 
             if (indexRange != null) {
                 NumericRange range = NumericRange.parse(indexRange);
@@ -61,7 +64,8 @@ public class AttributeReader {
                     new Variant(valueAtRange),
                     value.getStatusCode(),
                     value.getSourceTime(),
-                    value.getServerTime());
+                    value.getServerTime()
+                );
             }
 
             if (timestamps != null) {
@@ -76,7 +80,11 @@ public class AttributeReader {
         }
     }
 
-    private static DataValue readAttribute(ServerNode node, AttributeId attributeId) throws UaException {
+    private static DataValue readAttribute(
+        AttributeContext context,
+        ServerNode node,
+        AttributeId attributeId) throws UaException {
+
         switch (node.getNodeClass()) {
             case DataType:
                 return readDataTypeAttribute((ServerNode & DataTypeNode) node, attributeId);
@@ -94,16 +102,20 @@ public class AttributeReader {
                 return readReferenceTypeAttribute((ServerNode & ReferenceTypeNode) node, attributeId);
 
             case Variable:
-                return readVariableAttribute((ServerNode & VariableNode) node, attributeId);
+                return readVariableAttribute(context, (ServerNode & VariableNode) node, attributeId);
 
             case VariableType:
                 return readVariableTypeAttribute((ServerNode & VariableTypeNode) node, attributeId);
+
+            case View:
+                return readViewAttribute((ServerNode & ViewNode) node, attributeId);
 
             default:
                 throw new UaException(StatusCodes.Bad_NodeClassInvalid);
         }
 
     }
+
 
     private static DataValue readNodeAttribute(Node node, AttributeId attributeId) throws UaException {
         UInteger writeMask = node.getWriteMask().orElse(uint(0));
@@ -201,38 +213,32 @@ public class AttributeReader {
     }
 
     private static <T extends ServerNode & VariableNode>
-    DataValue readVariableAttribute(T node, AttributeId attributeId) throws UaException {
+    DataValue readVariableAttribute(AttributeContext context, T node, AttributeId attributeId) throws UaException {
 
         switch (attributeId) {
             case Value:
-                return new DataValue(
-                    node.getValue().getValue(),
-                    node.getValue().getStatusCode(),
-                    node.getValue().getSourceTime(),
-                    DateTime.now());
+                return node.getAttribute(context, AttributeId.Value);
 
             case DataType:
-                return dv(node.getDataType());
+                return node.getAttribute(context, AttributeId.DataType);
 
             case ValueRank:
-                return dv(node.getValueRank());
+                return node.getAttribute(context, AttributeId.ValueRank);
 
             case ArrayDimensions:
-                return node.getArrayDimensions().map(AttributeReader::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return node.getAttribute(context, AttributeId.ArrayDimensions);
 
             case AccessLevel:
-                return dv(node.getAccessLevel());
+                return node.getAttribute(context, AttributeId.AccessLevel);
 
             case UserAccessLevel:
-                return dv(node.getUserAccessLevel());
+                return node.getAttribute(context, AttributeId.UserAccessLevel);
 
             case MinimumSamplingInterval:
-                return node.getMinimumSamplingInterval().map(AttributeReader::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return node.getAttribute(context, AttributeId.MinimumSamplingInterval);
 
             case Historizing:
-                return dv(node.getHistorizing());
+                return node.getAttribute(context, AttributeId.Historizing);
 
             default:
                 return readNodeAttribute(node, attributeId);
@@ -261,6 +267,10 @@ public class AttributeReader {
             default:
                 return readNodeAttribute(node, attributeId);
         }
+    }
+
+    private static DataValue readViewAttribute(ServerNode node, AttributeId attributeId) {
+        return null; // TODO
     }
 
     /**

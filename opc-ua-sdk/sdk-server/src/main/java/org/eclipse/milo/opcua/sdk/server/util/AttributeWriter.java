@@ -29,7 +29,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -48,7 +48,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class AttributeWriter {
 
-    public static void writeAttribute(AttributeDelegate.AttributeContext context,
+    public static void writeAttribute(AttributeContext context,
                                       ServerNode node,
                                       AttributeId attributeId,
                                       DataValue value,
@@ -59,13 +59,18 @@ public class AttributeWriter {
         if (indexRange != null) {
             NumericRange range = NumericRange.parse(indexRange);
 
-            DataValue current = node.readAttribute(attributeId);
+            DataValue current = node.readAttribute(
+                new AttributeContext(context.getServer()),
+                attributeId
+            );
+
             Variant currentVariant = current.getValue();
 
             Object valueAtRange = NumericRange.writeToValueAtRange(
                 currentVariant,
                 updateVariant,
-                range);
+                range
+            );
 
             updateVariant = new Variant(valueAtRange);
         }
@@ -82,7 +87,7 @@ public class AttributeWriter {
         writeNode(context, node, attributeId, value);
     }
 
-    private static void writeNode(AttributeDelegate.AttributeContext context,
+    private static void writeNode(AttributeContext context,
                                   ServerNode node,
                                   AttributeId attributeId,
                                   DataValue value) throws UaException {
@@ -121,7 +126,7 @@ public class AttributeWriter {
         }
     }
 
-    private static void writeNodeAttribute(AttributeDelegate.AttributeContext context,
+    private static void writeNodeAttribute(AttributeContext context,
                                            ServerNode node,
                                            AttributeId attributeId,
                                            DataValue value) throws UaException {
@@ -192,7 +197,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & DataTypeNode>
-    void writeDataTypeAttribute(AttributeDelegate.AttributeContext context,
+    void writeDataTypeAttribute(AttributeContext context,
                                 T node,
                                 AttributeId attributeId,
                                 DataValue value) throws UaException {
@@ -215,7 +220,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & MethodNode>
-    void writeMethodAttribute(AttributeDelegate.AttributeContext context,
+    void writeMethodAttribute(AttributeContext context,
                               T node,
                               AttributeId attributeId,
                               DataValue value) throws UaException {
@@ -246,7 +251,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & ObjectNode>
-    void writeObjectAttribute(AttributeDelegate.AttributeContext context,
+    void writeObjectAttribute(AttributeContext context,
                               T node,
                               AttributeId attributeId,
                               DataValue value) throws UaException {
@@ -269,7 +274,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & ObjectTypeNode>
-    void writeObjectTypeAttribute(AttributeDelegate.AttributeContext context,
+    void writeObjectTypeAttribute(AttributeContext context,
                                   T node,
                                   AttributeId attributeId,
                                   DataValue value) throws UaException {
@@ -292,7 +297,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & ReferenceTypeNode>
-    void writeReferenceTypeAttribute(AttributeDelegate.AttributeContext context,
+    void writeReferenceTypeAttribute(AttributeContext context,
                                      T node,
                                      AttributeId attributeId,
                                      DataValue value) throws UaException {
@@ -331,7 +336,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & VariableNode>
-    void writeVariableAttribute(AttributeDelegate.AttributeContext context,
+    void writeVariableAttribute(AttributeContext context,
                                 T node,
                                 AttributeId attributeId,
                                 DataValue value) throws UaException {
@@ -415,7 +420,7 @@ public class AttributeWriter {
     }
 
     private static <T extends ServerNode & VariableTypeNode>
-    void writeVariableTypeAttribute(AttributeDelegate.AttributeContext context,
+    void writeVariableTypeAttribute(AttributeContext context,
                                     T node,
                                     AttributeId attributeId,
                                     DataValue value) throws UaException {

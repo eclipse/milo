@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
@@ -104,7 +105,7 @@ public class VendorNamespace implements Namespace {
             UaNode node = nodeManager.get(id.getNodeId());
 
             DataValue value = (node != null) ?
-                node.readAttribute(id.getAttributeId().intValue()) :
+                node.readAttribute(new AttributeContext(context), id.getAttributeId()) :
                 new DataValue(StatusCodes.Bad_NodeIdUnknown);
 
             results.add(value);

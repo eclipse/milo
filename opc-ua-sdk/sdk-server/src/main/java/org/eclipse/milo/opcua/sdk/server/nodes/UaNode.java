@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateAdapter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -432,13 +433,14 @@ public abstract class UaNode implements ServerNode {
     }
 
     @Override
-    public DataValue getAttribute(AttributeId attributeId) throws UaException {
+    public DataValue getAttribute(AttributeContext context,
+                                  AttributeId attributeId) throws UaException {
 
-        return attributeDelegate.get().getAttribute(null, this, attributeId); // TODO context
+        return attributeDelegate.get().getAttribute(context, this, attributeId);
     }
 
     @Override
-    public void setAttribute(AttributeDelegate.AttributeContext context,
+    public void setAttribute(AttributeContext context,
                              AttributeId attributeId,
                              DataValue value) throws UaException {
 

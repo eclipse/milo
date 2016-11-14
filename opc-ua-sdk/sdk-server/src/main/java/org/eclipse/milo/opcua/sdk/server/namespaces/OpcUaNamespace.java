@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesN
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.DerivedVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -126,9 +127,11 @@ public class OpcUaNamespace implements Namespace {
 
             if (node != null) {
                 value = node.readAttribute(
+                    new AttributeContext(context),
                     id.getAttributeId().intValue(),
                     timestamps,
-                    id.getIndexRange());
+                    id.getIndexRange()
+                );
             } else {
                 value = new DataValue(new StatusCode(StatusCodes.Bad_NodeIdUnknown));
             }

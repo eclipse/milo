@@ -31,12 +31,13 @@ import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegateAdapter;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateAdapter;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.VariableNodeDelegate;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -52,6 +53,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -176,6 +178,7 @@ public class ExampleNamespace implements Namespace {
     private void addVariableNodes(UaFolderNode rootNode) {
         addArrayNodes(rootNode);
         addScalarNodes(rootNode);
+        addAdminReadableNodes(rootNode);
         addAdminWritableNodes(rootNode);
     }
 
@@ -250,6 +253,90 @@ public class ExampleNamespace implements Namespace {
         }
     }
 
+    private void addAdminReadableNodes(UaFolderNode rootNode) {
+        UaFolderNode adminFolder = new UaFolderNode(
+            server.getNodeManager(),
+            new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanRead"),
+            new QualifiedName(namespaceIndex, "OnlyAdminCanRead"),
+            LocalizedText.english("OnlyAdminCanRead")
+        );
+
+        server.getNodeManager().addNode(adminFolder);
+        rootNode.addOrganizes(adminFolder);
+
+        String name = "String";
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanRead/" + name))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setDisplayName(LocalizedText.english(name))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        node.setValue(new DataValue(new Variant("shh... don't tell the lusers")));
+
+        node.setAttributeDelegate(new VariableNodeDelegate() {
+            @Override
+            protected UByte getUserAccessLevel(AttributeContext context, VariableNode node) throws UaException {
+                Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
+
+                // no session means the write is "internal", allow it...
+                boolean userAdmin = identity.map("admin"::equals).orElse(true);
+
+                return userAdmin ?
+                    ubyte(AccessLevel.getMask(AccessLevel.CurrentRead, AccessLevel.CurrentWrite)) : ubyte(0);
+            }
+
+            @Override
+            protected DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
+
+                // no session means the write is "internal", allow it...
+                boolean userCanRead = identity.map("admin"::equals).orElse(true);
+
+                if (userCanRead) {
+                    logger.info(
+                        "Allowing user '{}' access reading Value of {}",
+                        identity, node.getNodeId());
+
+                    return node.getValue();
+                } else {
+                    logger.info(
+                        "Denying user '{}' access reading Value of {}",
+                        identity, node.getNodeId());
+
+                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                }
+            }
+
+            @Override
+            protected void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
+                Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
+
+                // no session means the write is "internal", allow it...
+                boolean userCanWrite = identity.map("admin"::equals).orElse(true);
+
+                if (userCanWrite) {
+                    logger.info(
+                        "Allowing user '{}' access writing to Value of {}",
+                        identity, node.getNodeId());
+
+                    node.setValue(value);
+                } else {
+                    logger.info(
+                        "Denying user '{}' access writing to Value of {}",
+                        identity, node.getNodeId());
+
+                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                }
+            }
+        });
+
+        server.getNodeManager().addNode(node);
+        adminFolder.addOrganizes(node);
+    }
+
     private void addAdminWritableNodes(UaFolderNode rootNode) {
         UaFolderNode adminFolder = new UaFolderNode(
             server.getNodeManager(),
@@ -273,35 +360,38 @@ public class ExampleNamespace implements Namespace {
 
         node.setValue(new DataValue(new Variant("hello, admin")));
 
-        node.setAttributeDelegate(new AttributeDelegateAdapter() {
+        node.setAttributeDelegate(new VariableNodeDelegate() {
             @Override
-            protected void setVariableAttribute(
-                AttributeContext context,
-                VariableNode node,
-                AttributeId attributeId,
-                DataValue value) throws UaException {
+            protected UByte getUserAccessLevel(AttributeContext context, VariableNode node) throws UaException {
+                Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
 
-                if (attributeId == AttributeId.Value) {
-                    Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
+                // no session means the write is "internal", allow it...
+                boolean userCanWrite = identity.map("admin"::equals).orElse(true);
 
-                    // no session means the write is "internal", allow it...
-                    boolean userCanWrite = identity.map("admin"::equals).orElse(true);
+                return userCanWrite ?
+                    ubyte(AccessLevel.getMask(AccessLevel.CurrentRead, AccessLevel.CurrentWrite)) :
+                    ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
+            }
 
-                    if (userCanWrite) {
-                        logger.info(
-                            "Allowing user '{}' access writing to {} of {}",
-                            identity, attributeId, node.getNodeId());
+            @Override
+            protected void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
+                Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
 
-                        node.setValue(value);
-                    } else {
-                        logger.info(
-                            "Denying user '{}' access writing to {} of {}",
-                            identity, attributeId, node.getNodeId());
+                // no session means the write is "internal", allow it...
+                boolean userCanWrite = identity.map("admin"::equals).orElse(true);
 
-                        throw new UaException(StatusCodes.Bad_UserAccessDenied);
-                    }
+                if (userCanWrite) {
+                    logger.info(
+                        "Allowing user '{}' access writing to Value of {}",
+                        identity, node.getNodeId());
+
+                    node.setValue(value);
                 } else {
-                    super.setVariableAttribute(context, node, attributeId, value);
+                    logger.info(
+                        "Denying user '{}' access writing to Value of {}",
+                        identity, node.getNodeId());
+
+                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
                 }
             }
         });
@@ -368,6 +458,7 @@ public class ExampleNamespace implements Namespace {
 
             if (node != null) {
                 DataValue value = node.readAttribute(
+                    new AttributeContext(context),
                     readValueId.getAttributeId().intValue(),
                     timestamps,
                     readValueId.getIndexRange()
@@ -392,7 +483,7 @@ public class ExampleNamespace implements Namespace {
             if (node != null) {
                 try {
                     node.writeAttribute(
-                        new AttributeDelegate.AttributeContext(context),
+                        new AttributeContext(context),
                         writeValue.getAttributeId(),
                         writeValue.getValue(),
                         writeValue.getIndexRange()
