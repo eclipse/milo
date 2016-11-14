@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
@@ -34,13 +33,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 public class AttributeDelegateAdapter implements AttributeDelegate {
-
-    protected static final Supplier<UaException> ATTRIBUTE_ID_INVALID_EXCEPTION =
-        () -> new UaException(StatusCodes.Bad_AttributeIdInvalid);
 
     @Override
     public DataValue getAttribute(
@@ -119,31 +113,31 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
     protected DataValue getBaseAttribute(AttributeContext context, Node node, AttributeId attributeId) throws UaException {
         switch (attributeId) {
             case NodeId:
-                return dv(node.getNodeId());
+                return AttributeUtil.dv(node.getNodeId());
 
             case NodeClass:
-                return dv(node.getNodeClass());
+                return AttributeUtil.dv(node.getNodeClass());
 
             case BrowseName:
-                return dv(node.getBrowseName());
+                return AttributeUtil.dv(node.getBrowseName());
 
             case DisplayName:
-                return dv(node.getDisplayName());
+                return AttributeUtil.dv(node.getDisplayName());
 
             case Description:
                 return node.getDescription()
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case WriteMask:
                 return node.getWriteMask()
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case UserWriteMask:
                 return node.getUserWriteMask()
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             default:
                 throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
@@ -157,7 +151,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                return dv(node.getIsAbstract());
+                return AttributeUtil.dv(node.getIsAbstract());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -171,10 +165,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case Executable:
-                return dv(node.isExecutable());
+                return AttributeUtil.dv(node.isExecutable());
 
             case UserExecutable:
-                return dv(node.isUserExecutable());
+                return AttributeUtil.dv(node.isUserExecutable());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -188,7 +182,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case EventNotifier:
-                return dv(node.getEventNotifier());
+                return AttributeUtil.dv(node.getEventNotifier());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -202,7 +196,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                return dv(node.getIsAbstract());
+                return AttributeUtil.dv(node.getIsAbstract());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -216,15 +210,15 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                return dv(node.getIsAbstract());
+                return AttributeUtil.dv(node.getIsAbstract());
 
             case Symmetric:
-                return dv(node.getSymmetric());
+                return AttributeUtil.dv(node.getSymmetric());
 
             case InverseName:
                 return node.getInverseName()
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -248,29 +242,29 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                 );
 
             case DataType:
-                return dv(node.getDataType());
+                return AttributeUtil.dv(node.getDataType());
 
             case ValueRank:
-                return dv(node.getValueRank());
+                return AttributeUtil.dv(node.getValueRank());
 
             case ArrayDimensions:
                 return node.getArrayDimensions()
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case AccessLevel:
-                return dv(node.getAccessLevel());
+                return AttributeUtil.dv(node.getAccessLevel());
 
             case UserAccessLevel:
-                return dv(node.getUserAccessLevel());
+                return AttributeUtil.dv(node.getUserAccessLevel());
 
             case MinimumSamplingInterval:
                 return node.getMinimumSamplingInterval()
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case Historizing:
-                return dv(node.getHistorizing());
+                return AttributeUtil.dv(node.getHistorizing());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -284,21 +278,21 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case Value:
-                return node.getValue().orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return node.getValue().orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case DataType:
-                return dv(node.getDataType());
+                return AttributeUtil.dv(node.getDataType());
 
             case ValueRank:
-                return dv(node.getValueRank());
+                return AttributeUtil.dv(node.getValueRank());
 
             case ArrayDimensions:
                 return node.getArrayDimensions()
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case IsAbstract:
-                return dv(node.getIsAbstract());
+                return AttributeUtil.dv(node.getIsAbstract());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -312,10 +306,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case ContainsNoLoops:
-                return dv(node.getContainsNoLoops());
+                return AttributeUtil.dv(node.getContainsNoLoops());
 
             case EventNotifier:
-                return dv(node.getEventNotifier());
+                return AttributeUtil.dv(node.getEventNotifier());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -325,25 +319,25 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
     protected void setBaseAttribute(Node node, AttributeId attributeId, DataValue value) throws UaException {
         switch (attributeId) {
             case NodeId:
-                node.setNodeId(extract(value));
+                node.setNodeId(AttributeUtil.extract(value));
                 break;
             case NodeClass:
-                node.setNodeClass(extract(value));
+                node.setNodeClass(AttributeUtil.extract(value));
                 break;
             case BrowseName:
-                node.setBrowseName(extract(value));
+                node.setBrowseName(AttributeUtil.extract(value));
                 break;
             case DisplayName:
-                node.setDisplayName(extract(value));
+                node.setDisplayName(AttributeUtil.extract(value));
                 break;
             case Description:
-                node.setDescription(extract(value));
+                node.setDescription(AttributeUtil.extract(value));
                 break;
             case WriteMask:
-                node.setWriteMask(extract(value));
+                node.setWriteMask(AttributeUtil.extract(value));
                 break;
             case UserWriteMask:
-                node.setUserWriteMask(extract(value));
+                node.setUserWriteMask(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -358,7 +352,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                node.setIsAbstract(extract(value));
+                node.setIsAbstract(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -373,10 +367,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case Executable:
-                node.setExecutable(extract(value));
+                node.setExecutable(AttributeUtil.extract(value));
                 break;
             case UserExecutable:
-                node.setUserExecutable(extract(value));
+                node.setUserExecutable(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -391,7 +385,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case EventNotifier:
-                node.setEventNotifier(extract(value));
+                node.setEventNotifier(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -406,7 +400,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                node.setIsAbstract(extract(value));
+                node.setIsAbstract(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -421,13 +415,13 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                node.setIsAbstract(extract(value));
+                node.setIsAbstract(AttributeUtil.extract(value));
                 break;
             case Symmetric:
-                node.setSymmetric(extract(value));
+                node.setSymmetric(AttributeUtil.extract(value));
                 break;
             case InverseName:
-                node.setInverseName(extract(value));
+                node.setInverseName(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -446,25 +440,25 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                 node.setValue(value);
                 break;
             case DataType:
-                node.setDataType(extract(value));
+                node.setDataType(AttributeUtil.extract(value));
                 break;
             case ValueRank:
-                node.setValueRank(extract(value));
+                node.setValueRank(AttributeUtil.extract(value));
                 break;
             case ArrayDimensions:
-                node.setArrayDimensions(Optional.ofNullable(extract(value)));
+                node.setArrayDimensions(Optional.ofNullable(AttributeUtil.extract(value)));
                 break;
             case AccessLevel:
-                node.setAccessLevel(extract(value));
+                node.setAccessLevel(AttributeUtil.extract(value));
                 break;
             case UserAccessLevel:
-                node.setUserAccessLevel(extract(value));
+                node.setUserAccessLevel(AttributeUtil.extract(value));
                 break;
             case MinimumSamplingInterval:
-                node.setMinimumSamplingInterval(extract(value));
+                node.setMinimumSamplingInterval(AttributeUtil.extract(value));
                 break;
             case Historizing:
-                node.setHistorizing(extract(value));
+                node.setHistorizing(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -482,16 +476,16 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                 node.setValue(Optional.of(value));
                 break;
             case DataType:
-                node.setDataType(extract(value));
+                node.setDataType(AttributeUtil.extract(value));
                 break;
             case ValueRank:
-                node.setValueRank(extract(value));
+                node.setValueRank(AttributeUtil.extract(value));
                 break;
             case ArrayDimensions:
-                node.setArrayDimensions(extract(value));
+                node.setArrayDimensions(AttributeUtil.extract(value));
                 break;
             case IsAbstract:
-                node.setIsAbstract(extract(value));
+                node.setIsAbstract(AttributeUtil.extract(value));
                 break;
 
             default:
@@ -506,36 +500,14 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case ContainsNoLoops:
-                node.setContainsNoLoops(extract(value));
+                node.setContainsNoLoops(AttributeUtil.extract(value));
                 break;
             case EventNotifier:
-                node.setEventNotifier(extract(value));
+                node.setEventNotifier(AttributeUtil.extract(value));
                 break;
 
             default:
                 setBaseAttribute(node, attributeId, value);
-        }
-    }
-
-    /**
-     * DataValue for a non-value attribute; no source timestamp included.
-     */
-    protected static DataValue dv(Object o) {
-        return new DataValue(new Variant(o), StatusCode.GOOD, null, DateTime.now());
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static <T> T extract(DataValue value) throws UaException {
-        Variant variant = value.getValue();
-        if (variant == null) return null;
-
-        Object o = variant.getValue();
-        if (o == null) return null;
-
-        try {
-            return (T) o;
-        } catch (ClassCastException e) {
-            throw new UaException(StatusCodes.Bad_TypeMismatch);
         }
     }
 

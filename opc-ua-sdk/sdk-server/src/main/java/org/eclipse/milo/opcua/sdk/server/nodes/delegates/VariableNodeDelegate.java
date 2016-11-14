@@ -17,6 +17,8 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -25,53 +27,115 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class VariableNodeDelegate extends AttributeDelegateAdapter {
+import static org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION;
+import static org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeUtil.dv;
+import static org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeUtil.extract;
+
+
+public class VariableNodeDelegate implements AttributeDelegate {
+
+    private final AttributeDelegate parent;
+
+    public VariableNodeDelegate() {
+        this(new AttributeDelegateAdapter());
+    }
+
+    public VariableNodeDelegate(AttributeDelegate parent) {
+        this.parent = parent;
+    }
 
     @Override
-    protected DataValue getVariableAttribute(
-        AttributeContext context,
-        VariableNode node,
-        AttributeId attributeId) throws UaException {
+    public DataValue getAttribute(AttributeContext context, UaNode node, AttributeId attributeId) throws UaException {
+        if (node instanceof VariableNode) {
+            VariableNode vNode = (VariableNode) node;
 
-        switch (attributeId) {
-            case Value:
-                DataValue value = getValue(context, node);
+            switch (attributeId) {
+                case Value:
+                    DataValue value = getValue(context, vNode);
 
-                return new DataValue(
-                    value.getValue(),
-                    value.getStatusCode(),
-                    value.getSourceTime(),
-                    DateTime.now()
-                );
+                    return new DataValue(
+                        value.getValue(),
+                        value.getStatusCode(),
+                        value.getSourceTime(),
+                        DateTime.now()
+                    );
 
-            case DataType:
-                return dv(getDataType(context, node));
+                case DataType:
+                    return dv(getDataType(context, vNode));
 
-            case ValueRank:
-                return dv(getValueRank(context, node));
+                case ValueRank:
+                    return dv(getValueRank(context, vNode));
 
-            case ArrayDimensions:
-                return getArrayDimensions(context, node)
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                case ArrayDimensions:
+                    return getArrayDimensions(context, vNode)
+                        .map(AttributeUtil::dv)
+                        .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
 
-            case AccessLevel:
-                return dv(getAccessLevel(context, node));
+                case AccessLevel:
+                    return dv(getAccessLevel(context, vNode));
 
-            case UserAccessLevel:
-                return dv(getUserAccessLevel(context, node));
+                case UserAccessLevel:
+                    return dv(getUserAccessLevel(context, vNode));
 
-            case MinimumSamplingInterval:
-                return getMinimumSamplingInterval(context, node)
-                    .map(AttributeDelegateAdapter::dv)
-                    .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
+                case MinimumSamplingInterval:
+                    return getMinimumSamplingInterval(context, vNode)
+                        .map(AttributeUtil::dv)
+                        .orElseThrow(ATTRIBUTE_ID_INVALID_EXCEPTION);
 
-            case Historizing:
-                return dv(getHistorizing(context, node));
+                case Historizing:
+                    return dv(getHistorizing(context, vNode));
 
+                default:
+                    return parent.getAttribute(context, node, attributeId);
+            }
+        } else {
+            return parent.getAttribute(context, node, attributeId);
+        }
+    }
 
-            default:
-                return super.getVariableAttribute(context, node, attributeId);
+    @Override
+    public void setAttribute(AttributeContext context, UaNode node, AttributeId attributeId, DataValue value) throws UaException {
+        if (node instanceof VariableNode) {
+            VariableNode vNode = (VariableNode) node;
+
+            switch (attributeId) {
+                case Value:
+                    setValue(context, vNode, value);
+                    break;
+
+                case DataType:
+                    setDataType(context, vNode, extract(value));
+                    break;
+
+                case ValueRank:
+                    setValueRank(context, vNode, extract(value));
+                    break;
+
+                case ArrayDimensions:
+                    setArrayDimensions(context, vNode, extract(value));
+                    break;
+
+                case AccessLevel:
+                    setAccessLevel(context, vNode, extract(value));
+                    break;
+
+                case UserAccessLevel:
+                    setUserAccessLevel(context, vNode, extract(value));
+                    break;
+
+                case MinimumSamplingInterval:
+                    setMinimumSamplingInterval(context, vNode, extract(value));
+                    break;
+
+                case Historizing:
+                    setHistorizing(context, vNode, extract(value));
+                    break;
+
+                default:
+                    parent.setAttribute(context, node, attributeId, value);
+            }
+        } else {
+            parent.setAttribute(context, node, attributeId, value);
         }
     }
 
@@ -105,51 +169,6 @@ public class VariableNodeDelegate extends AttributeDelegateAdapter {
 
     protected Boolean getHistorizing(AttributeContext context, VariableNode node) throws UaException {
         return node.getHistorizing();
-    }
-
-    @Override
-    protected void setVariableAttribute(
-        AttributeContext context,
-        VariableNode node,
-        AttributeId attributeId,
-        DataValue value) throws UaException {
-
-        switch (attributeId) {
-            case Value:
-                setValue(context, node, value);
-                break;
-
-            case DataType:
-                setDataType(context, node, extract(value));
-                break;
-
-            case ValueRank:
-                setValueRank(context, node, extract(value));
-                break;
-
-            case ArrayDimensions:
-                setArrayDimensions(context, node, extract(value));
-                break;
-
-            case AccessLevel:
-                setAccessLevel(context, node, extract(value));
-                break;
-
-            case UserAccessLevel:
-                setUserAccessLevel(context, node, extract(value));
-                break;
-
-            case MinimumSamplingInterval:
-                setMinimumSamplingInterval(context, node, extract(value));
-                break;
-
-            case Historizing:
-                setHistorizing(context, node, extract(value));
-                break;
-
-            default:
-                super.setVariableAttribute(context, node, attributeId, value);
-        }
     }
 
     protected void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
