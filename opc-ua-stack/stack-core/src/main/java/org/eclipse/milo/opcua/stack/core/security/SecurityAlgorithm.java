@@ -53,7 +53,7 @@ public enum SecurityAlgorithm {
     /**
      * Asymmetric Signature; transformation to be used with {@link Signature#getInstance(String)}.
      */
-    RsaSha256("http://www.w3.org/2001/04/xmldsig#rsa-sha256", "SHA256withRSA"),
+    RsaSha256("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", "SHA256withRSA"),
 
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
