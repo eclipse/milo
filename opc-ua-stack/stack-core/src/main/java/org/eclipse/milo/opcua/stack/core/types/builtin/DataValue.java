@@ -181,4 +181,13 @@ public final class DataValue {
         );
     }
 
+    /**
+     * Create a {@link DataValue} containing *only* the Variant. All other fields will be null.
+     * @param v the value {@link Variant}.
+     * @return a {@link DataValue} containing only the value.
+     */
+    public static DataValue valueOnly(Variant v) {
+        return new DataValue(v, null, null, null);
+    }
+
 }

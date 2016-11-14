@@ -30,7 +30,6 @@ import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.util.StreamUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -43,6 +42,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public abstract class UaNode implements ServerNode {
 
@@ -237,7 +238,7 @@ public abstract class UaNode implements ServerNode {
 
         List<UaNode> referencedNodes = getReferences().stream()
             .filter(Reference::isForward)
-            .flatMap(r -> StreamUtil.opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
 
         for (UaNode node : referencedNodes) {
@@ -305,7 +306,7 @@ public abstract class UaNode implements ServerNode {
     public Optional<VariableNode> getPropertyNode(QualifiedName browseName) {
         Node node = references.stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> StreamUtil.opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -359,7 +360,7 @@ public abstract class UaNode implements ServerNode {
     protected Optional<ObjectNode> getObjectComponent(QualifiedName browseName) {
         ObjectNode node = (ObjectNode) references.stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE.and(r -> r.getTargetNodeClass() == NodeClass.Object))
-            .flatMap(r -> StreamUtil.opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -373,7 +374,7 @@ public abstract class UaNode implements ServerNode {
     protected Optional<VariableNode> getVariableComponent(QualifiedName browseName) {
         VariableNode node = (VariableNode) references.stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE.and(r -> r.getTargetNodeClass() == NodeClass.Variable))
-            .flatMap(r -> StreamUtil.opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 

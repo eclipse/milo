@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.nodes.attached.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -42,8 +42,8 @@ public class ReadExample implements ClientExample {
         // synchronous connect
         client.connect().get();
 
-        // synchronous read request via UaVariableNode
-        UaVariableNode node = client.getAddressSpace().getVariableNode(Identifiers.Server_ServerStatus_StartTime);
+        // synchronous read request via VariableNode
+        VariableNode node = client.getAddressSpace().createVariableNode(Identifiers.Server_ServerStatus_StartTime);
         DataValue value = node.readValue().get();
 
         logger.info("StartTime={}", value.getValue().getValue());
