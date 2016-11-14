@@ -402,7 +402,7 @@ public class SubscriptionManager {
                         }
                     });
                 } else {
-                    readDataAttributes(namespace, nodeId).thenAccept(vs -> {
+                    readDataAttributes(session, namespace, nodeId).thenAccept(vs -> {
                         try {
                             for (DataValue value : vs) {
                                 StatusCode statusCode = value.getStatusCode();
@@ -438,7 +438,6 @@ public class SubscriptionManager {
                                 throw new UaException(StatusCodes.Bad_NotReadable);
                             }
                             if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
-                                // TODO We didn't read with the session, so this isn't right.
                                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
                             }
 
@@ -576,7 +575,7 @@ public class SubscriptionManager {
                     NodeId nodeId = item.getReadValueId().getNodeId();
                     Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
 
-                    readDataAttributes(namespace, nodeId).thenAccept(vs -> {
+                    readDataAttributes(session, namespace, nodeId).thenAccept(vs -> {
                         try {
                             for (DataValue value : vs) {
                                 StatusCode statusCode = value.getStatusCode();
@@ -695,15 +694,14 @@ public class SubscriptionManager {
         }
     }
 
-    private CompletableFuture<List<DataValue>> readDataAttributes(Namespace namespace, NodeId itemId) {
-
+    private CompletableFuture<List<DataValue>> readDataAttributes(Session session, Namespace namespace, NodeId itemId) {
         Function<AttributeId, ReadValueId> f = id ->
             new ReadValueId(itemId, id.uid(), null, QualifiedName.NULL_VALUE);
 
         CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
 
         ReadContext readContext = new ReadContext(
-            server, null, future, new DiagnosticsContext<>());
+            server, session, future, new DiagnosticsContext<>());
 
         List<ReadValueId> attributes = newArrayList(
             f.apply(AttributeId.AccessLevel),
