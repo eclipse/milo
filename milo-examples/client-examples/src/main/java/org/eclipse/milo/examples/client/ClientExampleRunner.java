@@ -57,22 +57,22 @@ public class ClientExampleRunner {
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/example").get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
-                .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
-                .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
 
         loader.load();
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
-                .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-                .setApplicationUri("urn:digitalpetri:opcua:client")
-                .setCertificate(loader.getClientCertificate())
-                .setKeyPair(loader.getClientKeyPair())
-                .setEndpoint(endpoint)
-                .setIdentityProvider(clientExample.getIdentityProvider())
-                .setRequestTimeout(uint(5000))
-                .build();
+            .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
+            .setApplicationUri("urn:eclipse:milo:examples:client")
+            .setCertificate(loader.getClientCertificate())
+            .setKeyPair(loader.getClientKeyPair())
+            .setEndpoint(endpoint)
+            .setIdentityProvider(clientExample.getIdentityProvider())
+            .setRequestTimeout(uint(5000))
+            .build();
 
         return new OpcUaClient(config);
     }
