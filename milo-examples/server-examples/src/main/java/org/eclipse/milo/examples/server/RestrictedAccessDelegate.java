@@ -59,9 +59,10 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
         Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
 
         if (accessLevels.contains(AccessLevel.CurrentRead)) {
-            logger.info(
-                "Allowing user '{}' access reading Value of {}",
-                identity.orElse("internal"), node.getNodeId());
+            identity.ifPresent(user ->
+                logger.info(
+                    "Allowing user '{}' access reading Value of {}", user, node.getNodeId())
+            );
 
             return node.getValue();
         } else {
@@ -80,9 +81,10 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
         Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
 
         if (accessLevels.contains(AccessLevel.CurrentWrite)) {
-            logger.info(
-                "Allowing user '{}' access writing to Value of {}",
-                identity.orElse("internal"), node.getNodeId());
+            identity.ifPresent(user ->
+                logger.info(
+                    "Allowing user '{}' access writing to Value of {}", user, node.getNodeId())
+            );
 
             node.setValue(value);
         } else {
