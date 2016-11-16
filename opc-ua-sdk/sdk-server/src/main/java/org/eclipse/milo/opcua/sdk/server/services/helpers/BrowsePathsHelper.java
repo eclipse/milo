@@ -34,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePath;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowsePathResult;
@@ -134,19 +135,24 @@ public class BrowsePathsHelper {
         if (elements.size() == 1) {
             return target(nodeId, elements.get(0)).thenApply(targets ->
                 targets.stream()
-                    .map(n -> new BrowsePathTarget(n, uint(0)))
+                    .map(n -> new BrowsePathTarget(n, UInteger.MAX))
                     .collect(toList()));
         } else {
-            RelativePathElement e = elements.remove(0);
+            RelativePathElement e = elements.get(0);
 
             return next(nodeId, e).thenCompose(nextExId -> {
+                List<RelativePathElement> nextElements = elements.subList(1, elements.size());
+
                 Optional<NodeId> nextId = namespaceManager.toNodeId(nextExId);
 
                 if (nextId.isPresent()) {
-                    return follow(nextId.get(), elements);
+                    return follow(nextId.get(), nextElements);
                 } else {
+                    UInteger remaining = nextElements.isEmpty() ?
+                        UInteger.MAX : uint(nextElements.size());
+
                     List<BrowsePathTarget> targets = newArrayList(
-                        new BrowsePathTarget(nextExId, uint(elements.size())));
+                        new BrowsePathTarget(nextExId, remaining));
 
                     return completedFuture(targets);
                 }
