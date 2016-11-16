@@ -283,11 +283,15 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
                 secureChannel.setChannelId(0);
             }
 
-            logger.error("Received error message: " + errorMessage);
+            logger.error(
+                "[remote={}] Received error message: {}",
+                ctx.channel().remoteAddress(), errorMessage);
 
             handshakeFuture.completeExceptionally(new UaException(statusCode, errorMessage.getReason()));
         } catch (UaException e) {
-            logger.error("An exception occurred while decoding an error message: {}", e.getMessage(), e);
+            logger.error(
+                "[remote={}] An exception occurred while decoding an error message: {}",
+                ctx.channel().remoteAddress(), e.getMessage(), e);
 
             handshakeFuture.completeExceptionally(e);
         } finally {
