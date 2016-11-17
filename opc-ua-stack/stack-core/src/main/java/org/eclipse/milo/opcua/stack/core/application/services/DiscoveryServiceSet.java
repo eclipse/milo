@@ -17,15 +17,25 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Response;
 
 public interface DiscoveryServiceSet {
 
     default void onFindServers(
         ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest) throws UaException {
+
+        serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
+    }
+
+    default void onFindServersOnNetwork(
+        ServiceRequest<FindServersOnNetworkRequest, FindServersOnNetworkResponse> serviceRequest) throws UaException {
 
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
@@ -38,6 +48,12 @@ public interface DiscoveryServiceSet {
 
     default void onRegisterServer(
         ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
+
+        serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
+    }
+
+    default void onRegisterServer2(
+        ServiceRequest<RegisterServer2Request, RegisterServer2Response> serviceRequest) throws UaException {
 
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
