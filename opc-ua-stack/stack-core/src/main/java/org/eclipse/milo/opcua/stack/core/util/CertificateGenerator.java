@@ -119,13 +119,13 @@ public class CertificateGenerator {
         args.add(String.valueOf(validity));
 
         args.add("-ext");
-        args.add("BC=ca:true");
+        args.add("BC=ca:false");
 
         args.add("-ext");
-        args.add("KeyUsage=digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment,keyAgreement");
+        args.add("KeyUsage=digitalSignature,nonRepudiation,keyEncipherment,dataEncipherment,keyCertSign");
 
         args.add("-ext");
-        args.add("ExtendedKeyUsage=serverAuth");
+        args.add("ExtendedKeyUsage=clientAuth,serverAuth");
 
         args.add("-ext");
         StringBuilder sb = new StringBuilder();
@@ -176,7 +176,8 @@ public class CertificateGenerator {
         }
     }
 
-    private static class ExitTrappedException extends SecurityException {}
+    private static class ExitTrappedException extends SecurityException {
+    }
 
     private static final SecurityManager SYSTEM_SECURITY_MANAGER = System.getSecurityManager();
 
