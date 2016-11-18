@@ -72,6 +72,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     public static final AttributeKey<Map<Long, UaRequestFuture>> KEY_PENDING_REQUEST_FUTURES =
         AttributeKey.valueOf("pending-request-futures");
 
+    public static final int SECURE_CHANNEL_TIMEOUT_SECONDS = 10;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private List<ByteBuf> chunkBuffers = new LinkedList<>();
@@ -147,7 +149,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                     ctx.close();
                 }
             },
-            5, TimeUnit.SECONDS
+            SECURE_CHANNEL_TIMEOUT_SECONDS, TimeUnit.SECONDS
         );
 
         logger.debug("OpenSecureChannel timeout scheduled for +5s");
@@ -167,7 +169,10 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error("Exception caught: {}", cause.getMessage(), cause);
+        logger.error(
+            "[remote={}] Exception caught: {}",
+            ctx.channel().remoteAddress(), cause.getMessage(), cause);
+
         ctx.close();
     }
 
