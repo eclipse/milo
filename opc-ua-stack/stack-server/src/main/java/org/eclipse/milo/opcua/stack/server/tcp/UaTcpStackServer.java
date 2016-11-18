@@ -13,11 +13,13 @@
 
 package org.eclipse.milo.opcua.stack.server.tcp;
 
-import java.net.InetAddress;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -116,7 +118,16 @@ public class UaTcpStackServer implements UaStackServer {
     public UaTcpStackServer(UaTcpStackServerConfig config) {
         this.config = config;
 
-        addServiceSet(new DefaultDiscoveryServiceSet());
+        // add opc.tcp protocol for URL class. Needed to split discovery URLs
+        URL.setURLStreamHandlerFactory(protocol -> "opc.tcp".equals(protocol) ? new URLStreamHandler() {
+            protected URLConnection openConnection(URL url) throws IOException {
+                return new URLConnection(url) {
+                    public void connect() throws IOException {}
+                };
+            }
+        } : null);
+
+        addServiceSet(new DefaultDiscoveryService(this));
 
         addServiceSet(new AttributeServiceSet() {
         });
@@ -421,7 +432,7 @@ public class UaTcpStackServer implements UaStackServer {
         return this;
     }
 
-    private EndpointDescription mapEndpoint(Endpoint endpoint) {
+    EndpointDescription mapEndpoint(Endpoint endpoint) {
         List<UserTokenPolicy> userTokenPolicies = config.getUserTokenPolicies();
 
         return new EndpointDescription(
@@ -447,134 +458,6 @@ public class UaTcpStackServer implements UaStackServer {
         } else {
             return ByteString.NULL_VALUE;
         }
-    }
-
-    private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
-        @Override
-        public void onGetEndpoints(ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) {
-            GetEndpointsRequest request = serviceRequest.getRequest();
-
-            List<String> profileUris = request.getProfileUris() != null ?
-                newArrayList(request.getProfileUris()) :
-                new ArrayList<>();
-
-            List<EndpointDescription> allEndpoints = endpoints.stream()
-                .map(UaTcpStackServer.this::mapEndpoint)
-                .filter(ed -> filterProfileUris(ed, profileUris))
-                .collect(toList());
-
-            List<EndpointDescription> matchingEndpoints = allEndpoints.stream()
-                .filter(ed -> filterEndpointUrls(ed, request.getEndpointUrl()))
-                .collect(toList());
-
-            GetEndpointsResponse response = new GetEndpointsResponse(
-                serviceRequest.createResponseHeader(),
-                matchingEndpoints.isEmpty() ?
-                    a(allEndpoints, EndpointDescription.class) :
-                    a(matchingEndpoints, EndpointDescription.class)
-            );
-
-            serviceRequest.setResponse(response);
-        }
-
-        private boolean filterProfileUris(EndpointDescription endpoint, List<String> profileUris) {
-            return profileUris.size() == 0 || profileUris.contains(endpoint.getTransportProfileUri());
-        }
-
-        private boolean filterEndpointUrls(EndpointDescription endpoint, String endpointUrl) {
-            try {
-                String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-                String endpointHost = new URI(endpoint.getEndpointUrl()).parseServerAuthority().getHost();
-
-                return requestedHost.equalsIgnoreCase(endpointHost);
-            } catch (Throwable e) {
-                logger.warn("Unable to create URI.", e);
-                return false;
-            }
-        }
-
-        @Override
-        public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest) {
-            FindServersRequest request = serviceRequest.getRequest();
-
-            List<String> serverUris = request.getServerUris() != null ?
-                newArrayList(request.getServerUris()) :
-                new ArrayList<>();
-
-            List<ApplicationDescription> applicationDescriptions =
-                newArrayList(getApplicationDescription(request.getEndpointUrl()));
-
-            applicationDescriptions = applicationDescriptions.stream()
-                .filter(ad -> filterServerUris(ad, serverUris))
-                .collect(toList());
-
-            FindServersResponse response = new FindServersResponse(
-                serviceRequest.createResponseHeader(),
-                a(applicationDescriptions, ApplicationDescription.class)
-            );
-
-            serviceRequest.setResponse(response);
-        }
-
-        private ApplicationDescription getApplicationDescription(String endpointUrl) {
-            List<String> allDiscoveryUrls = newArrayList(discoveryUrls);
-
-            List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
-                .filter(discoveryUrl -> {
-                    try {
-                        String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-                        String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
-
-                        logger.debug("requestedHost={}, discoveryHost={}", requestedHost, discoveryHost);
-
-                        return requestedHost.equalsIgnoreCase(discoveryHost);
-                    } catch (Throwable e) {
-                        logger.warn("Unable to create URI.", e);
-                        return false;
-                    }
-                })
-                .collect(toList());
-
-            if (matchingDiscoveryUrls.isEmpty()) {
-                matchingDiscoveryUrls = allDiscoveryUrls.stream()
-                    .filter(discoveryUrl -> {
-                        try {
-                            String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-                            String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
-                            InetAddress requestedHostAddress = InetAddress.getByName(requestedHost);
-                            InetAddress discoveryHostAddress = InetAddress.getByName(discoveryHost);
-
-                            logger.debug(
-                                "requestedHostAddress={}, discoveryHostAddress={}",
-                                requestedHost, discoveryHost);
-
-                            return requestedHostAddress.equals(discoveryHostAddress);
-                        } catch (Throwable e) {
-                            logger.warn("Unable to create URI.", e);
-                            return false;
-                        }
-                    })
-                    .collect(toList());
-            }
-
-            logger.debug("Matching discovery URLs: {}", matchingDiscoveryUrls);
-
-            return new ApplicationDescription(
-                config.getApplicationUri(),
-                config.getProductUri(),
-                config.getApplicationName(),
-                ApplicationType.Server,
-                null, null,
-                matchingDiscoveryUrls.isEmpty() ?
-                    a(allDiscoveryUrls, String.class) :
-                    a(matchingDiscoveryUrls, String.class)
-            );
-        }
-
-        private boolean filterServerUris(ApplicationDescription ad, List<String> serverUris) {
-            return serverUris.size() == 0 || serverUris.contains(ad.getApplicationUri());
-        }
-
     }
 
 }
