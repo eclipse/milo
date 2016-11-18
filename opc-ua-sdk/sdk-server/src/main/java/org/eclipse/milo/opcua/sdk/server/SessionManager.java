@@ -87,12 +87,17 @@ public class SessionManager implements
 
     private final OpcUaServer server;
 
-    private DiscoveryServices discoveryServices;
+	private DiscoveryServices discoveryServices;
 
     public SessionManager(OpcUaServer server) {
         this.server = server;
-        this.discoveryServices = new DiscoveryServices((UaTcpStackServer)server.getServer(), false);
+        this.discoveryServices = new DiscoveryServices((UaTcpStackServer)server.getServer(), true);
     }
+
+
+	public DiscoveryServices getDiscoveryServices() {
+		return discoveryServices;
+	}
 
     public List<Session> getActiveSessions() {
         return Lists.newArrayList(activeSessions.values());

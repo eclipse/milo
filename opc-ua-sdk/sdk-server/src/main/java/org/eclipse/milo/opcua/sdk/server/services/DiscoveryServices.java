@@ -12,13 +12,17 @@
  */
 package org.eclipse.milo.opcua.sdk.server.services;
 
+import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
+import org.eclipse.milo.opcua.sdk.server.services.helpers.MdnsHelper;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.*;
 import org.eclipse.milo.opcua.stack.server.tcp.DefaultDiscoveryService;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
@@ -31,6 +35,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 public class DiscoveryServices extends DefaultDiscoveryService {
 
@@ -40,40 +45,89 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 	private final boolean multicastEnabled;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	private MdnsHelper mdnsHelper = null;
+
 
 	private Consumer<RegisteredServer> registerServerConsumer = null;
-	private final Timer checkRegistrationTimeoutTimer = new Timer();
 
 	public DiscoveryServices(UaTcpStackServer server, boolean multicastEnabled) {
 		super(server);
 		registeredServers = new LinkedList<>();
 		registeredServerLastSeen = new HashMap<>();
 		this.multicastEnabled = multicastEnabled;
-		checkRegistrationTimeoutTimer.scheduleAtFixedRate(new TimerTask() {
+		new Timer().scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
 				checkRegistrationTimeout();
 			}
 		}, 30 * 1000, 30 * 1000); // check cleanup every 30 secs
+
+		if (multicastEnabled) {
+			OpcUaServerConfig config = (OpcUaServerConfig)server.getConfig();
+			//FIXME for now use 0.0.0.0. mDNS should only listen on the same IP as the rest of the server.
+			mdnsHelper = new MdnsHelper("0.0.0.0", config.getBindPort());
+			Thread mdnsThread = new Thread(mdnsHelper);
+			mdnsThread.start();
+		}
 	}
 
 	public void setRegisterServerConsumer(Consumer<RegisteredServer> registerServerConsumer) {
 		this.registerServerConsumer = registerServerConsumer;
 	}
 
+	public void setMulticastServerConsumer(Consumer<ServerOnNetwork> consumer) {
+		if (multicastEnabled)
+			mdnsHelper.setMulticastServerConsumer(consumer);
+	}
+
 	@Override
 	public void onFindServersOnNetwork(
 			ServiceRequest<FindServersOnNetworkRequest, FindServersOnNetworkResponse> serviceRequest) throws UaException {
+		if (!multicastEnabled) {
+			serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
+			return;
+		}
 
-		serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
+		int recordCount = 0;
+		if (serviceRequest.getRequest().getStartingRecordId().compareTo(UInteger.valueOf(mdnsHelper.getCurrentServerOnNetworkId()))<0) {
+			recordCount = mdnsHelper.getCurrentServerOnNetworkId()-serviceRequest.getRequest().getStartingRecordId().intValue();
+		}
+
+		if (serviceRequest.getRequest().getMaxRecordsToReturn().longValue() > 0) {
+			recordCount = Integer.min(recordCount, serviceRequest.getRequest().getMaxRecordsToReturn().intValue());
+		}
+
+		Stream<ServerOnNetwork> filteredServers = mdnsHelper.getServerOnNetwork().stream().filter(
+				serverOnNetwork -> serverOnNetwork.getRecordId().compareTo(serviceRequest.getRequest().getStartingRecordId())>=0);
+
+		if (serviceRequest.getRequest().getServerCapabilityFilter() != null && serviceRequest.getRequest().getServerCapabilityFilter().length > 0) {
+
+			filteredServers = filteredServers.filter(serverOnNetwork -> serverOnNetwork.getServerCapabilities() == null ||
+					Arrays.asList(serverOnNetwork.getServerCapabilities())
+					.containsAll(Arrays.asList(serviceRequest.getRequest().getServerCapabilityFilter())));
+		}
+
+		ResponseHeader header = serviceRequest.createResponseHeader();
+
+		serviceRequest.setResponse(new FindServersOnNetworkResponse(header, new DateTime(mdnsHelper.getLastServerOnNetworkIdReset()), filteredServers.toArray(ServerOnNetwork[]::new)));
 	}
 
-	public StatusCode addMulticastRecord(String host, int port, boolean addTxt, String[] capabilities) {
-		return null;
+	public StatusCode addMulticastRecord(String name, int port, String path, String[] capabilities) {
+		if (!multicastEnabled) {
+			return new StatusCode(StatusCodes.Bad_ServiceUnsupported);
+		}
+		if (!mdnsHelper.addRecord(name, port, path, capabilities))
+			return StatusCode.BAD;
+		return StatusCode.GOOD;
 	}
 
-	public StatusCode removeMulticastRecord(String host, int port, boolean removeTxt) {
-		return null;
+	public StatusCode removeMulticastRecord(String name, int port, String path) {
+		if (!multicastEnabled) {
+			return new StatusCode(StatusCodes.Bad_ServiceUnsupported);
+		}
+		if (!mdnsHelper.removeRecord(name, port, path))
+			return StatusCode.BAD;
+		return StatusCode.GOOD;
 	}
 
 	private StatusCode processRegisterServer(RegisteredServer requestServer, ExtensionObject[] requestDiscoveryConfiguration,
@@ -105,7 +159,7 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 			}
 		}
 
-		if (mdnsName == null && requestServer.getServerNames().length > 0) {
+		if (mdnsName == null && requestServer.getServerNames() != null && requestServer.getServerNames().length > 0) {
 			mdnsName = requestServer.getServerNames()[0].getText();
 		}
 
@@ -118,7 +172,6 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 		}
 
 		// check semaphore
-		File semaphoreFile = null;
 		if (requestServer.getSemaphoreFilePath() != null && requestServer.getSemaphoreFilePath().length() > 0) {
 			if (!new File(requestServer.getSemaphoreFilePath()).isFile()) {
 				return new StatusCode(StatusCodes.Bad_SemaphoreFileMissing);
@@ -127,20 +180,21 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 
 		if (multicastEnabled) {
 			// publish or unpublish mDNS record
-			for (int i = 0; i < requestServer.getDiscoveryUrls().length; i++) {
-				URL fullDiscoveryUrl = null;
+			for (String discoveryUrl : requestServer.getDiscoveryUrls()) {
+				URL fullDiscoveryUrl;
 				try {
-					fullDiscoveryUrl = new URL(requestServer.getDiscoveryUrls()[i]);
+					fullDiscoveryUrl = new URL(discoveryUrl);
 				} catch (MalformedURLException e) {
 					return new StatusCode(StatusCodes.Bad_UnexpectedError);
 				}
 
 				if (!requestServer.getIsOnline()) {
-					if (removeMulticastRecord(fullDiscoveryUrl.getHost(), fullDiscoveryUrl.getPort(), i == requestServer.getDiscoveryUrls().length).isBad()) {
+					if (removeMulticastRecord(fullDiscoveryUrl.getHost(), fullDiscoveryUrl.getPort(), fullDiscoveryUrl.getPath()).isBad()) {
 						logger.warn("Could not remove mDNS record for hostname " + fullDiscoveryUrl.getHost() + ":" + fullDiscoveryUrl.getPort());
 					}
 				} else {
-					if (addMulticastRecord(fullDiscoveryUrl.getHost(), fullDiscoveryUrl.getPort(), i == 0, discoveryConfiguration.getServerCapabilities()).isBad()) {
+					String[] capabilities = discoveryConfiguration == null || discoveryConfiguration.getServerCapabilities() == null ? new String[0] : discoveryConfiguration.getServerCapabilities();
+					if (addMulticastRecord(fullDiscoveryUrl.getHost(), fullDiscoveryUrl.getPort(), fullDiscoveryUrl.getPath(), capabilities).isBad()) {
 						logger.warn("Could not add mDNS record for hostname " + fullDiscoveryUrl.getHost() + ":" + fullDiscoveryUrl.getPort());
 					}
 				}

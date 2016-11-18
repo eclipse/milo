@@ -179,10 +179,6 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
 		);
 	}
 
-	private boolean filterServerUris(ApplicationDescription ad, List<String> serverUris) {
-		return serverUris.size() == 0 || serverUris.contains(ad.getApplicationUri());
-	}
-
 	protected List<RegisteredServer> getRegisteredServers() {
 		return Collections.emptyList();
 	}
