@@ -380,7 +380,7 @@ public class SessionManager implements
                     /*
                      * Identity change
                      */
-                    Object tokenObject = request.getUserIdentityToken().decode();
+                    Object tokenObject = request.getUserIdentityToken().getObject();
                     Object identityObject = validateIdentityToken(
                         secureChannel,
                         session,
@@ -410,11 +410,11 @@ public class SessionManager implements
                      */
                     ByteString certificateBytes = secureChannel.getRemoteCertificateBytes();
 
-                    if (request.getUserIdentityToken() == null || request.getUserIdentityToken().decode() == null) {
+                    if (request.getUserIdentityToken() == null || request.getUserIdentityToken().getObject() == null) {
                         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
                     }
 
-                    Object tokenObject = request.getUserIdentityToken().decode();
+                    Object tokenObject = request.getUserIdentityToken().getObject();
                     Object identityObject = validateIdentityToken(
                         secureChannel,
                         session,
@@ -455,11 +455,11 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
             }
 
-            if (request.getUserIdentityToken() == null || request.getUserIdentityToken().decode() == null) {
+            if (request.getUserIdentityToken() == null || request.getUserIdentityToken().getObject() == null) {
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
             }
 
-            Object tokenObject = request.getUserIdentityToken().decode();
+            Object tokenObject = request.getUserIdentityToken().getObject();
             Object identityObject = validateIdentityToken(
                 secureChannel,
                 session,

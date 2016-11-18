@@ -351,7 +351,7 @@ public abstract class UaNode implements Node {
                 new EnumDecoder((Integer) o)
             );
         } else if (UaStructure.class.isAssignableFrom(clazz) && o instanceof ExtensionObject) {
-            Object decoded = ((ExtensionObject) o).decode();
+            Object decoded = ((ExtensionObject) o).getObject();
             return clazz.cast(decoded);
         } else {
             return clazz.cast(o);

@@ -279,15 +279,30 @@ public class BinaryDecoder implements UaDecoder {
         int encoding = buffer.readByte();
 
         if (encoding == 0) {
-            return new ExtensionObject((ByteString) null, encodingTypeId);
+            return ExtensionObject.fromByteString(null, encodingTypeId);
         } else if (encoding == 1) {
             ByteString byteString = decodeByteString(null);
 
-            return new ExtensionObject(byteString, encodingTypeId);
+            if (byteString.isNotNull()) {
+                return ExtensionObject.fromByteString(byteString, encodingTypeId);
+            } else {
+                // Workaround for a bug in other stack(s) where the length is encoded as -1 even though a body
+                // is encoded.
+                // The encoding byte above has indicated a body is encoded, so if we know the encodingTypeId then
+                // we can decode the body anyway.
+                Object o = DelegateRegistry.getInstance().getDecoder(encodingTypeId).decode(this);
+                return ExtensionObject.fromObject(o, encodingTypeId, ExtensionObject.BodyType.ByteString);
+            }
         } else if (encoding == 2) {
             XmlElement xmlElement = decodeXmlElement(null);
 
-            return new ExtensionObject(xmlElement, encodingTypeId);
+            if (xmlElement.isNotNull()) {
+                return ExtensionObject.fromXmlElement(xmlElement, encodingTypeId);
+            } else {
+                // See workaround explained above.
+                Object o = DelegateRegistry.getInstance().getDecoder(encodingTypeId).decode(this);
+                return ExtensionObject.fromObject(o, encodingTypeId, ExtensionObject.BodyType.XmlElement);
+            }
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,

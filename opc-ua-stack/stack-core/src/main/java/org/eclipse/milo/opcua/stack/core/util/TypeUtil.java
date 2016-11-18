@@ -105,7 +105,11 @@ public class TypeUtil {
         if (backingType.isPrimitive()) {
             return PRIMITIVE_BUILTIN_TYPES.getOrDefault(backingType, -1);
         } else {
-            return BUILTIN_TYPES.inverse().getOrDefault(backingType, -1);
+            if (ExtensionObject.class.isAssignableFrom(backingType)) {
+                return BUILTIN_TYPES.inverse().getOrDefault(ExtensionObject.class, -1);
+            } else {
+                return BUILTIN_TYPES.inverse().getOrDefault(backingType, -1);
+            }
         }
     }
 

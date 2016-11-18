@@ -17,6 +17,8 @@ import com.google.common.base.MoreObjects;
 
 public final class XmlElement {
 
+    public static final XmlElement NULL_VALUE = new XmlElement(null);
+
     private final String fragment;
 
     public XmlElement(String fragment) {

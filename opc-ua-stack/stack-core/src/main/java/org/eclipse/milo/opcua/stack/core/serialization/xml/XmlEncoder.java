@@ -27,6 +27,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.UaSerializable;
@@ -312,7 +313,7 @@ public class XmlEncoder implements UaEncoder {
             write(field, Unchecked.consumer(w -> {
                 encodeNodeId("TypeId", value.getEncodingTypeId());
 
-                Object object = value.getEncoded();
+                Object object = value.getEncodedBody(DataTypeEncoding.OPC_UA);
 
                 if (object instanceof UaSerializable) {
                     UaSerializable serializable = (UaSerializable) object;

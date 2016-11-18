@@ -138,10 +138,10 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
 
     @Override
     protected void installFilter(ExtensionObject filterXo) throws UaException {
-        if (filterXo == null || filterXo.decode() == null) {
+        if (filterXo == null || filterXo.getObject() == null) {
             this.filter = DefaultFilter;
         } else {
-            Object filterObject = filterXo.decode();
+            Object filterObject = filterXo.getObject();
 
             if (filterObject instanceof MonitoringFilter) {
                 if (filterObject instanceof DataChangeFilter) {

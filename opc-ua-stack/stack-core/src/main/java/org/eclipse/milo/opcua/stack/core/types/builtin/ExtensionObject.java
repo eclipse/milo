@@ -13,141 +13,277 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 
-public final class ExtensionObject {
+public abstract class ExtensionObject {
+
+    public static ExtensionObject NULL_BINARY = ExtensionObject.fromByteString(
+        ByteString.NULL_VALUE,
+        NodeId.NULL_VALUE
+    );
+
+    public static ExtensionObject NULL_XML = ExtensionObject.fromXmlElement(
+        XmlElement.NULL_VALUE,
+        NodeId.NULL_VALUE
+    );
 
     public enum BodyType {
         ByteString,
         XmlElement
     }
 
-    private volatile Object decoded;
+    /**
+     * @return the {@link BodyType} of the encoded body.
+     */
+    public abstract BodyType getBodyType();
 
-    private final BodyType bodyType;
+    /**
+     * Get the encoded body for this ExtensionObject.
+     * <p>
+     * Depending on the {@link BodyType}, either {@link ByteString} or {@link XmlElement}.
+     *
+     * @return the encoded by for this ExtensionObject.
+     */
+    public abstract Object getEncodedBody(DataTypeEncoding context);
 
-    private final Object encoded;
-    private final NodeId encodingTypeId;
+    /**
+     * @return the {@link NodeId} of the type node for the object contained within.
+     */
+    public abstract NodeId getEncodingTypeId();
 
-    public ExtensionObject(ByteString encoded, NodeId encodingTypeId) {
-        this.encoded = encoded;
-        this.encodingTypeId = encodingTypeId;
-
-        bodyType = BodyType.ByteString;
+    /**
+     * Decode the body and return the decoded Object.
+     *
+     * @return the Object returned by the decoding the encoded body.
+     * @throws UaSerializationException if decoding fails for any reason.
+     */
+    public <T> T getObject() throws UaSerializationException {
+        return getObject(DataTypeEncoding.OPC_UA);
     }
 
-    public ExtensionObject(XmlElement encoded, NodeId encodingTypeId) {
-        this.encoded = encoded;
-        this.encodingTypeId = encodingTypeId;
+    /**
+     * Decode the body and return the decoded Object.
+     *
+     * @param context the {@link DataTypeEncoding} to use for decoding.
+     * @return the Object returned by the decoding the encoded body.
+     * @throws UaSerializationException if decoding fails for any reason.
+     */
+    public abstract <T> T getObject(DataTypeEncoding context) throws UaSerializationException;
 
-        bodyType = BodyType.XmlElement;
+    public abstract boolean isNull();
+
+    public final boolean isNotNull() {
+        return !isNull();
     }
 
-    public Object getEncoded() {
-        return encoded;
+    @Override
+    public final int hashCode() {
+        return Objects.hashCode(getEncodingTypeId(), getObject());
     }
 
-    public NodeId getEncodingTypeId() {
-        return encodingTypeId;
-    }
-
-    public BodyType getBodyType() {
-        return bodyType;
-    }
-
-    public <T> T decode() throws UaSerializationException {
-        return decode(DataTypeEncoding.OPC_UA);
-    }
-
-    public <T> T decode(DataTypeEncoding context) throws UaSerializationException {
-        if (decoded != null) return (T) decoded;
-
-        switch (bodyType) {
-            case ByteString: {
-                ByteString bs = (ByteString) encoded;
-                if (bs == null || bs.isNull()) {
-                    return null;
-                } else {
-                    decoded = context.decodeFromByteString((ByteString) encoded, encodingTypeId);
-                    return (T) decoded;
-                }
-            }
-
-            case XmlElement: {
-                XmlElement e = (XmlElement) encoded;
-                if (e == null || e.isNull()) {
-                    return null;
-                } else {
-                    decoded = context.decodeFromXmlElement((XmlElement) encoded, encodingTypeId);
-                    return (T) decoded;
-                }
-            }
-
-            default:
-                throw new IllegalStateException("unknown body type: " + bodyType);
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
+        if ((obj == null) || !(obj instanceof ExtensionObject)) {
+            return false;
+        }
+
+        final ExtensionObject other = (ExtensionObject) obj;
+
+        return Objects.equal(getEncodingTypeId(), other.getEncodingTypeId()) &&
+            Objects.equal(getObject(), other.getObject());
     }
 
-    public static ExtensionObject encode(UaStructure structure) throws UaSerializationException {
-        return encodeAsByteString(structure, structure.getBinaryEncodingId());
+    /**
+     * Create an {@link ExtensionObject} from an Object instance.
+     * <p>
+     * The encoded body will be created on demand.
+     *
+     * @param object         the Object instance.
+     * @param encodingTypeId the {@link NodeId} of the encoding type.
+     * @param bodyType       the {@link BodyType} to use when creating the body.
+     * @return an {@link ExtensionObject}.
+     */
+    public static ExtensionObject fromObject(Object object, NodeId encodingTypeId, BodyType bodyType) {
+        return new LazilyEncodedExtensionObject(object, encodingTypeId, bodyType);
     }
 
-    public static ExtensionObject encodeAsByteString(Object object,
-                                                     NodeId encodingTypeId) throws UaSerializationException {
-
-        return encodeAsByteString(object, encodingTypeId, DataTypeEncoding.OPC_UA);
+    public static ExtensionObject fromStructure(UaStructure structure) {
+        return fromStructure(structure, BodyType.ByteString);
     }
 
-    public static ExtensionObject encodeAsByteString(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeEncoding context) throws UaSerializationException {
+    public static ExtensionObject fromStructure(UaStructure structure, BodyType bodyType) {
+        NodeId encodingTypeId = bodyType == BodyType.ByteString ?
+            structure.getBinaryEncodingId() :
+            structure.getXmlEncodingId();
 
-        ByteString encoded = context.encodeToByteString(object, encodingTypeId);
-
-        return new ExtensionObject(encoded, encodingTypeId);
+        return new LazilyEncodedExtensionObject(structure, encodingTypeId, bodyType);
     }
 
-    public static ExtensionObject encodeAsXmlElement(Object object,
-                                                     NodeId encodingTypeId) throws UaSerializationException {
-
-        return encodeAsXmlElement(object, encodingTypeId, DataTypeEncoding.OPC_UA);
+    /**
+     * Create an {@link ExtensionObject} from a {@link ByteString} representing the encoded body.
+     *
+     * @param byteString     a {@link ByteString} representing the encoded body.
+     * @param encodingTypeId the {@link NodeId} of the encoding type.
+     * @return an {@link ExtensionObject}.
+     */
+    public static ExtensionObject fromByteString(ByteString byteString, NodeId encodingTypeId) {
+        return new LazilyDecodedExtensionObject(byteString, encodingTypeId);
     }
 
-    public static ExtensionObject encodeAsXmlElement(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeEncoding context) throws UaSerializationException {
-
-        XmlElement encoded = context.encodeToXmlElement(object, encodingTypeId);
-
-        return new ExtensionObject(encoded, encodingTypeId);
+    /**
+     * Create an {@link ExtensionObject} from an {@link XmlElement} representing the encoded body.
+     *
+     * @param xmlElement     an {@link XmlElement} representing the encoded body.
+     * @param encodingTypeId the {@link NodeId} of the encoding type.
+     * @return an {@link ExtensionObject}.
+     */
+    public static ExtensionObject fromXmlElement(XmlElement xmlElement, NodeId encodingTypeId) {
+        return new LazilyDecodedExtensionObject(xmlElement, encodingTypeId);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    private static final class LazilyDecodedExtensionObject extends ExtensionObject {
 
-        ExtensionObject that = (ExtensionObject) o;
+        private volatile Object decoded;
 
-        return Objects.equal(encoded, that.encoded) &&
-            Objects.equal(encodingTypeId, that.encodingTypeId);
+        private final BodyType bodyType;
+
+        private final Object encoded;
+        private final NodeId encodingTypeId;
+
+        private LazilyDecodedExtensionObject(ByteString encoded, NodeId encodingTypeId) {
+            this.encoded = encoded;
+            this.encodingTypeId = encodingTypeId;
+
+            bodyType = BodyType.ByteString;
+        }
+
+        private LazilyDecodedExtensionObject(XmlElement encoded, NodeId encodingTypeId) {
+            this.encoded = encoded;
+            this.encodingTypeId = encodingTypeId;
+
+            bodyType = BodyType.XmlElement;
+        }
+
+        @Override
+        public BodyType getBodyType() {
+            return bodyType;
+        }
+
+        @Override
+        public Object getEncodedBody(DataTypeEncoding context) {
+            return encoded;
+        }
+
+        @Override
+        public NodeId getEncodingTypeId() {
+            return encodingTypeId;
+        }
+
+        @Override
+        public <T> T getObject(DataTypeEncoding context) throws UaSerializationException {
+            if (decoded != null) return (T) decoded;
+
+            switch (bodyType) {
+                case ByteString: {
+                    ByteString bs = (ByteString) encoded;
+                    if (bs == null || bs.isNull()) {
+                        return null;
+                    } else {
+                        decoded = context.decodeFromByteString((ByteString) encoded, encodingTypeId);
+                        return (T) decoded;
+                    }
+                }
+
+                case XmlElement: {
+                    XmlElement e = (XmlElement) encoded;
+                    if (e == null || e.isNull()) {
+                        return null;
+                    } else {
+                        decoded = context.decodeFromXmlElement((XmlElement) encoded, encodingTypeId);
+                        return (T) decoded;
+                    }
+                }
+
+                default:
+                    throw new IllegalStateException("unknown body type: " + bodyType);
+            }
+        }
+
+        @Override
+        public boolean isNull() {
+            return encoded == null;
+        }
+
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(encoded, encodingTypeId);
-    }
+    private static final class LazilyEncodedExtensionObject extends ExtensionObject {
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("encoded", encoded)
-            .add("encodingTypeId", encodingTypeId)
-            .toString();
+        private volatile ByteString encodedByteString;
+        private volatile XmlElement encodedXmlElement;
+
+        private final Object object;
+        private final NodeId encodingTypeId;
+        private final BodyType bodyType;
+
+        private LazilyEncodedExtensionObject(Object object, NodeId encodingTypeId, BodyType bodyType) {
+            this.object = object;
+            this.encodingTypeId = encodingTypeId;
+            this.bodyType = bodyType;
+        }
+
+        @Override
+        public BodyType getBodyType() {
+            return bodyType;
+        }
+
+        @Override
+        public Object getEncodedBody(DataTypeEncoding context) {
+            switch (bodyType) {
+                case ByteString:
+                    if (object == null) {
+                        return ByteString.NULL_VALUE;
+                    }
+                    if (encodedByteString == null) {
+                        encodedByteString = context.encodeToByteString(object, encodingTypeId);
+                    }
+                    return encodedByteString;
+
+                case XmlElement:
+                    if (object == null) {
+                        return XmlElement.NULL_VALUE;
+                    }
+                    if (encodedXmlElement == null) {
+                        encodedXmlElement = context.encodeToXmlElement(object, encodingTypeId);
+                    }
+                    return encodedXmlElement;
+
+                default:
+                    throw new IllegalStateException("unknown body type: " + bodyType);
+            }
+        }
+
+        @Override
+        public NodeId getEncodingTypeId() {
+            return encodingTypeId;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T> T getObject(DataTypeEncoding context) throws UaSerializationException {
+            return (T) object;
+        }
+
+        @Override
+        public boolean isNull() {
+            return object == null;
+        }
+
     }
 
 }

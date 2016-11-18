@@ -24,6 +24,7 @@ import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.EncoderDelegate;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
@@ -427,11 +428,11 @@ public class BinaryEncoder implements UaEncoder {
 
     @Override
     public void encodeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
-        if (value == null || value.getEncoded() == null) {
+        if (value == null || value.isNull()) {
             encodeNodeId(null, NodeId.NULL_VALUE);
             buffer.writeByte(0); // No body is encoded
         } else {
-            Object object = value.getEncoded();
+            Object object = value.getEncodedBody(DataTypeEncoding.OPC_UA);
 
             switch (value.getBodyType()) {
                 case ByteString: {
@@ -548,9 +549,11 @@ public class BinaryEncoder implements UaEncoder {
         }
     }
 
-    private void encodeValue(Object value, int typeId, boolean structure, boolean enumeration) {
-        if (structure) {
-            ExtensionObject extensionObject = ExtensionObject.encode((UaStructure) value);
+    private void encodeValue(Object value, int typeId, boolean structured, boolean enumeration) {
+        if (structured) {
+            UaStructure structure = (UaStructure) value;
+
+            ExtensionObject extensionObject = ExtensionObject.fromStructure(structure);
 
             encodeBuiltinType(typeId, extensionObject);
         } else if (enumeration) {

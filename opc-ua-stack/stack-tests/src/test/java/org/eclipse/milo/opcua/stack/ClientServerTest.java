@@ -21,7 +21,6 @@ import java.util.concurrent.ExecutionException;
 import com.beust.jcommander.internal.Lists;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -88,7 +87,7 @@ public class ClientServerTest extends SecurityFixture {
             {new Variant(StatusCode.GOOD)},
             {new Variant(new QualifiedName(0, "QualifiedName"))},
             {new Variant(LocalizedText.english("LocalizedText"))},
-            {new Variant(ExtensionObject.encode(new ReadValueId(NodeId.NULL_VALUE, uint(1), null, new QualifiedName(0, "DataEncoding"))))},
+            {new Variant(ExtensionObject.fromStructure(new ReadValueId(NodeId.NULL_VALUE, uint(1), null, new QualifiedName(0, "DataEncoding")), ExtensionObject.BodyType.ByteString))},
         };
     }
 

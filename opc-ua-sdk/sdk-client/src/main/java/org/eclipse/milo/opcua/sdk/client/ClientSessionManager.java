@@ -393,7 +393,7 @@ class ClientSessionManager {
                     buildClientSignature(secureChannel, csr),
                     new SignedSoftwareCertificate[0],
                     new String[0],
-                    ExtensionObject.encode(userIdentityToken),
+                    ExtensionObject.fromStructure(userIdentityToken),
                     userTokenSignature
                 );
 
@@ -480,7 +480,7 @@ class ClientSessionManager {
                     clientSignature,
                     new SignedSoftwareCertificate[0],
                     new String[0],
-                    ExtensionObject.encode(userIdentityToken),
+                    ExtensionObject.fromStructure(userIdentityToken),
                     userTokenSignature
                 );
 

@@ -335,15 +335,15 @@ public class XmlDecoder implements UaDecoder {
             requireNextEndElement(field);
 
             if (body instanceof XmlElement) {
-                return new ExtensionObject((XmlElement) body, encodingTypeId);
+                return ExtensionObject.fromXmlElement((XmlElement) body, encodingTypeId);
             } else if (body instanceof ByteString) {
-                return new ExtensionObject((ByteString) body, encodingTypeId);
+                return ExtensionObject.fromByteString((ByteString) body, encodingTypeId);
             } else {
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError,
                     "unrecognized ExtensionObject body: " + body);
             }
         } else {
-            return new ExtensionObject(ByteString.NULL_VALUE, NodeId.NULL_VALUE);
+            return ExtensionObject.NULL_XML;
         }
     }
 
