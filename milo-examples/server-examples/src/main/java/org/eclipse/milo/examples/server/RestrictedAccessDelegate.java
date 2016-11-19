@@ -23,9 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.DelegatingAttributeDelegate;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,50 +55,6 @@ public class RestrictedAccessDelegate extends DelegatingAttributeDelegate {
         Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
 
         return ubyte(AccessLevel.getMask(accessLevels));
-    }
-
-    @Override
-    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-        Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
-
-        Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
-
-        if (accessLevels.contains(AccessLevel.CurrentRead)) {
-            identity.ifPresent(user ->
-                logger.info(
-                    "Allowing user '{}' access reading Value of {}", user, node.getNodeId())
-            );
-
-            return super.getValue(context, node);
-        } else {
-            logger.info(
-                "Denying user '{}' access reading Value of {}",
-                identity.orElse("internal"), node.getNodeId());
-
-            throw new UaException(StatusCodes.Bad_UserAccessDenied);
-        }
-    }
-
-    @Override
-    public void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
-        Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
-
-        Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
-
-        if (accessLevels.contains(AccessLevel.CurrentWrite)) {
-            identity.ifPresent(user ->
-                logger.info(
-                    "Allowing user '{}' access writing to Value of {}", user, node.getNodeId())
-            );
-
-            super.setValue(context, node, value);
-        } else {
-            logger.info(
-                "Denying user '{}' access writing to Value of {}",
-                identity.orElse("internal"), node.getNodeId());
-
-            throw new UaException(StatusCodes.Bad_UserAccessDenied);
-        }
     }
 
 }
