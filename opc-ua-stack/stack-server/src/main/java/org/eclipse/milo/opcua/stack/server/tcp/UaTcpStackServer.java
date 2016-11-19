@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.server.tcp;
 
+import java.net.InetAddress;
 import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
@@ -524,6 +525,8 @@ public class UaTcpStackServer implements UaStackServer {
                         String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
                         String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
 
+                        logger.debug("requestedHost={}, discoveryHost={}", requestedHost, discoveryHost);
+
                         return requestedHost.equalsIgnoreCase(discoveryHost);
                     } catch (Throwable e) {
                         logger.warn("Unable to create URI.", e);
@@ -531,6 +534,30 @@ public class UaTcpStackServer implements UaStackServer {
                     }
                 })
                 .collect(toList());
+
+            if (matchingDiscoveryUrls.isEmpty()) {
+                matchingDiscoveryUrls = allDiscoveryUrls.stream()
+                    .filter(discoveryUrl -> {
+                        try {
+                            String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
+                            String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
+                            InetAddress requestedHostAddress = InetAddress.getByName(requestedHost);
+                            InetAddress discoveryHostAddress = InetAddress.getByName(discoveryHost);
+
+                            logger.debug(
+                                "requestedHostAddress={}, discoveryHostAddress={}",
+                                requestedHost, discoveryHost);
+
+                            return requestedHostAddress.equals(discoveryHostAddress);
+                        } catch (Throwable e) {
+                            logger.warn("Unable to create URI.", e);
+                            return false;
+                        }
+                    })
+                    .collect(toList());
+            }
+
+            logger.debug("Matching discovery URLs: {}", matchingDiscoveryUrls);
 
             return new ApplicationDescription(
                 config.getApplicationUri(),
