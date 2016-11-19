@@ -36,7 +36,8 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.VariableNodeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -217,6 +218,8 @@ public class ExampleNamespace implements Namespace {
 
             node.setValue(new DataValue(variant));
 
+            node.setAttributeDelegate(new ValueLoggingDelegate());
+
             server.getNodeManager().addNode(node);
             arrayTypesFolder.addOrganizes(node);
         }
@@ -248,6 +251,8 @@ public class ExampleNamespace implements Namespace {
                 .build();
 
             node.setValue(new DataValue(variant));
+
+            node.setAttributeDelegate(new ValueLoggingDelegate());
 
             server.getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
@@ -352,12 +357,17 @@ public class ExampleNamespace implements Namespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new VariableNodeDelegate() {
-                @Override
-                protected DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                    return new DataValue(new Variant(random.nextBoolean()));
-                }
-            });
+            AttributeDelegate delegate = AttributeDelegateChain.create(
+                new AttributeDelegate() {
+                    @Override
+                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                        return new DataValue(new Variant(random.nextBoolean()));
+                    }
+                },
+                ValueLoggingDelegate::new
+            );
+
+            node.setAttributeDelegate(delegate);
 
             server.getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
@@ -380,12 +390,17 @@ public class ExampleNamespace implements Namespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new VariableNodeDelegate() {
-                @Override
-                protected DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                    return new DataValue(new Variant(random.nextInt()));
-                }
-            });
+            AttributeDelegate delegate = AttributeDelegateChain.create(
+                new AttributeDelegate() {
+                    @Override
+                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                        return new DataValue(new Variant(random.nextInt()));
+                    }
+                },
+                ValueLoggingDelegate::new
+            );
+
+            node.setAttributeDelegate(delegate);
 
             server.getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
@@ -408,12 +423,17 @@ public class ExampleNamespace implements Namespace {
 
             node.setValue(new DataValue(variant));
 
-            node.setAttributeDelegate(new VariableNodeDelegate() {
-                @Override
-                protected DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
-                    return new DataValue(new Variant(random.nextDouble()));
-                }
-            });
+            AttributeDelegate delegate = AttributeDelegateChain.create(
+                new AttributeDelegate() {
+                    @Override
+                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                        return new DataValue(new Variant(random.nextDouble()));
+                    }
+                },
+                ValueLoggingDelegate::new
+            );
+
+            node.setAttributeDelegate(delegate);
 
             server.getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);

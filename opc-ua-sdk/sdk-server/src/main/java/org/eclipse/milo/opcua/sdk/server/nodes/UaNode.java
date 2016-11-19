@@ -31,7 +31,7 @@ import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.DefaultAttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -52,7 +52,7 @@ public abstract class UaNode implements ServerNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UaNode.class);
 
-    private static final AttributeDelegate DEFAULT_ATTRIBUTE_DELEGATE = new DefaultAttributeDelegate();
+    private static final AttributeDelegate DEFAULT_ATTRIBUTE_DELEGATE = AttributeDelegate.DEFAULT;
 
     private final AtomicInteger refCount = new AtomicInteger(0);
 

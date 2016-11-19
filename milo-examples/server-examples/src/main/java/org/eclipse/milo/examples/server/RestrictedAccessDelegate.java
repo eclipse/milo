@@ -21,7 +21,8 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.delegates.VariableNodeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.DelegatingAttributeDelegate;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 
-public class RestrictedAccessDelegate extends VariableNodeDelegate {
+public class RestrictedAccessDelegate extends DelegatingAttributeDelegate {
 
     private static final Set<AccessLevel> INTERNAL_ACCESS = AccessLevel.READ_WRITE;
 
@@ -40,11 +41,17 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
     private final Function<Object, Set<AccessLevel>> accessLevelsFn;
 
     public RestrictedAccessDelegate(Function<Object, Set<AccessLevel>> accessLevelsFn) {
+        this(null, accessLevelsFn);
+    }
+
+    public RestrictedAccessDelegate(AttributeDelegate parent, Function<Object, Set<AccessLevel>> accessLevelsFn) {
+        super(parent);
+
         this.accessLevelsFn = accessLevelsFn;
     }
 
     @Override
-    protected UByte getUserAccessLevel(AttributeContext context, VariableNode node) throws UaException {
+    public UByte getUserAccessLevel(AttributeContext context, VariableNode node) throws UaException {
         Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
 
         Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
@@ -53,7 +60,7 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
     }
 
     @Override
-    protected DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
         Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
 
         Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
@@ -64,7 +71,7 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
                     "Allowing user '{}' access reading Value of {}", user, node.getNodeId())
             );
 
-            return node.getValue();
+            return super.getValue(context, node);
         } else {
             logger.info(
                 "Denying user '{}' access reading Value of {}",
@@ -75,7 +82,7 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
     }
 
     @Override
-    protected void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
+    public void setValue(AttributeContext context, VariableNode node, DataValue value) throws UaException {
         Optional<Object> identity = context.getSession().map(Session::getIdentityObject);
 
         Set<AccessLevel> accessLevels = identity.map(accessLevelsFn).orElse(INTERNAL_ACCESS);
@@ -86,7 +93,7 @@ public class RestrictedAccessDelegate extends VariableNodeDelegate {
                     "Allowing user '{}' access writing to Value of {}", user, node.getNodeId())
             );
 
-            node.setValue(value);
+            super.setValue(context, node, value);
         } else {
             logger.info(
                 "Denying user '{}' access writing to Value of {}",

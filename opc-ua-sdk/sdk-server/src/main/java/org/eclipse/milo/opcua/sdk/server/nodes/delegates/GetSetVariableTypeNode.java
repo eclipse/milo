@@ -1,0 +1,116 @@
+package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
+
+import java.util.Optional;
+
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+
+import static org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeUtil.dv;
+
+public interface GetSetVariableTypeNode extends GetSetBase {
+
+    default DataValue getVariableTypeAttribute(
+        AttributeContext context,
+        VariableTypeNode node,
+        AttributeId attributeId) throws UaException {
+
+        switch (attributeId) {
+            case Value:
+                return getValue(context, node)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+
+            case DataType:
+                return dv(getDataType(context, node));
+
+            case ValueRank:
+                return dv(getValueRank(context, node));
+
+            case ArrayDimensions:
+                return getArrayDimensions(context, node)
+                    .map(AttributeUtil::dv)
+                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+
+            case IsAbstract:
+                return dv(getIsAbstract(context, node));
+
+            default:
+                return getBaseAttribute(context, node, attributeId);
+        }
+    }
+
+    default void setVariableTypeAttribute(
+        AttributeContext context,
+        VariableTypeNode node,
+        AttributeId attributeId,
+        DataValue value) throws UaException {
+
+        switch (attributeId) {
+            case Value:
+                setValue(context, node, value);
+                break;
+            case DataType:
+                setDataType(context, node, AttributeUtil.extract(value));
+                break;
+            case ValueRank:
+                setValueRank(context, node, AttributeUtil.extract(value));
+                break;
+            case ArrayDimensions:
+                setArrayDimensions(context, node, AttributeUtil.extract(value));
+                break;
+            case IsAbstract:
+                setIsAbstract(context, node, AttributeUtil.extract(value));
+                break;
+
+            default:
+                setBaseAttribute(context, node, attributeId, value);
+        }
+    }
+
+    default Optional<DataValue> getValue(AttributeContext context, VariableTypeNode node) throws UaException {
+        return node.getValue();
+    }
+
+    default NodeId getDataType(AttributeContext context, VariableTypeNode node) throws UaException {
+        return node.getDataType();
+    }
+
+    default Integer getValueRank(AttributeContext context, VariableTypeNode node) throws UaException {
+        return node.getValueRank();
+    }
+
+    default Optional<UInteger[]> getArrayDimensions(
+        AttributeContext context, VariableTypeNode node) throws UaException {
+
+        return node.getArrayDimensions();
+    }
+
+    default Boolean getIsAbstract(AttributeContext context, VariableTypeNode node) throws UaException {
+        return node.getIsAbstract();
+    }
+
+    default void setValue(AttributeContext context, VariableTypeNode node, DataValue value) throws UaException {
+        node.setValue(Optional.ofNullable(value));
+    }
+
+    default void setDataType(AttributeContext context, VariableTypeNode node, NodeId dataType) throws UaException {
+        node.setDataType(dataType);
+    }
+
+    default void setValueRank(AttributeContext context, VariableTypeNode node, Integer valueRank) throws UaException {
+        node.setValueRank(valueRank);
+    }
+
+    default void setArrayDimensions(AttributeContext context, VariableTypeNode node, UInteger[] arrayDimensions) throws UaException {
+        node.setArrayDimensions(Optional.ofNullable(arrayDimensions));
+    }
+
+    default void setIsAbstract(AttributeContext context, VariableTypeNode node, Boolean isAbstract) throws UaException {
+        node.setIsAbstract(isAbstract);
+    }
+
+}
