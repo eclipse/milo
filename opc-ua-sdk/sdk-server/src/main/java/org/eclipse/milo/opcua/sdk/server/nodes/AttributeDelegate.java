@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -20,11 +21,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 public interface AttributeDelegate {
 
     DataValue getAttribute(AttributeContext context,
-                           UaNode node,
+                           Node node,
                            AttributeId attributeId) throws UaException;
 
     void setAttribute(AttributeContext context,
-                      UaNode node,
+                      Node node,
                       AttributeId attributeId,
                       DataValue value) throws UaException;
 

@@ -26,46 +26,46 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
-import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 
-public class AttributeDelegateAdapter implements AttributeDelegate {
+import static org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeUtil.dv;
+
+public class DefaultAttributeDelegate implements AttributeDelegate {
 
     @Override
     public DataValue getAttribute(
         AttributeContext context,
-        UaNode node,
+        Node node,
         AttributeId attributeId) throws UaException {
 
         switch (node.getNodeClass()) {
             case DataType:
-                return getDataTypeAttribute(context, (ServerNode & DataTypeNode) node, attributeId);
+                return getDataTypeAttribute(context, (DataTypeNode) node, attributeId);
 
             case Method:
-                return getMethodAttribute(context, (ServerNode & MethodNode) node, attributeId);
+                return getMethodAttribute(context, (MethodNode) node, attributeId);
 
             case Object:
-                return getObjectAttribute(context, (ServerNode & ObjectNode) node, attributeId);
+                return getObjectAttribute(context, (ObjectNode) node, attributeId);
 
             case ObjectType:
-                return getObjectTypeAttribute(context, (ServerNode & ObjectTypeNode) node, attributeId);
+                return getObjectTypeAttribute(context, (ObjectTypeNode) node, attributeId);
 
             case ReferenceType:
-                return getReferenceTypeAttribute(context, (ServerNode & ReferenceTypeNode) node, attributeId);
+                return getReferenceTypeAttribute(context, (ReferenceTypeNode) node, attributeId);
 
             case Variable:
-                return getVariableAttribute(context, (ServerNode & VariableNode) node, attributeId);
+                return getVariableAttribute(context, (VariableNode) node, attributeId);
 
             case VariableType:
-                return getVariableTypeAttribute(context, (ServerNode & VariableTypeNode) node, attributeId);
+                return getVariableTypeAttribute(context, (VariableTypeNode) node, attributeId);
 
             case View:
-                return getViewAttribute(context, (ServerNode & ViewNode) node, attributeId);
+                return getViewAttribute(context, (ViewNode) node, attributeId);
 
             default:
                 throw new UaException(StatusCodes.Bad_NodeClassInvalid);
@@ -75,7 +75,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
     @Override
     public void setAttribute(
         AttributeContext context,
-        UaNode node,
+        Node node,
         AttributeId attributeId,
         DataValue value) throws UaException {
 
@@ -117,16 +117,16 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case NodeId:
-                return AttributeUtil.dv(node.getNodeId());
+                return dv(node.getNodeId());
 
             case NodeClass:
-                return AttributeUtil.dv(node.getNodeClass());
+                return dv(node.getNodeClass());
 
             case BrowseName:
-                return AttributeUtil.dv(node.getBrowseName());
+                return dv(node.getBrowseName());
 
             case DisplayName:
-                return AttributeUtil.dv(node.getDisplayName());
+                return dv(node.getDisplayName());
 
             case Description:
                 return node.getDescription()
@@ -155,7 +155,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                return AttributeUtil.dv(node.getIsAbstract());
+                return dv(node.getIsAbstract());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -169,10 +169,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case Executable:
-                return AttributeUtil.dv(node.isExecutable());
+                return dv(node.isExecutable());
 
             case UserExecutable:
-                return AttributeUtil.dv(node.isUserExecutable());
+                return dv(node.isUserExecutable());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -186,7 +186,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case EventNotifier:
-                return AttributeUtil.dv(node.getEventNotifier());
+                return dv(node.getEventNotifier());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -200,7 +200,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                return AttributeUtil.dv(node.getIsAbstract());
+                return dv(node.getIsAbstract());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -214,10 +214,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case IsAbstract:
-                return AttributeUtil.dv(node.getIsAbstract());
+                return dv(node.getIsAbstract());
 
             case Symmetric:
-                return AttributeUtil.dv(node.getSymmetric());
+                return dv(node.getSymmetric());
 
             case InverseName:
                 return node.getInverseName()
@@ -246,10 +246,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                 );
 
             case DataType:
-                return AttributeUtil.dv(node.getDataType());
+                return dv(node.getDataType());
 
             case ValueRank:
-                return AttributeUtil.dv(node.getValueRank());
+                return dv(node.getValueRank());
 
             case ArrayDimensions:
                 return node.getArrayDimensions()
@@ -257,10 +257,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                     .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case AccessLevel:
-                return AttributeUtil.dv(node.getAccessLevel());
+                return dv(node.getAccessLevel());
 
             case UserAccessLevel:
-                return AttributeUtil.dv(node.getUserAccessLevel());
+                return dv(node.getUserAccessLevel());
 
             case MinimumSamplingInterval:
                 return node.getMinimumSamplingInterval()
@@ -268,7 +268,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                     .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case Historizing:
-                return AttributeUtil.dv(node.getHistorizing());
+                return dv(node.getHistorizing());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -285,10 +285,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                 return node.getValue().orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case DataType:
-                return AttributeUtil.dv(node.getDataType());
+                return dv(node.getDataType());
 
             case ValueRank:
-                return AttributeUtil.dv(node.getValueRank());
+                return dv(node.getValueRank());
 
             case ArrayDimensions:
                 return node.getArrayDimensions()
@@ -296,7 +296,7 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
                     .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
 
             case IsAbstract:
-                return AttributeUtil.dv(node.getIsAbstract());
+                return dv(node.getIsAbstract());
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -310,10 +310,10 @@ public class AttributeDelegateAdapter implements AttributeDelegate {
 
         switch (attributeId) {
             case ContainsNoLoops:
-                return AttributeUtil.dv(node.getContainsNoLoops());
+                return dv(node.getContainsNoLoops());
 
             case EventNotifier:
-                return AttributeUtil.dv(node.getEventNotifier());
+                return dv(node.getEventNotifier());
 
             default:
                 return getBaseAttribute(context, node, attributeId);

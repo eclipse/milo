@@ -15,10 +15,10 @@ package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
 import java.util.Optional;
 
+import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeDelegate;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -37,7 +37,7 @@ public class VariableNodeDelegate implements AttributeDelegate {
     private final AttributeDelegate parent;
 
     public VariableNodeDelegate() {
-        this(new AttributeDelegateAdapter());
+        this(new DefaultAttributeDelegate());
     }
 
     public VariableNodeDelegate(AttributeDelegate parent) {
@@ -47,7 +47,7 @@ public class VariableNodeDelegate implements AttributeDelegate {
     @Override
     public DataValue getAttribute(
         AttributeContext context,
-        UaNode node,
+        Node node,
         AttributeId attributeId) throws UaException {
 
         if (node instanceof VariableNode) {
@@ -100,7 +100,7 @@ public class VariableNodeDelegate implements AttributeDelegate {
     @Override
     public void setAttribute(
         AttributeContext context,
-        UaNode node,
+        Node node,
         AttributeId attributeId,
         DataValue value) throws UaException {
 
