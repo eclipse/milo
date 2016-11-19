@@ -59,7 +59,7 @@ public class AttributeWriter {
                 throw new UaException(StatusCodes.Bad_NotWritable);
             }
 
-            Set<AccessLevel> userAccessLevels = getUserAccessLevels(node, internalContext);
+            Set<AccessLevel> userAccessLevels = getUserAccessLevels(node, context);
             if (!userAccessLevels.contains(AccessLevel.CurrentWrite)) {
                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
             }
@@ -71,7 +71,7 @@ public class AttributeWriter {
                 throw new UaException(StatusCodes.Bad_NotWritable);
             }
 
-            Set<WriteMask> userWriteMasks = getUserWriteMasks(node, internalContext);
+            Set<WriteMask> userWriteMasks = getUserWriteMasks(node, context);
             if (!userWriteMasks.contains(writeMask)) {
                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
             }
