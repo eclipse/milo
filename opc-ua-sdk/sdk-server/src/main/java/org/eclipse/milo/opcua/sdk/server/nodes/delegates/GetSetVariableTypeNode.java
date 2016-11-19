@@ -17,13 +17,14 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-import static org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeUtil.dv;
+import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.dv;
 
 public interface GetSetVariableTypeNode extends GetSetBase {
 
