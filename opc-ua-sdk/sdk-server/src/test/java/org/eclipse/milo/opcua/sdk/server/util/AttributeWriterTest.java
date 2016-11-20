@@ -13,10 +13,12 @@
 
 package org.eclipse.milo.opcua.sdk.server.util;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -28,12 +30,16 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+
 public class AttributeWriterTest {
-    
+
     @Test
     public void testVariantToVariant() throws UaException {
         testWriteConversion(new Variant("String"), null, null);
@@ -53,6 +59,7 @@ public class AttributeWriterTest {
     public void testByteStringToUByteArray() throws UaException {
         testWriteConversion(new Variant(ByteString.of("foo".getBytes())), Identifiers.Byte, node -> {
             node.setValueRank(ValueRanks.OneDimension);
+            node.setArrayDimensions(Optional.of(new UInteger[]{uint(0)}));
         });
     }
 
@@ -84,7 +91,9 @@ public class AttributeWriterTest {
         Consumer<UaVariableNode> nodeCustomizer) throws UaException {
 
         final UaVariableNode varNode = createMockNode("test", node -> {
-            node.setAccessLevel(Unsigned.ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)));
+            UByte accessLevel = ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE));
+            node.setAccessLevel(accessLevel);
+            node.setUserAccessLevel(accessLevel);
             if (nodeCustomizer != null) {
                 nodeCustomizer.accept(node);
             }
@@ -94,7 +103,7 @@ public class AttributeWriterTest {
             varNode.setDataType(dataType);
         }
 
-        AttributeWriter.writeAttribute(null, varNode, AttributeId.Value, value, null);
+        AttributeWriter.writeAttribute(new AttributeContext(null, null), varNode, AttributeId.Value, value, null);
     }
 
     private UaVariableNode createMockNode(
@@ -108,6 +117,7 @@ public class AttributeWriterTest {
 
         final UaVariableNode node = new UaVariableNode(
             null, nodeId, browseName, displayName);
+
 
         if (nodeCustomizer != null) {
             nodeCustomizer.accept(node);

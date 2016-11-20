@@ -125,13 +125,18 @@ public class AttributeWriter {
                     AttributeId.ValueRank)
             );
 
-            Optional<UInteger[]> arrayDimensions = extract(
-                node.getAttribute(
-                    context,
-                    AttributeId.ArrayDimensions)
-            );
+            if (valueRank == null) valueRank = 0;
 
-            validateArrayType(valueRank, arrayDimensions, value);
+            if (valueRank > 0) {
+                Optional<UInteger[]> arrayDimensions = Optional.ofNullable(
+                    extract(
+                        node.getAttribute(
+                            context,
+                            AttributeId.ArrayDimensions))
+                );
+
+                validateArrayType(valueRank, arrayDimensions, value);
+            }
 
             node.setAttribute(context, attributeId, value);
         } else {
