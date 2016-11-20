@@ -260,6 +260,7 @@ public class TestNamespace implements Namespace {
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(nodeManager)
                 .setNodeId(new NodeId(namespaceIndex, "/Static/AllProfiles/Scalar/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
