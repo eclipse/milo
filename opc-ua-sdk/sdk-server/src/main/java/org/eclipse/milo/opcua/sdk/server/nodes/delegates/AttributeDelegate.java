@@ -39,6 +39,10 @@ public interface AttributeDelegate extends
     GetSetVariableTypeNode,
     GetSetViewNode {
 
+    /**
+     * A default implementation of {@link AttributeDelegate} in which all calls are simply delegate to the
+     * appropriate getter or setter for the Node.
+     */
     AttributeDelegate DEFAULT = new AttributeDelegate() {};
 
     default DataValue getAttribute(
