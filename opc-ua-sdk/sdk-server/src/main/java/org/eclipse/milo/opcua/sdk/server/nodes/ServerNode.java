@@ -19,12 +19,14 @@ import javax.annotation.Nullable;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeWriter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
@@ -174,8 +176,25 @@ public interface ServerNode extends Node {
         AttributeWriter.writeAttribute(context, this, attributeId, value, indexRange);
     }
 
+    /**
+     * Get an attribute of this node, taking the {@link AttributeContext} into account and respecting any
+     * {@link AttributeDelegate} this node may have.
+     *
+     * @param context     the {@link AttributeContext} to get the attribute in.
+     * @param attributeId the {@link AttributeId} to get.
+     * @return a {@link DataValue} containing the attribute value or a {@link StatusCode} describing any failure.
+     */
     DataValue getAttribute(AttributeContext context, AttributeId attributeId);
 
+    /**
+     * Set an attribute of this node, taking the {@link AttributeContext} into account and respecting any
+     * {@link AttributeDelegate} this node may have.
+     *
+     * @param context     the {@link AttributeContext} to set the attribute in.
+     * @param attributeId the {@link AttributeId} to set.
+     * @param value       the new {@link DataValue} to set for the attribute.
+     * @throws UaException if setting the attribute failed for any reason.
+     */
     void setAttribute(AttributeContext context, AttributeId attributeId, DataValue value) throws UaException;
 
 }
