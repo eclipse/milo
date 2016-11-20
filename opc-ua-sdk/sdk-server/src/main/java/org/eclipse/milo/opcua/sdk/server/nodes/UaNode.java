@@ -433,9 +433,7 @@ public abstract class UaNode implements ServerNode {
     }
 
     @Override
-    public DataValue getAttribute(AttributeContext context,
-                                  AttributeId attributeId) throws UaException {
-
+    public DataValue getAttribute(AttributeContext context, AttributeId attributeId) {
         return attributeDelegate.get().getAttribute(context, this, attributeId);
     }
 

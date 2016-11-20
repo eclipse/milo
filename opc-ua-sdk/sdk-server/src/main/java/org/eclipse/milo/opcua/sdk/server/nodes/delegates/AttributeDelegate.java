@@ -48,35 +48,39 @@ public interface AttributeDelegate extends
     default DataValue getAttribute(
         AttributeContext context,
         Node node,
-        AttributeId attributeId) throws UaException {
+        AttributeId attributeId) {
 
-        switch (node.getNodeClass()) {
-            case DataType:
-                return getDataTypeAttribute(context, (DataTypeNode) node, attributeId);
+        try {
+            switch (node.getNodeClass()) {
+                case DataType:
+                    return getDataTypeAttribute(context, (DataTypeNode) node, attributeId);
 
-            case Method:
-                return getMethodAttribute(context, (MethodNode) node, attributeId);
+                case Method:
+                    return getMethodAttribute(context, (MethodNode) node, attributeId);
 
-            case Object:
-                return getObjectAttribute(context, (ObjectNode) node, attributeId);
+                case Object:
+                    return getObjectAttribute(context, (ObjectNode) node, attributeId);
 
-            case ObjectType:
-                return getObjectTypeAttribute(context, (ObjectTypeNode) node, attributeId);
+                case ObjectType:
+                    return getObjectTypeAttribute(context, (ObjectTypeNode) node, attributeId);
 
-            case ReferenceType:
-                return getReferenceTypeAttribute(context, (ReferenceTypeNode) node, attributeId);
+                case ReferenceType:
+                    return getReferenceTypeAttribute(context, (ReferenceTypeNode) node, attributeId);
 
-            case Variable:
-                return getVariableAttribute(context, (VariableNode) node, attributeId);
+                case Variable:
+                    return getVariableAttribute(context, (VariableNode) node, attributeId);
 
-            case VariableType:
-                return getVariableTypeAttribute(context, (VariableTypeNode) node, attributeId);
+                case VariableType:
+                    return getVariableTypeAttribute(context, (VariableTypeNode) node, attributeId);
 
-            case View:
-                return getViewAttribute(context, (ViewNode) node, attributeId);
+                case View:
+                    return getViewAttribute(context, (ViewNode) node, attributeId);
 
-            default:
-                throw new UaException(StatusCodes.Bad_NodeClassInvalid);
+                default:
+                    throw new UaException(StatusCodes.Bad_NodeClassInvalid);
+            }
+        } catch (UaException e) {
+            return new DataValue(e.getStatusCode());
         }
     }
 
