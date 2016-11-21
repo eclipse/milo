@@ -13,31 +13,29 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface VariableTypeNode extends Node {
 
-    Optional<DataValue> getValue();
+    DataValue getValue();
 
     NodeId getDataType();
 
     Integer getValueRank();
 
-    Optional<UInteger[]> getArrayDimensions();
+    UInteger[] getArrayDimensions();
 
     Boolean getIsAbstract();
 
-    void setValue(Optional<DataValue> value);
+    void setValue(DataValue value);
 
     void setDataType(NodeId dataType);
 
     void setValueRank(Integer valueRank);
 
-    void setArrayDimensions(Optional<UInteger[]> arrayDimensions);
+    void setArrayDimensions(UInteger[] arrayDimensions);
 
     void setIsAbstract(Boolean isAbstract);
 

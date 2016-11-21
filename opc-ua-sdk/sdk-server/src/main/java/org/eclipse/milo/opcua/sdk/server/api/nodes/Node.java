@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -56,21 +54,21 @@ public interface Node {
      *
      * @return if this attribute is present, the Description ({@link LocalizedText}).
      */
-    Optional<LocalizedText> getDescription();
+    LocalizedText getDescription();
 
     /**
      * See OPC-UA Part 3, section 5.2.7.
      *
      * @return if this attribute is present, the WriteMask ({@link UInteger}).
      */
-    Optional<UInteger> getWriteMask();
+    UInteger getWriteMask();
 
     /**
      * See OPC-UA Part 3, section 5.2.8.
      *
      * @return if this attribute is present, the UserWriteMask ({@link UInteger}).
      */
-    Optional<UInteger> getUserWriteMask();
+    UInteger getUserWriteMask();
 
     /**
      * Set the NodeId attribute of this Node.
@@ -105,20 +103,20 @@ public interface Node {
      *
      * @param description the Description to set.
      */
-    void setDescription(Optional<LocalizedText> description);
+    void setDescription(LocalizedText description);
 
     /**
      * Set the WriteMask attribute of this Node.
      *
      * @param writeMask the WriteMask to set.
      */
-    void setWriteMask(Optional<UInteger> writeMask);
+    void setWriteMask(UInteger writeMask);
 
     /**
      * Set the UserWriteMask attribute of this Node.
      *
      * @param userWriteMask the UserWriteMask to set.
      */
-    void setUserWriteMask(Optional<UInteger> userWriteMask);
+    void setUserWriteMask(UInteger userWriteMask);
 
 }

@@ -57,7 +57,6 @@ import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_TYPE_DEFINITION_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class UaVariableNode extends UaNode implements VariableNode {
 
@@ -66,10 +65,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private volatile DataValue value = INITIAL_VALUE;
     private volatile NodeId dataType = Identifiers.BaseDataType;
     private volatile Integer valueRank = ValueRanks.Scalar;
-    private volatile Optional<UInteger[]> arrayDimensions = Optional.empty();
+    private volatile UInteger[] arrayDimensions = null;
     private volatile UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
     private volatile UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-    private volatile Optional<Double> minimumSamplingInterval = Optional.empty();
+    private volatile Double minimumSamplingInterval = 0.0;
     private volatile Boolean historizing = false;
 
     public UaVariableNode(
@@ -82,7 +81,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         setDescription(variableTypeNode.getDescription());
         setWriteMask(variableTypeNode.getWriteMask());
         setUserWriteMask(variableTypeNode.getUserWriteMask());
-        setValue(variableTypeNode.getValue().orElse(INITIAL_VALUE));
+        setValue(variableTypeNode.getValue());
         setDataType(variableTypeNode.getDataType());
         setValueRank(variableTypeNode.getValueRank());
         setArrayDimensions(variableTypeNode.getArrayDimensions());
@@ -102,16 +101,16 @@ public class UaVariableNode extends UaNode implements VariableNode {
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         DataValue value,
         NodeId dataType,
         Integer valueRank,
-        Optional<UInteger[]> arrayDimensions,
+        UInteger[] arrayDimensions,
         UByte accessLevel,
         UByte userAccessLevel,
-        Optional<Double> minimumSamplingInterval,
+        Double minimumSamplingInterval,
         boolean historizing) {
 
         super(nodeManager, nodeId, NodeClass.Variable,
@@ -143,7 +142,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    public Optional<UInteger[]> getArrayDimensions() {
+    public UInteger[] getArrayDimensions() {
         return arrayDimensions;
     }
 
@@ -158,7 +157,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    public Optional<Double> getMinimumSamplingInterval() {
+    public Double getMinimumSamplingInterval() {
         return minimumSamplingInterval;
     }
 
@@ -189,10 +188,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    public synchronized void setArrayDimensions(Optional<UInteger[]> arrayDimensions) {
+    public synchronized void setArrayDimensions(UInteger[] arrayDimensions) {
         this.arrayDimensions = arrayDimensions;
 
-        arrayDimensions.ifPresent(v -> fireAttributeChanged(AttributeId.ArrayDimensions, v));
+        fireAttributeChanged(AttributeId.ArrayDimensions, arrayDimensions);
     }
 
     @Override
@@ -210,10 +209,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    public void setMinimumSamplingInterval(Optional<Double> minimumSamplingInterval) {
+    public void setMinimumSamplingInterval(Double minimumSamplingInterval) {
         this.minimumSamplingInterval = minimumSamplingInterval;
 
-        minimumSamplingInterval.ifPresent(v -> fireAttributeChanged(AttributeId.MinimumSamplingInterval, v));
+        fireAttributeChanged(AttributeId.MinimumSamplingInterval, minimumSamplingInterval);
     }
 
     @Override
@@ -453,9 +452,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
         private NodeId nodeId;
         private QualifiedName browseName;
         private LocalizedText displayName;
-        private Optional<LocalizedText> description = Optional.empty();
-        private Optional<UInteger> writeMask = Optional.of(uint(0));
-        private Optional<UInteger> userWriteMask = Optional.of(uint(0));
+        private LocalizedText description = LocalizedText.NULL_VALUE;
+        private UInteger writeMask = UInteger.MIN;
+        private UInteger userWriteMask = UInteger.MIN;
 
         private DataValue value = new DataValue(
             Variant.NULL_VALUE, new StatusCode(StatusCodes.Uncertain_InitialValue),
@@ -464,10 +463,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
         private NodeId dataType;
         private int valueRank = ValueRanks.Scalar;
-        private Optional<UInteger[]> arrayDimensions = Optional.empty();
+        private UInteger[] arrayDimensions = null;
         private UByte accessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
         private UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
-        private Optional<Double> minimumSamplingInterval = Optional.empty();
+        private Double minimumSamplingInterval = 0.0;
         private boolean historizing = false;
 
         private final UaNodeManager nodeManager;
@@ -531,17 +530,17 @@ public class UaVariableNode extends UaNode implements VariableNode {
         }
 
         public UaVariableNodeBuilder setDescription(LocalizedText description) {
-            this.description = Optional.of(description);
+            this.description = description;
             return this;
         }
 
         public UaVariableNodeBuilder setWriteMask(UInteger writeMask) {
-            this.writeMask = Optional.of(writeMask);
+            this.writeMask = writeMask;
             return this;
         }
 
         public UaVariableNodeBuilder setUserWriteMask(UInteger userWriteMask) {
-            this.userWriteMask = Optional.of(userWriteMask);
+            this.userWriteMask = userWriteMask;
             return this;
         }
 
@@ -561,7 +560,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         }
 
         public UaVariableNodeBuilder setArrayDimensions(UInteger[] arrayDimensions) {
-            this.arrayDimensions = Optional.of(arrayDimensions);
+            this.arrayDimensions = arrayDimensions;
             return this;
         }
 
@@ -576,7 +575,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         }
 
         public UaVariableNodeBuilder setMinimumSamplingInterval(Double minimumSamplingInterval) {
-            this.minimumSamplingInterval = Optional.of(minimumSamplingInterval);
+            this.minimumSamplingInterval = minimumSamplingInterval;
             return this;
         }
 

@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
@@ -33,19 +31,19 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
     private volatile Boolean isAbstract;
     private volatile Boolean symmetric;
-    private volatile Optional<LocalizedText> inverseName;
+    private volatile LocalizedText inverseName;
 
     public UaReferenceTypeNode(
         UaNodeManager nodeManager,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         Boolean isAbstract,
         Boolean symmetric,
-        Optional<LocalizedText> inverseName) {
+        LocalizedText inverseName) {
 
         super(nodeManager, nodeId, NodeClass.ReferenceType,
             browseName, displayName, description, writeMask, userWriteMask);
@@ -67,7 +65,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Override
-    public Optional<LocalizedText> getInverseName() {
+    public LocalizedText getInverseName() {
         return inverseName;
     }
 
@@ -86,10 +84,10 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Override
-    public synchronized void setInverseName(Optional<LocalizedText> inverseName) {
+    public synchronized void setInverseName(LocalizedText inverseName) {
         this.inverseName = inverseName;
 
-        inverseName.ifPresent(v -> fireAttributeChanged(AttributeId.InverseName, v));
+        fireAttributeChanged(AttributeId.InverseName, inverseName);
     }
 
     @UaOptional("NodeVersion")

@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.core.model;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -29,8 +27,8 @@ public interface Property<T> {
 
     Class<T> getJavaType();
 
-    default Optional<UInteger[]> getArrayDimensions() {
-        return Optional.empty();
+    default UInteger[] getArrayDimensions() {
+        return null;
     }
 
 }
