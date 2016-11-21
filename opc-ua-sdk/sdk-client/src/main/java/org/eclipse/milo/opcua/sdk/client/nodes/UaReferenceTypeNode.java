@@ -13,13 +13,11 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -45,16 +43,8 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Override
-    public CompletableFuture<Optional<LocalizedText>> getInverseName() {
-        return readInverseName().thenApply(v -> {
-            StatusCode statusCode = v.getStatusCode();
-
-            if (statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
-                return Optional.empty();
-            } else {
-                return Optional.ofNullable((LocalizedText) v.getValue().getValue());
-            }
-        });
+    public CompletableFuture<LocalizedText> getInverseName() {
+        return readInverseName().thenApply(v -> (LocalizedText) v.getValue().getValue());
     }
 
     @Override

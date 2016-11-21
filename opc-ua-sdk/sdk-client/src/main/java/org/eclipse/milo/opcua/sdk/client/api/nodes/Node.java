@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.nodes;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -71,7 +70,7 @@ public interface Node {
      *
      * @return the Description attribute, if present.
      */
-    CompletableFuture<Optional<LocalizedText>> getDescription();
+    CompletableFuture<LocalizedText> getDescription();
 
     /**
      * Get the WriteMask attribute.
@@ -80,7 +79,7 @@ public interface Node {
      *
      * @return the WriteMask attribute, if present.
      */
-    CompletableFuture<Optional<UInteger>> getWriteMask();
+    CompletableFuture<UInteger> getWriteMask();
 
     /**
      * Get the WriteMask attribute.
@@ -89,7 +88,7 @@ public interface Node {
      *
      * @return the WriteMask attribute, if present.
      */
-    CompletableFuture<Optional<UInteger>> getUserWriteMask();
+    CompletableFuture<UInteger> getUserWriteMask();
 
     /**
      * Set the NodeId attribute.

@@ -131,16 +131,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    public CompletableFuture<Optional<UInteger[]>> getArrayDimensions() {
-        return readArrayDimensions().thenApply(v -> {
-            StatusCode statusCode = v.getStatusCode();
-
-            if (statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
-                return Optional.empty();
-            } else {
-                return Optional.ofNullable((UInteger[]) v.getValue().getValue());
-            }
-        });
+    public CompletableFuture<UInteger[]> getArrayDimensions() {
+        return readArrayDimensions().thenApply(v -> (UInteger[]) v.getValue().getValue());
     }
 
     @Override
@@ -154,16 +146,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    public CompletableFuture<Optional<Double>> getMinimumSamplingInterval() {
-        return readMinimumSamplingInterval().thenApply(v -> {
-            StatusCode statusCode = v.getStatusCode();
-
-            if (statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
-                return Optional.empty();
-            } else {
-                return Optional.ofNullable((Double) v.getValue().getValue());
-            }
-        });
+    public CompletableFuture<Double> getMinimumSamplingInterval() {
+        return readMinimumSamplingInterval().thenApply(v -> (Double) v.getValue().getValue());
     }
 
     @Override

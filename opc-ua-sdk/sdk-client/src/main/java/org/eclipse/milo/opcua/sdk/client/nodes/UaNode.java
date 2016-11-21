@@ -187,42 +187,18 @@ public abstract class UaNode implements Node {
     }
 
     @Override
-    public CompletableFuture<Optional<LocalizedText>> getDescription() {
-        return readDescription().thenApply(v -> {
-            StatusCode statusCode = v.getStatusCode();
-
-            if (statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
-                return Optional.empty();
-            } else {
-                return Optional.ofNullable((LocalizedText) v.getValue().getValue());
-            }
-        });
+    public CompletableFuture<LocalizedText> getDescription() {
+        return readDescription().thenApply(v -> (LocalizedText) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<Optional<UInteger>> getWriteMask() {
-        return readWriteMask().thenApply(v -> {
-            StatusCode statusCode = v.getStatusCode();
-
-            if (statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
-                return Optional.empty();
-            } else {
-                return Optional.ofNullable((UInteger) v.getValue().getValue());
-            }
-        });
+    public CompletableFuture<UInteger> getWriteMask() {
+        return readWriteMask().thenApply(v -> (UInteger) v.getValue().getValue());
     }
 
     @Override
-    public CompletableFuture<Optional<UInteger>> getUserWriteMask() {
-        return readUserWriteMask().thenApply(v -> {
-            StatusCode statusCode = v.getStatusCode();
-
-            if (statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
-                return Optional.empty();
-            } else {
-                return Optional.ofNullable((UInteger) v.getValue().getValue());
-            }
-        });
+    public CompletableFuture<UInteger> getUserWriteMask() {
+        return readUserWriteMask().thenApply(v -> (UInteger) v.getValue().getValue());
     }
 
     @Override
