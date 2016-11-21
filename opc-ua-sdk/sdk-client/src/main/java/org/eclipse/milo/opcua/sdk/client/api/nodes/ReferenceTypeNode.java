@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.nodes;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -47,7 +46,7 @@ public interface ReferenceTypeNode extends Node {
      *
      * @return the InverseName attribute.
      */
-    CompletableFuture<Optional<LocalizedText>> getInverseName();
+    CompletableFuture<LocalizedText> getInverseName();
 
     /**
      * Set the IsAbstract attribute.
