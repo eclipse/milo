@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
@@ -51,19 +49,13 @@ public interface GetSetBase {
                 return dv(getDisplayName(context, node));
 
             case Description:
-                return getDescription(context, node)
-                    .map(AttributeUtil::dv)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return dv(getDescription(context, node));
 
             case WriteMask:
-                return getWriteMask(context, node)
-                    .map(AttributeUtil::dv)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return dv(getWriteMask(context, node));
 
             case UserWriteMask:
-                return getUserWriteMask(context, node)
-                    .map(AttributeUtil::dv)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return dv(getUserWriteMask(context, node));
 
             default:
                 throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
@@ -120,15 +112,15 @@ public interface GetSetBase {
         return node.getDisplayName();
     }
 
-    default Optional<LocalizedText> getDescription(AttributeContext context, Node node) throws UaException {
+    default LocalizedText getDescription(AttributeContext context, Node node) throws UaException {
         return node.getDescription();
     }
 
-    default Optional<UInteger> getWriteMask(AttributeContext context, Node node) throws UaException {
+    default UInteger getWriteMask(AttributeContext context, Node node) throws UaException {
         return node.getWriteMask();
     }
 
-    default Optional<UInteger> getUserWriteMask(AttributeContext context, Node node) throws UaException {
+    default UInteger getUserWriteMask(AttributeContext context, Node node) throws UaException {
         return node.getUserWriteMask();
     }
 
@@ -149,15 +141,15 @@ public interface GetSetBase {
     }
 
     default void setDescription(AttributeContext context, Node node, LocalizedText description) throws UaException {
-        node.setDescription(Optional.ofNullable(description));
+        node.setDescription(description);
     }
 
     default void setWriteMask(AttributeContext context, Node node, UInteger writeMask) throws UaException {
-        node.setWriteMask(Optional.ofNullable(writeMask));
+        node.setWriteMask(writeMask);
     }
 
     default void setUserWriteMask(AttributeContext context, Node node, UInteger userWriteMask) throws UaException {
-        node.setUserWriteMask(Optional.ofNullable(userWriteMask));
+        node.setUserWriteMask(userWriteMask);
     }
 
 }

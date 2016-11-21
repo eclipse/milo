@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
@@ -27,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaObjectNode(typeName = "0:ShelvedStateMachineType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:ShelvedStateMachineType")
 public class ShelvedStateMachineNode extends FiniteStateMachineNode implements ShelvedStateMachineType {
 
     public ShelvedStateMachineNode(
@@ -35,9 +34,9 @@ public class ShelvedStateMachineNode extends FiniteStateMachineNode implements S
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         UByte eventNotifier) {
 
         super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);

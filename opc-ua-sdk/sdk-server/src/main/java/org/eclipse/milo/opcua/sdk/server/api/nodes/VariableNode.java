@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -28,13 +26,13 @@ public interface VariableNode extends Node {
 
     Integer getValueRank();
 
-    Optional<UInteger[]> getArrayDimensions();
+    UInteger[] getArrayDimensions();
 
     UByte getAccessLevel();
 
     UByte getUserAccessLevel();
 
-    Optional<Double> getMinimumSamplingInterval();
+    Double getMinimumSamplingInterval();
 
     Boolean getHistorizing();
 
@@ -54,13 +52,13 @@ public interface VariableNode extends Node {
 
     void setValueRank(Integer valueRank);
 
-    void setArrayDimensions(Optional<UInteger[]> arrayDimensions);
+    void setArrayDimensions(UInteger[] arrayDimensions);
 
     void setAccessLevel(UByte accessLevel);
 
     void setUserAccessLevel(UByte userAccessLevel);
 
-    void setMinimumSamplingInterval(Optional<Double> minimumSamplingInterval);
+    void setMinimumSamplingInterval(Double minimumSamplingInterval);
 
     void setHistorizing(Boolean historizing);
 

@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.SessionDiagnosticsVariableNode;
@@ -33,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
-@UaObjectNode(typeName = "0:SessionDiagnosticsObjectType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:SessionDiagnosticsObjectType")
 public class SessionDiagnosticsObjectNode extends BaseObjectNode implements SessionDiagnosticsObjectType {
 
     public SessionDiagnosticsObjectNode(
@@ -41,9 +40,9 @@ public class SessionDiagnosticsObjectNode extends BaseObjectNode implements Sess
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         UByte eventNotifier) {
 
         super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);

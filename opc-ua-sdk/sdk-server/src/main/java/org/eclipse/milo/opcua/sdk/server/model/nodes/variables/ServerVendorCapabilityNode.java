@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.ServerVendorCapabilityType;
@@ -41,16 +39,16 @@ public class ServerVendorCapabilityNode extends BaseDataVariableNode implements 
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         DataValue value,
         NodeId dataType,
         Integer valueRank,
-        Optional<UInteger[]> arrayDimensions,
+        UInteger[] arrayDimensions,
         UByte accessLevel,
         UByte userAccessLevel,
-        Optional<Double> minimumSamplingInterval,
+        Double minimumSamplingInterval,
         boolean historizing) {
 
         super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask,

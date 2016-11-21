@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.NamespacesType;
@@ -25,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaObjectNode(typeName = "0:NamespacesType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:NamespacesType")
 public class NamespacesNode extends BaseObjectNode implements NamespacesType {
 
     public NamespacesNode(
@@ -33,9 +32,9 @@ public class NamespacesNode extends BaseObjectNode implements NamespacesType {
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         UByte eventNotifier) {
 
         super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);

@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
@@ -46,9 +44,7 @@ public interface GetSetVariableNode extends GetSetBase {
                 return dv(getValueRank(context, node));
 
             case ArrayDimensions:
-                return getArrayDimensions(context, node)
-                    .map(AttributeUtil::dv)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return dv(getArrayDimensions(context, node));
 
             case AccessLevel:
                 return dv(getAccessLevel(context, node));
@@ -57,9 +53,7 @@ public interface GetSetVariableNode extends GetSetBase {
                 return dv(getUserAccessLevel(context, node));
 
             case MinimumSamplingInterval:
-                return getMinimumSamplingInterval(context, node)
-                    .map(AttributeUtil::dv)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return dv(getMinimumSamplingInterval(context, node));
 
             case Historizing:
                 return dv(getHistorizing(context, node));
@@ -118,7 +112,7 @@ public interface GetSetVariableNode extends GetSetBase {
         return node.getValueRank();
     }
 
-    default Optional<UInteger[]> getArrayDimensions(AttributeContext context, VariableNode node) throws UaException {
+    default UInteger[] getArrayDimensions(AttributeContext context, VariableNode node) throws UaException {
         return node.getArrayDimensions();
     }
 
@@ -130,7 +124,7 @@ public interface GetSetVariableNode extends GetSetBase {
         return node.getUserAccessLevel();
     }
 
-    default Optional<Double> getMinimumSamplingInterval(
+    default Double getMinimumSamplingInterval(
         AttributeContext context, VariableNode node) throws UaException {
 
         return node.getMinimumSamplingInterval();
@@ -157,7 +151,7 @@ public interface GetSetVariableNode extends GetSetBase {
     default void setArrayDimensions(
         AttributeContext context, VariableNode node, UInteger[] arrayDimensions) throws UaException {
 
-        node.setArrayDimensions(Optional.ofNullable(arrayDimensions));
+        node.setArrayDimensions(arrayDimensions);
     }
 
     default void setAccessLevel(AttributeContext context, VariableNode node, UByte accessLevel) throws UaException {
@@ -173,7 +167,7 @@ public interface GetSetVariableNode extends GetSetBase {
     default void setMinimumSamplingInterval(
         AttributeContext context, VariableNode node, Double minimumSamplingInterval) throws UaException {
 
-        node.setMinimumSamplingInterval(Optional.ofNullable(minimumSamplingInterval));
+        node.setMinimumSamplingInterval(minimumSamplingInterval);
     }
 
     default void setHistorizing(

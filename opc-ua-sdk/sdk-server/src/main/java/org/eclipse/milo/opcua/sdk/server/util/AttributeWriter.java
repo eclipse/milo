@@ -128,11 +128,10 @@ public class AttributeWriter {
             if (valueRank == null) valueRank = 0;
 
             if (valueRank > 0) {
-                Optional<UInteger[]> arrayDimensions = Optional.ofNullable(
-                    extract(
-                        node.getAttribute(
-                            context,
-                            AttributeId.ArrayDimensions))
+                UInteger[] arrayDimensions = extract(
+                    node.getAttribute(
+                        context,
+                        AttributeId.ArrayDimensions)
                 );
 
                 validateArrayType(valueRank, arrayDimensions, value);
@@ -237,7 +236,7 @@ public class AttributeWriter {
 
     static void validateArrayType(
         Integer valueRank,
-        Optional<UInteger[]> arrayDimensionsOpt,
+        UInteger[] arrayDimensions,
         DataValue value) throws UaException {
 
         Variant variant = value.getValue();
@@ -286,12 +285,12 @@ public class AttributeWriter {
                     throw new UaException(StatusCodes.Bad_TypeMismatch);
                 }
 
-                int[] nodeDimensions = arrayDimensionsOpt.map(uia -> {
-                    int[] arrayDimensions = new int[uia.length];
+                int[] nodeDimensions = Optional.ofNullable(arrayDimensions).map(uia -> {
+                    int[] dims = new int[uia.length];
                     for (int i = 0; i < uia.length; i++) {
-                        arrayDimensions[i] = uia[i].intValue();
+                        dims[i] = uia[i].intValue();
                     }
-                    return arrayDimensions;
+                    return dims;
                 }).orElse(new int[0]);
 
                 if (nodeDimensions.length > 0) {

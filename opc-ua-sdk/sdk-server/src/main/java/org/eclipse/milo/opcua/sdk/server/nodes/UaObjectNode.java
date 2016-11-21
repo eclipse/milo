@@ -51,7 +51,6 @@ import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_TYPE_DEFINITION_PRED
 import static org.eclipse.milo.opcua.sdk.core.Reference.ORGANIZES_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class UaObjectNode extends UaNode implements ObjectNode {
 
@@ -71,9 +70,9 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         UByte eventNotifier) {
 
         super(nodeManager, nodeId, NodeClass.Object,
@@ -255,9 +254,9 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         private NodeId nodeId;
         private QualifiedName browseName;
         private LocalizedText displayName;
-        private Optional<LocalizedText> description = Optional.empty();
-        private Optional<UInteger> writeMask = Optional.of(uint(0));
-        private Optional<UInteger> userWriteMask = Optional.of(uint(0));
+        private LocalizedText description = LocalizedText.NULL_VALUE;
+        private UInteger writeMask = UInteger.MIN;
+        private UInteger userWriteMask = UInteger.MIN;
         private UByte eventNotifier = ubyte(0);
 
         private final UaNodeManager nodeManager;
@@ -328,17 +327,17 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         }
 
         public UaObjectNodeBuilder setDescription(LocalizedText description) {
-            this.description = Optional.of(description);
+            this.description = description;
             return this;
         }
 
         public UaObjectNodeBuilder setWriteMask(UInteger writeMask) {
-            this.writeMask = Optional.of(writeMask);
+            this.writeMask = writeMask;
             return this;
         }
 
         public UaObjectNodeBuilder setUserWriteMask(UInteger userWriteMask) {
-            this.userWriteMask = Optional.of(userWriteMask);
+            this.userWriteMask = userWriteMask;
             return this;
         }
 

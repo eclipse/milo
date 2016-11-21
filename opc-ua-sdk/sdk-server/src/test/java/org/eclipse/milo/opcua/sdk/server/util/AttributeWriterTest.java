@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.util;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -59,7 +58,7 @@ public class AttributeWriterTest {
     public void testByteStringToUByteArray() throws UaException {
         testWriteConversion(new Variant(ByteString.of("foo".getBytes())), Identifiers.Byte, node -> {
             node.setValueRank(ValueRanks.OneDimension);
-            node.setArrayDimensions(Optional.of(new UInteger[]{uint(0)}));
+            node.setArrayDimensions(new UInteger[]{uint(0)});
         });
     }
 
