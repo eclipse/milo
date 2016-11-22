@@ -33,7 +33,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
 
     @Override
     public CompletableFuture<Boolean> getIsAbstract() {
-        return readIsAbstract().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readIsAbstract());
     }
 
     @Override

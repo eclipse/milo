@@ -34,27 +34,27 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 
     @Override
     public CompletableFuture<Object> getValue() {
-        return readValue().thenApply(v -> v.getValue().getValue());
+        return getAttributeOrFail(readValue());
     }
 
     @Override
     public CompletableFuture<NodeId> getDataType() {
-        return readDataType().thenApply(v -> (NodeId) v.getValue().getValue());
+        return getAttributeOrFail(readDataType());
     }
 
     @Override
     public CompletableFuture<Integer> getValueRank() {
-        return readValueRank().thenApply(v -> (Integer) v.getValue().getValue());
+        return getAttributeOrFail(readValueRank());
     }
 
     @Override
     public CompletableFuture<UInteger[]> getArrayDimensions() {
-        return readArrayDimensions().thenApply(v -> (UInteger[]) v.getValue().getValue());
+        return getAttributeOrFail(readArrayDimensions());
     }
 
     @Override
     public CompletableFuture<Boolean> getIsAbstract() {
-        return readIsAbstract().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readIsAbstract());
     }
 
     @Override

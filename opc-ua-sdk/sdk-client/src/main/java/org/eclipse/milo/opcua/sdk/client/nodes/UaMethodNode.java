@@ -33,12 +33,12 @@ public class UaMethodNode extends UaNode implements MethodNode {
 
     @Override
     public CompletableFuture<Boolean> getExecutable() {
-        return readExecutable().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readExecutable());
     }
 
     @Override
     public CompletableFuture<Boolean> getUserExecutable() {
-        return readUserExecutable().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readUserExecutable());
     }
 
     @Override
