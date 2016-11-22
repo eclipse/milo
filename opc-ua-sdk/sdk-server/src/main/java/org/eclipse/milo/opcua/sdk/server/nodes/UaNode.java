@@ -23,7 +23,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
@@ -428,7 +430,16 @@ public abstract class UaNode implements ServerNode {
         }
     }
 
-    public void setAttributeDelegate(AttributeDelegate attributeDelegate) {
+    /**
+     * Set the {@link AttributeDelegate} for this node.
+     * <p>
+     * Shall be non-null. To revert from a custom delegate to default behavior set {@link AttributeDelegate#DEFAULT}.
+     *
+     * @param attributeDelegate the {@link AttributeDelegate}.
+     */
+    public void setAttributeDelegate(@Nonnull AttributeDelegate attributeDelegate) {
+        Preconditions.checkNotNull(attributeDelegate);
+
         this.attributeDelegate.set(attributeDelegate);
     }
 
