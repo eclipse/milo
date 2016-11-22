@@ -34,12 +34,12 @@ public class UaViewNode extends UaNode implements ViewNode {
 
     @Override
     public CompletableFuture<Boolean> getContainsNoLoops() {
-        return readContainsNoLoops().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readContainsNoLoops());
     }
 
     @Override
     public CompletableFuture<UByte> getEventNotifier() {
-        return readEventNotifier().thenApply(v -> (UByte) v.getValue().getValue());
+        return getAttributeOrFail(readEventNotifier());
     }
 
     @Override

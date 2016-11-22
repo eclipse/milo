@@ -117,42 +117,42 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
     @Override
     public CompletableFuture<Object> getValue() {
-        return readValue().thenApply(v -> v.getValue().getValue());
+        return getAttributeOrFail(readValue());
     }
 
     @Override
     public CompletableFuture<NodeId> getDataType() {
-        return readDataType().thenApply(v -> (NodeId) v.getValue().getValue());
+        return getAttributeOrFail(readDataType());
     }
 
     @Override
     public CompletableFuture<Integer> getValueRank() {
-        return readValueRank().thenApply(v -> (Integer) v.getValue().getValue());
+        return getAttributeOrFail(readValueRank());
     }
 
     @Override
     public CompletableFuture<UInteger[]> getArrayDimensions() {
-        return readArrayDimensions().thenApply(v -> (UInteger[]) v.getValue().getValue());
+        return getAttributeOrFail(readArrayDimensions());
     }
 
     @Override
     public CompletableFuture<UByte> getAccessLevel() {
-        return readAccessLevel().thenApply(v -> (UByte) v.getValue().getValue());
+        return getAttributeOrFail(readAccessLevel());
     }
 
     @Override
     public CompletableFuture<UByte> getUserAccessLevel() {
-        return readUserAccessLevel().thenApply(v -> (UByte) v.getValue().getValue());
+        return getAttributeOrFail(readUserAccessLevel());
     }
 
     @Override
     public CompletableFuture<Double> getMinimumSamplingInterval() {
-        return readMinimumSamplingInterval().thenApply(v -> (Double) v.getValue().getValue());
+        return getAttributeOrFail(readMinimumSamplingInterval());
     }
 
     @Override
     public CompletableFuture<Boolean> getHistorizing() {
-        return readHistorizing().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readHistorizing());
     }
 
     @Override
