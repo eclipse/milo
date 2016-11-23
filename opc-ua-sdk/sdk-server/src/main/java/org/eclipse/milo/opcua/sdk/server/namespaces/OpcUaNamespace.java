@@ -41,7 +41,6 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.DerivedVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
@@ -103,7 +102,7 @@ public class OpcUaNamespace implements Namespace {
 
     @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaNode node = nodeMap.get(nodeId);
+        org.eclipse.milo.opcua.sdk.server.nodes.ServerNode node = nodeMap.get(nodeId);
 
         if (node != null) {
             return CompletableFuture.completedFuture(node.getReferences());
@@ -124,7 +123,7 @@ public class OpcUaNamespace implements Namespace {
         for (ReadValueId id : readValueIds) {
             DataValue value;
 
-            UaNode node = nodeMap.get(id.getNodeId());
+            org.eclipse.milo.opcua.sdk.server.nodes.ServerNode node = nodeMap.get(id.getNodeId());
 
             if (node != null) {
                 value = node.readAttribute(
@@ -207,7 +206,7 @@ public class OpcUaNamespace implements Namespace {
                              ExpandedNodeId targetNodeId,
                              NodeClass targetNodeClass) throws UaException {
 
-        UaNode node = nodeMap.get(sourceNodeId);
+        org.eclipse.milo.opcua.sdk.server.nodes.ServerNode node = nodeMap.get(sourceNodeId);
 
         if (node != null) {
             Reference reference = new Reference(

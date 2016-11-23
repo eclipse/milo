@@ -13,10 +13,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
@@ -31,6 +34,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 public interface ServerNode extends Node {
+
+    void addReference(Reference reference);
+
+    default void addReferences(Collection<Reference> c) {
+        c.forEach(this::addReference);
+    }
+
+    void removeReference(Reference reference);
+
+    default void removeReferences(Collection<Reference> c) {
+        c.forEach(this::removeReference);
+    }
+
+    ImmutableList<Reference> getReferences();
 
     /**
      * Read the specified attribute.

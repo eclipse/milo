@@ -139,7 +139,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     public Optional<Node> getDescriptionNode() {
-        Optional<UaNode> node = getReferences().stream()
+        Optional<ServerNode> node = getReferences().stream()
             .filter(HAS_DESCRIPTION_PREDICATE)
             .findFirst()
             .flatMap(r -> getNode(r.getTargetNodeId()));

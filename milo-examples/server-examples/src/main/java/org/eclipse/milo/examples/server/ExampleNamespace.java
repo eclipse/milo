@@ -33,9 +33,9 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
@@ -486,7 +486,7 @@ public class ExampleNamespace implements Namespace {
 
     @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaNode node = server.getNodeMap().get(nodeId);
+        ServerNode node = server.getNodeMap().get(nodeId);
 
         if (node != null) {
             return CompletableFuture.completedFuture(node.getReferences());
@@ -505,7 +505,7 @@ public class ExampleNamespace implements Namespace {
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId readValueId : readValueIds) {
-            UaNode node = server.getNodeMap().get(readValueId.getNodeId());
+            ServerNode node = server.getNodeMap().get(readValueId.getNodeId());
 
             if (node != null) {
                 DataValue value = node.readAttribute(
@@ -529,7 +529,7 @@ public class ExampleNamespace implements Namespace {
         List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
 
         for (WriteValue writeValue : writeValues) {
-            UaNode node = server.getNodeMap().get(writeValue.getNodeId());
+            ServerNode node = server.getNodeMap().get(writeValue.getNodeId());
 
             if (node != null) {
                 try {
@@ -581,7 +581,7 @@ public class ExampleNamespace implements Namespace {
 
     @Override
     public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
-        Optional<UaNode> node = server.getNodeMap().getNode(methodId);
+        Optional<ServerNode> node = server.getNodeMap().getNode(methodId);
 
         return node.flatMap(n -> {
             if (n instanceof UaMethodNode) {

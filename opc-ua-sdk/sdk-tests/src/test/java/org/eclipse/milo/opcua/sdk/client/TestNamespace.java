@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -122,7 +123,7 @@ public class TestNamespace implements Namespace {
 
     @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaNode node = nodeManager.get(nodeId);
+        ServerNode node = nodeManager.get(nodeId);
 
         if (node != null) {
             return CompletableFuture.completedFuture(node.getReferences());
@@ -138,7 +139,7 @@ public class TestNamespace implements Namespace {
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId id : readValueIds) {
-            UaNode node = nodeManager.get(id.getNodeId());
+            ServerNode node = nodeManager.get(id.getNodeId());
 
             if (node != null) {
                 DataValue value = node.readAttribute(
@@ -170,7 +171,7 @@ public class TestNamespace implements Namespace {
 
         for (WriteValue writeValue : writeValues) {
             try {
-                UaNode node = nodeManager.getNode(writeValue.getNodeId())
+                ServerNode node = nodeManager.getNode(writeValue.getNodeId())
                     .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
                 node.writeAttribute(
@@ -217,7 +218,7 @@ public class TestNamespace implements Namespace {
 
     @Override
     public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
-        UaNode node = nodeManager.get(methodId);
+        ServerNode node = nodeManager.get(methodId);
 
         if (node instanceof UaMethodNode) {
             return ((UaMethodNode) node).getInvocationHandler();

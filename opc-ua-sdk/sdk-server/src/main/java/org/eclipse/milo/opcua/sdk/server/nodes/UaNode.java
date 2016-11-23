@@ -195,11 +195,11 @@ public abstract class UaNode implements ServerNode {
         return nodeMap;
     }
 
-    protected Optional<UaNode> getNode(NodeId nodeId) {
+    protected Optional<ServerNode> getNode(NodeId nodeId) {
         return nodeMap.getNode(nodeId);
     }
 
-    protected Optional<UaNode> getNode(ExpandedNodeId nodeId) {
+    protected Optional<ServerNode> getNode(ExpandedNodeId nodeId) {
         return nodeMap.getNode(nodeId);
     }
 
@@ -246,12 +246,12 @@ public abstract class UaNode implements ServerNode {
 
         ExpandedNodeId expanded = getNodeId().expanded();
 
-        List<UaNode> referencedNodes = getReferences().stream()
+        List<ServerNode> referencedNodes = getReferences().stream()
             .filter(Reference::isForward)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
 
-        for (UaNode node : referencedNodes) {
+        for (ServerNode node : referencedNodes) {
             List<Reference> inverseReferences = node.getReferences().stream()
                 .filter(Reference::isInverse)
                 .filter(r -> r.getTargetNodeId().equals(expanded))

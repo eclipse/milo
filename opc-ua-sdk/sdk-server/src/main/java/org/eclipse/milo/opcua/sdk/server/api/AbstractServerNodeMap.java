@@ -17,12 +17,13 @@ import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.ForwardingConcurrentMap;
 import com.google.common.collect.MapMaker;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public abstract class AbstractServerNodeMap extends ForwardingConcurrentMap<NodeId, UaNode> implements ServerNodeMap {
+public abstract class AbstractServerNodeMap
+    extends ForwardingConcurrentMap<NodeId, ServerNode> implements ServerNodeMap {
 
-    private final ConcurrentMap<NodeId, UaNode> nodeMap;
+    private final ConcurrentMap<NodeId, ServerNode> nodeMap;
 
     public AbstractServerNodeMap() {
         MapMaker mapMaker = new MapMaker();
@@ -30,12 +31,12 @@ public abstract class AbstractServerNodeMap extends ForwardingConcurrentMap<Node
         nodeMap = makeNodeMap(mapMaker);
     }
 
-    protected ConcurrentMap<NodeId, UaNode> makeNodeMap(MapMaker mapMaker) {
+    protected ConcurrentMap<NodeId, ServerNode> makeNodeMap(MapMaker mapMaker) {
         return mapMaker.makeMap();
     }
 
     @Override
-    protected final ConcurrentMap<NodeId, UaNode> delegate() {
+    protected final ConcurrentMap<NodeId, ServerNode> delegate() {
         return nodeMap;
     }
 

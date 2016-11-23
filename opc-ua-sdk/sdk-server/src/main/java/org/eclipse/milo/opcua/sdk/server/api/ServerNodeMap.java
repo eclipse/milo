@@ -17,11 +17,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public interface ServerNodeMap extends ConcurrentMap<NodeId, UaNode> {
+public interface ServerNodeMap extends ConcurrentMap<NodeId, ServerNode> {
 
     /**
      * Add a {@link UaNode} to this {@link ServerNodeMap}.
@@ -33,7 +34,7 @@ public interface ServerNodeMap extends ConcurrentMap<NodeId, UaNode> {
      *
      * @param node the {@link UaNode} to add.
      */
-    default void addNode(UaNode node) {
+    default void addNode(ServerNode node) {
         put(node.getNodeId(), node);
     }
 
@@ -55,49 +56,49 @@ public interface ServerNodeMap extends ConcurrentMap<NodeId, UaNode> {
      * Check if a {@link UaNode} exists in this {@link ServerNodeMap}.
      *
      * @param node the {@link UaNode} in question.
-     * @return {@code true} if this {@link ServerNodeMap} contains the {@link UaNode}.
+     * @return {@code true} if this {@link ServerNodeMap} contains the {@link ServerNode}.
      */
-    default boolean containsNode(UaNode node) {
+    default boolean containsNode(ServerNode node) {
         return containsNodeId(node.getNodeId());
     }
 
     /**
-     * Check if a {@link UaNode} identified by {@link NodeId} exists in this {@link ServerNodeMap}.
+     * Check if a {@link ServerNode} identified by {@link NodeId} exists in this {@link ServerNodeMap}.
      *
      * @param nodeId the {@link NodeId} of the {@link UaNode} in question.
-     * @return {@code true} if this {@link ServerNodeMap} contains the {@link UaNode} identified by {@code nodeId}.
+     * @return {@code true} if this {@link ServerNodeMap} contains the {@link ServerNode} identified by {@code nodeId}.
      */
     default boolean containsNodeId(NodeId nodeId) {
         return containsKey(nodeId);
     }
 
     /**
-     * Get the {@link UaNode} identified by the provided {@link NodeId}, if it exists.
+     * Get the {@link ServerNode} identified by the provided {@link NodeId}, if it exists.
      *
      * @param nodeId the {@link NodeId} of the {@link UaNode}.
      * @return an {@link Optional} containing the {@link UaNode}, if present.
      */
-    default Optional<UaNode> getNode(NodeId nodeId) {
+    default Optional<ServerNode> getNode(NodeId nodeId) {
         return Optional.ofNullable(get(nodeId));
     }
 
     /**
-     * Get the {@link UaNode} identified by the provided {@link ExpandedNodeId}, if it exists.
+     * Get the {@link ServerNode} identified by the provided {@link ExpandedNodeId}, if it exists.
      *
      * @param nodeId the {@link ExpandedNodeId} of the {@link UaNode}.
      * @return an {@link Optional} containing the {@link UaNode}, if present.
      */
-    default Optional<UaNode> getNode(ExpandedNodeId nodeId) {
+    default Optional<ServerNode> getNode(ExpandedNodeId nodeId) {
         return nodeId.local().flatMap(this::getNode);
     }
 
     /**
-     * Remove the {@link UaNode} identified by the provided {@link NodeId}, if it exists.
+     * Remove the {@link ServerNode} identified by the provided {@link NodeId}, if it exists.
      *
      * @param nodeId the {@link NodeId} of the {@link UaNode}.
      * @return an {@link Optional} containing the {@link UaNode}, if removed.
      */
-    default Optional<UaNode> removeNode(NodeId nodeId) {
+    default Optional<ServerNode> removeNode(NodeId nodeId) {
         return Optional.ofNullable(remove(nodeId));
     }
 
