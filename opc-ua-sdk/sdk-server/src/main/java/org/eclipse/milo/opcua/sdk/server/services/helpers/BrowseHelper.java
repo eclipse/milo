@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
@@ -89,15 +90,18 @@ public class BrowseHelper {
     }
 
     public static CompletableFuture<BrowseResult> browse(
+        AccessContext context,
         OpcUaServer server,
         ViewDescription view,
         UInteger maxReferencesPerNode,
         BrowseDescription browseDescription) {
 
         Browse browse = new Browse(
+            context,
             server,
             maxReferencesPerNode,
-            browseDescription);
+            browseDescription
+        );
 
         server.getExecutorService().execute(browse);
 
@@ -108,14 +112,17 @@ public class BrowseHelper {
 
         private final CompletableFuture<BrowseResult> future = new CompletableFuture<>();
 
+        private final AccessContext context;
         private final OpcUaServer server;
         private final UInteger maxReferencesPerNode;
         private final BrowseDescription browseDescription;
 
-        private Browse(OpcUaServer server,
+        private Browse(AccessContext context,
+                       OpcUaServer server,
                        UInteger maxReferencesPerNode,
                        BrowseDescription browseDescription) {
 
+            this.context = context;
             this.browseDescription = browseDescription;
             this.maxReferencesPerNode = maxReferencesPerNode;
             this.server = server;
@@ -131,7 +138,7 @@ public class BrowseHelper {
             Namespace namespace = namespaceManager.getNamespace(browseDescription.getNodeId().getNamespaceIndex());
 
             CompletableFuture<List<Reference>> referencesFuture =
-                namespace.getReferences(browseDescription.getNodeId());
+                namespace.getReferences(context, browseDescription.getNodeId());
 
             referencesFuture.whenComplete((references, ex) -> {
                 if (references != null) {
@@ -294,7 +301,7 @@ public class BrowseHelper {
         private CompletableFuture<ExpandedNodeId> getTypeDefinition(NodeId nodeId) {
             Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
 
-            return namespace.getReferences(nodeId).thenApply(references ->
+            return namespace.getReferences(context, nodeId).thenApply(references ->
                 references.stream()
                     .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId()))
                     .findFirst()

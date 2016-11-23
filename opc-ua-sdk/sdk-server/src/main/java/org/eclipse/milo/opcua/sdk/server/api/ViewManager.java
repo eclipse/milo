@@ -41,7 +41,8 @@ public interface ViewManager {
         OpcUaServer server = context.getServer();
 
         List<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream()
-            .map(browseDescription -> BrowseHelper.browse(server, view, maxReferencesPerNode, browseDescription))
+            .map(browseDescription ->
+                BrowseHelper.browse(context, server, view, maxReferencesPerNode, browseDescription))
             .collect(toList());
 
         FutureUtils.sequence(futures).thenAccept(context::complete);
@@ -49,15 +50,19 @@ public interface ViewManager {
 
     /**
      * If the node identified by {@code nodeId} exists return all {@link Reference}s.
+     * <p>
+     * The {@link AccessContext} can be ignored unless the server wishes to impose some restriction upon which users
+     * can browse which nodes. Note that this only obscures what is returned in the browse; nothing prevents a client
+     * from addressing a {@link NodeId} in other service requests, whether they browsed it or not.
      *
-     * @param nodeId the {@link NodeId} identifying the node.
+     * @param context the {@link AccessContext} this request is being made under.
+     * @param nodeId  the {@link NodeId} identifying the node.
      * @return a {@link CompletableFuture} containing the {@link Reference}s. If the node is unknown, complete the
      * future exceptionally.
      */
-    CompletableFuture<List<Reference>> getReferences(NodeId nodeId);
+    CompletableFuture<List<Reference>> getReferences(AccessContext context, NodeId nodeId);
 
-
-    final class BrowseContext extends OperationContext<BrowseDescription, BrowseResult> {
+    final class BrowseContext extends OperationContext<BrowseDescription, BrowseResult> implements AccessContext {
         public BrowseContext(OpcUaServer server,
                              @Nullable Session session,
                              DiagnosticsContext<BrowseDescription> diagnosticsContext) {

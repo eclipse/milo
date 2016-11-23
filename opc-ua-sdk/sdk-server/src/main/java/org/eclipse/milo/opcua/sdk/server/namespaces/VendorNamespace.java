@@ -23,6 +23,7 @@ import com.sun.management.OperatingSystemMXBean;
 import com.sun.management.UnixOperatingSystemMXBean;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
@@ -79,7 +80,7 @@ public class VendorNamespace implements Namespace {
     }
 
     @Override
-    public CompletableFuture<List<Reference>> getReferences(NodeId nodeId) {
+    public CompletableFuture<List<Reference>> getReferences(AccessContext context, NodeId nodeId) {
         UaNode node = nodeManager.get(nodeId);
 
         if (node != null) {

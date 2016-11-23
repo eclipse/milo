@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -47,7 +48,7 @@ public class NoOpNamespace implements Namespace {
     }
 
     @Override
-    public CompletableFuture<List<Reference>> getReferences(NodeId nodeId) {
+    public CompletableFuture<List<Reference>> getReferences(AccessContext context, NodeId nodeId) {
         CompletableFuture<List<Reference>> f = new CompletableFuture<>();
         f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
         return f;
