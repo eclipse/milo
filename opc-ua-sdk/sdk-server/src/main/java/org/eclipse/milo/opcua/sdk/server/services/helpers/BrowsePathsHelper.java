@@ -170,7 +170,7 @@ public class BrowsePathsHelper {
 
         Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
 
-        CompletableFuture<List<Reference>> future = namespace.getReferences(context, nodeId);
+        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -207,7 +207,7 @@ public class BrowsePathsHelper {
 
         Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
 
-        CompletableFuture<List<Reference>> future = namespace.getReferences(context, nodeId);
+        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()

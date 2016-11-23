@@ -280,7 +280,7 @@ public class ExampleNamespace implements Namespace {
     }
 
     @Override
-    public CompletableFuture<List<Reference>> getReferences(AccessContext context, NodeId nodeId) {
+    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
         UaNode node = server.getNodeManager().get(nodeId);
 
         if (node != null) {
