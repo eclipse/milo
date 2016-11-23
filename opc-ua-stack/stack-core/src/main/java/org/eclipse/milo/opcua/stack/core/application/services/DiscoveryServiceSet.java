@@ -15,16 +15,16 @@ package org.eclipse.milo.opcua.stack.core.application.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Response;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
 
 public interface DiscoveryServiceSet {
 
