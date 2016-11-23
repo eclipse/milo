@@ -128,7 +128,7 @@ public class OpcUaNamespace implements Namespace {
             if (node != null) {
                 value = node.readAttribute(
                     new AttributeContext(context),
-                    id.getAttributeId().intValue(),
+                    id.getAttributeId(),
                     timestamps,
                     id.getIndexRange()
                 );

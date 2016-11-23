@@ -35,18 +35,41 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 public interface ServerNode extends Node {
 
+    /**
+     * Add a {@link Reference} to this node.
+     *
+     * @param reference the {@link Reference} to add.
+     */
     void addReference(Reference reference);
 
+    /**
+     * Add {@link Reference}s to this node.
+     *
+     * @param c the {@link Reference}s to add.
+     */
     default void addReferences(Collection<Reference> c) {
         c.forEach(this::addReference);
     }
 
+    /**
+     * Remove a {@link Reference} from this node.
+     *
+     * @param reference to remove.
+     */
     void removeReference(Reference reference);
 
+    /**
+     * Remove {@link Reference}s from this node.
+     *
+     * @param c the {@link Reference}s to remove.
+     */
     default void removeReferences(Collection<Reference> c) {
         c.forEach(this::removeReference);
     }
 
+    /**
+     * @return this node's {@link Reference}s.
+     */
     ImmutableList<Reference> getReferences();
 
     /**
@@ -59,19 +82,6 @@ public interface ServerNode extends Node {
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(AttributeContext context, UInteger attribute) {
-        return readAttribute(context, attribute.intValue());
-    }
-
-    /**
-     * Read the specified attribute.
-     * <p>
-     * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
-     * will be returned.
-     *
-     * @param attribute the id of the attribute to read.
-     * @return the value of the specified attribute.
-     */
-    default DataValue readAttribute(AttributeContext context, int attribute) {
         return readAttribute(context, attribute, null, null);
     }
 
@@ -88,29 +98,13 @@ public interface ServerNode extends Node {
      */
     default DataValue readAttribute(
         AttributeContext context,
-        int attribute,
+        UInteger attribute,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange) {
 
         return AttributeId.from(attribute)
             .map(attributeId -> readAttribute(context, attributeId, timestamps, indexRange))
             .orElse(new DataValue(StatusCodes.Bad_AttributeIdInvalid));
-    }
-
-    /**
-     * Read the specified attribute.
-     * <p>
-     * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
-     * will be returned.
-     *
-     * @param attributeId the id of the attribute to read.
-     * @return the value of the specified attribute.
-     */
-    default DataValue readAttribute(
-        AttributeContext context,
-        AttributeId attributeId) {
-
-        return readAttribute(context, attributeId, null, null);
     }
 
     /**
@@ -145,24 +139,6 @@ public interface ServerNode extends Node {
     default void writeAttribute(
         AttributeContext context,
         UInteger attribute,
-        DataValue value,
-        String indexRange) throws UaException {
-
-        writeAttribute(context, attribute.intValue(), value, indexRange);
-    }
-
-    /**
-     * Write to the specified attribute.
-     *
-     * @param context    the {@link NamespaceManager}.
-     * @param attribute  the id of the attribute to write.
-     * @param value      the {@link DataValue} write.
-     * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
-     * @throws UaException if writing to the attribute fails.
-     */
-    default void writeAttribute(
-        AttributeContext context,
-        int attribute,
         DataValue value,
         String indexRange) throws UaException {
 
