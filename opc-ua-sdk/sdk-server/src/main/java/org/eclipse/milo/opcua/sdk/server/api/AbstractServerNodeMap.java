@@ -20,11 +20,11 @@ import com.google.common.collect.MapMaker;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public abstract class AbstractUaNodeManager extends ForwardingConcurrentMap<NodeId, UaNode> implements UaNodeManager {
+public abstract class AbstractServerNodeMap extends ForwardingConcurrentMap<NodeId, UaNode> implements ServerNodeMap {
 
     private final ConcurrentMap<NodeId, UaNode> nodeMap;
 
-    public AbstractUaNodeManager() {
+    public AbstractServerNodeMap() {
         MapMaker mapMaker = new MapMaker();
 
         nodeMap = makeNodeMap(mapMaker);

@@ -35,8 +35,8 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractUaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractServerNodeMap;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
@@ -80,7 +80,7 @@ public class OpcUaServer {
 
     private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
 
-    private final UaNodeManager nodeManager = new OpcUaNodeManager();
+    private final ServerNodeMap nodeMap = new OpcUaServerNodeMap();
 
     private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
 
@@ -190,8 +190,8 @@ public class OpcUaServer {
         return namespaceManager;
     }
 
-    public UaNodeManager getNodeManager() {
-        return nodeManager;
+    public ServerNodeMap getNodeMap() {
+        return nodeMap;
     }
 
     public SessionManager getSessionManager() {
@@ -308,6 +308,6 @@ public class OpcUaServer {
         return hostnames;
     }
 
-    private static class OpcUaNodeManager extends AbstractUaNodeManager {}
+    private static class OpcUaServerNodeMap extends AbstractServerNodeMap {}
 
 }

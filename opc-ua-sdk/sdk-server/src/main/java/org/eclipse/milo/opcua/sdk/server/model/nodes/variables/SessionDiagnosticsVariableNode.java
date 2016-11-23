@@ -15,7 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.SessionDiagnosticsVariableType;
@@ -35,15 +35,15 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 public class SessionDiagnosticsVariableNode extends BaseDataVariableNode implements SessionDiagnosticsVariableType {
 
     public SessionDiagnosticsVariableNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         VariableTypeNode variableTypeNode) {
 
-        super(nodeManager, nodeId, variableTypeNode);
+        super(nodeMap, nodeId, variableTypeNode);
     }
 
     public SessionDiagnosticsVariableNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -59,7 +59,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
         Double minimumSamplingInterval,
         boolean historizing) {
 
-        super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask,
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask,
             value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 

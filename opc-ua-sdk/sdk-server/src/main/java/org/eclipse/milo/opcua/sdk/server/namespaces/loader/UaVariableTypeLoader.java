@@ -14,7 +14,7 @@
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -27,22 +27,22 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaVariableTypeLoader {
 
-    private final UaNodeManager nodeManager;
+    private final ServerNodeMap nodeMap;
 
-    public UaVariableTypeLoader(UaNodeManager nodeManager) {
-        this.nodeManager = nodeManager;
+    public UaVariableTypeLoader(ServerNodeMap nodeMap) {
+        this.nodeMap = nodeMap;
     }
 
     private void buildNode0() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=62"), new QualifiedName(0, "BaseVariableType"), new LocalizedText("en", "BaseVariableType"), new LocalizedText("en", "The abstract base type for all variable nodes."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, true);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=62"), new QualifiedName(0, "BaseVariableType"), new LocalizedText("en", "BaseVariableType"), new LocalizedText("en", "The abstract base type for all variable nodes."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, true);
         node.addReference(new Reference(NodeId.parse("ns=0;i=62"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=62"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=62"), NodeId.parse("ns=0;i=35"), ExpandedNodeId.parse("svr=0;i=89"), NodeClass.Object, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode1() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=63"), new QualifiedName(0, "BaseDataVariableType"), new LocalizedText("en", "BaseDataVariableType"), new LocalizedText("en", "The type for variable that represents a process value."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=63"), new QualifiedName(0, "BaseDataVariableType"), new LocalizedText("en", "BaseDataVariableType"), new LocalizedText("en", "The type for variable that represents a process value."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=63"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=62"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=63"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=63"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=72"), NodeClass.VariableType, true));
@@ -429,11 +429,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=63"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2365"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=63"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=9002"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=63"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2380"), NodeClass.VariableType, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode2() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=68"), new QualifiedName(0, "PropertyType"), new LocalizedText("en", "PropertyType"), new LocalizedText("en", "The type for variable that represents a property of another node."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=68"), new QualifiedName(0, "PropertyType"), new LocalizedText("en", "PropertyType"), new LocalizedText("en", "The type for variable that represents a property of another node."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=68"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=62"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=68"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=104"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=68"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=105"), NodeClass.Variable, false));
@@ -1161,11 +1161,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=68"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=7614"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=68"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=8254"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=68"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=7619"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode3() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=69"), new QualifiedName(0, "DataTypeDescriptionType"), new LocalizedText("en", "DataTypeDescriptionType"), new LocalizedText("en", "The type for variable that represents the description of a data type encoding."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=12"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=69"), new QualifiedName(0, "DataTypeDescriptionType"), new LocalizedText("en", "DataTypeDescriptionType"), new LocalizedText("en", "The type for variable that represents the description of a data type encoding."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=12"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=69"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=104"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=69"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=105"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=69"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
@@ -1297,11 +1297,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=69"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12094"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=69"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=8247"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=69"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=8244"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode4() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=72"), new QualifiedName(0, "DataTypeDictionaryType"), new LocalizedText("en", "DataTypeDictionaryType"), new LocalizedText("en", "The type for variable that represents the collection of data type decriptions."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=15"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=72"), new QualifiedName(0, "DataTypeDictionaryType"), new LocalizedText("en", "DataTypeDictionaryType"), new LocalizedText("en", "The type for variable that represents the collection of data type decriptions."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=15"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=72"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=106"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=72"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=107"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=72"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
@@ -1309,11 +1309,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=72"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=107"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=72"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=72"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode5() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=8995"), new QualifiedName(0, "TwoStateVariableType"), new LocalizedText("en", "TwoStateVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=8995"), new QualifiedName(0, "TwoStateVariableType"), new LocalizedText("en", "TwoStateVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=8995"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=8996"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8995"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9000"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8995"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9001"), NodeClass.Variable, true));
@@ -1340,29 +1340,29 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8995"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=10029"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8995"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=10038"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8995"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=10047"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode6() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=9002"), new QualifiedName(0, "ConditionVariableType"), new LocalizedText("en", "ConditionVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=9002"), new QualifiedName(0, "ConditionVariableType"), new LocalizedText("en", "ConditionVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=9002"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9003"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9002"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9002"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9003"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9002"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=9020"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9002"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=9022"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9002"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=9024"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode7() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2137"), new QualifiedName(0, "ServerVendorCapabilityType"), new LocalizedText("en", "ServerVendorCapabilityType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -1, new UInteger[]{}, true);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2137"), new QualifiedName(0, "ServerVendorCapabilityType"), new LocalizedText("en", "ServerVendorCapabilityType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -1, new UInteger[]{}, true);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2137"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=11562"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2137"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode8() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2138"), new QualifiedName(0, "ServerStatusType"), new LocalizedText("en", "ServerStatusType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=862"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2138"), new QualifiedName(0, "ServerStatusType"), new LocalizedText("en", "ServerStatusType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=862"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2138"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2007"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2138"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2139"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2138"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2140"), NodeClass.Variable, true));
@@ -1378,11 +1378,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2138"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2752"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2138"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2753"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2138"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2256"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode9() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2150"), new QualifiedName(0, "ServerDiagnosticsSummaryType"), new LocalizedText("en", "ServerDiagnosticsSummaryType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=859"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2150"), new QualifiedName(0, "ServerDiagnosticsSummaryType"), new LocalizedText("en", "ServerDiagnosticsSummaryType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=859"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2150"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3095"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2150"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2021"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2150"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2151"), NodeClass.Variable, true));
@@ -1411,21 +1411,21 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2150"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2162"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2150"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2163"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2150"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2275"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode10() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2164"), new QualifiedName(0, "SamplingIntervalDiagnosticsArrayType"), new LocalizedText("en", "SamplingIntervalDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=856"), 1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2164"), new QualifiedName(0, "SamplingIntervalDiagnosticsArrayType"), new LocalizedText("en", "SamplingIntervalDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=856"), 1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2164"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2022"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2164"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12779"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2164"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2164"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12779"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2164"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2289"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode11() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2165"), new QualifiedName(0, "SamplingIntervalDiagnosticsType"), new LocalizedText("en", "SamplingIntervalDiagnosticsType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=856"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2165"), new QualifiedName(0, "SamplingIntervalDiagnosticsType"), new LocalizedText("en", "SamplingIntervalDiagnosticsType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=856"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2165"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12779"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2165"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2166"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2165"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11697"), NodeClass.Variable, true));
@@ -1436,11 +1436,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2165"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11697"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2165"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11698"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2165"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11699"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode12() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2171"), new QualifiedName(0, "SubscriptionDiagnosticsArrayType"), new LocalizedText("en", "SubscriptionDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=874"), 1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2171"), new QualifiedName(0, "SubscriptionDiagnosticsArrayType"), new LocalizedText("en", "SubscriptionDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=874"), 1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2171"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3110"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2171"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2023"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2171"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12152"), NodeClass.Variable, false));
@@ -1449,11 +1449,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2171"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2171"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12784"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2171"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2290"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode13() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2172"), new QualifiedName(0, "SubscriptionDiagnosticsType"), new LocalizedText("en", "SubscriptionDiagnosticsType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=874"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2172"), new QualifiedName(0, "SubscriptionDiagnosticsType"), new LocalizedText("en", "SubscriptionDiagnosticsType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=874"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2172"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12784"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2172"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2173"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2172"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2174"), NodeClass.Variable, true));
@@ -1518,11 +1518,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2172"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8896"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2172"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8897"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2172"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8902"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode14() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2196"), new QualifiedName(0, "SessionDiagnosticsArrayType"), new LocalizedText("en", "SessionDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=865"), 1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2196"), new QualifiedName(0, "SessionDiagnosticsArrayType"), new LocalizedText("en", "SessionDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=865"), 1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2196"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3112"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2196"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3129"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2196"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2027"), NodeClass.Variable, false));
@@ -1530,11 +1530,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2196"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2196"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12816"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2196"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3707"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode15() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2197"), new QualifiedName(0, "SessionDiagnosticsVariableType"), new LocalizedText("en", "SessionDiagnosticsVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=865"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2197"), new QualifiedName(0, "SessionDiagnosticsVariableType"), new LocalizedText("en", "SessionDiagnosticsVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=865"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2197"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12098"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2197"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2030"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2197"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12816"), NodeClass.Variable, false));
@@ -1625,11 +1625,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2197"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2242"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2197"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2730"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2197"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2731"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode16() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2243"), new QualifiedName(0, "SessionSecurityDiagnosticsArrayType"), new LocalizedText("en", "SessionSecurityDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=868"), 1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2243"), new QualifiedName(0, "SessionSecurityDiagnosticsArrayType"), new LocalizedText("en", "SessionSecurityDiagnosticsArrayType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=868"), 1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2243"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3113"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2243"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3130"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2243"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2028"), NodeClass.Variable, false));
@@ -1637,11 +1637,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2243"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2243"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12860"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2243"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3708"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode17() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2244"), new QualifiedName(0, "SessionSecurityDiagnosticsType"), new LocalizedText("en", "SessionSecurityDiagnosticsType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=868"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2244"), new QualifiedName(0, "SessionSecurityDiagnosticsType"), new LocalizedText("en", "SessionSecurityDiagnosticsType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=868"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2244"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12142"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2244"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2031"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2244"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=12860"), NodeClass.Variable, false));
@@ -1664,11 +1664,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2244"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2251"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2244"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2252"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2244"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=3058"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode18() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2365"), new QualifiedName(0, "DataItemType"), new LocalizedText("en", "DataItemType"), new LocalizedText("en", "A variable that contains live automation data."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2365"), new QualifiedName(0, "DataItemType"), new LocalizedText("en", "DataItemType"), new LocalizedText("en", "A variable that contains live automation data."), UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2365"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2366"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2365"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2367"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2365"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
@@ -1677,11 +1677,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2365"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2368"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2365"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2372"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2365"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12021"), NodeClass.VariableType, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode19() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2368"), new QualifiedName(0, "AnalogItemType"), new LocalizedText("en", "AnalogItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=26"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2368"), new QualifiedName(0, "AnalogItemType"), new LocalizedText("en", "AnalogItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=26"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2368"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2370"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2368"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2369"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2368"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2371"), NodeClass.Variable, true));
@@ -1689,38 +1689,38 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2368"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2370"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2368"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2369"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2368"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2371"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode20() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2372"), new QualifiedName(0, "DiscreteItemType"), new LocalizedText("en", "DiscreteItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, true);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2372"), new QualifiedName(0, "DiscreteItemType"), new LocalizedText("en", "DiscreteItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -2, new UInteger[]{}, true);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2372"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2365"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2372"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2373"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2372"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2376"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2372"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=11238"), NodeClass.VariableType, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode21() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2373"), new QualifiedName(0, "TwoStateDiscreteType"), new LocalizedText("en", "TwoStateDiscreteType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=1"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2373"), new QualifiedName(0, "TwoStateDiscreteType"), new LocalizedText("en", "TwoStateDiscreteType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=1"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2373"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2374"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2373"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2375"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2373"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2372"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2373"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2374"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2373"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2375"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode22() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2376"), new QualifiedName(0, "MultiStateDiscreteType"), new LocalizedText("en", "MultiStateDiscreteType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=28"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2376"), new QualifiedName(0, "MultiStateDiscreteType"), new LocalizedText("en", "MultiStateDiscreteType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=28"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2376"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2377"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2376"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2372"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2376"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2377"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode23() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2380"), new QualifiedName(0, "ProgramDiagnosticType"), new LocalizedText("en", "ProgramDiagnosticType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=894"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2380"), new QualifiedName(0, "ProgramDiagnosticType"), new LocalizedText("en", "ProgramDiagnosticType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=894"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2380"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2399"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2380"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2381"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2380"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2382"), NodeClass.Variable, true));
@@ -1743,11 +1743,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2380"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2388"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2380"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2389"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2380"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2390"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode24() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2755"), new QualifiedName(0, "StateVariableType"), new LocalizedText("en", "StateVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2755"), new QualifiedName(0, "StateVariableType"), new LocalizedText("en", "StateVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2755"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2769"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2755"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2756"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2755"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2757"), NodeClass.Variable, true));
@@ -1762,11 +1762,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2755"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2775"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2755"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2776"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2755"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=8995"), NodeClass.VariableType, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode25() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2760"), new QualifiedName(0, "FiniteStateVariableType"), new LocalizedText("en", "FiniteStateVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2760"), new QualifiedName(0, "FiniteStateVariableType"), new LocalizedText("en", "FiniteStateVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2760"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2772"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2760"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2761"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2760"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2755"), NodeClass.VariableType, false));
@@ -1774,11 +1774,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2760"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=9179"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2760"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=9456"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2760"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3830"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode26() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2762"), new QualifiedName(0, "TransitionVariableType"), new LocalizedText("en", "TransitionVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2762"), new QualifiedName(0, "TransitionVariableType"), new LocalizedText("en", "TransitionVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2762"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2770"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2762"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2763"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2762"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2764"), NodeClass.Variable, true));
@@ -1793,11 +1793,11 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2762"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11456"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2762"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2767"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2762"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2774"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode27() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=2767"), new QualifiedName(0, "FiniteTransitionVariableType"), new LocalizedText("en", "FiniteTransitionVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=2767"), new QualifiedName(0, "FiniteTransitionVariableType"), new LocalizedText("en", "FiniteTransitionVariableType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=21"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=2767"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2773"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2767"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2768"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2767"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2762"), NodeClass.VariableType, false));
@@ -1806,21 +1806,21 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2767"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=9461"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2767"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3835"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2767"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3825"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode28() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=11238"), new QualifiedName(0, "MultiStateValueDiscreteType"), new LocalizedText("en", "MultiStateValueDiscreteType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=26"), -2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=11238"), new QualifiedName(0, "MultiStateValueDiscreteType"), new LocalizedText("en", "MultiStateValueDiscreteType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=26"), -2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=11238"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11241"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11238"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11461"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11238"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=2372"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11238"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11241"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11238"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11461"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode29() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=3051"), new QualifiedName(0, "BuildInfoType"), new LocalizedText("en", "BuildInfoType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=338"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=3051"), new QualifiedName(0, "BuildInfoType"), new LocalizedText("en", "BuildInfoType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=338"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=3051"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=3077"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3051"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2142"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3051"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=3052"), NodeClass.Variable, true));
@@ -1837,21 +1837,21 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=3051"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=3056"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3051"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=3057"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3051"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=2260"), NodeClass.Variable, false));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode30() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=11487"), new QualifiedName(0, "OptionSetType"), new LocalizedText("en", "OptionSetType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=11487"), new QualifiedName(0, "OptionSetType"), new LocalizedText("en", "OptionSetType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), -1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=11487"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11488"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11487"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11701"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11487"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=63"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11487"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11488"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11487"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11701"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode31() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=12021"), new QualifiedName(0, "ArrayItemType"), new LocalizedText("en", "ArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 0, new UInteger[]{}, true);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=12021"), new QualifiedName(0, "ArrayItemType"), new LocalizedText("en", "ArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 0, new UInteger[]{}, true);
         node.addReference(new Reference(NodeId.parse("ns=0;i=12021"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12024"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12021"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12025"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12021"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12026"), NodeClass.Variable, true));
@@ -1868,37 +1868,37 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12021"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12047"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12021"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12057"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12021"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12068"), NodeClass.VariableType, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode32() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=12029"), new QualifiedName(0, "YArrayItemType"), new LocalizedText("en", "YArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=12029"), new QualifiedName(0, "YArrayItemType"), new LocalizedText("en", "YArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=12029"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12037"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12029"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12021"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12029"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12037"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode33() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=12038"), new QualifiedName(0, "XYArrayItemType"), new LocalizedText("en", "XYArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=12080"), 1, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=12038"), new QualifiedName(0, "XYArrayItemType"), new LocalizedText("en", "XYArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=12080"), 1, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=12038"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12046"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12038"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12021"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12038"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12046"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode34() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=12047"), new QualifiedName(0, "ImageItemType"), new LocalizedText("en", "ImageItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 2, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=12047"), new QualifiedName(0, "ImageItemType"), new LocalizedText("en", "ImageItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 2, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=12047"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12055"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12047"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12056"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12047"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12021"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12047"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12055"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12047"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12056"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode35() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=12057"), new QualifiedName(0, "CubeItemType"), new LocalizedText("en", "CubeItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 3, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=12057"), new QualifiedName(0, "CubeItemType"), new LocalizedText("en", "CubeItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 3, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=12057"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12065"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12057"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12066"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12057"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12067"), NodeClass.Variable, true));
@@ -1906,15 +1906,15 @@ public class UaVariableTypeLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12057"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12065"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12057"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12066"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12057"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12067"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     private void buildNode36() {
-        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeManager, NodeId.parse("ns=0;i=12068"), new QualifiedName(0, "NDimensionArrayItemType"), new LocalizedText("en", "NDimensionArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 0, new UInteger[]{}, false);
+        UaVariableTypeNode node = new UaVariableTypeNode(this.nodeMap, NodeId.parse("ns=0;i=12068"), new QualifiedName(0, "NDimensionArrayItemType"), new LocalizedText("en", "NDimensionArrayItemType"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), new DataValue(Variant.NULL_VALUE), NodeId.parse("ns=0;i=24"), 0, new UInteger[]{}, false);
         node.addReference(new Reference(NodeId.parse("ns=0;i=12068"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12076"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12068"), NodeId.parse("ns=0;i=45"), ExpandedNodeId.parse("svr=0;i=12021"), NodeClass.VariableType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12068"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12076"), NodeClass.Variable, true));
-        this.nodeManager.addNode(node);
+        this.nodeMap.addNode(node);
     }
 
     public void buildNodes() {

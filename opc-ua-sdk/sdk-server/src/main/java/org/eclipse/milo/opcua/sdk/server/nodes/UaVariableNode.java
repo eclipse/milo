@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
@@ -72,11 +72,11 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private volatile Boolean historizing = false;
 
     public UaVariableNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         VariableTypeNode variableTypeNode) {
 
-        this(nodeManager, nodeId, variableTypeNode.getBrowseName(), variableTypeNode.getDisplayName());
+        this(nodeMap, nodeId, variableTypeNode.getBrowseName(), variableTypeNode.getDisplayName());
 
         setDescription(variableTypeNode.getDescription());
         setWriteMask(variableTypeNode.getWriteMask());
@@ -88,16 +88,16 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     public UaVariableNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName) {
 
-        super(nodeManager, nodeId, NodeClass.Variable, browseName, displayName);
+        super(nodeMap, nodeId, NodeClass.Variable, browseName, displayName);
     }
 
     public UaVariableNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -113,7 +113,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         Double minimumSamplingInterval,
         boolean historizing) {
 
-        super(nodeManager, nodeId, NodeClass.Variable,
+        super(nodeMap, nodeId, NodeClass.Variable,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.value = value;
@@ -441,8 +441,8 @@ public class UaVariableNode extends UaNode implements VariableNode {
         EUInformation.class
     );
 
-    public static UaVariableNodeBuilder builder(UaNodeManager nodeManager) {
-        return new UaVariableNodeBuilder(nodeManager);
+    public static UaVariableNodeBuilder builder(ServerNodeMap nodeMap) {
+        return new UaVariableNodeBuilder(nodeMap);
     }
 
     public static class UaVariableNodeBuilder implements Supplier<UaVariableNode> {
@@ -469,10 +469,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
         private Double minimumSamplingInterval = 0.0;
         private boolean historizing = false;
 
-        private final UaNodeManager nodeManager;
+        private final ServerNodeMap nodeMap;
 
-        public UaVariableNodeBuilder(UaNodeManager nodeManager) {
-            this.nodeManager = nodeManager;
+        public UaVariableNodeBuilder(ServerNodeMap nodeMap) {
+            this.nodeMap = nodeMap;
         }
 
         @Override
@@ -500,7 +500,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
             // TODO More validation on references.
 
             UaVariableNode node = new UaVariableNode(
-                nodeManager,
+                nodeMap,
                 nodeId, browseName, displayName,
                 description, writeMask, userWriteMask,
                 value, dataType, valueRank,

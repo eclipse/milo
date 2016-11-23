@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
@@ -57,16 +57,16 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     private volatile UByte eventNotifier = ubyte(0);
 
     public UaObjectNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName) {
 
-        super(nodeManager, nodeId, NodeClass.Object, browseName, displayName);
+        super(nodeMap, nodeId, NodeClass.Object, browseName, displayName);
     }
 
     public UaObjectNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -75,7 +75,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         UInteger userWriteMask,
         UByte eventNotifier) {
 
-        super(nodeManager, nodeId, NodeClass.Object,
+        super(nodeMap, nodeId, NodeClass.Object,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.eventNotifier = eventNotifier;
@@ -243,8 +243,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         NamingRuleType.class
     );
 
-    public static UaObjectNodeBuilder builder(UaNodeManager nodeManager) {
-        return new UaObjectNodeBuilder(nodeManager);
+    public static UaObjectNodeBuilder builder(ServerNodeMap nodeMap) {
+        return new UaObjectNodeBuilder(nodeMap);
     }
 
     public static class UaObjectNodeBuilder implements Supplier<UaObjectNode> {
@@ -259,10 +259,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         private UInteger userWriteMask = UInteger.MIN;
         private UByte eventNotifier = ubyte(0);
 
-        private final UaNodeManager nodeManager;
+        private final ServerNodeMap nodeMap;
 
-        public UaObjectNodeBuilder(UaNodeManager nodeManager) {
-            this.nodeManager = nodeManager;
+        public UaObjectNodeBuilder(ServerNodeMap nodeMap) {
+            this.nodeMap = nodeMap;
         }
 
         @Override
@@ -296,7 +296,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             // TODO More validation on references.
 
             UaObjectNode node = new UaObjectNode(
-                nodeManager,
+                nodeMap,
                 nodeId,
                 browseName,
                 displayName,

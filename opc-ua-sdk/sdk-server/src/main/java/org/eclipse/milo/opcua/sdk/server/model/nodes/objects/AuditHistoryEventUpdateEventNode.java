@@ -15,7 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.AuditHistoryEventUpdateEventType;
@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 public class AuditHistoryEventUpdateEventNode extends AuditHistoryUpdateEventNode implements AuditHistoryEventUpdateEventType {
 
     public AuditHistoryEventUpdateEventNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -41,7 +41,7 @@ public class AuditHistoryEventUpdateEventNode extends AuditHistoryUpdateEventNod
         UInteger userWriteMask,
         UByte eventNotifier) {
 
-        super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
     @Override

@@ -13,25 +13,25 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 
 public class UaNodeLoader {
 
-    private final UaNodeManager nodeManager;
+    private final ServerNodeMap nodeMap;
 
-    public UaNodeLoader(UaNodeManager nodeManager) {
-        this.nodeManager = nodeManager;
+    public UaNodeLoader(ServerNodeMap nodeMap) {
+        this.nodeMap = nodeMap;
     }
 
     public void loadNodes() throws Exception {
-        new UaDataTypeLoader(nodeManager).buildNodes();
-        new UaMethodLoader(nodeManager).buildNodes();
-        new UaObjectLoader(nodeManager).buildNodes();
-        new UaObjectTypeLoader(nodeManager).buildNodes();
-        new UaReferenceTypeLoader(nodeManager).buildNodes();
-        new UaVariableLoader(nodeManager).buildNodes();
-        new UaVariableTypeLoader(nodeManager).buildNodes();
-        new UaViewLoader(nodeManager).buildNodes();
+        new UaDataTypeLoader(nodeMap).buildNodes();
+        new UaMethodLoader(nodeMap).buildNodes();
+        new UaObjectLoader(nodeMap).buildNodes();
+        new UaObjectTypeLoader(nodeMap).buildNodes();
+        new UaReferenceTypeLoader(nodeMap).buildNodes();
+        new UaVariableLoader(nodeMap).buildNodes();
+        new UaVariableTypeLoader(nodeMap).buildNodes();
+        new UaViewLoader(nodeMap).buildNodes();
     }
 
 }

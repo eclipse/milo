@@ -15,7 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.BaseEventType;
@@ -33,7 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 public class BaseEventNode extends BaseObjectNode implements BaseEventType {
 
     public BaseEventNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -42,7 +42,7 @@ public class BaseEventNode extends BaseObjectNode implements BaseEventType {
         UInteger userWriteMask,
         UByte eventNotifier) {
 
-        super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
     @Override

@@ -21,14 +21,14 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public interface UaNodeManager extends ConcurrentMap<NodeId, UaNode> {
+public interface ServerNodeMap extends ConcurrentMap<NodeId, UaNode> {
 
     /**
-     * Add a {@link UaNode} to this {@link UaNodeManager}.
+     * Add a {@link UaNode} to this {@link ServerNodeMap}.
      * <p>
      * This method is shorthand for:
      * <pre>
-     *     {@code nodeManager.put(node.getNodeId(), node);}
+     *     {@code nodeMap.put(node.getNodeId(), node);}
      * </pre>
      *
      * @param node the {@link UaNode} to add.
@@ -52,20 +52,20 @@ public interface UaNodeManager extends ConcurrentMap<NodeId, UaNode> {
     }
 
     /**
-     * Check if a {@link UaNode} exists in this {@link UaNodeManager}.
+     * Check if a {@link UaNode} exists in this {@link ServerNodeMap}.
      *
      * @param node the {@link UaNode} in question.
-     * @return {@code true} if this {@link UaNodeManager} contains the {@link UaNode}.
+     * @return {@code true} if this {@link ServerNodeMap} contains the {@link UaNode}.
      */
     default boolean containsNode(UaNode node) {
         return containsNodeId(node.getNodeId());
     }
 
     /**
-     * Check if a {@link UaNode} identified by {@link NodeId} exists in this {@link UaNodeManager}.
+     * Check if a {@link UaNode} identified by {@link NodeId} exists in this {@link ServerNodeMap}.
      *
      * @param nodeId the {@link NodeId} of the {@link UaNode} in question.
-     * @return {@code true} if this {@link UaNodeManager} contains the {@link UaNode} identified by {@code nodeId}.
+     * @return {@code true} if this {@link ServerNodeMap} contains the {@link UaNode} identified by {@code nodeId}.
      */
     default boolean containsNodeId(NodeId nodeId) {
         return containsKey(nodeId);

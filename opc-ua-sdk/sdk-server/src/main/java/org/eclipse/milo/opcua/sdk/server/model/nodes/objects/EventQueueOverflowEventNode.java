@@ -13,7 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.EventQueueOverflowEventType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 public class EventQueueOverflowEventNode extends BaseEventNode implements EventQueueOverflowEventType {
 
     public EventQueueOverflowEventNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -34,7 +34,7 @@ public class EventQueueOverflowEventNode extends BaseEventNode implements EventQ
         UInteger userWriteMask,
         UByte eventNotifier) {
 
-        super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
 }
