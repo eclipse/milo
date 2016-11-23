@@ -138,7 +138,7 @@ public class BrowseHelper {
             Namespace namespace = namespaceManager.getNamespace(browseDescription.getNodeId().getNamespaceIndex());
 
             CompletableFuture<List<Reference>> referencesFuture =
-                namespace.getReferences(context, browseDescription.getNodeId());
+                namespace.browse(context, browseDescription.getNodeId());
 
             referencesFuture.whenComplete((references, ex) -> {
                 if (references != null) {
@@ -301,7 +301,7 @@ public class BrowseHelper {
         private CompletableFuture<ExpandedNodeId> getTypeDefinition(NodeId nodeId) {
             Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
 
-            return namespace.getReferences(context, nodeId).thenApply(references ->
+            return namespace.browse(context, nodeId).thenApply(references ->
                 references.stream()
                     .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId()))
                     .findFirst()

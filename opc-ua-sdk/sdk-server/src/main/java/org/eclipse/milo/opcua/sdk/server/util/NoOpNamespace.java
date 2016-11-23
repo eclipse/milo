@@ -48,7 +48,7 @@ public class NoOpNamespace implements Namespace {
     }
 
     @Override
-    public CompletableFuture<List<Reference>> getReferences(AccessContext context, NodeId nodeId) {
+    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
         CompletableFuture<List<Reference>> f = new CompletableFuture<>();
         f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
         return f;

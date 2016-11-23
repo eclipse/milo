@@ -60,7 +60,7 @@ public interface ViewManager {
      * @return a {@link CompletableFuture} containing the {@link Reference}s. If the node is unknown, complete the
      * future exceptionally.
      */
-    CompletableFuture<List<Reference>> getReferences(AccessContext context, NodeId nodeId);
+    CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId);
 
     final class BrowseContext extends OperationContext<BrowseDescription, BrowseResult> implements AccessContext {
         public BrowseContext(OpcUaServer server,
