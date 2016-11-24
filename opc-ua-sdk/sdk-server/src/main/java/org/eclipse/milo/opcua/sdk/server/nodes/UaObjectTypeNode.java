@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
@@ -39,9 +37,9 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         Boolean isAbstract) {
 
         super(nodeManager, nodeId, NodeClass.ObjectType,

@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
@@ -39,9 +40,9 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         boolean isAbstract) {
 
         super(nodeManager, nodeId, NodeClass.DataType,

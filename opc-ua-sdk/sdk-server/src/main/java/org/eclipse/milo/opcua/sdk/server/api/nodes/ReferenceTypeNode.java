@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 public interface ReferenceTypeNode extends Node {
@@ -23,12 +21,12 @@ public interface ReferenceTypeNode extends Node {
 
     Boolean getSymmetric();
 
-    Optional<LocalizedText> getInverseName();
+    LocalizedText getInverseName();
 
     void setIsAbstract(Boolean isAbstract);
 
     void setSymmetric(Boolean isSymmetric);
 
-    void setInverseName(Optional<LocalizedText> inverseName);
+    void setInverseName(LocalizedText inverseName);
 
 }

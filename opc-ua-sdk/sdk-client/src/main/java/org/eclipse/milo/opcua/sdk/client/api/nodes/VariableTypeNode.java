@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.nodes;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -57,7 +56,7 @@ public interface VariableTypeNode extends Node {
      *
      * @return the ArrayDimensions attribute value.
      */
-    CompletableFuture<Optional<UInteger[]>> getArrayDimensions();
+    CompletableFuture<UInteger[]> getArrayDimensions();
 
     /**
      * Get the IsAbstract attribute value.

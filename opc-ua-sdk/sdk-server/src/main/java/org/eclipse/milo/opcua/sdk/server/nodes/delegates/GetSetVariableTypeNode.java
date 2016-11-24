@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
@@ -35,8 +33,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
 
         switch (attributeId) {
             case Value:
-                return getValue(context, node)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return getValue(context, node);
 
             case DataType:
                 return dv(getDataType(context, node));
@@ -45,9 +42,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
                 return dv(getValueRank(context, node));
 
             case ArrayDimensions:
-                return getArrayDimensions(context, node)
-                    .map(AttributeUtil::dv)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return dv(getArrayDimensions(context, node));
 
             case IsAbstract:
                 return dv(getIsAbstract(context, node));
@@ -85,7 +80,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
         }
     }
 
-    default Optional<DataValue> getValue(AttributeContext context, VariableTypeNode node) throws UaException {
+    default DataValue getValue(AttributeContext context, VariableTypeNode node) throws UaException {
         return node.getValue();
     }
 
@@ -97,7 +92,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
         return node.getValueRank();
     }
 
-    default Optional<UInteger[]> getArrayDimensions(
+    default UInteger[] getArrayDimensions(
         AttributeContext context, VariableTypeNode node) throws UaException {
 
         return node.getArrayDimensions();
@@ -108,7 +103,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
     }
 
     default void setValue(AttributeContext context, VariableTypeNode node, DataValue value) throws UaException {
-        node.setValue(Optional.ofNullable(value));
+        node.setValue(value);
     }
 
     default void setDataType(AttributeContext context, VariableTypeNode node, NodeId dataType) throws UaException {
@@ -122,7 +117,7 @@ public interface GetSetVariableTypeNode extends GetSetBase {
     default void setArrayDimensions(
         AttributeContext context, VariableTypeNode node, UInteger[] arrayDimensions) throws UaException {
 
-        node.setArrayDimensions(Optional.ofNullable(arrayDimensions));
+        node.setArrayDimensions(arrayDimensions);
     }
 
     default void setIsAbstract(AttributeContext context, VariableTypeNode node, Boolean isAbstract) throws UaException {

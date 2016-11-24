@@ -13,9 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
-import java.util.Optional;
-
-import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.MaintenanceConditionClassType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -24,7 +21,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaObjectNode(typeName = "0:MaintenanceConditionClassType")
+@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:MaintenanceConditionClassType")
 public class MaintenanceConditionClassNode extends BaseConditionClassNode implements MaintenanceConditionClassType {
 
     public MaintenanceConditionClassNode(
@@ -32,9 +29,9 @@ public class MaintenanceConditionClassNode extends BaseConditionClassNode implem
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         UByte eventNotifier) {
 
         super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);

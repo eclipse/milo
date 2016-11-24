@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.nodes;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -58,7 +57,7 @@ public interface VariableNode extends Node {
      *
      * @return the ArrayDimensions attribute value, if present.
      */
-    CompletableFuture<Optional<UInteger[]>> getArrayDimensions();
+    CompletableFuture<UInteger[]> getArrayDimensions();
 
     /**
      * Get the AccessLevel attribute value.
@@ -85,7 +84,7 @@ public interface VariableNode extends Node {
      *
      * @return the MinimumSamplingInterval attribute value, if present.
      */
-    CompletableFuture<Optional<Double>> getMinimumSamplingInterval();
+    CompletableFuture<Double> getMinimumSamplingInterval();
 
     /**
      * Get the Historizing attribute value.
