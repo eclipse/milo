@@ -25,6 +25,7 @@ import com.google.common.collect.PeekingIterator;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -119,7 +120,7 @@ public class TestNamespace implements Namespace {
     }
 
     @Override
-    public CompletableFuture<List<Reference>> getReferences(NodeId nodeId) {
+    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
         UaNode node = nodeManager.get(nodeId);
 
         if (node != null) {
