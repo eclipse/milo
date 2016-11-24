@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import java.util.Optional;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
@@ -78,17 +77,17 @@ public abstract class DelegatingAttributeDelegate implements AttributeDelegate {
     }
 
     @Override
-    public Optional<LocalizedText> getDescription(AttributeContext context, Node node) throws UaException {
+    public LocalizedText getDescription(AttributeContext context, Node node) throws UaException {
         return delegate.getDescription(context, node);
     }
 
     @Override
-    public Optional<UInteger> getWriteMask(AttributeContext context, Node node) throws UaException {
+    public UInteger getWriteMask(AttributeContext context, Node node) throws UaException {
         return delegate.getWriteMask(context, node);
     }
 
     @Override
-    public Optional<UInteger> getUserWriteMask(AttributeContext context, Node node) throws UaException {
+    public UInteger getUserWriteMask(AttributeContext context, Node node) throws UaException {
         return delegate.getUserWriteMask(context, node);
     }
 
@@ -210,7 +209,7 @@ public abstract class DelegatingAttributeDelegate implements AttributeDelegate {
     }
 
     @Override
-    public Optional<LocalizedText> getInverseName(AttributeContext context, ReferenceTypeNode node) throws UaException {
+    public LocalizedText getInverseName(AttributeContext context, ReferenceTypeNode node) throws UaException {
         return delegate.getInverseName(context, node);
     }
 
@@ -251,7 +250,7 @@ public abstract class DelegatingAttributeDelegate implements AttributeDelegate {
     }
 
     @Override
-    public Optional<UInteger[]> getArrayDimensions(AttributeContext context, VariableNode node) throws UaException {
+    public UInteger[] getArrayDimensions(AttributeContext context, VariableNode node) throws UaException {
         return delegate.getArrayDimensions(context, node);
     }
 
@@ -266,7 +265,7 @@ public abstract class DelegatingAttributeDelegate implements AttributeDelegate {
     }
 
     @Override
-    public Optional<Double> getMinimumSamplingInterval(AttributeContext context, VariableNode node) throws UaException {
+    public Double getMinimumSamplingInterval(AttributeContext context, VariableNode node) throws UaException {
         return delegate.getMinimumSamplingInterval(context, node);
     }
 
@@ -326,7 +325,7 @@ public abstract class DelegatingAttributeDelegate implements AttributeDelegate {
     // region VariableTypeNode delegates
 
     @Override
-    public Optional<DataValue> getValue(AttributeContext context, VariableTypeNode node) throws UaException {
+    public DataValue getValue(AttributeContext context, VariableTypeNode node) throws UaException {
         return delegate.getValue(context, node);
     }
 
@@ -341,7 +340,7 @@ public abstract class DelegatingAttributeDelegate implements AttributeDelegate {
     }
 
     @Override
-    public Optional<UInteger[]> getArrayDimensions(AttributeContext context, VariableTypeNode node) throws UaException {
+    public UInteger[] getArrayDimensions(AttributeContext context, VariableTypeNode node) throws UaException {
         return delegate.getArrayDimensions(context, node);
     }
 

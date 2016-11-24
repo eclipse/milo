@@ -13,13 +13,11 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -50,16 +48,8 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     @Override
-    public CompletableFuture<Optional<UInteger[]>> getArrayDimensions() {
-        return readArrayDimensions().thenApply(v -> {
-            StatusCode statusCode = v.getStatusCode();
-
-            if (statusCode.getValue() == StatusCodes.Bad_AttributeIdInvalid) {
-                return Optional.empty();
-            } else {
-                return Optional.ofNullable((UInteger[]) v.getValue().getValue());
-            }
-        });
+    public CompletableFuture<UInteger[]> getArrayDimensions() {
+        return readArrayDimensions().thenApply(v -> (UInteger[]) v.getValue().getValue());
     }
 
     @Override

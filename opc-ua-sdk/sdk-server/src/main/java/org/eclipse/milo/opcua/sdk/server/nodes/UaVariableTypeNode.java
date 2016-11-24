@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
@@ -32,10 +30,10 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 
-    private volatile Optional<DataValue> value;
+    private volatile DataValue value;
     private volatile NodeId dataType;
     private volatile Integer valueRank;
-    private volatile Optional<UInteger[]> arrayDimensions;
+    private volatile UInteger[] arrayDimensions;
     private volatile Boolean isAbstract;
 
     public UaVariableTypeNode(
@@ -43,13 +41,13 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
-        Optional<DataValue> value,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
+        DataValue value,
         NodeId dataType,
         Integer valueRank,
-        Optional<UInteger[]> arrayDimensions,
+        UInteger[] arrayDimensions,
         Boolean isAbstract) {
 
         super(nodeManager, nodeId, NodeClass.VariableType,
@@ -63,7 +61,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     @Override
-    public Optional<DataValue> getValue() {
+    public DataValue getValue() {
         return value;
     }
 
@@ -78,7 +76,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     @Override
-    public Optional<UInteger[]> getArrayDimensions() {
+    public UInteger[] getArrayDimensions() {
         return arrayDimensions;
     }
 
@@ -88,10 +86,10 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     @Override
-    public synchronized void setValue(Optional<DataValue> value) {
+    public synchronized void setValue(DataValue value) {
         this.value = value;
 
-        value.ifPresent(v -> fireAttributeChanged(AttributeId.Value, v));
+        fireAttributeChanged(AttributeId.Value, value);
     }
 
     @Override
@@ -109,10 +107,10 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     }
 
     @Override
-    public synchronized void setArrayDimensions(Optional<UInteger[]> arrayDimensions) {
+    public synchronized void setArrayDimensions(UInteger[] arrayDimensions) {
         this.arrayDimensions = arrayDimensions;
 
-        arrayDimensions.ifPresent(v -> fireAttributeChanged(AttributeId.ArrayDimensions, v));
+        fireAttributeChanged(AttributeId.ArrayDimensions, arrayDimensions);
     }
 
     @Override

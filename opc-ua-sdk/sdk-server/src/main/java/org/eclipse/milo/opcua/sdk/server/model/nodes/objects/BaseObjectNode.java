@@ -13,28 +13,26 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
-import java.util.Optional;
-
-import org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.BaseObjectType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaObjectNode(typeName = "0:BaseObjectType")
-public class BaseObjectNode extends org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode implements BaseObjectType {
+@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:BaseObjectType")
+public class BaseObjectNode extends UaObjectNode implements BaseObjectType {
 
     public BaseObjectNode(
         UaNodeManager nodeManager,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         UByte eventNotifier) {
 
         super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);

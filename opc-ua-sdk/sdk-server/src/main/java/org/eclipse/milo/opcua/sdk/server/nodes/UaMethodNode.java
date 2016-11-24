@@ -41,7 +41,6 @@ import static org.eclipse.milo.opcua.sdk.core.Reference.ALWAYS_GENERATES_EVENT_P
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_PROPERTY_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class UaMethodNode extends UaNode implements MethodNode {
 
@@ -55,9 +54,9 @@ public class UaMethodNode extends UaNode implements MethodNode {
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
-        Optional<LocalizedText> description,
-        Optional<UInteger> writeMask,
-        Optional<UInteger> userWriteMask,
+        LocalizedText description,
+        UInteger writeMask,
+        UInteger userWriteMask,
         Boolean executable,
         Boolean userExecutable) {
 
@@ -186,9 +185,9 @@ public class UaMethodNode extends UaNode implements MethodNode {
         private NodeId nodeId;
         private QualifiedName browseName;
         private LocalizedText displayName;
-        private Optional<LocalizedText> description = Optional.empty();
-        private Optional<UInteger> writeMask = Optional.of(uint(0));
-        private Optional<UInteger> userWriteMask = Optional.of(uint(0));
+        private LocalizedText description = LocalizedText.NULL_VALUE;
+        private UInteger writeMask = UInteger.MIN;
+        private UInteger userWriteMask = UInteger.MIN;
 
         private boolean executable = true;
         private boolean userExecutable = true;
@@ -238,17 +237,17 @@ public class UaMethodNode extends UaNode implements MethodNode {
         }
 
         public UaMethodNodeBuilder setDescription(LocalizedText description) {
-            this.description = Optional.of(description);
+            this.description = description;
             return this;
         }
 
         public UaMethodNodeBuilder setWriteMask(UInteger writeMask) {
-            this.writeMask = Optional.of(writeMask);
+            this.writeMask = writeMask;
             return this;
         }
 
         public UaMethodNodeBuilder setUserWriteMask(UInteger userWriteMask) {
-            this.userWriteMask = Optional.of(userWriteMask);
+            this.userWriteMask = userWriteMask;
             return this;
         }
 

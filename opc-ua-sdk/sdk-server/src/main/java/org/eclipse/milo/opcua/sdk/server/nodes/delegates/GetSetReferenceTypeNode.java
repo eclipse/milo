@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
@@ -40,9 +38,7 @@ public interface GetSetReferenceTypeNode extends GetSetBase {
                 return dv(getSymmetric(context, node));
 
             case InverseName:
-                return getInverseName(context, node)
-                    .map(AttributeUtil::dv)
-                    .orElseThrow(AttributeUtil.ATTRIBUTE_ID_INVALID_EXCEPTION);
+                return dv(getInverseName(context, node));
 
             default:
                 return getBaseAttribute(context, node, attributeId);
@@ -79,7 +75,7 @@ public interface GetSetReferenceTypeNode extends GetSetBase {
         return node.getSymmetric();
     }
 
-    default Optional<LocalizedText> getInverseName(
+    default LocalizedText getInverseName(
         AttributeContext context, ReferenceTypeNode node) throws UaException {
 
         return node.getInverseName();
@@ -100,7 +96,7 @@ public interface GetSetReferenceTypeNode extends GetSetBase {
     default void setInverseName(
         AttributeContext context, ReferenceTypeNode node, LocalizedText inverseName) throws UaException {
 
-        node.setInverseName(Optional.ofNullable(inverseName));
+        node.setInverseName(inverseName);
     }
 
 }
