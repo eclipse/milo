@@ -47,7 +47,14 @@ import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.UaStackServer;
-import org.eclipse.milo.opcua.stack.core.application.services.*;
+import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -55,7 +62,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.types.structured.*;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServerOnNetwork;
+import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
@@ -160,12 +172,14 @@ public class OpcUaServer {
     public CompletableFuture<OpcUaServer> startup() {
         return stackServer.startup().whenComplete((o, throwable) -> {
             //TODO set capabilities correct
-            sessionManager.getDiscoveryServices().addMulticastRecord(config.getHostname(), config.getBindPort(), config.getServerName(), new String[0]);
+            sessionManager.getDiscoveryServices().addMulticastRecord(config.getHostname(),
+                    config.getBindPort(), config.getServerName(), new String[0]);
         }).thenApply(ignored -> OpcUaServer.this);
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
-        sessionManager.getDiscoveryServices().removeMulticastRecord(config.getHostname(), config.getBindPort(), config.getServerName());
+        sessionManager.getDiscoveryServices().removeMulticastRecord(config.getHostname(),
+                config.getBindPort(), config.getServerName());
         return stackServer.shutdown().thenApply(ignored -> OpcUaServer.this);
     }
 

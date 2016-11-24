@@ -38,7 +38,16 @@ import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
-import org.eclipse.milo.opcua.stack.core.application.services.*;
+import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.QueryServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -46,7 +55,85 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.structured.*;
+import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Response;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
+import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -59,16 +146,15 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class SessionManager implements
-    AttributeServiceSet,
-    MethodServiceSet,
-    MonitoredItemServiceSet,
-    NodeManagementServiceSet,
-    QueryServiceSet,
-    SessionServiceSet,
-    SubscriptionServiceSet,
-    ViewServiceSet,
-    DiscoveryServiceSet
-    {
+        AttributeServiceSet,
+        MethodServiceSet,
+        MonitoredItemServiceSet,
+        NodeManagementServiceSet,
+        QueryServiceSet,
+        SessionServiceSet,
+        SubscriptionServiceSet,
+        ViewServiceSet,
+        DiscoveryServiceSet {
 
     private static final int MAX_SESSION_TIMEOUT_MS = 120000;
 
@@ -87,7 +173,7 @@ public class SessionManager implements
 
     private final OpcUaServer server;
 
-	private DiscoveryServices discoveryServices;
+    private DiscoveryServices discoveryServices;
 
     public SessionManager(OpcUaServer server) {
         this.server = server;
@@ -95,9 +181,9 @@ public class SessionManager implements
     }
 
 
-	public DiscoveryServices getDiscoveryServices() {
-		return discoveryServices;
-	}
+    public DiscoveryServices getDiscoveryServices() {
+        return discoveryServices;
+    }
 
     public List<Session> getActiveSessions() {
         return Lists.newArrayList(activeSessions.values());
@@ -771,15 +857,15 @@ public class SessionManager implements
 
     //region Discovery Services
     @Override
-    public void onFindServers(
-            ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest) throws UaException {
+    public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest)
+            throws UaException {
         // no session required
         discoveryServices.onFindServers(serviceRequest);
     }
 
     @Override
-    public void onFindServersOnNetwork(
-            ServiceRequest<FindServersOnNetworkRequest, FindServersOnNetworkResponse> serviceRequest) throws UaException {
+    public void onFindServersOnNetwork(ServiceRequest<FindServersOnNetworkRequest,
+            FindServersOnNetworkResponse> serviceRequest) throws UaException {
 
         // no session required
         discoveryServices.onFindServersOnNetwork(serviceRequest);
