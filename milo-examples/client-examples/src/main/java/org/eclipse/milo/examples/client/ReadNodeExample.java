@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.model.nodes.objects.ServerNode;
-import org.eclipse.milo.opcua.sdk.client.api.model.nodes.variables.ServerStatusNode;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.ServerNode;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.ServerStatusNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;

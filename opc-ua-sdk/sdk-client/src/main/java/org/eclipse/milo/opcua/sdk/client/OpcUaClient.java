@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.sdk.client.api.model.TypeRegistryInitializer;
+import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
