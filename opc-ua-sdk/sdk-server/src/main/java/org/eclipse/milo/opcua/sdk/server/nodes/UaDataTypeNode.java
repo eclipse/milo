@@ -13,14 +13,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -36,7 +33,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     private volatile Boolean isAbstract;
 
     public UaDataTypeNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -45,7 +42,7 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
         UInteger userWriteMask,
         boolean isAbstract) {
 
-        super(nodeManager, nodeId, NodeClass.DataType,
+        super(nodeMap, nodeId, NodeClass.DataType,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.isAbstract = isAbstract;

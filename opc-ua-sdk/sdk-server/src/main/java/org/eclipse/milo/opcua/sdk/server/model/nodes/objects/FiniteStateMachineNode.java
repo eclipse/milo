@@ -15,7 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.FiniteStateVariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.FiniteTransitionVariableNode;
@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 public class FiniteStateMachineNode extends StateMachineNode implements FiniteStateMachineType {
 
     public FiniteStateMachineNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -41,7 +41,7 @@ public class FiniteStateMachineNode extends StateMachineNode implements FiniteSt
         UInteger userWriteMask,
         UByte eventNotifier) {
 
-        super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
     @Override

@@ -13,13 +13,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 
 public abstract class DerivedVariableNode extends UaVariableNode {
 
-    public DerivedVariableNode(UaNodeManager nodeManager, UaVariableNode variableNode) {
+    public DerivedVariableNode(ServerNodeMap nodeMap, UaVariableNode variableNode) {
 
-        super(nodeManager,
+        super(nodeMap,
             variableNode.getNodeId(),
             variableNode.getBrowseName(),
             variableNode.getDisplayName(),

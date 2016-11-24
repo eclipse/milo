@@ -15,7 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.model.nodes.objects;
 
 import java.util.Optional;
 
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.objects.FileType;
@@ -31,7 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 public class FileNode extends BaseObjectNode implements FileType {
 
     public FileNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -40,7 +40,7 @@ public class FileNode extends BaseObjectNode implements FileType {
         UInteger userWriteMask,
         UByte eventNotifier) {
 
-        super(nodeManager, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
     @Override

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.util.StreamUtil;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -39,10 +39,10 @@ public class VariableNodeFactory {
     private static final Reflections NODE_REFLECTIONS =
         new Reflections("org.eclipse.milo.opcua.sdk.server.model");
 
-    private final UaNodeManager nodeManager;
+    private final ServerNodeMap nodeMap;
 
-    public VariableNodeFactory(UaNodeManager nodeManager) {
-        this.nodeManager = nodeManager;
+    public VariableNodeFactory(ServerNodeMap nodeMap) {
+        this.nodeMap = nodeMap;
     }
 
     public UaVariableNode create(
@@ -82,19 +82,19 @@ public class VariableNodeFactory {
                                              NodeId typeDefinitionId,
                                              Class<T> clazz) throws UaRuntimeException {
 
-        UaVariableTypeNode typeDefinitionNode = (UaVariableTypeNode) nodeManager.getNode(typeDefinitionId)
+        UaVariableTypeNode typeDefinitionNode = (UaVariableTypeNode) nodeMap.getNode(typeDefinitionId)
             .orElseThrow(() ->
                 new UaRuntimeException(
                     StatusCodes.Bad_NodeIdUnknown,
                     "unknown type definition: " + typeDefinitionId));
 
         UaVariableNode node = instanceFromTypeDefinition(nodeId, typeDefinitionNode);
-        nodeManager.addNode(node);
+        nodeMap.addNode(node);
 
         List<UaVariableNode> propertyDeclarations = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
             .distinct()
-            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+            .map(r -> nodeMap.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
             .map(UaVariableNode.class::cast)
             .filter(vn ->
@@ -120,12 +120,12 @@ public class VariableNodeFactory {
             instance.setArrayDimensions(declaration.getArrayDimensions());
 
             node.addProperty(instance);
-            nodeManager.addNode(instance);
+            nodeMap.addNode(instance);
         }
 
         List<UaVariableNode> variableDeclarations = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+            .map(r -> nodeMap.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
             .map(UaVariableNode.class::cast)
             .collect(Collectors.toList());
@@ -147,7 +147,7 @@ public class VariableNodeFactory {
             instance.setArrayDimensions(declaration.getArrayDimensions());
 
             node.addComponent(instance);
-            nodeManager.addNode(instance);
+            nodeMap.addNode(instance);
         }
 
         return clazz.cast(node);
@@ -166,7 +166,7 @@ public class VariableNodeFactory {
 
         try {
             Class[] uaVariableNodeCtorParams = {
-                UaNodeManager.class,
+                ServerNodeMap.class,
                 NodeId.class,
                 VariableTypeNode.class
             };
@@ -174,7 +174,7 @@ public class VariableNodeFactory {
             Constructor<?> ctor = clazz.getDeclaredConstructor(uaVariableNodeCtorParams);
 
             Object[] initArgs = {
-                nodeManager,
+                nodeMap,
                 nodeId,
                 typeDefinitionNode
             };

@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -50,7 +50,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     private volatile Boolean userExecutable;
 
     public UaMethodNode(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -60,7 +60,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
         Boolean executable,
         Boolean userExecutable) {
 
-        super(nodeManager, nodeId, NodeClass.Method,
+        super(nodeMap, nodeId, NodeClass.Method,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.executable = executable;
@@ -176,8 +176,8 @@ public class UaMethodNode extends UaNode implements MethodNode {
     /**
      * @return a new {@link UaMethodNodeBuilder}.
      */
-    public static UaMethodNodeBuilder builder(UaNodeManager nodeManager) {
-        return new UaMethodNodeBuilder(nodeManager);
+    public static UaMethodNodeBuilder builder(ServerNodeMap nodeMap) {
+        return new UaMethodNodeBuilder(nodeMap);
     }
 
     public static class UaMethodNodeBuilder implements Supplier<UaMethodNode> {
@@ -192,10 +192,10 @@ public class UaMethodNode extends UaNode implements MethodNode {
         private boolean executable = true;
         private boolean userExecutable = true;
 
-        private final UaNodeManager nodeManager;
+        private final ServerNodeMap nodeMap;
 
-        public UaMethodNodeBuilder(UaNodeManager nodeManager) {
-            this.nodeManager = nodeManager;
+        public UaMethodNodeBuilder(ServerNodeMap nodeMap) {
+            this.nodeMap = nodeMap;
         }
 
         @Override
@@ -209,7 +209,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
             return new UaMethodNode(
-                nodeManager,
+                nodeMap,
                 nodeId,
                 browseName,
                 displayName,

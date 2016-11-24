@@ -30,7 +30,7 @@ import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -52,27 +52,27 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
 
     private final Method annotatedMethod;
 
-    private final UaNodeManager nodeManager;
+    private final ServerNodeMap nodeMap;
     private final List<Argument> inputArguments;
     private final List<Argument> outputArguments;
     private final Object annotatedObject;
 
     public AnnotationBasedInvocationHandler(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         Argument[] inputArguments,
         Argument[] outputArguments,
         Object annotatedObject) {
 
-        this(nodeManager, Lists.newArrayList(inputArguments), Lists.newArrayList(outputArguments), annotatedObject);
+        this(nodeMap, Lists.newArrayList(inputArguments), Lists.newArrayList(outputArguments), annotatedObject);
     }
 
     public AnnotationBasedInvocationHandler(
-        UaNodeManager nodeManager,
+        ServerNodeMap nodeMap,
         List<Argument> inputArguments,
         List<Argument> outputArguments,
         Object annotatedObject) {
 
-        this.nodeManager = nodeManager;
+        this.nodeMap = nodeMap;
         this.inputArguments = inputArguments;
         this.outputArguments = outputArguments;
         this.annotatedObject = annotatedObject;
@@ -139,7 +139,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
                 Object[] parameters = new Object[1 + inputs.length + outputs.length];
 
                 UaObjectNode objectNode =
-                    (UaObjectNode) nodeManager.getNode(objectId)
+                    (UaObjectNode) nodeMap.getNode(objectId)
                         .orElseThrow(() -> new Exception("owner Object node found"));
 
                 InvocationContext context = new InvocationContextImpl(objectNode, future, inputArgumentResults, latch);
@@ -191,7 +191,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
 
 
     public static AnnotationBasedInvocationHandler fromAnnotatedObject(
-        UaNodeManager nodeManager, Object annotatedObject) throws Exception {
+        ServerNodeMap nodeMap, Object annotatedObject) throws Exception {
         // TODO Make this work when parameter types are not built-in types
 
         Method annotatedMethod = Arrays.stream(annotatedObject.getClass().getMethods())
@@ -258,7 +258,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
         }
 
         return new AnnotationBasedInvocationHandler(
-            nodeManager,
+            nodeMap,
             inputArguments,
             outputArguments,
             annotatedObject

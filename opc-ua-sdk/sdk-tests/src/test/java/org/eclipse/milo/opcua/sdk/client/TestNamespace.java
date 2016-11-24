@@ -30,8 +30,9 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -69,7 +70,7 @@ public class TestNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaNodeManager nodeManager;
+    private final ServerNodeMap nodeManager;
     private final UaFolderNode testFolder;
     private final SubscriptionModel subscriptionModel;
 
@@ -80,7 +81,7 @@ public class TestNamespace implements Namespace {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
 
-        nodeManager = server.getNodeManager();
+        nodeManager = server.getNodeMap();
 
         NodeId testFolderNodeId = new NodeId(namespaceIndex, "Test");
 
@@ -122,7 +123,7 @@ public class TestNamespace implements Namespace {
 
     @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaNode node = nodeManager.get(nodeId);
+        ServerNode node = nodeManager.get(nodeId);
 
         if (node != null) {
             return CompletableFuture.completedFuture(node.getReferences());
@@ -138,12 +139,12 @@ public class TestNamespace implements Namespace {
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId id : readValueIds) {
-            UaNode node = nodeManager.get(id.getNodeId());
+            ServerNode node = nodeManager.get(id.getNodeId());
 
             if (node != null) {
                 DataValue value = node.readAttribute(
                     new AttributeContext(context),
-                    id.getAttributeId().intValue(),
+                    id.getAttributeId(),
                     timestamps,
                     id.getIndexRange()
                 );
@@ -170,14 +171,15 @@ public class TestNamespace implements Namespace {
 
         for (WriteValue writeValue : writeValues) {
             try {
-                UaNode node = nodeManager.getNode(writeValue.getNodeId())
+                ServerNode node = nodeManager.getNode(writeValue.getNodeId())
                     .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
                 node.writeAttribute(
                     new AttributeContext(context),
-                    writeValue.getAttributeId().intValue(),
+                    writeValue.getAttributeId(),
                     writeValue.getValue(),
-                    writeValue.getIndexRange());
+                    writeValue.getIndexRange()
+                );
 
                 if (logger.isTraceEnabled()) {
                     Variant variant = writeValue.getValue().getValue();
@@ -217,7 +219,7 @@ public class TestNamespace implements Namespace {
 
     @Override
     public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
-        UaNode node = nodeManager.get(methodId);
+        ServerNode node = nodeManager.get(methodId);
 
         if (node instanceof UaMethodNode) {
             return ((UaMethodNode) node).getInvocationHandler();
