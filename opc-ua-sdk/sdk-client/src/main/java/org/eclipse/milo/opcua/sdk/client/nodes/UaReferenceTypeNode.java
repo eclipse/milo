@@ -34,17 +34,17 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
     @Override
     public CompletableFuture<Boolean> getIsAbstract() {
-        return readIsAbstract().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readIsAbstract());
     }
 
     @Override
     public CompletableFuture<Boolean> getSymmetric() {
-        return readSymmetric().thenApply(v -> (Boolean) v.getValue().getValue());
+        return getAttributeOrFail(readSymmetric());
     }
 
     @Override
     public CompletableFuture<LocalizedText> getInverseName() {
-        return readInverseName().thenApply(v -> (LocalizedText) v.getValue().getValue());
+        return getAttributeOrFail(readInverseName());
     }
 
     @Override

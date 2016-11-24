@@ -99,4 +99,17 @@ public class FutureUtils {
         return failedFuture(new UaException(statusCode));
     }
 
+    /**
+     * Return a {@link CompletableFuture} that has been completed exceptionally with a {@link UaException} built from
+     * {@code statusCode}.
+     *
+     * @param cause      the inner {@link Exception}.
+     * @param statusCode the status code to build the {@link UaException} with.
+     * @return a {@link CompletableFuture} that has been completed exceptionally with a {@link UaException} built from
+     * {@code statusCode}.
+     */
+    public static <T> CompletableFuture<T> failedUaFuture(Throwable cause, long statusCode) {
+        return failedFuture(new UaException(statusCode, cause));
+    }
+
 }

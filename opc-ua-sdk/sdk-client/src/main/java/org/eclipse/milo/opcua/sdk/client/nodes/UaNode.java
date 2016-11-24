@@ -52,6 +52,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.DataValue.valueOnly;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -166,39 +167,63 @@ public abstract class UaNode implements Node {
         });
     }
 
+    /**
+     * Gets the attribute of type {@code T} out of the {@link DataValue} or fails if the {@link StatusCode} was bad or
+     * a type conversion error occurred.
+     *
+     * @param readFuture the {@link CompletableFuture} providing the {@link DataValue}.
+     * @param <T>        the type of the attribute to get.
+     * @return the attribute value.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> CompletableFuture<T> getAttributeOrFail(CompletableFuture<DataValue> readFuture) {
+        return readFuture.thenCompose(value -> {
+            if (value.getStatusCode().isGood()) {
+                try {
+                    return completedFuture((T) value.getValue().getValue());
+                } catch (Throwable t) {
+                    return failedUaFuture(t, StatusCodes.Bad_TypeMismatch);
+                }
+            } else {
+                return failedUaFuture(value.getStatusCode());
+            }
+        });
+    }
+
     @Override
     public CompletableFuture<NodeId> getNodeId() {
-        return readNodeId().thenApply(v -> (NodeId) v.getValue().getValue());
+        return getAttributeOrFail(readNodeId());
     }
 
     @Override
     public CompletableFuture<NodeClass> getNodeClass() {
-        return readNodeClass().thenApply(v -> NodeClass.from((Integer) v.getValue().getValue()));
+        return this.<Integer>getAttributeOrFail(readNodeClass())
+            .thenApply(NodeClass::from);
     }
 
     @Override
     public CompletableFuture<QualifiedName> getBrowseName() {
-        return readBrowseName().thenApply(v -> (QualifiedName) v.getValue().getValue());
+        return getAttributeOrFail(readBrowseName());
     }
 
     @Override
     public CompletableFuture<LocalizedText> getDisplayName() {
-        return readDisplayName().thenApply(v -> (LocalizedText) v.getValue().getValue());
+        return getAttributeOrFail(readDisplayName());
     }
 
     @Override
     public CompletableFuture<LocalizedText> getDescription() {
-        return readDescription().thenApply(v -> (LocalizedText) v.getValue().getValue());
+        return getAttributeOrFail(readDescription());
     }
 
     @Override
     public CompletableFuture<UInteger> getWriteMask() {
-        return readWriteMask().thenApply(v -> (UInteger) v.getValue().getValue());
+        return getAttributeOrFail(readWriteMask());
     }
 
     @Override
     public CompletableFuture<UInteger> getUserWriteMask() {
-        return readUserWriteMask().thenApply(v -> (UInteger) v.getValue().getValue());
+        return getAttributeOrFail(readUserWriteMask());
     }
 
     @Override

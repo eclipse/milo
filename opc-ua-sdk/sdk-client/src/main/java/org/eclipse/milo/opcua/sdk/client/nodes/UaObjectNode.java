@@ -184,7 +184,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
     @Override
     public CompletableFuture<UByte> getEventNotifier() {
-        return readEventNotifier().thenApply(v -> (UByte) v.getValue().getValue());
+        return getAttributeOrFail(readEventNotifier());
     }
 
     @Override
