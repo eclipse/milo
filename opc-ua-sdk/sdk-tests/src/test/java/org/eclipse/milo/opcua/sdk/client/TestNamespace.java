@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -141,9 +142,11 @@ public class TestNamespace implements Namespace {
 
             if (node != null) {
                 DataValue value = node.readAttribute(
+                    new AttributeContext(context),
                     id.getAttributeId().intValue(),
                     timestamps,
-                    id.getIndexRange());
+                    id.getIndexRange()
+                );
 
                 if (logger.isTraceEnabled()) {
                     Variant variant = value.getValue();
@@ -171,7 +174,7 @@ public class TestNamespace implements Namespace {
                     .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
                 node.writeAttribute(
-                    server.getNamespaceManager(),
+                    new AttributeContext(context),
                     writeValue.getAttributeId().intValue(),
                     writeValue.getValue(),
                     writeValue.getIndexRange());
@@ -258,6 +261,7 @@ public class TestNamespace implements Namespace {
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(nodeManager)
                 .setNodeId(new NodeId(namespaceIndex, "/Static/AllProfiles/Scalar/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)

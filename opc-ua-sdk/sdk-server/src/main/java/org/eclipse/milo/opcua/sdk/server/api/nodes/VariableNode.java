@@ -62,6 +62,6 @@ public interface VariableNode extends Node {
 
     void setMinimumSamplingInterval(Optional<Double> minimumSamplingInterval);
 
-    void setHistorizing(boolean historizing);
+    void setHistorizing(Boolean historizing);
 
 }

@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaViewNode extends UaNode implements ViewNode {
 
-    private volatile boolean containsNoLoops;
+    private volatile Boolean containsNoLoops;
     private volatile UByte eventNotifier;
 
     public UaViewNode(
@@ -43,7 +43,7 @@ public class UaViewNode extends UaNode implements ViewNode {
         Optional<LocalizedText> description,
         Optional<UInteger> writeMask,
         Optional<UInteger> userWriteMask,
-        boolean containsNoLoops,
+        Boolean containsNoLoops,
         UByte eventNotifier) {
 
         super(nodeManager, nodeId, NodeClass.View,
@@ -64,7 +64,7 @@ public class UaViewNode extends UaNode implements ViewNode {
     }
 
     @Override
-    public synchronized void setContainsNoLoops(boolean containsNoLoops) {
+    public synchronized void setContainsNoLoops(Boolean containsNoLoops) {
         this.containsNoLoops = containsNoLoops;
 
         fireAttributeChanged(AttributeId.ContainsNoLoops, containsNoLoops);

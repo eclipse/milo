@@ -42,13 +42,13 @@ public interface MethodNode extends Node {
      *
      * @param executable {@code true} if the method is executable.
      */
-    void setExecutable(boolean executable);
+    void setExecutable(Boolean executable);
 
     /**
      * Set the UserExecutable attribute of this Method.
      *
      * @param userExecutable {@code true} if the method is executable, taking access rights into account.
      */
-    void setUserExecutable(boolean userExecutable);
+    void setUserExecutable(Boolean userExecutable);
 
 }

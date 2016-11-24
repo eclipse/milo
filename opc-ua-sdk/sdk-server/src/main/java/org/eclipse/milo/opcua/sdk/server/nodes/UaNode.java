@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
@@ -30,8 +33,10 @@ import org.eclipse.milo.opcua.sdk.server.api.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -49,9 +54,14 @@ public abstract class UaNode implements ServerNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UaNode.class);
 
+    private static final AttributeDelegate DEFAULT_ATTRIBUTE_DELEGATE = AttributeDelegate.DEFAULT;
+
     private final AtomicInteger refCount = new AtomicInteger(0);
 
     private final List<Reference> references = new CopyOnWriteArrayList<>();
+
+    private final AtomicReference<AttributeDelegate> attributeDelegate =
+        new AtomicReference<>(DEFAULT_ATTRIBUTE_DELEGATE);
 
     private List<WeakReference<AttributeObserver>> observers;
 
@@ -418,6 +428,32 @@ public abstract class UaNode implements ServerNode {
                 iterator.remove();
             }
         }
+    }
+
+    /**
+     * Set the {@link AttributeDelegate} for this node.
+     * <p>
+     * Shall be non-null. To revert from a custom delegate to default behavior set {@link AttributeDelegate#DEFAULT}.
+     *
+     * @param attributeDelegate the {@link AttributeDelegate}.
+     */
+    public void setAttributeDelegate(@Nonnull AttributeDelegate attributeDelegate) {
+        Preconditions.checkNotNull(attributeDelegate);
+
+        this.attributeDelegate.set(attributeDelegate);
+    }
+
+    @Override
+    public DataValue getAttribute(AttributeContext context, AttributeId attributeId) {
+        return attributeDelegate.get().getAttribute(context, this, attributeId);
+    }
+
+    @Override
+    public void setAttribute(AttributeContext context,
+                             AttributeId attributeId,
+                             DataValue value) throws UaException {
+
+        attributeDelegate.get().setAttribute(context, this, attributeId, value);
     }
 
 }

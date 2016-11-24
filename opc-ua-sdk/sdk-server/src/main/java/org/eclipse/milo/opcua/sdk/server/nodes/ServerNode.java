@@ -19,31 +19,30 @@ import javax.annotation.Nullable;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeWriter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 public interface ServerNode extends Node {
 
     /**
-     * @param attributeId the id of the attribute in question.
-     * @return {@code true} if this {@link Node} has the attribute identified by {@code attributeId}.
+     * Read the specified attribute.
+     * <p>
+     * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
+     * will be returned.
+     *
+     * @param attribute the id of the attribute to read.
+     * @return the value of the specified attribute.
      */
-    default boolean hasAttribute(int attributeId) {
-        return StatusCodes.Bad_AttributeIdInvalid != readAttribute(attributeId).getStatusCode().getValue();
-    }
-
-    /**
-     * @param attributeId the id of the attribute in question.
-     * @return {@code true} if this {@link Node} has the attribute identified by {@code attributeId}.
-     */
-    default boolean hasAttribute(UInteger attributeId) {
-        return hasAttribute(attributeId.intValue());
+    default DataValue readAttribute(AttributeContext context, UInteger attribute) {
+        return readAttribute(context, attribute.intValue());
     }
 
     /**
@@ -55,21 +54,8 @@ public interface ServerNode extends Node {
      * @param attribute the id of the attribute to read.
      * @return the value of the specified attribute.
      */
-    default DataValue readAttribute(UInteger attribute) {
-        return readAttribute(attribute.intValue());
-    }
-
-    /**
-     * Read the specified attribute.
-     * <p>
-     * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
-     * will be returned.
-     *
-     * @param attribute the id of the attribute to read.
-     * @return the value of the specified attribute.
-     */
-    default DataValue readAttribute(int attribute) {
-        return readAttribute(attribute, null, null);
+    default DataValue readAttribute(AttributeContext context, int attribute) {
+        return readAttribute(context, attribute, null, null);
     }
 
     /**
@@ -84,12 +70,13 @@ public interface ServerNode extends Node {
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(
+        AttributeContext context,
         int attribute,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange) {
 
         return AttributeId.from(attribute)
-            .map(attributeId -> readAttribute(attributeId, timestamps, indexRange))
+            .map(attributeId -> readAttribute(context, attributeId, timestamps, indexRange))
             .orElse(new DataValue(StatusCodes.Bad_AttributeIdInvalid));
     }
 
@@ -102,8 +89,11 @@ public interface ServerNode extends Node {
      * @param attributeId the id of the attribute to read.
      * @return the value of the specified attribute.
      */
-    default DataValue readAttribute(AttributeId attributeId) {
-        return readAttribute(attributeId, null, null);
+    default DataValue readAttribute(
+        AttributeContext context,
+        AttributeId attributeId) {
+
+        return readAttribute(context, attributeId, null, null);
     }
 
     /**
@@ -118,42 +108,43 @@ public interface ServerNode extends Node {
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(
+        AttributeContext context,
         AttributeId attributeId,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange) {
 
-        return AttributeReader.readAttribute(this, attributeId, timestamps, indexRange);
+        return AttributeReader.readAttribute(context, this, attributeId, timestamps, indexRange);
     }
 
     /**
      * Write to the specified attribute.
      *
-     * @param ns         the {@link NamespaceManager}.
+     * @param context    the {@link NamespaceManager}.
      * @param attribute  the id of the attribute to write.
      * @param value      the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        NamespaceManager ns,
+        AttributeContext context,
         UInteger attribute,
         DataValue value,
         String indexRange) throws UaException {
 
-        writeAttribute(ns, attribute.intValue(), value, indexRange);
+        writeAttribute(context, attribute.intValue(), value, indexRange);
     }
 
     /**
      * Write to the specified attribute.
      *
-     * @param ns         the {@link NamespaceManager}.
+     * @param context    the {@link NamespaceManager}.
      * @param attribute  the id of the attribute to write.
      * @param value      the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        NamespaceManager ns,
+        AttributeContext context,
         int attribute,
         DataValue value,
         String indexRange) throws UaException {
@@ -161,7 +152,7 @@ public interface ServerNode extends Node {
         Optional<AttributeId> attributeId = AttributeId.from(attribute);
 
         if (attributeId.isPresent()) {
-            writeAttribute(ns, attributeId.get(), value, indexRange);
+            writeAttribute(context, attributeId.get(), value, indexRange);
         } else {
             throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
         }
@@ -170,19 +161,40 @@ public interface ServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param ns          the {@link NamespaceManager}.
+     * @param context     the {@link NamespaceManager}.
      * @param attributeId the {@link AttributeId} of the attribute to write.
      * @param value       the {@link DataValue} write.
      * @param indexRange  the index range to write. Must be a parseable by {@link NumericRange}.
      * @throws UaException if writing to the attribute fails.
      */
     default void writeAttribute(
-        NamespaceManager ns,
+        AttributeContext context,
         AttributeId attributeId,
         DataValue value,
         String indexRange) throws UaException {
 
-        AttributeWriter.writeAttribute(ns, this, attributeId, value, indexRange);
+        AttributeWriter.writeAttribute(context, this, attributeId, value, indexRange);
     }
+
+    /**
+     * Get an attribute of this node, taking the {@link AttributeContext} into account and respecting any
+     * {@link AttributeDelegate} this node may have.
+     *
+     * @param context     the {@link AttributeContext} to get the attribute in.
+     * @param attributeId the {@link AttributeId} to get.
+     * @return a {@link DataValue} containing the attribute value or a {@link StatusCode} describing any failure.
+     */
+    DataValue getAttribute(AttributeContext context, AttributeId attributeId);
+
+    /**
+     * Set an attribute of this node, taking the {@link AttributeContext} into account and respecting any
+     * {@link AttributeDelegate} this node may have.
+     *
+     * @param context     the {@link AttributeContext} to set the attribute in.
+     * @param attributeId the {@link AttributeId} to set.
+     * @param value       the new {@link DataValue} to set for the attribute.
+     * @throws UaException if setting the attribute failed for any reason.
+     */
+    void setAttribute(AttributeContext context, AttributeId attributeId, DataValue value) throws UaException;
 
 }
