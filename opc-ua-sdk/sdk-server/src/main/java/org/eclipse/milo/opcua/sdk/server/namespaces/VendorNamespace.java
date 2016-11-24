@@ -155,22 +155,18 @@ public class VendorNamespace implements Namespace {
             UaObjectNode vendorServerInfo = (UaObjectNode) node;
 
             // standard Java API
-            
             addVendorInfoPlainJava(vendorServerInfo);
 
             // JMX API
-            
             addVendorInfoJmx(vendorServerInfo);
-            
+
             // com.sun API
-            
             addVendorInfoSunJmx(vendorServerInfo);
         });
-        
+
     }
-    
+
     private void addVendorInfoPlainJava(UaObjectNode vendorServerInfo) {
-        
         UaVariableNode availableProcessors = new UaVariableNode(
             nodeManager,
             new NodeId(1, "VendorServerInfo/AvailableProcessors"),
@@ -183,14 +179,14 @@ public class VendorNamespace implements Namespace {
             }
         };
         availableProcessors.setDataType(Identifiers.Int32);
-        
+
         vendorServerInfo.addComponent(availableProcessors);
     }
-    
+
     private void addVendorInfoJmx(UaObjectNode vendorServerInfo) {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
-        
+
         UaVariableNode usedMemory = new UaVariableNode(
             nodeManager,
             new NodeId(1, "VendorServerInfo/UsedMemory"),
@@ -250,7 +246,7 @@ public class VendorNamespace implements Namespace {
             }
         };
         osVersion.setDataType(Identifiers.String);
-        
+
         vendorServerInfo.addComponent(usedMemory);
         vendorServerInfo.addComponent(maxMemory);
         vendorServerInfo.addComponent(osName);
@@ -260,22 +256,22 @@ public class VendorNamespace implements Namespace {
 
     private void addVendorInfoSunJmx(UaObjectNode vendorServerInfo) {
         try {
-            com.sun.management.OperatingSystemMXBean osBean = 
-                    (com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
-            
+            com.sun.management.OperatingSystemMXBean osBean =
+                (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+
             UaVariableNode processCpuLoad = new UaVariableNode(
                 nodeManager,
                 new NodeId(1, "VendorServerInfo/ProcessCpuLoad"),
                 new QualifiedName(1, "ProcessCpuLoad"),
                 LocalizedText.english("ProcessCpuLoad")) {
-  
+
                 @Override
                 public DataValue getValue() {
                     return new DataValue(new Variant(osBean.getProcessCpuLoad() * 100d));
                 }
             };
             processCpuLoad.setDataType(Identifiers.Double);
-  
+
             UaVariableNode systemCpuLoad = new UaVariableNode(
                 nodeManager,
                 new NodeId(1, "VendorServerInfo/SystemCpuLoad"),
@@ -287,13 +283,13 @@ public class VendorNamespace implements Namespace {
                 }
             };
             systemCpuLoad.setDataType(Identifiers.Double);
-            
+
             vendorServerInfo.addComponent(processCpuLoad);
             vendorServerInfo.addComponent(systemCpuLoad);
-   
+
             if (osBean instanceof UnixOperatingSystemMXBean) {
                 UnixOperatingSystemMXBean unixBean = (UnixOperatingSystemMXBean) osBean;
-   
+
                 UaVariableNode openFileDescriptors = new UaVariableNode(
                     nodeManager,
                     new NodeId(1, "VendorServerInfo/OpenFileDescriptors"),
@@ -305,7 +301,7 @@ public class VendorNamespace implements Namespace {
                     }
                 };
                 openFileDescriptors.setDataType(Identifiers.Int64);
-   
+
                 UaVariableNode maxFileDescriptors = new UaVariableNode(
                     nodeManager,
                     new NodeId(1, "VendorServerInfo/MaxFileDescriptors"),
@@ -317,11 +313,11 @@ public class VendorNamespace implements Namespace {
                     }
                 };
                 maxFileDescriptors.setDataType(Identifiers.Int64);
-   
+
                 vendorServerInfo.addComponent(openFileDescriptors);
                 vendorServerInfo.addComponent(maxFileDescriptors);
             }
-        } catch ( Throwable e ) {
+        } catch (Throwable e) {
             // ignore
         }
     }
