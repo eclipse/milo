@@ -44,7 +44,7 @@ public enum WriteMask {
     WriteMask(1048576),
     ValueForVariableType(2097152);
 
-    public static final Set<AccessLevel> NONE = ImmutableSet.of();
+    public static final Set<WriteMask> NONE = ImmutableSet.of();
 
     private final int value;
 

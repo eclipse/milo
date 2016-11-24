@@ -31,8 +31,8 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
 
-    private volatile boolean isAbstract;
-    private volatile boolean symmetric;
+    private volatile Boolean isAbstract;
+    private volatile Boolean symmetric;
     private volatile Optional<LocalizedText> inverseName;
 
     public UaReferenceTypeNode(
@@ -43,8 +43,8 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         Optional<LocalizedText> description,
         Optional<UInteger> writeMask,
         Optional<UInteger> userWriteMask,
-        boolean isAbstract,
-        boolean symmetric,
+        Boolean isAbstract,
+        Boolean symmetric,
         Optional<LocalizedText> inverseName) {
 
         super(nodeManager, nodeId, NodeClass.ReferenceType,
@@ -72,14 +72,14 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Override
-    public synchronized void setIsAbstract(boolean isAbstract) {
+    public synchronized void setIsAbstract(Boolean isAbstract) {
         this.isAbstract = isAbstract;
 
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
     }
 
     @Override
-    public synchronized void setSymmetric(boolean symmetric) {
+    public synchronized void setSymmetric(Boolean symmetric) {
         this.symmetric = symmetric;
 
         fireAttributeChanged(AttributeId.Symmetric, symmetric);

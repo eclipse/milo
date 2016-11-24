@@ -70,7 +70,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     private volatile UByte accessLevel = Unsigned.ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
     private volatile UByte userAccessLevel = ubyte(AccessLevel.getMask(AccessLevel.CurrentRead));
     private volatile Optional<Double> minimumSamplingInterval = Optional.empty();
-    private volatile boolean historizing = false;
+    private volatile Boolean historizing = false;
 
     public UaVariableNode(
         UaNodeManager nodeManager,
@@ -217,7 +217,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Override
-    public void setHistorizing(boolean historizing) {
+    public void setHistorizing(Boolean historizing) {
         this.historizing = historizing;
 
         fireAttributeChanged(AttributeId.Historizing, historizing);

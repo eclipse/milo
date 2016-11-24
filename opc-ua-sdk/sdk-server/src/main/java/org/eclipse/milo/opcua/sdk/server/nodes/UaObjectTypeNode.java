@@ -32,7 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
-    private volatile boolean isAbstract;
+    private volatile Boolean isAbstract;
 
     public UaObjectTypeNode(
         UaNodeManager nodeManager,
@@ -42,7 +42,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         Optional<LocalizedText> description,
         Optional<UInteger> writeMask,
         Optional<UInteger> userWriteMask,
-        boolean isAbstract) {
+        Boolean isAbstract) {
 
         super(nodeManager, nodeId, NodeClass.ObjectType,
             browseName, displayName, description, writeMask, userWriteMask);
@@ -56,7 +56,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     }
 
     @Override
-    public synchronized void setIsAbstract(boolean isAbstract) {
+    public synchronized void setIsAbstract(Boolean isAbstract) {
         this.isAbstract = isAbstract;
 
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);

@@ -27,6 +27,6 @@ public interface ObjectTypeNode extends Node {
      *
      * @param isAbstract {@code true} if this
      */
-    void setIsAbstract(boolean isAbstract);
+    void setIsAbstract(Boolean isAbstract);
 
 }

@@ -21,7 +21,7 @@ public interface ViewNode extends Node {
 
     UByte getEventNotifier();
 
-    void setContainsNoLoops(boolean containsNoLoops);
+    void setContainsNoLoops(Boolean containsNoLoops);
 
     void setEventNotifier(UByte eventNotifier);
 

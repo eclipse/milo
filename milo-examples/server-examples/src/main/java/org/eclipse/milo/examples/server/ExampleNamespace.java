@@ -16,6 +16,7 @@ package org.eclipse.milo.examples.server;
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,10 +31,14 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -118,6 +123,8 @@ public class ExampleNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final Random random = new Random();
+
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -173,6 +180,9 @@ public class ExampleNamespace implements Namespace {
     private void addVariableNodes(UaFolderNode rootNode) {
         addArrayNodes(rootNode);
         addScalarNodes(rootNode);
+        addAdminReadableNodes(rootNode);
+        addAdminWritableNodes(rootNode);
+        addDynamicNodes(rootNode);
     }
 
     private void addArrayNodes(UaFolderNode rootNode) {
@@ -199,6 +209,7 @@ public class ExampleNamespace implements Namespace {
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
                 .setNodeId(new NodeId(namespaceIndex, "HelloWorld/ArrayTypes/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -208,6 +219,8 @@ public class ExampleNamespace implements Namespace {
                 .build();
 
             node.setValue(new DataValue(variant));
+
+            node.setAttributeDelegate(new ValueLoggingDelegate());
 
             server.getNodeManager().addNode(node);
             arrayTypesFolder.addOrganizes(node);
@@ -233,6 +246,7 @@ public class ExampleNamespace implements Namespace {
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
                 .setNodeId(new NodeId(namespaceIndex, "HelloWorld/ScalarTypes/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
@@ -241,8 +255,191 @@ public class ExampleNamespace implements Namespace {
 
             node.setValue(new DataValue(variant));
 
+            node.setAttributeDelegate(new ValueLoggingDelegate());
+
             server.getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
+        }
+    }
+
+    private void addAdminReadableNodes(UaFolderNode rootNode) {
+        UaFolderNode adminFolder = new UaFolderNode(
+            server.getNodeManager(),
+            new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanRead"),
+            new QualifiedName(namespaceIndex, "OnlyAdminCanRead"),
+            LocalizedText.english("OnlyAdminCanRead")
+        );
+
+        server.getNodeManager().addNode(adminFolder);
+        rootNode.addOrganizes(adminFolder);
+
+        String name = "String";
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanRead/" + name))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setDisplayName(LocalizedText.english(name))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        node.setValue(new DataValue(new Variant("shh... don't tell the lusers")));
+
+        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+            if ("admin".equals(identity)) {
+                return AccessLevel.READ_WRITE;
+            } else {
+                return AccessLevel.NONE;
+            }
+        }));
+
+        server.getNodeManager().addNode(node);
+        adminFolder.addOrganizes(node);
+    }
+
+    private void addAdminWritableNodes(UaFolderNode rootNode) {
+        UaFolderNode adminFolder = new UaFolderNode(
+            server.getNodeManager(),
+            new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanWrite"),
+            new QualifiedName(namespaceIndex, "OnlyAdminCanWrite"),
+            LocalizedText.english("OnlyAdminCanWrite")
+        );
+
+        server.getNodeManager().addNode(adminFolder);
+        rootNode.addOrganizes(adminFolder);
+
+        String name = "String";
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanWrite/" + name))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setDisplayName(LocalizedText.english(name))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        node.setValue(new DataValue(new Variant("admin was here")));
+
+        node.setAttributeDelegate(new RestrictedAccessDelegate(identity -> {
+            if ("admin".equals(identity)) {
+                return AccessLevel.READ_WRITE;
+            } else {
+                return AccessLevel.READ_ONLY;
+            }
+        }));
+
+        server.getNodeManager().addNode(node);
+        adminFolder.addOrganizes(node);
+    }
+
+    private void addDynamicNodes(UaFolderNode rootNode) {
+        UaFolderNode dynamicFolder = new UaFolderNode(
+            server.getNodeManager(),
+            new NodeId(namespaceIndex, "HelloWorld/Dynamic"),
+            new QualifiedName(namespaceIndex, "Dynamic"),
+            LocalizedText.english("Dynamic")
+        );
+
+        server.getNodeManager().addNode(dynamicFolder);
+        rootNode.addOrganizes(dynamicFolder);
+
+        // Dynamic Boolean
+        {
+            String name = "Boolean";
+            NodeId typeId = Identifiers.Boolean;
+            Variant variant = new Variant(false);
+
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/Dynamic/" + name))
+                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setDisplayName(LocalizedText.english(name))
+                .setDataType(typeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build();
+
+            node.setValue(new DataValue(variant));
+
+            AttributeDelegate delegate = AttributeDelegateChain.create(
+                new AttributeDelegate() {
+                    @Override
+                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                        return new DataValue(new Variant(random.nextBoolean()));
+                    }
+                },
+                ValueLoggingDelegate::new
+            );
+
+            node.setAttributeDelegate(delegate);
+
+            server.getNodeManager().addNode(node);
+            dynamicFolder.addOrganizes(node);
+        }
+
+        // Dynamic Int32
+        {
+            String name = "Int32";
+            NodeId typeId = Identifiers.Int32;
+            Variant variant = new Variant(0);
+
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/Dynamic/" + name))
+                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setDisplayName(LocalizedText.english(name))
+                .setDataType(typeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build();
+
+            node.setValue(new DataValue(variant));
+
+            AttributeDelegate delegate = AttributeDelegateChain.create(
+                new AttributeDelegate() {
+                    @Override
+                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                        return new DataValue(new Variant(random.nextInt()));
+                    }
+                },
+                ValueLoggingDelegate::new
+            );
+
+            node.setAttributeDelegate(delegate);
+
+            server.getNodeManager().addNode(node);
+            dynamicFolder.addOrganizes(node);
+        }
+
+        // Dynamic Double
+        {
+            String name = "Double";
+            NodeId typeId = Identifiers.Double;
+            Variant variant = new Variant(0.0);
+
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeManager())
+                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/Dynamic/" + name))
+                .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setDisplayName(LocalizedText.english(name))
+                .setDataType(typeId)
+                .setTypeDefinition(Identifiers.BaseDataVariableType)
+                .build();
+
+            node.setValue(new DataValue(variant));
+
+            AttributeDelegate delegate = AttributeDelegateChain.create(
+                new AttributeDelegate() {
+                    @Override
+                    public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                        return new DataValue(new Variant(random.nextDouble()));
+                    }
+                },
+                ValueLoggingDelegate::new
+            );
+
+            node.setAttributeDelegate(delegate);
+
+            server.getNodeManager().addNode(node);
+            dynamicFolder.addOrganizes(node);
         }
     }
 
@@ -274,6 +471,14 @@ public class ExampleNamespace implements Namespace {
                 methodNode.getNodeClass(),
                 true
             ));
+
+            methodNode.addReference(new Reference(
+                methodNode.getNodeId(),
+                Identifiers.HasComponent,
+                folderNode.getNodeId().expanded(),
+                folderNode.getNodeClass(),
+                false
+            ));
         } catch (Exception e) {
             logger.error("Error creating sqrt() method.", e);
         }
@@ -304,6 +509,7 @@ public class ExampleNamespace implements Namespace {
 
             if (node != null) {
                 DataValue value = node.readAttribute(
+                    new AttributeContext(context),
                     readValueId.getAttributeId().intValue(),
                     timestamps,
                     readValueId.getIndexRange()
@@ -328,7 +534,7 @@ public class ExampleNamespace implements Namespace {
             if (node != null) {
                 try {
                     node.writeAttribute(
-                        server.getNamespaceManager(),
+                        new AttributeContext(context),
                         writeValue.getAttributeId(),
                         writeValue.getValue(),
                         writeValue.getIndexRange()
@@ -339,7 +545,7 @@ public class ExampleNamespace implements Namespace {
                     logger.info(
                         "Wrote value {} to {} attribute of {}",
                         writeValue.getValue().getValue(),
-                        AttributeId.from(writeValue.getAttributeId()),
+                        AttributeId.from(writeValue.getAttributeId()).map(Object::toString).orElse("unknown"),
                         node.getNodeId());
                 } catch (UaException e) {
                     logger.error("Unable to write value={}", writeValue.getValue(), e);

@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.services.helpers;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -135,7 +136,9 @@ public class BrowsePathsHelper {
     private CompletableFuture<List<BrowsePathTarget>> follow(NodeId nodeId,
                                                              List<RelativePathElement> elements) {
 
-        if (elements.size() == 1) {
+        if (elements.isEmpty()) {
+            return completedFuture(Collections.emptyList());
+        } else if (elements.size() == 1) {
             return target(nodeId, elements.get(0)).thenApply(targets ->
                 targets.stream()
                     .map(n -> new BrowsePathTarget(n, UInteger.MAX))
