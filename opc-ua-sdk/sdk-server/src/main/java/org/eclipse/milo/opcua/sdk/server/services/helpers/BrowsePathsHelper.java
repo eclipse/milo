@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
@@ -57,10 +58,12 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class BrowsePathsHelper {
 
+    private final AccessContext context;
     private final OpcUaServer server;
     private final NamespaceManager namespaceManager;
 
-    public BrowsePathsHelper(OpcUaServer server, NamespaceManager namespaceManager) {
+    public BrowsePathsHelper(AccessContext context, OpcUaServer server, NamespaceManager namespaceManager) {
+        this.context = context;
         this.server = server;
         this.namespaceManager = namespaceManager;
     }
@@ -167,7 +170,7 @@ public class BrowsePathsHelper {
 
         Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
 
-        CompletableFuture<List<Reference>> future = namespace.getReferences(nodeId);
+        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -204,7 +207,7 @@ public class BrowsePathsHelper {
 
         Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
 
-        CompletableFuture<List<Reference>> future = namespace.getReferences(nodeId);
+        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()

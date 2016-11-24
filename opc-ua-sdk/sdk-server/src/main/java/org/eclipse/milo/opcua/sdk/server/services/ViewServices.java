@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -150,9 +151,16 @@ public class ViewServices implements ViewServiceSet {
         translateBrowsePathsCounter.record(service);
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
+        Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
         NamespaceManager namespaceManager = server.getNamespaceManager();
 
-        new BrowsePathsHelper(server, namespaceManager).onTranslateBrowsePaths(service);
+        BrowsePathsHelper browsePathsHelper = new BrowsePathsHelper(
+            () -> Optional.ofNullable(session),
+            server,
+            namespaceManager
+        );
+
+        browsePathsHelper.onTranslateBrowsePaths(service);
     }
 
     @Override
