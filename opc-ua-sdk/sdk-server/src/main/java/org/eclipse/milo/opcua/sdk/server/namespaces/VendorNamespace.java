@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,11 +15,11 @@ package org.eclipse.milo.opcua.sdk.server.namespaces;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.lang.management.OperatingSystemMXBean;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
-import com.sun.management.OperatingSystemMXBean;
 import com.sun.management.UnixOperatingSystemMXBean;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -49,6 +49,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
+@SuppressWarnings("restriction")
 public class VendorNamespace implements Namespace {
 
     public static final UShort NAMESPACE_INDEX = ushort(1);
@@ -153,22 +154,128 @@ public class VendorNamespace implements Namespace {
         nodeManager.getNode(Identifiers.Server_VendorServerInfo).ifPresent(node -> {
             UaObjectNode vendorServerInfo = (UaObjectNode) node;
 
-            OperatingSystemMXBean osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-            MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+            // standard Java API
+            
+            addVendorInfoPlainJava(vendorServerInfo);
 
+            // JMX API
+            
+            addVendorInfoJmx(vendorServerInfo);
+            
+            // com.sun API
+            
+            addVendorInfoSunJmx(vendorServerInfo);
+        });
+        
+    }
+    
+    private void addVendorInfoPlainJava(UaObjectNode vendorServerInfo) {
+        
+        UaVariableNode availableProcessors = new UaVariableNode(
+            nodeManager,
+            new NodeId(1, "VendorServerInfo/AvailableProcessors"),
+            new QualifiedName(1, "AvailableProcessors"),
+            LocalizedText.english("AvailableProcessors")) {
+
+            @Override
+            public DataValue getValue() {
+                return new DataValue(new Variant(Runtime.getRuntime().availableProcessors()));
+            }
+        };
+        availableProcessors.setDataType(Identifiers.Int32);
+        
+        vendorServerInfo.addComponent(availableProcessors);
+    }
+    
+    private void addVendorInfoJmx(UaObjectNode vendorServerInfo) {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+        
+        UaVariableNode usedMemory = new UaVariableNode(
+            nodeManager,
+            new NodeId(1, "VendorServerInfo/UsedMemory"),
+            new QualifiedName(1, "UsedMemory"),
+            LocalizedText.english("UsedMemory")) {
+            @Override
+            public DataValue getValue() {
+                return new DataValue(new Variant(memoryBean.getHeapMemoryUsage().getUsed() / 1000));
+            }
+        };
+        usedMemory.setDataType(Identifiers.Int64);
+
+        UaVariableNode maxMemory = new UaVariableNode(
+            nodeManager,
+            new NodeId(1, "VendorServerInfo/MaxMemory"),
+            new QualifiedName(1, "MaxMemory"),
+            LocalizedText.english("MaxMemory")) {
+            @Override
+            public DataValue getValue() {
+                return new DataValue(new Variant(memoryBean.getHeapMemoryUsage().getMax()));
+            }
+        };
+        maxMemory.setDataType(Identifiers.Int64);
+
+        UaVariableNode osName = new UaVariableNode(
+            nodeManager,
+            new NodeId(1, "VendorServerInfo/OsName"),
+            new QualifiedName(1, "OsName"),
+            LocalizedText.english("OsName")) {
+            @Override
+            public DataValue getValue() {
+                return new DataValue(new Variant(osBean.getName()));
+            }
+        };
+        osName.setDataType(Identifiers.String);
+
+        UaVariableNode osArch = new UaVariableNode(
+            nodeManager,
+            new NodeId(1, "VendorServerInfo/OsArch"),
+            new QualifiedName(1, "OsArch"),
+            LocalizedText.english("OsArch")) {
+            @Override
+            public DataValue getValue() {
+                return new DataValue(new Variant(osBean.getArch()));
+            }
+        };
+        osArch.setDataType(Identifiers.String);
+
+        UaVariableNode osVersion = new UaVariableNode(
+            nodeManager,
+            new NodeId(1, "VendorServerInfo/OsVersion"),
+            new QualifiedName(1, "OsVersion"),
+            LocalizedText.english("OsVersion")) {
+            @Override
+            public DataValue getValue() {
+                return new DataValue(new Variant(osBean.getVersion()));
+            }
+        };
+        osVersion.setDataType(Identifiers.String);
+        
+        vendorServerInfo.addComponent(usedMemory);
+        vendorServerInfo.addComponent(maxMemory);
+        vendorServerInfo.addComponent(osName);
+        vendorServerInfo.addComponent(osArch);
+        vendorServerInfo.addComponent(osVersion);
+    }
+
+    private void addVendorInfoSunJmx(UaObjectNode vendorServerInfo) {
+        try {
+            com.sun.management.OperatingSystemMXBean osBean = 
+                    (com.sun.management.OperatingSystemMXBean)ManagementFactory.getOperatingSystemMXBean();
+            
             UaVariableNode processCpuLoad = new UaVariableNode(
                 nodeManager,
                 new NodeId(1, "VendorServerInfo/ProcessCpuLoad"),
                 new QualifiedName(1, "ProcessCpuLoad"),
                 LocalizedText.english("ProcessCpuLoad")) {
-
+  
                 @Override
                 public DataValue getValue() {
                     return new DataValue(new Variant(osBean.getProcessCpuLoad() * 100d));
                 }
             };
             processCpuLoad.setDataType(Identifiers.Double);
-
+  
             UaVariableNode systemCpuLoad = new UaVariableNode(
                 nodeManager,
                 new NodeId(1, "VendorServerInfo/SystemCpuLoad"),
@@ -180,93 +287,13 @@ public class VendorNamespace implements Namespace {
                 }
             };
             systemCpuLoad.setDataType(Identifiers.Double);
-
-            UaVariableNode availableProcessors = new UaVariableNode(
-                nodeManager,
-                new NodeId(1, "VendorServerInfo/AvailableProcessors"),
-                new QualifiedName(1, "AvailableProcessors"),
-                LocalizedText.english("AvailableProcessors")) {
-
-                @Override
-                public DataValue getValue() {
-                    return new DataValue(new Variant(Runtime.getRuntime().availableProcessors()));
-                }
-            };
-            availableProcessors.setDataType(Identifiers.Int32);
-
-            UaVariableNode usedMemory = new UaVariableNode(
-                nodeManager,
-                new NodeId(1, "VendorServerInfo/UsedMemory"),
-                new QualifiedName(1, "UsedMemory"),
-                LocalizedText.english("UsedMemory")) {
-                @Override
-                public DataValue getValue() {
-                    return new DataValue(new Variant(memoryBean.getHeapMemoryUsage().getUsed() / 1000));
-                }
-            };
-            usedMemory.setDataType(Identifiers.Int64);
-
-            UaVariableNode maxMemory = new UaVariableNode(
-                nodeManager,
-                new NodeId(1, "VendorServerInfo/MaxMemory"),
-                new QualifiedName(1, "MaxMemory"),
-                LocalizedText.english("MaxMemory")) {
-                @Override
-                public DataValue getValue() {
-                    return new DataValue(new Variant(memoryBean.getHeapMemoryUsage().getMax()));
-                }
-            };
-            maxMemory.setDataType(Identifiers.Int64);
-
-            UaVariableNode osName = new UaVariableNode(
-                nodeManager,
-                new NodeId(1, "VendorServerInfo/OsName"),
-                new QualifiedName(1, "OsName"),
-                LocalizedText.english("OsName")) {
-                @Override
-                public DataValue getValue() {
-                    return new DataValue(new Variant(osBean.getName()));
-                }
-            };
-            osName.setDataType(Identifiers.String);
-
-
-            UaVariableNode osArch = new UaVariableNode(
-                nodeManager,
-                new NodeId(1, "VendorServerInfo/OsArch"),
-                new QualifiedName(1, "OsArch"),
-                LocalizedText.english("OsArch")) {
-                @Override
-                public DataValue getValue() {
-                    return new DataValue(new Variant(osBean.getArch()));
-                }
-            };
-            osArch.setDataType(Identifiers.String);
-
-            UaVariableNode osVersion = new UaVariableNode(
-                nodeManager,
-                new NodeId(1, "VendorServerInfo/OsVersion"),
-                new QualifiedName(1, "OsVersion"),
-                LocalizedText.english("OsVersion")) {
-                @Override
-                public DataValue getValue() {
-                    return new DataValue(new Variant(osBean.getVersion()));
-                }
-            };
-            osVersion.setDataType(Identifiers.String);
-
+            
             vendorServerInfo.addComponent(processCpuLoad);
             vendorServerInfo.addComponent(systemCpuLoad);
-            vendorServerInfo.addComponent(availableProcessors);
-            vendorServerInfo.addComponent(usedMemory);
-            vendorServerInfo.addComponent(maxMemory);
-            vendorServerInfo.addComponent(osName);
-            vendorServerInfo.addComponent(osArch);
-            vendorServerInfo.addComponent(osVersion);
-
+   
             if (osBean instanceof UnixOperatingSystemMXBean) {
                 UnixOperatingSystemMXBean unixBean = (UnixOperatingSystemMXBean) osBean;
-
+   
                 UaVariableNode openFileDescriptors = new UaVariableNode(
                     nodeManager,
                     new NodeId(1, "VendorServerInfo/OpenFileDescriptors"),
@@ -278,7 +305,7 @@ public class VendorNamespace implements Namespace {
                     }
                 };
                 openFileDescriptors.setDataType(Identifiers.Int64);
-
+   
                 UaVariableNode maxFileDescriptors = new UaVariableNode(
                     nodeManager,
                     new NodeId(1, "VendorServerInfo/MaxFileDescriptors"),
@@ -290,11 +317,13 @@ public class VendorNamespace implements Namespace {
                     }
                 };
                 maxFileDescriptors.setDataType(Identifiers.Int64);
-
+   
                 vendorServerInfo.addComponent(openFileDescriptors);
                 vendorServerInfo.addComponent(maxFileDescriptors);
             }
-        });
+        } catch ( Throwable e ) {
+            // ignore
+        }
     }
 
 }
