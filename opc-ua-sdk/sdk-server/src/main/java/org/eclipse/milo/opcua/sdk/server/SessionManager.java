@@ -177,7 +177,11 @@ public class SessionManager implements
 
     public SessionManager(OpcUaServer server) {
         this.server = server;
-        this.discoveryServices = new DiscoveryServices((UaTcpStackServer)server.getServer(), true);
+        if (server.getConfig().isDiscoveryServer()) {
+            this.discoveryServices = new DiscoveryServices((UaTcpStackServer) server.getServer(), true);
+        } else {
+            this.discoveryServices = null;
+        }
     }
 
 
@@ -859,15 +863,22 @@ public class SessionManager implements
     @Override
     public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest)
             throws UaException {
-        // no session required
+        // no session/authentication required
+
+        if (!server.getConfig().isDiscoveryServer()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
         discoveryServices.onFindServers(serviceRequest);
     }
 
     @Override
     public void onFindServersOnNetwork(ServiceRequest<FindServersOnNetworkRequest,
             FindServersOnNetworkResponse> serviceRequest) throws UaException {
+        // no session/authentication required
 
-        // no session required
+        if (!server.getConfig().isDiscoveryServer()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
         discoveryServices.onFindServersOnNetwork(serviceRequest);
     }
 
@@ -876,6 +887,10 @@ public class SessionManager implements
             ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) throws UaException {
 
         session(serviceRequest);
+
+        if (!server.getConfig().isDiscoveryServer()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
         discoveryServices.onGetEndpoints(serviceRequest);
     }
 
@@ -884,6 +899,10 @@ public class SessionManager implements
             ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
 
         session(serviceRequest);
+
+        if (!server.getConfig().isDiscoveryServer()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
         discoveryServices.onRegisterServer(serviceRequest);
     }
 
@@ -892,6 +911,11 @@ public class SessionManager implements
             ServiceRequest<RegisterServer2Request, RegisterServer2Response> serviceRequest) throws UaException {
 
         session(serviceRequest);
+
+        if (!server.getConfig().isDiscoveryServer()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
+
         discoveryServices.onRegisterServer2(serviceRequest);
     }
     //endregion

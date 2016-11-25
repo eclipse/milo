@@ -52,6 +52,9 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     private Function<String, Set<String>> hostnameResolver = OpcUaServer::getHostnames;
 
+    private boolean isDiscoveryServer;
+    private boolean enableMulticast;
+
     private OpcUaServerConfigLimits limits =
         new OpcUaServerConfigLimits() {
         };
@@ -93,6 +96,16 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     public OpcUaServerConfigBuilder setHostnameResolver(Function<String, Set<String>> hostnameResolver) {
         this.hostnameResolver = hostnameResolver;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setIsDiscoveryServer(boolean isDiscoveryServer) {
+        this.isDiscoveryServer = isDiscoveryServer;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setEnableMulticast(boolean enableMulticast) {
+        this.enableMulticast = enableMulticast;
         return this;
     }
 
@@ -174,7 +187,9 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             identityValidator,
             buildInfo,
             limits,
-            hostnameResolver
+            hostnameResolver,
+            isDiscoveryServer,
+            enableMulticast
         );
     }
 
@@ -199,6 +214,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
         private final Function<String, Set<String>> hostnameResolver;
+        private final boolean isDiscoveryServer;
+        private final boolean enableMulticast;
 
         public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
                                      String hostname,
@@ -220,6 +237,34 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             this.buildInfo = buildInfo;
             this.limits = limits;
             this.hostnameResolver = hostnameResolver;
+            this.isDiscoveryServer = false;
+            this.enableMulticast = false;
+        }
+
+        public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
+                                     String hostname,
+                                     List<String> bindAddresses,
+                                     int bindPort,
+                                     EnumSet<SecurityPolicy> securityPolicies,
+                                     IdentityValidator identityValidator,
+                                     BuildInfo buildInfo,
+                                     OpcUaServerConfigLimits limits,
+                                     Function<String, Set<String>> hostnameResolver,
+                                     boolean isDiscoveryServer,
+                                     boolean enableMulticast) {
+
+            this.stackServerConfig = stackServerConfig;
+
+            this.hostname = hostname;
+            this.bindAddresses = bindAddresses;
+            this.bindPort = bindPort;
+            this.securityPolicies = securityPolicies;
+            this.identityValidator = identityValidator;
+            this.buildInfo = buildInfo;
+            this.limits = limits;
+            this.hostnameResolver = hostnameResolver;
+            this.isDiscoveryServer = isDiscoveryServer;
+            this.enableMulticast = enableMulticast;
         }
 
         @Override
@@ -315,6 +360,16 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         @Override
         public Function<String, Set<String>> getHostnameResolver() {
             return hostnameResolver;
+        }
+
+        @Override
+        public boolean isDiscoveryServer() {
+            return isDiscoveryServer;
+        }
+
+        @Override
+        public boolean getEnableMulticast() {
+            return enableMulticast;
         }
 
     }

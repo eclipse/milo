@@ -60,6 +60,11 @@
             <artifactId>jmdns</artifactId>
             <version>3.5.1</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.eclipse.milo</groupId>
+			<artifactId>stack-client</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 
 </project>

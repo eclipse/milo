@@ -114,6 +114,16 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     Function<String, Set<String>> getHostnameResolver();
 
     /**
+     * @return true if this server is a LDS server which supports the discovery service set
+     */
+    boolean isDiscoveryServer();
+
+    /**
+     * @return true if this server should announce itself via mDNS
+     */
+    boolean getEnableMulticast();
+
+    /**
      * @return a {@link OpcUaServerConfigBuilder}.
      */
     static OpcUaServerConfigBuilder builder() {
@@ -153,6 +163,9 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
         builder.setBuildInfo(config.getBuildInfo());
         builder.setLimits(config.getLimits());
         builder.setHostnameResolver(config.getHostnameResolver());
+
+        builder.setIsDiscoveryServer(config.isDiscoveryServer());
+        builder.setEnableMulticast(config.getEnableMulticast());
 
         return builder;
     }
