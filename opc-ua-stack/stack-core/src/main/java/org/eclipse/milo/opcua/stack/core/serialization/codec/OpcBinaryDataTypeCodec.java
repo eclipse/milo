@@ -11,8 +11,14 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization;
+package org.eclipse.milo.opcua.stack.core.serialization.codec;
 
-public interface EncoderDelegate<T> {
-    void encode(T encodable, UaEncoder encoder);
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+
+public interface OpcBinaryDataTypeCodec<T> extends DataTypeCodec<T, OpcBinaryStreamReader, OpcBinaryStreamWriter> {
+
+    T decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException;
+
+    void encode(SerializationContext context, T t, OpcBinaryStreamWriter writer) throws UaSerializationException;
+
 }

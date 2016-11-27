@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -66,21 +72,54 @@ public class WriteRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(WriteRequest writeRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", writeRequest._requestHeader != null ? writeRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("NodesToWrite", writeRequest._nodesToWrite, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<WriteRequest> {
+        @Override
+        public WriteRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            WriteValue[] _nodesToWrite =
+                reader.readArray(
+                    () -> (WriteValue) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "WriteValue", reader),
+                    WriteValue.class
+                );
+
+            return new WriteRequest(_requestHeader, _nodesToWrite);
+        }
+
+        @Override
+        public void encode(SerializationContext context, WriteRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeArray(
+                encodable._nodesToWrite,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "WriteValue", e, writer)
+            );
+        }
     }
 
-    public static WriteRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        WriteValue[] _nodesToWrite = decoder.decodeArray("NodesToWrite", decoder::decodeSerializable, WriteValue.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<WriteRequest> {
+        @Override
+        public WriteRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            WriteValue[] _nodesToWrite =
+                reader.readArray(
+                    "NodesToWrite",
+                    f -> (WriteValue) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "WriteValue", reader),
+                    WriteValue.class
+                );
 
-        return new WriteRequest(_requestHeader, _nodesToWrite);
-    }
+            return new WriteRequest(_requestHeader, _nodesToWrite);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(WriteRequest::encode, WriteRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(WriteRequest::decode, WriteRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, WriteRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeArray(
+                "NodesToWrite",
+                encodable._nodesToWrite,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "WriteValue", e, writer)
+            );
+        }
     }
 
 }

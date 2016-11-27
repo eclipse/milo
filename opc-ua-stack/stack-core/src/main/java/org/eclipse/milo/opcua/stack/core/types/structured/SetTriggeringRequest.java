@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -86,27 +92,48 @@ public class SetTriggeringRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(SetTriggeringRequest setTriggeringRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", setTriggeringRequest._requestHeader != null ? setTriggeringRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("SubscriptionId", setTriggeringRequest._subscriptionId);
-        encoder.encodeUInt32("TriggeringItemId", setTriggeringRequest._triggeringItemId);
-        encoder.encodeArray("LinksToAdd", setTriggeringRequest._linksToAdd, encoder::encodeUInt32);
-        encoder.encodeArray("LinksToRemove", setTriggeringRequest._linksToRemove, encoder::encodeUInt32);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SetTriggeringRequest> {
+        @Override
+        public SetTriggeringRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            UInteger _subscriptionId = reader.readUInt32();
+            UInteger _triggeringItemId = reader.readUInt32();
+            UInteger[] _linksToAdd = reader.readArray(reader::readUInt32, UInteger.class);
+            UInteger[] _linksToRemove = reader.readArray(reader::readUInt32, UInteger.class);
+
+            return new SetTriggeringRequest(_requestHeader, _subscriptionId, _triggeringItemId, _linksToAdd, _linksToRemove);
+        }
+
+        @Override
+        public void encode(SerializationContext context, SetTriggeringRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeUInt32(encodable._subscriptionId);
+            writer.writeUInt32(encodable._triggeringItemId);
+            writer.writeArray(encodable._linksToAdd, writer::writeUInt32);
+            writer.writeArray(encodable._linksToRemove, writer::writeUInt32);
+        }
     }
 
-    public static SetTriggeringRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        UInteger _triggeringItemId = decoder.decodeUInt32("TriggeringItemId");
-        UInteger[] _linksToAdd = decoder.decodeArray("LinksToAdd", decoder::decodeUInt32, UInteger.class);
-        UInteger[] _linksToRemove = decoder.decodeArray("LinksToRemove", decoder::decodeUInt32, UInteger.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<SetTriggeringRequest> {
+        @Override
+        public SetTriggeringRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
+            UInteger _triggeringItemId = reader.readUInt32("TriggeringItemId");
+            UInteger[] _linksToAdd = reader.readArray("LinksToAdd", reader::readUInt32, UInteger.class);
+            UInteger[] _linksToRemove = reader.readArray("LinksToRemove", reader::readUInt32, UInteger.class);
 
-        return new SetTriggeringRequest(_requestHeader, _subscriptionId, _triggeringItemId, _linksToAdd, _linksToRemove);
-    }
+            return new SetTriggeringRequest(_requestHeader, _subscriptionId, _triggeringItemId, _linksToAdd, _linksToRemove);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(SetTriggeringRequest::encode, SetTriggeringRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SetTriggeringRequest::decode, SetTriggeringRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, SetTriggeringRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
+            writer.writeUInt32("TriggeringItemId", encodable._triggeringItemId);
+            writer.writeArray("LinksToAdd", encodable._linksToAdd, writer::writeUInt32);
+            writer.writeArray("LinksToRemove", encodable._linksToRemove, writer::writeUInt32);
+        }
     }
 
 }

@@ -15,10 +15,16 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -91,29 +97,52 @@ public class OpenSecureChannelRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(OpenSecureChannelRequest openSecureChannelRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", openSecureChannelRequest._requestHeader != null ? openSecureChannelRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("ClientProtocolVersion", openSecureChannelRequest._clientProtocolVersion);
-        encoder.encodeEnumeration("RequestType", openSecureChannelRequest._requestType);
-        encoder.encodeEnumeration("SecurityMode", openSecureChannelRequest._securityMode);
-        encoder.encodeByteString("ClientNonce", openSecureChannelRequest._clientNonce);
-        encoder.encodeUInt32("RequestedLifetime", openSecureChannelRequest._requestedLifetime);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<OpenSecureChannelRequest> {
+        @Override
+        public OpenSecureChannelRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            UInteger _clientProtocolVersion = reader.readUInt32();
+            SecurityTokenRequestType _requestType = SecurityTokenRequestType.from(reader.readInt32());
+            MessageSecurityMode _securityMode = MessageSecurityMode.from(reader.readInt32());
+            ByteString _clientNonce = reader.readByteString();
+            UInteger _requestedLifetime = reader.readUInt32();
+
+            return new OpenSecureChannelRequest(_requestHeader, _clientProtocolVersion, _requestType, _securityMode, _clientNonce, _requestedLifetime);
+        }
+
+        @Override
+        public void encode(SerializationContext context, OpenSecureChannelRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeUInt32(encodable._clientProtocolVersion);
+            writer.writeInt32(encodable._requestType != null ? encodable._requestType.getValue() : 0);
+            writer.writeInt32(encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
+            writer.writeByteString(encodable._clientNonce);
+            writer.writeUInt32(encodable._requestedLifetime);
+        }
     }
 
-    public static OpenSecureChannelRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _clientProtocolVersion = decoder.decodeUInt32("ClientProtocolVersion");
-        SecurityTokenRequestType _requestType = decoder.decodeEnumeration("RequestType", SecurityTokenRequestType.class);
-        MessageSecurityMode _securityMode = decoder.decodeEnumeration("SecurityMode", MessageSecurityMode.class);
-        ByteString _clientNonce = decoder.decodeByteString("ClientNonce");
-        UInteger _requestedLifetime = decoder.decodeUInt32("RequestedLifetime");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<OpenSecureChannelRequest> {
+        @Override
+        public OpenSecureChannelRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            UInteger _clientProtocolVersion = reader.readUInt32("ClientProtocolVersion");
+            SecurityTokenRequestType _requestType = SecurityTokenRequestType.from(reader.readInt32("RequestType"));
+            MessageSecurityMode _securityMode = MessageSecurityMode.from(reader.readInt32("SecurityMode"));
+            ByteString _clientNonce = reader.readByteString("ClientNonce");
+            UInteger _requestedLifetime = reader.readUInt32("RequestedLifetime");
 
-        return new OpenSecureChannelRequest(_requestHeader, _clientProtocolVersion, _requestType, _securityMode, _clientNonce, _requestedLifetime);
-    }
+            return new OpenSecureChannelRequest(_requestHeader, _clientProtocolVersion, _requestType, _securityMode, _clientNonce, _requestedLifetime);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(OpenSecureChannelRequest::encode, OpenSecureChannelRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(OpenSecureChannelRequest::decode, OpenSecureChannelRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, OpenSecureChannelRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeUInt32("ClientProtocolVersion", encodable._clientProtocolVersion);
+            writer.writeInt32("RequestType", encodable._requestType != null ? encodable._requestType.getValue() : 0);
+            writer.writeInt32("SecurityMode", encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
+            writer.writeByteString("ClientNonce", encodable._clientNonce);
+            writer.writeUInt32("RequestedLifetime", encodable._requestedLifetime);
+        }
     }
 
 }

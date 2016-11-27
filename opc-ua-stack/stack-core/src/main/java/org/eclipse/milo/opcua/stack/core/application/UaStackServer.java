@@ -28,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.application.services.QueryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHandler;
 import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.TestServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
@@ -70,8 +69,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeReque
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
@@ -192,11 +189,6 @@ public interface UaStackServer {
         addRequestHandler(SetPublishingModeRequest.class, serviceSet::onSetPublishingMode);
         addRequestHandler(PublishRequest.class, serviceSet::onPublish);
         addRequestHandler(RepublishRequest.class, serviceSet::onRepublish);
-    }
-
-    default void addServiceSet(TestServiceSet serviceSet) {
-        addRequestHandler(TestStackRequest.class, serviceSet::onTestStack);
-        addRequestHandler(TestStackExRequest.class, serviceSet::onTestStackEx);
     }
 
     default void addServiceSet(ViewServiceSet serviceSet) {

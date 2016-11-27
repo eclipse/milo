@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -64,21 +69,36 @@ public class OptionSet implements UaStructure {
             .toString();
     }
 
-    public static void encode(OptionSet optionSet, UaEncoder encoder) {
-        encoder.encodeByteString("Value", optionSet._value);
-        encoder.encodeByteString("ValidBits", optionSet._validBits);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<OptionSet> {
+        @Override
+        public OptionSet decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ByteString _value = reader.readByteString();
+            ByteString _validBits = reader.readByteString();
+
+            return new OptionSet(_value, _validBits);
+        }
+
+        @Override
+        public void encode(SerializationContext context, OptionSet encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeByteString(encodable._value);
+            writer.writeByteString(encodable._validBits);
+        }
     }
 
-    public static OptionSet decode(UaDecoder decoder) {
-        ByteString _value = decoder.decodeByteString("Value");
-        ByteString _validBits = decoder.decodeByteString("ValidBits");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<OptionSet> {
+        @Override
+        public OptionSet decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ByteString _value = reader.readByteString("Value");
+            ByteString _validBits = reader.readByteString("ValidBits");
 
-        return new OptionSet(_value, _validBits);
-    }
+            return new OptionSet(_value, _validBits);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(OptionSet::encode, OptionSet.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(OptionSet::decode, OptionSet.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, OptionSet encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeByteString("Value", encodable._value);
+            writer.writeByteString("ValidBits", encodable._validBits);
+        }
     }
 
 }

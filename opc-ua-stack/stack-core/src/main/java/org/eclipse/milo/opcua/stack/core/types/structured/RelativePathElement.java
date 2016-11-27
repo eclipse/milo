@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -76,25 +81,44 @@ public class RelativePathElement implements UaStructure {
             .toString();
     }
 
-    public static void encode(RelativePathElement relativePathElement, UaEncoder encoder) {
-        encoder.encodeNodeId("ReferenceTypeId", relativePathElement._referenceTypeId);
-        encoder.encodeBoolean("IsInverse", relativePathElement._isInverse);
-        encoder.encodeBoolean("IncludeSubtypes", relativePathElement._includeSubtypes);
-        encoder.encodeQualifiedName("TargetName", relativePathElement._targetName);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RelativePathElement> {
+        @Override
+        public RelativePathElement decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _referenceTypeId = reader.readNodeId();
+            Boolean _isInverse = reader.readBoolean();
+            Boolean _includeSubtypes = reader.readBoolean();
+            QualifiedName _targetName = reader.readQualifiedName();
+
+            return new RelativePathElement(_referenceTypeId, _isInverse, _includeSubtypes, _targetName);
+        }
+
+        @Override
+        public void encode(SerializationContext context, RelativePathElement encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._referenceTypeId);
+            writer.writeBoolean(encodable._isInverse);
+            writer.writeBoolean(encodable._includeSubtypes);
+            writer.writeQualifiedName(encodable._targetName);
+        }
     }
 
-    public static RelativePathElement decode(UaDecoder decoder) {
-        NodeId _referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
-        Boolean _isInverse = decoder.decodeBoolean("IsInverse");
-        Boolean _includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
-        QualifiedName _targetName = decoder.decodeQualifiedName("TargetName");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<RelativePathElement> {
+        @Override
+        public RelativePathElement decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _referenceTypeId = reader.readNodeId("ReferenceTypeId");
+            Boolean _isInverse = reader.readBoolean("IsInverse");
+            Boolean _includeSubtypes = reader.readBoolean("IncludeSubtypes");
+            QualifiedName _targetName = reader.readQualifiedName("TargetName");
 
-        return new RelativePathElement(_referenceTypeId, _isInverse, _includeSubtypes, _targetName);
-    }
+            return new RelativePathElement(_referenceTypeId, _isInverse, _includeSubtypes, _targetName);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(RelativePathElement::encode, RelativePathElement.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RelativePathElement::decode, RelativePathElement.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, RelativePathElement encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("ReferenceTypeId", encodable._referenceTypeId);
+            writer.writeBoolean("IsInverse", encodable._isInverse);
+            writer.writeBoolean("IncludeSubtypes", encodable._includeSubtypes);
+            writer.writeQualifiedName("TargetName", encodable._targetName);
+        }
     }
 
 }

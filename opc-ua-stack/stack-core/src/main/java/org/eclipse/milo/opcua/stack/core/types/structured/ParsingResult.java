@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -75,23 +80,40 @@ public class ParsingResult implements UaStructure {
             .toString();
     }
 
-    public static void encode(ParsingResult parsingResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", parsingResult._statusCode);
-        encoder.encodeArray("DataStatusCodes", parsingResult._dataStatusCodes, encoder::encodeStatusCode);
-        encoder.encodeArray("DataDiagnosticInfos", parsingResult._dataDiagnosticInfos, encoder::encodeDiagnosticInfo);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ParsingResult> {
+        @Override
+        public ParsingResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            StatusCode _statusCode = reader.readStatusCode();
+            StatusCode[] _dataStatusCodes = reader.readArray(reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _dataDiagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+
+            return new ParsingResult(_statusCode, _dataStatusCodes, _dataDiagnosticInfos);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ParsingResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(encodable._statusCode);
+            writer.writeArray(encodable._dataStatusCodes, writer::writeStatusCode);
+            writer.writeArray(encodable._dataDiagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
-    public static ParsingResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        StatusCode[] _dataStatusCodes = decoder.decodeArray("DataStatusCodes", decoder::decodeStatusCode, StatusCode.class);
-        DiagnosticInfo[] _dataDiagnosticInfos = decoder.decodeArray("DataDiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ParsingResult> {
+        @Override
+        public ParsingResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            StatusCode _statusCode = reader.readStatusCode("StatusCode");
+            StatusCode[] _dataStatusCodes = reader.readArray("DataStatusCodes", reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _dataDiagnosticInfos = reader.readArray("DataDiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
 
-        return new ParsingResult(_statusCode, _dataStatusCodes, _dataDiagnosticInfos);
-    }
+            return new ParsingResult(_statusCode, _dataStatusCodes, _dataDiagnosticInfos);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ParsingResult::encode, ParsingResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ParsingResult::decode, ParsingResult.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ParsingResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode("StatusCode", encodable._statusCode);
+            writer.writeArray("DataStatusCodes", encodable._dataStatusCodes, writer::writeStatusCode);
+            writer.writeArray("DataDiagnosticInfos", encodable._dataDiagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
 }

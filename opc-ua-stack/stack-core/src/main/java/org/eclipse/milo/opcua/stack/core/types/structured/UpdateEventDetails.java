@@ -17,9 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
@@ -75,25 +81,62 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
             .toString();
     }
 
-    public static void encode(UpdateEventDetails updateEventDetails, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", updateEventDetails._nodeId);
-        encoder.encodeEnumeration("PerformInsertReplace", updateEventDetails._performInsertReplace);
-        encoder.encodeSerializable("Filter", updateEventDetails._filter != null ? updateEventDetails._filter : new EventFilter());
-        encoder.encodeArray("EventData", updateEventDetails._eventData, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UpdateEventDetails> {
+        @Override
+        public UpdateEventDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32());
+            EventFilter _filter = (EventFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", reader);
+            HistoryEventFieldList[] _eventData =
+                reader.readArray(
+                    () -> (HistoryEventFieldList) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", reader),
+                    HistoryEventFieldList.class
+                );
+
+            return new UpdateEventDetails(_nodeId, _performInsertReplace, _filter, _eventData);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UpdateEventDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._nodeId);
+            writer.writeInt32(encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", encodable._filter, writer);
+            writer.writeArray(
+                encodable._eventData,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", e, writer)
+            );
+        }
     }
 
-    public static UpdateEventDetails decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        PerformUpdateType _performInsertReplace = decoder.decodeEnumeration("PerformInsertReplace", PerformUpdateType.class);
-        EventFilter _filter = decoder.decodeSerializable("Filter", EventFilter.class);
-        HistoryEventFieldList[] _eventData = decoder.decodeArray("EventData", decoder::decodeSerializable, HistoryEventFieldList.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<UpdateEventDetails> {
+        @Override
+        public UpdateEventDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32("PerformInsertReplace"));
+            EventFilter _filter = (EventFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", reader);
+            HistoryEventFieldList[] _eventData =
+                reader.readArray(
+                    "EventData",
+                    f -> (HistoryEventFieldList) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", reader),
+                    HistoryEventFieldList.class
+                );
 
-        return new UpdateEventDetails(_nodeId, _performInsertReplace, _filter, _eventData);
-    }
+            return new UpdateEventDetails(_nodeId, _performInsertReplace, _filter, _eventData);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(UpdateEventDetails::encode, UpdateEventDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(UpdateEventDetails::decode, UpdateEventDetails.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, UpdateEventDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeInt32("PerformInsertReplace", encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", encodable._filter, writer);
+            writer.writeArray(
+                "EventData",
+                encodable._eventData,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", e, writer)
+            );
+        }
     }
 
 }

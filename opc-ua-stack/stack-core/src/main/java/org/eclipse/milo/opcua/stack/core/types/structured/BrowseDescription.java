@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -89,29 +94,52 @@ public class BrowseDescription implements UaStructure {
             .toString();
     }
 
-    public static void encode(BrowseDescription browseDescription, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", browseDescription._nodeId);
-        encoder.encodeEnumeration("BrowseDirection", browseDescription._browseDirection);
-        encoder.encodeNodeId("ReferenceTypeId", browseDescription._referenceTypeId);
-        encoder.encodeBoolean("IncludeSubtypes", browseDescription._includeSubtypes);
-        encoder.encodeUInt32("NodeClassMask", browseDescription._nodeClassMask);
-        encoder.encodeUInt32("ResultMask", browseDescription._resultMask);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<BrowseDescription> {
+        @Override
+        public BrowseDescription decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            BrowseDirection _browseDirection = BrowseDirection.from(reader.readInt32());
+            NodeId _referenceTypeId = reader.readNodeId();
+            Boolean _includeSubtypes = reader.readBoolean();
+            UInteger _nodeClassMask = reader.readUInt32();
+            UInteger _resultMask = reader.readUInt32();
+
+            return new BrowseDescription(_nodeId, _browseDirection, _referenceTypeId, _includeSubtypes, _nodeClassMask, _resultMask);
+        }
+
+        @Override
+        public void encode(SerializationContext context, BrowseDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._nodeId);
+            writer.writeInt32(encodable._browseDirection != null ? encodable._browseDirection.getValue() : 0);
+            writer.writeNodeId(encodable._referenceTypeId);
+            writer.writeBoolean(encodable._includeSubtypes);
+            writer.writeUInt32(encodable._nodeClassMask);
+            writer.writeUInt32(encodable._resultMask);
+        }
     }
 
-    public static BrowseDescription decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        BrowseDirection _browseDirection = decoder.decodeEnumeration("BrowseDirection", BrowseDirection.class);
-        NodeId _referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
-        Boolean _includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
-        UInteger _nodeClassMask = decoder.decodeUInt32("NodeClassMask");
-        UInteger _resultMask = decoder.decodeUInt32("ResultMask");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<BrowseDescription> {
+        @Override
+        public BrowseDescription decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            BrowseDirection _browseDirection = BrowseDirection.from(reader.readInt32("BrowseDirection"));
+            NodeId _referenceTypeId = reader.readNodeId("ReferenceTypeId");
+            Boolean _includeSubtypes = reader.readBoolean("IncludeSubtypes");
+            UInteger _nodeClassMask = reader.readUInt32("NodeClassMask");
+            UInteger _resultMask = reader.readUInt32("ResultMask");
 
-        return new BrowseDescription(_nodeId, _browseDirection, _referenceTypeId, _includeSubtypes, _nodeClassMask, _resultMask);
-    }
+            return new BrowseDescription(_nodeId, _browseDirection, _referenceTypeId, _includeSubtypes, _nodeClassMask, _resultMask);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(BrowseDescription::encode, BrowseDescription.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(BrowseDescription::decode, BrowseDescription.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, BrowseDescription encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeInt32("BrowseDirection", encodable._browseDirection != null ? encodable._browseDirection.getValue() : 0);
+            writer.writeNodeId("ReferenceTypeId", encodable._referenceTypeId);
+            writer.writeBoolean("IncludeSubtypes", encodable._includeSubtypes);
+            writer.writeUInt32("NodeClassMask", encodable._nodeClassMask);
+            writer.writeUInt32("ResultMask", encodable._resultMask);
+        }
     }
 
 }

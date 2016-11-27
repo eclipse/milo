@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -75,23 +81,40 @@ public class RegisterServer2Response implements UaResponseMessage {
             .toString();
     }
 
-    public static void encode(RegisterServer2Response registerServer2Response, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", registerServer2Response._responseHeader != null ? registerServer2Response._responseHeader : new ResponseHeader());
-        encoder.encodeArray("ConfigurationResults", registerServer2Response._configurationResults, encoder::encodeStatusCode);
-        encoder.encodeArray("DiagnosticInfos", registerServer2Response._diagnosticInfos, encoder::encodeDiagnosticInfo);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RegisterServer2Response> {
+        @Override
+        public RegisterServer2Response decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            StatusCode[] _configurationResults = reader.readArray(reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+
+            return new RegisterServer2Response(_responseHeader, _configurationResults, _diagnosticInfos);
+        }
+
+        @Override
+        public void encode(SerializationContext context, RegisterServer2Response encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            writer.writeArray(encodable._configurationResults, writer::writeStatusCode);
+            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
-    public static RegisterServer2Response decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        StatusCode[] _configurationResults = decoder.decodeArray("ConfigurationResults", decoder::decodeStatusCode, StatusCode.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<RegisterServer2Response> {
+        @Override
+        public RegisterServer2Response decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            StatusCode[] _configurationResults = reader.readArray("ConfigurationResults", reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
 
-        return new RegisterServer2Response(_responseHeader, _configurationResults, _diagnosticInfos);
-    }
+            return new RegisterServer2Response(_responseHeader, _configurationResults, _diagnosticInfos);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(RegisterServer2Response::encode, RegisterServer2Response.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RegisterServer2Response::decode, RegisterServer2Response.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, RegisterServer2Response encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            writer.writeArray("ConfigurationResults", encodable._configurationResults, writer::writeStatusCode);
+            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
 }

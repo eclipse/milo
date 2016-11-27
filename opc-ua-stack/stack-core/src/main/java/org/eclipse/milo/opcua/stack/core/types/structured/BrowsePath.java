@@ -15,10 +15,16 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -63,21 +69,36 @@ public class BrowsePath implements UaStructure {
             .toString();
     }
 
-    public static void encode(BrowsePath browsePath, UaEncoder encoder) {
-        encoder.encodeNodeId("StartingNode", browsePath._startingNode);
-        encoder.encodeSerializable("RelativePath", browsePath._relativePath != null ? browsePath._relativePath : new RelativePath());
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<BrowsePath> {
+        @Override
+        public BrowsePath decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _startingNode = reader.readNodeId();
+            RelativePath _relativePath = (RelativePath) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", reader);
+
+            return new BrowsePath(_startingNode, _relativePath);
+        }
+
+        @Override
+        public void encode(SerializationContext context, BrowsePath encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._startingNode);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", encodable._relativePath, writer);
+        }
     }
 
-    public static BrowsePath decode(UaDecoder decoder) {
-        NodeId _startingNode = decoder.decodeNodeId("StartingNode");
-        RelativePath _relativePath = decoder.decodeSerializable("RelativePath", RelativePath.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<BrowsePath> {
+        @Override
+        public BrowsePath decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _startingNode = reader.readNodeId("StartingNode");
+            RelativePath _relativePath = (RelativePath) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", reader);
 
-        return new BrowsePath(_startingNode, _relativePath);
-    }
+            return new BrowsePath(_startingNode, _relativePath);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(BrowsePath::encode, BrowsePath.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(BrowsePath::decode, BrowsePath.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, BrowsePath encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("StartingNode", encodable._startingNode);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", encodable._relativePath, writer);
+        }
     }
 
 }

@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -95,29 +100,52 @@ public class ResponseHeader implements UaStructure {
             .toString();
     }
 
-    public static void encode(ResponseHeader responseHeader, UaEncoder encoder) {
-        encoder.encodeDateTime("Timestamp", responseHeader._timestamp);
-        encoder.encodeUInt32("RequestHandle", responseHeader._requestHandle);
-        encoder.encodeStatusCode("ServiceResult", responseHeader._serviceResult);
-        encoder.encodeDiagnosticInfo("ServiceDiagnostics", responseHeader._serviceDiagnostics);
-        encoder.encodeArray("StringTable", responseHeader._stringTable, encoder::encodeString);
-        encoder.encodeExtensionObject("AdditionalHeader", responseHeader._additionalHeader);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ResponseHeader> {
+        @Override
+        public ResponseHeader decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            DateTime _timestamp = reader.readDateTime();
+            UInteger _requestHandle = reader.readUInt32();
+            StatusCode _serviceResult = reader.readStatusCode();
+            DiagnosticInfo _serviceDiagnostics = reader.readDiagnosticInfo();
+            String[] _stringTable = reader.readArray(reader::readString, String.class);
+            ExtensionObject _additionalHeader = reader.readExtensionObject();
+
+            return new ResponseHeader(_timestamp, _requestHandle, _serviceResult, _serviceDiagnostics, _stringTable, _additionalHeader);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ResponseHeader encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(encodable._timestamp);
+            writer.writeUInt32(encodable._requestHandle);
+            writer.writeStatusCode(encodable._serviceResult);
+            writer.writeDiagnosticInfo(encodable._serviceDiagnostics);
+            writer.writeArray(encodable._stringTable, writer::writeString);
+            writer.writeExtensionObject(encodable._additionalHeader);
+        }
     }
 
-    public static ResponseHeader decode(UaDecoder decoder) {
-        DateTime _timestamp = decoder.decodeDateTime("Timestamp");
-        UInteger _requestHandle = decoder.decodeUInt32("RequestHandle");
-        StatusCode _serviceResult = decoder.decodeStatusCode("ServiceResult");
-        DiagnosticInfo _serviceDiagnostics = decoder.decodeDiagnosticInfo("ServiceDiagnostics");
-        String[] _stringTable = decoder.decodeArray("StringTable", decoder::decodeString, String.class);
-        ExtensionObject _additionalHeader = decoder.decodeExtensionObject("AdditionalHeader");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ResponseHeader> {
+        @Override
+        public ResponseHeader decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            DateTime _timestamp = reader.readDateTime("Timestamp");
+            UInteger _requestHandle = reader.readUInt32("RequestHandle");
+            StatusCode _serviceResult = reader.readStatusCode("ServiceResult");
+            DiagnosticInfo _serviceDiagnostics = reader.readDiagnosticInfo("ServiceDiagnostics");
+            String[] _stringTable = reader.readArray("StringTable", reader::readString, String.class);
+            ExtensionObject _additionalHeader = reader.readExtensionObject("AdditionalHeader");
 
-        return new ResponseHeader(_timestamp, _requestHandle, _serviceResult, _serviceDiagnostics, _stringTable, _additionalHeader);
-    }
+            return new ResponseHeader(_timestamp, _requestHandle, _serviceResult, _serviceDiagnostics, _stringTable, _additionalHeader);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ResponseHeader::encode, ResponseHeader.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ResponseHeader::decode, ResponseHeader.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ResponseHeader encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime("Timestamp", encodable._timestamp);
+            writer.writeUInt32("RequestHandle", encodable._requestHandle);
+            writer.writeStatusCode("ServiceResult", encodable._serviceResult);
+            writer.writeDiagnosticInfo("ServiceDiagnostics", encodable._serviceDiagnostics);
+            writer.writeArray("StringTable", encodable._stringTable, writer::writeString);
+            writer.writeExtensionObject("AdditionalHeader", encodable._additionalHeader);
+        }
     }
 
 }

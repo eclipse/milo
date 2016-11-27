@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -105,33 +110,60 @@ public class RegisteredServer implements UaStructure {
             .toString();
     }
 
-    public static void encode(RegisteredServer registeredServer, UaEncoder encoder) {
-        encoder.encodeString("ServerUri", registeredServer._serverUri);
-        encoder.encodeString("ProductUri", registeredServer._productUri);
-        encoder.encodeArray("ServerNames", registeredServer._serverNames, encoder::encodeLocalizedText);
-        encoder.encodeEnumeration("ServerType", registeredServer._serverType);
-        encoder.encodeString("GatewayServerUri", registeredServer._gatewayServerUri);
-        encoder.encodeArray("DiscoveryUrls", registeredServer._discoveryUrls, encoder::encodeString);
-        encoder.encodeString("SemaphoreFilePath", registeredServer._semaphoreFilePath);
-        encoder.encodeBoolean("IsOnline", registeredServer._isOnline);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RegisteredServer> {
+        @Override
+        public RegisteredServer decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            String _serverUri = reader.readString();
+            String _productUri = reader.readString();
+            LocalizedText[] _serverNames = reader.readArray(reader::readLocalizedText, LocalizedText.class);
+            ApplicationType _serverType = ApplicationType.from(reader.readInt32());
+            String _gatewayServerUri = reader.readString();
+            String[] _discoveryUrls = reader.readArray(reader::readString, String.class);
+            String _semaphoreFilePath = reader.readString();
+            Boolean _isOnline = reader.readBoolean();
+
+            return new RegisteredServer(_serverUri, _productUri, _serverNames, _serverType, _gatewayServerUri, _discoveryUrls, _semaphoreFilePath, _isOnline);
+        }
+
+        @Override
+        public void encode(SerializationContext context, RegisteredServer encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(encodable._serverUri);
+            writer.writeString(encodable._productUri);
+            writer.writeArray(encodable._serverNames, writer::writeLocalizedText);
+            writer.writeInt32(encodable._serverType != null ? encodable._serverType.getValue() : 0);
+            writer.writeString(encodable._gatewayServerUri);
+            writer.writeArray(encodable._discoveryUrls, writer::writeString);
+            writer.writeString(encodable._semaphoreFilePath);
+            writer.writeBoolean(encodable._isOnline);
+        }
     }
 
-    public static RegisteredServer decode(UaDecoder decoder) {
-        String _serverUri = decoder.decodeString("ServerUri");
-        String _productUri = decoder.decodeString("ProductUri");
-        LocalizedText[] _serverNames = decoder.decodeArray("ServerNames", decoder::decodeLocalizedText, LocalizedText.class);
-        ApplicationType _serverType = decoder.decodeEnumeration("ServerType", ApplicationType.class);
-        String _gatewayServerUri = decoder.decodeString("GatewayServerUri");
-        String[] _discoveryUrls = decoder.decodeArray("DiscoveryUrls", decoder::decodeString, String.class);
-        String _semaphoreFilePath = decoder.decodeString("SemaphoreFilePath");
-        Boolean _isOnline = decoder.decodeBoolean("IsOnline");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<RegisteredServer> {
+        @Override
+        public RegisteredServer decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            String _serverUri = reader.readString("ServerUri");
+            String _productUri = reader.readString("ProductUri");
+            LocalizedText[] _serverNames = reader.readArray("ServerNames", reader::readLocalizedText, LocalizedText.class);
+            ApplicationType _serverType = ApplicationType.from(reader.readInt32("ServerType"));
+            String _gatewayServerUri = reader.readString("GatewayServerUri");
+            String[] _discoveryUrls = reader.readArray("DiscoveryUrls", reader::readString, String.class);
+            String _semaphoreFilePath = reader.readString("SemaphoreFilePath");
+            Boolean _isOnline = reader.readBoolean("IsOnline");
 
-        return new RegisteredServer(_serverUri, _productUri, _serverNames, _serverType, _gatewayServerUri, _discoveryUrls, _semaphoreFilePath, _isOnline);
-    }
+            return new RegisteredServer(_serverUri, _productUri, _serverNames, _serverType, _gatewayServerUri, _discoveryUrls, _semaphoreFilePath, _isOnline);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(RegisteredServer::encode, RegisteredServer.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RegisteredServer::decode, RegisteredServer.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, RegisteredServer encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeString("ServerUri", encodable._serverUri);
+            writer.writeString("ProductUri", encodable._productUri);
+            writer.writeArray("ServerNames", encodable._serverNames, writer::writeLocalizedText);
+            writer.writeInt32("ServerType", encodable._serverType != null ? encodable._serverType.getValue() : 0);
+            writer.writeString("GatewayServerUri", encodable._gatewayServerUri);
+            writer.writeArray("DiscoveryUrls", encodable._discoveryUrls, writer::writeString);
+            writer.writeString("SemaphoreFilePath", encodable._semaphoreFilePath);
+            writer.writeBoolean("IsOnline", encodable._isOnline);
+        }
     }
 
 }

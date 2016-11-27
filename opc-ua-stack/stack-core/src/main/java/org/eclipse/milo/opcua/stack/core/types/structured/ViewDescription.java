@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -71,23 +76,40 @@ public class ViewDescription implements UaStructure {
             .toString();
     }
 
-    public static void encode(ViewDescription viewDescription, UaEncoder encoder) {
-        encoder.encodeNodeId("ViewId", viewDescription._viewId);
-        encoder.encodeDateTime("Timestamp", viewDescription._timestamp);
-        encoder.encodeUInt32("ViewVersion", viewDescription._viewVersion);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ViewDescription> {
+        @Override
+        public ViewDescription decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _viewId = reader.readNodeId();
+            DateTime _timestamp = reader.readDateTime();
+            UInteger _viewVersion = reader.readUInt32();
+
+            return new ViewDescription(_viewId, _timestamp, _viewVersion);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ViewDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._viewId);
+            writer.writeDateTime(encodable._timestamp);
+            writer.writeUInt32(encodable._viewVersion);
+        }
     }
 
-    public static ViewDescription decode(UaDecoder decoder) {
-        NodeId _viewId = decoder.decodeNodeId("ViewId");
-        DateTime _timestamp = decoder.decodeDateTime("Timestamp");
-        UInteger _viewVersion = decoder.decodeUInt32("ViewVersion");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ViewDescription> {
+        @Override
+        public ViewDescription decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _viewId = reader.readNodeId("ViewId");
+            DateTime _timestamp = reader.readDateTime("Timestamp");
+            UInteger _viewVersion = reader.readUInt32("ViewVersion");
 
-        return new ViewDescription(_viewId, _timestamp, _viewVersion);
-    }
+            return new ViewDescription(_viewId, _timestamp, _viewVersion);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ViewDescription::encode, ViewDescription.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ViewDescription::decode, ViewDescription.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ViewDescription encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("ViewId", encodable._viewId);
+            writer.writeDateTime("Timestamp", encodable._timestamp);
+            writer.writeUInt32("ViewVersion", encodable._viewVersion);
+        }
     }
 
 }

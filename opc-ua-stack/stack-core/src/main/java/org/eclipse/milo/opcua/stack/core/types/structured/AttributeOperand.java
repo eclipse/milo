@@ -15,9 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -83,27 +89,48 @@ public class AttributeOperand extends FilterOperand {
             .toString();
     }
 
-    public static void encode(AttributeOperand attributeOperand, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", attributeOperand._nodeId);
-        encoder.encodeString("Alias", attributeOperand._alias);
-        encoder.encodeSerializable("BrowsePath", attributeOperand._browsePath != null ? attributeOperand._browsePath : new RelativePath());
-        encoder.encodeUInt32("AttributeId", attributeOperand._attributeId);
-        encoder.encodeString("IndexRange", attributeOperand._indexRange);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AttributeOperand> {
+        @Override
+        public AttributeOperand decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            String _alias = reader.readString();
+            RelativePath _browsePath = (RelativePath) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", reader);
+            UInteger _attributeId = reader.readUInt32();
+            String _indexRange = reader.readString();
+
+            return new AttributeOperand(_nodeId, _alias, _browsePath, _attributeId, _indexRange);
+        }
+
+        @Override
+        public void encode(SerializationContext context, AttributeOperand encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._nodeId);
+            writer.writeString(encodable._alias);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", encodable._browsePath, writer);
+            writer.writeUInt32(encodable._attributeId);
+            writer.writeString(encodable._indexRange);
+        }
     }
 
-    public static AttributeOperand decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        String _alias = decoder.decodeString("Alias");
-        RelativePath _browsePath = decoder.decodeSerializable("BrowsePath", RelativePath.class);
-        UInteger _attributeId = decoder.decodeUInt32("AttributeId");
-        String _indexRange = decoder.decodeString("IndexRange");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<AttributeOperand> {
+        @Override
+        public AttributeOperand decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            String _alias = reader.readString("Alias");
+            RelativePath _browsePath = (RelativePath) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", reader);
+            UInteger _attributeId = reader.readUInt32("AttributeId");
+            String _indexRange = reader.readString("IndexRange");
 
-        return new AttributeOperand(_nodeId, _alias, _browsePath, _attributeId, _indexRange);
-    }
+            return new AttributeOperand(_nodeId, _alias, _browsePath, _attributeId, _indexRange);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(AttributeOperand::encode, AttributeOperand.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(AttributeOperand::decode, AttributeOperand.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, AttributeOperand encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeString("Alias", encodable._alias);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", encodable._browsePath, writer);
+            writer.writeUInt32("AttributeId", encodable._attributeId);
+            writer.writeString("IndexRange", encodable._indexRange);
+        }
     }
 
 }

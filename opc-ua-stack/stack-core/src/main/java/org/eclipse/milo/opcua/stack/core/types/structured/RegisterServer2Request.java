@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -73,23 +79,40 @@ public class RegisterServer2Request implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(RegisterServer2Request registerServer2Request, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", registerServer2Request._requestHeader != null ? registerServer2Request._requestHeader : new RequestHeader());
-        encoder.encodeSerializable("Server", registerServer2Request._server != null ? registerServer2Request._server : new RegisteredServer());
-        encoder.encodeArray("DiscoveryConfiguration", registerServer2Request._discoveryConfiguration, encoder::encodeExtensionObject);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RegisterServer2Request> {
+        @Override
+        public RegisterServer2Request decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RegisteredServer _server = (RegisteredServer) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RegisteredServer", reader);
+            ExtensionObject[] _discoveryConfiguration = reader.readArray(reader::readExtensionObject, ExtensionObject.class);
+
+            return new RegisterServer2Request(_requestHeader, _server, _discoveryConfiguration);
+        }
+
+        @Override
+        public void encode(SerializationContext context, RegisterServer2Request encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RegisteredServer", encodable._server, writer);
+            writer.writeArray(encodable._discoveryConfiguration, writer::writeExtensionObject);
+        }
     }
 
-    public static RegisterServer2Request decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        RegisteredServer _server = decoder.decodeSerializable("Server", RegisteredServer.class);
-        ExtensionObject[] _discoveryConfiguration = decoder.decodeArray("DiscoveryConfiguration", decoder::decodeExtensionObject, ExtensionObject.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<RegisterServer2Request> {
+        @Override
+        public RegisterServer2Request decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RegisteredServer _server = (RegisteredServer) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RegisteredServer", reader);
+            ExtensionObject[] _discoveryConfiguration = reader.readArray("DiscoveryConfiguration", reader::readExtensionObject, ExtensionObject.class);
 
-        return new RegisterServer2Request(_requestHeader, _server, _discoveryConfiguration);
-    }
+            return new RegisterServer2Request(_requestHeader, _server, _discoveryConfiguration);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(RegisterServer2Request::encode, RegisterServer2Request.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RegisterServer2Request::decode, RegisterServer2Request.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, RegisterServer2Request encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RegisteredServer", encodable._server, writer);
+            writer.writeArray("DiscoveryConfiguration", encodable._discoveryConfiguration, writer::writeExtensionObject);
+        }
     }
 
 }

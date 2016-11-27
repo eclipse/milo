@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -77,33 +82,60 @@ public class ReferenceTypeAttributes extends NodeAttributes {
             .toString();
     }
 
-    public static void encode(ReferenceTypeAttributes referenceTypeAttributes, UaEncoder encoder) {
-        encoder.encodeUInt32("SpecifiedAttributes", referenceTypeAttributes._specifiedAttributes);
-        encoder.encodeLocalizedText("DisplayName", referenceTypeAttributes._displayName);
-        encoder.encodeLocalizedText("Description", referenceTypeAttributes._description);
-        encoder.encodeUInt32("WriteMask", referenceTypeAttributes._writeMask);
-        encoder.encodeUInt32("UserWriteMask", referenceTypeAttributes._userWriteMask);
-        encoder.encodeBoolean("IsAbstract", referenceTypeAttributes._isAbstract);
-        encoder.encodeBoolean("Symmetric", referenceTypeAttributes._symmetric);
-        encoder.encodeLocalizedText("InverseName", referenceTypeAttributes._inverseName);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReferenceTypeAttributes> {
+        @Override
+        public ReferenceTypeAttributes decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+            UInteger _writeMask = reader.readUInt32();
+            UInteger _userWriteMask = reader.readUInt32();
+            Boolean _isAbstract = reader.readBoolean();
+            Boolean _symmetric = reader.readBoolean();
+            LocalizedText _inverseName = reader.readLocalizedText();
+
+            return new ReferenceTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract, _symmetric, _inverseName);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ReferenceTypeAttributes encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(encodable._specifiedAttributes);
+            writer.writeLocalizedText(encodable._displayName);
+            writer.writeLocalizedText(encodable._description);
+            writer.writeUInt32(encodable._writeMask);
+            writer.writeUInt32(encodable._userWriteMask);
+            writer.writeBoolean(encodable._isAbstract);
+            writer.writeBoolean(encodable._symmetric);
+            writer.writeLocalizedText(encodable._inverseName);
+        }
     }
 
-    public static ReferenceTypeAttributes decode(UaDecoder decoder) {
-        UInteger _specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        Boolean _isAbstract = decoder.decodeBoolean("IsAbstract");
-        Boolean _symmetric = decoder.decodeBoolean("Symmetric");
-        LocalizedText _inverseName = decoder.decodeLocalizedText("InverseName");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ReferenceTypeAttributes> {
+        @Override
+        public ReferenceTypeAttributes decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32("SpecifiedAttributes");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
+            UInteger _writeMask = reader.readUInt32("WriteMask");
+            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
+            Boolean _isAbstract = reader.readBoolean("IsAbstract");
+            Boolean _symmetric = reader.readBoolean("Symmetric");
+            LocalizedText _inverseName = reader.readLocalizedText("InverseName");
 
-        return new ReferenceTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract, _symmetric, _inverseName);
-    }
+            return new ReferenceTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract, _symmetric, _inverseName);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ReferenceTypeAttributes::encode, ReferenceTypeAttributes.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReferenceTypeAttributes::decode, ReferenceTypeAttributes.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ReferenceTypeAttributes encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("SpecifiedAttributes", encodable._specifiedAttributes);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+            writer.writeUInt32("WriteMask", encodable._writeMask);
+            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+            writer.writeBoolean("IsAbstract", encodable._isAbstract);
+            writer.writeBoolean("Symmetric", encodable._symmetric);
+            writer.writeLocalizedText("InverseName", encodable._inverseName);
+        }
     }
 
 }

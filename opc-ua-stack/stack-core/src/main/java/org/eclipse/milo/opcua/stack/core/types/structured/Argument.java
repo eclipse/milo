@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -86,27 +91,48 @@ public class Argument implements UaStructure {
             .toString();
     }
 
-    public static void encode(Argument argument, UaEncoder encoder) {
-        encoder.encodeString("Name", argument._name);
-        encoder.encodeNodeId("DataType", argument._dataType);
-        encoder.encodeInt32("ValueRank", argument._valueRank);
-        encoder.encodeArray("ArrayDimensions", argument._arrayDimensions, encoder::encodeUInt32);
-        encoder.encodeLocalizedText("Description", argument._description);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<Argument> {
+        @Override
+        public Argument decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            String _name = reader.readString();
+            NodeId _dataType = reader.readNodeId();
+            Integer _valueRank = reader.readInt32();
+            UInteger[] _arrayDimensions = reader.readArray(reader::readUInt32, UInteger.class);
+            LocalizedText _description = reader.readLocalizedText();
+
+            return new Argument(_name, _dataType, _valueRank, _arrayDimensions, _description);
+        }
+
+        @Override
+        public void encode(SerializationContext context, Argument encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(encodable._name);
+            writer.writeNodeId(encodable._dataType);
+            writer.writeInt32(encodable._valueRank);
+            writer.writeArray(encodable._arrayDimensions, writer::writeUInt32);
+            writer.writeLocalizedText(encodable._description);
+        }
     }
 
-    public static Argument decode(UaDecoder decoder) {
-        String _name = decoder.decodeString("Name");
-        NodeId _dataType = decoder.decodeNodeId("DataType");
-        Integer _valueRank = decoder.decodeInt32("ValueRank");
-        UInteger[] _arrayDimensions = decoder.decodeArray("ArrayDimensions", decoder::decodeUInt32, UInteger.class);
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<Argument> {
+        @Override
+        public Argument decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            String _name = reader.readString("Name");
+            NodeId _dataType = reader.readNodeId("DataType");
+            Integer _valueRank = reader.readInt32("ValueRank");
+            UInteger[] _arrayDimensions = reader.readArray("ArrayDimensions", reader::readUInt32, UInteger.class);
+            LocalizedText _description = reader.readLocalizedText("Description");
 
-        return new Argument(_name, _dataType, _valueRank, _arrayDimensions, _description);
-    }
+            return new Argument(_name, _dataType, _valueRank, _arrayDimensions, _description);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(Argument::encode, Argument.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(Argument::decode, Argument.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, Argument encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeString("Name", encodable._name);
+            writer.writeNodeId("DataType", encodable._dataType);
+            writer.writeInt32("ValueRank", encodable._valueRank);
+            writer.writeArray("ArrayDimensions", encodable._arrayDimensions, writer::writeUInt32);
+            writer.writeLocalizedText("Description", encodable._description);
+        }
     }
 
 }

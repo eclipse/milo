@@ -25,11 +25,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.examples.client.ClientExample;
 import org.eclipse.milo.opcua.stack.examples.server.ServerExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class ClientServerExample {
 
@@ -52,21 +55,23 @@ public class ClientServerExample {
         ClientExample client = new ClientExample(loader.getClientCertificate(), loader.getClientKeyPair());
 
         for (int i = 0; i < 5; i++) {
-            logger.info("Sending synchronous TestStackRequest input={}", i);
-            TestStackResponse response = client.testStack(i).get();
-            logger.info("Received TestStackResponse output={}", response.getOutput());
+            NodeId nodeId = new NodeId(2, i);
+            logger.info("Sending synchronous TestStackRequest NodeId={}", i);
+            ReadResponse response = client.testStack(nodeId).get();
+            logger.info("Received TestStackResponse value={}", l(response.getResults()).get(0).getValue());
         }
 
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
-            logger.info("Sending asynchronous TestStackRequest input={}", i);
+            NodeId nodeId = new NodeId(2, i);
+            logger.info("Sending asynchronous TestStackRequest NodeId={}", nodeId);
 
-            CompletableFuture<TestStackResponse> future = client.testStack(i);
+            CompletableFuture<ReadResponse> future = client.testStack(nodeId);
 
             future.whenComplete((response, ex) -> {
                 if (response != null) {
-                    logger.info("Received TestStackResponse output={}", response.getOutput());
+                    logger.info("Received TestStackResponse value={}", l(response.getResults()).get(0).getValue());
                 } else {
                     logger.error("Error: {}", ex.getMessage(), ex);
                 }

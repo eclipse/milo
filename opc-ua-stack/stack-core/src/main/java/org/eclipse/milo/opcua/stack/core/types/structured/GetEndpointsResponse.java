@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -66,21 +72,54 @@ public class GetEndpointsResponse implements UaResponseMessage {
             .toString();
     }
 
-    public static void encode(GetEndpointsResponse getEndpointsResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", getEndpointsResponse._responseHeader != null ? getEndpointsResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Endpoints", getEndpointsResponse._endpoints, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<GetEndpointsResponse> {
+        @Override
+        public GetEndpointsResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            EndpointDescription[] _endpoints =
+                reader.readArray(
+                    () -> (EndpointDescription) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", reader),
+                    EndpointDescription.class
+                );
+
+            return new GetEndpointsResponse(_responseHeader, _endpoints);
+        }
+
+        @Override
+        public void encode(SerializationContext context, GetEndpointsResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            writer.writeArray(
+                encodable._endpoints,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", e, writer)
+            );
+        }
     }
 
-    public static GetEndpointsResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        EndpointDescription[] _endpoints = decoder.decodeArray("Endpoints", decoder::decodeSerializable, EndpointDescription.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<GetEndpointsResponse> {
+        @Override
+        public GetEndpointsResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            EndpointDescription[] _endpoints =
+                reader.readArray(
+                    "Endpoints",
+                    f -> (EndpointDescription) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", reader),
+                    EndpointDescription.class
+                );
 
-        return new GetEndpointsResponse(_responseHeader, _endpoints);
-    }
+            return new GetEndpointsResponse(_responseHeader, _endpoints);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(GetEndpointsResponse::encode, GetEndpointsResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(GetEndpointsResponse::decode, GetEndpointsResponse.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, GetEndpointsResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            writer.writeArray(
+                "Endpoints",
+                encodable._endpoints,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", e, writer)
+            );
+        }
     }
 
 }

@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -66,21 +72,54 @@ public class AddReferencesRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(AddReferencesRequest addReferencesRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", addReferencesRequest._requestHeader != null ? addReferencesRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("ReferencesToAdd", addReferencesRequest._referencesToAdd, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AddReferencesRequest> {
+        @Override
+        public AddReferencesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            AddReferencesItem[] _referencesToAdd =
+                reader.readArray(
+                    () -> (AddReferencesItem) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddReferencesItem", reader),
+                    AddReferencesItem.class
+                );
+
+            return new AddReferencesRequest(_requestHeader, _referencesToAdd);
+        }
+
+        @Override
+        public void encode(SerializationContext context, AddReferencesRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeArray(
+                encodable._referencesToAdd,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddReferencesItem", e, writer)
+            );
+        }
     }
 
-    public static AddReferencesRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        AddReferencesItem[] _referencesToAdd = decoder.decodeArray("ReferencesToAdd", decoder::decodeSerializable, AddReferencesItem.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<AddReferencesRequest> {
+        @Override
+        public AddReferencesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            AddReferencesItem[] _referencesToAdd =
+                reader.readArray(
+                    "ReferencesToAdd",
+                    f -> (AddReferencesItem) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddReferencesItem", reader),
+                    AddReferencesItem.class
+                );
 
-        return new AddReferencesRequest(_requestHeader, _referencesToAdd);
-    }
+            return new AddReferencesRequest(_requestHeader, _referencesToAdd);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(AddReferencesRequest::encode, AddReferencesRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(AddReferencesRequest::decode, AddReferencesRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, AddReferencesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeArray(
+                "ReferencesToAdd",
+                encodable._referencesToAdd,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddReferencesItem", e, writer)
+            );
+        }
     }
 
 }

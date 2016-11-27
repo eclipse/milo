@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -66,21 +72,54 @@ public class DeleteReferencesRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(DeleteReferencesRequest deleteReferencesRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", deleteReferencesRequest._requestHeader != null ? deleteReferencesRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("ReferencesToDelete", deleteReferencesRequest._referencesToDelete, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DeleteReferencesRequest> {
+        @Override
+        public DeleteReferencesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            DeleteReferencesItem[] _referencesToDelete =
+                reader.readArray(
+                    () -> (DeleteReferencesItem) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "DeleteReferencesItem", reader),
+                    DeleteReferencesItem.class
+                );
+
+            return new DeleteReferencesRequest(_requestHeader, _referencesToDelete);
+        }
+
+        @Override
+        public void encode(SerializationContext context, DeleteReferencesRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeArray(
+                encodable._referencesToDelete,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "DeleteReferencesItem", e, writer)
+            );
+        }
     }
 
-    public static DeleteReferencesRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        DeleteReferencesItem[] _referencesToDelete = decoder.decodeArray("ReferencesToDelete", decoder::decodeSerializable, DeleteReferencesItem.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<DeleteReferencesRequest> {
+        @Override
+        public DeleteReferencesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            DeleteReferencesItem[] _referencesToDelete =
+                reader.readArray(
+                    "ReferencesToDelete",
+                    f -> (DeleteReferencesItem) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "DeleteReferencesItem", reader),
+                    DeleteReferencesItem.class
+                );
 
-        return new DeleteReferencesRequest(_requestHeader, _referencesToDelete);
-    }
+            return new DeleteReferencesRequest(_requestHeader, _referencesToDelete);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteReferencesRequest::encode, DeleteReferencesRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteReferencesRequest::decode, DeleteReferencesRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, DeleteReferencesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeArray(
+                "ReferencesToDelete",
+                encodable._referencesToDelete,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "DeleteReferencesItem", e, writer)
+            );
+        }
     }
 
 }

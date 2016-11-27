@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -72,31 +77,56 @@ public class ViewAttributes extends NodeAttributes {
             .toString();
     }
 
-    public static void encode(ViewAttributes viewAttributes, UaEncoder encoder) {
-        encoder.encodeUInt32("SpecifiedAttributes", viewAttributes._specifiedAttributes);
-        encoder.encodeLocalizedText("DisplayName", viewAttributes._displayName);
-        encoder.encodeLocalizedText("Description", viewAttributes._description);
-        encoder.encodeUInt32("WriteMask", viewAttributes._writeMask);
-        encoder.encodeUInt32("UserWriteMask", viewAttributes._userWriteMask);
-        encoder.encodeBoolean("ContainsNoLoops", viewAttributes._containsNoLoops);
-        encoder.encodeByte("EventNotifier", viewAttributes._eventNotifier);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ViewAttributes> {
+        @Override
+        public ViewAttributes decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+            UInteger _writeMask = reader.readUInt32();
+            UInteger _userWriteMask = reader.readUInt32();
+            Boolean _containsNoLoops = reader.readBoolean();
+            UByte _eventNotifier = reader.readByte();
+
+            return new ViewAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _containsNoLoops, _eventNotifier);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ViewAttributes encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(encodable._specifiedAttributes);
+            writer.writeLocalizedText(encodable._displayName);
+            writer.writeLocalizedText(encodable._description);
+            writer.writeUInt32(encodable._writeMask);
+            writer.writeUInt32(encodable._userWriteMask);
+            writer.writeBoolean(encodable._containsNoLoops);
+            writer.writeByte(encodable._eventNotifier);
+        }
     }
 
-    public static ViewAttributes decode(UaDecoder decoder) {
-        UInteger _specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        Boolean _containsNoLoops = decoder.decodeBoolean("ContainsNoLoops");
-        UByte _eventNotifier = decoder.decodeByte("EventNotifier");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ViewAttributes> {
+        @Override
+        public ViewAttributes decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32("SpecifiedAttributes");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
+            UInteger _writeMask = reader.readUInt32("WriteMask");
+            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
+            Boolean _containsNoLoops = reader.readBoolean("ContainsNoLoops");
+            UByte _eventNotifier = reader.readByte("EventNotifier");
 
-        return new ViewAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _containsNoLoops, _eventNotifier);
-    }
+            return new ViewAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _containsNoLoops, _eventNotifier);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ViewAttributes::encode, ViewAttributes.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ViewAttributes::decode, ViewAttributes.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ViewAttributes encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("SpecifiedAttributes", encodable._specifiedAttributes);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+            writer.writeUInt32("WriteMask", encodable._writeMask);
+            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+            writer.writeBoolean("ContainsNoLoops", encodable._containsNoLoops);
+            writer.writeByte("EventNotifier", encodable._eventNotifier);
+        }
     }
 
 }

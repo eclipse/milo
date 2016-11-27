@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -57,19 +62,32 @@ public class UserIdentityToken implements UaStructure {
             .toString();
     }
 
-    public static void encode(UserIdentityToken userIdentityToken, UaEncoder encoder) {
-        encoder.encodeString("PolicyId", userIdentityToken._policyId);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UserIdentityToken> {
+        @Override
+        public UserIdentityToken decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            String _policyId = reader.readString();
+
+            return new UserIdentityToken(_policyId);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UserIdentityToken encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(encodable._policyId);
+        }
     }
 
-    public static UserIdentityToken decode(UaDecoder decoder) {
-        String _policyId = decoder.decodeString("PolicyId");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<UserIdentityToken> {
+        @Override
+        public UserIdentityToken decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            String _policyId = reader.readString("PolicyId");
 
-        return new UserIdentityToken(_policyId);
-    }
+            return new UserIdentityToken(_policyId);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(UserIdentityToken::encode, UserIdentityToken.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(UserIdentityToken::decode, UserIdentityToken.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, UserIdentityToken encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeString("PolicyId", encodable._policyId);
+        }
     }
 
 }

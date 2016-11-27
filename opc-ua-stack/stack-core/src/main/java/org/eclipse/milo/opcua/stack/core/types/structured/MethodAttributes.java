@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -71,31 +76,56 @@ public class MethodAttributes extends NodeAttributes {
             .toString();
     }
 
-    public static void encode(MethodAttributes methodAttributes, UaEncoder encoder) {
-        encoder.encodeUInt32("SpecifiedAttributes", methodAttributes._specifiedAttributes);
-        encoder.encodeLocalizedText("DisplayName", methodAttributes._displayName);
-        encoder.encodeLocalizedText("Description", methodAttributes._description);
-        encoder.encodeUInt32("WriteMask", methodAttributes._writeMask);
-        encoder.encodeUInt32("UserWriteMask", methodAttributes._userWriteMask);
-        encoder.encodeBoolean("Executable", methodAttributes._executable);
-        encoder.encodeBoolean("UserExecutable", methodAttributes._userExecutable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MethodAttributes> {
+        @Override
+        public MethodAttributes decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+            UInteger _writeMask = reader.readUInt32();
+            UInteger _userWriteMask = reader.readUInt32();
+            Boolean _executable = reader.readBoolean();
+            Boolean _userExecutable = reader.readBoolean();
+
+            return new MethodAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _executable, _userExecutable);
+        }
+
+        @Override
+        public void encode(SerializationContext context, MethodAttributes encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(encodable._specifiedAttributes);
+            writer.writeLocalizedText(encodable._displayName);
+            writer.writeLocalizedText(encodable._description);
+            writer.writeUInt32(encodable._writeMask);
+            writer.writeUInt32(encodable._userWriteMask);
+            writer.writeBoolean(encodable._executable);
+            writer.writeBoolean(encodable._userExecutable);
+        }
     }
 
-    public static MethodAttributes decode(UaDecoder decoder) {
-        UInteger _specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        Boolean _executable = decoder.decodeBoolean("Executable");
-        Boolean _userExecutable = decoder.decodeBoolean("UserExecutable");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MethodAttributes> {
+        @Override
+        public MethodAttributes decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32("SpecifiedAttributes");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
+            UInteger _writeMask = reader.readUInt32("WriteMask");
+            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
+            Boolean _executable = reader.readBoolean("Executable");
+            Boolean _userExecutable = reader.readBoolean("UserExecutable");
 
-        return new MethodAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _executable, _userExecutable);
-    }
+            return new MethodAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _executable, _userExecutable);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MethodAttributes::encode, MethodAttributes.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MethodAttributes::decode, MethodAttributes.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MethodAttributes encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("SpecifiedAttributes", encodable._specifiedAttributes);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+            writer.writeUInt32("WriteMask", encodable._writeMask);
+            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+            writer.writeBoolean("Executable", encodable._executable);
+            writer.writeBoolean("UserExecutable", encodable._userExecutable);
+        }
     }
 
 }

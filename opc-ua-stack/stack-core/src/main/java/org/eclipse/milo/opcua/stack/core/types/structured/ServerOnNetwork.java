@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -79,25 +84,44 @@ public class ServerOnNetwork implements UaStructure {
             .toString();
     }
 
-    public static void encode(ServerOnNetwork serverOnNetwork, UaEncoder encoder) {
-        encoder.encodeUInt32("RecordId", serverOnNetwork._recordId);
-        encoder.encodeString("ServerName", serverOnNetwork._serverName);
-        encoder.encodeString("DiscoveryUrl", serverOnNetwork._discoveryUrl);
-        encoder.encodeArray("ServerCapabilities", serverOnNetwork._serverCapabilities, encoder::encodeString);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ServerOnNetwork> {
+        @Override
+        public ServerOnNetwork decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _recordId = reader.readUInt32();
+            String _serverName = reader.readString();
+            String _discoveryUrl = reader.readString();
+            String[] _serverCapabilities = reader.readArray(reader::readString, String.class);
+
+            return new ServerOnNetwork(_recordId, _serverName, _discoveryUrl, _serverCapabilities);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ServerOnNetwork encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(encodable._recordId);
+            writer.writeString(encodable._serverName);
+            writer.writeString(encodable._discoveryUrl);
+            writer.writeArray(encodable._serverCapabilities, writer::writeString);
+        }
     }
 
-    public static ServerOnNetwork decode(UaDecoder decoder) {
-        UInteger _recordId = decoder.decodeUInt32("RecordId");
-        String _serverName = decoder.decodeString("ServerName");
-        String _discoveryUrl = decoder.decodeString("DiscoveryUrl");
-        String[] _serverCapabilities = decoder.decodeArray("ServerCapabilities", decoder::decodeString, String.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ServerOnNetwork> {
+        @Override
+        public ServerOnNetwork decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _recordId = reader.readUInt32("RecordId");
+            String _serverName = reader.readString("ServerName");
+            String _discoveryUrl = reader.readString("DiscoveryUrl");
+            String[] _serverCapabilities = reader.readArray("ServerCapabilities", reader::readString, String.class);
 
-        return new ServerOnNetwork(_recordId, _serverName, _discoveryUrl, _serverCapabilities);
-    }
+            return new ServerOnNetwork(_recordId, _serverName, _discoveryUrl, _serverCapabilities);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ServerOnNetwork::encode, ServerOnNetwork.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ServerOnNetwork::decode, ServerOnNetwork.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ServerOnNetwork encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("RecordId", encodable._recordId);
+            writer.writeString("ServerName", encodable._serverName);
+            writer.writeString("DiscoveryUrl", encodable._discoveryUrl);
+            writer.writeArray("ServerCapabilities", encodable._serverCapabilities, writer::writeString);
+        }
     }
 
 }

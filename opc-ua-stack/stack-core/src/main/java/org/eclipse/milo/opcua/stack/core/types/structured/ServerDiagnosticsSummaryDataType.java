@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -124,41 +129,76 @@ public class ServerDiagnosticsSummaryDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(ServerDiagnosticsSummaryDataType serverDiagnosticsSummaryDataType, UaEncoder encoder) {
-        encoder.encodeUInt32("ServerViewCount", serverDiagnosticsSummaryDataType._serverViewCount);
-        encoder.encodeUInt32("CurrentSessionCount", serverDiagnosticsSummaryDataType._currentSessionCount);
-        encoder.encodeUInt32("CumulatedSessionCount", serverDiagnosticsSummaryDataType._cumulatedSessionCount);
-        encoder.encodeUInt32("SecurityRejectedSessionCount", serverDiagnosticsSummaryDataType._securityRejectedSessionCount);
-        encoder.encodeUInt32("RejectedSessionCount", serverDiagnosticsSummaryDataType._rejectedSessionCount);
-        encoder.encodeUInt32("SessionTimeoutCount", serverDiagnosticsSummaryDataType._sessionTimeoutCount);
-        encoder.encodeUInt32("SessionAbortCount", serverDiagnosticsSummaryDataType._sessionAbortCount);
-        encoder.encodeUInt32("CurrentSubscriptionCount", serverDiagnosticsSummaryDataType._currentSubscriptionCount);
-        encoder.encodeUInt32("CumulatedSubscriptionCount", serverDiagnosticsSummaryDataType._cumulatedSubscriptionCount);
-        encoder.encodeUInt32("PublishingIntervalCount", serverDiagnosticsSummaryDataType._publishingIntervalCount);
-        encoder.encodeUInt32("SecurityRejectedRequestsCount", serverDiagnosticsSummaryDataType._securityRejectedRequestsCount);
-        encoder.encodeUInt32("RejectedRequestsCount", serverDiagnosticsSummaryDataType._rejectedRequestsCount);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ServerDiagnosticsSummaryDataType> {
+        @Override
+        public ServerDiagnosticsSummaryDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _serverViewCount = reader.readUInt32();
+            UInteger _currentSessionCount = reader.readUInt32();
+            UInteger _cumulatedSessionCount = reader.readUInt32();
+            UInteger _securityRejectedSessionCount = reader.readUInt32();
+            UInteger _rejectedSessionCount = reader.readUInt32();
+            UInteger _sessionTimeoutCount = reader.readUInt32();
+            UInteger _sessionAbortCount = reader.readUInt32();
+            UInteger _currentSubscriptionCount = reader.readUInt32();
+            UInteger _cumulatedSubscriptionCount = reader.readUInt32();
+            UInteger _publishingIntervalCount = reader.readUInt32();
+            UInteger _securityRejectedRequestsCount = reader.readUInt32();
+            UInteger _rejectedRequestsCount = reader.readUInt32();
+
+            return new ServerDiagnosticsSummaryDataType(_serverViewCount, _currentSessionCount, _cumulatedSessionCount, _securityRejectedSessionCount, _rejectedSessionCount, _sessionTimeoutCount, _sessionAbortCount, _currentSubscriptionCount, _cumulatedSubscriptionCount, _publishingIntervalCount, _securityRejectedRequestsCount, _rejectedRequestsCount);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ServerDiagnosticsSummaryDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(encodable._serverViewCount);
+            writer.writeUInt32(encodable._currentSessionCount);
+            writer.writeUInt32(encodable._cumulatedSessionCount);
+            writer.writeUInt32(encodable._securityRejectedSessionCount);
+            writer.writeUInt32(encodable._rejectedSessionCount);
+            writer.writeUInt32(encodable._sessionTimeoutCount);
+            writer.writeUInt32(encodable._sessionAbortCount);
+            writer.writeUInt32(encodable._currentSubscriptionCount);
+            writer.writeUInt32(encodable._cumulatedSubscriptionCount);
+            writer.writeUInt32(encodable._publishingIntervalCount);
+            writer.writeUInt32(encodable._securityRejectedRequestsCount);
+            writer.writeUInt32(encodable._rejectedRequestsCount);
+        }
     }
 
-    public static ServerDiagnosticsSummaryDataType decode(UaDecoder decoder) {
-        UInteger _serverViewCount = decoder.decodeUInt32("ServerViewCount");
-        UInteger _currentSessionCount = decoder.decodeUInt32("CurrentSessionCount");
-        UInteger _cumulatedSessionCount = decoder.decodeUInt32("CumulatedSessionCount");
-        UInteger _securityRejectedSessionCount = decoder.decodeUInt32("SecurityRejectedSessionCount");
-        UInteger _rejectedSessionCount = decoder.decodeUInt32("RejectedSessionCount");
-        UInteger _sessionTimeoutCount = decoder.decodeUInt32("SessionTimeoutCount");
-        UInteger _sessionAbortCount = decoder.decodeUInt32("SessionAbortCount");
-        UInteger _currentSubscriptionCount = decoder.decodeUInt32("CurrentSubscriptionCount");
-        UInteger _cumulatedSubscriptionCount = decoder.decodeUInt32("CumulatedSubscriptionCount");
-        UInteger _publishingIntervalCount = decoder.decodeUInt32("PublishingIntervalCount");
-        UInteger _securityRejectedRequestsCount = decoder.decodeUInt32("SecurityRejectedRequestsCount");
-        UInteger _rejectedRequestsCount = decoder.decodeUInt32("RejectedRequestsCount");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ServerDiagnosticsSummaryDataType> {
+        @Override
+        public ServerDiagnosticsSummaryDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _serverViewCount = reader.readUInt32("ServerViewCount");
+            UInteger _currentSessionCount = reader.readUInt32("CurrentSessionCount");
+            UInteger _cumulatedSessionCount = reader.readUInt32("CumulatedSessionCount");
+            UInteger _securityRejectedSessionCount = reader.readUInt32("SecurityRejectedSessionCount");
+            UInteger _rejectedSessionCount = reader.readUInt32("RejectedSessionCount");
+            UInteger _sessionTimeoutCount = reader.readUInt32("SessionTimeoutCount");
+            UInteger _sessionAbortCount = reader.readUInt32("SessionAbortCount");
+            UInteger _currentSubscriptionCount = reader.readUInt32("CurrentSubscriptionCount");
+            UInteger _cumulatedSubscriptionCount = reader.readUInt32("CumulatedSubscriptionCount");
+            UInteger _publishingIntervalCount = reader.readUInt32("PublishingIntervalCount");
+            UInteger _securityRejectedRequestsCount = reader.readUInt32("SecurityRejectedRequestsCount");
+            UInteger _rejectedRequestsCount = reader.readUInt32("RejectedRequestsCount");
 
-        return new ServerDiagnosticsSummaryDataType(_serverViewCount, _currentSessionCount, _cumulatedSessionCount, _securityRejectedSessionCount, _rejectedSessionCount, _sessionTimeoutCount, _sessionAbortCount, _currentSubscriptionCount, _cumulatedSubscriptionCount, _publishingIntervalCount, _securityRejectedRequestsCount, _rejectedRequestsCount);
-    }
+            return new ServerDiagnosticsSummaryDataType(_serverViewCount, _currentSessionCount, _cumulatedSessionCount, _securityRejectedSessionCount, _rejectedSessionCount, _sessionTimeoutCount, _sessionAbortCount, _currentSubscriptionCount, _cumulatedSubscriptionCount, _publishingIntervalCount, _securityRejectedRequestsCount, _rejectedRequestsCount);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ServerDiagnosticsSummaryDataType::encode, ServerDiagnosticsSummaryDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ServerDiagnosticsSummaryDataType::decode, ServerDiagnosticsSummaryDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ServerDiagnosticsSummaryDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("ServerViewCount", encodable._serverViewCount);
+            writer.writeUInt32("CurrentSessionCount", encodable._currentSessionCount);
+            writer.writeUInt32("CumulatedSessionCount", encodable._cumulatedSessionCount);
+            writer.writeUInt32("SecurityRejectedSessionCount", encodable._securityRejectedSessionCount);
+            writer.writeUInt32("RejectedSessionCount", encodable._rejectedSessionCount);
+            writer.writeUInt32("SessionTimeoutCount", encodable._sessionTimeoutCount);
+            writer.writeUInt32("SessionAbortCount", encodable._sessionAbortCount);
+            writer.writeUInt32("CurrentSubscriptionCount", encodable._currentSubscriptionCount);
+            writer.writeUInt32("CumulatedSubscriptionCount", encodable._cumulatedSubscriptionCount);
+            writer.writeUInt32("PublishingIntervalCount", encodable._publishingIntervalCount);
+            writer.writeUInt32("SecurityRejectedRequestsCount", encodable._securityRejectedRequestsCount);
+            writer.writeUInt32("RejectedRequestsCount", encodable._rejectedRequestsCount);
+        }
     }
 
 }

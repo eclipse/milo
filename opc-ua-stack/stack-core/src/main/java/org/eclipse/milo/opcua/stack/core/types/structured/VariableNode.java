@@ -17,9 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -117,49 +123,110 @@ public class VariableNode extends InstanceNode {
             .toString();
     }
 
-    public static void encode(VariableNode variableNode, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", variableNode._nodeId);
-        encoder.encodeEnumeration("NodeClass", variableNode._nodeClass);
-        encoder.encodeQualifiedName("BrowseName", variableNode._browseName);
-        encoder.encodeLocalizedText("DisplayName", variableNode._displayName);
-        encoder.encodeLocalizedText("Description", variableNode._description);
-        encoder.encodeUInt32("WriteMask", variableNode._writeMask);
-        encoder.encodeUInt32("UserWriteMask", variableNode._userWriteMask);
-        encoder.encodeArray("References", variableNode._references, encoder::encodeSerializable);
-        encoder.encodeVariant("Value", variableNode._value);
-        encoder.encodeNodeId("DataType", variableNode._dataType);
-        encoder.encodeInt32("ValueRank", variableNode._valueRank);
-        encoder.encodeArray("ArrayDimensions", variableNode._arrayDimensions, encoder::encodeUInt32);
-        encoder.encodeByte("AccessLevel", variableNode._accessLevel);
-        encoder.encodeByte("UserAccessLevel", variableNode._userAccessLevel);
-        encoder.encodeDouble("MinimumSamplingInterval", variableNode._minimumSamplingInterval);
-        encoder.encodeBoolean("Historizing", variableNode._historizing);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<VariableNode> {
+        @Override
+        public VariableNode decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
+            QualifiedName _browseName = reader.readQualifiedName();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+            UInteger _writeMask = reader.readUInt32();
+            UInteger _userWriteMask = reader.readUInt32();
+            ReferenceNode[] _references =
+                reader.readArray(
+                    () -> (ReferenceNode) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                    ReferenceNode.class
+                );
+            Variant _value = reader.readVariant();
+            NodeId _dataType = reader.readNodeId();
+            Integer _valueRank = reader.readInt32();
+            UInteger[] _arrayDimensions = reader.readArray(reader::readUInt32, UInteger.class);
+            UByte _accessLevel = reader.readByte();
+            UByte _userAccessLevel = reader.readByte();
+            Double _minimumSamplingInterval = reader.readDouble();
+            Boolean _historizing = reader.readBoolean();
+
+            return new VariableNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _value, _dataType, _valueRank, _arrayDimensions, _accessLevel, _userAccessLevel, _minimumSamplingInterval, _historizing);
+        }
+
+        @Override
+        public void encode(SerializationContext context, VariableNode encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._nodeId);
+            writer.writeInt32(encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
+            writer.writeQualifiedName(encodable._browseName);
+            writer.writeLocalizedText(encodable._displayName);
+            writer.writeLocalizedText(encodable._description);
+            writer.writeUInt32(encodable._writeMask);
+            writer.writeUInt32(encodable._userWriteMask);
+            writer.writeArray(
+                encodable._references,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+            );
+            writer.writeVariant(encodable._value);
+            writer.writeNodeId(encodable._dataType);
+            writer.writeInt32(encodable._valueRank);
+            writer.writeArray(encodable._arrayDimensions, writer::writeUInt32);
+            writer.writeByte(encodable._accessLevel);
+            writer.writeByte(encodable._userAccessLevel);
+            writer.writeDouble(encodable._minimumSamplingInterval);
+            writer.writeBoolean(encodable._historizing);
+        }
     }
 
-    public static VariableNode decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        NodeClass _nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        QualifiedName _browseName = decoder.decodeQualifiedName("BrowseName");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        ReferenceNode[] _references = decoder.decodeArray("References", decoder::decodeSerializable, ReferenceNode.class);
-        Variant _value = decoder.decodeVariant("Value");
-        NodeId _dataType = decoder.decodeNodeId("DataType");
-        Integer _valueRank = decoder.decodeInt32("ValueRank");
-        UInteger[] _arrayDimensions = decoder.decodeArray("ArrayDimensions", decoder::decodeUInt32, UInteger.class);
-        UByte _accessLevel = decoder.decodeByte("AccessLevel");
-        UByte _userAccessLevel = decoder.decodeByte("UserAccessLevel");
-        Double _minimumSamplingInterval = decoder.decodeDouble("MinimumSamplingInterval");
-        Boolean _historizing = decoder.decodeBoolean("Historizing");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<VariableNode> {
+        @Override
+        public VariableNode decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
+            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
+            UInteger _writeMask = reader.readUInt32("WriteMask");
+            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
+            ReferenceNode[] _references =
+                reader.readArray(
+                    "References",
+                    f -> (ReferenceNode) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                    ReferenceNode.class
+                );
+            Variant _value = reader.readVariant("Value");
+            NodeId _dataType = reader.readNodeId("DataType");
+            Integer _valueRank = reader.readInt32("ValueRank");
+            UInteger[] _arrayDimensions = reader.readArray("ArrayDimensions", reader::readUInt32, UInteger.class);
+            UByte _accessLevel = reader.readByte("AccessLevel");
+            UByte _userAccessLevel = reader.readByte("UserAccessLevel");
+            Double _minimumSamplingInterval = reader.readDouble("MinimumSamplingInterval");
+            Boolean _historizing = reader.readBoolean("Historizing");
 
-        return new VariableNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _value, _dataType, _valueRank, _arrayDimensions, _accessLevel, _userAccessLevel, _minimumSamplingInterval, _historizing);
-    }
+            return new VariableNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _value, _dataType, _valueRank, _arrayDimensions, _accessLevel, _userAccessLevel, _minimumSamplingInterval, _historizing);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(VariableNode::encode, VariableNode.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(VariableNode::decode, VariableNode.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, VariableNode encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
+            writer.writeQualifiedName("BrowseName", encodable._browseName);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+            writer.writeUInt32("WriteMask", encodable._writeMask);
+            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+            writer.writeArray(
+                "References",
+                encodable._references,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+            );
+            writer.writeVariant("Value", encodable._value);
+            writer.writeNodeId("DataType", encodable._dataType);
+            writer.writeInt32("ValueRank", encodable._valueRank);
+            writer.writeArray("ArrayDimensions", encodable._arrayDimensions, writer::writeUInt32);
+            writer.writeByte("AccessLevel", encodable._accessLevel);
+            writer.writeByte("UserAccessLevel", encodable._userAccessLevel);
+            writer.writeDouble("MinimumSamplingInterval", encodable._minimumSamplingInterval);
+            writer.writeBoolean("Historizing", encodable._historizing);
+        }
     }
 
 }

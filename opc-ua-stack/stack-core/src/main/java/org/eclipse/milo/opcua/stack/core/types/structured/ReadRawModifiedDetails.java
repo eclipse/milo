@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -84,27 +89,48 @@ public class ReadRawModifiedDetails extends HistoryReadDetails {
             .toString();
     }
 
-    public static void encode(ReadRawModifiedDetails readRawModifiedDetails, UaEncoder encoder) {
-        encoder.encodeBoolean("IsReadModified", readRawModifiedDetails._isReadModified);
-        encoder.encodeDateTime("StartTime", readRawModifiedDetails._startTime);
-        encoder.encodeDateTime("EndTime", readRawModifiedDetails._endTime);
-        encoder.encodeUInt32("NumValuesPerNode", readRawModifiedDetails._numValuesPerNode);
-        encoder.encodeBoolean("ReturnBounds", readRawModifiedDetails._returnBounds);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReadRawModifiedDetails> {
+        @Override
+        public ReadRawModifiedDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            Boolean _isReadModified = reader.readBoolean();
+            DateTime _startTime = reader.readDateTime();
+            DateTime _endTime = reader.readDateTime();
+            UInteger _numValuesPerNode = reader.readUInt32();
+            Boolean _returnBounds = reader.readBoolean();
+
+            return new ReadRawModifiedDetails(_isReadModified, _startTime, _endTime, _numValuesPerNode, _returnBounds);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ReadRawModifiedDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeBoolean(encodable._isReadModified);
+            writer.writeDateTime(encodable._startTime);
+            writer.writeDateTime(encodable._endTime);
+            writer.writeUInt32(encodable._numValuesPerNode);
+            writer.writeBoolean(encodable._returnBounds);
+        }
     }
 
-    public static ReadRawModifiedDetails decode(UaDecoder decoder) {
-        Boolean _isReadModified = decoder.decodeBoolean("IsReadModified");
-        DateTime _startTime = decoder.decodeDateTime("StartTime");
-        DateTime _endTime = decoder.decodeDateTime("EndTime");
-        UInteger _numValuesPerNode = decoder.decodeUInt32("NumValuesPerNode");
-        Boolean _returnBounds = decoder.decodeBoolean("ReturnBounds");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ReadRawModifiedDetails> {
+        @Override
+        public ReadRawModifiedDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            Boolean _isReadModified = reader.readBoolean("IsReadModified");
+            DateTime _startTime = reader.readDateTime("StartTime");
+            DateTime _endTime = reader.readDateTime("EndTime");
+            UInteger _numValuesPerNode = reader.readUInt32("NumValuesPerNode");
+            Boolean _returnBounds = reader.readBoolean("ReturnBounds");
 
-        return new ReadRawModifiedDetails(_isReadModified, _startTime, _endTime, _numValuesPerNode, _returnBounds);
-    }
+            return new ReadRawModifiedDetails(_isReadModified, _startTime, _endTime, _numValuesPerNode, _returnBounds);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ReadRawModifiedDetails::encode, ReadRawModifiedDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReadRawModifiedDetails::decode, ReadRawModifiedDetails.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ReadRawModifiedDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeBoolean("IsReadModified", encodable._isReadModified);
+            writer.writeDateTime("StartTime", encodable._startTime);
+            writer.writeDateTime("EndTime", encodable._endTime);
+            writer.writeUInt32("NumValuesPerNode", encodable._numValuesPerNode);
+            writer.writeBoolean("ReturnBounds", encodable._returnBounds);
+        }
     }
 
 }

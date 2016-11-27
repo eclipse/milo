@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -65,21 +70,36 @@ public class MonitoredItemNotification implements UaStructure {
             .toString();
     }
 
-    public static void encode(MonitoredItemNotification monitoredItemNotification, UaEncoder encoder) {
-        encoder.encodeUInt32("ClientHandle", monitoredItemNotification._clientHandle);
-        encoder.encodeDataValue("Value", monitoredItemNotification._value);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoredItemNotification> {
+        @Override
+        public MonitoredItemNotification decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _clientHandle = reader.readUInt32();
+            DataValue _value = reader.readDataValue();
+
+            return new MonitoredItemNotification(_clientHandle, _value);
+        }
+
+        @Override
+        public void encode(SerializationContext context, MonitoredItemNotification encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(encodable._clientHandle);
+            writer.writeDataValue(encodable._value);
+        }
     }
 
-    public static MonitoredItemNotification decode(UaDecoder decoder) {
-        UInteger _clientHandle = decoder.decodeUInt32("ClientHandle");
-        DataValue _value = decoder.decodeDataValue("Value");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoredItemNotification> {
+        @Override
+        public MonitoredItemNotification decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _clientHandle = reader.readUInt32("ClientHandle");
+            DataValue _value = reader.readDataValue("Value");
 
-        return new MonitoredItemNotification(_clientHandle, _value);
-    }
+            return new MonitoredItemNotification(_clientHandle, _value);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoredItemNotification::encode, MonitoredItemNotification.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoredItemNotification::decode, MonitoredItemNotification.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MonitoredItemNotification encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("ClientHandle", encodable._clientHandle);
+            writer.writeDataValue("Value", encodable._value);
+        }
     }
 
 }

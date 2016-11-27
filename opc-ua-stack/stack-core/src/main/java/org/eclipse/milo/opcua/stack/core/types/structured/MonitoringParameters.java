@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -83,27 +88,48 @@ public class MonitoringParameters implements UaStructure {
             .toString();
     }
 
-    public static void encode(MonitoringParameters monitoringParameters, UaEncoder encoder) {
-        encoder.encodeUInt32("ClientHandle", monitoringParameters._clientHandle);
-        encoder.encodeDouble("SamplingInterval", monitoringParameters._samplingInterval);
-        encoder.encodeExtensionObject("Filter", monitoringParameters._filter);
-        encoder.encodeUInt32("QueueSize", monitoringParameters._queueSize);
-        encoder.encodeBoolean("DiscardOldest", monitoringParameters._discardOldest);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoringParameters> {
+        @Override
+        public MonitoringParameters decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _clientHandle = reader.readUInt32();
+            Double _samplingInterval = reader.readDouble();
+            ExtensionObject _filter = reader.readExtensionObject();
+            UInteger _queueSize = reader.readUInt32();
+            Boolean _discardOldest = reader.readBoolean();
+
+            return new MonitoringParameters(_clientHandle, _samplingInterval, _filter, _queueSize, _discardOldest);
+        }
+
+        @Override
+        public void encode(SerializationContext context, MonitoringParameters encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(encodable._clientHandle);
+            writer.writeDouble(encodable._samplingInterval);
+            writer.writeExtensionObject(encodable._filter);
+            writer.writeUInt32(encodable._queueSize);
+            writer.writeBoolean(encodable._discardOldest);
+        }
     }
 
-    public static MonitoringParameters decode(UaDecoder decoder) {
-        UInteger _clientHandle = decoder.decodeUInt32("ClientHandle");
-        Double _samplingInterval = decoder.decodeDouble("SamplingInterval");
-        ExtensionObject _filter = decoder.decodeExtensionObject("Filter");
-        UInteger _queueSize = decoder.decodeUInt32("QueueSize");
-        Boolean _discardOldest = decoder.decodeBoolean("DiscardOldest");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoringParameters> {
+        @Override
+        public MonitoringParameters decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _clientHandle = reader.readUInt32("ClientHandle");
+            Double _samplingInterval = reader.readDouble("SamplingInterval");
+            ExtensionObject _filter = reader.readExtensionObject("Filter");
+            UInteger _queueSize = reader.readUInt32("QueueSize");
+            Boolean _discardOldest = reader.readBoolean("DiscardOldest");
 
-        return new MonitoringParameters(_clientHandle, _samplingInterval, _filter, _queueSize, _discardOldest);
-    }
+            return new MonitoringParameters(_clientHandle, _samplingInterval, _filter, _queueSize, _discardOldest);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoringParameters::encode, MonitoringParameters.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoringParameters::decode, MonitoringParameters.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MonitoringParameters encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("ClientHandle", encodable._clientHandle);
+            writer.writeDouble("SamplingInterval", encodable._samplingInterval);
+            writer.writeExtensionObject("Filter", encodable._filter);
+            writer.writeUInt32("QueueSize", encodable._queueSize);
+            writer.writeBoolean("DiscardOldest", encodable._discardOldest);
+        }
     }
 
 }

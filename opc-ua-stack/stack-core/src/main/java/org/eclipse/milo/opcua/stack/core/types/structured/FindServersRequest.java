@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -79,25 +85,44 @@ public class FindServersRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(FindServersRequest findServersRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", findServersRequest._requestHeader != null ? findServersRequest._requestHeader : new RequestHeader());
-        encoder.encodeString("EndpointUrl", findServersRequest._endpointUrl);
-        encoder.encodeArray("LocaleIds", findServersRequest._localeIds, encoder::encodeString);
-        encoder.encodeArray("ServerUris", findServersRequest._serverUris, encoder::encodeString);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<FindServersRequest> {
+        @Override
+        public FindServersRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            String _endpointUrl = reader.readString();
+            String[] _localeIds = reader.readArray(reader::readString, String.class);
+            String[] _serverUris = reader.readArray(reader::readString, String.class);
+
+            return new FindServersRequest(_requestHeader, _endpointUrl, _localeIds, _serverUris);
+        }
+
+        @Override
+        public void encode(SerializationContext context, FindServersRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeString(encodable._endpointUrl);
+            writer.writeArray(encodable._localeIds, writer::writeString);
+            writer.writeArray(encodable._serverUris, writer::writeString);
+        }
     }
 
-    public static FindServersRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        String _endpointUrl = decoder.decodeString("EndpointUrl");
-        String[] _localeIds = decoder.decodeArray("LocaleIds", decoder::decodeString, String.class);
-        String[] _serverUris = decoder.decodeArray("ServerUris", decoder::decodeString, String.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<FindServersRequest> {
+        @Override
+        public FindServersRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            String _endpointUrl = reader.readString("EndpointUrl");
+            String[] _localeIds = reader.readArray("LocaleIds", reader::readString, String.class);
+            String[] _serverUris = reader.readArray("ServerUris", reader::readString, String.class);
 
-        return new FindServersRequest(_requestHeader, _endpointUrl, _localeIds, _serverUris);
-    }
+            return new FindServersRequest(_requestHeader, _endpointUrl, _localeIds, _serverUris);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(FindServersRequest::encode, FindServersRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(FindServersRequest::decode, FindServersRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, FindServersRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            writer.writeString("EndpointUrl", encodable._endpointUrl);
+            writer.writeArray("LocaleIds", encodable._localeIds, writer::writeString);
+            writer.writeArray("ServerUris", encodable._serverUris, writer::writeString);
+        }
     }
 
 }

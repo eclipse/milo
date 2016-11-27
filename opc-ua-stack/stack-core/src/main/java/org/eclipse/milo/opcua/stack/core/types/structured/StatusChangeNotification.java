@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -66,21 +71,36 @@ public class StatusChangeNotification extends NotificationData {
             .toString();
     }
 
-    public static void encode(StatusChangeNotification statusChangeNotification, UaEncoder encoder) {
-        encoder.encodeStatusCode("Status", statusChangeNotification._status);
-        encoder.encodeDiagnosticInfo("DiagnosticInfo", statusChangeNotification._diagnosticInfo);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<StatusChangeNotification> {
+        @Override
+        public StatusChangeNotification decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            StatusCode _status = reader.readStatusCode();
+            DiagnosticInfo _diagnosticInfo = reader.readDiagnosticInfo();
+
+            return new StatusChangeNotification(_status, _diagnosticInfo);
+        }
+
+        @Override
+        public void encode(SerializationContext context, StatusChangeNotification encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(encodable._status);
+            writer.writeDiagnosticInfo(encodable._diagnosticInfo);
+        }
     }
 
-    public static StatusChangeNotification decode(UaDecoder decoder) {
-        StatusCode _status = decoder.decodeStatusCode("Status");
-        DiagnosticInfo _diagnosticInfo = decoder.decodeDiagnosticInfo("DiagnosticInfo");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<StatusChangeNotification> {
+        @Override
+        public StatusChangeNotification decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            StatusCode _status = reader.readStatusCode("Status");
+            DiagnosticInfo _diagnosticInfo = reader.readDiagnosticInfo("DiagnosticInfo");
 
-        return new StatusChangeNotification(_status, _diagnosticInfo);
-    }
+            return new StatusChangeNotification(_status, _diagnosticInfo);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(StatusChangeNotification::encode, StatusChangeNotification.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(StatusChangeNotification::decode, StatusChangeNotification.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, StatusChangeNotification encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode("Status", encodable._status);
+            writer.writeDiagnosticInfo("DiagnosticInfo", encodable._diagnosticInfo);
+        }
     }
 
 }

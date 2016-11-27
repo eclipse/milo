@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -70,23 +75,40 @@ public class ModelChangeStructureDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(ModelChangeStructureDataType modelChangeStructureDataType, UaEncoder encoder) {
-        encoder.encodeNodeId("Affected", modelChangeStructureDataType._affected);
-        encoder.encodeNodeId("AffectedType", modelChangeStructureDataType._affectedType);
-        encoder.encodeByte("Verb", modelChangeStructureDataType._verb);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ModelChangeStructureDataType> {
+        @Override
+        public ModelChangeStructureDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _affected = reader.readNodeId();
+            NodeId _affectedType = reader.readNodeId();
+            UByte _verb = reader.readByte();
+
+            return new ModelChangeStructureDataType(_affected, _affectedType, _verb);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ModelChangeStructureDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._affected);
+            writer.writeNodeId(encodable._affectedType);
+            writer.writeByte(encodable._verb);
+        }
     }
 
-    public static ModelChangeStructureDataType decode(UaDecoder decoder) {
-        NodeId _affected = decoder.decodeNodeId("Affected");
-        NodeId _affectedType = decoder.decodeNodeId("AffectedType");
-        UByte _verb = decoder.decodeByte("Verb");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ModelChangeStructureDataType> {
+        @Override
+        public ModelChangeStructureDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _affected = reader.readNodeId("Affected");
+            NodeId _affectedType = reader.readNodeId("AffectedType");
+            UByte _verb = reader.readByte("Verb");
 
-        return new ModelChangeStructureDataType(_affected, _affectedType, _verb);
-    }
+            return new ModelChangeStructureDataType(_affected, _affectedType, _verb);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ModelChangeStructureDataType::encode, ModelChangeStructureDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ModelChangeStructureDataType::decode, ModelChangeStructureDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ModelChangeStructureDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("Affected", encodable._affected);
+            writer.writeNodeId("AffectedType", encodable._affectedType);
+            writer.writeByte("Verb", encodable._verb);
+        }
     }
 
 }

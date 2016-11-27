@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -78,25 +83,44 @@ public class MonitoredItemModifyResult implements UaStructure {
             .toString();
     }
 
-    public static void encode(MonitoredItemModifyResult monitoredItemModifyResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", monitoredItemModifyResult._statusCode);
-        encoder.encodeDouble("RevisedSamplingInterval", monitoredItemModifyResult._revisedSamplingInterval);
-        encoder.encodeUInt32("RevisedQueueSize", monitoredItemModifyResult._revisedQueueSize);
-        encoder.encodeExtensionObject("FilterResult", monitoredItemModifyResult._filterResult);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoredItemModifyResult> {
+        @Override
+        public MonitoredItemModifyResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            StatusCode _statusCode = reader.readStatusCode();
+            Double _revisedSamplingInterval = reader.readDouble();
+            UInteger _revisedQueueSize = reader.readUInt32();
+            ExtensionObject _filterResult = reader.readExtensionObject();
+
+            return new MonitoredItemModifyResult(_statusCode, _revisedSamplingInterval, _revisedQueueSize, _filterResult);
+        }
+
+        @Override
+        public void encode(SerializationContext context, MonitoredItemModifyResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(encodable._statusCode);
+            writer.writeDouble(encodable._revisedSamplingInterval);
+            writer.writeUInt32(encodable._revisedQueueSize);
+            writer.writeExtensionObject(encodable._filterResult);
+        }
     }
 
-    public static MonitoredItemModifyResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        Double _revisedSamplingInterval = decoder.decodeDouble("RevisedSamplingInterval");
-        UInteger _revisedQueueSize = decoder.decodeUInt32("RevisedQueueSize");
-        ExtensionObject _filterResult = decoder.decodeExtensionObject("FilterResult");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoredItemModifyResult> {
+        @Override
+        public MonitoredItemModifyResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            StatusCode _statusCode = reader.readStatusCode("StatusCode");
+            Double _revisedSamplingInterval = reader.readDouble("RevisedSamplingInterval");
+            UInteger _revisedQueueSize = reader.readUInt32("RevisedQueueSize");
+            ExtensionObject _filterResult = reader.readExtensionObject("FilterResult");
 
-        return new MonitoredItemModifyResult(_statusCode, _revisedSamplingInterval, _revisedQueueSize, _filterResult);
-    }
+            return new MonitoredItemModifyResult(_statusCode, _revisedSamplingInterval, _revisedQueueSize, _filterResult);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoredItemModifyResult::encode, MonitoredItemModifyResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoredItemModifyResult::decode, MonitoredItemModifyResult.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MonitoredItemModifyResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode("StatusCode", encodable._statusCode);
+            writer.writeDouble("RevisedSamplingInterval", encodable._revisedSamplingInterval);
+            writer.writeUInt32("RevisedQueueSize", encodable._revisedQueueSize);
+            writer.writeExtensionObject("FilterResult", encodable._filterResult);
+        }
     }
 
 }

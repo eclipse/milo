@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -63,21 +68,36 @@ public class DoubleComplexNumberType implements UaStructure {
             .toString();
     }
 
-    public static void encode(DoubleComplexNumberType doubleComplexNumberType, UaEncoder encoder) {
-        encoder.encodeDouble("Real", doubleComplexNumberType._real);
-        encoder.encodeDouble("Imaginary", doubleComplexNumberType._imaginary);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DoubleComplexNumberType> {
+        @Override
+        public DoubleComplexNumberType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            Double _real = reader.readDouble();
+            Double _imaginary = reader.readDouble();
+
+            return new DoubleComplexNumberType(_real, _imaginary);
+        }
+
+        @Override
+        public void encode(SerializationContext context, DoubleComplexNumberType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble(encodable._real);
+            writer.writeDouble(encodable._imaginary);
+        }
     }
 
-    public static DoubleComplexNumberType decode(UaDecoder decoder) {
-        Double _real = decoder.decodeDouble("Real");
-        Double _imaginary = decoder.decodeDouble("Imaginary");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<DoubleComplexNumberType> {
+        @Override
+        public DoubleComplexNumberType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            Double _real = reader.readDouble("Real");
+            Double _imaginary = reader.readDouble("Imaginary");
 
-        return new DoubleComplexNumberType(_real, _imaginary);
-    }
+            return new DoubleComplexNumberType(_real, _imaginary);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(DoubleComplexNumberType::encode, DoubleComplexNumberType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DoubleComplexNumberType::decode, DoubleComplexNumberType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, DoubleComplexNumberType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble("Real", encodable._real);
+            writer.writeDouble("Imaginary", encodable._imaginary);
+        }
     }
 
 }

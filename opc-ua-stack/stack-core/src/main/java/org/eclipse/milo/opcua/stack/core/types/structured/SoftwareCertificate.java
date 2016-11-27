@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -116,37 +122,86 @@ public class SoftwareCertificate implements UaStructure {
             .toString();
     }
 
-    public static void encode(SoftwareCertificate softwareCertificate, UaEncoder encoder) {
-        encoder.encodeString("ProductName", softwareCertificate._productName);
-        encoder.encodeString("ProductUri", softwareCertificate._productUri);
-        encoder.encodeString("VendorName", softwareCertificate._vendorName);
-        encoder.encodeByteString("VendorProductCertificate", softwareCertificate._vendorProductCertificate);
-        encoder.encodeString("SoftwareVersion", softwareCertificate._softwareVersion);
-        encoder.encodeString("BuildNumber", softwareCertificate._buildNumber);
-        encoder.encodeDateTime("BuildDate", softwareCertificate._buildDate);
-        encoder.encodeString("IssuedBy", softwareCertificate._issuedBy);
-        encoder.encodeDateTime("IssueDate", softwareCertificate._issueDate);
-        encoder.encodeArray("SupportedProfiles", softwareCertificate._supportedProfiles, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SoftwareCertificate> {
+        @Override
+        public SoftwareCertificate decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            String _productName = reader.readString();
+            String _productUri = reader.readString();
+            String _vendorName = reader.readString();
+            ByteString _vendorProductCertificate = reader.readByteString();
+            String _softwareVersion = reader.readString();
+            String _buildNumber = reader.readString();
+            DateTime _buildDate = reader.readDateTime();
+            String _issuedBy = reader.readString();
+            DateTime _issueDate = reader.readDateTime();
+            SupportedProfile[] _supportedProfiles =
+                reader.readArray(
+                    () -> (SupportedProfile) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", reader),
+                    SupportedProfile.class
+                );
+
+            return new SoftwareCertificate(_productName, _productUri, _vendorName, _vendorProductCertificate, _softwareVersion, _buildNumber, _buildDate, _issuedBy, _issueDate, _supportedProfiles);
+        }
+
+        @Override
+        public void encode(SerializationContext context, SoftwareCertificate encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(encodable._productName);
+            writer.writeString(encodable._productUri);
+            writer.writeString(encodable._vendorName);
+            writer.writeByteString(encodable._vendorProductCertificate);
+            writer.writeString(encodable._softwareVersion);
+            writer.writeString(encodable._buildNumber);
+            writer.writeDateTime(encodable._buildDate);
+            writer.writeString(encodable._issuedBy);
+            writer.writeDateTime(encodable._issueDate);
+            writer.writeArray(
+                encodable._supportedProfiles,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", e, writer)
+            );
+        }
     }
 
-    public static SoftwareCertificate decode(UaDecoder decoder) {
-        String _productName = decoder.decodeString("ProductName");
-        String _productUri = decoder.decodeString("ProductUri");
-        String _vendorName = decoder.decodeString("VendorName");
-        ByteString _vendorProductCertificate = decoder.decodeByteString("VendorProductCertificate");
-        String _softwareVersion = decoder.decodeString("SoftwareVersion");
-        String _buildNumber = decoder.decodeString("BuildNumber");
-        DateTime _buildDate = decoder.decodeDateTime("BuildDate");
-        String _issuedBy = decoder.decodeString("IssuedBy");
-        DateTime _issueDate = decoder.decodeDateTime("IssueDate");
-        SupportedProfile[] _supportedProfiles = decoder.decodeArray("SupportedProfiles", decoder::decodeSerializable, SupportedProfile.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<SoftwareCertificate> {
+        @Override
+        public SoftwareCertificate decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            String _productName = reader.readString("ProductName");
+            String _productUri = reader.readString("ProductUri");
+            String _vendorName = reader.readString("VendorName");
+            ByteString _vendorProductCertificate = reader.readByteString("VendorProductCertificate");
+            String _softwareVersion = reader.readString("SoftwareVersion");
+            String _buildNumber = reader.readString("BuildNumber");
+            DateTime _buildDate = reader.readDateTime("BuildDate");
+            String _issuedBy = reader.readString("IssuedBy");
+            DateTime _issueDate = reader.readDateTime("IssueDate");
+            SupportedProfile[] _supportedProfiles =
+                reader.readArray(
+                    "SupportedProfiles",
+                    f -> (SupportedProfile) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", reader),
+                    SupportedProfile.class
+                );
 
-        return new SoftwareCertificate(_productName, _productUri, _vendorName, _vendorProductCertificate, _softwareVersion, _buildNumber, _buildDate, _issuedBy, _issueDate, _supportedProfiles);
-    }
+            return new SoftwareCertificate(_productName, _productUri, _vendorName, _vendorProductCertificate, _softwareVersion, _buildNumber, _buildDate, _issuedBy, _issueDate, _supportedProfiles);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(SoftwareCertificate::encode, SoftwareCertificate.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SoftwareCertificate::decode, SoftwareCertificate.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, SoftwareCertificate encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeString("ProductName", encodable._productName);
+            writer.writeString("ProductUri", encodable._productUri);
+            writer.writeString("VendorName", encodable._vendorName);
+            writer.writeByteString("VendorProductCertificate", encodable._vendorProductCertificate);
+            writer.writeString("SoftwareVersion", encodable._softwareVersion);
+            writer.writeString("BuildNumber", encodable._buildNumber);
+            writer.writeDateTime("BuildDate", encodable._buildDate);
+            writer.writeString("IssuedBy", encodable._issuedBy);
+            writer.writeDateTime("IssueDate", encodable._issueDate);
+            writer.writeArray(
+                "SupportedProfiles",
+                encodable._supportedProfiles,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", e, writer)
+            );
+        }
     }
 
 }

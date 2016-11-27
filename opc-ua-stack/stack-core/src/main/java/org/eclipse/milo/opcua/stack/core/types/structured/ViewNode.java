@@ -15,9 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -77,37 +83,86 @@ public class ViewNode extends InstanceNode {
             .toString();
     }
 
-    public static void encode(ViewNode viewNode, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", viewNode._nodeId);
-        encoder.encodeEnumeration("NodeClass", viewNode._nodeClass);
-        encoder.encodeQualifiedName("BrowseName", viewNode._browseName);
-        encoder.encodeLocalizedText("DisplayName", viewNode._displayName);
-        encoder.encodeLocalizedText("Description", viewNode._description);
-        encoder.encodeUInt32("WriteMask", viewNode._writeMask);
-        encoder.encodeUInt32("UserWriteMask", viewNode._userWriteMask);
-        encoder.encodeArray("References", viewNode._references, encoder::encodeSerializable);
-        encoder.encodeBoolean("ContainsNoLoops", viewNode._containsNoLoops);
-        encoder.encodeByte("EventNotifier", viewNode._eventNotifier);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ViewNode> {
+        @Override
+        public ViewNode decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
+            QualifiedName _browseName = reader.readQualifiedName();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+            UInteger _writeMask = reader.readUInt32();
+            UInteger _userWriteMask = reader.readUInt32();
+            ReferenceNode[] _references =
+                reader.readArray(
+                    () -> (ReferenceNode) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                    ReferenceNode.class
+                );
+            Boolean _containsNoLoops = reader.readBoolean();
+            UByte _eventNotifier = reader.readByte();
+
+            return new ViewNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _containsNoLoops, _eventNotifier);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ViewNode encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(encodable._nodeId);
+            writer.writeInt32(encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
+            writer.writeQualifiedName(encodable._browseName);
+            writer.writeLocalizedText(encodable._displayName);
+            writer.writeLocalizedText(encodable._description);
+            writer.writeUInt32(encodable._writeMask);
+            writer.writeUInt32(encodable._userWriteMask);
+            writer.writeArray(
+                encodable._references,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+            );
+            writer.writeBoolean(encodable._containsNoLoops);
+            writer.writeByte(encodable._eventNotifier);
+        }
     }
 
-    public static ViewNode decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        NodeClass _nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        QualifiedName _browseName = decoder.decodeQualifiedName("BrowseName");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        ReferenceNode[] _references = decoder.decodeArray("References", decoder::decodeSerializable, ReferenceNode.class);
-        Boolean _containsNoLoops = decoder.decodeBoolean("ContainsNoLoops");
-        UByte _eventNotifier = decoder.decodeByte("EventNotifier");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ViewNode> {
+        @Override
+        public ViewNode decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
+            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
+            UInteger _writeMask = reader.readUInt32("WriteMask");
+            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
+            ReferenceNode[] _references =
+                reader.readArray(
+                    "References",
+                    f -> (ReferenceNode) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                    ReferenceNode.class
+                );
+            Boolean _containsNoLoops = reader.readBoolean("ContainsNoLoops");
+            UByte _eventNotifier = reader.readByte("EventNotifier");
 
-        return new ViewNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _containsNoLoops, _eventNotifier);
-    }
+            return new ViewNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _containsNoLoops, _eventNotifier);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ViewNode::encode, ViewNode.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ViewNode::decode, ViewNode.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ViewNode encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
+            writer.writeQualifiedName("BrowseName", encodable._browseName);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+            writer.writeUInt32("WriteMask", encodable._writeMask);
+            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+            writer.writeArray(
+                "References",
+                encodable._references,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+            );
+            writer.writeBoolean("ContainsNoLoops", encodable._containsNoLoops);
+            writer.writeByte("EventNotifier", encodable._eventNotifier);
+        }
     }
 
 }

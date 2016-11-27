@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -71,23 +76,40 @@ public class ModificationInfo implements UaStructure {
             .toString();
     }
 
-    public static void encode(ModificationInfo modificationInfo, UaEncoder encoder) {
-        encoder.encodeDateTime("ModificationTime", modificationInfo._modificationTime);
-        encoder.encodeEnumeration("UpdateType", modificationInfo._updateType);
-        encoder.encodeString("UserName", modificationInfo._userName);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ModificationInfo> {
+        @Override
+        public ModificationInfo decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            DateTime _modificationTime = reader.readDateTime();
+            HistoryUpdateType _updateType = HistoryUpdateType.from(reader.readInt32());
+            String _userName = reader.readString();
+
+            return new ModificationInfo(_modificationTime, _updateType, _userName);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ModificationInfo encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(encodable._modificationTime);
+            writer.writeInt32(encodable._updateType != null ? encodable._updateType.getValue() : 0);
+            writer.writeString(encodable._userName);
+        }
     }
 
-    public static ModificationInfo decode(UaDecoder decoder) {
-        DateTime _modificationTime = decoder.decodeDateTime("ModificationTime");
-        HistoryUpdateType _updateType = decoder.decodeEnumeration("UpdateType", HistoryUpdateType.class);
-        String _userName = decoder.decodeString("UserName");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ModificationInfo> {
+        @Override
+        public ModificationInfo decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            DateTime _modificationTime = reader.readDateTime("ModificationTime");
+            HistoryUpdateType _updateType = HistoryUpdateType.from(reader.readInt32("UpdateType"));
+            String _userName = reader.readString("UserName");
 
-        return new ModificationInfo(_modificationTime, _updateType, _userName);
-    }
+            return new ModificationInfo(_modificationTime, _updateType, _userName);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ModificationInfo::encode, ModificationInfo.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ModificationInfo::decode, ModificationInfo.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ModificationInfo encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime("ModificationTime", encodable._modificationTime);
+            writer.writeInt32("UpdateType", encodable._updateType != null ? encodable._updateType.getValue() : 0);
+            writer.writeString("UserName", encodable._userName);
+        }
     }
 
 }

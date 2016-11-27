@@ -17,10 +17,16 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -60,19 +66,50 @@ public class HistoryEvent implements UaStructure {
             .toString();
     }
 
-    public static void encode(HistoryEvent historyEvent, UaEncoder encoder) {
-        encoder.encodeArray("Events", historyEvent._events, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryEvent> {
+        @Override
+        public HistoryEvent decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            HistoryEventFieldList[] _events =
+                reader.readArray(
+                    () -> (HistoryEventFieldList) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", reader),
+                    HistoryEventFieldList.class
+                );
+
+            return new HistoryEvent(_events);
+        }
+
+        @Override
+        public void encode(SerializationContext context, HistoryEvent encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                encodable._events,
+                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", e, writer)
+            );
+        }
     }
 
-    public static HistoryEvent decode(UaDecoder decoder) {
-        HistoryEventFieldList[] _events = decoder.decodeArray("Events", decoder::decodeSerializable, HistoryEventFieldList.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryEvent> {
+        @Override
+        public HistoryEvent decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            HistoryEventFieldList[] _events =
+                reader.readArray(
+                    "Events",
+                    f -> (HistoryEventFieldList) context.decode(
+                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", reader),
+                    HistoryEventFieldList.class
+                );
 
-        return new HistoryEvent(_events);
-    }
+            return new HistoryEvent(_events);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryEvent::encode, HistoryEvent.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryEvent::decode, HistoryEvent.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, HistoryEvent encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                "Events",
+                encodable._events,
+                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", e, writer)
+            );
+        }
     }
 
 }

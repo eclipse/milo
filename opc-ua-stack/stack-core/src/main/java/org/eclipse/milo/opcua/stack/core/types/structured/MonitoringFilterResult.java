@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -48,17 +53,28 @@ public class MonitoringFilterResult implements UaStructure {
             .toString();
     }
 
-    public static void encode(MonitoringFilterResult monitoringFilterResult, UaEncoder encoder) {
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoringFilterResult> {
+        @Override
+        public MonitoringFilterResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+
+            return new MonitoringFilterResult();
+        }
+
+        @Override
+        public void encode(SerializationContext context, MonitoringFilterResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        }
     }
 
-    public static MonitoringFilterResult decode(UaDecoder decoder) {
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoringFilterResult> {
+        @Override
+        public MonitoringFilterResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
 
-        return new MonitoringFilterResult();
-    }
+            return new MonitoringFilterResult();
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoringFilterResult::encode, MonitoringFilterResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoringFilterResult::decode, MonitoringFilterResult.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MonitoringFilterResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+        }
     }
 
 }

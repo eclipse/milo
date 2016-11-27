@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -63,21 +68,36 @@ public class Range implements UaStructure {
             .toString();
     }
 
-    public static void encode(Range range, UaEncoder encoder) {
-        encoder.encodeDouble("Low", range._low);
-        encoder.encodeDouble("High", range._high);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<Range> {
+        @Override
+        public Range decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            Double _low = reader.readDouble();
+            Double _high = reader.readDouble();
+
+            return new Range(_low, _high);
+        }
+
+        @Override
+        public void encode(SerializationContext context, Range encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble(encodable._low);
+            writer.writeDouble(encodable._high);
+        }
     }
 
-    public static Range decode(UaDecoder decoder) {
-        Double _low = decoder.decodeDouble("Low");
-        Double _high = decoder.decodeDouble("High");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<Range> {
+        @Override
+        public Range decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            Double _low = reader.readDouble("Low");
+            Double _high = reader.readDouble("High");
 
-        return new Range(_low, _high);
-    }
+            return new Range(_low, _high);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(Range::encode, Range.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(Range::decode, Range.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, Range encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble("Low", encodable._low);
+            writer.writeDouble("High", encodable._high);
+        }
     }
 
 }
