@@ -381,7 +381,7 @@ public class OpcUaServer {
      * @return true if periodic registering successfully started, false if already registered
      */
     public boolean registerWithDiscoveryServer(String discoveryServerUrl, String semaphoreFilePath) {
-        return this.registerWithDiscoveryServer(discoveryServerUrl, 10 * 60 * 1000,500, semaphoreFilePath);
+        return this.registerWithDiscoveryServer(discoveryServerUrl, 10 * 60 * 1000, 500, semaphoreFilePath);
     }
 
     /**
