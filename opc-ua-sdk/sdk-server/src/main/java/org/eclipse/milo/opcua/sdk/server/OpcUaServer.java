@@ -420,8 +420,8 @@ public class OpcUaServer {
 
         periodicServerRegisterScheduler = Executors.newScheduledThreadPool(2);
 
-        periodicServerRegisterScheduler.scheduleWithFixedDelay(new PeriodicServerRegister(discoveryServerUrl), delayFirstRegisterMs,
-                intervalMs, TimeUnit.MILLISECONDS);
+        periodicServerRegisterScheduler.scheduleWithFixedDelay(new PeriodicServerRegister(discoveryServerUrl),
+                delayFirstRegisterMs, intervalMs, TimeUnit.MILLISECONDS);
 
         return true;
     }
@@ -491,7 +491,8 @@ public class OpcUaServer {
         return futureRegisterResult;
     }
 
-    private CompletableFuture<StatusCode> registerWithDiscoveryServer(boolean isRegister, EndpointDescription discoveryEndpoint,
+    private CompletableFuture<StatusCode> registerWithDiscoveryServer(boolean isRegister,
+                                                                      EndpointDescription discoveryEndpoint,
                                                                       String semaphoreFilePath) {
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
                 .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
@@ -528,28 +529,29 @@ public class OpcUaServer {
                 config.getApplicationName().getText(), new String[0]);
 
 
-        registerServer2(stackClient, serverToBeRegistered, mdnsDiscoveryConfig).whenComplete((statusCode, throwable) -> {
-           if (statusCode == null) {
-               logger.error("RegisterServer2 failed with error: {}", throwable.getMessage(), throwable);
-               futureRegisterResult.completeExceptionally(throwable);
-           } else if (statusCode.getValue() == StatusCodes.Bad_NotImplemented ||
-                   statusCode.getValue() == StatusCodes.Bad_ServiceUnsupported) {
-               // RegisterServer2 failed, try RegisterServer
-                registerServer(stackClient, serverToBeRegistered).whenComplete((statusCode1, throwable1) -> {
-                    if (statusCode1 == null) {
-                        logger.error("RegisterServer failed with error: {}", throwable1.getMessage(), throwable1);
-                        futureRegisterResult.completeExceptionally(throwable1);
-                    } else {
-                        if (statusCode1.isBad()) {
-                            logger.error("RegisterServer failed with status code: {}", statusCode1);
+        registerServer2(stackClient, serverToBeRegistered, mdnsDiscoveryConfig).whenComplete(
+            (statusCode, throwable) -> {
+                if (statusCode == null) {
+                    logger.error("RegisterServer2 failed with error: {}", throwable.getMessage(), throwable);
+                    futureRegisterResult.completeExceptionally(throwable);
+                } else if (statusCode.getValue() == StatusCodes.Bad_NotImplemented ||
+                       statusCode.getValue() == StatusCodes.Bad_ServiceUnsupported) {
+                    // RegisterServer2 failed, try RegisterServer
+                    registerServer(stackClient, serverToBeRegistered).whenComplete((statusCode1, throwable1) -> {
+                        if (statusCode1 == null) {
+                            logger.error("RegisterServer failed with error: {}", throwable1.getMessage(), throwable1);
+                            futureRegisterResult.completeExceptionally(throwable1);
+                        } else {
+                            if (statusCode1.isBad()) {
+                                logger.error("RegisterServer failed with status code: {}", statusCode1);
+                            }
+                            futureRegisterResult.complete(statusCode1);
                         }
-                        futureRegisterResult.complete(statusCode1);
-                    }
-                });
-           } else {
-               futureRegisterResult.complete(statusCode);
-           }
-        });
+                    });
+                } else {
+                    futureRegisterResult.complete(statusCode);
+                }
+            });
 
         return futureRegisterResult;
     }

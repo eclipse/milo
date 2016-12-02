@@ -13,14 +13,12 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.milo.examples.client.util.KeyStoreLoader;
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -28,23 +26,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerOnNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class FindServersClient {
 
@@ -57,8 +50,8 @@ public class FindServersClient {
         FindServersClient example = new FindServersClient();
 
 
-        example.OutputFindServersOnNetwork("opc.tcp://localhost:4840/discovery")
-                .thenCompose(aVoid -> example.OutputFindServers("opc.tcp://localhost:4840/discovery"))
+        example.outputFindServersOnNetwork("opc.tcp://localhost:4840/discovery")
+                .thenCompose(aVoid -> example.outputFindServers("opc.tcp://localhost:4840/discovery"))
                 .get();
 
     }
@@ -83,14 +76,14 @@ public class FindServersClient {
         return new UaTcpStackClient(config);
     }
 
-    private CompletableFuture<Void> OutputFindServersOnNetwork(String discoveryEndpointUrl) {
+    private CompletableFuture<Void> outputFindServersOnNetwork(String discoveryEndpointUrl) {
         CompletableFuture<Void> finished = new CompletableFuture<>();
 
-        FindServersOnNetwork(discoveryEndpointUrl).exceptionally(ex -> {
-            logger.error("error invoking FindServersOnNetwork", ex);
+        findServersOnNetwork(discoveryEndpointUrl).exceptionally(ex -> {
+            logger.error("error invoking findServersOnNetwork", ex);
             return new ServerOnNetwork[0];
         }).thenAccept(v -> {
-            logger.info("FindServersOnNetwork returned " + v.length + " Servers");
+            logger.info("findServersOnNetwork returned " + v.length + " Servers");
             for (ServerOnNetwork sn : v) {
                 logger.info("Server: " + sn.getServerName());
                 logger.info("\tRecordID: " + sn.getRecordId());
@@ -99,7 +92,7 @@ public class FindServersClient {
                 caps.append("\tCapabilities: ");
                 if (sn.getServerCapabilities() != null) {
                     for (String cap : sn.getServerCapabilities()) {
-                        caps.append(cap + ",");
+                        caps.append(cap).append(",");
                     }
                 }
                 logger.info(caps.toString());
@@ -110,9 +103,14 @@ public class FindServersClient {
         return finished;
     }
 
-    private CompletableFuture<ServerOnNetwork[]> FindServersOnNetwork(String discoveryEndpointUrl) {
+    private CompletableFuture<ServerOnNetwork[]> findServersOnNetwork(String discoveryEndpointUrl) {
 
         UaTcpStackClient client = getClient(discoveryEndpointUrl);
+        if (client == null) {
+            CompletableFuture<ServerOnNetwork[]> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new RuntimeException("Could not initialize client"));
+            return cf;
+        }
 
         RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
@@ -120,7 +118,7 @@ public class FindServersClient {
                 uint(requestHandle.getAndIncrement()),
                 uint(0), null, uint(60), null);
 
-        FindServersOnNetworkRequest request = new FindServersOnNetworkRequest(header, null, null, null );
+        FindServersOnNetworkRequest request = new FindServersOnNetworkRequest(header, null, null, null);
 
         return client.<FindServersOnNetworkResponse>sendRequest(request).thenCompose(result -> {
             StatusCode statusCode = result.getResponseHeader().getServiceResult();
@@ -135,14 +133,14 @@ public class FindServersClient {
         });
     }
 
-    private CompletableFuture<Void> OutputFindServers(String discoveryEndpointUrl) {
+    private CompletableFuture<Void> outputFindServers(String discoveryEndpointUrl) {
         CompletableFuture<Void> finished = new CompletableFuture<>();
 
-        FindServers(discoveryEndpointUrl).exceptionally(ex -> {
-            logger.error("error invoking FindServers", ex);
+        findServers(discoveryEndpointUrl).exceptionally(ex -> {
+            logger.error("error invoking findServers", ex);
             return new ApplicationDescription[0];
         }).thenAccept(v -> {
-            logger.info("FindServers returned " + v.length + " Servers");
+            logger.info("findServers returned " + v.length + " Servers");
 
             for (ApplicationDescription ad : v) {
                 logger.info("Server: " + ad.getApplicationUri());
@@ -158,10 +156,8 @@ public class FindServersClient {
                     logger.info("\tDiscovery URLs: null");
                 }
                 try {
-                    OutputGetEndpoints(ad).get();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                    outputGetEndpoints(ad).get();
+                } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                 }
                 logger.info("---");
@@ -172,9 +168,14 @@ public class FindServersClient {
         return finished;
     }
 
-    private CompletableFuture<ApplicationDescription[]> FindServers(String discoveryEndpointUrl) {
+    private CompletableFuture<ApplicationDescription[]> findServers(String discoveryEndpointUrl) {
 
         UaTcpStackClient client = getClient(discoveryEndpointUrl);
+        if (client == null) {
+            CompletableFuture<ApplicationDescription[]> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new RuntimeException("Could not initialize client"));
+            return cf;
+        }
 
         RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
@@ -197,11 +198,13 @@ public class FindServersClient {
         });
     }
 
-    private CompletableFuture<Void> OutputGetEndpoints(ApplicationDescription applicationDescription) {
+    private CompletableFuture<Void> outputGetEndpoints(ApplicationDescription applicationDescription) {
         CompletableFuture<Void> finished = new CompletableFuture<>();
 
-        if (applicationDescription.getDiscoveryUrls() == null || applicationDescription.getDiscoveryUrls().length == 0) {
-            logger.warn("Can not get endpoints. Empty discovery urls for Server: " + applicationDescription.getApplicationUri());
+        if (applicationDescription.getDiscoveryUrls() == null ||
+                applicationDescription.getDiscoveryUrls().length == 0) {
+            logger.warn("Can not get endpoints. Empty discovery urls for Server: " +
+                    applicationDescription.getApplicationUri());
             CompletableFuture<EndpointDescription[]> future = new CompletableFuture<>();
             future.complete(new EndpointDescription[0]);
             return finished;
@@ -214,7 +217,8 @@ public class FindServersClient {
             finished.completeExceptionally(e);
         }
 
-        logger.info("GetEndpoints for " + applicationDescription.getApplicationUri() + " returned " + endpoints.length + " Endpoints");
+        logger.info("GetEndpoints for " + applicationDescription.getApplicationUri() + " returned " + endpoints.length +
+                " Endpoints");
         for (EndpointDescription ed : endpoints) {
             logger.info("\tEndpoint URL: " + ed.getEndpointUrl());
             logger.info("\tTransport profile URI: " + ed.getTransportProfileUri());

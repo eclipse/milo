@@ -44,14 +44,14 @@ public class ExampleDiscoveryServer {
 
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> future.complete(null)));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> server.shutdown().thenRun(() -> future.complete(null))));
 
         future.get();
     }
 
     private final OpcUaServer server;
 
-    public ExampleDiscoveryServer() throws Exception {
+    private ExampleDiscoveryServer() throws Exception {
         CryptoRestrictions.remove();
 
         KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -68,49 +68,46 @@ public class ExampleDiscoveryServer {
 
         DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
 
-        UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
-                true,
-                authChallenge -> {
-                    String username = authChallenge.getUsername();
-                    String password = authChallenge.getPassword();
+        UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(true, authChallenge -> {
+            String username = authChallenge.getUsername();
+            String password = authChallenge.getPassword();
 
-                    boolean userOk = "user".equals(username) && "password1".equals(password);
-                    boolean adminOk = "admin".equals(username) && "password2".equals(password);
+            boolean userOk = "user".equals(username) && "password1".equals(password);
+            boolean adminOk = "admin".equals(username) && "password2".equals(password);
 
-                    return userOk || adminOk;
-                }
-        );
+            return userOk || adminOk;
+        });
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
-                .setApplicationUri("urn:eclipse:milo:examples:server")
-                .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Discovery Server"))
-                .setBindAddresses(newArrayList("0.0.0.0"))
-                .setBindPort(4840)
-                .setBuildInfo(
-                        new BuildInfo(
-                                "urn:eclipse:milo:example-server",
-                                "eclipse",
-                                "eclipse milo example server",
-                                OpcUaServer.SDK_VERSION,
-                                "", DateTime.now()))
-                .setCertificateManager(certificateManager)
-                .setCertificateValidator(certificateValidator)
-                .setIdentityValidator(identityValidator)
-                .setProductUri("urn:eclipse:milo:example-discovery-server")
-                .setServerName("discovery")
-                .setSecurityPolicies(
-                        EnumSet.of(
-                                SecurityPolicy.None,
-                                SecurityPolicy.Basic128Rsa15,
-                                SecurityPolicy.Basic256,
-                                SecurityPolicy.Basic256Sha256))
-                .setUserTokenPolicies(
-                        ImmutableList.of(
-                                USER_TOKEN_POLICY_ANONYMOUS,
-                                USER_TOKEN_POLICY_USERNAME))
-                .setIsDiscoveryServer(true)
-                .setEnableMulticast(true)
-                .build();
+            .setApplicationUri("urn:eclipse:milo:examples:server")
+            .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Discovery Server"))
+            .setBindAddresses(newArrayList("0.0.0.0"))
+            .setBindPort(4840)
+            .setBuildInfo(
+                    new BuildInfo(
+                            "urn:eclipse:milo:example-server",
+                            "eclipse",
+                            "eclipse milo example server",
+                            OpcUaServer.SDK_VERSION,
+                            "", DateTime.now()))
+            .setCertificateManager(certificateManager)
+            .setCertificateValidator(certificateValidator)
+            .setIdentityValidator(identityValidator)
+            .setProductUri("urn:eclipse:milo:example-discovery-server")
+            .setServerName("discovery")
+            .setSecurityPolicies(
+                    EnumSet.of(
+                            SecurityPolicy.None,
+                            SecurityPolicy.Basic128Rsa15,
+                            SecurityPolicy.Basic256,
+                            SecurityPolicy.Basic256Sha256))
+            .setUserTokenPolicies(
+                    ImmutableList.of(
+                            USER_TOKEN_POLICY_ANONYMOUS,
+                            USER_TOKEN_POLICY_USERNAME))
+            .setIsDiscoveryServer(true)
+            .setEnableMulticast(true)
+            .build();
 
         server = new OpcUaServer(serverConfig);
 
@@ -120,11 +117,11 @@ public class ExampleDiscoveryServer {
         return server;
     }
 
-    public CompletableFuture<OpcUaServer> startup() {
+    private CompletableFuture<OpcUaServer> startup() {
         return server.startup();
     }
 
-    public CompletableFuture<OpcUaServer> shutdown() {
+    private CompletableFuture<OpcUaServer> shutdown() {
         return server.shutdown();
     }
 }

@@ -17,7 +17,6 @@ package org.eclipse.milo.opcua.sdk.server.services.helpers;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -53,20 +52,24 @@ public class MdnsHelper implements Runnable {
 
     private Date lastServerOnNetworkIdReset;
     private InetAddress ownAddress;
-    private int ownPort;
 
     private Optional<InetAddress> getMostPublicAddress(Set<String> bindAddresses) {
         Function<InetAddress, Integer> addressToInt = inetAddress -> {
-            if (inetAddress.isLoopbackAddress())
+            if (inetAddress.isLoopbackAddress()) {
                 return 0;
-            if (inetAddress.isLinkLocalAddress())
+            }
+            if (inetAddress.isLinkLocalAddress()) {
                 return 1;
-            if (inetAddress.isMulticastAddress())
+            }
+            if (inetAddress.isMulticastAddress()) {
                 return 2;
-            if (inetAddress.isAnyLocalAddress())
+            }
+            if (inetAddress.isAnyLocalAddress()) {
                 return 3;
-            if (inetAddress.isSiteLocalAddress())
+            }
+            if (inetAddress.isSiteLocalAddress()) {
                 return 4;
+            }
             return 5;
         };
 
@@ -80,7 +83,7 @@ public class MdnsHelper implements Runnable {
         }).sorted((a1, a2) -> addressToInt.apply(a2) - addressToInt.apply(a1)).findFirst();
     }
 
-    public MdnsHelper(Set<String> bindAddresses, int serverPort) {
+    public MdnsHelper(Set<String> bindAddresses) {
 
         Optional<InetAddress> highestPrioAddress = getMostPublicAddress(bindAddresses);
 
@@ -91,13 +94,10 @@ public class MdnsHelper implements Runnable {
                 logger.warn("mDNS: no bind address valid. Setting to 0.0.0.0");
                 ownAddress = InetAddress.getByName("0.0.0.0"); // Create a JmDNS instance
             } catch (UnknownHostException e) {
-                //logger.error("Could not initialize address for instantiation of JmDNS for host: " + listeningHost + ". " +
-                //        e.getMessage());
                 e.printStackTrace();
             }
         }
 
-        ownPort = serverPort;
         try {
             jmdns = JmDNS.create(ownAddress);
         } catch (IOException e) {
@@ -153,10 +153,6 @@ public class MdnsHelper implements Runnable {
         InetAddress[] addressList = serviceInfo.getInetAddresses();
         for (InetAddress mdnsIa : addressList) {
 
-            //if (Arrays.equals(ownAddress.getAddress(), mdnsIa.getAddress()) && serviceInfo.getPort() == ownPort) {
-            //    continue; // its ourself
-            //}
-
             discoveryUrl = "opc.tcp://" + mdnsIa.getHostAddress() + ":" + serviceInfo.getPort() +
                     serviceInfo.getPropertyString("path");
 
@@ -195,8 +191,9 @@ public class MdnsHelper implements Runnable {
 
             ServerOnNetwork son = addToServerOnNetwork(serviceInfo.getName(), discoveryUrl, caps);
 
-            if (multicastServerConsumer != null)
+            if (multicastServerConsumer != null) {
                 multicastServerConsumer.accept(son);
+            }
         } else {
 
             serverOnNetworkMap.get(discoveryUrl).lastSeen = new Date();

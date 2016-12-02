@@ -86,8 +86,9 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
     }
 
     private boolean filterEndpointUrls(EndpointDescription endpoint, String endpointUrl) {
-        if (endpoint == null || endpointUrl == null)
+        if (endpoint == null || endpointUrl == null) {
             return false;
+        }
         try {
             String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
             String endpointHost = new URI(endpoint.getEndpointUrl()).parseServerAuthority().getHost();

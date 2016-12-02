@@ -43,18 +43,14 @@ public class ExampleRegisterServer {
 
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            server.shutdown().thenRun(() -> {
-                future.complete(null);
-            });
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> server.shutdown().thenRun(() -> future.complete(null))));
 
         future.get();
     }
 
     private final OpcUaServer server;
 
-    public ExampleRegisterServer() throws Exception {
+    private ExampleRegisterServer() throws Exception {
         CryptoRestrictions.remove();
 
         KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -71,18 +67,15 @@ public class ExampleRegisterServer {
 
         DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
 
-        UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
-                true,
-                authChallenge -> {
-                    String username = authChallenge.getUsername();
-                    String password = authChallenge.getPassword();
+        UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(true, authChallenge -> {
+            String username = authChallenge.getUsername();
+            String password = authChallenge.getPassword();
 
-                    boolean userOk = "user".equals(username) && "password1".equals(password);
-                    boolean adminOk = "admin".equals(username) && "password2".equals(password);
+            boolean userOk = "user".equals(username) && "password1".equals(password);
+            boolean adminOk = "admin".equals(username) && "password2".equals(password);
 
-                    return userOk || adminOk;
-                }
-        );
+            return userOk || adminOk;
+        });
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
                 .setApplicationUri("urn:eclipse:milo:examples:server")
@@ -123,23 +116,21 @@ public class ExampleRegisterServer {
         return server;
     }
 
-    public CompletableFuture<OpcUaServer> startup() {
-        return server.startup().whenComplete((opcUaServer, throwable) -> {
-            server.registerWithDiscoveryServer("opc.tcp://localhost:4840/discovery",null);
-        });
+    private CompletableFuture<OpcUaServer> startup() {
+        return server.startup().whenComplete((opcUaServer, throwable) -> server
+                .registerWithDiscoveryServer("opc.tcp://localhost:4840/discovery", null));
     }
 
-    public CompletableFuture<OpcUaServer> shutdown() {
+    private CompletableFuture<OpcUaServer> shutdown() {
         CompletableFuture<OpcUaServer> done = new CompletableFuture<>();
-        server.unregisterFromDiscoveryServer().whenComplete((statusCode, throwable) -> {
-            server.shutdown().whenComplete((opcUaServer, throwable1) -> {
-                if (opcUaServer != null) {
-                    done.complete(opcUaServer);
-                } else {
-                    done.completeExceptionally(throwable1);
-                }
-            });
-        });
+        server.unregisterFromDiscoveryServer()
+                .whenComplete((statusCode, throwable) -> server.shutdown().whenComplete((opcUaServer, throwable1) -> {
+                    if (opcUaServer != null) {
+                        done.complete(opcUaServer);
+                    } else {
+                        done.completeExceptionally(throwable1);
+                    }
+                }));
         return done;
     }
 }

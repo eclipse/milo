@@ -14,8 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -92,7 +90,7 @@ public class DiscoveryServices extends DefaultDiscoveryService {
                 hostnames.addAll(config.getHostnameResolver().apply(bindAddress));
             }
 
-            mdnsHelper = new MdnsHelper(hostnames, config.getBindPort());
+            mdnsHelper = new MdnsHelper(hostnames);
             Thread mdnsThread = new Thread(mdnsHelper);
             mdnsThread.start();
         }
@@ -129,7 +127,8 @@ public class DiscoveryServices extends DefaultDiscoveryService {
         }
 
         Stream<ServerOnNetwork> filteredServers = mdnsHelper.getServerOnNetwork().stream().filter(serverOnNetwork ->
-                serverOnNetwork.getRecordId().compareTo(serviceRequest.getRequest().getStartingRecordId()) >= 0);
+                serverOnNetwork.getRecordId().compareTo(serviceRequest.getRequest().getStartingRecordId()) >= 0)
+                .limit(recordCount);
 
         if (serviceRequest.getRequest().getServerCapabilityFilter() != null &&
                 serviceRequest.getRequest().getServerCapabilityFilter().length > 0) {
