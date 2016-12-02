@@ -86,6 +86,8 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
     }
 
     private boolean filterEndpointUrls(EndpointDescription endpoint, String endpointUrl) {
+        if (endpoint == null || endpointUrl == null)
+            return false;
         try {
             String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
             String endpointHost = new URI(endpoint.getEndpointUrl()).parseServerAuthority().getHost();
@@ -133,7 +135,12 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
     public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest) {
         FindServersRequest request = serviceRequest.getRequest();
 
-        ApplicationDescription selfAppDescription = getApplicationDescription(request.getEndpointUrl());
+        String discoveryUrl = request.getEndpointUrl();
+        if (discoveryUrl == null) {
+            discoveryUrl = server.getDiscoveryUrls().toArray(new String[0])[0];
+        }
+
+        ApplicationDescription selfAppDescription = getApplicationDescription(discoveryUrl);
 
 
         LinkedList<ApplicationDescription> applicationDescriptions = new LinkedList<>();

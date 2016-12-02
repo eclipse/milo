@@ -425,7 +425,7 @@ public class UaTcpStackServer implements UaStackServer {
 
                 endpoints.add(new Endpoint(uri, bindAddress, certificate, securityPolicy, messageSecurity));
             } catch (Throwable e) {
-                logger.warn("Invalid endpoint URI, ignoring: {}", endpointUri);
+                logger.warn("Invalid endpoint URI, ignoring: {}", endpointUri, e.getMessage());
             }
         }
 

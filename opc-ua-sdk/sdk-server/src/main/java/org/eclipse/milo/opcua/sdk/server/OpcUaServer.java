@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,6 +41,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
+import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
@@ -88,6 +92,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ServerOnNetwork;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
+import org.eclipse.milo.opcua.stack.server.Endpoint;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +116,7 @@ public class OpcUaServer {
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
     private final NamespaceManager namespaceManager = new NamespaceManager();
-    private final SessionManager sessionManager = new SessionManager(this);
+    private final SessionManager sessionManager;
     private final ServerTable serverTable = new ServerTable();
 
     private final UaStackServer stackServer;
@@ -122,9 +127,8 @@ public class OpcUaServer {
 
     private final OpcUaServerConfig config;
 
-    private String registeredWithDiscoveryServer;
+    private EndpointDescription registeredWithDiscoveryServer;
     private ScheduledExecutorService periodicServerRegisterScheduler;
-    private final AtomicLong requestHandle = new AtomicLong(1L);
     private String registerSemaphoreFilePath;
     private long registerNextTryInterval;
     private long registerDefaultInterval;
@@ -136,6 +140,9 @@ public class OpcUaServer {
         this.registerNextTryInterval = 0;
 
         stackServer = new UaTcpStackServer(config);
+
+        sessionManager = new SessionManager(this);
+
 
         stackServer.addServiceSet((AttributeServiceSet) sessionManager);
         stackServer.addServiceSet((MethodServiceSet) sessionManager);
@@ -205,7 +212,7 @@ public class OpcUaServer {
         return stackServer.startup().whenComplete((o, throwable) -> {
             //TODO set capabilities correct
             if (config.getEnableMulticast()) {
-                sessionManager.getDiscoveryServices().addMulticastRecord(config.getHostname(),
+                sessionManager.getDiscoveryServices().addMulticastRecord(config.getApplicationName().getText(),
                         config.getBindPort(), config.getServerName(), new String[0]);
             }
         }).thenApply(ignored -> OpcUaServer.this);
@@ -408,13 +415,12 @@ public class OpcUaServer {
             return false;
         }
 
-        this.registeredWithDiscoveryServer = discoveryServerUrl;
         this.registerSemaphoreFilePath = semaphoreFilePath;
         this.registerDefaultInterval = intervalMs;
 
         periodicServerRegisterScheduler = Executors.newScheduledThreadPool(2);
 
-        periodicServerRegisterScheduler.scheduleWithFixedDelay(new PeriodicServerRegister(), delayFirstRegisterMs,
+        periodicServerRegisterScheduler.scheduleWithFixedDelay(new PeriodicServerRegister(discoveryServerUrl), delayFirstRegisterMs,
                 intervalMs, TimeUnit.MILLISECONDS);
 
         return true;
@@ -432,28 +438,87 @@ public class OpcUaServer {
         return registerWithDiscoveryServer(false, registeredWithDiscoveryServer, null);
     }
 
-    private CompletableFuture<StatusCode> registerWithDiscoveryServer(boolean isRegister, String discoveryServerUrl,
+    private CompletableFuture<StatusCode> registerServer2(OpcUaClient stackClient,
+                                                          RegisteredServer serverToBeRegistered,
+                                                          MdnsDiscoveryConfiguration mdnsDiscoveryConfig) {
+
+        CompletableFuture<StatusCode> futureRegisterResult = new CompletableFuture<>();
+
+        ExtensionObject[] discoveryConfig = {ExtensionObject.encode(mdnsDiscoveryConfig)};
+
+        RegisterServer2Request registerServer2Request;
+        try {
+            registerServer2Request = new RegisterServer2Request(
+                    stackClient.newRequestHeader(stackClient.getSession().get().getAuthenticationToken()),
+                    serverToBeRegistered, discoveryConfig);
+        } catch (InterruptedException | ExecutionException e) {
+            futureRegisterResult.completeExceptionally(e);
+            return futureRegisterResult;
+        }
+
+        // first try RegisterServer2
+        stackClient.sendRequest(registerServer2Request).whenComplete((response2, ex2) -> {
+            if (response2 == null) {
+                futureRegisterResult.completeExceptionally(ex2);
+            } else {
+                futureRegisterResult.complete(response2.getResponseHeader().getServiceResult());
+            }
+        });
+
+        return futureRegisterResult;
+    }
+
+    private CompletableFuture<StatusCode> registerServer(OpcUaClient stackClient,
+                                                          RegisteredServer serverToBeRegistered) {
+
+        CompletableFuture<StatusCode> futureRegisterResult = new CompletableFuture<>();
+        RegisterServerRequest registerServerRequest = null;
+        try {
+            registerServerRequest = new RegisterServerRequest(
+                    stackClient.newRequestHeader(stackClient.getSession().get().getAuthenticationToken()),
+                    serverToBeRegistered);
+        } catch (InterruptedException | ExecutionException e) {
+            futureRegisterResult.completeExceptionally(e);
+        }
+        CompletableFuture<RegisterServerResponse> future = stackClient.sendRequest(registerServerRequest);
+        future.whenComplete((response, ex) -> {
+            if (response == null) {
+                futureRegisterResult.completeExceptionally(ex);
+            } else {
+                futureRegisterResult.complete(response.getResponseHeader().getServiceResult());
+            }
+        });
+        return futureRegisterResult;
+    }
+
+    private CompletableFuture<StatusCode> registerWithDiscoveryServer(boolean isRegister, EndpointDescription discoveryEndpoint,
                                                                       String semaphoreFilePath) {
-        UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
-                .setApplicationName(LocalizedText.english("Stack Example Client"))
-                .setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
-                .setEndpointUrl(discoveryServerUrl)
+        OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
+                .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
+                .setApplicationUri("urn:eclipse:milo:examples:client")
+                //.setCertificate(loader.getClientCertificate())
+                //.setKeyPair(loader.getClientKeyPair())
+                .setEndpoint(discoveryEndpoint)
+                .setIdentityProvider(new AnonymousProvider())
+                .setRequestTimeout(uint(1000))
                 .build();
 
-        UaTcpStackClient stackClient = new UaTcpStackClient(config);
+        CompletableFuture<StatusCode> futureRegisterResult = new CompletableFuture<StatusCode>();
 
-        RequestHeader header = new RequestHeader(
-                NodeId.NULL_VALUE,
-                DateTime.now(),
-                uint(requestHandle.getAndIncrement()),
-                uint(0), null, uint(60), null);
+        OpcUaClient stackClient = new OpcUaClient(clientConfig);
+        try {
+            stackClient.connect().get();
+        } catch (InterruptedException | ExecutionException e) {
+            futureRegisterResult.completeExceptionally(e);
+            return futureRegisterResult;
+        }
 
         LocalizedText[] serverNames = new LocalizedText[1];
         serverNames[0] = config.getApplicationName();
         ApplicationType serverType = ApplicationType.ClientAndServer;
 
         String[] discoveryUrls = Arrays.stream(stackServer.getEndpointDescriptions()).map(
-                EndpointDescription::getEndpointUrl).toArray(String[]::new);
+                EndpointDescription::getEndpointUrl).distinct().toArray(String[]::new);
 
         RegisteredServer serverToBeRegistered = new RegisteredServer(config.getApplicationUri(), config.getProductUri(),
                 serverNames, serverType, null, discoveryUrls, semaphoreFilePath, isRegister);
@@ -463,48 +528,82 @@ public class OpcUaServer {
                 config.getApplicationName().getText(), new String[0]);
 
 
-        ExtensionObject[] discoveryConfig = {ExtensionObject.encode(mdnsDiscoveryConfig)};
-
-        RegisterServer2Request registerServer2Request = new RegisterServer2Request(header, serverToBeRegistered,
-                discoveryConfig);
-
-        CompletableFuture<StatusCode> futureRegisterResult = new CompletableFuture<StatusCode>();
-
-        // first try RegisterServer2
-        CompletableFuture<RegisterServer2Response> future2 = stackClient.sendRequest(registerServer2Request);
-        future2.whenComplete((response2, ex2) -> {
-            if (response2 == null) {
-                logger.error("RegisterServer2 failed with error: {}", ex2.getMessage(), ex2);
-            } else if (response2.getResponseHeader().getServiceResult().getValue() == StatusCodes.Bad_NotImplemented ||
-                    response2.getResponseHeader().getServiceResult().getValue() ==
-                    StatusCodes.Bad_ServiceUnsupported) {
-                // RegisterServer2 failed, try RegisterServer
-                RegisterServerRequest registerServerRequest = new RegisterServerRequest(header, serverToBeRegistered);
-                CompletableFuture<RegisterServerResponse> future = stackClient.sendRequest(registerServerRequest);
-                future.whenComplete((response, ex) -> {
-                    if (response == null) {
-                        logger.error("RegisterServer failed with error: {}", ex.getMessage(), ex);
-                        futureRegisterResult.complete(new StatusCode(StatusCodes.Bad_UnexpectedError));
-                    } else if (response.getResponseHeader().getServiceResult().isBad()) {
-                        logger.error("RegisterServer failed with status code: {}",
-                                response.getResponseHeader().getServiceResult());
-                        futureRegisterResult.complete(response.getResponseHeader().getServiceResult());
+        registerServer2(stackClient, serverToBeRegistered, mdnsDiscoveryConfig).whenComplete((statusCode, throwable) -> {
+           if (statusCode == null) {
+               logger.error("RegisterServer2 failed with error: {}", throwable.getMessage(), throwable);
+               futureRegisterResult.completeExceptionally(throwable);
+           } else if (statusCode.getValue() == StatusCodes.Bad_NotImplemented ||
+                   statusCode.getValue() == StatusCodes.Bad_ServiceUnsupported) {
+               // RegisterServer2 failed, try RegisterServer
+                registerServer(stackClient, serverToBeRegistered).whenComplete((statusCode1, throwable1) -> {
+                    if (statusCode1 == null) {
+                        logger.error("RegisterServer failed with error: {}", throwable1.getMessage(), throwable1);
+                        futureRegisterResult.completeExceptionally(throwable1);
                     } else {
-                        futureRegisterResult.complete(response.getResponseHeader().getServiceResult());
+                        if (statusCode1.isBad()) {
+                            logger.error("RegisterServer failed with status code: {}", statusCode1);
+                        }
+                        futureRegisterResult.complete(statusCode1);
                     }
                 });
-            } else {
-                futureRegisterResult.complete(response2.getResponseHeader().getServiceResult());
-            }
+           } else {
+               futureRegisterResult.complete(statusCode);
+           }
         });
 
         return futureRegisterResult;
     }
 
+    private void retryPeriodicServerRegister(String discoveryServerUrl) {
+
+        // reschedule server registering with backing off strategy as defined in specification.
+        // first retry in 1s, then double each time, i.e. 2,4,8,... until main interval is reached.
+        if (registerNextTryInterval == 0) {
+            registerNextTryInterval = 1000;
+        } else {
+            registerNextTryInterval *= 2;
+            if (registerNextTryInterval > registerDefaultInterval) {
+                registerNextTryInterval = 0;
+                logger.warn("Retry interval of register server reached maximum. Falling back to default retry cycle");
+                return;
+            }
+        }
+
+        logger.info("Retry register server in " + (registerNextTryInterval / 1000) + " seconds");
+
+        periodicServerRegisterScheduler.schedule(new PeriodicServerRegister(discoveryServerUrl),
+                registerNextTryInterval, TimeUnit.MILLISECONDS);
+    }
+
     private class PeriodicServerRegister implements Runnable {
+
+        String discoveryServerUrl;
+
+        public PeriodicServerRegister(String discoveryServerUrl) {
+            this.discoveryServerUrl = discoveryServerUrl;
+        }
 
         @Override
         public void run() {
+
+            if (registeredWithDiscoveryServer == null) {
+                EndpointDescription endpoint;
+                try {
+                    EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(discoveryServerUrl).get();
+                    endpoint = Arrays.stream(endpoints)
+                            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
+                            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+                } catch (Exception e) {
+                    logger.error("Can not get endpoints from discovery server: " + e.getMessage());
+                    retryPeriodicServerRegister(discoveryServerUrl);
+                    return;
+                }
+
+
+                registeredWithDiscoveryServer = endpoint;
+            }
+
+
             registerWithDiscoveryServer(true, registeredWithDiscoveryServer, registerSemaphoreFilePath)
                     .whenComplete((statusCode, ex) -> {
                         if (statusCode == null) {
@@ -513,23 +612,10 @@ public class OpcUaServer {
                             return;
                         }
                         if (statusCode.isBad()) {
-                            // reschedule server registering with backing off strategy as defined in specification.
-                            // first retry in 1s, then double each time, i.e. 2,4,8,... until main interval is reached.
-                            if (registerNextTryInterval == 0) {
-                                registerNextTryInterval = 1000;
-                            } else {
-                                registerNextTryInterval *= 2;
-                                if (registerNextTryInterval > registerDefaultInterval) {
-                                    registerNextTryInterval = 0;
-                                }
-                                return;
-                            }
-
-                            logger.warn("Could not register server with discovery server: " + statusCode +
-                                    ". Next retry in " + (registerNextTryInterval / 1000) + " seconds");
-
-                            periodicServerRegisterScheduler.schedule(new PeriodicServerRegister(),
-                                    registerNextTryInterval, TimeUnit.MILLISECONDS);
+                            logger.warn("Could not register server with discovery server: " + statusCode);
+                            retryPeriodicServerRegister(discoveryServerUrl);
+                        } else {
+                            logger.info("Successfully registered with discovery server " + discoveryServerUrl);
                         }
                     });
         }

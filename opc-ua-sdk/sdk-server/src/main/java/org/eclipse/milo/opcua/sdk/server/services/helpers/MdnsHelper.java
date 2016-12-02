@@ -22,7 +22,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
@@ -52,14 +55,48 @@ public class MdnsHelper implements Runnable {
     private InetAddress ownAddress;
     private int ownPort;
 
-    public MdnsHelper(String listeningHost, int serverPort) {
-        try {
-            ownAddress = InetAddress.getByName(listeningHost); // Create a JmDNS instance
-        } catch (UnknownHostException e) {
-            logger.error("Could not initialize address for instantiation of JmDNS for host: " + listeningHost + ". " +
-                    e.getMessage());
-            e.printStackTrace();
+    private Optional<InetAddress> getMostPublicAddress(Set<String> bindAddresses) {
+        Function<InetAddress, Integer> addressToInt = inetAddress -> {
+            if (inetAddress.isLoopbackAddress())
+                return 0;
+            if (inetAddress.isLinkLocalAddress())
+                return 1;
+            if (inetAddress.isMulticastAddress())
+                return 2;
+            if (inetAddress.isAnyLocalAddress())
+                return 3;
+            if (inetAddress.isSiteLocalAddress())
+                return 4;
+            return 5;
+        };
+
+        return bindAddresses.stream().map(s -> {
+            try {
+                return InetAddress.getByName(s);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).sorted((a1, a2) -> addressToInt.apply(a2) - addressToInt.apply(a1)).findFirst();
+    }
+
+    public MdnsHelper(Set<String> bindAddresses, int serverPort) {
+
+        Optional<InetAddress> highestPrioAddress = getMostPublicAddress(bindAddresses);
+
+        if (highestPrioAddress.isPresent()) {
+            ownAddress = highestPrioAddress.get();
+        } else {
+            try {
+                logger.warn("mDNS: no bind address valid. Setting to 0.0.0.0");
+                ownAddress = InetAddress.getByName("0.0.0.0"); // Create a JmDNS instance
+            } catch (UnknownHostException e) {
+                //logger.error("Could not initialize address for instantiation of JmDNS for host: " + listeningHost + ". " +
+                //        e.getMessage());
+                e.printStackTrace();
+            }
         }
+
         ownPort = serverPort;
         try {
             jmdns = JmDNS.create(ownAddress);
@@ -110,35 +147,45 @@ public class MdnsHelper implements Runnable {
         return true;
     }
 
-    private void processRecord(ServiceInfo serviceInfo) {
+    private String serviceInfoToDiscoveryUrl(ServiceInfo serviceInfo) {
+        String discoveryUrl = null;
 
-        String serverName = serviceInfo.getName();
+        InetAddress[] addressList = serviceInfo.getInetAddresses();
+        for (InetAddress mdnsIa : addressList) {
 
-        ServerOnNetworkMdns entry;
+            //if (Arrays.equals(ownAddress.getAddress(), mdnsIa.getAddress()) && serviceInfo.getPort() == ownPort) {
+            //    continue; // its ourself
+            //}
 
-        if (!serverOnNetworkMap.containsKey(serverName)) {
-            entry = new ServerOnNetworkMdns();
-            String discoveryUrl = null;
+            discoveryUrl = "opc.tcp://" + mdnsIa.getHostAddress() + ":" + serviceInfo.getPort() +
+                    serviceInfo.getPropertyString("path");
 
-            InetAddress[] addressList = serviceInfo.getInetAddresses();
-            for (InetAddress mdnsIa : addressList) {
-
-                if (Arrays.equals(ownAddress.getAddress(), mdnsIa.getAddress()) && serviceInfo.getPort() == ownPort) {
-                    continue; // its ourself
-                }
-
-                discoveryUrl = "opc.tcp://" + mdnsIa.getHostAddress() + ":" + serviceInfo.getPort() +
-                        serviceInfo.getPropertyString("path");
-
-                if (discoveryUrl.endsWith("/")) {
-                    discoveryUrl = discoveryUrl.substring(0, discoveryUrl.length() - 1);
-                }
-
-                break;
-
+            if (discoveryUrl.endsWith("/")) {
+                discoveryUrl = discoveryUrl.substring(0, discoveryUrl.length() - 1);
             }
 
-            String capsString = serviceInfo.getPropertyString("caps");
+            break;
+
+        }
+
+        return discoveryUrl;
+    }
+
+    private void processRecord(ServiceInfo serviceInfo) {
+
+        String discoveryUrl = serviceInfoToDiscoveryUrl(serviceInfo);
+
+
+        if (!serverOnNetworkMap.containsKey(discoveryUrl)) {
+
+
+            String[] caps;
+
+            if (serviceInfo.getPropertyString("caps") != null) {
+                caps = serviceInfo.getPropertyString("caps").split(",");
+            } else {
+                caps = new String[0];
+            }
 
 
             if (lastServerOnNetworkId == Integer.MAX_VALUE) {
@@ -146,18 +193,37 @@ public class MdnsHelper implements Runnable {
                 lastServerOnNetworkId = 0;
             }
 
-            entry.serverOnNetwork =
-                    new ServerOnNetwork(UInteger.valueOf(++lastServerOnNetworkId), serverName, discoveryUrl,
-                            capsString.split(","));
-            serverOnNetworkMap.put(serverName, entry);
-            serverOnNetworkList.add(entry.serverOnNetwork);
-            multicastServerConsumer.accept(entry.serverOnNetwork);
+            ServerOnNetwork son = addToServerOnNetwork(serviceInfo.getName(), discoveryUrl, caps);
+
+            if (multicastServerConsumer != null)
+                multicastServerConsumer.accept(son);
         } else {
 
-            entry = serverOnNetworkMap.get(serverName);
+            serverOnNetworkMap.get(discoveryUrl).lastSeen = new Date();
         }
 
+    }
+
+    public ServerOnNetwork addToServerOnNetwork(String serverName, String discoveryUrl, String[] caps) {
+        if (serverOnNetworkMap.containsKey(discoveryUrl)) {
+            serverOnNetworkMap.get(discoveryUrl).lastSeen = new Date();
+            return serverOnNetworkMap.get(discoveryUrl).serverOnNetwork;
+        }
+
+        ServerOnNetworkMdns entry = new ServerOnNetworkMdns();
+        entry.serverOnNetwork =
+                new ServerOnNetwork(UInteger.valueOf(++lastServerOnNetworkId), serverName, discoveryUrl, caps);
         entry.lastSeen = new Date();
+        serverOnNetworkMap.put(discoveryUrl, entry);
+        serverOnNetworkList.add(entry.serverOnNetwork);
+        return entry.serverOnNetwork;
+    }
+
+    public boolean removeFromServerOnNetwork(String discoveryUrl) {
+        //noinspection SuspiciousMethodCalls
+        boolean retVal = serverOnNetworkList.remove(serverOnNetworkMap.get(discoveryUrl).serverOnNetwork);
+        serverOnNetworkMap.remove(discoveryUrl);
+        return retVal;
     }
 
     public void run() {
@@ -165,18 +231,16 @@ public class MdnsHelper implements Runnable {
 
             @Override
             public void serviceResolved(ServiceEvent event) {
-                logger.info("mDNS: found server: " + event.getInfo().getName());
+                logger.info("mDNS: found server: " + event.getInfo());
                 processRecord(event.getInfo());
             }
 
             @Override
             public void serviceRemoved(ServiceEvent event) {
-                String serverName = event.getInfo().getName();
-                if (serverOnNetworkMap.containsKey(serverName)) {
-                    logger.info("mDNS: remove server (TTL=0): " + serverName);
-                    //noinspection SuspiciousMethodCalls
-                    serverOnNetworkList.remove(serverOnNetworkMap.get(serverName));
-                    serverOnNetworkMap.remove(serverName);
+                String discoveryUrl = serviceInfoToDiscoveryUrl(event.getInfo());
+                if (serverOnNetworkMap.containsKey(discoveryUrl)) {
+                    logger.info("mDNS: remove server (TTL=0): " + discoveryUrl);
+                    removeFromServerOnNetwork(discoveryUrl);
                 }
 
             }

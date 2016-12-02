@@ -200,51 +200,29 @@ public class FindServersClient {
     private CompletableFuture<Void> OutputGetEndpoints(ApplicationDescription applicationDescription) {
         CompletableFuture<Void> finished = new CompletableFuture<>();
 
-        GetEndpoints(applicationDescription).exceptionally(ex -> {
-            logger.error("error invoking GetEndpoints", ex);
-            return new EndpointDescription[0];
-        }).thenAccept(v -> {
-            logger.info("GetEndpoints for " + applicationDescription.getApplicationUri() + " returned " + v.length + " Endpoints");
-            for (EndpointDescription ed : v) {
-                logger.info("\tEndpoint URL: " + ed.getEndpointUrl());
-                logger.info("\tTransport profile URI: " + ed.getTransportProfileUri());
-                logger.info("---");
-            }
-            finished.complete(null);
-        });
+        if (applicationDescription.getDiscoveryUrls() == null || applicationDescription.getDiscoveryUrls().length == 0) {
+            logger.warn("Can not get endpoints. Empty discovery urls for Server: " + applicationDescription.getApplicationUri());
+            CompletableFuture<EndpointDescription[]> future = new CompletableFuture<>();
+            future.complete(new EndpointDescription[0]);
+            return finished;
+        }
+
+        EndpointDescription[] endpoints = new EndpointDescription[0];
+        try {
+            endpoints = UaTcpStackClient.getEndpoints(applicationDescription.getDiscoveryUrls()[0]).get();
+        } catch (InterruptedException | ExecutionException e) {
+            finished.completeExceptionally(e);
+        }
+
+        logger.info("GetEndpoints for " + applicationDescription.getApplicationUri() + " returned " + endpoints.length + " Endpoints");
+        for (EndpointDescription ed : endpoints) {
+            logger.info("\tEndpoint URL: " + ed.getEndpointUrl());
+            logger.info("\tTransport profile URI: " + ed.getTransportProfileUri());
+            logger.info("---");
+        }
+        finished.complete(null);
 
         return finished;
     }
 
-    private CompletableFuture<EndpointDescription[]> GetEndpoints(ApplicationDescription appDescription) {
-
-        if (appDescription.getDiscoveryUrls() == null || appDescription.getDiscoveryUrls().length == 0) {
-            logger.warn("Can not get endpoints. Empty discovery urls for Server: " + appDescription.getApplicationUri());
-            CompletableFuture<EndpointDescription[]> future = new CompletableFuture<>();
-            future.complete(new EndpointDescription[0]);
-            return future;
-        }
-
-        UaTcpStackClient client = getClient(appDescription.getDiscoveryUrls()[0]);
-
-        RequestHeader header = new RequestHeader(
-                NodeId.NULL_VALUE,
-                DateTime.now(),
-                uint(requestHandle.getAndIncrement()),
-                uint(0), null, uint(60), null);
-
-        GetEndpointsRequest request = new GetEndpointsRequest(header, null, null, null);
-
-        return client.<GetEndpointsResponse>sendRequest(request).thenCompose(result -> {
-            StatusCode statusCode = result.getResponseHeader().getServiceResult();
-
-            if (statusCode.isGood()) {
-                return CompletableFuture.completedFuture(result.getEndpoints());
-            } else {
-                CompletableFuture<EndpointDescription[]> f = new CompletableFuture<>();
-                f.completeExceptionally(new UaException(statusCode));
-                return f;
-            }
-        });
-    }
 }

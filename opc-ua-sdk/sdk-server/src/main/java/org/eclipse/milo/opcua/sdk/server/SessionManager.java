@@ -885,8 +885,7 @@ public class SessionManager implements
     @Override
     public void onGetEndpoints(
             ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) throws UaException {
-
-        session(serviceRequest);
+        // no session/authentication required
 
         if (!server.getConfig().isDiscoveryServer()) {
             throw new UaException(StatusCodes.Bad_NotSupported);

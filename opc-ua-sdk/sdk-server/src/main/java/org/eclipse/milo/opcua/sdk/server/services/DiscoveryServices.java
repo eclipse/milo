@@ -20,9 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -82,8 +84,15 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 
         if (multicastEnabled) {
             OpcUaServerConfig config = (OpcUaServerConfig) server.getConfig();
-            //FIXME for now use 0.0.0.0. mDNS should only listen on the same IP as the rest of the server.
-            mdnsHelper = new MdnsHelper("0.0.0.0", config.getBindPort());
+
+            Set<String> hostnames = new HashSet<>();
+            hostnames.add(config.getHostname());
+
+            for (String bindAddress : config.getBindAddresses()) {
+                hostnames.addAll(config.getHostnameResolver().apply(bindAddress));
+            }
+
+            mdnsHelper = new MdnsHelper(hostnames, config.getBindPort());
             Thread mdnsThread = new Thread(mdnsHelper);
             mdnsThread.start();
         }
@@ -120,7 +129,7 @@ public class DiscoveryServices extends DefaultDiscoveryService {
         }
 
         Stream<ServerOnNetwork> filteredServers = mdnsHelper.getServerOnNetwork().stream().filter(serverOnNetwork ->
-            serverOnNetwork.getRecordId().compareTo(serviceRequest.getRequest().getStartingRecordId()) >= 0);
+                serverOnNetwork.getRecordId().compareTo(serviceRequest.getRequest().getStartingRecordId()) >= 0);
 
         if (serviceRequest.getRequest().getServerCapabilityFilter() != null &&
                 serviceRequest.getRequest().getServerCapabilityFilter().length > 0) {
@@ -216,28 +225,16 @@ public class DiscoveryServices extends DefaultDiscoveryService {
         if (multicastEnabled) {
             // publish or unpublish mDNS record
             for (String discoveryUrl : requestServer.getDiscoveryUrls()) {
-                URL fullDiscoveryUrl;
-                try {
-                    fullDiscoveryUrl = new URL(discoveryUrl);
-                } catch (MalformedURLException e) {
-                    return new StatusCode(StatusCodes.Bad_UnexpectedError);
-                }
-
                 if (!requestServer.getIsOnline()) {
-                    if (removeMulticastRecord(fullDiscoveryUrl.getHost(), fullDiscoveryUrl.getPort(),
-                            fullDiscoveryUrl.getPath()).isBad()) {
-                        logger.warn("Could not remove mDNS record for hostname " + fullDiscoveryUrl.getHost() + ":" +
-                                fullDiscoveryUrl.getPort());
+                    if (!mdnsHelper.removeFromServerOnNetwork(discoveryUrl)) {
+                        logger.warn("Could not remove server record for " + discoveryUrl);
                     }
                 } else {
                     String[] capabilities =
                             discoveryConfiguration == null || discoveryConfiguration.getServerCapabilities() == null ?
                                     new String[0] : discoveryConfiguration.getServerCapabilities();
-                    if (addMulticastRecord(fullDiscoveryUrl.getHost(), fullDiscoveryUrl.getPort(),
-                            fullDiscoveryUrl.getPath(), capabilities).isBad()) {
-                        logger.warn("Could not add mDNS record for hostname " + fullDiscoveryUrl.getHost() + ":" +
-                                fullDiscoveryUrl.getPort());
-                    }
+                    mdnsHelper.addToServerOnNetwork(requestServer.getServerNames()[0].getText(), discoveryUrl,
+                            capabilities);
                 }
             }
         }
@@ -256,13 +253,15 @@ public class DiscoveryServices extends DefaultDiscoveryService {
             this.registeredServers.remove(registeredServer);
             this.registeredServerLastSeen.remove(registeredServer);
 
+            logger.info("Server successfully unregistered: " + requestServer.getServerUri());
+
             return StatusCode.GOOD;
         }
 
         if (registeredServer == null) {
             // this server did not yet register, create new
 
-            logger.debug("RegisterServer called by new server: " + requestServer.getServerUri());
+            logger.info("New Server successfully registered: " + requestServer.getServerUri());
 
             registeredServer = requestServer;
             this.registeredServers.add(registeredServer);
@@ -270,9 +269,12 @@ public class DiscoveryServices extends DefaultDiscoveryService {
             if (registerServerConsumer != null) {
                 registerServerConsumer.accept(registeredServer);
             }
+        } else {
+            logger.info("Server successfully re-registered: " + requestServer.getServerUri());
         }
         // update or add last seen value
         this.registeredServerLastSeen.put(registeredServer, new Date());
+
 
         return StatusCode.GOOD;
     }
