@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -28,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.stream.Collectors.toList;
 

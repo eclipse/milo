@@ -14,12 +14,12 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Arrays;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class ByteString {
 
@@ -48,12 +48,12 @@ public final class ByteString {
         return bytes;
     }
 
-    @Nonnull
-    public byte[] bytesOrElse(@Nonnull byte[] other) {
+    @NotNull
+    public byte[] bytesOrElse(@NotNull byte[] other) {
         return bytes != null ? bytes : other;
     }
 
-    @Nonnull
+    @NotNull
     public byte[] bytesOrEmpty() {
         return bytesOrElse(new byte[0]);
     }
@@ -69,14 +69,14 @@ public final class ByteString {
         return bs;
     }
 
-    @Nonnull
-    public UByte[] uBytesOrElse(@Nonnull UByte[] other) {
+    @NotNull
+    public UByte[] uBytesOrElse(@NotNull UByte[] other) {
         UByte[] ubs = uBytes();
 
         return ubs != null ? ubs : other;
     }
 
-    @Nonnull
+    @NotNull
     public UByte[] uBytesOrEmpty() {
         return uBytesOrElse(new UByte[0]);
     }

@@ -19,7 +19,6 @@ import java.util.Calendar;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import javax.annotation.Nonnull;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -49,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+import org.jetbrains.annotations.NotNull;
 import org.jooq.lambda.Unchecked;
 
 public class XmlEncoder implements UaEncoder {
@@ -385,7 +385,7 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    private void writeValue(String field, @Nonnull String value) {
+    private void writeValue(String field, @NotNull String value) {
         write(field, Unchecked.consumer(w -> w.writeCharacters(value)));
     }
 

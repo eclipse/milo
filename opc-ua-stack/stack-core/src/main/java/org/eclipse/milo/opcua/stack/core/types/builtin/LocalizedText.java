@@ -14,9 +14,9 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Locale;
-import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
+import org.jetbrains.annotations.Nullable;
 
 public final class LocalizedText {
 

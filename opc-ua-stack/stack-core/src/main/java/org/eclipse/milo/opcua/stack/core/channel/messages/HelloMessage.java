@@ -13,13 +13,12 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryEncoder;
 import org.eclipse.milo.opcua.stack.core.util.annotations.UInt32Primitive;
+import org.jetbrains.annotations.NotNull;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -60,7 +59,7 @@ public class HelloMessage {
                         @UInt32Primitive long sendBufferSize,
                         @UInt32Primitive long maxMessageSize,
                         @UInt32Primitive long maxChunkCount,
-                        @Nonnull String endpointUrl) {
+                        @NotNull String endpointUrl) {
 
         checkArgument(receiveBufferSize >= 8192, "receiverBufferSize must be at least 8192 bytes");
         checkArgument(sendBufferSize >= 8192, "sendBufferSize must be at least 8192 bytes");

@@ -23,7 +23,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -45,6 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -437,7 +437,7 @@ public abstract class UaNode implements ServerNode {
      *
      * @param attributeDelegate the {@link AttributeDelegate}.
      */
-    public void setAttributeDelegate(@Nonnull AttributeDelegate attributeDelegate) {
+    public void setAttributeDelegate(@NotNull AttributeDelegate attributeDelegate) {
         Preconditions.checkNotNull(attributeDelegate);
 
         this.attributeDelegate.set(attributeDelegate);

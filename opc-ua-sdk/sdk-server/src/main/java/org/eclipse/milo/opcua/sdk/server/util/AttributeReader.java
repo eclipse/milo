@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
@@ -26,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
