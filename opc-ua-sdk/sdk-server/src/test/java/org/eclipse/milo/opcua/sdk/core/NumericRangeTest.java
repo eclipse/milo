@@ -60,6 +60,18 @@ public class NumericRangeTest {
     }
 
     @Test
+    public void testArrayBeyondEnd() throws UaException {
+        int[] array = new int[]{0, 1, 2, 3};
+        NumericRange nr = NumericRange.parse("0:10");
+        Variant value = new Variant(array);
+
+        Object result = NumericRange.readFromValueAtRange(value, nr);
+
+        assertTrue(result instanceof int[]);
+        assertEquals(result, array);
+    }
+
+    @Test
     public void testString1d() throws UaException {
         NumericRange nr = NumericRange.parse("1:2");
         Variant value = new Variant("abcdef");
@@ -100,6 +112,18 @@ public class NumericRangeTest {
     }
 
     @Test
+    public void testStringBeyondEnd() throws UaException {
+        String string = "abcdef";
+        NumericRange nr = NumericRange.parse("0:10");
+        Variant value = new Variant(string);
+
+        Object result = NumericRange.readFromValueAtRange(value, nr);
+
+        assertTrue(result instanceof String);
+        assertEquals(result, string);
+    }
+
+    @Test
     public void testByteString1d() throws UaException {
         NumericRange nr = NumericRange.parse("1:2");
         Variant value = new Variant(new ByteString(new byte[]{1, 2, 3, 4}));
@@ -128,6 +152,18 @@ public class NumericRangeTest {
         };
 
         assertTrue(Arrays.deepEquals((ByteString[]) result, expected));
+    }
+
+    @Test
+    public void testByteStringBeyondEnd() throws UaException {
+        ByteString byteString = new ByteString(new byte[]{1, 2, 3, 4});
+        NumericRange nr = NumericRange.parse("0:10");
+        Variant value = new Variant(byteString);
+
+        Object result = NumericRange.readFromValueAtRange(value, nr);
+
+        assertTrue(result instanceof ByteString);
+        assertEquals(result, byteString);
     }
 
     @Test(dataProvider = "getInvalidRanges", expectedExceptions = UaException.class)

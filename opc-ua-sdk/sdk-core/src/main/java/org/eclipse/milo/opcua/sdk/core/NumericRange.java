@@ -122,10 +122,10 @@ public final class NumericRange {
         Bounds bounds = range.getDimensionBounds(dimension);
         int low = bounds.low;
         int high = bounds.high;
-        int len = high - low + 1;
 
         if (dimension == dimensionCount) {
             if (array.getClass().isArray()) {
+                int len = Math.min(high - low + 1, Array.getLength(array));
                 Class<?> type = array.getClass().getComponentType();
                 Object a = Array.newInstance(type, len);
 
@@ -137,16 +137,18 @@ public final class NumericRange {
                 return a;
             } else if (array instanceof String) {
                 String s = (String) array;
-
-                return s.substring(low, high + 1);
+                int to = Math.min(high + 1, s.length());
+                return s.substring(low, to);
             } else if (array instanceof ByteString) {
                 ByteString bs = (ByteString) array;
-                byte[] copy = Arrays.copyOfRange(bs.bytesOrEmpty(), low, high + 1);
+                int to = Math.min(high + 1, bs.length());
+                byte[] copy = Arrays.copyOfRange(bs.bytesOrEmpty(), low, to);
                 return new ByteString(copy);
             } else {
                 throw new UaException(StatusCodes.Bad_IndexRangeNoData);
             }
         } else {
+            int len = Math.min(high - low + 1, Array.getLength(array));
             Class<?> type = array.getClass().getComponentType();
             Object a = Array.newInstance(type, len);
 
