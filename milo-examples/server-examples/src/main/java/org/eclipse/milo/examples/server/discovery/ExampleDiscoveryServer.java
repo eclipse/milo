@@ -57,14 +57,14 @@ public class ExampleDiscoveryServer {
         KeyStoreLoader loader = new KeyStoreLoader().load();
 
         DefaultCertificateManager certificateManager = new DefaultCertificateManager(
-                loader.getServerKeyPair(),
-                loader.getServerCertificate()
+            loader.getServerKeyPair(),
+            loader.getServerCertificate()
         );
 
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
 
         LoggerFactory.getLogger(getClass())
-                .info("security temp dir: {}", securityTempDir.getAbsolutePath());
+            .info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
         DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
 
@@ -84,27 +84,27 @@ public class ExampleDiscoveryServer {
             .setBindAddresses(newArrayList("0.0.0.0"))
             .setBindPort(4840)
             .setBuildInfo(
-                    new BuildInfo(
-                            "urn:eclipse:milo:example-server",
-                            "eclipse",
-                            "eclipse milo example server",
-                            OpcUaServer.SDK_VERSION,
-                            "", DateTime.now()))
+                new BuildInfo(
+                    "urn:eclipse:milo:example-server",
+                    "eclipse",
+                    "eclipse milo example server",
+                    OpcUaServer.SDK_VERSION,
+                    "", DateTime.now()))
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
             .setIdentityValidator(identityValidator)
             .setProductUri("urn:eclipse:milo:example-discovery-server")
             .setServerName("discovery")
             .setSecurityPolicies(
-                    EnumSet.of(
-                            SecurityPolicy.None,
-                            SecurityPolicy.Basic128Rsa15,
-                            SecurityPolicy.Basic256,
-                            SecurityPolicy.Basic256Sha256))
+                EnumSet.of(
+                    SecurityPolicy.None,
+                    SecurityPolicy.Basic128Rsa15,
+                    SecurityPolicy.Basic256,
+                    SecurityPolicy.Basic256Sha256))
             .setUserTokenPolicies(
-                    ImmutableList.of(
-                            USER_TOKEN_POLICY_ANONYMOUS,
-                            USER_TOKEN_POLICY_USERNAME))
+                ImmutableList.of(
+                    USER_TOKEN_POLICY_ANONYMOUS,
+                    USER_TOKEN_POLICY_USERNAME))
             .setIsDiscoveryServer(true)
             .setEnableMulticast(true)
             .build();

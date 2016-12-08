@@ -130,7 +130,7 @@ public class MdnsHelper implements Runnable {
             jmdns.registerService(serviceInfo);
         } catch (IOException e) {
             logger.error("Could not add mDNS record for: " + mdnsName + " on port " + port + " with endpoint path: " +
-                    endpointName + ". Error: " + e.getMessage());
+                endpointName + ". Error: " + e.getMessage());
             return false;
         }
         return true;
@@ -154,7 +154,7 @@ public class MdnsHelper implements Runnable {
         for (InetAddress mdnsIa : addressList) {
 
             discoveryUrl = "opc.tcp://" + mdnsIa.getHostAddress() + ":" + serviceInfo.getPort() +
-                    serviceInfo.getPropertyString("path");
+                serviceInfo.getPropertyString("path");
 
             if (discoveryUrl.endsWith("/")) {
                 discoveryUrl = discoveryUrl.substring(0, discoveryUrl.length() - 1);
@@ -209,7 +209,7 @@ public class MdnsHelper implements Runnable {
 
         ServerOnNetworkMdns entry = new ServerOnNetworkMdns();
         entry.serverOnNetwork =
-                new ServerOnNetwork(UInteger.valueOf(++lastServerOnNetworkId), serverName, discoveryUrl, caps);
+            new ServerOnNetwork(UInteger.valueOf(++lastServerOnNetworkId), serverName, discoveryUrl, caps);
         entry.lastSeen = new Date();
         serverOnNetworkMap.put(discoveryUrl, entry);
         serverOnNetworkList.add(entry.serverOnNetwork);

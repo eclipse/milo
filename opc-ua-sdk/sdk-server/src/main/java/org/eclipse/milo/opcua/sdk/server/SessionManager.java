@@ -146,15 +146,15 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class SessionManager implements
-        AttributeServiceSet,
-        MethodServiceSet,
-        MonitoredItemServiceSet,
-        NodeManagementServiceSet,
-        QueryServiceSet,
-        SessionServiceSet,
-        SubscriptionServiceSet,
-        ViewServiceSet,
-        DiscoveryServiceSet {
+    AttributeServiceSet,
+    MethodServiceSet,
+    MonitoredItemServiceSet,
+    NodeManagementServiceSet,
+    QueryServiceSet,
+    SessionServiceSet,
+    SubscriptionServiceSet,
+    ViewServiceSet,
+    DiscoveryServiceSet {
 
     private static final int MAX_SESSION_TIMEOUT_MS = 120000;
 
@@ -353,7 +353,9 @@ public class SessionManager implements
     private void validateApplicationUri(String applicationUri, X509Certificate certificate) throws UaException {
         try {
             Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
-            if (subjectAltNames == null) subjectAltNames = Collections.emptyList();
+            if (subjectAltNames == null) {
+                subjectAltNames = Collections.emptyList();
+            }
 
             for (List<?> idAndValue : subjectAltNames) {
                 if (idAndValue != null && idAndValue.size() == 2) {
@@ -862,7 +864,7 @@ public class SessionManager implements
     //region Discovery Services
     @Override
     public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest)
-            throws UaException {
+        throws UaException {
         // no session/authentication required
 
         if (!server.getConfig().isDiscoveryServer()) {
@@ -873,7 +875,7 @@ public class SessionManager implements
 
     @Override
     public void onFindServersOnNetwork(ServiceRequest<FindServersOnNetworkRequest,
-            FindServersOnNetworkResponse> serviceRequest) throws UaException {
+        FindServersOnNetworkResponse> serviceRequest) throws UaException {
         // no session/authentication required
 
         if (!server.getConfig().isDiscoveryServer()) {
@@ -884,7 +886,7 @@ public class SessionManager implements
 
     @Override
     public void onGetEndpoints(
-            ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) throws UaException {
+        ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) throws UaException {
         // no session/authentication required
 
         if (!server.getConfig().isDiscoveryServer()) {
@@ -895,7 +897,7 @@ public class SessionManager implements
 
     @Override
     public void onRegisterServer(
-            ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
+        ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
 
         session(serviceRequest);
 
@@ -907,7 +909,7 @@ public class SessionManager implements
 
     @Override
     public void onRegisterServer2(
-            ServiceRequest<RegisterServer2Request, RegisterServer2Response> serviceRequest) throws UaException {
+        ServiceRequest<RegisterServer2Request, RegisterServer2Response> serviceRequest) throws UaException {
 
         session(serviceRequest);
 

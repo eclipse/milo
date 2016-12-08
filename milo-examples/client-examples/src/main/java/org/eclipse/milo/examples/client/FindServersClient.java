@@ -51,8 +51,8 @@ public class FindServersClient {
 
 
         example.outputFindServersOnNetwork("opc.tcp://localhost:4840/discovery")
-                .thenCompose(aVoid -> example.outputFindServers("opc.tcp://localhost:4840/discovery"))
-                .get();
+            .thenCompose(aVoid -> example.outputFindServers("opc.tcp://localhost:4840/discovery"))
+            .get();
 
     }
 
@@ -66,12 +66,12 @@ public class FindServersClient {
         }
 
         UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
-                .setApplicationName(LocalizedText.english("Stack Example Client"))
-                .setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
-                .setCertificate(loader.getClientCertificate())
-                .setKeyPair(loader.getClientKeyPair())
-                .setEndpointUrl(endpointUrl)
-                .build();
+            .setApplicationName(LocalizedText.english("Stack Example Client"))
+            .setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
+            .setCertificate(loader.getClientCertificate())
+            .setKeyPair(loader.getClientKeyPair())
+            .setEndpointUrl(endpointUrl)
+            .build();
 
         return new UaTcpStackClient(config);
     }
@@ -113,10 +113,10 @@ public class FindServersClient {
         }
 
         RequestHeader header = new RequestHeader(
-                NodeId.NULL_VALUE,
-                DateTime.now(),
-                uint(requestHandle.getAndIncrement()),
-                uint(0), null, uint(60), null);
+            NodeId.NULL_VALUE,
+            DateTime.now(),
+            uint(requestHandle.getAndIncrement()),
+            uint(0), null, uint(60), null);
 
         FindServersOnNetworkRequest request = new FindServersOnNetworkRequest(header, null, null, null);
 
@@ -178,10 +178,10 @@ public class FindServersClient {
         }
 
         RequestHeader header = new RequestHeader(
-                NodeId.NULL_VALUE,
-                DateTime.now(),
-                uint(requestHandle.getAndIncrement()),
-                uint(0), null, uint(60), null);
+            NodeId.NULL_VALUE,
+            DateTime.now(),
+            uint(requestHandle.getAndIncrement()),
+            uint(0), null, uint(60), null);
 
         FindServersRequest request = new FindServersRequest(header, null, null, null);
 
@@ -202,9 +202,9 @@ public class FindServersClient {
         CompletableFuture<Void> finished = new CompletableFuture<>();
 
         if (applicationDescription.getDiscoveryUrls() == null ||
-                applicationDescription.getDiscoveryUrls().length == 0) {
+            applicationDescription.getDiscoveryUrls().length == 0) {
             logger.warn("Can not get endpoints. Empty discovery urls for Server: " +
-                    applicationDescription.getApplicationUri());
+                applicationDescription.getApplicationUri());
             CompletableFuture<EndpointDescription[]> future = new CompletableFuture<>();
             future.complete(new EndpointDescription[0]);
             return finished;
@@ -218,7 +218,7 @@ public class FindServersClient {
         }
 
         logger.info("GetEndpoints for " + applicationDescription.getApplicationUri() + " returned " + endpoints.length +
-                " Endpoints");
+            " Endpoints");
         for (EndpointDescription ed : endpoints) {
             logger.info("\tEndpoint URL: " + ed.getEndpointUrl());
             logger.info("\tTransport profile URI: " + ed.getTransportProfileUri());

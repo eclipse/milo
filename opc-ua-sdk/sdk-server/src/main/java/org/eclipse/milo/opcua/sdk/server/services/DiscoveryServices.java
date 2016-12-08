@@ -108,8 +108,8 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 
     @Override
     public void onFindServersOnNetwork(
-            ServiceRequest<FindServersOnNetworkRequest, FindServersOnNetworkResponse> serviceRequest)
-            throws UaException {
+        ServiceRequest<FindServersOnNetworkRequest, FindServersOnNetworkResponse> serviceRequest)
+        throws UaException {
         if (!multicastEnabled) {
             serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
             return;
@@ -117,9 +117,9 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 
         int recordCount = 0;
         if (serviceRequest.getRequest().getStartingRecordId()
-                .compareTo(UInteger.valueOf(mdnsHelper.getCurrentServerOnNetworkId())) < 0) {
+            .compareTo(UInteger.valueOf(mdnsHelper.getCurrentServerOnNetworkId())) < 0) {
             recordCount = mdnsHelper.getCurrentServerOnNetworkId() -
-                    serviceRequest.getRequest().getStartingRecordId().intValue();
+                serviceRequest.getRequest().getStartingRecordId().intValue();
         }
 
         if (serviceRequest.getRequest().getMaxRecordsToReturn().longValue() > 0) {
@@ -127,24 +127,24 @@ public class DiscoveryServices extends DefaultDiscoveryService {
         }
 
         Stream<ServerOnNetwork> filteredServers = mdnsHelper.getServerOnNetwork().stream().filter(serverOnNetwork ->
-                serverOnNetwork.getRecordId().compareTo(serviceRequest.getRequest().getStartingRecordId()) >= 0)
-                .limit(recordCount);
+            serverOnNetwork.getRecordId().compareTo(serviceRequest.getRequest().getStartingRecordId()) >= 0)
+            .limit(recordCount);
 
         if (serviceRequest.getRequest().getServerCapabilityFilter() != null &&
-                serviceRequest.getRequest().getServerCapabilityFilter().length > 0) {
+            serviceRequest.getRequest().getServerCapabilityFilter().length > 0) {
 
             filteredServers =
-                    filteredServers.filter(serverOnNetwork -> serverOnNetwork.getServerCapabilities() == null ||
-                            Arrays.asList(serverOnNetwork.getServerCapabilities())
-                                    .containsAll(
-                                            Arrays.asList(serviceRequest.getRequest().getServerCapabilityFilter())));
+                filteredServers.filter(serverOnNetwork -> serverOnNetwork.getServerCapabilities() == null ||
+                    Arrays.asList(serverOnNetwork.getServerCapabilities())
+                        .containsAll(
+                            Arrays.asList(serviceRequest.getRequest().getServerCapabilityFilter())));
         }
 
         ResponseHeader header = serviceRequest.createResponseHeader();
 
         serviceRequest.setResponse(
-                new FindServersOnNetworkResponse(header, new DateTime(mdnsHelper.getLastServerOnNetworkIdReset()),
-                        filteredServers.toArray(ServerOnNetwork[]::new)));
+            new FindServersOnNetworkResponse(header, new DateTime(mdnsHelper.getLastServerOnNetworkIdReset()),
+                filteredServers.toArray(ServerOnNetwork[]::new)));
     }
 
     public StatusCode addMulticastRecord(String name, int port, String path, String[] capabilities) {
@@ -177,8 +177,8 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 
 
         Optional<RegisteredServer> rs =
-                registeredServers.stream().filter(s -> s.getServerUri().compareTo(requestServer.getServerUri()) == 0)
-                        .findFirst();
+            registeredServers.stream().filter(s -> s.getServerUri().compareTo(requestServer.getServerUri()) == 0)
+                .findFirst();
         if (rs.isPresent()) {
             registeredServer = rs.get();
         }
@@ -191,7 +191,7 @@ public class DiscoveryServices extends DefaultDiscoveryService {
             configurationResults.ensureCapacity(requestDiscoveryConfiguration.length);
             for (ExtensionObject e : requestDiscoveryConfiguration) {
                 if (discoveryConfiguration == null &&
-                        e.getEncodingTypeId().equals(Identifiers.MdnsDiscoveryConfiguration)) {
+                    e.getEncodingTypeId().equals(Identifiers.MdnsDiscoveryConfiguration)) {
                     // we found a known extension object which we can convert
                     discoveryConfiguration = e.decode();
                     mdnsName = discoveryConfiguration.getMdnsServerName();
@@ -230,10 +230,10 @@ public class DiscoveryServices extends DefaultDiscoveryService {
                     }
                 } else {
                     String[] capabilities =
-                            discoveryConfiguration == null || discoveryConfiguration.getServerCapabilities() == null ?
-                                    new String[0] : discoveryConfiguration.getServerCapabilities();
+                        discoveryConfiguration == null || discoveryConfiguration.getServerCapabilities() == null ?
+                            new String[0] : discoveryConfiguration.getServerCapabilities();
                     mdnsHelper.addToServerOnNetwork(requestServer.getServerNames()[0].getText(), discoveryUrl,
-                            capabilities);
+                        capabilities);
                 }
             }
         }
@@ -293,15 +293,15 @@ public class DiscoveryServices extends DefaultDiscoveryService {
                 File semaphoreFile = new File(r.getSemaphoreFilePath());
                 if (!semaphoreFile.isFile()) {
                     logger.info("Registration of server '" + r.getServerUri() +
-                            "' is removed because the semaphore file '" +
-                            semaphoreFile.getAbsolutePath() + "' was removed.");
+                        "' is removed because the semaphore file '" +
+                        semaphoreFile.getAbsolutePath() + "' was removed.");
                     remove = true;
                 }
             } else {
                 Date lastSeen = this.registeredServerLastSeen.get(r);
                 if (lastSeen.before(timedOutIfBefore)) {
                     logger.info("Registration of server '" + r.getServerUri() +
-                            "' is removed because its registration timed out.");
+                        "' is removed because its registration timed out.");
                     remove = true;
                 }
             }
@@ -314,27 +314,27 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 
     @Override
     public void onRegisterServer(
-            ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
+        ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
 
         ResponseHeader header = serviceRequest
-                .createResponseHeader(processRegisterServer(serviceRequest.getRequest().getServer(), null, null, null));
+            .createResponseHeader(processRegisterServer(serviceRequest.getRequest().getServer(), null, null, null));
 
         serviceRequest.setResponse(new RegisterServerResponse(header));
     }
 
     @Override
     public void onRegisterServer2(
-            ServiceRequest<RegisterServer2Request, RegisterServer2Response> serviceRequest) throws UaException {
+        ServiceRequest<RegisterServer2Request, RegisterServer2Response> serviceRequest) throws UaException {
 
         ArrayList<StatusCode> configurationResults = new ArrayList<>();
         ArrayList<DiagnosticInfo> diagnosticInfos = new ArrayList<>();
 
         ResponseHeader header =
-                serviceRequest.createResponseHeader(processRegisterServer(serviceRequest.getRequest().getServer(),
-                        serviceRequest.getRequest().getDiscoveryConfiguration(), configurationResults,
-                        diagnosticInfos));
+            serviceRequest.createResponseHeader(processRegisterServer(serviceRequest.getRequest().getServer(),
+                serviceRequest.getRequest().getDiscoveryConfiguration(), configurationResults,
+                diagnosticInfos));
         serviceRequest.setResponse(new RegisterServer2Response(header, configurationResults.toArray(new StatusCode[0]),
-                diagnosticInfos.toArray(new DiagnosticInfo[0])));
+            diagnosticInfos.toArray(new DiagnosticInfo[0])));
     }
 
     @Override

@@ -59,23 +59,23 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
         GetEndpointsRequest request = serviceRequest.getRequest();
 
         List<String> profileUris = request.getProfileUris() != null ?
-                newArrayList(request.getProfileUris()) :
-                new ArrayList<>();
+            newArrayList(request.getProfileUris()) :
+            new ArrayList<>();
 
         List<EndpointDescription> allEndpoints = server.getEndpoints().stream()
-                .map(server::mapEndpoint)
-                .filter(ed -> filterProfileUris(ed, profileUris))
-                .collect(toList());
+            .map(server::mapEndpoint)
+            .filter(ed -> filterProfileUris(ed, profileUris))
+            .collect(toList());
 
         List<EndpointDescription> matchingEndpoints = allEndpoints.stream()
-                .filter(ed -> filterEndpointUrls(ed, request.getEndpointUrl()))
-                .collect(toList());
+            .filter(ed -> filterEndpointUrls(ed, request.getEndpointUrl()))
+            .collect(toList());
 
         GetEndpointsResponse response = new GetEndpointsResponse(
-                serviceRequest.createResponseHeader(),
-                matchingEndpoints.isEmpty() ?
-                        a(allEndpoints, EndpointDescription.class) :
-                        a(matchingEndpoints, EndpointDescription.class)
+            serviceRequest.createResponseHeader(),
+            matchingEndpoints.isEmpty() ?
+                a(allEndpoints, EndpointDescription.class) :
+                a(matchingEndpoints, EndpointDescription.class)
         );
 
         serviceRequest.setResponse(response);
@@ -101,7 +101,7 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
     }
 
     private ApplicationDescription getApplicationDescriptionFromRegisteredServer(
-            RegisteredServer registeredServer, String[] localeIds) {
+        RegisteredServer registeredServer, String[] localeIds) {
         LocalizedText serverName = null;
         if (localeIds != null && localeIds.length > 0 && registeredServer.getServerNames() != null) {
             List<String> locales = Arrays.asList(localeIds);
@@ -122,13 +122,13 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
         }
 
         return new ApplicationDescription(
-                registeredServer.getServerUri(),
-                registeredServer.getProductUri(),
-                serverName,
-                registeredServer.getServerType(),
-                registeredServer.getGatewayServerUri(),
-                null,
-                registeredServer.getDiscoveryUrls()
+            registeredServer.getServerUri(),
+            registeredServer.getProductUri(),
+            serverName,
+            registeredServer.getServerType(),
+            registeredServer.getGatewayServerUri(),
+            null,
+            registeredServer.getDiscoveryUrls()
         );
     }
 
@@ -156,21 +156,21 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
             }
 
             applicationDescriptions.addAll(this.getRegisteredServers().stream()
-                    .filter(r -> wantedUris.contains(r.getServerUri()))
-                    .map(r -> getApplicationDescriptionFromRegisteredServer(r, request.getLocaleIds()))
-                    .collect(Collectors.toList()));
+                .filter(r -> wantedUris.contains(r.getServerUri()))
+                .map(r -> getApplicationDescriptionFromRegisteredServer(r, request.getLocaleIds()))
+                .collect(Collectors.toList()));
 
         } else {
             // client wants the full list
             applicationDescriptions.add(selfAppDescription);
             applicationDescriptions.addAll(this.getRegisteredServers().stream()
-                    .map(r -> getApplicationDescriptionFromRegisteredServer(r,
-                            request.getLocaleIds())).collect(Collectors.toList()));
+                .map(r -> getApplicationDescriptionFromRegisteredServer(r,
+                    request.getLocaleIds())).collect(Collectors.toList()));
         }
 
         FindServersResponse response = new FindServersResponse(
-                serviceRequest.createResponseHeader(),
-                a(applicationDescriptions, ApplicationDescription.class)
+            serviceRequest.createResponseHeader(),
+            a(applicationDescriptions, ApplicationDescription.class)
         );
 
         serviceRequest.setResponse(response);
@@ -180,54 +180,54 @@ public class DefaultDiscoveryService implements DiscoveryServiceSet {
         List<String> allDiscoveryUrls = newArrayList(server.getDiscoveryUrls());
 
         List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
+            .filter(discoveryUrl -> {
+                try {
+                    String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
+                    String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
+
+                    logger.debug("requestedHost={}, discoveryHost={}", requestedHost, discoveryHost);
+
+                    return requestedHost.equalsIgnoreCase(discoveryHost);
+                } catch (Throwable e) {
+                    logger.warn("Unable to create URI.", e);
+                    return false;
+                }
+            })
+            .collect(toList());
+
+        if (matchingDiscoveryUrls.isEmpty()) {
+            matchingDiscoveryUrls = allDiscoveryUrls.stream()
                 .filter(discoveryUrl -> {
                     try {
                         String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
                         String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
+                        InetAddress requestedHostAddress = InetAddress.getByName(requestedHost);
+                        InetAddress discoveryHostAddress = InetAddress.getByName(discoveryHost);
 
-                        logger.debug("requestedHost={}, discoveryHost={}", requestedHost, discoveryHost);
+                        logger.debug(
+                            "requestedHostAddress={}, discoveryHostAddress={}",
+                            requestedHost, discoveryHost);
 
-                        return requestedHost.equalsIgnoreCase(discoveryHost);
+                        return requestedHostAddress.equals(discoveryHostAddress);
                     } catch (Throwable e) {
                         logger.warn("Unable to create URI.", e);
                         return false;
                     }
                 })
                 .collect(toList());
-
-        if (matchingDiscoveryUrls.isEmpty()) {
-            matchingDiscoveryUrls = allDiscoveryUrls.stream()
-                    .filter(discoveryUrl -> {
-                        try {
-                            String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-                            String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
-                            InetAddress requestedHostAddress = InetAddress.getByName(requestedHost);
-                            InetAddress discoveryHostAddress = InetAddress.getByName(discoveryHost);
-
-                            logger.debug(
-                                    "requestedHostAddress={}, discoveryHostAddress={}",
-                                    requestedHost, discoveryHost);
-
-                            return requestedHostAddress.equals(discoveryHostAddress);
-                        } catch (Throwable e) {
-                            logger.warn("Unable to create URI.", e);
-                            return false;
-                        }
-                    })
-                    .collect(toList());
         }
 
         logger.debug("Matching discovery URLs: {}", matchingDiscoveryUrls);
 
         return new ApplicationDescription(
-                server.getConfig().getApplicationUri(),
-                server.getConfig().getProductUri(),
-                server.getConfig().getApplicationName(),
-                ApplicationType.Server,
-                null, null,
-                matchingDiscoveryUrls.isEmpty() ?
-                        a(allDiscoveryUrls, String.class) :
-                        a(matchingDiscoveryUrls, String.class)
+            server.getConfig().getApplicationUri(),
+            server.getConfig().getProductUri(),
+            server.getConfig().getApplicationName(),
+            ApplicationType.Server,
+            null, null,
+            matchingDiscoveryUrls.isEmpty() ?
+                a(allDiscoveryUrls, String.class) :
+                a(matchingDiscoveryUrls, String.class)
         );
     }
 
