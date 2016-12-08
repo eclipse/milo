@@ -52,8 +52,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     private Function<String, Set<String>> hostnameResolver = OpcUaServer::getHostnames;
 
-    private boolean isDiscoveryServer;
-    private boolean enableMulticast;
+    private boolean discoveryServerEnabled;
+    private boolean multicastEnabled;
 
     private OpcUaServerConfigLimits limits =
         new OpcUaServerConfigLimits() {
@@ -99,13 +99,13 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         return this;
     }
 
-    public OpcUaServerConfigBuilder setIsDiscoveryServer(boolean isDiscoveryServer) {
-        this.isDiscoveryServer = isDiscoveryServer;
+    public OpcUaServerConfigBuilder setDiscoveryServerEnabled(boolean discoveryServerEnabled) {
+        this.discoveryServerEnabled = discoveryServerEnabled;
         return this;
     }
 
-    public OpcUaServerConfigBuilder setEnableMulticast(boolean enableMulticast) {
-        this.enableMulticast = enableMulticast;
+    public OpcUaServerConfigBuilder setMulticastEnabled(boolean multicastEnabled) {
+        this.multicastEnabled = multicastEnabled;
         return this;
     }
 
@@ -188,8 +188,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             buildInfo,
             limits,
             hostnameResolver,
-            isDiscoveryServer,
-            enableMulticast
+            discoveryServerEnabled,
+            multicastEnabled
         );
     }
 
@@ -363,12 +363,12 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         }
 
         @Override
-        public boolean isDiscoveryServer() {
+        public boolean isDiscoveryServerEnabled() {
             return isDiscoveryServer;
         }
 
         @Override
-        public boolean getEnableMulticast() {
+        public boolean isMulticastEnabled() {
             return enableMulticast;
         }
 

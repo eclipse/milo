@@ -104,8 +104,8 @@ public class ExampleRegisterServer {
                 ImmutableList.of(
                     USER_TOKEN_POLICY_ANONYMOUS,
                     USER_TOKEN_POLICY_USERNAME))
-            .setIsDiscoveryServer(true)
-            .setEnableMulticast(true)
+            .setDiscoveryServerEnabled(true)
+            .setMulticastEnabled(true)
             .build();
 
         server = new OpcUaServer(serverConfig);

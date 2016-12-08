@@ -27,14 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Maps;
@@ -53,7 +51,6 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -71,7 +68,6 @@ import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -83,16 +79,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.MdnsDiscoveryConfiguration;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Response;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
-import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerOnNetwork;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
-import org.eclipse.milo.opcua.stack.server.Endpoint;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +144,7 @@ public class OpcUaServer {
         stackServer.addServiceSet((SessionServiceSet) sessionManager);
         stackServer.addServiceSet((SubscriptionServiceSet) sessionManager);
         stackServer.addServiceSet((ViewServiceSet) sessionManager);
-        if (config.isDiscoveryServer()) {
+        if (config.isDiscoveryServerEnabled()) {
             stackServer.addServiceSet((DiscoveryServiceSet) sessionManager);
         }
 
@@ -211,7 +204,7 @@ public class OpcUaServer {
     public CompletableFuture<OpcUaServer> startup() {
         return stackServer.startup().whenComplete((o, throwable) -> {
             //TODO set capabilities correct
-            if (config.getEnableMulticast()) {
+            if (config.isMulticastEnabled()) {
                 sessionManager.getDiscoveryServices().addMulticastRecord(config.getApplicationName().getText(),
                         config.getBindPort(), config.getServerName(), new String[0]);
             }
@@ -219,7 +212,7 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
-        if (config.getEnableMulticast()) {
+        if (config.isMulticastEnabled()) {
             sessionManager.getDiscoveryServices().removeMulticastRecord(config.getHostname(),
                     config.getBindPort(), config.getServerName());
         }

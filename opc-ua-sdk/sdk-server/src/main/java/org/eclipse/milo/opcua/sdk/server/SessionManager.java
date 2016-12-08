@@ -177,7 +177,7 @@ public class SessionManager implements
 
     public SessionManager(OpcUaServer server) {
         this.server = server;
-        if (server.getConfig().isDiscoveryServer()) {
+        if (server.getConfig().isDiscoveryServerEnabled()) {
             this.discoveryServices = new DiscoveryServices((UaTcpStackServer) server.getServer(), true);
         } else {
             this.discoveryServices = null;
@@ -867,7 +867,7 @@ public class SessionManager implements
         throws UaException {
         // no session/authentication required
 
-        if (!server.getConfig().isDiscoveryServer()) {
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
             throw new UaException(StatusCodes.Bad_NotSupported);
         }
         discoveryServices.onFindServers(serviceRequest);
@@ -878,7 +878,7 @@ public class SessionManager implements
         FindServersOnNetworkResponse> serviceRequest) throws UaException {
         // no session/authentication required
 
-        if (!server.getConfig().isDiscoveryServer()) {
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
             throw new UaException(StatusCodes.Bad_NotSupported);
         }
         discoveryServices.onFindServersOnNetwork(serviceRequest);
@@ -889,7 +889,7 @@ public class SessionManager implements
         ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) throws UaException {
         // no session/authentication required
 
-        if (!server.getConfig().isDiscoveryServer()) {
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
             throw new UaException(StatusCodes.Bad_NotSupported);
         }
         discoveryServices.onGetEndpoints(serviceRequest);
@@ -901,7 +901,7 @@ public class SessionManager implements
 
         session(serviceRequest);
 
-        if (!server.getConfig().isDiscoveryServer()) {
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
             throw new UaException(StatusCodes.Bad_NotSupported);
         }
         discoveryServices.onRegisterServer(serviceRequest);
@@ -913,7 +913,7 @@ public class SessionManager implements
 
         session(serviceRequest);
 
-        if (!server.getConfig().isDiscoveryServer()) {
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
             throw new UaException(StatusCodes.Bad_NotSupported);
         }
 
