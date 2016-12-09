@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -55,6 +55,14 @@ public final class NodeId {
      * @param namespaceIndex the index for a namespace URI. An index of 0 is used for OPC UA defined NodeIds.
      * @param identifier     the identifier for a node in the address space of an OPC UA Server.
      */
+    public NodeId(int namespaceIndex, UInteger identifier) {
+        this(ushort(namespaceIndex), identifier);
+    }
+
+    /**
+     * @param namespaceIndex the index for a namespace URI. An index of 0 is used for OPC UA defined NodeIds.
+     * @param identifier     the identifier for a node in the address space of an OPC UA Server.
+     */
     public NodeId(int namespaceIndex, String identifier) {
         this(ushort(namespaceIndex), identifier);
     }
@@ -85,6 +93,17 @@ public final class NodeId {
 
         this.namespaceIndex = namespaceIndex;
         this.identifier = identifier;
+    }
+
+    /**
+     * @param namespaceIndex the index for a namespace URI. An index of 0 is used for OPC UA defined NodeIds.
+     * @param identifier     the identifier for a node in the address space of an OPC UA Server.
+     */
+    public NodeId(UShort namespaceIndex, int identifier) {
+        checkNotNull(namespaceIndex);
+
+        this.namespaceIndex = namespaceIndex;
+        this.identifier = uint(identifier);
     }
 
     /**
