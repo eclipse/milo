@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,7 +22,9 @@ import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 
-public final class ByteString {
+public final class ByteString implements Serializable {
+
+    private static final long serialVersionUID = 451472015617419665L;
 
     public static final ByteString NULL_VALUE = new ByteString(null);
 
