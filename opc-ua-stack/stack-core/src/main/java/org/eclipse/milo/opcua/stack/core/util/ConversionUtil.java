@@ -14,12 +14,9 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
-import javax.annotation.Nullable;
 
 public class ConversionUtil {
 

@@ -14,12 +14,12 @@
 package org.eclipse.milo.opcua.stack.core.channel.headers;
 
 import java.nio.charset.Charset;
-import javax.annotation.Nonnull;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.jetbrains.annotations.NotNull;
 
 public class AsymmetricSecurityHeader {
 
@@ -36,9 +36,9 @@ public class AsymmetricSecurityHeader {
      *                           Certificate. This indicates what public key was used to encrypt the MessageChunk. This
      *                           field shall be null if the Message is not encrypted.
      */
-    public AsymmetricSecurityHeader(@Nonnull String securityPolicyUri,
-                                    @Nonnull ByteString senderCertificate,
-                                    @Nonnull ByteString receiverThumbprint) {
+    public AsymmetricSecurityHeader(@NotNull String securityPolicyUri,
+                                    @NotNull ByteString senderCertificate,
+                                    @NotNull ByteString receiverThumbprint) {
 
         Preconditions.checkNotNull(securityPolicyUri);
         Preconditions.checkArgument(securityPolicyUri.getBytes(Charset.forName("UTF-8")).length <= 255,
@@ -52,17 +52,17 @@ public class AsymmetricSecurityHeader {
         this.receiverThumbprint = receiverThumbprint;
     }
 
-    @Nonnull
+    @NotNull
     public String getSecurityPolicyUri() {
         return securityPolicyUri;
     }
 
-    @Nonnull
+    @NotNull
     public ByteString getSenderCertificate() {
         return senderCertificate;
     }
 
-    @Nonnull
+    @NotNull
     public ByteString getReceiverThumbprint() {
         return receiverThumbprint;
     }

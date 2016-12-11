@@ -14,10 +14,10 @@
 package org.eclipse.milo.opcua.stack.core;
 
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.jetbrains.annotations.Nullable;
 
 public enum BuiltinReferenceType implements ReferenceType {
 

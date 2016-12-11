@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
@@ -36,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.jetbrains.annotations.Nullable;
 
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.extract;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;

@@ -16,11 +16,11 @@ package org.eclipse.milo.opcua.stack.server;
 import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,11 +33,11 @@ public class Endpoint {
     private final String bindAddress;
 
     public Endpoint(
-        @Nonnull URI endpointUri,
+        @NotNull URI endpointUri,
         @Nullable String bindAddress,
         @Nullable X509Certificate certificate,
-        @Nonnull SecurityPolicy securityPolicy,
-        @Nonnull MessageSecurityMode messageSecurity) {
+        @NotNull SecurityPolicy securityPolicy,
+        @NotNull MessageSecurityMode messageSecurity) {
 
         checkNotNull(endpointUri);
         checkNotNull(securityPolicy);

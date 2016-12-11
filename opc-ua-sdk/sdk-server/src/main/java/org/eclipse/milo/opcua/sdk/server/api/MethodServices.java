@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.sdk.server.api;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -31,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 public interface MethodServices {

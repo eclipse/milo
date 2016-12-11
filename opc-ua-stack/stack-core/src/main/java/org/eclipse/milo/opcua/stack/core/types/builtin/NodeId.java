@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
 import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
@@ -26,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
+import org.jetbrains.annotations.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -251,7 +251,7 @@ public final class NodeId {
 
     private static final Pattern NONE_OPAQUE = Pattern.compile("b=([0-9a-zA-Z+/=]*)");
 
-    public static NodeId parse(@Nonnull String s) {
+    public static NodeId parse(@NotNull String s) {
         Matcher m;
 
         if (s.startsWith("ns=")) {

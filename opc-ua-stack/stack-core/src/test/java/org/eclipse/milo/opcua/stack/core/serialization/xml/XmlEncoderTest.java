@@ -13,10 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.xml;
 
-import static org.testng.Assert.assertTrue;
-
 import java.io.StringWriter;
-
 import javax.xml.stream.XMLStreamException;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -26,6 +23,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.testng.annotations.Test;
+
+import static org.testng.Assert.assertTrue;
 
 public class XmlEncoderTest {
 

@@ -30,8 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -42,6 +40,8 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ public class DefaultCertificateValidator implements CertificateValidator, AutoCl
      * @param revocationDir the optional directory of revoked certificates, may be {@code null}
      */
     public DefaultCertificateValidator(
-        @Nonnull File trustedDir,
+        @NotNull File trustedDir,
         @Nullable File rejectedDir,
         @Nullable File revocationDir) {
 

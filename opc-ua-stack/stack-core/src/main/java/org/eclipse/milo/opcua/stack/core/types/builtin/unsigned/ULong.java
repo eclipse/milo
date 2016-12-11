@@ -13,7 +13,8 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned;
 
 import java.math.BigInteger;
-import javax.annotation.Nonnull;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The <code>unsigned long</code> type
@@ -214,7 +215,7 @@ public final class ULong extends UNumber implements Comparable<ULong> {
     }
 
     @Override
-    public int compareTo(@Nonnull ULong o) {
+    public int compareTo(@NotNull ULong o) {
         return compare(value, o.value);
     }
 

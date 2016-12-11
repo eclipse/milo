@@ -14,11 +14,11 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.OperationContext;
+import org.jetbrains.annotations.Nullable;
 
 public class AttributeContext {
 
