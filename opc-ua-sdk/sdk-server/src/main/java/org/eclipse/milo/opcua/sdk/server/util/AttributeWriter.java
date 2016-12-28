@@ -34,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 
@@ -53,7 +54,9 @@ public class AttributeWriter {
 
         AttributeContext internalContext = new AttributeContext(context.getServer());
 
-        if (attributeId == AttributeId.Value) {
+        NodeClass nodeClass = node.getNodeClass();
+
+        if (attributeId == AttributeId.Value && nodeClass == NodeClass.Variable) {
             Set<AccessLevel> accessLevels = getAccessLevels(node, internalContext);
             if (!accessLevels.contains(AccessLevel.CurrentWrite)) {
                 throw new UaException(StatusCodes.Bad_NotWritable);

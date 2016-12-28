@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
@@ -41,7 +42,9 @@ public class AttributeReader {
         try {
             AttributeContext internalContext = new AttributeContext(context.getServer());
 
-            if (attributeId == AttributeId.Value) {
+            NodeClass nodeClass = node.getNodeClass();
+
+            if (attributeId == AttributeId.Value && nodeClass == NodeClass.Variable) {
                 Set<AccessLevel> accessLevels = getAccessLevels(node, internalContext);
                 if (!accessLevels.contains(AccessLevel.CurrentRead)) {
                     throw new UaException(StatusCodes.Bad_NotWritable);
