@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
@@ -91,6 +92,36 @@ public class OpcUaClientIT {
     public void startClientAndServer() throws Exception {
         logger.info("startClientAndServer()");
 
+        startServer();
+        startClient();
+    }
+
+    @AfterTest
+    public void stopClientAndServer() throws ExecutionException, InterruptedException {
+        logger.info("stopClientAndServer()");
+
+        stopClient();
+        stopServer();
+    }
+
+    private void startClient() throws Exception {
+        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+
+        EndpointDescription endpoint = Arrays.stream(endpoints)
+            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
+            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+
+        OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
+            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
+            .setApplicationUri("urn:digitalpetri:opcua:client")
+            .setEndpoint(endpoint)
+            .setRequestTimeout(uint(60000))
+            .build();
+
+        client = new OpcUaClient(clientConfig);
+    }
+
+    private void startServer() throws Exception {
         UsernameIdentityValidator usernameValidator = new UsernameIdentityValidator(
             true, // allow anonymous access
             challenge -> {
@@ -153,32 +184,17 @@ public class OpcUaClientIT {
             idx -> new TestNamespace(server, idx));
 
         server.startup().get();
-
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
-
-        EndpointDescription endpoint = Arrays.stream(endpoints)
-            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
-            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
-
-        OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-            .setApplicationUri("urn:digitalpetri:opcua:client")
-            .setEndpoint(endpoint)
-            .setRequestTimeout(uint(60000))
-            .build();
-
-        client = new OpcUaClient(clientConfig);
     }
 
-    @AfterTest
-    public void stopClientAndServer() throws ExecutionException, InterruptedException {
-        logger.info("stopClientAndServer()");
-
+    private void stopClient() {
         try {
             client.disconnect().get();
         } catch (InterruptedException | ExecutionException e) {
             logger.warn("Error disconnecting client.", e);
         }
+    }
+
+    private void stopServer() throws InterruptedException, ExecutionException {
         server.shutdown().get();
         SocketServers.shutdownAll().get();
     }
@@ -595,6 +611,93 @@ public class OpcUaClientIT {
         assertNotNull(currentTimeNode.getValue().get());
 
         client.disconnect().get();
+    }
+
+    /**
+     * Create a subscription, adds a monitored item, then waits for the value to arrive.
+     * Stop and start the server. This should invoke the onSubscriptionTransferFailed() callback because when the
+     * client reconnects the server would not be able to transfer a subscription after it lost all its state.
+     * Again, create a subscription, add a monitored item, then wait for the value to arrive.
+     *
+     * @throws Exception if anything goes wrong during the test.
+     */
+    @Test
+    public void testFailedSubscriptionTransfer() throws Exception {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+
+        final Object notificationLock = new Object();
+
+        UaSubscription.NotificationListener notificationListener = new UaSubscription.NotificationListener() {
+            @Override
+            public void onDataChangeNotification(UaSubscription subscription,
+                                                 ImmutableList<Tuple2<UaMonitoredItem, DataValue>> itemValues,
+                                                 DateTime publishTime) {
+
+                for (Tuple2<UaMonitoredItem, DataValue> itemValue : itemValues) {
+                    UaMonitoredItem item = itemValue.v1();
+                    DataValue value = itemValue.v2();
+
+                    logger.info("item={}, value={}", item.getReadValueId().getNodeId(), value);
+                }
+
+                synchronized (notificationLock) {
+                    notificationLock.notifyAll();
+                }
+            }
+        };
+
+        client.getSubscriptionManager().addSubscriptionListener(new UaSubscriptionManager.SubscriptionListener() {
+            @Override
+            public void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {
+                Stack.sharedExecutor().execute(() -> {
+                    try {
+                        createItemAndWait(notificationListener, notificationLock);
+
+                        future.complete(null);
+                    } catch (InterruptedException | ExecutionException e) {
+                        logger.error("Error creating Subscription: {}", e.getMessage(), e);
+
+                        future.completeExceptionally(e);
+                    }
+                });
+            }
+        });
+
+
+        createItemAndWait(notificationListener, notificationLock);
+
+        stopServer();
+        startServer();
+
+        future.get(15, TimeUnit.SECONDS);
+    }
+
+    private void createItemAndWait(
+        UaSubscription.NotificationListener notificationListener,
+        Object notificationLock) throws InterruptedException, ExecutionException {
+
+        // create a subscription and a monitored item
+        UaSubscription subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
+        subscription.addNotificationListener(notificationListener);
+
+        ReadValueId readValueId = new ReadValueId(
+            Identifiers.Server_ServerStatus_State,
+            AttributeId.Value.uid(), null, QualifiedName.NULL_VALUE);
+
+        MonitoringParameters parameters = new MonitoringParameters(
+            uint(1),    // client handle
+            1000.0,     // sampling interval
+            null,       // no (default) filter
+            uint(10),   // queue size
+            true);      // discard oldest
+
+        MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(
+            readValueId, MonitoringMode.Reporting, parameters);
+
+        synchronized (notificationLock) {
+            subscription.createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
+            notificationLock.wait(5000);
+        }
     }
 
 }
