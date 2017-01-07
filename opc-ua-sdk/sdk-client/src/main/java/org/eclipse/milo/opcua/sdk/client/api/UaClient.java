@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.services.AttributeServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.MethodServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.MonitoredItemServices;
+import org.eclipse.milo.opcua.sdk.client.api.services.NodeManagementServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.SubscriptionServices;
 import org.eclipse.milo.opcua.sdk.client.api.services.ViewServices;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscriptionManager;
@@ -27,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 
 public interface UaClient extends AttributeServices,
-    MethodServices, MonitoredItemServices, SubscriptionServices, ViewServices {
+    MethodServices, MonitoredItemServices, NodeManagementServices, SubscriptionServices, ViewServices {
 
     /**
      * @return the {@link OpcUaClientConfig} for this client.

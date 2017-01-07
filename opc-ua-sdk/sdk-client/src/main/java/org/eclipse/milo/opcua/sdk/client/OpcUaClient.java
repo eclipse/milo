@@ -36,6 +36,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
@@ -51,6 +57,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequ
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
@@ -536,6 +548,54 @@ public class OpcUaClient implements UaClient {
                 triggeringItemId,
                 a(linksToAdd, UInteger.class),
                 a(linksToRemove, UInteger.class));
+
+            return sendRequest(request);
+        });
+    }
+
+    @Override
+    public CompletableFuture<AddNodesResponse> addNodes(List<AddNodesItem> nodesToAdd) {
+        return getSession().thenCompose(session -> {
+            AddNodesRequest request = new AddNodesRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                a(nodesToAdd, AddNodesItem.class)
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    @Override
+    public CompletableFuture<AddReferencesResponse> addReferences(List<AddReferencesItem> referencesToAdd) {
+        return getSession().thenCompose(session -> {
+            AddReferencesRequest request = new AddReferencesRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                a(referencesToAdd, AddReferencesItem.class)
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    @Override
+    public CompletableFuture<DeleteNodesResponse> deleteNodes(List<DeleteNodesItem> nodesToDelete) {
+        return getSession().thenCompose(session -> {
+            DeleteNodesRequest request = new DeleteNodesRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                a(nodesToDelete, DeleteNodesItem.class)
+            );
+
+            return sendRequest(request);
+        });
+    }
+
+    @Override
+    public CompletableFuture<DeleteReferencesResponse> deleteReferences(List<DeleteReferencesItem> referencesToDelete) {
+        return getSession().thenCompose(session -> {
+            DeleteReferencesRequest request = new DeleteReferencesRequest(
+                newRequestHeader(session.getAuthenticationToken()),
+                a(referencesToDelete, DeleteReferencesItem.class)
+            );
 
             return sendRequest(request);
         });
