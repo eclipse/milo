@@ -38,14 +38,29 @@ public interface UaSubscription {
     UInteger getSubscriptionId();
 
     /**
+     * @return the last requested publishing interval of this {@link UaSubscription}.
+     */
+    double getRequestedPublishingInterval();
+
+    /**
      * @return the actual/revised publishing interval of this {@link UaSubscription}.
      */
     double getRevisedPublishingInterval();
 
     /**
+     * @return the last requested lifetime count of this {@link UaSubscription}.
+     */
+    UInteger getRequestedLifetimeCount();
+
+    /**
      * @return the actual/revised lifetime count of this {@link UaSubscription}.
      */
     UInteger getRevisedLifetimeCount();
+
+    /**
+     * @return the last requested max keep-alive count of this {@link UaSubscription}.
+     */
+    UInteger getRequestedMaxKeepAliveCount();
 
     /**
      * @return the actual/revised max keep-alive count of this {@link UaSubscription}.

@@ -54,11 +54,16 @@ public class OpcUaSubscription implements UaSubscription {
     private final AsyncSemaphore notificationSemaphore = new AsyncSemaphore(1);
 
     private volatile long lastSequenceNumber = 0L;
+
+    private volatile double requestedPublishingInterval = 0.0;
     private volatile double revisedPublishingInterval = 0.0;
 
+    private volatile UInteger requestedLifetimeCount = uint(0);
     private volatile UInteger revisedLifetimeCount = uint(0);
 
+    private volatile UInteger requestedMaxKeepAliveCount = uint(0);
     private volatile UInteger revisedMaxKeepAliveCount = uint(0);
+
     private volatile UInteger maxNotificationsPerPublish;
     private volatile boolean publishingEnabled;
     private volatile UByte priority;
@@ -114,7 +119,11 @@ public class OpcUaSubscription implements UaSubscription {
                     result.getRevisedSamplingInterval(),
                     result.getRevisedQueueSize(),
                     result.getFilterResult(),
-                    request.getMonitoringMode());
+                    request.getMonitoringMode()
+                );
+
+                item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
+                item.setRequestedQueueSize(request.getRequestedParameters().getQueueSize());
 
                 if (item.getStatusCode().isGood()) {
                     itemsByClientHandle.put(item.getClientHandle(), item);
@@ -180,6 +189,9 @@ public class OpcUaSubscription implements UaSubscription {
                     item.setRevisedSamplingInterval(result.getRevisedSamplingInterval());
                     item.setRevisedQueueSize(result.getRevisedQueueSize());
                     item.setFilterResult(result.getFilterResult());
+
+                    item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
+                    item.setRequestedQueueSize(request.getRequestedParameters().getQueueSize());
                 }
 
                 statusCodes.add(statusCode);
@@ -257,13 +269,29 @@ public class OpcUaSubscription implements UaSubscription {
     }
 
     @Override
+    public double getRequestedPublishingInterval() {
+        return requestedPublishingInterval;
+    }
+
+    @Override
     public double getRevisedPublishingInterval() {
         return revisedPublishingInterval;
+    }
+
+
+    @Override
+    public UInteger getRequestedLifetimeCount() {
+        return requestedLifetimeCount;
     }
 
     @Override
     public UInteger getRevisedLifetimeCount() {
         return revisedLifetimeCount;
+    }
+
+    @Override
+    public UInteger getRequestedMaxKeepAliveCount() {
+        return requestedMaxKeepAliveCount;
     }
 
     @Override
@@ -321,12 +349,24 @@ public class OpcUaSubscription implements UaSubscription {
         return lastSequenceNumber;
     }
 
+    void setRequestedPublishingInterval(double requestedPublishingInterval) {
+        this.requestedPublishingInterval = requestedPublishingInterval;
+    }
+
     void setRevisedPublishingInterval(double revisedPublishingInterval) {
         this.revisedPublishingInterval = revisedPublishingInterval;
     }
 
+    void setRequestedLifetimeCount(UInteger requestedLifetimeCount) {
+        this.requestedLifetimeCount = requestedLifetimeCount;
+    }
+
     void setRevisedLifetimeCount(UInteger revisedLifetimeCount) {
         this.revisedLifetimeCount = revisedLifetimeCount;
+    }
+
+    void setRequestedMaxKeepAliveCount(UInteger requestedMaxKeepAliveCount) {
+        this.requestedMaxKeepAliveCount = requestedMaxKeepAliveCount;
     }
 
     void setRevisedMaxKeepAliveCount(UInteger revisedMaxKeepAliveCount) {

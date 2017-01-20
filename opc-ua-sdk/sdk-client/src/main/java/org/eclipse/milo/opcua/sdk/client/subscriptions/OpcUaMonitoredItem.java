@@ -32,6 +32,9 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     private volatile BiConsumer<UaMonitoredItem, DataValue> valueConsumer;
     private volatile BiConsumer<UaMonitoredItem, Variant[]> eventConsumer;
 
+    private volatile double requestedSamplingInterval = 0.0;
+    private volatile UInteger requestedQueueSize = uint(0);
+
     private volatile StatusCode statusCode;
     private volatile double revisedSamplingInterval = 0.0;
     private volatile UInteger revisedQueueSize = uint(0);
@@ -83,8 +86,18 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     }
 
     @Override
+    public double getRequestedSamplingInterval() {
+        return requestedSamplingInterval;
+    }
+
+    @Override
     public double getRevisedSamplingInterval() {
         return revisedSamplingInterval;
+    }
+
+    @Override
+    public UInteger getRequestedQueueSize() {
+        return requestedQueueSize;
     }
 
     @Override
@@ -130,8 +143,16 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         this.filterResult = filterResult;
     }
 
+    void setRequestedSamplingInterval(double requestedSamplingInterval) {
+        this.requestedSamplingInterval = requestedSamplingInterval;
+    }
+
     void setRevisedSamplingInterval(double revisedSamplingInterval) {
         this.revisedSamplingInterval = revisedSamplingInterval;
+    }
+
+    void setRequestedQueueSize(UInteger requestedQueueSize) {
+        this.requestedQueueSize = requestedQueueSize;
     }
 
     void setRevisedQueueSize(UInteger revisedQueueSize) {

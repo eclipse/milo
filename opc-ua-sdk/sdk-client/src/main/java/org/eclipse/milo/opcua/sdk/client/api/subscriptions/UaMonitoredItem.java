@@ -57,11 +57,25 @@ public interface UaMonitoredItem {
     StatusCode getStatusCode();
 
     /**
+     * Get the last requested sampling interval.
+     *
+     * @return the last requested sampling interval.
+     */
+    double getRequestedSamplingInterval();
+
+    /**
      * Get the revised sampling interval.
      *
      * @return the revised sampling interval.
      */
     double getRevisedSamplingInterval();
+
+    /**
+     * Get the last requested queue size.
+     *
+     * @return the last requested queue size.
+     */
+    UInteger getRequestedQueueSize();
 
     /**
      * Get the revised queue size.
@@ -96,7 +110,7 @@ public interface UaMonitoredItem {
      * <p>
      * The {@link UaMonitoredItem} in the consumer will be this item.
      *
-     * @@param valueConsumer the {@link BiConsumer} that will receive values as they arrive from the server.
+     * @param valueConsumer the {@link BiConsumer} that will receive values as they arrive from the server.
      */
     void setValueConsumer(BiConsumer<UaMonitoredItem, DataValue> valueConsumer);
 

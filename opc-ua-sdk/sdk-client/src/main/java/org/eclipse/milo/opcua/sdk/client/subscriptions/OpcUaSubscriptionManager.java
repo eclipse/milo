@@ -142,7 +142,13 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 response.getRevisedLifetimeCount(),
                 response.getRevisedMaxKeepAliveCount(),
                 maxNotificationsPerPublish,
-                publishingEnabled, priority);
+                publishingEnabled,
+                priority
+            );
+
+            subscription.setRequestedPublishingInterval(requestedPublishingInterval);
+            subscription.setRequestedLifetimeCount(requestedLifetimeCount);
+            subscription.setRequestedMaxKeepAliveCount(requestedMaxKeepAliveCount);
 
             subscriptions.put(subscription.getSubscriptionId(), subscription);
 
@@ -212,6 +218,10 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         );
 
         return future.thenApply(response -> {
+            subscription.setRequestedPublishingInterval(requestedPublishingInterval);
+            subscription.setRequestedLifetimeCount(requestedLifetimeCount);
+            subscription.setRequestedMaxKeepAliveCount(requestedMaxKeepAliveCount);
+            
             subscription.setRevisedPublishingInterval(response.getRevisedPublishingInterval());
             subscription.setRevisedLifetimeCount(response.getRevisedLifetimeCount());
             subscription.setRevisedMaxKeepAliveCount(response.getRevisedMaxKeepAliveCount());
