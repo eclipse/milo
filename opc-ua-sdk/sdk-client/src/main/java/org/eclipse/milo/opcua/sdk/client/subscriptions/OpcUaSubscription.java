@@ -153,9 +153,7 @@ public class OpcUaSubscription implements UaSubscription {
                         for (int i = 0; i < items.size(); i++) {
                             UaMonitoredItem item = items.get(i);
 
-                            if (item.getStatusCode().isGood()) {
-                                itemCreationCallback.accept(item, i);
-                            }
+                            itemCreationCallback.accept(item, i);
                         }
                     }
                 } finally {
