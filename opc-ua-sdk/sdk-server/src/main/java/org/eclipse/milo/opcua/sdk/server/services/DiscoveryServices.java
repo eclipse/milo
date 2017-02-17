@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.MdnsHelper;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
@@ -73,12 +74,13 @@ public class DiscoveryServices extends DefaultDiscoveryService {
         registeredServers = new LinkedList<>();
         registeredServerLastSeen = new HashMap<>();
         this.multicastEnabled = multicastEnabled;
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+
+        Stack.sharedScheduledExecutor().scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 checkRegistrationTimeout();
             }
-        }, 30 * 1000, 30 * 1000); // check cleanup every 30 secs
+        }, 30 * 1000, 30 * 1000, TimeUnit.MILLISECONDS); // check cleanup every 30 secs
 
         if (multicastEnabled) {
             OpcUaServerConfig config = (OpcUaServerConfig) server.getConfig();
@@ -91,8 +93,7 @@ public class DiscoveryServices extends DefaultDiscoveryService {
             }
 
             mdnsHelper = new MdnsHelper(hostnames);
-            Thread mdnsThread = new Thread(mdnsHelper);
-            mdnsThread.start();
+            Stack.sharedScheduledExecutor().schedule(mdnsHelper, 0, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -191,7 +192,8 @@ public class DiscoveryServices extends DefaultDiscoveryService {
             configurationResults.ensureCapacity(requestDiscoveryConfiguration.length);
             for (ExtensionObject e : requestDiscoveryConfiguration) {
                 if (discoveryConfiguration == null &&
-                    e.getEncodingTypeId().equals(Identifiers.MdnsDiscoveryConfiguration)) {
+                    e.getEncodingTypeId().equals(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultBinary) ||
+                    e.getEncodingTypeId().equals(Identifiers.MdnsDiscoveryConfiguration_Encoding_DefaultXml)) {
                     // we found a known extension object which we can convert
                     discoveryConfiguration = e.decode();
                     mdnsName = discoveryConfiguration.getMdnsServerName();
@@ -315,7 +317,6 @@ public class DiscoveryServices extends DefaultDiscoveryService {
     @Override
     public void onRegisterServer(
         ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
-
         ResponseHeader header = serviceRequest
             .createResponseHeader(processRegisterServer(serviceRequest.getRequest().getServer(), null, null, null));
 
