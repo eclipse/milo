@@ -13,33 +13,35 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+
 public class UaRuntimeException extends RuntimeException {
 
-    private final long statusCode;
+    private final StatusCode statusCode;
 
     public UaRuntimeException(Throwable cause) {
         super(cause);
 
-        this.statusCode = StatusCodes.Bad_InternalError;
+        this.statusCode = new StatusCode(StatusCodes.Bad_InternalError);
     }
 
     public UaRuntimeException(long statusCode) {
-        this.statusCode = statusCode;
+        this.statusCode = new StatusCode(statusCode);
     }
 
     public UaRuntimeException(long statusCode, String message) {
         super(message);
 
-        this.statusCode = statusCode;
+        this.statusCode = new StatusCode(statusCode);
     }
 
     public UaRuntimeException(long statusCode, Throwable cause) {
         super(cause);
 
-        this.statusCode = statusCode;
+        this.statusCode = new StatusCode(statusCode);
     }
 
-    public long getStatusCode() {
+    public StatusCode getStatusCode() {
         return statusCode;
     }
 

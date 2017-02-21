@@ -41,7 +41,7 @@ public class ExceptionHandler {
             } else if (innerCause instanceof UaRuntimeException) {
                 UaRuntimeException ex = (UaRuntimeException) innerCause;
                 message = ex.getMessage();
-                statusCode = ex.getStatusCode();
+                statusCode = ex.getStatusCode().getValue();
             }
         }
 
