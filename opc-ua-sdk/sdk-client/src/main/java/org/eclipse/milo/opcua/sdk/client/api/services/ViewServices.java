@@ -93,6 +93,28 @@ public interface ViewServices {
                                                      List<ByteString> continuationPoints);
 
     /**
+     * This service is used to request the next set of Browse or BrowseNext response information that is too large to
+     * be sent in a single response.
+     * <p>
+     * “Too large” in this context means that the server is not able to return a larger response or that the number of
+     * results to return exceeds the maximum number of results to return that was specified by the client in the
+     * original Browse request.
+     *
+     * @param releaseContinuationPoint if {@code true}, passed continuationPoint shall be reset to free resources in
+     *                                 the server. If {@code false}, passed continuationPoint shall be used to get the
+     *                                 next set of browse information.
+     * @param continuationPoint        a server-defined opaque value that represents the next continuation point.
+     * @return
+     */
+    default CompletableFuture<BrowseResult> browseNext(
+        boolean releaseContinuationPoint,
+        ByteString continuationPoint) {
+
+        return browseNext(releaseContinuationPoint, newArrayList(continuationPoint))
+            .thenApply(response -> response.getResults()[0]);
+    }
+
+    /**
      * This service is used to request that the server translates one or more browse paths to {@link NodeId}s.
      * <p>
      * Each browse path is constructed of a starting {@link NodeId} and a {@link RelativePath}. The specified starting
