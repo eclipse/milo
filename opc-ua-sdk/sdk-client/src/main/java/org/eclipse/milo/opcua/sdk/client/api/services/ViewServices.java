@@ -104,7 +104,7 @@ public interface ViewServices {
      *                                 the server. If {@code false}, passed continuationPoint shall be used to get the
      *                                 next set of browse information.
      * @param continuationPoint        a server-defined opaque value that represents the next continuation point.
-     * @return
+     * @return a {@link CompletableFuture} containing the {@link BrowseResult}.
      */
     default CompletableFuture<BrowseResult> browseNext(
         boolean releaseContinuationPoint,
