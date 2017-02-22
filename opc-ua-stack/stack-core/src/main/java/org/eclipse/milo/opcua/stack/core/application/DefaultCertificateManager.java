@@ -29,7 +29,8 @@ import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.emptyList;
 
 public class DefaultCertificateManager implements CertificateManager {
 
@@ -39,11 +40,21 @@ public class DefaultCertificateManager implements CertificateManager {
     private final Map<ByteString, X509Certificate> certificates = Maps.newConcurrentMap();
 
     public DefaultCertificateManager() {
-        this((KeyPair) null, null);
+        this(emptyList(), emptyList());
     }
 
     public DefaultCertificateManager(KeyPair privateKey, X509Certificate certificate) {
-        this(newArrayList(privateKey), newArrayList(certificate));
+        checkNotNull(privateKey, "privateKey must be non-null");
+        checkNotNull(certificate, "certificate must be non-null");
+
+        try {
+            ByteString thumbprint = ByteString.of(DigestUtil.sha1(certificate.getEncoded()));
+
+            this.privateKeys.put(thumbprint, privateKey);
+            this.certificates.put(thumbprint, certificate);
+        } catch (CertificateEncodingException e) {
+            logger.error("Error getting certificate thumbprint.", e);
+        }
     }
 
     public DefaultCertificateManager(List<KeyPair> privateKeys,
@@ -53,18 +64,19 @@ public class DefaultCertificateManager implements CertificateManager {
             "privateKeys.size() and certificates.size() must be equal");
 
         for (int i = 0; i < privateKeys.size(); i++) {
-            KeyPair privateKey = privateKeys.get(0);
-            X509Certificate certificate = certificates.get(0);
+            KeyPair privateKey = privateKeys.get(i);
+            X509Certificate certificate = certificates.get(i);
 
-            if (privateKey != null && certificate != null) {
-                try {
-                    ByteString thumbprint = ByteString.of(DigestUtil.sha1(certificate.getEncoded()));
+            checkNotNull(privateKey, "privateKey must be non-null");
+            checkNotNull(certificate, "certificate must be non-null");
 
-                    this.privateKeys.put(thumbprint, privateKey);
-                    this.certificates.put(thumbprint, certificate);
-                } catch (CertificateEncodingException e) {
-                    logger.error("Error getting certificate thumbprint.", e);
-                }
+            try {
+                ByteString thumbprint = ByteString.of(DigestUtil.sha1(certificate.getEncoded()));
+
+                this.privateKeys.put(thumbprint, privateKey);
+                this.certificates.put(thumbprint, certificate);
+            } catch (CertificateEncodingException e) {
+                logger.error("Error getting certificate thumbprint.", e);
             }
         }
     }
