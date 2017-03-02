@@ -120,6 +120,12 @@ public interface UaTcpStackClientConfig {
 
 
     /**
+     * @return the maximum amount of time, in milliseconds, to wait for an Acknowledge message in response to the
+     * client's Hello message.
+     */
+    UInteger getAcknowledgeTimeout();
+
+    /**
      * @return a new {@link UaTcpStackClientConfigBuilder}.
      */
     static UaTcpStackClientConfigBuilder builder() {
@@ -151,6 +157,7 @@ public interface UaTcpStackClientConfig {
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
+        builder.setAcknowledgeTimeout(config.getAcknowledgeTimeout());
 
         return builder;
     }
