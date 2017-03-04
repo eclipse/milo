@@ -251,11 +251,12 @@ class ClientChannelManager {
         RequestHeader requestHeader = new RequestHeader(
             NodeId.NULL_VALUE, DateTime.now(), uint(0), uint(0), null, uint(0), null);
 
-        secureChannel.getChannel().pipeline().addFirst(new ChannelInboundHandlerAdapter() {
+        secureChannel.getChannel().pipeline().addLast(new ChannelInboundHandlerAdapter() {
             @Override
             public void channelInactive(ChannelHandlerContext ctx) throws Exception {
                 logger.debug("channelInactive(), disconnect complete");
                 disconnected.complete(Unit.VALUE);
+                super.channelInactive(ctx);
             }
         });
 
