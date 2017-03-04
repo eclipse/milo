@@ -376,7 +376,9 @@ class ClientSessionManager {
             try {
                 Channel channel = secureChannel.getChannel();
 
-                channel.pipeline().addLast(new InactivityHandler());
+                if (channel.pipeline().get(InactivityHandler.class) == null) {
+                    channel.pipeline().addLast(new InactivityHandler());
+                }
 
                 EndpointDescription endpoint = stackClient.getEndpoint()
                     .orElseThrow(() -> new Exception("cannot create session with no endpoint configured"));
@@ -459,6 +461,12 @@ class ClientSessionManager {
 
         Function<ClientSecureChannel, CompletionStage<ActivateSessionResponse>> activate = secureChannel -> {
             try {
+                Channel channel = secureChannel.getChannel();
+
+                if (channel.pipeline().get(InactivityHandler.class) == null) {
+                    channel.pipeline().addLast(new InactivityHandler());
+                }
+
                 EndpointDescription endpoint = stackClient.getEndpoint()
                     .orElseThrow(() -> new Exception("cannot create session with no endpoint configured"));
 
@@ -695,6 +703,10 @@ class ClientSessionManager {
         @Override
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
             State currentState = state.get();
+
+            logger.debug(
+                "channelInactive(), currentState={}",
+                currentState.getClass().getSimpleName());
 
             if (currentState instanceof Active) {
                 Reactivating reactivating = new Reactivating();
