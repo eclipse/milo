@@ -29,7 +29,7 @@ Snapshots and releases are available using Maven. In order to use snapshots a re
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
@@ -39,7 +39,7 @@ Snapshots and releases are available using Maven. In order to use snapshots a re
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-server</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
@@ -49,7 +49,7 @@ Snapshots and releases are available using Maven. In order to use snapshots a re
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-client</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
 
@@ -57,6 +57,6 @@ Snapshots and releases are available using Maven. In order to use snapshots a re
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-server</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </dependency>
 ```
