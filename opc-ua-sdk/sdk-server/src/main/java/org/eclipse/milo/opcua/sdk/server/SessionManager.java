@@ -178,7 +178,8 @@ public class SessionManager implements
     public SessionManager(OpcUaServer server) {
         this.server = server;
         if (server.getConfig().isDiscoveryServerEnabled()) {
-            this.discoveryServices = new DiscoveryServices((UaTcpStackServer) server.getServer(), true);
+            this.discoveryServices = new DiscoveryServices(server, true,
+                server.getConfig().getRegisterTimeoutSeconds());
         } else {
             this.discoveryServices = null;
         }

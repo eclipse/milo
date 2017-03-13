@@ -13,6 +13,10 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -44,6 +48,17 @@ public final class Stack {
     private static ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE;
     private static HashedWheelTimer WHEEL_TIMER;
     private static ClassLoader CUSTOM_CLASS_LOADER;
+
+    static {
+        // add opc.tcp protocol for URL class. Needed to split discovery URLs
+        URL.setURLStreamHandlerFactory(protocol -> "opc.tcp".equals(protocol) ? new URLStreamHandler() {
+            protected URLConnection openConnection(URL url) throws IOException {
+                return new URLConnection(url) {
+                    public void connect() throws IOException {}
+                };
+            }
+        } : null);
+    }
 
     /**
      * @return a shared {@link NioEventLoopGroup}.
@@ -105,7 +120,7 @@ public final class Stack {
                 }
             };
 
-            SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor(threadFactory);
+            SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(5);
         }
 
         return SCHEDULED_EXECUTOR_SERVICE;

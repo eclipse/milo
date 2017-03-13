@@ -118,14 +118,6 @@ public class UaTcpStackServer implements UaStackServer {
     public UaTcpStackServer(UaTcpStackServerConfig config) {
         this.config = config;
 
-        // add opc.tcp protocol for URL class. Needed to split discovery URLs
-        URL.setURLStreamHandlerFactory(protocol -> "opc.tcp".equals(protocol) ? new URLStreamHandler() {
-            protected URLConnection openConnection(URL url) throws IOException {
-                return new URLConnection(url) {
-                    public void connect() throws IOException {}
-                };
-            }
-        } : null);
 
         addServiceSet(new DefaultDiscoveryService(this));
 

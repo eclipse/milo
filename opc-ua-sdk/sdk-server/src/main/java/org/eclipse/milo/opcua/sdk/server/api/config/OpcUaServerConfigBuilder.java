@@ -53,6 +53,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
     private Function<String, Set<String>> hostnameResolver = OpcUaServer::getHostnames;
 
     private boolean discoveryServerEnabled;
+    private int registerTimeoutSeconds;
+
     private boolean multicastEnabled;
 
     private OpcUaServerConfigLimits limits =
@@ -101,6 +103,11 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     public OpcUaServerConfigBuilder setDiscoveryServerEnabled(boolean discoveryServerEnabled) {
         this.discoveryServerEnabled = discoveryServerEnabled;
+        return this;
+    }
+
+    public OpcUaServerConfigBuilder setRegisterTimeoutSeconds(int registerTimeoutSeconds) {
+        this.registerTimeoutSeconds = registerTimeoutSeconds;
         return this;
     }
 
@@ -189,7 +196,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             limits,
             hostnameResolver,
             discoveryServerEnabled,
-            multicastEnabled
+            multicastEnabled,
+            registerTimeoutSeconds
         );
     }
 
@@ -215,6 +223,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         private final OpcUaServerConfigLimits limits;
         private final Function<String, Set<String>> hostnameResolver;
         private final boolean isDiscoveryServer;
+        private final int registerTimeoutSeconds;
         private final boolean enableMulticast;
 
         public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
@@ -238,6 +247,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             this.limits = limits;
             this.hostnameResolver = hostnameResolver;
             this.isDiscoveryServer = false;
+            this.registerTimeoutSeconds = 60 * 60; // default is 60 Minutes
             this.enableMulticast = false;
         }
 
@@ -251,7 +261,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
                                      OpcUaServerConfigLimits limits,
                                      Function<String, Set<String>> hostnameResolver,
                                      boolean isDiscoveryServer,
-                                     boolean enableMulticast) {
+                                     boolean enableMulticast,
+                                     int registerTimeoutSeconds) {
 
             this.stackServerConfig = stackServerConfig;
 
@@ -264,6 +275,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             this.limits = limits;
             this.hostnameResolver = hostnameResolver;
             this.isDiscoveryServer = isDiscoveryServer;
+            this.registerTimeoutSeconds = registerTimeoutSeconds;
             this.enableMulticast = enableMulticast;
         }
 
@@ -365,6 +377,11 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         @Override
         public boolean isDiscoveryServerEnabled() {
             return isDiscoveryServer;
+        }
+
+        @Override
+        public int getRegisterTimeoutSeconds() {
+            return registerTimeoutSeconds;
         }
 
         @Override

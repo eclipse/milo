@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.MdnsHelper;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -66,21 +67,20 @@ public class DiscoveryServices extends DefaultDiscoveryService {
 
     private MdnsHelper mdnsHelper = null;
 
+    private int registerTimeoutSeconds;
+
 
     private Consumer<RegisteredServer> registerServerConsumer = null;
 
-    public DiscoveryServices(UaTcpStackServer server, boolean multicastEnabled) {
-        super(server);
+    public DiscoveryServices(OpcUaServer server, boolean multicastEnabled, int registerTimeoutSeconds) {
+        super((UaTcpStackServer) server.getServer());
         registeredServers = new LinkedList<>();
         registeredServerLastSeen = new HashMap<>();
         this.multicastEnabled = multicastEnabled;
+        this.registerTimeoutSeconds = registerTimeoutSeconds;
 
-        Stack.sharedScheduledExecutor().scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                checkRegistrationTimeout();
-            }
-        }, 30 * 1000, 30 * 1000, TimeUnit.MILLISECONDS); // check cleanup every 30 secs
+        server.getScheduledExecutorService().scheduleAtFixedRate(this::checkRegistrationTimeout,
+            10, 10, TimeUnit.SECONDS); // check cleanup every 10 secs
 
         if (multicastEnabled) {
             OpcUaServerConfig config = (OpcUaServerConfig) server.getConfig();
@@ -284,10 +284,12 @@ public class DiscoveryServices extends DefaultDiscoveryService {
      * Cleanup server registration:
      * If the semaphore file path is set, then it just checks the existence of the file.
      * When it is deleted, the registration is removed.
-     * If there is no semaphore file, then the registration will be removed if it is older than 60 minutes.
+     * If there is no semaphore file, then the registration will be removed if it is older
+     * than 60 minutes (=registerTimeoutSeconds).
      */
-    private void checkRegistrationTimeout() {
-        Date timedOutIfBefore = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(60));
+    private synchronized void checkRegistrationTimeout() {
+        Date timedOutIfBefore = new Date(System.currentTimeMillis() -
+            TimeUnit.SECONDS.toMillis(registerTimeoutSeconds));
         for (RegisteredServer r : registeredServers) {
             boolean remove = false;
             if (r.getSemaphoreFilePath() != null && r.getSemaphoreFilePath().length() > 0) {

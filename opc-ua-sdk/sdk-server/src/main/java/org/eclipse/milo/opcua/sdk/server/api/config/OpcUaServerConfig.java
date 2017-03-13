@@ -119,6 +119,11 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     boolean isDiscoveryServerEnabled();
 
     /**
+     * @return A registered server is removed if it does not reregister within the given amount of seconds
+     */
+    int getRegisterTimeoutSeconds();
+
+    /**
      * @return true if this server should announce itself via mDNS
      */
     boolean isMulticastEnabled();
@@ -165,6 +170,7 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
         builder.setHostnameResolver(config.getHostnameResolver());
 
         builder.setDiscoveryServerEnabled(config.isDiscoveryServerEnabled());
+        builder.setRegisterTimeoutSeconds(config.getRegisterTimeoutSeconds());
         builder.setMulticastEnabled(config.isMulticastEnabled());
 
         return builder;

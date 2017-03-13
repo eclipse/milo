@@ -118,7 +118,7 @@ public class ExampleRegisterServer {
 
     private CompletableFuture<OpcUaServer> startup() {
         return server.startup().whenComplete((opcUaServer, throwable) -> server
-            .registerWithDiscoveryServer("opc.tcp://localhost:4840/discovery", null));
+            .registerWithDiscoveryServer("opc.tcp://localhost:4840/discovery", null, null));
     }
 
     private CompletableFuture<OpcUaServer> shutdown() {

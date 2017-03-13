@@ -202,6 +202,7 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
+        this.registeredWithDiscoveryServer = null;
         return stackServer.startup().whenComplete((o, throwable) -> {
             //TODO set capabilities correct
             if (config.isMulticastEnabled()) {
@@ -213,7 +214,7 @@ public class OpcUaServer {
 
     public CompletableFuture<OpcUaServer> shutdown() {
         if (config.isMulticastEnabled()) {
-            sessionManager.getDiscoveryServices().removeMulticastRecord(config.getHostname(),
+            sessionManager.getDiscoveryServices().removeMulticastRecord(config.getApplicationName().getText(),
                     config.getBindPort(), config.getServerName());
         }
         return stackServer.shutdown().thenApply(ignored -> OpcUaServer.this);
@@ -380,8 +381,9 @@ public class OpcUaServer {
      * @param semaphoreFilePath optional file path to a semaphore file
      * @return true if periodic registering successfully started, false if already registered
      */
-    public boolean registerWithDiscoveryServer(String discoveryServerUrl, String semaphoreFilePath) {
-        return this.registerWithDiscoveryServer(discoveryServerUrl, 10 * 60 * 1000, 500, semaphoreFilePath);
+    public boolean registerWithDiscoveryServer(String discoveryServerUrl, String semaphoreFilePath,
+                                               CompletableFuture<StatusCode> registered) {
+        return this.registerWithDiscoveryServer(discoveryServerUrl, 10 * 60 * 1000, 500, semaphoreFilePath, registered);
     }
 
     /**
@@ -401,7 +403,7 @@ public class OpcUaServer {
      * @return true if periodic registering successfully started, false if already registered
      */
     public boolean registerWithDiscoveryServer(String discoveryServerUrl, long intervalMs, long delayFirstRegisterMs,
-                                               String semaphoreFilePath) {
+                                               String semaphoreFilePath, CompletableFuture<StatusCode> registered) {
         if (registeredWithDiscoveryServer != null) {
             logger.warn("Can not register server with discovery server " + discoveryServerUrl +
                     ". Already registered with: " + registeredWithDiscoveryServer);
@@ -413,7 +415,8 @@ public class OpcUaServer {
 
         periodicServerRegisterScheduler = Executors.newScheduledThreadPool(2);
 
-        periodicServerRegisterScheduler.scheduleWithFixedDelay(new PeriodicServerRegister(discoveryServerUrl),
+        periodicServerRegisterScheduler.scheduleWithFixedDelay(
+            new PeriodicServerRegister(discoveryServerUrl, registered),
                 delayFirstRegisterMs, intervalMs, TimeUnit.MILLISECONDS);
 
         return true;
@@ -428,7 +431,12 @@ public class OpcUaServer {
             return futureRegisterResult;
         }
         periodicServerRegisterScheduler.shutdown();
-        return registerWithDiscoveryServer(false, registeredWithDiscoveryServer, null);
+        return registerWithDiscoveryServer(false, registeredWithDiscoveryServer, null)
+            .whenComplete((result, ex) -> {
+                if (result.isGood()) {
+                    registeredWithDiscoveryServer = null;
+                }
+            });
     }
 
     private CompletableFuture<StatusCode> registerServer2(OpcUaClient stackClient,
@@ -549,7 +557,7 @@ public class OpcUaServer {
         return futureRegisterResult;
     }
 
-    private void retryPeriodicServerRegister(String discoveryServerUrl) {
+    private void retryPeriodicServerRegister(String discoveryServerUrl, CompletableFuture<StatusCode> registered) {
 
         // reschedule server registering with backing off strategy as defined in specification.
         // first retry in 1s, then double each time, i.e. 2,4,8,... until main interval is reached.
@@ -566,16 +574,18 @@ public class OpcUaServer {
 
         logger.info("Retry register server in " + (registerNextTryInterval / 1000) + " seconds");
 
-        periodicServerRegisterScheduler.schedule(new PeriodicServerRegister(discoveryServerUrl),
+        periodicServerRegisterScheduler.schedule(new PeriodicServerRegister(discoveryServerUrl, registered),
                 registerNextTryInterval, TimeUnit.MILLISECONDS);
     }
 
     private class PeriodicServerRegister implements Runnable {
 
         String discoveryServerUrl;
+        CompletableFuture<StatusCode> registered;
 
-        public PeriodicServerRegister(String discoveryServerUrl) {
+        public PeriodicServerRegister(String discoveryServerUrl, CompletableFuture<StatusCode> registered) {
             this.discoveryServerUrl = discoveryServerUrl;
+            this.registered = registered;
         }
 
         @Override
@@ -589,8 +599,8 @@ public class OpcUaServer {
                             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
                             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
                 } catch (Exception e) {
-                    logger.error("Can not get endpoints from discovery server: " + e.getMessage());
-                    retryPeriodicServerRegister(discoveryServerUrl);
+                    logger.warn("Can not get endpoints from discovery server: " + e.getMessage() + ". Retrying...");
+                    retryPeriodicServerRegister(discoveryServerUrl, registered);
                     return;
                 }
 
@@ -604,13 +614,21 @@ public class OpcUaServer {
                         if (statusCode == null) {
                             logger.error("Could not register server with discovery server. Error {}",
                                     ex.getMessage(), ex);
+                            if (registered != null && !registered.isDone()) {
+                                registered.completeExceptionally(
+                                    new Throwable("Could not register server with discovery server. Error " +
+                                        ex.getMessage()));
+                            }
                             return;
                         }
                         if (statusCode.isBad()) {
                             logger.warn("Could not register server with discovery server: " + statusCode);
-                            retryPeriodicServerRegister(discoveryServerUrl);
+                            retryPeriodicServerRegister(discoveryServerUrl, registered);
                         } else {
                             logger.info("Successfully registered with discovery server " + discoveryServerUrl);
+                            if (registered != null && !registered.isDone()) {
+                                registered.complete(StatusCode.GOOD);
+                            }
                         }
                     });
         }
