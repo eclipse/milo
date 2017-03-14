@@ -17,6 +17,7 @@ package org.eclipse.milo.opcua.sdk.server.services.helpers;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class MdnsHelper implements Runnable {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdnsHelper.class);
 
     private JmDNS jmdns = null;
 
@@ -53,8 +54,11 @@ public class MdnsHelper implements Runnable {
     private Date lastServerOnNetworkIdReset;
     private InetAddress ownAddress;
 
-    private Optional<InetAddress> getMostPublicAddress(Set<String> bindAddresses) {
+    static Optional<InetAddress> getMostPublicAddress(Set<String> bindAddresses) {
         Function<InetAddress, Integer> addressToInt = inetAddress -> {
+            if (inetAddress == null) {
+                return -1;
+            }
             if (inetAddress.isLoopbackAddress()) {
                 return 0;
             }
@@ -77,10 +81,10 @@ public class MdnsHelper implements Runnable {
             try {
                 return InetAddress.getByName(s);
             } catch (UnknownHostException e) {
-                logger.warn("Failed to get hostname for address '{}': {}", s, e.getMessage(), e);
+                LOGGER.warn("Failed to get hostname for address '{}': {}", s, e.getMessage(), e);
                 return null;
             }
-        }).sorted((a1, a2) -> addressToInt.apply(a2) - addressToInt.apply(a1)).findFirst();
+        }).max(Comparator.comparingInt(addressToInt::apply));
     }
 
     public MdnsHelper(Set<String> bindAddresses) {
@@ -91,17 +95,17 @@ public class MdnsHelper implements Runnable {
             ownAddress = highestPrioAddress.get();
         } else {
             try {
-                logger.warn("mDNS: no bind address valid. Setting to 0.0.0.0");
+                LOGGER.warn("mDNS: no bind address valid. Setting to 0.0.0.0");
                 ownAddress = InetAddress.getByName("0.0.0.0"); // Create a JmDNS instance
             } catch (UnknownHostException e) {
-                logger.error("Failed to get bind address: {}", e.getMessage(), e);
+                LOGGER.error("Failed to get bind address: {}", e.getMessage(), e);
             }
         }
 
         try {
             jmdns = JmDNS.create(ownAddress);
         } catch (IOException e) {
-            logger.error("Could not create instance of JmDNS: {}", e.getMessage(), e);
+            LOGGER.error("Could not create instance of JmDNS: {}", e.getMessage(), e);
         }
 
         serverOnNetworkMap = new HashMap<>();
@@ -129,7 +133,7 @@ public class MdnsHelper implements Runnable {
         try {
             jmdns.registerService(serviceInfo);
         } catch (IOException e) {
-            logger.error("Could not add mDNS record for: " + mdnsName + " on port " + port + " with endpoint path: " +
+            LOGGER.error("Could not add mDNS record for: " + mdnsName + " on port " + port + " with endpoint path: " +
                 endpointName + ". Error: " + e.getMessage());
             return false;
         }
@@ -228,7 +232,7 @@ public class MdnsHelper implements Runnable {
 
             @Override
             public void serviceResolved(ServiceEvent event) {
-                logger.info("mDNS: found server: " + event.getInfo());
+                LOGGER.info("mDNS: found server: " + event.getInfo());
                 processRecord(event.getInfo());
             }
 
@@ -236,7 +240,7 @@ public class MdnsHelper implements Runnable {
             public void serviceRemoved(ServiceEvent event) {
                 String discoveryUrl = serviceInfoToDiscoveryUrl(event.getInfo());
                 if (serverOnNetworkMap.containsKey(discoveryUrl)) {
-                    logger.info("mDNS: remove server (TTL=0): " + discoveryUrl);
+                    LOGGER.info("mDNS: remove server (TTL=0): " + discoveryUrl);
                     removeFromServerOnNetwork(discoveryUrl);
                 }
 
@@ -248,7 +252,7 @@ public class MdnsHelper implements Runnable {
             }
         });
 
-        logger.info("mDNS registration done");
+        LOGGER.info("mDNS registration done");
         // Wait until the largest possible integer value
         try {
             Thread.sleep(Integer.MAX_VALUE);
