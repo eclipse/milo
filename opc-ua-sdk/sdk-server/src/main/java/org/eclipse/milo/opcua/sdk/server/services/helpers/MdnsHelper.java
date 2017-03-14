@@ -77,7 +77,7 @@ public class MdnsHelper implements Runnable {
             try {
                 return InetAddress.getByName(s);
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                logger.warn("Failed to get hostname for address '{}': {}", s, e.getMessage(), e);
                 return null;
             }
         }).sorted((a1, a2) -> addressToInt.apply(a2) - addressToInt.apply(a1)).findFirst();
@@ -94,16 +94,16 @@ public class MdnsHelper implements Runnable {
                 logger.warn("mDNS: no bind address valid. Setting to 0.0.0.0");
                 ownAddress = InetAddress.getByName("0.0.0.0"); // Create a JmDNS instance
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                logger.error("Failed to get bind address: {}", e.getMessage(), e);
             }
         }
 
         try {
             jmdns = JmDNS.create(ownAddress);
         } catch (IOException e) {
-            logger.error("Could not create instance of JmDNS: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Could not create instance of JmDNS: {}", e.getMessage(), e);
         }
+
         serverOnNetworkMap = new HashMap<>();
         serverOnNetworkList = new LinkedList<>();
         lastServerOnNetworkId = 0;
