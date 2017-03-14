@@ -41,6 +41,9 @@ public class OpcUaServerConfigTest {
             .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))
             .setLimits(new OpcUaServerConfigLimits() {})
+            .setDiscoveryServerEnabled(true)
+            .setMulticastEnabled(true)
+            .setRegisterTimeoutSeconds(120)
             .build();
 
         OpcUaServerConfig copy = OpcUaServerConfig.copy(original).build();
@@ -51,6 +54,9 @@ public class OpcUaServerConfigTest {
         assertEquals(copy.getIdentityValidator(), original.getIdentityValidator());
         assertEquals(copy.getBuildInfo(), original.getBuildInfo());
         assertEquals(copy.getLimits(), original.getLimits());
+        assertEquals(copy.isDiscoveryServerEnabled(), original.isDiscoveryServerEnabled());
+        assertEquals(copy.isMulticastEnabled(), original.isMulticastEnabled());
+        assertEquals(copy.getRegisterTimeoutSeconds(), original.getRegisterTimeoutSeconds());
     }
 
 }

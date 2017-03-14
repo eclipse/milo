@@ -52,10 +52,9 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     private Function<String, Set<String>> hostnameResolver = OpcUaServer::getHostnames;
 
-    private boolean discoveryServerEnabled;
-    private int registerTimeoutSeconds;
-
-    private boolean multicastEnabled;
+    private boolean discoveryServerEnabled = false;
+    private int registerTimeoutSeconds = 60 * 60; // default is 60 Minutes
+    private boolean multicastEnabled = false;
 
     private OpcUaServerConfigLimits limits =
         new OpcUaServerConfigLimits() {
@@ -222,34 +221,9 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
         private final Function<String, Set<String>> hostnameResolver;
-        private final boolean isDiscoveryServer;
+        private final boolean discoveryServerEnabled;
+        private final boolean multicastEnabled;
         private final int registerTimeoutSeconds;
-        private final boolean enableMulticast;
-
-        public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
-                                     String hostname,
-                                     List<String> bindAddresses,
-                                     int bindPort,
-                                     EnumSet<SecurityPolicy> securityPolicies,
-                                     IdentityValidator identityValidator,
-                                     BuildInfo buildInfo,
-                                     OpcUaServerConfigLimits limits,
-                                     Function<String, Set<String>> hostnameResolver) {
-
-            this.stackServerConfig = stackServerConfig;
-
-            this.hostname = hostname;
-            this.bindAddresses = bindAddresses;
-            this.bindPort = bindPort;
-            this.securityPolicies = securityPolicies;
-            this.identityValidator = identityValidator;
-            this.buildInfo = buildInfo;
-            this.limits = limits;
-            this.hostnameResolver = hostnameResolver;
-            this.isDiscoveryServer = false;
-            this.registerTimeoutSeconds = 60 * 60; // default is 60 Minutes
-            this.enableMulticast = false;
-        }
 
         public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
                                      String hostname,
@@ -260,8 +234,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
                                      BuildInfo buildInfo,
                                      OpcUaServerConfigLimits limits,
                                      Function<String, Set<String>> hostnameResolver,
-                                     boolean isDiscoveryServer,
-                                     boolean enableMulticast,
+                                     boolean discoveryServerEnabled,
+                                     boolean multicastEnabled,
                                      int registerTimeoutSeconds) {
 
             this.stackServerConfig = stackServerConfig;
@@ -274,9 +248,9 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
             this.buildInfo = buildInfo;
             this.limits = limits;
             this.hostnameResolver = hostnameResolver;
-            this.isDiscoveryServer = isDiscoveryServer;
+            this.discoveryServerEnabled = discoveryServerEnabled;
             this.registerTimeoutSeconds = registerTimeoutSeconds;
-            this.enableMulticast = enableMulticast;
+            this.multicastEnabled = multicastEnabled;
         }
 
         @Override
@@ -376,7 +350,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
         @Override
         public boolean isDiscoveryServerEnabled() {
-            return isDiscoveryServer;
+            return discoveryServerEnabled;
         }
 
         @Override
@@ -386,7 +360,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
         @Override
         public boolean isMulticastEnabled() {
-            return enableMulticast;
+            return multicastEnabled;
         }
 
     }
