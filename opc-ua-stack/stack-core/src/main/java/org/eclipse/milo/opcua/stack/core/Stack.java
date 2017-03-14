@@ -120,7 +120,7 @@ public final class Stack {
                 }
             };
 
-            SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(5);
+            SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
         }
 
         return SCHEDULED_EXECUTOR_SERVICE;
