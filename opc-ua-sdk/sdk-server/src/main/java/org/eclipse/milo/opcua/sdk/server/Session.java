@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.opcua.sdk.server.services.AttributeHistoryServices;
 import org.eclipse.milo.opcua.sdk.server.services.AttributeServices;
 import org.eclipse.milo.opcua.sdk.server.services.MethodServices;
 import org.eclipse.milo.opcua.sdk.server.services.MonitoredItemServices;
@@ -67,6 +68,7 @@ public class Session implements SessionServiceSet {
     private volatile ScheduledFuture<?> checkTimeoutFuture;
 
     private final AttributeServices attributeServices;
+    private final AttributeHistoryServices attributeHistoryServices;
     private final MethodServices methodServices;
     private final MonitoredItemServices monitoredItemServices;
     private final NodeManagementServiceSet nodeManagementServices;
@@ -94,6 +96,7 @@ public class Session implements SessionServiceSet {
         subscriptionManager = new SubscriptionManager(this, server);
 
         attributeServices = new AttributeServices();
+        attributeHistoryServices = new AttributeHistoryServices();
         methodServices = new MethodServices();
         monitoredItemServices = new MonitoredItemServices(subscriptionManager);
         nodeManagementServices = new NodeManagementServices();
@@ -176,6 +179,10 @@ public class Session implements SessionServiceSet {
 
     public AttributeServices getAttributeServices() {
         return attributeServices;
+    }
+
+    public AttributeHistoryServices getAttributeHistoryServices() {
+        return attributeHistoryServices;
     }
 
     public MethodServices getMethodServices() {

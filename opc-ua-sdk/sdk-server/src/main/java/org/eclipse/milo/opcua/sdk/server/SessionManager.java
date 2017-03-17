@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
+import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
@@ -134,6 +135,7 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class SessionManager implements
     AttributeServiceSet,
+    AttributeHistoryServiceSet,
     MethodServiceSet,
     MonitoredItemServiceSet,
     NodeManagementServiceSet,
@@ -609,7 +611,7 @@ public class SessionManager implements
     public void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getAttributeServices().onHistoryRead(service);
+        session.getAttributeHistoryServices().onHistoryRead(service);
     }
 
     @Override
@@ -618,7 +620,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getAttributeServices().onHistoryUpdate(service);
+        session.getAttributeHistoryServices().onHistoryUpdate(service);
     }
     //endregion
 
