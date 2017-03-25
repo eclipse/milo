@@ -46,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.UaStackServer;
+import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
@@ -104,6 +105,7 @@ public class OpcUaServer {
         stackServer = new UaTcpStackServer(config);
 
         stackServer.addServiceSet((AttributeServiceSet) sessionManager);
+        stackServer.addServiceSet((AttributeHistoryServiceSet) sessionManager);
         stackServer.addServiceSet((MethodServiceSet) sessionManager);
         stackServer.addServiceSet((MonitoredItemServiceSet) sessionManager);
         stackServer.addServiceSet((NodeManagementServiceSet) sessionManager);

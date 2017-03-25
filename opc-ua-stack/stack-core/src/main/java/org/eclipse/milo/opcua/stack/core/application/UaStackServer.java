@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
+import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
@@ -139,6 +140,9 @@ public interface UaStackServer {
     default void addServiceSet(AttributeServiceSet serviceSet) {
         addRequestHandler(ReadRequest.class, serviceSet::onRead);
         addRequestHandler(WriteRequest.class, serviceSet::onWrite);
+    }
+
+    default void addServiceSet(AttributeHistoryServiceSet serviceSet) {
         addRequestHandler(HistoryReadRequest.class, serviceSet::onHistoryRead);
         addRequestHandler(HistoryUpdateRequest.class, serviceSet::onHistoryUpdate);
     }
