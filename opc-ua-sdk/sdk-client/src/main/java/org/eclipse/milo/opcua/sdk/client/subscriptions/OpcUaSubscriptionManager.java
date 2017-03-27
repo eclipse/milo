@@ -279,10 +279,16 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     private UInteger getTimeoutHint() {
         double minKeepAlive = subscriptions.values().stream()
             .map(s -> s.getRevisedPublishingInterval() * s.getRevisedMaxKeepAliveCount().doubleValue())
-            .min(Comparator.<Double>naturalOrder())
+            .min(Comparator.naturalOrder())
             .orElse(client.getConfig().getRequestTimeout().doubleValue());
 
-        long timeoutHint = (long) (getMaxPendingPublishes() * minKeepAlive * 1.25);
+        long maxPendingPublishes = getMaxPendingPublishes();
+
+        long timeoutHint = (long) (maxPendingPublishes * minKeepAlive * 1.25);
+
+        logger.debug(
+            "getTimeoutHint() minKeepAlive={} maxPendingPublishes={} timeoutHint={}",
+            minKeepAlive, maxPendingPublishes, timeoutHint);
 
         return uint(timeoutHint);
     }
@@ -366,7 +372,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                     .map(UaException::getStatusCode)
                     .orElse(StatusCode.BAD);
 
-                logger.debug("Publish service failure: {}", statusCode, ex);
+                logger.debug("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
 
                 if (statusCode.getValue() != StatusCodes.Bad_TooManyPublishRequests) {
                     maybeSendPublishRequests();
