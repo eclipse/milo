@@ -119,6 +119,10 @@ public class UaTcpStackClient implements UaStackClient {
     @Override
     public CompletableFuture<UaStackClient> disconnect() {
         return channelManager.disconnect()
+            .whenComplete((u, ex) -> pending.forEach((h, cf) ->
+                cf.completeExceptionally(
+                    new UaException(StatusCodes.Bad_Disconnect, "client disconnect")))
+            )
             .thenApply(v -> UaTcpStackClient.this);
     }
 
