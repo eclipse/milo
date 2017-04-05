@@ -17,11 +17,11 @@ package org.eclipse.milo.opcua.sdk.server.services.helpers;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -31,23 +31,28 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerOnNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.util.stream.Collectors.toList;
+
 public class MdnsHelper implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MdnsHelper.class);
 
-    private JmDNS jmdns = null;
+    /** Fully-qualified service type name */
+    private static final String OPC_UA_SERVICE_TYPE = "_opcua-tcp._tcp.local.";
 
-    private final String mdnsListening = "_opcua-tcp._tcp.local.";
+    private JmDNS jmdns = null;
 
     private Consumer<ServerOnNetwork> multicastServerConsumer = null;
 
-    private HashMap<String, ServerOnNetworkMdns> serverOnNetworkMap;
-    private LinkedList<ServerOnNetwork> serverOnNetworkList;
+    private final Map<String, ServerOnNetworkMdns> serverOnNetworkMap = Maps.newConcurrentMap();
+    private final List<ServerOnNetwork> serverOnNetworkList = Lists.newCopyOnWriteArrayList();
 
     private int lastServerOnNetworkId;
 
@@ -108,8 +113,6 @@ public class MdnsHelper implements Runnable {
             LOGGER.error("Could not create instance of JmDNS: {}", e.getMessage(), e);
         }
 
-        serverOnNetworkMap = new HashMap<>();
-        serverOnNetworkList = new LinkedList<>();
         lastServerOnNetworkId = 0;
         lastServerOnNetworkIdReset = new Date();
     }
@@ -129,7 +132,7 @@ public class MdnsHelper implements Runnable {
             txt += " caps=" + String.join(",", (CharSequence[]) capabilities);
         }
 
-        ServiceInfo serviceInfo = ServiceInfo.create(mdnsListening, mdnsName, port, txt);
+        ServiceInfo serviceInfo = ServiceInfo.create(OPC_UA_SERVICE_TYPE, mdnsName, port, txt);
         try {
             jmdns.registerService(serviceInfo);
         } catch (IOException e) {
@@ -146,63 +149,57 @@ public class MdnsHelper implements Runnable {
             endpointName = endpointName.substring(1);
         }
 
-        ServiceInfo serviceInfo = ServiceInfo.create(mdnsListening, mdnsName, port, "path=/" + endpointName);
+        ServiceInfo serviceInfo = ServiceInfo.create(OPC_UA_SERVICE_TYPE, mdnsName, port, "path=/" + endpointName);
         jmdns.unregisterService(serviceInfo);
         return true;
     }
 
-    private String serviceInfoToDiscoveryUrl(ServiceInfo serviceInfo) {
-        String discoveryUrl = null;
-
+    private List<String> serviceInfoToDiscoveryUrls(ServiceInfo serviceInfo) {
         InetAddress[] addressList = serviceInfo.getInetAddresses();
-        for (InetAddress mdnsIa : addressList) {
 
-            discoveryUrl = "opc.tcp://" + mdnsIa.getHostAddress() + ":" + serviceInfo.getPort() +
-                serviceInfo.getPropertyString("path");
+        return Arrays.stream(addressList).map(ia -> {
+            String discoveryUrl = String.format(
+                "ocp.tcp://%s:%s%s",
+                ia.getHostAddress(),
+                serviceInfo.getPort(),
+                serviceInfo.getPropertyString("path")
+            );
 
             if (discoveryUrl.endsWith("/")) {
-                discoveryUrl = discoveryUrl.substring(0, discoveryUrl.length() - 1);
+                discoveryUrl = discoveryUrl.substring(0, discoveryUrl.length()-1);
             }
 
-            break;
-
-        }
-
-        return discoveryUrl;
+            return discoveryUrl;
+        }).collect(toList());
     }
 
     private void processRecord(ServiceInfo serviceInfo) {
+        List<String> discoveryUrls = serviceInfoToDiscoveryUrls(serviceInfo);
 
-        String discoveryUrl = serviceInfoToDiscoveryUrl(serviceInfo);
+        discoveryUrls.forEach(discoveryUrl -> {
+            if (!serverOnNetworkMap.containsKey(discoveryUrl)) {
+                String[] caps;
 
+                if (serviceInfo.getPropertyString("caps") != null) {
+                    caps = serviceInfo.getPropertyString("caps").split(",");
+                } else {
+                    caps = new String[0];
+                }
 
-        if (!serverOnNetworkMap.containsKey(discoveryUrl)) {
+                if (lastServerOnNetworkId == Integer.MAX_VALUE) {
+                    lastServerOnNetworkIdReset = new Date();
+                    lastServerOnNetworkId = 0;
+                }
 
+                ServerOnNetwork son = addToServerOnNetwork(serviceInfo.getName(), discoveryUrl, caps);
 
-            String[] caps;
-
-            if (serviceInfo.getPropertyString("caps") != null) {
-                caps = serviceInfo.getPropertyString("caps").split(",");
+                if (multicastServerConsumer != null) {
+                    multicastServerConsumer.accept(son);
+                }
             } else {
-                caps = new String[0];
+                serverOnNetworkMap.get(discoveryUrl).lastSeen = new Date();
             }
-
-
-            if (lastServerOnNetworkId == Integer.MAX_VALUE) {
-                lastServerOnNetworkIdReset = new Date();
-                lastServerOnNetworkId = 0;
-            }
-
-            ServerOnNetwork son = addToServerOnNetwork(serviceInfo.getName(), discoveryUrl, caps);
-
-            if (multicastServerConsumer != null) {
-                multicastServerConsumer.accept(son);
-            }
-        } else {
-
-            serverOnNetworkMap.get(discoveryUrl).lastSeen = new Date();
-        }
-
+        });
     }
 
     public ServerOnNetwork addToServerOnNetwork(String serverName, String discoveryUrl, String[] caps) {
@@ -228,7 +225,7 @@ public class MdnsHelper implements Runnable {
     }
 
     public void run() {
-        jmdns.addServiceListener(mdnsListening, new ServiceListener() {
+        jmdns.addServiceListener(OPC_UA_SERVICE_TYPE, new ServiceListener() {
 
             @Override
             public void serviceResolved(ServiceEvent event) {
@@ -238,12 +235,14 @@ public class MdnsHelper implements Runnable {
 
             @Override
             public void serviceRemoved(ServiceEvent event) {
-                String discoveryUrl = serviceInfoToDiscoveryUrl(event.getInfo());
-                if (serverOnNetworkMap.containsKey(discoveryUrl)) {
-                    LOGGER.info("mDNS: remove server (TTL=0): " + discoveryUrl);
-                    removeFromServerOnNetwork(discoveryUrl);
-                }
+                List<String> discoveryUrls = serviceInfoToDiscoveryUrls(event.getInfo());
 
+                discoveryUrls.forEach(discoveryUrl -> {
+                    if (serverOnNetworkMap.containsKey(discoveryUrl)) {
+                        LOGGER.info("mDNS: remove server (TTL=0): " + discoveryUrl);
+                        removeFromServerOnNetwork(discoveryUrl);
+                    }
+                });
             }
 
             @Override
@@ -279,7 +278,6 @@ public class MdnsHelper implements Runnable {
     public Date getLastServerOnNetworkIdReset() {
         return lastServerOnNetworkIdReset;
     }
-
 
     public List<ServerOnNetwork> getServerOnNetwork() {
         return serverOnNetworkList;
