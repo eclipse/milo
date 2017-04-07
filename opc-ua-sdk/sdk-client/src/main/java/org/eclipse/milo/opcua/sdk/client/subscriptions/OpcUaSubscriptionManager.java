@@ -374,7 +374,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                 logger.debug("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
 
-                if (statusCode.getValue() != StatusCodes.Bad_TooManyPublishRequests) {
+                if (statusCode.getValue() != StatusCodes.Bad_NoSubscription &&
+                    statusCode.getValue() != StatusCodes.Bad_TooManyPublishRequests) {
+
                     maybeSendPublishRequests();
                 }
 
