@@ -273,7 +273,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     private long getMaxPendingPublishes() {
         long maxPendingPublishRequests = client.getConfig().getMaxPendingPublishRequests().longValue();
 
-        return Math.min(subscriptions.size() * 2, maxPendingPublishRequests);
+        return Math.min(subscriptions.size() + 1, maxPendingPublishRequests);
     }
 
     private UInteger getTimeoutHint() {
