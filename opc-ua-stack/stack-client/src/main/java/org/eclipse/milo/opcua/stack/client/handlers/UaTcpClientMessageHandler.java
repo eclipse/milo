@@ -535,8 +535,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                     UaRequestFuture request = pending.remove(chunkDecoder.getLastRequestId());
 
                     if (request != null) {
-                        client.getExecutorService().execute(
-                            () -> request.getFuture().complete(response));
+                        request.getFuture().complete(response);
                     } else {
                         logger.warn("No UaRequestFuture for requestId={}", chunkDecoder.getLastRequestId());
                     }

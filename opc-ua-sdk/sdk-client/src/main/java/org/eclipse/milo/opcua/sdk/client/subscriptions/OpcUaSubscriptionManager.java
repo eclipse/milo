@@ -356,7 +356,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 requestHandle, Arrays.toString(ackStrings));
         }
 
-        client.<PublishResponse>sendRequest(request).whenCompleteAsync((response, ex) -> {
+        client.<PublishResponse>sendRequest(request).whenComplete((response, ex) -> {
 
             pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
 
@@ -387,7 +387,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 UaException uax = UaException.extract(ex).orElse(new UaException(ex));
                 subscriptionListeners.forEach(l -> l.onPublishFailure(uax));
             }
-        }, client.getConfig().getExecutor());
+        });
     }
 
     private void onPublishComplete(PublishResponse response) {

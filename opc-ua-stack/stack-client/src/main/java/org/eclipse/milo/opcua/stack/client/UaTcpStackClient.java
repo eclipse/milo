@@ -63,6 +63,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
+import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,8 @@ public class UaTcpStackClient implements UaStackClient {
     private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
     private final Map<UInteger, Timeout> timeouts = Maps.newConcurrentMap();
 
+    private final ExecutionQueue deliveryQueue;
+
     private final HashedWheelTimer wheelTimer;
 
     private final ApplicationDescription application;
@@ -87,6 +90,8 @@ public class UaTcpStackClient implements UaStackClient {
 
     public UaTcpStackClient(UaTcpStackClientConfig config) {
         this.config = config;
+
+        deliveryQueue = new ExecutionQueue(config.getExecutor());
 
         wheelTimer = config.getWheelTimer();
 
@@ -278,32 +283,34 @@ public class UaTcpStackClient implements UaStackClient {
     }
 
     private void receiveResponse(UaResponseMessage response) {
-        ResponseHeader header = response.getResponseHeader();
-        UInteger requestHandle = header.getRequestHandle();
+        deliveryQueue.submit(() -> {
+            ResponseHeader header = response.getResponseHeader();
+            UInteger requestHandle = header.getRequestHandle();
 
-        CompletableFuture<UaResponseMessage> future = pending.remove(requestHandle);
+            CompletableFuture<UaResponseMessage> future = pending.remove(requestHandle);
 
-        if (future != null) {
-            if (header.getServiceResult().isGood()) {
-                future.complete(response);
-            } else {
-                ServiceFault serviceFault;
-
-                if (response instanceof ServiceFault) {
-                    serviceFault = (ServiceFault) response;
+            if (future != null) {
+                if (header.getServiceResult().isGood()) {
+                    future.complete(response);
                 } else {
-                    serviceFault = new ServiceFault(header);
+                    ServiceFault serviceFault;
+
+                    if (response instanceof ServiceFault) {
+                        serviceFault = (ServiceFault) response;
+                    } else {
+                        serviceFault = new ServiceFault(header);
+                    }
+
+                    future.completeExceptionally(new UaServiceFaultException(serviceFault));
                 }
 
-                future.completeExceptionally(new UaServiceFaultException(serviceFault));
+                Timeout timeout = timeouts.remove(requestHandle);
+                if (timeout != null) timeout.cancel();
+            } else {
+                logger.warn("Received {} for unknown requestHandle: {}",
+                    response.getClass().getSimpleName(), requestHandle);
             }
-
-            Timeout timeout = timeouts.remove(requestHandle);
-            if (timeout != null) timeout.cancel();
-        } else {
-            logger.warn("Received {} for unknown requestHandle: {}",
-                response.getClass().getSimpleName(), requestHandle);
-        }
+        });
     }
 
     @Override
