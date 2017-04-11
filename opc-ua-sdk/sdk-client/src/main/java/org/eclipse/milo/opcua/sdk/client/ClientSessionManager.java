@@ -587,18 +587,20 @@ class ClientSessionManager {
             if (tsr != null) {
                 List<TransferResult> results = l(tsr.getResults());
 
-                for (int i = 0; i < results.size(); i++) {
-                    TransferResult result = results.get(i);
+                client.getConfig().getExecutor().execute(() -> {
+                    for (int i = 0; i < results.size(); i++) {
+                        TransferResult result = results.get(i);
 
-                    if (!result.getStatusCode().isGood()) {
-                        UaSubscription subscription = subscriptions.get(i);
+                        if (!result.getStatusCode().isGood()) {
+                            UaSubscription subscription = subscriptions.get(i);
 
-                        subscriptionManager.transferFailed(
-                            subscription.getSubscriptionId(),
-                            result.getStatusCode()
-                        );
+                            subscriptionManager.transferFailed(
+                                subscription.getSubscriptionId(),
+                                result.getStatusCode()
+                            );
+                        }
                     }
-                }
+                });
 
                 if (logger.isDebugEnabled()) {
                     Stream<UInteger> subscriptionIds = subscriptions.stream()
@@ -632,12 +634,14 @@ class ClientSessionManager {
 
                     logger.debug("TransferSubscriptions not supported: {}", statusCode);
 
-                    // transferFailed() will remove the subscription, but that is okay
-                    // because the list from getSubscriptions() above is a copy.
-                    for (UaSubscription subscription : subscriptions) {
-                        subscriptionManager.transferFailed(
-                            subscription.getSubscriptionId(), statusCode);
-                    }
+                    client.getConfig().getExecutor().execute(() -> {
+                        // transferFailed() will remove the subscription, but that is okay
+                        // because the list from getSubscriptions() above is a copy.
+                        for (UaSubscription subscription : subscriptions) {
+                            subscriptionManager.transferFailed(
+                                subscription.getSubscriptionId(), statusCode);
+                        }
+                    });
 
                     state.compareAndSet(transferringState, new Active(session, sessionFuture));
                     sessionFuture.complete(session);
