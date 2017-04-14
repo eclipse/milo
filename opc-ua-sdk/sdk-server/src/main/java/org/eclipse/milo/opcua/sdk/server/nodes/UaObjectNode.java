@@ -59,6 +59,18 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public UaObjectNode(
         ServerNodeMap nodeMap,
         NodeId nodeId,
+        ObjectTypeNode objectTypeNode) {
+
+        this(nodeMap, nodeId, objectTypeNode.getBrowseName(), objectTypeNode.getDisplayName());
+
+        setDescription(objectTypeNode.getDescription());
+        setWriteMask(objectTypeNode.getWriteMask());
+        setUserWriteMask(objectTypeNode.getUserWriteMask());
+    }
+
+    public UaObjectNode(
+        ServerNodeMap nodeMap,
+        NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName) {
 
