@@ -13,6 +13,12 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import java.util.List;
+import java.util.function.Supplier;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
@@ -60,6 +66,54 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
     }
 
+    /**
+     * Add a 'HasComponent' reference from this node to {@code node} and an inverse 'ComponentOf' reference from
+     * {@code node} back to this node.
+     *
+     * @param node the node to add as a component of this node.
+     */
+    public void addComponent(UaNode node) {
+        addReference(new Reference(
+            getNodeId(),
+            Identifiers.HasComponent,
+            node.getNodeId().expanded(),
+            node.getNodeClass(),
+            true
+        ));
+
+        node.addReference(new Reference(
+            node.getNodeId(),
+            Identifiers.HasComponent,
+            getNodeId().expanded(),
+            getNodeClass(),
+            false
+        ));
+    }
+
+    /**
+     * Add a 'HasSubtype' reference from this node to {@code node} and an inverse 'SubtypeOf' reference from
+     * {@code node} back to this node.
+     *
+     * @param node the node to add as a subtype of this node.
+     */
+    public void addSubtype(UaObjectTypeNode node) {
+        addReference(new Reference(
+            getNodeId(),
+            Identifiers.HasSubtype,
+            node.getNodeId().expanded(),
+            node.getNodeClass(),
+            true
+        ));
+
+        node.addReference(new Reference(
+            node.getNodeId(),
+            Identifiers.HasSubtype,
+            getNodeId().expanded(),
+            getNodeClass(),
+            false
+        ));
+    }
+
     @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
@@ -83,5 +137,86 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         ValueRanks.Scalar,
         ByteString.class
     );
+
+    public static class UaObjectTypeNodeBuilder implements Supplier<UaObjectTypeNode> {
+
+        private final List<Reference> references = Lists.newArrayList();
+
+        private NodeId nodeId;
+        private QualifiedName browseName;
+        private LocalizedText displayName;
+        private LocalizedText description = LocalizedText.NULL_VALUE;
+        private UInteger writeMask = UInteger.MIN;
+        private UInteger userWriteMask = UInteger.MIN;
+        private boolean isAbstract = false;
+
+        private final ServerNodeMap nodeMap;
+
+        public UaObjectTypeNodeBuilder(ServerNodeMap nodeMap) {
+            this.nodeMap = nodeMap;
+        }
+
+        public UaObjectTypeNodeBuilder setNodeId(NodeId nodeId) {
+            this.nodeId = nodeId;
+            return this;
+        }
+
+        public UaObjectTypeNodeBuilder setBrowseName(QualifiedName browseName) {
+            this.browseName = browseName;
+            return this;
+        }
+
+        public UaObjectTypeNodeBuilder setDisplayName(LocalizedText displayName) {
+            this.displayName = displayName;
+            return this;
+        }
+
+        public UaObjectTypeNodeBuilder setDescription(LocalizedText description) {
+            this.description = description;
+            return this;
+        }
+
+        public UaObjectTypeNodeBuilder setWriteMask(UInteger writeMask) {
+            this.writeMask = writeMask;
+            return this;
+        }
+
+        public UaObjectTypeNodeBuilder setUserWriteMask(UInteger userWriteMask) {
+            this.userWriteMask = userWriteMask;
+            return this;
+        }
+
+        public UaObjectTypeNodeBuilder setIsAbstract(boolean isAbstract) {
+            this.isAbstract = isAbstract;
+            return this;
+        }
+
+        public UaObjectTypeNodeBuilder addReference(Reference reference) {
+            references.add(reference);
+            return this;
+        }
+
+        @Override
+        public UaObjectTypeNode get() {
+            return build();
+        }
+
+        public UaObjectTypeNode build() {
+            Preconditions.checkNotNull(nodeId, "NodeId cannot be null");
+            Preconditions.checkNotNull(browseName, "BrowseName cannot be null");
+            Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
+
+            return new UaObjectTypeNode(
+                nodeMap,
+                nodeId,
+                browseName,
+                displayName,
+                description,
+                writeMask,
+                userWriteMask,
+                isAbstract
+            );
+        }
+    }
 
 }
