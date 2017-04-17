@@ -26,6 +26,15 @@ public final class LocalizedText {
     private final String text;
 
     /**
+     * Create a {@link LocalizedText} in English locale.
+     *
+     * @param text the text in English locale.
+     */
+    public LocalizedText(@Nullable String text) {
+        this(Locale.ENGLISH.getLanguage(), text);
+    }
+
+    /**
      * @param locale the locale.
      * @param text   the text in the specified locale.
      */
@@ -45,7 +54,7 @@ public final class LocalizedText {
     }
 
     public static LocalizedText english(@Nullable String text) {
-        return new LocalizedText(Locale.ENGLISH.getLanguage(), text);
+        return new LocalizedText(text);
     }
 
     @Override
