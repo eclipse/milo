@@ -138,6 +138,10 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         ByteString.class
     );
 
+    public static UaObjectTypeNodeBuilder builder(ServerNodeMap nodeMap) {
+        return new UaObjectTypeNodeBuilder(nodeMap);
+    }
+
     public static class UaObjectTypeNodeBuilder implements Supplier<UaObjectTypeNode> {
 
         private final List<Reference> references = Lists.newArrayList();
