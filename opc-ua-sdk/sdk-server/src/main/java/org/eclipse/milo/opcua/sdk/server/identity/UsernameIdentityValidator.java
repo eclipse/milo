@@ -94,7 +94,10 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
             }
 
-            if (algorithm != SecurityAlgorithm.Rsa15 && algorithm != SecurityAlgorithm.RsaOaep) {
+            if (algorithm != SecurityAlgorithm.Rsa15 &&
+                algorithm != SecurityAlgorithm.RsaOaepSha1 &&
+                algorithm != SecurityAlgorithm.RsaOaepSha256) {
+
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
             }
         }

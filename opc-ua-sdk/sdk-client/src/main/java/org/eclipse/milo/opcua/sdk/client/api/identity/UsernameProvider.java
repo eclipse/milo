@@ -160,8 +160,10 @@ public class UsernameProvider implements IdentityProvider {
         switch (algorithm) {
             case Rsa15:
                 return (getAsymmetricKeyLength(certificate) + 1) / 8 - 11;
-            case RsaOaep:
+            case RsaOaepSha1:
                 return (getAsymmetricKeyLength(certificate) + 1) / 8 - 42;
+            case RsaOaepSha256:
+                return (getAsymmetricKeyLength(certificate) + 1) / 8 - 66;
             default:
                 return 1;
         }
@@ -172,7 +174,8 @@ public class UsernameProvider implements IdentityProvider {
 
         switch (algorithm) {
             case Rsa15:
-            case RsaOaep:
+            case RsaOaepSha1:
+            case RsaOaepSha256:
                 return (getAsymmetricKeyLength(certificate) + 1) / 8;
             default:
                 return 1;
