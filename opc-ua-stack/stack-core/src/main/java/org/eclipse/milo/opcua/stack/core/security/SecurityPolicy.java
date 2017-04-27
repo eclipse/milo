@@ -23,44 +23,74 @@ public enum SecurityPolicy {
     /**
      * A suite of algorithms that do not provide any security settings.
      */
-    None("http://opcfoundation.org/UA/SecurityPolicy#None",
+    None(
+        "http://opcfoundation.org/UA/SecurityPolicy#None",
         SecurityAlgorithm.None,
         SecurityAlgorithm.None,
         SecurityAlgorithm.None,
         SecurityAlgorithm.None,
         SecurityAlgorithm.None,
         SecurityAlgorithm.None,
-        SecurityAlgorithm.None),
+        SecurityAlgorithm.None
+    ),
 
     /**
      * A suite of algorithms that use RSA for asymmetric encryption and AES-128 for symmetric encryption.
      */
-    Basic128Rsa15("http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15",
+    Basic128Rsa15(
+        "http://opcfoundation.org/UA/SecurityPolicy#Basic128Rsa15",
         SecurityAlgorithm.HmacSha1,
         SecurityAlgorithm.Aes128,
         SecurityAlgorithm.RsaSha1,
         SecurityAlgorithm.Rsa15,
         SecurityAlgorithm.KwRsa15,
         SecurityAlgorithm.PSha1,
-        SecurityAlgorithm.Sha1),
+        SecurityAlgorithm.Sha1
+    ),
 
-    Basic256("http://opcfoundation.org/UA/SecurityPolicy#Basic256",
+    Basic256(
+        "http://opcfoundation.org/UA/SecurityPolicy#Basic256",
         SecurityAlgorithm.HmacSha1,
         SecurityAlgorithm.Aes256,
         SecurityAlgorithm.RsaSha1,
-        SecurityAlgorithm.RsaOaep,
+        SecurityAlgorithm.RsaOaepSha1,
         SecurityAlgorithm.KwRsaOaep,
         SecurityAlgorithm.PSha1,
-        SecurityAlgorithm.Sha1),
+        SecurityAlgorithm.Sha1
+    ),
 
-    Basic256Sha256("http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256",
+    Basic256Sha256(
+        "http://opcfoundation.org/UA/SecurityPolicy#Basic256Sha256",
         SecurityAlgorithm.HmacSha256,
         SecurityAlgorithm.Aes256,
         SecurityAlgorithm.RsaSha256,
-        SecurityAlgorithm.RsaOaep,
+        SecurityAlgorithm.RsaOaepSha1,
         SecurityAlgorithm.KwRsaOaep,
         SecurityAlgorithm.PSha256,
-        SecurityAlgorithm.Sha256);
+        SecurityAlgorithm.Sha256
+    ),
+
+    Aes128_Sha256_RsaOaep(
+        "http://opcfoundation.org/UA/SecurityPolicy#Aes128-Sha256-RsaOaep",
+        SecurityAlgorithm.HmacSha256,
+        SecurityAlgorithm.Aes128,
+        SecurityAlgorithm.RsaSha256,
+        SecurityAlgorithm.RsaOaepSha1,
+        null, // N/A
+        SecurityAlgorithm.PSha256,
+        SecurityAlgorithm.Sha256
+    ),
+
+    Aes256_Sha256_RsaPss(
+        "http://opcfoundation.org/UA/SecurityPolicy#Aes256-Sha256-RsaPss",
+        SecurityAlgorithm.HmacSha256,
+        SecurityAlgorithm.Aes256,
+        SecurityAlgorithm.RsaSha256Pss,
+        SecurityAlgorithm.RsaOaepSha256,
+        null, // N/A
+        SecurityAlgorithm.PSha256,
+        SecurityAlgorithm.Sha256
+    );
 
     private final String securityPolicyUri;
     private final SecurityAlgorithm symmetricSignatureAlgorithm;
