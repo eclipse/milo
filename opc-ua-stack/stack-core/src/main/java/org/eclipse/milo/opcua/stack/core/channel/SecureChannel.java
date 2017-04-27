@@ -145,7 +145,8 @@ public interface SecureChannel {
 
             switch (algorithm) {
                 case Rsa15:
-                case RsaOaep:
+                case RsaOaepSha1:
+                case RsaOaepSha256:
                     return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8;
                 default:
                     return 1;
@@ -161,7 +162,8 @@ public interface SecureChannel {
 
             switch (algorithm) {
                 case Rsa15:
-                case RsaOaep:
+                case RsaOaepSha1:
+                case RsaOaepSha256:
                     return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8;
                 default:
                     return 1;
@@ -178,8 +180,10 @@ public interface SecureChannel {
             switch (algorithm) {
                 case Rsa15:
                     return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 11;
-                case RsaOaep:
+                case RsaOaepSha1:
                     return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 42;
+                case RsaOaepSha256:
+                    return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 66;
                 default:
                     return 1;
             }
@@ -195,8 +199,10 @@ public interface SecureChannel {
             switch (algorithm) {
                 case Rsa15:
                     return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 11;
-                case RsaOaep:
+                case RsaOaepSha1:
                     return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 42;
+                case RsaOaepSha256:
+                    return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 66;
                 default:
                     return 1;
             }
@@ -211,6 +217,7 @@ public interface SecureChannel {
         switch (algorithm) {
             case RsaSha1:
             case RsaSha256:
+            case RsaSha256Pss:
                 return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8;
             default:
                 return 0;
@@ -223,6 +230,7 @@ public interface SecureChannel {
         switch (algorithm) {
             case RsaSha1:
             case RsaSha256:
+            case RsaSha256Pss:
                 return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8;
             default:
                 return 0;
@@ -294,6 +302,8 @@ public interface SecureChannel {
             case Basic256:
                 return 24;
             case Basic256Sha256:
+            case Aes128_Sha256_RsaOaep:
+            case Aes256_Sha256_RsaPss:
                 return 32;
             default:
                 return 0;
@@ -305,9 +315,11 @@ public interface SecureChannel {
             case None:
                 return 0;
             case Basic128Rsa15:
+            case Aes128_Sha256_RsaOaep:
                 return 16;
             case Basic256:
             case Basic256Sha256:
+            case Aes256_Sha256_RsaPss:
                 return 32;
             default:
                 return 0;

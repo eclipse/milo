@@ -56,6 +56,13 @@ public enum SecurityAlgorithm {
     RsaSha256("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", "SHA256withRSA"),
 
     /**
+     * Asymmetric Signature; transformation to be used with {@link Signature#getInstance(String)}.
+     * <p>
+     * Requires Bouncy Castle installed as a Security Provider.
+     */
+    RsaSha256Pss("http://www.w3.org/2007/05/xmldsig-more#rsa-pss", "SHA256withRSA/PSS"),
+
+    /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
      */
     Rsa15("http://www.w3.org/2001/04/xmlenc#rsa-1_5", "RSA/ECB/PKCS1Padding"),
@@ -63,7 +70,12 @@ public enum SecurityAlgorithm {
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
      */
-    RsaOaep("http://www.w3.org/2001/04/xmlenc#rsa-oaep", "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
+    RsaOaepSha1("http://www.w3.org/2009/xmlenc11#mgf1sha1", "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
+
+    /**
+     * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
+     */
+    RsaOaepSha256("http://www.w3.org/2009/xmlenc11#mgf1sha256", "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"),
 
     /**
      * Asymmetric Key Wrap
