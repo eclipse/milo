@@ -117,8 +117,8 @@ public class ExampleServer {
         server = new OpcUaServer(serverConfig);
 
         server.getNamespaceManager().registerAndAdd(
-            ExampleAMLNamespace.NAMESPACE_URI,
-            idx -> new ExampleAMLNamespace(server, idx));
+            ExampleNamespace.NAMESPACE_URI,
+            idx -> new ExampleNamespace(server, idx));
 
         server.getServer().addRequestHandler(TestStackRequest.class, service -> {
             TestStackRequest request = service.getRequest();
