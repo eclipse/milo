@@ -119,7 +119,7 @@ public class ExampleServer {
         server.getNamespaceManager().registerAndAdd(
             ExampleNamespace.NAMESPACE_URI,
             idx -> new ExampleNamespace(server, idx));
-
+ 
         server.getServer().addRequestHandler(TestStackRequest.class, service -> {
             TestStackRequest request = service.getRequest();
 
