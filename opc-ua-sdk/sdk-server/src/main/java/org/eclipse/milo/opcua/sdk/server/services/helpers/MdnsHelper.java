@@ -44,7 +44,9 @@ public class MdnsHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MdnsHelper.class);
 
-    /** Fully-qualified service type name */
+    /**
+     * Fully-qualified service type name
+     */
     private static final String OPC_UA_SERVICE_TYPE = "_opcua-tcp._tcp.local.";
 
     private JmDNS jmdns = null;
@@ -107,43 +109,39 @@ public class MdnsHelper {
             }
         }
 
-        try {
-            jmdns = JmDNS.create(ownAddress);
-        } catch (IOException e) {
-            LOGGER.error("Could not create instance of JmDNS: {}", e.getMessage(), e);
-        }
-
         lastServerOnNetworkId = 0;
         lastServerOnNetworkIdReset = new Date();
 
-        jmdns.addServiceListener(OPC_UA_SERVICE_TYPE, new ServiceListener() {
+        try {
+            jmdns = JmDNS.create(ownAddress);
 
-            @Override
-            public void serviceResolved(ServiceEvent event) {
-                LOGGER.info("mDNS: found server: " + event.getInfo());
-                processRecord(event.getInfo());
-            }
+            jmdns.addServiceListener(OPC_UA_SERVICE_TYPE, new ServiceListener() {
+                @Override
+                public void serviceResolved(ServiceEvent event) {
+                    LOGGER.info("mDNS: found server: " + event.getInfo());
+                    processRecord(event.getInfo());
+                }
 
-            @Override
-            public void serviceRemoved(ServiceEvent event) {
-                List<String> discoveryUrls = serviceInfoToDiscoveryUrls(event.getInfo());
+                @Override
+                public void serviceRemoved(ServiceEvent event) {
+                    List<String> discoveryUrls = serviceInfoToDiscoveryUrls(event.getInfo());
 
-                discoveryUrls.forEach(discoveryUrl -> {
-                    if (serverOnNetworkMap.containsKey(discoveryUrl)) {
-                        LOGGER.info("mDNS: remove server (TTL=0): " + discoveryUrl);
-                        removeFromServerOnNetwork(discoveryUrl);
-                    }
-                });
-            }
+                    discoveryUrls.forEach(discoveryUrl -> {
+                        if (serverOnNetworkMap.containsKey(discoveryUrl)) {
+                            LOGGER.info("mDNS: remove server (TTL=0): " + discoveryUrl);
+                            removeFromServerOnNetwork(discoveryUrl);
+                        }
+                    });
+                }
 
-            @Override
-            public void serviceAdded(ServiceEvent event) {
-                event.getDNS().getServiceInfo(event.getType(), event.getName());
-            }
-        });
-
-        LOGGER.info("mDNS registration done");
-
+                @Override
+                public void serviceAdded(ServiceEvent event) {
+                    event.getDNS().getServiceInfo(event.getType(), event.getName());
+                }
+            });
+        } catch (IOException e) {
+            LOGGER.error("Could not create instance of JmDNS: {}", e.getMessage(), e);
+        }
     }
 
     public void setMulticastServerConsumer(Consumer<ServerOnNetwork> multicastServerConsumer) {
@@ -195,7 +193,7 @@ public class MdnsHelper {
             );
 
             if (discoveryUrl.endsWith("/")) {
-                discoveryUrl = discoveryUrl.substring(0, discoveryUrl.length()-1);
+                discoveryUrl = discoveryUrl.substring(0, discoveryUrl.length() - 1);
             }
 
             return discoveryUrl;
@@ -247,10 +245,11 @@ public class MdnsHelper {
     }
 
     public boolean removeFromServerOnNetwork(String discoveryUrl) {
-        //noinspection SuspiciousMethodCalls
-        boolean retVal = serverOnNetworkList.remove(serverOnNetworkMap.get(discoveryUrl).serverOnNetwork);
-        serverOnNetworkMap.remove(discoveryUrl);
-        return retVal;
+        ServerOnNetworkMdns serverOnNetworkMdns =
+            serverOnNetworkMap.remove(discoveryUrl);
+
+        return serverOnNetworkMdns != null &&
+            serverOnNetworkList.remove(serverOnNetworkMdns.serverOnNetwork);
     }
 
     private class ServerOnNetworkMdns {

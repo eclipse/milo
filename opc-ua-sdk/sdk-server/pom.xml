@@ -43,6 +43,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jmdns</groupId>
+            <artifactId>jmdns</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
@@ -54,22 +60,6 @@
             <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.jmdns</groupId>
-            <artifactId>jmdns</artifactId>
-            <version>3.5.1</version>
-        </dependency>
-		<dependency>
-			<groupId>org.eclipse.milo</groupId>
-			<artifactId>stack-client</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.milo</groupId>
-			<artifactId>sdk-client</artifactId>
-			<version>0.1.0-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 
 </project>
