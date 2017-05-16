@@ -14,11 +14,13 @@
 package org.eclipse.milo.examples.server;
 
 import java.io.File;
+import java.security.Security;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
@@ -41,6 +43,13 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 
 public class ExampleServer {
 
+    static {
+        CryptoRestrictions.remove();
+
+        // Required for SecurityPolicy.Aes256_Sha256_RsaPss
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     public static void main(String[] args) throws Exception {
         ExampleServer server = new ExampleServer();
 
@@ -56,8 +65,6 @@ public class ExampleServer {
     private final OpcUaServer server;
 
     public ExampleServer() throws Exception {
-        CryptoRestrictions.remove();
-
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
         LoggerFactory.getLogger(getClass()).info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
@@ -117,7 +124,9 @@ public class ExampleServer {
                     SecurityPolicy.None,
                     SecurityPolicy.Basic128Rsa15,
                     SecurityPolicy.Basic256,
-                    SecurityPolicy.Basic256Sha256))
+                    SecurityPolicy.Basic256Sha256,
+                    SecurityPolicy.Aes128_Sha256_RsaOaep,
+                    SecurityPolicy.Aes256_Sha256_RsaPss))
             .setUserTokenPolicies(
                 ImmutableList.of(
                     USER_TOKEN_POLICY_ANONYMOUS,
