@@ -13,11 +13,13 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.security.Security;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.examples.client.util.KeyStoreLoader;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -27,12 +29,20 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class ClientExampleRunner {
+
+    static {
+        CryptoRestrictions.remove();
+
+        // Required for SecurityPolicy.Aes256_Sha256_RsaPss
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

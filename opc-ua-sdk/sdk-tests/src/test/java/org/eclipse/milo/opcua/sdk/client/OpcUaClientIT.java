@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 import com.google.common.collect.ImmutableList;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
@@ -64,6 +66,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
 import org.jooq.lambda.tuple.Tuple2;
@@ -82,6 +85,13 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
 public class OpcUaClientIT {
+
+    static {
+        CryptoRestrictions.remove();
+
+        // Required for SecurityPolicy.Aes256_Sha256_RsaPss
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -105,15 +115,20 @@ public class OpcUaClientIT {
     }
 
     private void startClient() throws Exception {
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints("opc.tcp://localhost:12686/test-server").get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
+        KeyStoreLoader loader = new KeyStoreLoader().load();
+
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-            .setApplicationUri("urn:digitalpetri:opcua:client")
+            .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
+            .setApplicationUri("urn:eclipse:milo:test:client")
+            .setCertificate(loader.getClientCertificate())
+            .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
             .setRequestTimeout(uint(60000))
             .build();
@@ -163,13 +178,20 @@ public class OpcUaClientIT {
         );
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
-            .setApplicationName(LocalizedText.english("digitalpetri opc-ua server"))
-            .setApplicationUri("urn:digitalpetri:opcua:server")
+            .setApplicationName(LocalizedText.english("Eclipse Milo Test Server"))
+            .setApplicationUri("urn:eclipse:milo:examples:server")
             .setBindAddresses(newArrayList("localhost"))
             .setBindPort(12686)
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
-            .setSecurityPolicies(EnumSet.of(SecurityPolicy.None, SecurityPolicy.Basic128Rsa15))
+            .setSecurityPolicies(
+                EnumSet.of(
+                    SecurityPolicy.None,
+                    SecurityPolicy.Basic128Rsa15,
+                    SecurityPolicy.Basic256,
+                    SecurityPolicy.Basic256Sha256,
+                    SecurityPolicy.Aes128_Sha256_RsaOaep,
+                    SecurityPolicy.Aes256_Sha256_RsaPss))
             .setProductUri("urn:digitalpetri:opcua:sdk")
             .setServerName("test-server")
             .setUserTokenPolicies(userTokenPolicies)
@@ -415,8 +437,8 @@ public class OpcUaClientIT {
         KeyStoreLoader loader = new KeyStoreLoader().load();
 
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-            .setApplicationUri("urn:digitalpetri:opcua:client")
+            .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
+            .setApplicationUri("urn:eclipse:milo:test:client")
             .setCertificate(loader.getClientCertificate())
             .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
@@ -447,12 +469,44 @@ public class OpcUaClientIT {
         String user = new String(cs);
         String pass = new String(cs);
 
+
+        KeyStoreLoader loader = new KeyStoreLoader().load();
+
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-            .setApplicationUri("urn:digitalpetri:opcua:client")
+            .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
+            .setApplicationUri("urn:eclipse:milo:test:client")
+            .setCertificate(loader.getClientCertificate())
+            .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
             .setRequestTimeout(uint(60000))
             .setIdentityProvider(new UsernameProvider(user, pass))
+            .build();
+
+        OpcUaClient client = new OpcUaClient(clientConfig);
+
+        client.connect().get();
+    }
+
+    @Test
+    public void testUsernamePassword_WithSecurity() throws Exception {
+        logger.info("testUsernamePassword_WithSecurity()");
+
+        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+
+        EndpointDescription endpoint = Arrays.stream(endpoints)
+            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.Aes256_Sha256_RsaPss.getSecurityPolicyUri()))
+            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+
+        KeyStoreLoader loader = new KeyStoreLoader().load();
+
+        OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
+            .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
+            .setApplicationUri("urn:eclipse:milo:test:client")
+            .setCertificate(loader.getClientCertificate())
+            .setKeyPair(loader.getClientKeyPair())
+            .setEndpoint(endpoint)
+            .setRequestTimeout(uint(60000))
+            .setIdentityProvider(new UsernameProvider("user", "password"))
             .build();
 
         OpcUaClient client = new OpcUaClient(clientConfig);
@@ -488,13 +542,17 @@ public class OpcUaClientIT {
         X509Certificate identityCertificate = (X509Certificate) keyStore.getCertificate("identity");
         PrivateKey identityPrivateKey = (PrivateKey) keyStore.getKey("identity", "password".toCharArray());
 
+        KeyStoreLoader loader = new KeyStoreLoader().load();
+
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
-            .setApplicationUri("urn:eclipse:milo:examples:client")
+            .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
+            .setApplicationUri("urn:eclipse:milo:test:client")
             .setEndpoint(endpoint)
             .setKeyPair(loader.getClientKeyPair())
             .setCertificate(loader.getClientCertificate())
             .setRequestTimeout(uint(60000))
+            .setCertificate(loader.getClientCertificate())
+            .setKeyPair(loader.getClientKeyPair())
             .setIdentityProvider(new X509IdentityProvider(identityCertificate, identityPrivateKey))
             .build();
 
@@ -521,8 +579,8 @@ public class OpcUaClientIT {
             }
 
             private OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-                .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-                .setApplicationUri("urn:digitalpetri:opcua:client")
+                .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
+                .setApplicationUri("urn:eclipse:milo:test:client")
                 .setEndpoint(endpoint)
                 .setRequestTimeout(uint(10000))
                 .build();
@@ -575,8 +633,8 @@ public class OpcUaClientIT {
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-            .setApplicationUri("urn:digitalpetri:opcua:client")
+            .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
+            .setApplicationUri("urn:eclipse:milo:test:client")
             .setEndpoint(endpoint)
             .setRequestTimeout(uint(10000))
             .build();

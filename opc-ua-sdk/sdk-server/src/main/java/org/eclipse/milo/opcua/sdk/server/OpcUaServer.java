@@ -135,6 +135,8 @@ public class OpcUaServer {
 
         String configuredHostname = config.getHostname();
 
+        logger.info("Configured hostname: {}", configuredHostname);
+
         for (String bindAddress : config.getBindAddresses()) {
             Set<String> hostnames = Sets.union(
                 newHashSet(configuredHostname),
