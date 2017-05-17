@@ -175,7 +175,7 @@ public enum BuiltinReferenceType implements ReferenceType {
     private final String inverseName;
     private final boolean symmetric;
     private final boolean isAbstract;
-    private final BuiltinReferenceType superType;
+    private final NodeId superTypeId;
 
     BuiltinReferenceType(
         NodeId nodeId,
@@ -190,7 +190,12 @@ public enum BuiltinReferenceType implements ReferenceType {
         this.inverseName = inverseName;
         this.symmetric = symmetric;
         this.isAbstract = isAbstract;
-        this.superType = superType;
+
+        if (superType != null) {
+            this.superTypeId = superType.getNodeId();
+        } else {
+            this.superTypeId = null;
+        }
     }
 
     @Override
@@ -219,8 +224,8 @@ public enum BuiltinReferenceType implements ReferenceType {
     }
 
     @Override
-    public Optional<ReferenceType> getSuperType() {
-        return Optional.ofNullable(superType);
+    public Optional<NodeId> getSuperTypeId() {
+        return Optional.ofNullable(superTypeId);
     }
 
 }

@@ -80,11 +80,9 @@ public class Reference {
             return false;
         }
 
-        return referenceType.getSuperType().map(superType -> {
-            NodeId id = superType.getNodeId();
-
-            return id.equals(superTypeId) || subtypeOf(id, superTypeId, referenceTypes);
-        }).orElse(false);
+        return referenceType.getSuperTypeId()
+            .map(id -> id.equals(superTypeId) || subtypeOf(id, superTypeId, referenceTypes))
+            .orElse(false);
     }
 
     @Override

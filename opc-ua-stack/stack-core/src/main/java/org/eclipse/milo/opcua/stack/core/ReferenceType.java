@@ -47,8 +47,9 @@ public interface ReferenceType {
     boolean isAbstract();
 
     /**
-     * @return the super type of this reference type. All references except the root reference type have a super type.
+     * @return the {@link NodeId} of the super type of this reference type.
+     * All references except the root reference type have a super type.
      */
-    Optional<ReferenceType> getSuperType();
+    Optional<NodeId> getSuperTypeId();
 
 }
