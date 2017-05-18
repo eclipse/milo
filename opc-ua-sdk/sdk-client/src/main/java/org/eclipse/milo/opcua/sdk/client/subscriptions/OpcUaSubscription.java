@@ -119,7 +119,8 @@ public class OpcUaSubscription implements UaSubscription {
                     result.getRevisedSamplingInterval(),
                     result.getRevisedQueueSize(),
                     result.getFilterResult(),
-                    request.getMonitoringMode()
+                    request.getMonitoringMode(),
+                    request.getRequestedParameters().getFilter()
                 );
 
                 item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());

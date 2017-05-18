@@ -99,6 +99,15 @@ public interface UaMonitoredItem {
     MonitoringMode getMonitoringMode();
 
     /**
+     * Get the filter requested when the item was created.
+     * <p>
+     * May be null if no filter was requested.
+     *
+     * @return the filter requested when the item was created. May be null if no filter was requested.
+     */
+    ExtensionObject getMonitoringFilter();
+
+    /**
      * Set the {@link Consumer} that will receive values as they arrive from the server.
      *
      * @param valueConsumer the {@link Consumer} that will receive values as they arrive from the server.
