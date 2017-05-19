@@ -93,7 +93,6 @@ public class DiscoveryServices extends DefaultDiscoveryService {
             }
 
             mdnsHelper = new MdnsHelper(hostnames);
-            Stack.sharedScheduledExecutor().schedule(mdnsHelper, 0, TimeUnit.MILLISECONDS);
         }
     }
 

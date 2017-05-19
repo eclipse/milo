@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 
-public class MdnsHelper implements Runnable {
+public class MdnsHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MdnsHelper.class);
 
@@ -115,6 +115,35 @@ public class MdnsHelper implements Runnable {
 
         lastServerOnNetworkId = 0;
         lastServerOnNetworkIdReset = new Date();
+
+        jmdns.addServiceListener(OPC_UA_SERVICE_TYPE, new ServiceListener() {
+
+            @Override
+            public void serviceResolved(ServiceEvent event) {
+                LOGGER.info("mDNS: found server: " + event.getInfo());
+                processRecord(event.getInfo());
+            }
+
+            @Override
+            public void serviceRemoved(ServiceEvent event) {
+                List<String> discoveryUrls = serviceInfoToDiscoveryUrls(event.getInfo());
+
+                discoveryUrls.forEach(discoveryUrl -> {
+                    if (serverOnNetworkMap.containsKey(discoveryUrl)) {
+                        LOGGER.info("mDNS: remove server (TTL=0): " + discoveryUrl);
+                        removeFromServerOnNetwork(discoveryUrl);
+                    }
+                });
+            }
+
+            @Override
+            public void serviceAdded(ServiceEvent event) {
+                event.getDNS().getServiceInfo(event.getType(), event.getName());
+            }
+        });
+
+        LOGGER.info("mDNS registration done");
+
     }
 
     public void setMulticastServerConsumer(Consumer<ServerOnNetwork> multicastServerConsumer) {
@@ -223,43 +252,6 @@ public class MdnsHelper implements Runnable {
         serverOnNetworkMap.remove(discoveryUrl);
         return retVal;
     }
-
-    public void run() {
-        jmdns.addServiceListener(OPC_UA_SERVICE_TYPE, new ServiceListener() {
-
-            @Override
-            public void serviceResolved(ServiceEvent event) {
-                LOGGER.info("mDNS: found server: " + event.getInfo());
-                processRecord(event.getInfo());
-            }
-
-            @Override
-            public void serviceRemoved(ServiceEvent event) {
-                List<String> discoveryUrls = serviceInfoToDiscoveryUrls(event.getInfo());
-
-                discoveryUrls.forEach(discoveryUrl -> {
-                    if (serverOnNetworkMap.containsKey(discoveryUrl)) {
-                        LOGGER.info("mDNS: remove server (TTL=0): " + discoveryUrl);
-                        removeFromServerOnNetwork(discoveryUrl);
-                    }
-                });
-            }
-
-            @Override
-            public void serviceAdded(ServiceEvent event) {
-                event.getDNS().getServiceInfo(event.getType(), event.getName());
-            }
-        });
-
-        LOGGER.info("mDNS registration done");
-        // Wait until the largest possible integer value
-        try {
-            Thread.sleep(Integer.MAX_VALUE);
-        } catch (InterruptedException e) {
-            // do nothing
-        }
-    }
-
 
     private class ServerOnNetworkMdns {
         ServerOnNetwork serverOnNetwork;
