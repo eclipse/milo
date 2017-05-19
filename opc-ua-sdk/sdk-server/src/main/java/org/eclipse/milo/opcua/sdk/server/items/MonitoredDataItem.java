@@ -39,7 +39,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements DataItem {
 
-    private static final DataChangeFilter DefaultFilter = new DataChangeFilter(
+    private static final DataChangeFilter DEFAULT_FILTER = new DataChangeFilter(
         DataChangeTrigger.StatusValue,
         uint(DeadbandType.None.getValue()),
         0.0
@@ -139,7 +139,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
     @Override
     protected void installFilter(ExtensionObject filterXo) throws UaException {
         if (filterXo == null || filterXo.decode() == null) {
-            this.filter = DefaultFilter;
+            this.filter = DEFAULT_FILTER;
         } else {
             Object filterObject = filterXo.decode();
 
@@ -153,8 +153,15 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
                         throw new UaException(StatusCodes.Bad_DeadbandFilterInvalid);
                     }
 
-                    if (deadbandType != DeadbandType.None &&
-                        AttributeId.Value.isEqual(getReadValueId().getAttributeId())) {
+                    if (deadbandType == DeadbandType.Percent) {
+                        // Percent deadband is not currently implemented
+                        throw new UaException(StatusCodes.Bad_FilterNotAllowed);
+                    }
+
+                    if (deadbandType == DeadbandType.Absolute &&
+                        !AttributeId.Value.isEqual(getReadValueId().getAttributeId())) {
+
+                        // Absolute deadband is only allowed for Value attributes
                         throw new UaException(StatusCodes.Bad_FilterNotAllowed);
                     }
                 } else if (filterObject instanceof AggregateFilter) {
