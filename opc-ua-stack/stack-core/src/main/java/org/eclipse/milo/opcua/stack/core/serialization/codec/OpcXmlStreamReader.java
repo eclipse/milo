@@ -94,6 +94,10 @@ public class OpcXmlStreamReader {
         return this;
     }
 
+    public XMLStreamReader getStreamReader() {
+        return streamReader;
+    }
+
     public void skipElement() throws XMLStreamException {
         streamReader.nextTag();
     }

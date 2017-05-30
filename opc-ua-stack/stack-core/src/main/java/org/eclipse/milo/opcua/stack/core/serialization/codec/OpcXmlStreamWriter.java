@@ -96,6 +96,9 @@ public class OpcXmlStreamWriter {
         return this;
     }
 
+    public XMLStreamWriter getStreamWriter() {
+        return streamWriter;
+    }
 
     public void writeBoolean(String field, Boolean value) {
         if (value == null) value = false;
