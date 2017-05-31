@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
@@ -79,10 +78,10 @@ public class EventFilter extends MonitoringFilter {
             SimpleAttributeOperand[] _selectClauses =
                 reader.readArray(
                     () -> (SimpleAttributeOperand) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SimpleAttributeOperand", reader),
+                        SimpleAttributeOperand.BinaryEncodingId, reader),
                     SimpleAttributeOperand.class
                 );
-            ContentFilter _whereClause = (ContentFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", reader);
+            ContentFilter _whereClause = (ContentFilter) context.decode(ContentFilter.BinaryEncodingId, reader);
 
             return new EventFilter(_selectClauses, _whereClause);
         }
@@ -91,9 +90,9 @@ public class EventFilter extends MonitoringFilter {
         public void encode(SerializationContext context, EventFilter encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
                 encodable._selectClauses,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SimpleAttributeOperand", e, writer)
+                e -> context.encode(SimpleAttributeOperand.BinaryEncodingId, e, writer)
             );
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", encodable._whereClause, writer);
+            context.encode(ContentFilter.BinaryEncodingId, encodable._whereClause, writer);
         }
     }
 
@@ -104,10 +103,10 @@ public class EventFilter extends MonitoringFilter {
                 reader.readArray(
                     "SelectClauses",
                     f -> (SimpleAttributeOperand) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SimpleAttributeOperand", reader),
+                        SimpleAttributeOperand.XmlEncodingId, reader),
                     SimpleAttributeOperand.class
                 );
-            ContentFilter _whereClause = (ContentFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", reader);
+            ContentFilter _whereClause = (ContentFilter) context.decode(ContentFilter.XmlEncodingId, reader);
 
             return new EventFilter(_selectClauses, _whereClause);
         }
@@ -117,9 +116,9 @@ public class EventFilter extends MonitoringFilter {
             writer.writeArray(
                 "SelectClauses",
                 encodable._selectClauses,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SimpleAttributeOperand", e, writer)
+                (f, e) -> context.encode(SimpleAttributeOperand.XmlEncodingId, e, writer)
             );
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", encodable._whereClause, writer);
+            context.encode(ContentFilter.XmlEncodingId, encodable._whereClause, writer);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -72,7 +71,7 @@ public class RelativePath implements UaStructure {
             RelativePathElement[] _elements =
                 reader.readArray(
                     () -> (RelativePathElement) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePathElement", reader),
+                        RelativePathElement.BinaryEncodingId, reader),
                     RelativePathElement.class
                 );
 
@@ -83,7 +82,7 @@ public class RelativePath implements UaStructure {
         public void encode(SerializationContext context, RelativePath encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
                 encodable._elements,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePathElement", e, writer)
+                e -> context.encode(RelativePathElement.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -95,7 +94,7 @@ public class RelativePath implements UaStructure {
                 reader.readArray(
                     "Elements",
                     f -> (RelativePathElement) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePathElement", reader),
+                        RelativePathElement.XmlEncodingId, reader),
                     RelativePathElement.class
                 );
 
@@ -107,7 +106,7 @@ public class RelativePath implements UaStructure {
             writer.writeArray(
                 "Elements",
                 encodable._elements,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePathElement", e, writer)
+                (f, e) -> context.encode(RelativePathElement.XmlEncodingId, e, writer)
             );
         }
     }

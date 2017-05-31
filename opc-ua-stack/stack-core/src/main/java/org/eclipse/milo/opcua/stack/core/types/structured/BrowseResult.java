@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -88,7 +87,7 @@ public class BrowseResult implements UaStructure {
             ReferenceDescription[] _references =
                 reader.readArray(
                     () -> (ReferenceDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceDescription", reader),
+                        ReferenceDescription.BinaryEncodingId, reader),
                     ReferenceDescription.class
                 );
 
@@ -101,7 +100,7 @@ public class BrowseResult implements UaStructure {
             writer.writeByteString(encodable._continuationPoint);
             writer.writeArray(
                 encodable._references,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceDescription", e, writer)
+                e -> context.encode(ReferenceDescription.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -115,7 +114,7 @@ public class BrowseResult implements UaStructure {
                 reader.readArray(
                     "References",
                     f -> (ReferenceDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceDescription", reader),
+                        ReferenceDescription.XmlEncodingId, reader),
                     ReferenceDescription.class
                 );
 
@@ -129,7 +128,7 @@ public class BrowseResult implements UaStructure {
             writer.writeArray(
                 "References",
                 encodable._references,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceDescription", e, writer)
+                (f, e) -> context.encode(ReferenceDescription.XmlEncodingId, e, writer)
             );
         }
     }

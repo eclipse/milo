@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -115,14 +114,14 @@ public class EndpointDescription implements UaStructure {
         @Override
         public EndpointDescription decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
             String _endpointUrl = reader.readString();
-            ApplicationDescription _server = (ApplicationDescription) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ApplicationDescription", reader);
+            ApplicationDescription _server = (ApplicationDescription) context.decode(ApplicationDescription.BinaryEncodingId, reader);
             ByteString _serverCertificate = reader.readByteString();
             MessageSecurityMode _securityMode = MessageSecurityMode.from(reader.readInt32());
             String _securityPolicyUri = reader.readString();
             UserTokenPolicy[] _userIdentityTokens =
                 reader.readArray(
                     () -> (UserTokenPolicy) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "UserTokenPolicy", reader),
+                        UserTokenPolicy.BinaryEncodingId, reader),
                     UserTokenPolicy.class
                 );
             String _transportProfileUri = reader.readString();
@@ -134,13 +133,13 @@ public class EndpointDescription implements UaStructure {
         @Override
         public void encode(SerializationContext context, EndpointDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeString(encodable._endpointUrl);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ApplicationDescription", encodable._server, writer);
+            context.encode(ApplicationDescription.BinaryEncodingId, encodable._server, writer);
             writer.writeByteString(encodable._serverCertificate);
             writer.writeInt32(encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
             writer.writeString(encodable._securityPolicyUri);
             writer.writeArray(
                 encodable._userIdentityTokens,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "UserTokenPolicy", e, writer)
+                e -> context.encode(UserTokenPolicy.BinaryEncodingId, e, writer)
             );
             writer.writeString(encodable._transportProfileUri);
             writer.writeByte(encodable._securityLevel);
@@ -151,7 +150,7 @@ public class EndpointDescription implements UaStructure {
         @Override
         public EndpointDescription decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
             String _endpointUrl = reader.readString("EndpointUrl");
-            ApplicationDescription _server = (ApplicationDescription) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ApplicationDescription", reader);
+            ApplicationDescription _server = (ApplicationDescription) context.decode(ApplicationDescription.XmlEncodingId, reader);
             ByteString _serverCertificate = reader.readByteString("ServerCertificate");
             MessageSecurityMode _securityMode = MessageSecurityMode.from(reader.readInt32("SecurityMode"));
             String _securityPolicyUri = reader.readString("SecurityPolicyUri");
@@ -159,7 +158,7 @@ public class EndpointDescription implements UaStructure {
                 reader.readArray(
                     "UserIdentityTokens",
                     f -> (UserTokenPolicy) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "UserTokenPolicy", reader),
+                        UserTokenPolicy.XmlEncodingId, reader),
                     UserTokenPolicy.class
                 );
             String _transportProfileUri = reader.readString("TransportProfileUri");
@@ -171,14 +170,14 @@ public class EndpointDescription implements UaStructure {
         @Override
         public void encode(SerializationContext context, EndpointDescription encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
             writer.writeString("EndpointUrl", encodable._endpointUrl);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ApplicationDescription", encodable._server, writer);
+            context.encode(ApplicationDescription.XmlEncodingId, encodable._server, writer);
             writer.writeByteString("ServerCertificate", encodable._serverCertificate);
             writer.writeInt32("SecurityMode", encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
             writer.writeString("SecurityPolicyUri", encodable._securityPolicyUri);
             writer.writeArray(
                 "UserIdentityTokens",
                 encodable._userIdentityTokens,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "UserTokenPolicy", e, writer)
+                (f, e) -> context.encode(UserTokenPolicy.XmlEncodingId, e, writer)
             );
             writer.writeString("TransportProfileUri", encodable._transportProfileUri);
             writer.writeByte("SecurityLevel", encodable._securityLevel);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -88,7 +87,7 @@ public class FindServersOnNetworkRequest implements UaRequestMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<FindServersOnNetworkRequest> {
         @Override
         public FindServersOnNetworkRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
             UInteger _startingRecordId = reader.readUInt32();
             UInteger _maxRecordsToReturn = reader.readUInt32();
             String[] _serverCapabilityFilter = reader.readArray(reader::readString, String.class);
@@ -98,7 +97,7 @@ public class FindServersOnNetworkRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, FindServersOnNetworkRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32(encodable._startingRecordId);
             writer.writeUInt32(encodable._maxRecordsToReturn);
             writer.writeArray(encodable._serverCapabilityFilter, writer::writeString);
@@ -108,7 +107,7 @@ public class FindServersOnNetworkRequest implements UaRequestMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<FindServersOnNetworkRequest> {
         @Override
         public FindServersOnNetworkRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
             UInteger _startingRecordId = reader.readUInt32("StartingRecordId");
             UInteger _maxRecordsToReturn = reader.readUInt32("MaxRecordsToReturn");
             String[] _serverCapabilityFilter = reader.readArray("ServerCapabilityFilter", reader::readString, String.class);
@@ -118,7 +117,7 @@ public class FindServersOnNetworkRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, FindServersOnNetworkRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32("StartingRecordId", encodable._startingRecordId);
             writer.writeUInt32("MaxRecordsToReturn", encodable._maxRecordsToReturn);
             writer.writeArray("ServerCapabilityFilter", encodable._serverCapabilityFilter, writer::writeString);

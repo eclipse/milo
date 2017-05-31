@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
@@ -82,7 +81,7 @@ public class HistoryModifiedData extends HistoryData {
             ModificationInfo[] _modificationInfos =
                 reader.readArray(
                     () -> (ModificationInfo) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ModificationInfo", reader),
+                        ModificationInfo.BinaryEncodingId, reader),
                     ModificationInfo.class
                 );
 
@@ -94,7 +93,7 @@ public class HistoryModifiedData extends HistoryData {
             writer.writeArray(encodable._dataValues, writer::writeDataValue);
             writer.writeArray(
                 encodable._modificationInfos,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ModificationInfo", e, writer)
+                e -> context.encode(ModificationInfo.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -107,7 +106,7 @@ public class HistoryModifiedData extends HistoryData {
                 reader.readArray(
                     "ModificationInfos",
                     f -> (ModificationInfo) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ModificationInfo", reader),
+                        ModificationInfo.XmlEncodingId, reader),
                     ModificationInfo.class
                 );
 
@@ -120,7 +119,7 @@ public class HistoryModifiedData extends HistoryData {
             writer.writeArray(
                 "ModificationInfos",
                 encodable._modificationInfos,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ModificationInfo", e, writer)
+                (f, e) -> context.encode(ModificationInfo.XmlEncodingId, e, writer)
             );
         }
     }

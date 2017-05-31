@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -80,7 +79,7 @@ public class ContentFilterResult implements UaStructure {
             ContentFilterElementResult[] _elementResults =
                 reader.readArray(
                     () -> (ContentFilterElementResult) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElementResult", reader),
+                        ContentFilterElementResult.BinaryEncodingId, reader),
                     ContentFilterElementResult.class
                 );
             DiagnosticInfo[] _elementDiagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
@@ -92,7 +91,7 @@ public class ContentFilterResult implements UaStructure {
         public void encode(SerializationContext context, ContentFilterResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
                 encodable._elementResults,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElementResult", e, writer)
+                e -> context.encode(ContentFilterElementResult.BinaryEncodingId, e, writer)
             );
             writer.writeArray(encodable._elementDiagnosticInfos, writer::writeDiagnosticInfo);
         }
@@ -105,7 +104,7 @@ public class ContentFilterResult implements UaStructure {
                 reader.readArray(
                     "ElementResults",
                     f -> (ContentFilterElementResult) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElementResult", reader),
+                        ContentFilterElementResult.XmlEncodingId, reader),
                     ContentFilterElementResult.class
                 );
             DiagnosticInfo[] _elementDiagnosticInfos = reader.readArray("ElementDiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
@@ -118,7 +117,7 @@ public class ContentFilterResult implements UaStructure {
             writer.writeArray(
                 "ElementResults",
                 encodable._elementResults,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElementResult", e, writer)
+                (f, e) -> context.encode(ContentFilterElementResult.XmlEncodingId, e, writer)
             );
             writer.writeArray("ElementDiagnosticInfos", encodable._elementDiagnosticInfos, writer::writeDiagnosticInfo);
         }

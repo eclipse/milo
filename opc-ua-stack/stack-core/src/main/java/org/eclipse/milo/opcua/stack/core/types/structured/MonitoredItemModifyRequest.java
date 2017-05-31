@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -74,7 +73,7 @@ public class MonitoredItemModifyRequest implements UaStructure {
         @Override
         public MonitoredItemModifyRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
             UInteger _monitoredItemId = reader.readUInt32();
-            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoringParameters", reader);
+            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.BinaryEncodingId, reader);
 
             return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
         }
@@ -82,7 +81,7 @@ public class MonitoredItemModifyRequest implements UaStructure {
         @Override
         public void encode(SerializationContext context, MonitoredItemModifyRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeUInt32(encodable._monitoredItemId);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoringParameters", encodable._requestedParameters, writer);
+            context.encode(MonitoringParameters.BinaryEncodingId, encodable._requestedParameters, writer);
         }
     }
 
@@ -90,7 +89,7 @@ public class MonitoredItemModifyRequest implements UaStructure {
         @Override
         public MonitoredItemModifyRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
             UInteger _monitoredItemId = reader.readUInt32("MonitoredItemId");
-            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoringParameters", reader);
+            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.XmlEncodingId, reader);
 
             return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
         }
@@ -98,7 +97,7 @@ public class MonitoredItemModifyRequest implements UaStructure {
         @Override
         public void encode(SerializationContext context, MonitoredItemModifyRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
             writer.writeUInt32("MonitoredItemId", encodable._monitoredItemId);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoringParameters", encodable._requestedParameters, writer);
+            context.encode(MonitoringParameters.XmlEncodingId, encodable._requestedParameters, writer);
         }
     }
 

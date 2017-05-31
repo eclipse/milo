@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -75,11 +74,11 @@ public class GetEndpointsResponse implements UaResponseMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<GetEndpointsResponse> {
         @Override
         public GetEndpointsResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
             EndpointDescription[] _endpoints =
                 reader.readArray(
                     () -> (EndpointDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", reader),
+                        EndpointDescription.BinaryEncodingId, reader),
                     EndpointDescription.class
                 );
 
@@ -88,10 +87,10 @@ public class GetEndpointsResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, GetEndpointsResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
             writer.writeArray(
                 encodable._endpoints,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", e, writer)
+                e -> context.encode(EndpointDescription.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -99,12 +98,12 @@ public class GetEndpointsResponse implements UaResponseMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<GetEndpointsResponse> {
         @Override
         public GetEndpointsResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
             EndpointDescription[] _endpoints =
                 reader.readArray(
                     "Endpoints",
                     f -> (EndpointDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", reader),
+                        EndpointDescription.XmlEncodingId, reader),
                     EndpointDescription.class
                 );
 
@@ -113,11 +112,11 @@ public class GetEndpointsResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, GetEndpointsResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
             writer.writeArray(
                 "Endpoints",
                 encodable._endpoints,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", e, writer)
+                (f, e) -> context.encode(EndpointDescription.XmlEncodingId, e, writer)
             );
         }
     }

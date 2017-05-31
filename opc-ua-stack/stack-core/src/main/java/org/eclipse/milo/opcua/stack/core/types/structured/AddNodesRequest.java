@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -75,11 +74,11 @@ public class AddNodesRequest implements UaRequestMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<AddNodesRequest> {
         @Override
         public AddNodesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
             AddNodesItem[] _nodesToAdd =
                 reader.readArray(
                     () -> (AddNodesItem) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddNodesItem", reader),
+                        AddNodesItem.BinaryEncodingId, reader),
                     AddNodesItem.class
                 );
 
@@ -88,10 +87,10 @@ public class AddNodesRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, AddNodesRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
             writer.writeArray(
                 encodable._nodesToAdd,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddNodesItem", e, writer)
+                e -> context.encode(AddNodesItem.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -99,12 +98,12 @@ public class AddNodesRequest implements UaRequestMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<AddNodesRequest> {
         @Override
         public AddNodesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
             AddNodesItem[] _nodesToAdd =
                 reader.readArray(
                     "NodesToAdd",
                     f -> (AddNodesItem) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddNodesItem", reader),
+                        AddNodesItem.XmlEncodingId, reader),
                     AddNodesItem.class
                 );
 
@@ -113,11 +112,11 @@ public class AddNodesRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, AddNodesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
             writer.writeArray(
                 "NodesToAdd",
                 encodable._nodesToAdd,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "AddNodesItem", e, writer)
+                (f, e) -> context.encode(AddNodesItem.XmlEncodingId, e, writer)
             );
         }
     }

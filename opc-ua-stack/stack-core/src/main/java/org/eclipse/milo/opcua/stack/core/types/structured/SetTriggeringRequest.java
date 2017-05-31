@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -95,7 +94,7 @@ public class SetTriggeringRequest implements UaRequestMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<SetTriggeringRequest> {
         @Override
         public SetTriggeringRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
             UInteger _subscriptionId = reader.readUInt32();
             UInteger _triggeringItemId = reader.readUInt32();
             UInteger[] _linksToAdd = reader.readArray(reader::readUInt32, UInteger.class);
@@ -106,7 +105,7 @@ public class SetTriggeringRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, SetTriggeringRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32(encodable._subscriptionId);
             writer.writeUInt32(encodable._triggeringItemId);
             writer.writeArray(encodable._linksToAdd, writer::writeUInt32);
@@ -117,7 +116,7 @@ public class SetTriggeringRequest implements UaRequestMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<SetTriggeringRequest> {
         @Override
         public SetTriggeringRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
             UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
             UInteger _triggeringItemId = reader.readUInt32("TriggeringItemId");
             UInteger[] _linksToAdd = reader.readArray("LinksToAdd", reader::readUInt32, UInteger.class);
@@ -128,7 +127,7 @@ public class SetTriggeringRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, SetTriggeringRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
             writer.writeUInt32("TriggeringItemId", encodable._triggeringItemId);
             writer.writeArray("LinksToAdd", encodable._linksToAdd, writer::writeUInt32);

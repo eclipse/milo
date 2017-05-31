@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -110,11 +109,11 @@ public class PublishResponse implements UaResponseMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<PublishResponse> {
         @Override
         public PublishResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
             UInteger _subscriptionId = reader.readUInt32();
             UInteger[] _availableSequenceNumbers = reader.readArray(reader::readUInt32, UInteger.class);
             Boolean _moreNotifications = reader.readBoolean();
-            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NotificationMessage", reader);
+            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(NotificationMessage.BinaryEncodingId, reader);
             StatusCode[] _results = reader.readArray(reader::readStatusCode, StatusCode.class);
             DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
 
@@ -123,11 +122,11 @@ public class PublishResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, PublishResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
             writer.writeUInt32(encodable._subscriptionId);
             writer.writeArray(encodable._availableSequenceNumbers, writer::writeUInt32);
             writer.writeBoolean(encodable._moreNotifications);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NotificationMessage", encodable._notificationMessage, writer);
+            context.encode(NotificationMessage.BinaryEncodingId, encodable._notificationMessage, writer);
             writer.writeArray(encodable._results, writer::writeStatusCode);
             writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
         }
@@ -136,11 +135,11 @@ public class PublishResponse implements UaResponseMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<PublishResponse> {
         @Override
         public PublishResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
             UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
             UInteger[] _availableSequenceNumbers = reader.readArray("AvailableSequenceNumbers", reader::readUInt32, UInteger.class);
             Boolean _moreNotifications = reader.readBoolean("MoreNotifications");
-            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NotificationMessage", reader);
+            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(NotificationMessage.XmlEncodingId, reader);
             StatusCode[] _results = reader.readArray("Results", reader::readStatusCode, StatusCode.class);
             DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
 
@@ -149,11 +148,11 @@ public class PublishResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, PublishResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
             writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
             writer.writeArray("AvailableSequenceNumbers", encodable._availableSequenceNumbers, writer::writeUInt32);
             writer.writeBoolean("MoreNotifications", encodable._moreNotifications);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NotificationMessage", encodable._notificationMessage, writer);
+            context.encode(NotificationMessage.XmlEncodingId, encodable._notificationMessage, writer);
             writer.writeArray("Results", encodable._results, writer::writeStatusCode);
             writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
         }

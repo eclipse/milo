@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -89,13 +88,13 @@ public class CreateMonitoredItemsRequest implements UaRequestMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<CreateMonitoredItemsRequest> {
         @Override
         public CreateMonitoredItemsRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
             UInteger _subscriptionId = reader.readUInt32();
             TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32());
             MonitoredItemCreateRequest[] _itemsToCreate =
                 reader.readArray(
                     () -> (MonitoredItemCreateRequest) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoredItemCreateRequest", reader),
+                        MonitoredItemCreateRequest.BinaryEncodingId, reader),
                     MonitoredItemCreateRequest.class
                 );
 
@@ -104,12 +103,12 @@ public class CreateMonitoredItemsRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, CreateMonitoredItemsRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32(encodable._subscriptionId);
             writer.writeInt32(encodable._timestampsToReturn != null ? encodable._timestampsToReturn.getValue() : 0);
             writer.writeArray(
                 encodable._itemsToCreate,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoredItemCreateRequest", e, writer)
+                e -> context.encode(MonitoredItemCreateRequest.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -117,14 +116,14 @@ public class CreateMonitoredItemsRequest implements UaRequestMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<CreateMonitoredItemsRequest> {
         @Override
         public CreateMonitoredItemsRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
             UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
             TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32("TimestampsToReturn"));
             MonitoredItemCreateRequest[] _itemsToCreate =
                 reader.readArray(
                     "ItemsToCreate",
                     f -> (MonitoredItemCreateRequest) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoredItemCreateRequest", reader),
+                        MonitoredItemCreateRequest.XmlEncodingId, reader),
                     MonitoredItemCreateRequest.class
                 );
 
@@ -133,13 +132,13 @@ public class CreateMonitoredItemsRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, CreateMonitoredItemsRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
             writer.writeInt32("TimestampsToReturn", encodable._timestampsToReturn != null ? encodable._timestampsToReturn.getValue() : 0);
             writer.writeArray(
                 "ItemsToCreate",
                 encodable._itemsToCreate,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "MonitoredItemCreateRequest", e, writer)
+                (f, e) -> context.encode(MonitoredItemCreateRequest.XmlEncodingId, e, writer)
             );
         }
     }

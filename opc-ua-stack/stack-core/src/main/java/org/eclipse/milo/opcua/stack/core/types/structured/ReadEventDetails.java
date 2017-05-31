@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
@@ -90,7 +89,7 @@ public class ReadEventDetails extends HistoryReadDetails {
             UInteger _numValuesPerNode = reader.readUInt32();
             DateTime _startTime = reader.readDateTime();
             DateTime _endTime = reader.readDateTime();
-            EventFilter _filter = (EventFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", reader);
+            EventFilter _filter = (EventFilter) context.decode(EventFilter.BinaryEncodingId, reader);
 
             return new ReadEventDetails(_numValuesPerNode, _startTime, _endTime, _filter);
         }
@@ -100,7 +99,7 @@ public class ReadEventDetails extends HistoryReadDetails {
             writer.writeUInt32(encodable._numValuesPerNode);
             writer.writeDateTime(encodable._startTime);
             writer.writeDateTime(encodable._endTime);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", encodable._filter, writer);
+            context.encode(EventFilter.BinaryEncodingId, encodable._filter, writer);
         }
     }
 
@@ -110,7 +109,7 @@ public class ReadEventDetails extends HistoryReadDetails {
             UInteger _numValuesPerNode = reader.readUInt32("NumValuesPerNode");
             DateTime _startTime = reader.readDateTime("StartTime");
             DateTime _endTime = reader.readDateTime("EndTime");
-            EventFilter _filter = (EventFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", reader);
+            EventFilter _filter = (EventFilter) context.decode(EventFilter.XmlEncodingId, reader);
 
             return new ReadEventDetails(_numValuesPerNode, _startTime, _endTime, _filter);
         }
@@ -120,7 +119,7 @@ public class ReadEventDetails extends HistoryReadDetails {
             writer.writeUInt32("NumValuesPerNode", encodable._numValuesPerNode);
             writer.writeDateTime("StartTime", encodable._startTime);
             writer.writeDateTime("EndTime", encodable._endTime);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", encodable._filter, writer);
+            context.encode(EventFilter.XmlEncodingId, encodable._filter, writer);
         }
     }
 

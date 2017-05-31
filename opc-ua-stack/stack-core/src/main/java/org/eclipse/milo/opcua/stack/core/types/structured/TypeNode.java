@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
@@ -84,7 +83,7 @@ public class TypeNode extends Node {
             ReferenceNode[] _references =
                 reader.readArray(
                     () -> (ReferenceNode) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                        ReferenceNode.BinaryEncodingId, reader),
                     ReferenceNode.class
                 );
 
@@ -102,7 +101,7 @@ public class TypeNode extends Node {
             writer.writeUInt32(encodable._userWriteMask);
             writer.writeArray(
                 encodable._references,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+                e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -121,7 +120,7 @@ public class TypeNode extends Node {
                 reader.readArray(
                     "References",
                     f -> (ReferenceNode) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                        ReferenceNode.XmlEncodingId, reader),
                     ReferenceNode.class
                 );
 
@@ -140,7 +139,7 @@ public class TypeNode extends Node {
             writer.writeArray(
                 "References",
                 encodable._references,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+                (f, e) -> context.encode(ReferenceNode.XmlEncodingId, e, writer)
             );
         }
     }

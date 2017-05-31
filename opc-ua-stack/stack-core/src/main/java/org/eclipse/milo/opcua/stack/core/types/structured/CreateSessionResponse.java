@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -126,7 +125,7 @@ public class CreateSessionResponse implements UaResponseMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<CreateSessionResponse> {
         @Override
         public CreateSessionResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
             NodeId _sessionId = reader.readNodeId();
             NodeId _authenticationToken = reader.readNodeId();
             Double _revisedSessionTimeout = reader.readDouble();
@@ -135,16 +134,16 @@ public class CreateSessionResponse implements UaResponseMessage {
             EndpointDescription[] _serverEndpoints =
                 reader.readArray(
                     () -> (EndpointDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", reader),
+                        EndpointDescription.BinaryEncodingId, reader),
                     EndpointDescription.class
                 );
             SignedSoftwareCertificate[] _serverSoftwareCertificates =
                 reader.readArray(
                     () -> (SignedSoftwareCertificate) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignedSoftwareCertificate", reader),
+                        SignedSoftwareCertificate.BinaryEncodingId, reader),
                     SignedSoftwareCertificate.class
                 );
-            SignatureData _serverSignature = (SignatureData) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignatureData", reader);
+            SignatureData _serverSignature = (SignatureData) context.decode(SignatureData.BinaryEncodingId, reader);
             UInteger _maxRequestMessageSize = reader.readUInt32();
 
             return new CreateSessionResponse(_responseHeader, _sessionId, _authenticationToken, _revisedSessionTimeout, _serverNonce, _serverCertificate, _serverEndpoints, _serverSoftwareCertificates, _serverSignature, _maxRequestMessageSize);
@@ -152,7 +151,7 @@ public class CreateSessionResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, CreateSessionResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
             writer.writeNodeId(encodable._sessionId);
             writer.writeNodeId(encodable._authenticationToken);
             writer.writeDouble(encodable._revisedSessionTimeout);
@@ -160,13 +159,13 @@ public class CreateSessionResponse implements UaResponseMessage {
             writer.writeByteString(encodable._serverCertificate);
             writer.writeArray(
                 encodable._serverEndpoints,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", e, writer)
+                e -> context.encode(EndpointDescription.BinaryEncodingId, e, writer)
             );
             writer.writeArray(
                 encodable._serverSoftwareCertificates,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignedSoftwareCertificate", e, writer)
+                e -> context.encode(SignedSoftwareCertificate.BinaryEncodingId, e, writer)
             );
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignatureData", encodable._serverSignature, writer);
+            context.encode(SignatureData.BinaryEncodingId, encodable._serverSignature, writer);
             writer.writeUInt32(encodable._maxRequestMessageSize);
         }
     }
@@ -174,7 +173,7 @@ public class CreateSessionResponse implements UaResponseMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<CreateSessionResponse> {
         @Override
         public CreateSessionResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
             NodeId _sessionId = reader.readNodeId("SessionId");
             NodeId _authenticationToken = reader.readNodeId("AuthenticationToken");
             Double _revisedSessionTimeout = reader.readDouble("RevisedSessionTimeout");
@@ -184,17 +183,17 @@ public class CreateSessionResponse implements UaResponseMessage {
                 reader.readArray(
                     "ServerEndpoints",
                     f -> (EndpointDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", reader),
+                        EndpointDescription.XmlEncodingId, reader),
                     EndpointDescription.class
                 );
             SignedSoftwareCertificate[] _serverSoftwareCertificates =
                 reader.readArray(
                     "ServerSoftwareCertificates",
                     f -> (SignedSoftwareCertificate) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignedSoftwareCertificate", reader),
+                        SignedSoftwareCertificate.XmlEncodingId, reader),
                     SignedSoftwareCertificate.class
                 );
-            SignatureData _serverSignature = (SignatureData) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignatureData", reader);
+            SignatureData _serverSignature = (SignatureData) context.decode(SignatureData.XmlEncodingId, reader);
             UInteger _maxRequestMessageSize = reader.readUInt32("MaxRequestMessageSize");
 
             return new CreateSessionResponse(_responseHeader, _sessionId, _authenticationToken, _revisedSessionTimeout, _serverNonce, _serverCertificate, _serverEndpoints, _serverSoftwareCertificates, _serverSignature, _maxRequestMessageSize);
@@ -202,7 +201,7 @@ public class CreateSessionResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, CreateSessionResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
             writer.writeNodeId("SessionId", encodable._sessionId);
             writer.writeNodeId("AuthenticationToken", encodable._authenticationToken);
             writer.writeDouble("RevisedSessionTimeout", encodable._revisedSessionTimeout);
@@ -211,14 +210,14 @@ public class CreateSessionResponse implements UaResponseMessage {
             writer.writeArray(
                 "ServerEndpoints",
                 encodable._serverEndpoints,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EndpointDescription", e, writer)
+                (f, e) -> context.encode(EndpointDescription.XmlEncodingId, e, writer)
             );
             writer.writeArray(
                 "ServerSoftwareCertificates",
                 encodable._serverSoftwareCertificates,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignedSoftwareCertificate", e, writer)
+                (f, e) -> context.encode(SignedSoftwareCertificate.XmlEncodingId, e, writer)
             );
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SignatureData", encodable._serverSignature, writer);
+            context.encode(SignatureData.XmlEncodingId, encodable._serverSignature, writer);
             writer.writeUInt32("MaxRequestMessageSize", encodable._maxRequestMessageSize);
         }
     }

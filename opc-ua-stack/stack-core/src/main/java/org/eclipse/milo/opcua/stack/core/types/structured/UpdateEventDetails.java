@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
@@ -86,11 +85,11 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
         public UpdateEventDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
             NodeId _nodeId = reader.readNodeId();
             PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32());
-            EventFilter _filter = (EventFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", reader);
+            EventFilter _filter = (EventFilter) context.decode(EventFilter.BinaryEncodingId, reader);
             HistoryEventFieldList[] _eventData =
                 reader.readArray(
                     () -> (HistoryEventFieldList) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", reader),
+                        HistoryEventFieldList.BinaryEncodingId, reader),
                     HistoryEventFieldList.class
                 );
 
@@ -101,10 +100,10 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
         public void encode(SerializationContext context, UpdateEventDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeNodeId(encodable._nodeId);
             writer.writeInt32(encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", encodable._filter, writer);
+            context.encode(EventFilter.BinaryEncodingId, encodable._filter, writer);
             writer.writeArray(
                 encodable._eventData,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", e, writer)
+                e -> context.encode(HistoryEventFieldList.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -114,12 +113,12 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
         public UpdateEventDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
             NodeId _nodeId = reader.readNodeId("NodeId");
             PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32("PerformInsertReplace"));
-            EventFilter _filter = (EventFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", reader);
+            EventFilter _filter = (EventFilter) context.decode(EventFilter.XmlEncodingId, reader);
             HistoryEventFieldList[] _eventData =
                 reader.readArray(
                     "EventData",
                     f -> (HistoryEventFieldList) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", reader),
+                        HistoryEventFieldList.XmlEncodingId, reader),
                     HistoryEventFieldList.class
                 );
 
@@ -130,11 +129,11 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
         public void encode(SerializationContext context, UpdateEventDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
             writer.writeNodeId("NodeId", encodable._nodeId);
             writer.writeInt32("PerformInsertReplace", encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EventFilter", encodable._filter, writer);
+            context.encode(EventFilter.XmlEncodingId, encodable._filter, writer);
             writer.writeArray(
                 "EventData",
                 encodable._eventData,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "HistoryEventFieldList", e, writer)
+                (f, e) -> context.encode(HistoryEventFieldList.XmlEncodingId, e, writer)
             );
         }
     }

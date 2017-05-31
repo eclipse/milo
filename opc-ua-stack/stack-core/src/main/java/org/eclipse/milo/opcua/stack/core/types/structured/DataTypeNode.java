@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
@@ -89,7 +88,7 @@ public class DataTypeNode extends TypeNode {
             ReferenceNode[] _references =
                 reader.readArray(
                     () -> (ReferenceNode) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                        ReferenceNode.BinaryEncodingId, reader),
                     ReferenceNode.class
                 );
             Boolean _isAbstract = reader.readBoolean();
@@ -108,7 +107,7 @@ public class DataTypeNode extends TypeNode {
             writer.writeUInt32(encodable._userWriteMask);
             writer.writeArray(
                 encodable._references,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+                e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
             );
             writer.writeBoolean(encodable._isAbstract);
         }
@@ -128,7 +127,7 @@ public class DataTypeNode extends TypeNode {
                 reader.readArray(
                     "References",
                     f -> (ReferenceNode) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", reader),
+                        ReferenceNode.XmlEncodingId, reader),
                     ReferenceNode.class
                 );
             Boolean _isAbstract = reader.readBoolean("IsAbstract");
@@ -148,7 +147,7 @@ public class DataTypeNode extends TypeNode {
             writer.writeArray(
                 "References",
                 encodable._references,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ReferenceNode", e, writer)
+                (f, e) -> context.encode(ReferenceNode.XmlEncodingId, e, writer)
             );
             writer.writeBoolean("IsAbstract", encodable._isAbstract);
         }

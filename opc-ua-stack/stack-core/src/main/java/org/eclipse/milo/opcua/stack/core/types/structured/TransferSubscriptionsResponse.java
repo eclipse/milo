@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -83,11 +82,11 @@ public class TransferSubscriptionsResponse implements UaResponseMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<TransferSubscriptionsResponse> {
         @Override
         public TransferSubscriptionsResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
             TransferResult[] _results =
                 reader.readArray(
                     () -> (TransferResult) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "TransferResult", reader),
+                        TransferResult.BinaryEncodingId, reader),
                     TransferResult.class
                 );
             DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
@@ -97,10 +96,10 @@ public class TransferSubscriptionsResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, TransferSubscriptionsResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
             writer.writeArray(
                 encodable._results,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "TransferResult", e, writer)
+                e -> context.encode(TransferResult.BinaryEncodingId, e, writer)
             );
             writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
         }
@@ -109,12 +108,12 @@ public class TransferSubscriptionsResponse implements UaResponseMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<TransferSubscriptionsResponse> {
         @Override
         public TransferSubscriptionsResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", reader);
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
             TransferResult[] _results =
                 reader.readArray(
                     "Results",
                     f -> (TransferResult) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "TransferResult", reader),
+                        TransferResult.XmlEncodingId, reader),
                     TransferResult.class
                 );
             DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
@@ -124,11 +123,11 @@ public class TransferSubscriptionsResponse implements UaResponseMessage {
 
         @Override
         public void encode(SerializationContext context, TransferSubscriptionsResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ResponseHeader", encodable._responseHeader, writer);
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
             writer.writeArray(
                 "Results",
                 encodable._results,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "TransferResult", e, writer)
+                (f, e) -> context.encode(TransferResult.XmlEncodingId, e, writer)
             );
             writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
         }

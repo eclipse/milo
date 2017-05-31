@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -87,7 +86,7 @@ public class NodeTypeDescription implements UaStructure {
             QueryDataDescription[] _dataToReturn =
                 reader.readArray(
                     () -> (QueryDataDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "QueryDataDescription", reader),
+                        QueryDataDescription.BinaryEncodingId, reader),
                     QueryDataDescription.class
                 );
 
@@ -100,7 +99,7 @@ public class NodeTypeDescription implements UaStructure {
             writer.writeBoolean(encodable._includeSubTypes);
             writer.writeArray(
                 encodable._dataToReturn,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "QueryDataDescription", e, writer)
+                e -> context.encode(QueryDataDescription.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -114,7 +113,7 @@ public class NodeTypeDescription implements UaStructure {
                 reader.readArray(
                     "DataToReturn",
                     f -> (QueryDataDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "QueryDataDescription", reader),
+                        QueryDataDescription.XmlEncodingId, reader),
                     QueryDataDescription.class
                 );
 
@@ -128,7 +127,7 @@ public class NodeTypeDescription implements UaStructure {
             writer.writeArray(
                 "DataToReturn",
                 encodable._dataToReturn,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "QueryDataDescription", e, writer)
+                (f, e) -> context.encode(QueryDataDescription.XmlEncodingId, e, writer)
             );
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -137,7 +136,7 @@ public class SoftwareCertificate implements UaStructure {
             SupportedProfile[] _supportedProfiles =
                 reader.readArray(
                     () -> (SupportedProfile) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", reader),
+                        SupportedProfile.BinaryEncodingId, reader),
                     SupportedProfile.class
                 );
 
@@ -157,7 +156,7 @@ public class SoftwareCertificate implements UaStructure {
             writer.writeDateTime(encodable._issueDate);
             writer.writeArray(
                 encodable._supportedProfiles,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", e, writer)
+                e -> context.encode(SupportedProfile.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -178,7 +177,7 @@ public class SoftwareCertificate implements UaStructure {
                 reader.readArray(
                     "SupportedProfiles",
                     f -> (SupportedProfile) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", reader),
+                        SupportedProfile.XmlEncodingId, reader),
                     SupportedProfile.class
                 );
 
@@ -199,7 +198,7 @@ public class SoftwareCertificate implements UaStructure {
             writer.writeArray(
                 "SupportedProfiles",
                 encodable._supportedProfiles,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "SupportedProfile", e, writer)
+                (f, e) -> context.encode(SupportedProfile.XmlEncodingId, e, writer)
             );
         }
     }

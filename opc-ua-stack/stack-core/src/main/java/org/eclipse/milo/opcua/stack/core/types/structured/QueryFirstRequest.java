@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -100,15 +99,15 @@ public class QueryFirstRequest implements UaRequestMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<QueryFirstRequest> {
         @Override
         public QueryFirstRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
-            ViewDescription _view = (ViewDescription) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ViewDescription", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            ViewDescription _view = (ViewDescription) context.decode(ViewDescription.BinaryEncodingId, reader);
             NodeTypeDescription[] _nodeTypes =
                 reader.readArray(
                     () -> (NodeTypeDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NodeTypeDescription", reader),
+                        NodeTypeDescription.BinaryEncodingId, reader),
                     NodeTypeDescription.class
                 );
-            ContentFilter _filter = (ContentFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", reader);
+            ContentFilter _filter = (ContentFilter) context.decode(ContentFilter.BinaryEncodingId, reader);
             UInteger _maxDataSetsToReturn = reader.readUInt32();
             UInteger _maxReferencesToReturn = reader.readUInt32();
 
@@ -117,13 +116,13 @@ public class QueryFirstRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, QueryFirstRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ViewDescription", encodable._view, writer);
+            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+            context.encode(ViewDescription.BinaryEncodingId, encodable._view, writer);
             writer.writeArray(
                 encodable._nodeTypes,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NodeTypeDescription", e, writer)
+                e -> context.encode(NodeTypeDescription.BinaryEncodingId, e, writer)
             );
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", encodable._filter, writer);
+            context.encode(ContentFilter.BinaryEncodingId, encodable._filter, writer);
             writer.writeUInt32(encodable._maxDataSetsToReturn);
             writer.writeUInt32(encodable._maxReferencesToReturn);
         }
@@ -132,16 +131,16 @@ public class QueryFirstRequest implements UaRequestMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<QueryFirstRequest> {
         @Override
         public QueryFirstRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
-            ViewDescription _view = (ViewDescription) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ViewDescription", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            ViewDescription _view = (ViewDescription) context.decode(ViewDescription.XmlEncodingId, reader);
             NodeTypeDescription[] _nodeTypes =
                 reader.readArray(
                     "NodeTypes",
                     f -> (NodeTypeDescription) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NodeTypeDescription", reader),
+                        NodeTypeDescription.XmlEncodingId, reader),
                     NodeTypeDescription.class
                 );
-            ContentFilter _filter = (ContentFilter) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", reader);
+            ContentFilter _filter = (ContentFilter) context.decode(ContentFilter.XmlEncodingId, reader);
             UInteger _maxDataSetsToReturn = reader.readUInt32("MaxDataSetsToReturn");
             UInteger _maxReferencesToReturn = reader.readUInt32("MaxReferencesToReturn");
 
@@ -150,14 +149,14 @@ public class QueryFirstRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, QueryFirstRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ViewDescription", encodable._view, writer);
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            context.encode(ViewDescription.XmlEncodingId, encodable._view, writer);
             writer.writeArray(
                 "NodeTypes",
                 encodable._nodeTypes,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "NodeTypeDescription", e, writer)
+                (f, e) -> context.encode(NodeTypeDescription.XmlEncodingId, e, writer)
             );
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilter", encodable._filter, writer);
+            context.encode(ContentFilter.XmlEncodingId, encodable._filter, writer);
             writer.writeUInt32("MaxDataSetsToReturn", encodable._maxDataSetsToReturn);
             writer.writeUInt32("MaxReferencesToReturn", encodable._maxReferencesToReturn);
         }

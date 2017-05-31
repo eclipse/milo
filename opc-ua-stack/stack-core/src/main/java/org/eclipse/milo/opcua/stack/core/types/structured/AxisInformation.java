@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -95,8 +94,8 @@ public class AxisInformation implements UaStructure {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<AxisInformation> {
         @Override
         public AxisInformation decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            EUInformation _engineeringUnits = (EUInformation) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EUInformation", reader);
-            Range _eURange = (Range) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "Range", reader);
+            EUInformation _engineeringUnits = (EUInformation) context.decode(EUInformation.BinaryEncodingId, reader);
+            Range _eURange = (Range) context.decode(Range.BinaryEncodingId, reader);
             LocalizedText _title = reader.readLocalizedText();
             AxisScaleEnumeration _axisScaleType = AxisScaleEnumeration.from(reader.readInt32());
             Double[] _axisSteps = reader.readArray(reader::readDouble, Double.class);
@@ -106,8 +105,8 @@ public class AxisInformation implements UaStructure {
 
         @Override
         public void encode(SerializationContext context, AxisInformation encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EUInformation", encodable._engineeringUnits, writer);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "Range", encodable._eURange, writer);
+            context.encode(EUInformation.BinaryEncodingId, encodable._engineeringUnits, writer);
+            context.encode(Range.BinaryEncodingId, encodable._eURange, writer);
             writer.writeLocalizedText(encodable._title);
             writer.writeInt32(encodable._axisScaleType != null ? encodable._axisScaleType.getValue() : 0);
             writer.writeArray(encodable._axisSteps, writer::writeDouble);
@@ -117,8 +116,8 @@ public class AxisInformation implements UaStructure {
     public static class XmlCodec implements OpcXmlDataTypeCodec<AxisInformation> {
         @Override
         public AxisInformation decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            EUInformation _engineeringUnits = (EUInformation) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EUInformation", reader);
-            Range _eURange = (Range) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "Range", reader);
+            EUInformation _engineeringUnits = (EUInformation) context.decode(EUInformation.XmlEncodingId, reader);
+            Range _eURange = (Range) context.decode(Range.XmlEncodingId, reader);
             LocalizedText _title = reader.readLocalizedText("Title");
             AxisScaleEnumeration _axisScaleType = AxisScaleEnumeration.from(reader.readInt32("AxisScaleType"));
             Double[] _axisSteps = reader.readArray("AxisSteps", reader::readDouble, Double.class);
@@ -128,8 +127,8 @@ public class AxisInformation implements UaStructure {
 
         @Override
         public void encode(SerializationContext context, AxisInformation encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "EUInformation", encodable._engineeringUnits, writer);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "Range", encodable._eURange, writer);
+            context.encode(EUInformation.XmlEncodingId, encodable._engineeringUnits, writer);
+            context.encode(Range.XmlEncodingId, encodable._eURange, writer);
             writer.writeLocalizedText("Title", encodable._title);
             writer.writeInt32("AxisScaleType", encodable._axisScaleType != null ? encodable._axisScaleType.getValue() : 0);
             writer.writeArray("AxisSteps", encodable._axisSteps, writer::writeDouble);

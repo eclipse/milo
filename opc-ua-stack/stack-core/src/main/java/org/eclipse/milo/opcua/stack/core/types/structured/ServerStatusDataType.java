@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -103,7 +102,7 @@ public class ServerStatusDataType implements UaStructure {
             DateTime _startTime = reader.readDateTime();
             DateTime _currentTime = reader.readDateTime();
             ServerState _state = ServerState.from(reader.readInt32());
-            BuildInfo _buildInfo = (BuildInfo) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "BuildInfo", reader);
+            BuildInfo _buildInfo = (BuildInfo) context.decode(BuildInfo.BinaryEncodingId, reader);
             UInteger _secondsTillShutdown = reader.readUInt32();
             LocalizedText _shutdownReason = reader.readLocalizedText();
 
@@ -115,7 +114,7 @@ public class ServerStatusDataType implements UaStructure {
             writer.writeDateTime(encodable._startTime);
             writer.writeDateTime(encodable._currentTime);
             writer.writeInt32(encodable._state != null ? encodable._state.getValue() : 0);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "BuildInfo", encodable._buildInfo, writer);
+            context.encode(BuildInfo.BinaryEncodingId, encodable._buildInfo, writer);
             writer.writeUInt32(encodable._secondsTillShutdown);
             writer.writeLocalizedText(encodable._shutdownReason);
         }
@@ -127,7 +126,7 @@ public class ServerStatusDataType implements UaStructure {
             DateTime _startTime = reader.readDateTime("StartTime");
             DateTime _currentTime = reader.readDateTime("CurrentTime");
             ServerState _state = ServerState.from(reader.readInt32("State"));
-            BuildInfo _buildInfo = (BuildInfo) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "BuildInfo", reader);
+            BuildInfo _buildInfo = (BuildInfo) context.decode(BuildInfo.XmlEncodingId, reader);
             UInteger _secondsTillShutdown = reader.readUInt32("SecondsTillShutdown");
             LocalizedText _shutdownReason = reader.readLocalizedText("ShutdownReason");
 
@@ -139,7 +138,7 @@ public class ServerStatusDataType implements UaStructure {
             writer.writeDateTime("StartTime", encodable._startTime);
             writer.writeDateTime("CurrentTime", encodable._currentTime);
             writer.writeInt32("State", encodable._state != null ? encodable._state.getValue() : 0);
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "BuildInfo", encodable._buildInfo, writer);
+            context.encode(BuildInfo.XmlEncodingId, encodable._buildInfo, writer);
             writer.writeUInt32("SecondsTillShutdown", encodable._secondsTillShutdown);
             writer.writeLocalizedText("ShutdownReason", encodable._shutdownReason);
         }

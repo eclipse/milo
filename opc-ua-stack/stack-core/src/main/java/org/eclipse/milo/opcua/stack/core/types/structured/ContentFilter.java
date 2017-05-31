@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,7 +18,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -72,7 +71,7 @@ public class ContentFilter implements UaStructure {
             ContentFilterElement[] _elements =
                 reader.readArray(
                     () -> (ContentFilterElement) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElement", reader),
+                        ContentFilterElement.BinaryEncodingId, reader),
                     ContentFilterElement.class
                 );
 
@@ -83,7 +82,7 @@ public class ContentFilter implements UaStructure {
         public void encode(SerializationContext context, ContentFilter encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
                 encodable._elements,
-                e -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElement", e, writer)
+                e -> context.encode(ContentFilterElement.BinaryEncodingId, e, writer)
             );
         }
     }
@@ -95,7 +94,7 @@ public class ContentFilter implements UaStructure {
                 reader.readArray(
                     "Elements",
                     f -> (ContentFilterElement) context.decode(
-                        OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElement", reader),
+                        ContentFilterElement.XmlEncodingId, reader),
                     ContentFilterElement.class
                 );
 
@@ -107,7 +106,7 @@ public class ContentFilter implements UaStructure {
             writer.writeArray(
                 "Elements",
                 encodable._elements,
-                (f, e) -> context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "ContentFilterElement", e, writer)
+                (f, e) -> context.encode(ContentFilterElement.XmlEncodingId, e, writer)
             );
         }
     }

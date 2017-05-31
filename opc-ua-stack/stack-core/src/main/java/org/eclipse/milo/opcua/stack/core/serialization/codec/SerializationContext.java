@@ -107,6 +107,24 @@ public interface SerializationContext {
     }
 
     default void encode(
+        NodeId encodingId,
+        Object encodable,
+        OpcXmlStreamWriter writer) throws UaSerializationException {
+
+        @SuppressWarnings("unchecked")
+        OpcXmlDataTypeCodec<Object> codec =
+            (OpcXmlDataTypeCodec<Object>) getTypeManager().getXmlCodec(encodingId);
+
+        if (codec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                String.format("no OpcXmlDataTypeCodec registered for encodingId=%s", encodingId));
+        }
+
+        codec.encode(this, encodable, writer);
+    }
+
+    default void encode(
         String namespaceUri,
         String description,
         Object encodable,

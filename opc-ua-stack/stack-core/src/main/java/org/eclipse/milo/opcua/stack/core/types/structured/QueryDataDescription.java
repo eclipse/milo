@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -79,7 +78,7 @@ public class QueryDataDescription implements UaStructure {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<QueryDataDescription> {
         @Override
         public QueryDataDescription decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RelativePath _relativePath = (RelativePath) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", reader);
+            RelativePath _relativePath = (RelativePath) context.decode(RelativePath.BinaryEncodingId, reader);
             UInteger _attributeId = reader.readUInt32();
             String _indexRange = reader.readString();
 
@@ -88,7 +87,7 @@ public class QueryDataDescription implements UaStructure {
 
         @Override
         public void encode(SerializationContext context, QueryDataDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", encodable._relativePath, writer);
+            context.encode(RelativePath.BinaryEncodingId, encodable._relativePath, writer);
             writer.writeUInt32(encodable._attributeId);
             writer.writeString(encodable._indexRange);
         }
@@ -97,7 +96,7 @@ public class QueryDataDescription implements UaStructure {
     public static class XmlCodec implements OpcXmlDataTypeCodec<QueryDataDescription> {
         @Override
         public QueryDataDescription decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RelativePath _relativePath = (RelativePath) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", reader);
+            RelativePath _relativePath = (RelativePath) context.decode(RelativePath.XmlEncodingId, reader);
             UInteger _attributeId = reader.readUInt32("AttributeId");
             String _indexRange = reader.readString("IndexRange");
 
@@ -106,7 +105,7 @@ public class QueryDataDescription implements UaStructure {
 
         @Override
         public void encode(SerializationContext context, QueryDataDescription encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RelativePath", encodable._relativePath, writer);
+            context.encode(RelativePath.XmlEncodingId, encodable._relativePath, writer);
             writer.writeUInt32("AttributeId", encodable._attributeId);
             writer.writeString("IndexRange", encodable._indexRange);
         }

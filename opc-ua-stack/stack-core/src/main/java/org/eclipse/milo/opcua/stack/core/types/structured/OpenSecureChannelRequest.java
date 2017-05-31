@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
@@ -100,7 +99,7 @@ public class OpenSecureChannelRequest implements UaRequestMessage {
     public static class BinaryCodec implements OpcBinaryDataTypeCodec<OpenSecureChannelRequest> {
         @Override
         public OpenSecureChannelRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
             UInteger _clientProtocolVersion = reader.readUInt32();
             SecurityTokenRequestType _requestType = SecurityTokenRequestType.from(reader.readInt32());
             MessageSecurityMode _securityMode = MessageSecurityMode.from(reader.readInt32());
@@ -112,7 +111,7 @@ public class OpenSecureChannelRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, OpenSecureChannelRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32(encodable._clientProtocolVersion);
             writer.writeInt32(encodable._requestType != null ? encodable._requestType.getValue() : 0);
             writer.writeInt32(encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
@@ -124,7 +123,7 @@ public class OpenSecureChannelRequest implements UaRequestMessage {
     public static class XmlCodec implements OpcXmlDataTypeCodec<OpenSecureChannelRequest> {
         @Override
         public OpenSecureChannelRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", reader);
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
             UInteger _clientProtocolVersion = reader.readUInt32("ClientProtocolVersion");
             SecurityTokenRequestType _requestType = SecurityTokenRequestType.from(reader.readInt32("RequestType"));
             MessageSecurityMode _securityMode = MessageSecurityMode.from(reader.readInt32("SecurityMode"));
@@ -136,7 +135,7 @@ public class OpenSecureChannelRequest implements UaRequestMessage {
 
         @Override
         public void encode(SerializationContext context, OpenSecureChannelRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(OpcUaDataTypeManager.BINARY_NAMESPACE_URI, "RequestHeader", encodable._requestHeader, writer);
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
             writer.writeUInt32("ClientProtocolVersion", encodable._clientProtocolVersion);
             writer.writeInt32("RequestType", encodable._requestType != null ? encodable._requestType.getValue() : 0);
             writer.writeInt32("SecurityMode", encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
