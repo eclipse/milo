@@ -13,26 +13,37 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.codec;
 
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 
 import com.google.common.collect.Maps;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class OpcBinaryDataTypeDictionary implements DataTypeDictionary<OpcBinaryDataTypeCodec<?>> {
 
     private final String namespaceUri;
 
-    private final ConcurrentMap<String, OpcBinaryDataTypeCodec<?>> codecs;
+    private final Map<String, OpcBinaryDataTypeCodec<?>> codecsByDescription;
+    private final Map<NodeId, OpcBinaryDataTypeCodec<?>> codecsByEncodingId;
 
     public OpcBinaryDataTypeDictionary(String namespaceUri) {
-        this(namespaceUri, Maps.newConcurrentMap());
+        this.namespaceUri = namespaceUri;
+
+        codecsByDescription = Maps.newConcurrentMap();
+        codecsByEncodingId = Maps.newConcurrentMap();
     }
 
     public OpcBinaryDataTypeDictionary(
         String namespaceUri,
-        ConcurrentMap<String, OpcBinaryDataTypeCodec<?>> codecs) {
+        Map<String, OpcBinaryDataTypeCodec<?>> byDescription,
+        Map<NodeId, OpcBinaryDataTypeCodec<?>> byEncodingId) {
 
         this.namespaceUri = namespaceUri;
-        this.codecs = codecs;
+
+        codecsByDescription = Maps.newConcurrentMap();
+        codecsByDescription.putAll(byDescription);
+
+        codecsByEncodingId = Maps.newConcurrentMap();
+        codecsByEncodingId.putAll(byEncodingId);
     }
 
     @Override
@@ -41,13 +52,29 @@ public class OpcBinaryDataTypeDictionary implements DataTypeDictionary<OpcBinary
     }
 
     @Override
-    public void registerCodec(OpcBinaryDataTypeCodec<?> codec, String name) {
-        codecs.put(name, codec);
+    public OpcBinaryDataTypeCodec<?> getCodec(String description) {
+        return codecsByDescription.get(description);
     }
 
     @Override
-    public OpcBinaryDataTypeCodec<?> getCodec(String name) {
-        return codecs.get(name);
+    public OpcBinaryDataTypeCodec<?> getCodec(NodeId encodingId) {
+        return codecsByEncodingId.get(encodingId);
     }
 
+    @Override
+    public void registerCodec(OpcBinaryDataTypeCodec<?> codec, String description, NodeId encodingId) {
+        codecsByDescription.put(description, codec);
+        codecsByEncodingId.put(encodingId, codec);
+    }
+
+    @Override
+    public Map<String, OpcBinaryDataTypeCodec<?>> getCodecsByDescription() {
+        return codecsByDescription;
+    }
+
+    @Override
+    public Map<NodeId, OpcBinaryDataTypeCodec<?>> getCodecsByEncodingId() {
+        return codecsByEncodingId;
+    }
+    
 }

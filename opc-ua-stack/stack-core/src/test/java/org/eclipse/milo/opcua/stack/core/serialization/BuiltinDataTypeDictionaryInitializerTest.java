@@ -22,11 +22,11 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertNotEquals;
 import static org.testng.Assert.assertNotNull;
 
-public class OpcUaDataTypeManagerInitializerTest {
+public class BuiltinDataTypeDictionaryInitializerTest {
 
     @Test
     public void testInitialize() throws Exception {
-        OpcUaDataTypeManagerInitializer.initialize();
+        BuiltinDataTypeDictionaryInitializer.initialize();
 
         ClassLoader classLoader = getClass().getClassLoader();
         ClassPath classPath = ClassPath.from(classLoader);

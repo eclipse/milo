@@ -239,19 +239,19 @@ import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 
 /**
  * Registers the encoders and decoders for all the built-in enumerations and structures with
- * {@link OpcUaDataTypeManager}.
+ * {@link BuiltinDataTypeDictionary}.
  * <p>
  * This class is semi-auto-generated; if the UA spec version changes and adds or removes structures these methods will
  * need to be updated.
  */
-class OpcUaDataTypeManagerInitializer {
+class BuiltinDataTypeDictionaryInitializer {
 
     static void initialize() {
         initializeStructured();
     }
 
     private static void initializeStructured() {
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ActivateSessionRequest",
             ActivateSessionRequest.BinaryEncodingId,
             new ActivateSessionRequest.BinaryCodec(),
@@ -259,7 +259,7 @@ class OpcUaDataTypeManagerInitializer {
             new ActivateSessionRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ActivateSessionResponse",
             ActivateSessionResponse.BinaryEncodingId,
             new ActivateSessionResponse.BinaryCodec(),
@@ -267,7 +267,7 @@ class OpcUaDataTypeManagerInitializer {
             new ActivateSessionResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AddNodesRequest",
             AddNodesRequest.BinaryEncodingId,
             new AddNodesRequest.BinaryCodec(),
@@ -275,7 +275,7 @@ class OpcUaDataTypeManagerInitializer {
             new AddNodesRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AddNodesResult",
             AddNodesResult.BinaryEncodingId,
             new AddNodesResult.BinaryCodec(),
@@ -283,7 +283,7 @@ class OpcUaDataTypeManagerInitializer {
             new AddNodesResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AddReferencesRequest",
             AddReferencesRequest.BinaryEncodingId,
             new AddReferencesRequest.BinaryCodec(),
@@ -291,7 +291,7 @@ class OpcUaDataTypeManagerInitializer {
             new AddReferencesRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AggregateConfiguration",
             AggregateConfiguration.BinaryEncodingId,
             new AggregateConfiguration.BinaryCodec(),
@@ -299,7 +299,7 @@ class OpcUaDataTypeManagerInitializer {
             new AggregateConfiguration.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AggregateFilter",
             AggregateFilter.BinaryEncodingId,
             new AggregateFilter.BinaryCodec(),
@@ -307,7 +307,7 @@ class OpcUaDataTypeManagerInitializer {
             new AggregateFilter.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "Annotation",
             Annotation.BinaryEncodingId,
             new Annotation.BinaryCodec(),
@@ -315,7 +315,7 @@ class OpcUaDataTypeManagerInitializer {
             new Annotation.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ApplicationDescription",
             ApplicationDescription.BinaryEncodingId,
             new ApplicationDescription.BinaryCodec(),
@@ -323,7 +323,7 @@ class OpcUaDataTypeManagerInitializer {
             new ApplicationDescription.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AxisInformation",
             AxisInformation.BinaryEncodingId,
             new AxisInformation.BinaryCodec(),
@@ -331,7 +331,7 @@ class OpcUaDataTypeManagerInitializer {
             new AxisInformation.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowseDescription",
             BrowseDescription.BinaryEncodingId,
             new BrowseDescription.BinaryCodec(),
@@ -339,7 +339,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowseDescription.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowsePath",
             BrowsePath.BinaryEncodingId,
             new BrowsePath.BinaryCodec(),
@@ -347,7 +347,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowsePath.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowseRequest",
             BrowseRequest.BinaryEncodingId,
             new BrowseRequest.BinaryCodec(),
@@ -355,7 +355,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowseRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BuildInfo",
             BuildInfo.BinaryEncodingId,
             new BuildInfo.BinaryCodec(),
@@ -363,7 +363,7 @@ class OpcUaDataTypeManagerInitializer {
             new BuildInfo.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CallRequest",
             CallRequest.BinaryEncodingId,
             new CallRequest.BinaryCodec(),
@@ -371,7 +371,7 @@ class OpcUaDataTypeManagerInitializer {
             new CallRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CancelResponse",
             CancelResponse.BinaryEncodingId,
             new CancelResponse.BinaryCodec(),
@@ -379,7 +379,7 @@ class OpcUaDataTypeManagerInitializer {
             new CancelResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CloseSecureChannelResponse",
             CloseSecureChannelResponse.BinaryEncodingId,
             new CloseSecureChannelResponse.BinaryCodec(),
@@ -387,7 +387,7 @@ class OpcUaDataTypeManagerInitializer {
             new CloseSecureChannelResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ComplexNumberType",
             ComplexNumberType.BinaryEncodingId,
             new ComplexNumberType.BinaryCodec(),
@@ -395,7 +395,7 @@ class OpcUaDataTypeManagerInitializer {
             new ComplexNumberType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ContentFilter",
             ContentFilter.BinaryEncodingId,
             new ContentFilter.BinaryCodec(),
@@ -403,7 +403,7 @@ class OpcUaDataTypeManagerInitializer {
             new ContentFilter.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ContentFilterElement",
             ContentFilterElement.BinaryEncodingId,
             new ContentFilterElement.BinaryCodec(),
@@ -411,7 +411,7 @@ class OpcUaDataTypeManagerInitializer {
             new ContentFilterElement.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ContentFilterElementResult",
             ContentFilterElementResult.BinaryEncodingId,
             new ContentFilterElementResult.BinaryCodec(),
@@ -419,7 +419,7 @@ class OpcUaDataTypeManagerInitializer {
             new ContentFilterElementResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ContentFilterResult",
             ContentFilterResult.BinaryEncodingId,
             new ContentFilterResult.BinaryCodec(),
@@ -427,7 +427,7 @@ class OpcUaDataTypeManagerInitializer {
             new ContentFilterResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CreateMonitoredItemsRequest",
             CreateMonitoredItemsRequest.BinaryEncodingId,
             new CreateMonitoredItemsRequest.BinaryCodec(),
@@ -435,7 +435,7 @@ class OpcUaDataTypeManagerInitializer {
             new CreateMonitoredItemsRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CreateMonitoredItemsResponse",
             CreateMonitoredItemsResponse.BinaryEncodingId,
             new CreateMonitoredItemsResponse.BinaryCodec(),
@@ -443,7 +443,7 @@ class OpcUaDataTypeManagerInitializer {
             new CreateMonitoredItemsResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CreateSessionRequest",
             CreateSessionRequest.BinaryEncodingId,
             new CreateSessionRequest.BinaryCodec(),
@@ -451,7 +451,7 @@ class OpcUaDataTypeManagerInitializer {
             new CreateSessionRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CreateSessionResponse",
             CreateSessionResponse.BinaryEncodingId,
             new CreateSessionResponse.BinaryCodec(),
@@ -459,7 +459,7 @@ class OpcUaDataTypeManagerInitializer {
             new CreateSessionResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CreateSubscriptionRequest",
             CreateSubscriptionRequest.BinaryEncodingId,
             new CreateSubscriptionRequest.BinaryCodec(),
@@ -467,7 +467,7 @@ class OpcUaDataTypeManagerInitializer {
             new CreateSubscriptionRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CreateSubscriptionResponse",
             CreateSubscriptionResponse.BinaryEncodingId,
             new CreateSubscriptionResponse.BinaryCodec(),
@@ -475,7 +475,7 @@ class OpcUaDataTypeManagerInitializer {
             new CreateSubscriptionResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DataChangeFilter",
             DataChangeFilter.BinaryEncodingId,
             new DataChangeFilter.BinaryCodec(),
@@ -483,7 +483,7 @@ class OpcUaDataTypeManagerInitializer {
             new DataChangeFilter.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DataChangeNotification",
             DataChangeNotification.BinaryEncodingId,
             new DataChangeNotification.BinaryCodec(),
@@ -491,7 +491,7 @@ class OpcUaDataTypeManagerInitializer {
             new DataChangeNotification.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DataTypeAttributes",
             DataTypeAttributes.BinaryEncodingId,
             new DataTypeAttributes.BinaryCodec(),
@@ -499,7 +499,7 @@ class OpcUaDataTypeManagerInitializer {
             new DataTypeAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DataTypeNode",
             DataTypeNode.BinaryEncodingId,
             new DataTypeNode.BinaryCodec(),
@@ -507,7 +507,7 @@ class OpcUaDataTypeManagerInitializer {
             new DataTypeNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteAtTimeDetails",
             DeleteAtTimeDetails.BinaryEncodingId,
             new DeleteAtTimeDetails.BinaryCodec(),
@@ -515,7 +515,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteAtTimeDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteEventDetails",
             DeleteEventDetails.BinaryEncodingId,
             new DeleteEventDetails.BinaryCodec(),
@@ -523,7 +523,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteEventDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteMonitoredItemsRequest",
             DeleteMonitoredItemsRequest.BinaryEncodingId,
             new DeleteMonitoredItemsRequest.BinaryCodec(),
@@ -531,7 +531,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteMonitoredItemsRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteMonitoredItemsResponse",
             DeleteMonitoredItemsResponse.BinaryEncodingId,
             new DeleteMonitoredItemsResponse.BinaryCodec(),
@@ -539,7 +539,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteMonitoredItemsResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteNodesItem",
             DeleteNodesItem.BinaryEncodingId,
             new DeleteNodesItem.BinaryCodec(),
@@ -547,7 +547,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteNodesItem.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteNodesResponse",
             DeleteNodesResponse.BinaryEncodingId,
             new DeleteNodesResponse.BinaryCodec(),
@@ -555,7 +555,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteNodesResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteRawModifiedDetails",
             DeleteRawModifiedDetails.BinaryEncodingId,
             new DeleteRawModifiedDetails.BinaryCodec(),
@@ -563,7 +563,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteRawModifiedDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteReferencesItem",
             DeleteReferencesItem.BinaryEncodingId,
             new DeleteReferencesItem.BinaryCodec(),
@@ -571,7 +571,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteReferencesItem.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteReferencesResponse",
             DeleteReferencesResponse.BinaryEncodingId,
             new DeleteReferencesResponse.BinaryCodec(),
@@ -579,7 +579,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteReferencesResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteSubscriptionsResponse",
             DeleteSubscriptionsResponse.BinaryEncodingId,
             new DeleteSubscriptionsResponse.BinaryCodec(),
@@ -587,7 +587,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteSubscriptionsResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DiscoveryConfiguration",
             DiscoveryConfiguration.BinaryEncodingId,
             new DiscoveryConfiguration.BinaryCodec(),
@@ -595,7 +595,7 @@ class OpcUaDataTypeManagerInitializer {
             new DiscoveryConfiguration.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DoubleComplexNumberType",
             DoubleComplexNumberType.BinaryEncodingId,
             new DoubleComplexNumberType.BinaryCodec(),
@@ -603,7 +603,7 @@ class OpcUaDataTypeManagerInitializer {
             new DoubleComplexNumberType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ElementOperand",
             ElementOperand.BinaryEncodingId,
             new ElementOperand.BinaryCodec(),
@@ -611,7 +611,7 @@ class OpcUaDataTypeManagerInitializer {
             new ElementOperand.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EndpointConfiguration",
             EndpointConfiguration.BinaryEncodingId,
             new EndpointConfiguration.BinaryCodec(),
@@ -619,7 +619,7 @@ class OpcUaDataTypeManagerInitializer {
             new EndpointConfiguration.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EndpointDescription",
             EndpointDescription.BinaryEncodingId,
             new EndpointDescription.BinaryCodec(),
@@ -627,7 +627,7 @@ class OpcUaDataTypeManagerInitializer {
             new EndpointDescription.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EndpointUrlListDataType",
             EndpointUrlListDataType.BinaryEncodingId,
             new EndpointUrlListDataType.BinaryCodec(),
@@ -635,7 +635,7 @@ class OpcUaDataTypeManagerInitializer {
             new EndpointUrlListDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EnumValueType",
             EnumValueType.BinaryEncodingId,
             new EnumValueType.BinaryCodec(),
@@ -643,7 +643,7 @@ class OpcUaDataTypeManagerInitializer {
             new EnumValueType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EUInformation",
             EUInformation.BinaryEncodingId,
             new EUInformation.BinaryCodec(),
@@ -651,7 +651,7 @@ class OpcUaDataTypeManagerInitializer {
             new EUInformation.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EventFieldList",
             EventFieldList.BinaryEncodingId,
             new EventFieldList.BinaryCodec(),
@@ -659,7 +659,7 @@ class OpcUaDataTypeManagerInitializer {
             new EventFieldList.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EventFilterResult",
             EventFilterResult.BinaryEncodingId,
             new EventFilterResult.BinaryCodec(),
@@ -667,7 +667,7 @@ class OpcUaDataTypeManagerInitializer {
             new EventFilterResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "FilterOperand",
             FilterOperand.BinaryEncodingId,
             new FilterOperand.BinaryCodec(),
@@ -675,7 +675,7 @@ class OpcUaDataTypeManagerInitializer {
             new FilterOperand.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "FindServersOnNetworkResponse",
             FindServersOnNetworkResponse.BinaryEncodingId,
             new FindServersOnNetworkResponse.BinaryCodec(),
@@ -683,7 +683,7 @@ class OpcUaDataTypeManagerInitializer {
             new FindServersOnNetworkResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "FindServersResponse",
             FindServersResponse.BinaryEncodingId,
             new FindServersResponse.BinaryCodec(),
@@ -691,7 +691,7 @@ class OpcUaDataTypeManagerInitializer {
             new FindServersResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "GetEndpointsResponse",
             GetEndpointsResponse.BinaryEncodingId,
             new GetEndpointsResponse.BinaryCodec(),
@@ -699,7 +699,7 @@ class OpcUaDataTypeManagerInitializer {
             new GetEndpointsResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryEvent",
             HistoryEvent.BinaryEncodingId,
             new HistoryEvent.BinaryCodec(),
@@ -707,7 +707,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryEvent.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryModifiedData",
             HistoryModifiedData.BinaryEncodingId,
             new HistoryModifiedData.BinaryCodec(),
@@ -715,7 +715,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryModifiedData.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryReadRequest",
             HistoryReadRequest.BinaryEncodingId,
             new HistoryReadRequest.BinaryCodec(),
@@ -723,7 +723,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryReadRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryReadResponse",
             HistoryReadResponse.BinaryEncodingId,
             new HistoryReadResponse.BinaryCodec(),
@@ -731,7 +731,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryReadResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryReadResult",
             HistoryReadResult.BinaryEncodingId,
             new HistoryReadResult.BinaryCodec(),
@@ -739,7 +739,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryReadResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryReadValueId",
             HistoryReadValueId.BinaryEncodingId,
             new HistoryReadValueId.BinaryCodec(),
@@ -747,7 +747,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryReadValueId.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryUpdateDetails",
             HistoryUpdateDetails.BinaryEncodingId,
             new HistoryUpdateDetails.BinaryCodec(),
@@ -755,7 +755,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryUpdateDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryUpdateRequest",
             HistoryUpdateRequest.BinaryEncodingId,
             new HistoryUpdateRequest.BinaryCodec(),
@@ -763,7 +763,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryUpdateRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryUpdateResponse",
             HistoryUpdateResponse.BinaryEncodingId,
             new HistoryUpdateResponse.BinaryCodec(),
@@ -771,7 +771,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryUpdateResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RelativePathElement",
             RelativePathElement.BinaryEncodingId,
             new RelativePathElement.BinaryCodec(),
@@ -779,7 +779,7 @@ class OpcUaDataTypeManagerInitializer {
             new RelativePathElement.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ResponseHeader",
             ResponseHeader.BinaryEncodingId,
             new ResponseHeader.BinaryCodec(),
@@ -787,7 +787,7 @@ class OpcUaDataTypeManagerInitializer {
             new ResponseHeader.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SessionSecurityDiagnosticsDataType",
             SessionSecurityDiagnosticsDataType.BinaryEncodingId,
             new SessionSecurityDiagnosticsDataType.BinaryCodec(),
@@ -795,7 +795,7 @@ class OpcUaDataTypeManagerInitializer {
             new SessionSecurityDiagnosticsDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SetMonitoringModeRequest",
             SetMonitoringModeRequest.BinaryEncodingId,
             new SetMonitoringModeRequest.BinaryCodec(),
@@ -803,7 +803,7 @@ class OpcUaDataTypeManagerInitializer {
             new SetMonitoringModeRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SetPublishingModeRequest",
             SetPublishingModeRequest.BinaryEncodingId,
             new SetPublishingModeRequest.BinaryCodec(),
@@ -811,7 +811,7 @@ class OpcUaDataTypeManagerInitializer {
             new SetPublishingModeRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SetTriggeringRequest",
             SetTriggeringRequest.BinaryEncodingId,
             new SetTriggeringRequest.BinaryCodec(),
@@ -819,7 +819,7 @@ class OpcUaDataTypeManagerInitializer {
             new SetTriggeringRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SignatureData",
             SignatureData.BinaryEncodingId,
             new SignatureData.BinaryCodec(),
@@ -827,7 +827,7 @@ class OpcUaDataTypeManagerInitializer {
             new SignatureData.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SimpleAttributeOperand",
             SimpleAttributeOperand.BinaryEncodingId,
             new SimpleAttributeOperand.BinaryCodec(),
@@ -835,7 +835,7 @@ class OpcUaDataTypeManagerInitializer {
             new SimpleAttributeOperand.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "StatusChangeNotification",
             StatusChangeNotification.BinaryEncodingId,
             new StatusChangeNotification.BinaryCodec(),
@@ -843,7 +843,7 @@ class OpcUaDataTypeManagerInitializer {
             new StatusChangeNotification.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TransferSubscriptionsResponse",
             TransferSubscriptionsResponse.BinaryEncodingId,
             new TransferSubscriptionsResponse.BinaryCodec(),
@@ -851,7 +851,7 @@ class OpcUaDataTypeManagerInitializer {
             new TransferSubscriptionsResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TypeNode",
             TypeNode.BinaryEncodingId,
             new TypeNode.BinaryCodec(),
@@ -859,7 +859,7 @@ class OpcUaDataTypeManagerInitializer {
             new TypeNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UpdateStructureDataDetails",
             UpdateStructureDataDetails.BinaryEncodingId,
             new UpdateStructureDataDetails.BinaryCodec(),
@@ -867,7 +867,7 @@ class OpcUaDataTypeManagerInitializer {
             new UpdateStructureDataDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AddNodesItem",
             AddNodesItem.BinaryEncodingId,
             new AddNodesItem.BinaryCodec(),
@@ -875,7 +875,7 @@ class OpcUaDataTypeManagerInitializer {
             new AddNodesItem.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowseNextRequest",
             BrowseNextRequest.BinaryEncodingId,
             new BrowseNextRequest.BinaryCodec(),
@@ -883,7 +883,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowseNextRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowsePathResult",
             BrowsePathResult.BinaryEncodingId,
             new BrowsePathResult.BinaryCodec(),
@@ -891,7 +891,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowsePathResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowseResponse",
             BrowseResponse.BinaryEncodingId,
             new BrowseResponse.BinaryCodec(),
@@ -899,7 +899,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowseResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CallMethodRequest",
             CallMethodRequest.BinaryEncodingId,
             new CallMethodRequest.BinaryCodec(),
@@ -907,7 +907,7 @@ class OpcUaDataTypeManagerInitializer {
             new CallMethodRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CallResponse",
             CallResponse.BinaryEncodingId,
             new CallResponse.BinaryCodec(),
@@ -915,7 +915,7 @@ class OpcUaDataTypeManagerInitializer {
             new CallResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ChannelSecurityToken",
             ChannelSecurityToken.BinaryEncodingId,
             new ChannelSecurityToken.BinaryCodec(),
@@ -923,7 +923,7 @@ class OpcUaDataTypeManagerInitializer {
             new ChannelSecurityToken.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CloseSessionRequest",
             CloseSessionRequest.BinaryEncodingId,
             new CloseSessionRequest.BinaryCodec(),
@@ -931,7 +931,7 @@ class OpcUaDataTypeManagerInitializer {
             new CloseSessionRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "Node",
             Node.BinaryEncodingId,
             new Node.BinaryCodec(),
@@ -939,7 +939,7 @@ class OpcUaDataTypeManagerInitializer {
             new Node.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RepublishRequest",
             RepublishRequest.BinaryEncodingId,
             new RepublishRequest.BinaryCodec(),
@@ -947,7 +947,7 @@ class OpcUaDataTypeManagerInitializer {
             new RepublishRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SamplingIntervalDiagnosticsDataType",
             SamplingIntervalDiagnosticsDataType.BinaryEncodingId,
             new SamplingIntervalDiagnosticsDataType.BinaryCodec(),
@@ -955,7 +955,7 @@ class OpcUaDataTypeManagerInitializer {
             new SamplingIntervalDiagnosticsDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "StatusResult",
             StatusResult.BinaryEncodingId,
             new StatusResult.BinaryCodec(),
@@ -963,7 +963,7 @@ class OpcUaDataTypeManagerInitializer {
             new StatusResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SubscriptionAcknowledgement",
             SubscriptionAcknowledgement.BinaryEncodingId,
             new SubscriptionAcknowledgement.BinaryCodec(),
@@ -971,7 +971,7 @@ class OpcUaDataTypeManagerInitializer {
             new SubscriptionAcknowledgement.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SubscriptionDiagnosticsDataType",
             SubscriptionDiagnosticsDataType.BinaryEncodingId,
             new SubscriptionDiagnosticsDataType.BinaryCodec(),
@@ -979,7 +979,7 @@ class OpcUaDataTypeManagerInitializer {
             new SubscriptionDiagnosticsDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TimeZoneDataType",
             TimeZoneDataType.BinaryEncodingId,
             new TimeZoneDataType.BinaryCodec(),
@@ -987,7 +987,7 @@ class OpcUaDataTypeManagerInitializer {
             new TimeZoneDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TransferResult",
             TransferResult.BinaryEncodingId,
             new TransferResult.BinaryCodec(),
@@ -995,7 +995,7 @@ class OpcUaDataTypeManagerInitializer {
             new TransferResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TranslateBrowsePathsToNodeIdsRequest",
             TranslateBrowsePathsToNodeIdsRequest.BinaryEncodingId,
             new TranslateBrowsePathsToNodeIdsRequest.BinaryCodec(),
@@ -1003,7 +1003,7 @@ class OpcUaDataTypeManagerInitializer {
             new TranslateBrowsePathsToNodeIdsRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "Union",
             Union.BinaryEncodingId,
             new Union.BinaryCodec(),
@@ -1011,7 +1011,7 @@ class OpcUaDataTypeManagerInitializer {
             new Union.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UnregisterNodesRequest",
             UnregisterNodesRequest.BinaryEncodingId,
             new UnregisterNodesRequest.BinaryCodec(),
@@ -1019,7 +1019,7 @@ class OpcUaDataTypeManagerInitializer {
             new UnregisterNodesRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteNodesRequest",
             DeleteNodesRequest.BinaryEncodingId,
             new DeleteNodesRequest.BinaryCodec(),
@@ -1027,7 +1027,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteNodesRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteReferencesRequest",
             DeleteReferencesRequest.BinaryEncodingId,
             new DeleteReferencesRequest.BinaryCodec(),
@@ -1035,7 +1035,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteReferencesRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "DeleteSubscriptionsRequest",
             DeleteSubscriptionsRequest.BinaryEncodingId,
             new DeleteSubscriptionsRequest.BinaryCodec(),
@@ -1043,7 +1043,7 @@ class OpcUaDataTypeManagerInitializer {
             new DeleteSubscriptionsRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EventFilter",
             EventFilter.BinaryEncodingId,
             new EventFilter.BinaryCodec(),
@@ -1051,7 +1051,7 @@ class OpcUaDataTypeManagerInitializer {
             new EventFilter.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "EventNotificationList",
             EventNotificationList.BinaryEncodingId,
             new EventNotificationList.BinaryCodec(),
@@ -1059,7 +1059,7 @@ class OpcUaDataTypeManagerInitializer {
             new EventNotificationList.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "FindServersOnNetworkRequest",
             FindServersOnNetworkRequest.BinaryEncodingId,
             new FindServersOnNetworkRequest.BinaryCodec(),
@@ -1067,7 +1067,7 @@ class OpcUaDataTypeManagerInitializer {
             new FindServersOnNetworkRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "FindServersRequest",
             FindServersRequest.BinaryEncodingId,
             new FindServersRequest.BinaryCodec(),
@@ -1075,7 +1075,7 @@ class OpcUaDataTypeManagerInitializer {
             new FindServersRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "GetEndpointsRequest",
             GetEndpointsRequest.BinaryEncodingId,
             new GetEndpointsRequest.BinaryCodec(),
@@ -1083,7 +1083,7 @@ class OpcUaDataTypeManagerInitializer {
             new GetEndpointsRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryData",
             HistoryData.BinaryEncodingId,
             new HistoryData.BinaryCodec(),
@@ -1091,7 +1091,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryData.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryEventFieldList",
             HistoryEventFieldList.BinaryEncodingId,
             new HistoryEventFieldList.BinaryCodec(),
@@ -1099,7 +1099,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryEventFieldList.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryReadDetails",
             HistoryReadDetails.BinaryEncodingId,
             new HistoryReadDetails.BinaryCodec(),
@@ -1107,7 +1107,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryReadDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "HistoryUpdateResult",
             HistoryUpdateResult.BinaryEncodingId,
             new HistoryUpdateResult.BinaryCodec(),
@@ -1115,7 +1115,7 @@ class OpcUaDataTypeManagerInitializer {
             new HistoryUpdateResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "InstanceNode",
             InstanceNode.BinaryEncodingId,
             new InstanceNode.BinaryCodec(),
@@ -1123,7 +1123,7 @@ class OpcUaDataTypeManagerInitializer {
             new InstanceNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "IssuedIdentityToken",
             IssuedIdentityToken.BinaryEncodingId,
             new IssuedIdentityToken.BinaryCodec(),
@@ -1131,7 +1131,7 @@ class OpcUaDataTypeManagerInitializer {
             new IssuedIdentityToken.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "KerberosIdentityToken",
             KerberosIdentityToken.BinaryEncodingId,
             new KerberosIdentityToken.BinaryCodec(),
@@ -1139,7 +1139,7 @@ class OpcUaDataTypeManagerInitializer {
             new KerberosIdentityToken.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "LiteralOperand",
             LiteralOperand.BinaryEncodingId,
             new LiteralOperand.BinaryCodec(),
@@ -1147,7 +1147,7 @@ class OpcUaDataTypeManagerInitializer {
             new LiteralOperand.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MdnsDiscoveryConfiguration",
             MdnsDiscoveryConfiguration.BinaryEncodingId,
             new MdnsDiscoveryConfiguration.BinaryCodec(),
@@ -1155,7 +1155,7 @@ class OpcUaDataTypeManagerInitializer {
             new MdnsDiscoveryConfiguration.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MethodAttributes",
             MethodAttributes.BinaryEncodingId,
             new MethodAttributes.BinaryCodec(),
@@ -1163,7 +1163,7 @@ class OpcUaDataTypeManagerInitializer {
             new MethodAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MethodNode",
             MethodNode.BinaryEncodingId,
             new MethodNode.BinaryCodec(),
@@ -1171,7 +1171,7 @@ class OpcUaDataTypeManagerInitializer {
             new MethodNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ModelChangeStructureDataType",
             ModelChangeStructureDataType.BinaryEncodingId,
             new ModelChangeStructureDataType.BinaryCodec(),
@@ -1179,7 +1179,7 @@ class OpcUaDataTypeManagerInitializer {
             new ModelChangeStructureDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ModificationInfo",
             ModificationInfo.BinaryEncodingId,
             new ModificationInfo.BinaryCodec(),
@@ -1187,7 +1187,7 @@ class OpcUaDataTypeManagerInitializer {
             new ModificationInfo.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ModifyMonitoredItemsRequest",
             ModifyMonitoredItemsRequest.BinaryEncodingId,
             new ModifyMonitoredItemsRequest.BinaryCodec(),
@@ -1195,7 +1195,7 @@ class OpcUaDataTypeManagerInitializer {
             new ModifyMonitoredItemsRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ModifyMonitoredItemsResponse",
             ModifyMonitoredItemsResponse.BinaryEncodingId,
             new ModifyMonitoredItemsResponse.BinaryCodec(),
@@ -1203,7 +1203,7 @@ class OpcUaDataTypeManagerInitializer {
             new ModifyMonitoredItemsResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ModifySubscriptionRequest",
             ModifySubscriptionRequest.BinaryEncodingId,
             new ModifySubscriptionRequest.BinaryCodec(),
@@ -1211,7 +1211,7 @@ class OpcUaDataTypeManagerInitializer {
             new ModifySubscriptionRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ModifySubscriptionResponse",
             ModifySubscriptionResponse.BinaryEncodingId,
             new ModifySubscriptionResponse.BinaryCodec(),
@@ -1219,7 +1219,7 @@ class OpcUaDataTypeManagerInitializer {
             new ModifySubscriptionResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoredItemCreateRequest",
             MonitoredItemCreateRequest.BinaryEncodingId,
             new MonitoredItemCreateRequest.BinaryCodec(),
@@ -1227,7 +1227,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoredItemCreateRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoredItemCreateResult",
             MonitoredItemCreateResult.BinaryEncodingId,
             new MonitoredItemCreateResult.BinaryCodec(),
@@ -1235,7 +1235,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoredItemCreateResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoredItemModifyRequest",
             MonitoredItemModifyRequest.BinaryEncodingId,
             new MonitoredItemModifyRequest.BinaryCodec(),
@@ -1243,7 +1243,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoredItemModifyRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoredItemModifyResult",
             MonitoredItemModifyResult.BinaryEncodingId,
             new MonitoredItemModifyResult.BinaryCodec(),
@@ -1251,7 +1251,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoredItemModifyResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoredItemNotification",
             MonitoredItemNotification.BinaryEncodingId,
             new MonitoredItemNotification.BinaryCodec(),
@@ -1259,7 +1259,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoredItemNotification.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoringFilter",
             MonitoringFilter.BinaryEncodingId,
             new MonitoringFilter.BinaryCodec(),
@@ -1267,7 +1267,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoringFilter.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoringFilterResult",
             MonitoringFilterResult.BinaryEncodingId,
             new MonitoringFilterResult.BinaryCodec(),
@@ -1275,7 +1275,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoringFilterResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "MonitoringParameters",
             MonitoringParameters.BinaryEncodingId,
             new MonitoringParameters.BinaryCodec(),
@@ -1283,7 +1283,7 @@ class OpcUaDataTypeManagerInitializer {
             new MonitoringParameters.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "NetworkGroupDataType",
             NetworkGroupDataType.BinaryEncodingId,
             new NetworkGroupDataType.BinaryCodec(),
@@ -1291,7 +1291,7 @@ class OpcUaDataTypeManagerInitializer {
             new NetworkGroupDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "NodeReference",
             NodeReference.BinaryEncodingId,
             new NodeReference.BinaryCodec(),
@@ -1299,7 +1299,7 @@ class OpcUaDataTypeManagerInitializer {
             new NodeReference.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ObjectNode",
             ObjectNode.BinaryEncodingId,
             new ObjectNode.BinaryCodec(),
@@ -1307,7 +1307,7 @@ class OpcUaDataTypeManagerInitializer {
             new ObjectNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "OpenSecureChannelRequest",
             OpenSecureChannelRequest.BinaryEncodingId,
             new OpenSecureChannelRequest.BinaryCodec(),
@@ -1315,7 +1315,7 @@ class OpcUaDataTypeManagerInitializer {
             new OpenSecureChannelRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ProgramDiagnosticDataType",
             ProgramDiagnosticDataType.BinaryEncodingId,
             new ProgramDiagnosticDataType.BinaryCodec(),
@@ -1323,7 +1323,7 @@ class OpcUaDataTypeManagerInitializer {
             new ProgramDiagnosticDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "PublishResponse",
             PublishResponse.BinaryEncodingId,
             new PublishResponse.BinaryCodec(),
@@ -1331,7 +1331,7 @@ class OpcUaDataTypeManagerInitializer {
             new PublishResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "QueryDataSet",
             QueryDataSet.BinaryEncodingId,
             new QueryDataSet.BinaryCodec(),
@@ -1339,7 +1339,7 @@ class OpcUaDataTypeManagerInitializer {
             new QueryDataSet.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "QueryFirstResponse",
             QueryFirstResponse.BinaryEncodingId,
             new QueryFirstResponse.BinaryCodec(),
@@ -1347,7 +1347,7 @@ class OpcUaDataTypeManagerInitializer {
             new QueryFirstResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReadAtTimeDetails",
             ReadAtTimeDetails.BinaryEncodingId,
             new ReadAtTimeDetails.BinaryCodec(),
@@ -1355,7 +1355,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReadAtTimeDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReadProcessedDetails",
             ReadProcessedDetails.BinaryEncodingId,
             new ReadProcessedDetails.BinaryCodec(),
@@ -1363,7 +1363,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReadProcessedDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReadRequest",
             ReadRequest.BinaryEncodingId,
             new ReadRequest.BinaryCodec(),
@@ -1371,7 +1371,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReadRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReadValueId",
             ReadValueId.BinaryEncodingId,
             new ReadValueId.BinaryCodec(),
@@ -1379,7 +1379,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReadValueId.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReferenceDescription",
             ReferenceDescription.BinaryEncodingId,
             new ReferenceDescription.BinaryCodec(),
@@ -1387,7 +1387,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReferenceDescription.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReferenceTypeAttributes",
             ReferenceTypeAttributes.BinaryEncodingId,
             new ReferenceTypeAttributes.BinaryCodec(),
@@ -1395,7 +1395,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReferenceTypeAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RegisteredServer",
             RegisteredServer.BinaryEncodingId,
             new RegisteredServer.BinaryCodec(),
@@ -1403,7 +1403,7 @@ class OpcUaDataTypeManagerInitializer {
             new RegisteredServer.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RegisterNodesResponse",
             RegisterNodesResponse.BinaryEncodingId,
             new RegisterNodesResponse.BinaryCodec(),
@@ -1411,7 +1411,7 @@ class OpcUaDataTypeManagerInitializer {
             new RegisterNodesResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RegisterServer2Response",
             RegisterServer2Response.BinaryEncodingId,
             new RegisterServer2Response.BinaryCodec(),
@@ -1419,7 +1419,7 @@ class OpcUaDataTypeManagerInitializer {
             new RegisterServer2Response.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RegisterServerResponse",
             RegisterServerResponse.BinaryEncodingId,
             new RegisterServerResponse.BinaryCodec(),
@@ -1427,7 +1427,7 @@ class OpcUaDataTypeManagerInitializer {
             new RegisterServerResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RepublishResponse",
             RepublishResponse.BinaryEncodingId,
             new RepublishResponse.BinaryCodec(),
@@ -1435,7 +1435,7 @@ class OpcUaDataTypeManagerInitializer {
             new RepublishResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ServerOnNetwork",
             ServerOnNetwork.BinaryEncodingId,
             new ServerOnNetwork.BinaryCodec(),
@@ -1443,7 +1443,7 @@ class OpcUaDataTypeManagerInitializer {
             new ServerOnNetwork.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ServiceCounterDataType",
             ServiceCounterDataType.BinaryEncodingId,
             new ServiceCounterDataType.BinaryCodec(),
@@ -1451,7 +1451,7 @@ class OpcUaDataTypeManagerInitializer {
             new ServiceCounterDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SessionDiagnosticsDataType",
             SessionDiagnosticsDataType.BinaryEncodingId,
             new SessionDiagnosticsDataType.BinaryCodec(),
@@ -1459,7 +1459,7 @@ class OpcUaDataTypeManagerInitializer {
             new SessionDiagnosticsDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SetMonitoringModeResponse",
             SetMonitoringModeResponse.BinaryEncodingId,
             new SetMonitoringModeResponse.BinaryCodec(),
@@ -1467,7 +1467,7 @@ class OpcUaDataTypeManagerInitializer {
             new SetMonitoringModeResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SetPublishingModeResponse",
             SetPublishingModeResponse.BinaryEncodingId,
             new SetPublishingModeResponse.BinaryCodec(),
@@ -1475,7 +1475,7 @@ class OpcUaDataTypeManagerInitializer {
             new SetPublishingModeResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SetTriggeringResponse",
             SetTriggeringResponse.BinaryEncodingId,
             new SetTriggeringResponse.BinaryCodec(),
@@ -1483,7 +1483,7 @@ class OpcUaDataTypeManagerInitializer {
             new SetTriggeringResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SignedSoftwareCertificate",
             SignedSoftwareCertificate.BinaryEncodingId,
             new SignedSoftwareCertificate.BinaryCodec(),
@@ -1491,7 +1491,7 @@ class OpcUaDataTypeManagerInitializer {
             new SignedSoftwareCertificate.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SoftwareCertificate",
             SoftwareCertificate.BinaryEncodingId,
             new SoftwareCertificate.BinaryCodec(),
@@ -1499,7 +1499,7 @@ class OpcUaDataTypeManagerInitializer {
             new SoftwareCertificate.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TransferSubscriptionsRequest",
             TransferSubscriptionsRequest.BinaryEncodingId,
             new TransferSubscriptionsRequest.BinaryCodec(),
@@ -1507,7 +1507,7 @@ class OpcUaDataTypeManagerInitializer {
             new TransferSubscriptionsRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TrustListDataType",
             TrustListDataType.BinaryEncodingId,
             new TrustListDataType.BinaryCodec(),
@@ -1515,7 +1515,7 @@ class OpcUaDataTypeManagerInitializer {
             new TrustListDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UnregisterNodesResponse",
             UnregisterNodesResponse.BinaryEncodingId,
             new UnregisterNodesResponse.BinaryCodec(),
@@ -1523,7 +1523,7 @@ class OpcUaDataTypeManagerInitializer {
             new UnregisterNodesResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UpdateDataDetails",
             UpdateDataDetails.BinaryEncodingId,
             new UpdateDataDetails.BinaryCodec(),
@@ -1531,7 +1531,7 @@ class OpcUaDataTypeManagerInitializer {
             new UpdateDataDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UpdateEventDetails",
             UpdateEventDetails.BinaryEncodingId,
             new UpdateEventDetails.BinaryCodec(),
@@ -1539,7 +1539,7 @@ class OpcUaDataTypeManagerInitializer {
             new UpdateEventDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UserIdentityToken",
             UserIdentityToken.BinaryEncodingId,
             new UserIdentityToken.BinaryCodec(),
@@ -1547,7 +1547,7 @@ class OpcUaDataTypeManagerInitializer {
             new UserIdentityToken.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AddNodesResponse",
             AddNodesResponse.BinaryEncodingId,
             new AddNodesResponse.BinaryCodec(),
@@ -1555,7 +1555,7 @@ class OpcUaDataTypeManagerInitializer {
             new AddNodesResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AddReferencesItem",
             AddReferencesItem.BinaryEncodingId,
             new AddReferencesItem.BinaryCodec(),
@@ -1563,7 +1563,7 @@ class OpcUaDataTypeManagerInitializer {
             new AddReferencesItem.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AddReferencesResponse",
             AddReferencesResponse.BinaryEncodingId,
             new AddReferencesResponse.BinaryCodec(),
@@ -1571,7 +1571,7 @@ class OpcUaDataTypeManagerInitializer {
             new AddReferencesResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AggregateFilterResult",
             AggregateFilterResult.BinaryEncodingId,
             new AggregateFilterResult.BinaryCodec(),
@@ -1579,7 +1579,7 @@ class OpcUaDataTypeManagerInitializer {
             new AggregateFilterResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AnonymousIdentityToken",
             AnonymousIdentityToken.BinaryEncodingId,
             new AnonymousIdentityToken.BinaryCodec(),
@@ -1587,7 +1587,7 @@ class OpcUaDataTypeManagerInitializer {
             new AnonymousIdentityToken.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "Argument",
             Argument.BinaryEncodingId,
             new Argument.BinaryCodec(),
@@ -1595,7 +1595,7 @@ class OpcUaDataTypeManagerInitializer {
             new Argument.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "AttributeOperand",
             AttributeOperand.BinaryEncodingId,
             new AttributeOperand.BinaryCodec(),
@@ -1603,7 +1603,7 @@ class OpcUaDataTypeManagerInitializer {
             new AttributeOperand.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowseNextResponse",
             BrowseNextResponse.BinaryEncodingId,
             new BrowseNextResponse.BinaryCodec(),
@@ -1611,7 +1611,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowseNextResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowsePathTarget",
             BrowsePathTarget.BinaryEncodingId,
             new BrowsePathTarget.BinaryCodec(),
@@ -1619,7 +1619,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowsePathTarget.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "BrowseResult",
             BrowseResult.BinaryEncodingId,
             new BrowseResult.BinaryCodec(),
@@ -1627,7 +1627,7 @@ class OpcUaDataTypeManagerInitializer {
             new BrowseResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CallMethodResult",
             CallMethodResult.BinaryEncodingId,
             new CallMethodResult.BinaryCodec(),
@@ -1635,7 +1635,7 @@ class OpcUaDataTypeManagerInitializer {
             new CallMethodResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CancelRequest",
             CancelRequest.BinaryEncodingId,
             new CancelRequest.BinaryCodec(),
@@ -1643,7 +1643,7 @@ class OpcUaDataTypeManagerInitializer {
             new CancelRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CloseSecureChannelRequest",
             CloseSecureChannelRequest.BinaryEncodingId,
             new CloseSecureChannelRequest.BinaryCodec(),
@@ -1651,7 +1651,7 @@ class OpcUaDataTypeManagerInitializer {
             new CloseSecureChannelRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "CloseSessionResponse",
             CloseSessionResponse.BinaryEncodingId,
             new CloseSessionResponse.BinaryCodec(),
@@ -1659,7 +1659,7 @@ class OpcUaDataTypeManagerInitializer {
             new CloseSessionResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "NodeAttributes",
             NodeAttributes.BinaryEncodingId,
             new NodeAttributes.BinaryCodec(),
@@ -1667,7 +1667,7 @@ class OpcUaDataTypeManagerInitializer {
             new NodeAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "NodeTypeDescription",
             NodeTypeDescription.BinaryEncodingId,
             new NodeTypeDescription.BinaryCodec(),
@@ -1675,7 +1675,7 @@ class OpcUaDataTypeManagerInitializer {
             new NodeTypeDescription.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "NotificationData",
             NotificationData.BinaryEncodingId,
             new NotificationData.BinaryCodec(),
@@ -1683,7 +1683,7 @@ class OpcUaDataTypeManagerInitializer {
             new NotificationData.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "NotificationMessage",
             NotificationMessage.BinaryEncodingId,
             new NotificationMessage.BinaryCodec(),
@@ -1691,7 +1691,7 @@ class OpcUaDataTypeManagerInitializer {
             new NotificationMessage.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ObjectAttributes",
             ObjectAttributes.BinaryEncodingId,
             new ObjectAttributes.BinaryCodec(),
@@ -1699,7 +1699,7 @@ class OpcUaDataTypeManagerInitializer {
             new ObjectAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ObjectTypeAttributes",
             ObjectTypeAttributes.BinaryEncodingId,
             new ObjectTypeAttributes.BinaryCodec(),
@@ -1707,7 +1707,7 @@ class OpcUaDataTypeManagerInitializer {
             new ObjectTypeAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ObjectTypeNode",
             ObjectTypeNode.BinaryEncodingId,
             new ObjectTypeNode.BinaryCodec(),
@@ -1715,7 +1715,7 @@ class OpcUaDataTypeManagerInitializer {
             new ObjectTypeNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "OpenSecureChannelResponse",
             OpenSecureChannelResponse.BinaryEncodingId,
             new OpenSecureChannelResponse.BinaryCodec(),
@@ -1723,7 +1723,7 @@ class OpcUaDataTypeManagerInitializer {
             new OpenSecureChannelResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "OptionSet",
             OptionSet.BinaryEncodingId,
             new OptionSet.BinaryCodec(),
@@ -1731,7 +1731,7 @@ class OpcUaDataTypeManagerInitializer {
             new OptionSet.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ParsingResult",
             ParsingResult.BinaryEncodingId,
             new ParsingResult.BinaryCodec(),
@@ -1739,7 +1739,7 @@ class OpcUaDataTypeManagerInitializer {
             new ParsingResult.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "PublishRequest",
             PublishRequest.BinaryEncodingId,
             new PublishRequest.BinaryCodec(),
@@ -1747,7 +1747,7 @@ class OpcUaDataTypeManagerInitializer {
             new PublishRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "QueryDataDescription",
             QueryDataDescription.BinaryEncodingId,
             new QueryDataDescription.BinaryCodec(),
@@ -1755,7 +1755,7 @@ class OpcUaDataTypeManagerInitializer {
             new QueryDataDescription.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "QueryFirstRequest",
             QueryFirstRequest.BinaryEncodingId,
             new QueryFirstRequest.BinaryCodec(),
@@ -1763,7 +1763,7 @@ class OpcUaDataTypeManagerInitializer {
             new QueryFirstRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "QueryNextRequest",
             QueryNextRequest.BinaryEncodingId,
             new QueryNextRequest.BinaryCodec(),
@@ -1771,7 +1771,7 @@ class OpcUaDataTypeManagerInitializer {
             new QueryNextRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "QueryNextResponse",
             QueryNextResponse.BinaryEncodingId,
             new QueryNextResponse.BinaryCodec(),
@@ -1779,7 +1779,7 @@ class OpcUaDataTypeManagerInitializer {
             new QueryNextResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "Range",
             Range.BinaryEncodingId,
             new Range.BinaryCodec(),
@@ -1787,7 +1787,7 @@ class OpcUaDataTypeManagerInitializer {
             new Range.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReadEventDetails",
             ReadEventDetails.BinaryEncodingId,
             new ReadEventDetails.BinaryCodec(),
@@ -1795,7 +1795,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReadEventDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReadRawModifiedDetails",
             ReadRawModifiedDetails.BinaryEncodingId,
             new ReadRawModifiedDetails.BinaryCodec(),
@@ -1803,7 +1803,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReadRawModifiedDetails.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReadResponse",
             ReadResponse.BinaryEncodingId,
             new ReadResponse.BinaryCodec(),
@@ -1811,7 +1811,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReadResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RedundantServerDataType",
             RedundantServerDataType.BinaryEncodingId,
             new RedundantServerDataType.BinaryCodec(),
@@ -1819,7 +1819,7 @@ class OpcUaDataTypeManagerInitializer {
             new RedundantServerDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReferenceNode",
             ReferenceNode.BinaryEncodingId,
             new ReferenceNode.BinaryCodec(),
@@ -1827,7 +1827,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReferenceNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ReferenceTypeNode",
             ReferenceTypeNode.BinaryEncodingId,
             new ReferenceTypeNode.BinaryCodec(),
@@ -1835,7 +1835,7 @@ class OpcUaDataTypeManagerInitializer {
             new ReferenceTypeNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RegisterNodesRequest",
             RegisterNodesRequest.BinaryEncodingId,
             new RegisterNodesRequest.BinaryCodec(),
@@ -1843,7 +1843,7 @@ class OpcUaDataTypeManagerInitializer {
             new RegisterNodesRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RegisterServer2Request",
             RegisterServer2Request.BinaryEncodingId,
             new RegisterServer2Request.BinaryCodec(),
@@ -1851,7 +1851,7 @@ class OpcUaDataTypeManagerInitializer {
             new RegisterServer2Request.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RegisterServerRequest",
             RegisterServerRequest.BinaryEncodingId,
             new RegisterServerRequest.BinaryCodec(),
@@ -1859,7 +1859,7 @@ class OpcUaDataTypeManagerInitializer {
             new RegisterServerRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RelativePath",
             RelativePath.BinaryEncodingId,
             new RelativePath.BinaryCodec(),
@@ -1867,7 +1867,7 @@ class OpcUaDataTypeManagerInitializer {
             new RelativePath.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "RequestHeader",
             RequestHeader.BinaryEncodingId,
             new RequestHeader.BinaryCodec(),
@@ -1875,7 +1875,7 @@ class OpcUaDataTypeManagerInitializer {
             new RequestHeader.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SemanticChangeStructureDataType",
             SemanticChangeStructureDataType.BinaryEncodingId,
             new SemanticChangeStructureDataType.BinaryCodec(),
@@ -1883,7 +1883,7 @@ class OpcUaDataTypeManagerInitializer {
             new SemanticChangeStructureDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ServerDiagnosticsSummaryDataType",
             ServerDiagnosticsSummaryDataType.BinaryEncodingId,
             new ServerDiagnosticsSummaryDataType.BinaryCodec(),
@@ -1891,7 +1891,7 @@ class OpcUaDataTypeManagerInitializer {
             new ServerDiagnosticsSummaryDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ServerStatusDataType",
             ServerStatusDataType.BinaryEncodingId,
             new ServerStatusDataType.BinaryCodec(),
@@ -1899,7 +1899,7 @@ class OpcUaDataTypeManagerInitializer {
             new ServerStatusDataType.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ServiceFault",
             ServiceFault.BinaryEncodingId,
             new ServiceFault.BinaryCodec(),
@@ -1907,7 +1907,7 @@ class OpcUaDataTypeManagerInitializer {
             new ServiceFault.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "SupportedProfile",
             SupportedProfile.BinaryEncodingId,
             new SupportedProfile.BinaryCodec(),
@@ -1915,7 +1915,7 @@ class OpcUaDataTypeManagerInitializer {
             new SupportedProfile.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "TranslateBrowsePathsToNodeIdsResponse",
             TranslateBrowsePathsToNodeIdsResponse.BinaryEncodingId,
             new TranslateBrowsePathsToNodeIdsResponse.BinaryCodec(),
@@ -1923,7 +1923,7 @@ class OpcUaDataTypeManagerInitializer {
             new TranslateBrowsePathsToNodeIdsResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UserNameIdentityToken",
             UserNameIdentityToken.BinaryEncodingId,
             new UserNameIdentityToken.BinaryCodec(),
@@ -1931,7 +1931,7 @@ class OpcUaDataTypeManagerInitializer {
             new UserNameIdentityToken.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "UserTokenPolicy",
             UserTokenPolicy.BinaryEncodingId,
             new UserTokenPolicy.BinaryCodec(),
@@ -1939,7 +1939,7 @@ class OpcUaDataTypeManagerInitializer {
             new UserTokenPolicy.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "VariableAttributes",
             VariableAttributes.BinaryEncodingId,
             new VariableAttributes.BinaryCodec(),
@@ -1947,7 +1947,7 @@ class OpcUaDataTypeManagerInitializer {
             new VariableAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "VariableNode",
             VariableNode.BinaryEncodingId,
             new VariableNode.BinaryCodec(),
@@ -1955,7 +1955,7 @@ class OpcUaDataTypeManagerInitializer {
             new VariableNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "VariableTypeAttributes",
             VariableTypeAttributes.BinaryEncodingId,
             new VariableTypeAttributes.BinaryCodec(),
@@ -1963,7 +1963,7 @@ class OpcUaDataTypeManagerInitializer {
             new VariableTypeAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "VariableTypeNode",
             VariableTypeNode.BinaryEncodingId,
             new VariableTypeNode.BinaryCodec(),
@@ -1971,7 +1971,7 @@ class OpcUaDataTypeManagerInitializer {
             new VariableTypeNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ViewAttributes",
             ViewAttributes.BinaryEncodingId,
             new ViewAttributes.BinaryCodec(),
@@ -1979,7 +1979,7 @@ class OpcUaDataTypeManagerInitializer {
             new ViewAttributes.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ViewDescription",
             ViewDescription.BinaryEncodingId,
             new ViewDescription.BinaryCodec(),
@@ -1987,7 +1987,7 @@ class OpcUaDataTypeManagerInitializer {
             new ViewDescription.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "ViewNode",
             ViewNode.BinaryEncodingId,
             new ViewNode.BinaryCodec(),
@@ -1995,7 +1995,7 @@ class OpcUaDataTypeManagerInitializer {
             new ViewNode.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "WriteRequest",
             WriteRequest.BinaryEncodingId,
             new WriteRequest.BinaryCodec(),
@@ -2003,7 +2003,7 @@ class OpcUaDataTypeManagerInitializer {
             new WriteRequest.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "WriteResponse",
             WriteResponse.BinaryEncodingId,
             new WriteResponse.BinaryCodec(),
@@ -2011,7 +2011,7 @@ class OpcUaDataTypeManagerInitializer {
             new WriteResponse.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "WriteValue",
             WriteValue.BinaryEncodingId,
             new WriteValue.BinaryCodec(),
@@ -2019,7 +2019,7 @@ class OpcUaDataTypeManagerInitializer {
             new WriteValue.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "X509IdentityToken",
             X509IdentityToken.BinaryEncodingId,
             new X509IdentityToken.BinaryCodec(),
@@ -2027,7 +2027,7 @@ class OpcUaDataTypeManagerInitializer {
             new X509IdentityToken.XmlCodec()
         );
 
-        OpcUaDataTypeManager.register(
+        BuiltinDataTypeDictionary.register(
             "XVType",
             XVType.BinaryEncodingId,
             new XVType.BinaryCodec(),

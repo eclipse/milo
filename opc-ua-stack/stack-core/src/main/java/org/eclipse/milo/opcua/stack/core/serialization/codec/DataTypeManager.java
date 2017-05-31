@@ -19,7 +19,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface DataTypeManager {
 
-    void registerTypeDictionary(DataTypeDictionary dataTypeDictionary);
+    /**
+     * Register a {@link DataTypeDictionary} with this {@link DataTypeManager}.
+     * <p>
+     * If the available codecs in a dictionary change it should be re-registered with this {@link DataTypeManager}.
+     *
+     * @param dataTypeDictionary the {@link DataTypeDictionary}.
+     */
+    void registerTypeDictionary(DataTypeDictionary<?> dataTypeDictionary);
 
     /**
      * Get the {@link DataTypeDictionary} registered under {@code namespaceUri}.
@@ -29,6 +36,33 @@ public interface DataTypeManager {
      */
     @Nullable
     DataTypeDictionary getTypeDictionary(String namespaceUri);
+
+    /**
+     * Get the {@link DataTypeCodec} identified by {@code encodingId}. ().
+     *
+     * @param encodingId the {@link NodeId} of the DataTypeEncoding Node for the DataType.
+     * @return a {@link DataTypeCodec}, or {@code null} if none was found.
+     */
+    @Nullable
+    DataTypeCodec getCodec(NodeId encodingId);
+
+    /**
+     * Get the {@link OpcBinaryDataTypeCodec} identified by {@code encodingId}.
+     *
+     * @param encodingId the {@link NodeId} of the DataTypeEncoding node for the DataType of the requested codec.
+     * @return an {@link OpcBinaryDataTypeCodec}, or {@code null} if none was found.
+     */
+    @Nullable
+    OpcBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId);
+
+    /**
+     * Get the {@link OpcXmlDataTypeCodec} identified by {@code encodingId}.
+     *
+     * @param encodingId the {@link NodeId} of the DataTypeEncoding node for the DataType of the requested codec.
+     * @return an {@link OpcXmlDataTypeCodec}, or {@code null} if none was found.
+     */
+    @Nullable
+    OpcXmlDataTypeCodec<?> getXmlCodec(NodeId encodingId);
 
     /**
      * Get the {@link DataTypeCodec} in the dictionary identified by {@code namespaceUri} using {@code description} to
@@ -45,15 +79,6 @@ public interface DataTypeManager {
 
         return dictionary != null ? dictionary.getCodec(description) : null;
     }
-
-    /**
-     * Get the {@link OpcBinaryDataTypeCodec} identified by {@code encodingId}.
-     *
-     * @param encodingId the {@link NodeId} of the DataTypeEncoding node for the DataType of the requested codec.
-     * @return an {@link OpcBinaryDataTypeCodec}, or {@code null} if none was found.
-     */
-    @Nullable
-    OpcBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId);
 
     /**
      * Get the {@link OpcBinaryDataTypeCodec} identified by {@code description} from the dictionary identified by
@@ -73,15 +98,6 @@ public interface DataTypeManager {
             return null;
         }
     }
-
-    /**
-     * Get the {@link OpcXmlDataTypeCodec} identified by {@code encodingId}.
-     *
-     * @param encodingId the {@link NodeId} of the DataTypeEncoding node for the DataType of the requested codec.
-     * @return an {@link OpcXmlDataTypeCodec}, or {@code null} if none was found.
-     */
-    @Nullable
-    OpcXmlDataTypeCodec<?> getXmlCodec(NodeId encodingId);
 
     /**
      * Get the {@link OpcXmlDataTypeCodec} identified by {@code description} from the dictionary identified by

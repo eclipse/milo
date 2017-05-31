@@ -13,6 +13,10 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.codec;
 
+import java.util.Map;
+
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+
 public interface DataTypeDictionary<T extends DataTypeCodec> {
 
     /**
@@ -21,12 +25,14 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
     String getNamespaceUri();
 
     /**
-     * Register a {@link DataTypeCodec}.
+     * Register a {@link DataTypeCodec} with this dictionary.
      *
-     * @param codec       the {@link DataTypeCodec} to register.
-     * @param description the value of the DataTypeDescription that identifies the codec in the dictionary.
+     * @param codec       the codec to register.
+     * @param description the value of the DataTypeDescription Node that identifies {@code codec} in the dictionary.
+     * @param encodingId  the {@link NodeId} of the appropriate DataTypeEncoding Node for the DataType serialized
+     *                    by {@code codec}.
      */
-    void registerCodec(T codec, String description);
+    void registerCodec(T codec, String description, NodeId encodingId);
 
     /**
      * Get a {@link DataTypeCodec} registered with this dictionary.
@@ -35,5 +41,23 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      * @return a {@link DataTypeCodec} for {@code description}, or {@code null} if none is found.
      */
     T getCodec(String description);
+
+    /**
+     * Get a {@link DataTypeCodec} registered with this dictionary.
+     *
+     * @param encodingId the {@link NodeId} of the DataTypeEncoding Node for the DataType serialized by the codec.
+     * @return a {@link DataTypeCodec} for {@code encodingId}, or {@code null} if none is found.
+     */
+    T getCodec(NodeId encodingId);
+
+    /**
+     * @return a Map of all codecs registered with this dictionary, keyed by description.
+     */
+    Map<String, T> getCodecsByDescription();
+
+    /**
+     * @return a Map of all codecs registered with this dictionary, keyed by encoding id.
+     */
+    Map<NodeId, T> getCodecsByEncodingId();
 
 }
