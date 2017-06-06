@@ -17,8 +17,22 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 
 public interface DataTypeCodec<T, R, W> {
 
+    /**
+     * Decode a {@link T} using the provided reader {@link R}.
+     *
+     * @param context the {@link SerializationContext}.
+     * @param reader  the reader {@link R} to decode from.
+     * @return a decoded {@link T}.
+     */
     T decode(SerializationContext context, R reader) throws UaSerializationException;
 
+    /**
+     * Encode a {@link T} using the provided writer {@link W}.
+     *
+     * @param context the {@link SerializationContext}.
+     * @param t       the {@link T} to encode.
+     * @param writer  the writer {@link W} to encode to.
+     */
     void encode(SerializationContext context, T t, W writer) throws UaSerializationException;
 
 }

@@ -17,8 +17,22 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 
 public interface OpcXmlDataTypeCodec<T> extends DataTypeCodec<T, OpcXmlStreamReader, OpcXmlStreamWriter> {
 
+    /**
+     * Decode a {@link T} using the provided {@link OpcXmlStreamReader}.
+     *
+     * @param context the {@link SerializationContext}.
+     * @param reader  the {@link OpcXmlStreamReader} to decode from.
+     * @return a decoded {@link T}.
+     */
     T decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException;
 
-    void encode(SerializationContext context, T t, OpcXmlStreamWriter writer) throws UaSerializationException;
+    /**
+     * Encode a {@link T} using the provided {@link OpcXmlStreamWriter}.
+     *
+     * @param context   the {@link SerializationContext}.
+     * @param encodable the {@link T} to encode.
+     * @param writer    the {@link OpcXmlStreamWriter} to encode to.
+     */
+    void encode(SerializationContext context, T encodable, OpcXmlStreamWriter writer) throws UaSerializationException;
 
 }

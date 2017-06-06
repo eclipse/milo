@@ -17,8 +17,22 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 
 public interface OpcBinaryDataTypeCodec<T> extends DataTypeCodec<T, OpcBinaryStreamReader, OpcBinaryStreamWriter> {
 
+    /**
+     * Decode a {@link T} using the provided {@link OpcBinaryStreamReader}.
+     *
+     * @param context the {@link SerializationContext}.
+     * @param reader  the {@link OpcBinaryStreamReader} to decode from.
+     * @return a decoded {@link T}.
+     */
     T decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException;
 
-    void encode(SerializationContext context, T t, OpcBinaryStreamWriter writer) throws UaSerializationException;
+    /**
+     * Encode a {@link T} using the provided {@link OpcBinaryStreamWriter}.
+     *
+     * @param context   the {@link SerializationContext}.
+     * @param encodable the {@link T} to encode.
+     * @param writer    the {@link OpcBinaryStreamWriter} to encode to.
+     */
+    void encode(SerializationContext context, T encodable, OpcBinaryStreamWriter writer) throws UaSerializationException;
 
 }
