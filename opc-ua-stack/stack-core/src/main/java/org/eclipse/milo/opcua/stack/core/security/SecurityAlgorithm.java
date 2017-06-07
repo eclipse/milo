@@ -74,8 +74,15 @@ public enum SecurityAlgorithm {
 
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
+     * <p>
+     * Important note: the transformation used is "RSA/ECB/OAEPWithSHA256AndMGF1Padding" as opposed to
+     * "RSA/ECB/OAEPWithSHA-256AndMGF1Padding".
+     * <p>
+     * While similar, the former is provided by Bouncy Castle whereas the latter is provided by SunJCE.
+     * <p>
+     * This is important because the BC version uses SHA256 in the padding while the SunJCE version uses Sha1.
      */
-    RsaOaepSha256("http://www.w3.org/2009/xmlenc11#mgf1sha256", "RSA/ECB/OAEPWithSHA-256AndMGF1Padding"),
+    RsaOaepSha256("http://www.w3.org/2009/xmlenc11#mgf1sha256", "RSA/ECB/OAEPWithSHA256AndMGF1Padding"),
 
     /**
      * Asymmetric Key Wrap
