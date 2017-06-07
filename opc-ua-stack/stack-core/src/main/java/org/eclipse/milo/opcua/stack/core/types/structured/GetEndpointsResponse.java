@@ -86,10 +86,10 @@ public class GetEndpointsResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, GetEndpointsResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
+        public void encode(SerializationContext context, GetEndpointsResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
             writer.writeArray(
-                encodable._endpoints,
+                value._endpoints,
                 e -> context.encode(EndpointDescription.BinaryEncodingId, e, writer)
             );
         }

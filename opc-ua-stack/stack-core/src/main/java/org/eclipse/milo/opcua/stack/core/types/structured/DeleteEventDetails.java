@@ -78,9 +78,9 @@ public class DeleteEventDetails extends HistoryUpdateDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteEventDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeArray(encodable._eventIds, writer::writeByteString);
+        public void encode(SerializationContext context, DeleteEventDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeArray(value._eventIds, writer::writeByteString);
         }
     }
 

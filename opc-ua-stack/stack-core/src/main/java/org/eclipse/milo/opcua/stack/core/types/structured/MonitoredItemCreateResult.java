@@ -102,12 +102,12 @@ public class MonitoredItemCreateResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemCreateResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeUInt32(encodable._monitoredItemId);
-            writer.writeDouble(encodable._revisedSamplingInterval);
-            writer.writeUInt32(encodable._revisedQueueSize);
-            writer.writeExtensionObject(encodable._filterResult);
+        public void encode(SerializationContext context, MonitoredItemCreateResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeUInt32(value._monitoredItemId);
+            writer.writeDouble(value._revisedSamplingInterval);
+            writer.writeUInt32(value._revisedQueueSize);
+            writer.writeExtensionObject(value._filterResult);
         }
     }
 

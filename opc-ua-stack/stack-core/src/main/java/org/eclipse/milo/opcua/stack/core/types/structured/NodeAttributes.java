@@ -101,12 +101,12 @@ public class NodeAttributes implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, NodeAttributes encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._specifiedAttributes);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
-            writer.writeUInt32(encodable._writeMask);
-            writer.writeUInt32(encodable._userWriteMask);
+        public void encode(SerializationContext context, NodeAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._specifiedAttributes);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
         }
     }
 

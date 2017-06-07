@@ -93,11 +93,11 @@ public class ModifySubscriptionResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, ModifySubscriptionResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeDouble(encodable._revisedPublishingInterval);
-            writer.writeUInt32(encodable._revisedLifetimeCount);
-            writer.writeUInt32(encodable._revisedMaxKeepAliveCount);
+        public void encode(SerializationContext context, ModifySubscriptionResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeDouble(value._revisedPublishingInterval);
+            writer.writeUInt32(value._revisedLifetimeCount);
+            writer.writeUInt32(value._revisedMaxKeepAliveCount);
         }
     }
 

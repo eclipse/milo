@@ -370,50 +370,50 @@ public class SessionDiagnosticsDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SessionDiagnosticsDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._sessionId);
-            writer.writeString(encodable._sessionName);
-            context.encode(ApplicationDescription.BinaryEncodingId, encodable._clientDescription, writer);
-            writer.writeString(encodable._serverUri);
-            writer.writeString(encodable._endpointUrl);
-            writer.writeArray(encodable._localeIds, writer::writeString);
-            writer.writeDouble(encodable._actualSessionTimeout);
-            writer.writeUInt32(encodable._maxResponseMessageSize);
-            writer.writeDateTime(encodable._clientConnectionTime);
-            writer.writeDateTime(encodable._clientLastContactTime);
-            writer.writeUInt32(encodable._currentSubscriptionsCount);
-            writer.writeUInt32(encodable._currentMonitoredItemsCount);
-            writer.writeUInt32(encodable._currentPublishRequestsInQueue);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._totalRequestCount, writer);
-            writer.writeUInt32(encodable._unauthorizedRequestCount);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._readCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._historyReadCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._writeCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._historyUpdateCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._callCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._createMonitoredItemsCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._modifyMonitoredItemsCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._setMonitoringModeCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._setTriggeringCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._deleteMonitoredItemsCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._createSubscriptionCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._modifySubscriptionCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._setPublishingModeCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._publishCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._republishCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._transferSubscriptionsCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._deleteSubscriptionsCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._addNodesCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._addReferencesCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._deleteNodesCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._deleteReferencesCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._browseCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._browseNextCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._translateBrowsePathsToNodeIdsCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._queryFirstCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._queryNextCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._registerNodesCount, writer);
-            context.encode(ServiceCounterDataType.BinaryEncodingId, encodable._unregisterNodesCount, writer);
+        public void encode(SerializationContext context, SessionDiagnosticsDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._sessionId);
+            writer.writeString(value._sessionName);
+            context.encode(ApplicationDescription.BinaryEncodingId, value._clientDescription, writer);
+            writer.writeString(value._serverUri);
+            writer.writeString(value._endpointUrl);
+            writer.writeArray(value._localeIds, writer::writeString);
+            writer.writeDouble(value._actualSessionTimeout);
+            writer.writeUInt32(value._maxResponseMessageSize);
+            writer.writeDateTime(value._clientConnectionTime);
+            writer.writeDateTime(value._clientLastContactTime);
+            writer.writeUInt32(value._currentSubscriptionsCount);
+            writer.writeUInt32(value._currentMonitoredItemsCount);
+            writer.writeUInt32(value._currentPublishRequestsInQueue);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._totalRequestCount, writer);
+            writer.writeUInt32(value._unauthorizedRequestCount);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._readCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._historyReadCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._writeCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._historyUpdateCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._callCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._createMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._modifyMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._setMonitoringModeCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._setTriggeringCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._createSubscriptionCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._modifySubscriptionCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._setPublishingModeCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._publishCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._republishCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._transferSubscriptionsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteSubscriptionsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._addNodesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._addReferencesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteNodesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteReferencesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._browseCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._browseNextCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._translateBrowsePathsToNodeIdsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._queryFirstCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._queryNextCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._registerNodesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._unregisterNodesCount, writer);
         }
     }
 

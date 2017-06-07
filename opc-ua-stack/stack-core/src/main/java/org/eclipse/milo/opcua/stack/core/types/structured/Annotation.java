@@ -86,10 +86,10 @@ public class Annotation implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, Annotation encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._message);
-            writer.writeString(encodable._userName);
-            writer.writeDateTime(encodable._annotationTime);
+        public void encode(SerializationContext context, Annotation value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._message);
+            writer.writeString(value._userName);
+            writer.writeDateTime(value._annotationTime);
         }
     }
 

@@ -86,10 +86,10 @@ public class TranslateBrowsePathsToNodeIdsRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, TranslateBrowsePathsToNodeIdsRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+        public void encode(SerializationContext context, TranslateBrowsePathsToNodeIdsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
             writer.writeArray(
-                encodable._browsePaths,
+                value._browsePaths,
                 e -> context.encode(BrowsePath.BinaryEncodingId, e, writer)
             );
         }

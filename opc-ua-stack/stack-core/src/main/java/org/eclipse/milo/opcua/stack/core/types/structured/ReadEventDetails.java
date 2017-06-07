@@ -95,11 +95,11 @@ public class ReadEventDetails extends HistoryReadDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, ReadEventDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._numValuesPerNode);
-            writer.writeDateTime(encodable._startTime);
-            writer.writeDateTime(encodable._endTime);
-            context.encode(EventFilter.BinaryEncodingId, encodable._filter, writer);
+        public void encode(SerializationContext context, ReadEventDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._numValuesPerNode);
+            writer.writeDateTime(value._startTime);
+            writer.writeDateTime(value._endTime);
+            context.encode(EventFilter.BinaryEncodingId, value._filter, writer);
         }
     }
 

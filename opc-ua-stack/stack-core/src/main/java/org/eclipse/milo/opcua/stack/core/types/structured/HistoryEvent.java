@@ -79,9 +79,9 @@ public class HistoryEvent implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryEvent encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, HistoryEvent value, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
-                encodable._events,
+                value._events,
                 e -> context.encode(HistoryEventFieldList.BinaryEncodingId, e, writer)
             );
         }

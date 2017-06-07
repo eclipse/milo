@@ -78,9 +78,9 @@ public class DoubleComplexNumberType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, DoubleComplexNumberType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDouble(encodable._real);
-            writer.writeDouble(encodable._imaginary);
+        public void encode(SerializationContext context, DoubleComplexNumberType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble(value._real);
+            writer.writeDouble(value._imaginary);
         }
     }
 

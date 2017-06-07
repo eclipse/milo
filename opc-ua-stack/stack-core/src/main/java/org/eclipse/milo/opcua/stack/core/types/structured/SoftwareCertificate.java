@@ -144,18 +144,18 @@ public class SoftwareCertificate implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SoftwareCertificate encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._productName);
-            writer.writeString(encodable._productUri);
-            writer.writeString(encodable._vendorName);
-            writer.writeByteString(encodable._vendorProductCertificate);
-            writer.writeString(encodable._softwareVersion);
-            writer.writeString(encodable._buildNumber);
-            writer.writeDateTime(encodable._buildDate);
-            writer.writeString(encodable._issuedBy);
-            writer.writeDateTime(encodable._issueDate);
+        public void encode(SerializationContext context, SoftwareCertificate value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._productName);
+            writer.writeString(value._productUri);
+            writer.writeString(value._vendorName);
+            writer.writeByteString(value._vendorProductCertificate);
+            writer.writeString(value._softwareVersion);
+            writer.writeString(value._buildNumber);
+            writer.writeDateTime(value._buildDate);
+            writer.writeString(value._issuedBy);
+            writer.writeDateTime(value._issueDate);
             writer.writeArray(
-                encodable._supportedProfiles,
+                value._supportedProfiles,
                 e -> context.encode(SupportedProfile.BinaryEncodingId, e, writer)
             );
         }

@@ -89,11 +89,11 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteRawModifiedDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeBoolean(encodable._isDeleteModified);
-            writer.writeDateTime(encodable._startTime);
-            writer.writeDateTime(encodable._endTime);
+        public void encode(SerializationContext context, DeleteRawModifiedDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeBoolean(value._isDeleteModified);
+            writer.writeDateTime(value._startTime);
+            writer.writeDateTime(value._endTime);
         }
     }
 

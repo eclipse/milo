@@ -86,10 +86,10 @@ public class ModelChangeStructureDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ModelChangeStructureDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._affected);
-            writer.writeNodeId(encodable._affectedType);
-            writer.writeByte(encodable._verb);
+        public void encode(SerializationContext context, ModelChangeStructureDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._affected);
+            writer.writeNodeId(value._affectedType);
+            writer.writeByte(value._verb);
         }
     }
 

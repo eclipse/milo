@@ -71,8 +71,8 @@ public class HistoryUpdateDetails implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryUpdateDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
+        public void encode(SerializationContext context, HistoryUpdateDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
         }
     }
 

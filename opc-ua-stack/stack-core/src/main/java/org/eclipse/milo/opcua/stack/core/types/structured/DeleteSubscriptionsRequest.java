@@ -82,9 +82,9 @@ public class DeleteSubscriptionsRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteSubscriptionsRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(encodable._subscriptionIds, writer::writeUInt32);
+        public void encode(SerializationContext context, DeleteSubscriptionsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeArray(value._subscriptionIds, writer::writeUInt32);
         }
     }
 

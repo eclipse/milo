@@ -86,10 +86,10 @@ public class AddReferencesRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, AddReferencesRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+        public void encode(SerializationContext context, AddReferencesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
             writer.writeArray(
-                encodable._referencesToAdd,
+                value._referencesToAdd,
                 e -> context.encode(AddReferencesItem.BinaryEncodingId, e, writer)
             );
         }

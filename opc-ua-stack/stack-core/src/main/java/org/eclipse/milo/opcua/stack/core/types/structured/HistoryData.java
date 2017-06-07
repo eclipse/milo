@@ -75,8 +75,8 @@ public class HistoryData implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryData encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(encodable._dataValues, writer::writeDataValue);
+        public void encode(SerializationContext context, HistoryData value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(value._dataValues, writer::writeDataValue);
         }
     }
 

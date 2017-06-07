@@ -129,23 +129,23 @@ public class VariableTypeNode extends TypeNode {
         }
 
         @Override
-        public void encode(SerializationContext context, VariableTypeNode encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeInt32(encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeQualifiedName(encodable._browseName);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
-            writer.writeUInt32(encodable._writeMask);
-            writer.writeUInt32(encodable._userWriteMask);
+        public void encode(SerializationContext context, VariableTypeNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
+            writer.writeQualifiedName(value._browseName);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
             writer.writeArray(
-                encodable._references,
+                value._references,
                 e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
             );
-            writer.writeVariant(encodable._value);
-            writer.writeNodeId(encodable._dataType);
-            writer.writeInt32(encodable._valueRank);
-            writer.writeArray(encodable._arrayDimensions, writer::writeUInt32);
-            writer.writeBoolean(encodable._isAbstract);
+            writer.writeVariant(value._value);
+            writer.writeNodeId(value._dataType);
+            writer.writeInt32(value._valueRank);
+            writer.writeArray(value._arrayDimensions, writer::writeUInt32);
+            writer.writeBoolean(value._isAbstract);
         }
     }
 

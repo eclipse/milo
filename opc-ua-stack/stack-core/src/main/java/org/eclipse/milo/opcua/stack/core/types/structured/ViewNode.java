@@ -105,20 +105,20 @@ public class ViewNode extends InstanceNode {
         }
 
         @Override
-        public void encode(SerializationContext context, ViewNode encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeInt32(encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeQualifiedName(encodable._browseName);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
-            writer.writeUInt32(encodable._writeMask);
-            writer.writeUInt32(encodable._userWriteMask);
+        public void encode(SerializationContext context, ViewNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
+            writer.writeQualifiedName(value._browseName);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
             writer.writeArray(
-                encodable._references,
+                value._references,
                 e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
             );
-            writer.writeBoolean(encodable._containsNoLoops);
-            writer.writeByte(encodable._eventNotifier);
+            writer.writeBoolean(value._containsNoLoops);
+            writer.writeByte(value._eventNotifier);
         }
     }
 

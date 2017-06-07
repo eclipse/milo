@@ -117,14 +117,14 @@ public class AddNodesItem implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, AddNodesItem encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId(encodable._parentNodeId);
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeExpandedNodeId(encodable._requestedNewNodeId);
-            writer.writeQualifiedName(encodable._browseName);
-            writer.writeInt32(encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeExtensionObject(encodable._nodeAttributes);
-            writer.writeExpandedNodeId(encodable._typeDefinition);
+        public void encode(SerializationContext context, AddNodesItem value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeExpandedNodeId(value._parentNodeId);
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeExpandedNodeId(value._requestedNewNodeId);
+            writer.writeQualifiedName(value._browseName);
+            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
+            writer.writeExtensionObject(value._nodeAttributes);
+            writer.writeExpandedNodeId(value._typeDefinition);
         }
     }
 

@@ -107,13 +107,13 @@ public class BuildInfo implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, BuildInfo encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._productUri);
-            writer.writeString(encodable._manufacturerName);
-            writer.writeString(encodable._productName);
-            writer.writeString(encodable._softwareVersion);
-            writer.writeString(encodable._buildNumber);
-            writer.writeDateTime(encodable._buildDate);
+        public void encode(SerializationContext context, BuildInfo value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._productUri);
+            writer.writeString(value._manufacturerName);
+            writer.writeString(value._productName);
+            writer.writeString(value._softwareVersion);
+            writer.writeString(value._buildNumber);
+            writer.writeDateTime(value._buildDate);
         }
     }
 

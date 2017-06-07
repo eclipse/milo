@@ -100,11 +100,11 @@ public class CallMethodResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, CallMethodResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeArray(encodable._inputArgumentResults, writer::writeStatusCode);
-            writer.writeArray(encodable._inputArgumentDiagnosticInfos, writer::writeDiagnosticInfo);
-            writer.writeArray(encodable._outputArguments, writer::writeVariant);
+        public void encode(SerializationContext context, CallMethodResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeArray(value._inputArgumentResults, writer::writeStatusCode);
+            writer.writeArray(value._inputArgumentDiagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray(value._outputArguments, writer::writeVariant);
         }
     }
 

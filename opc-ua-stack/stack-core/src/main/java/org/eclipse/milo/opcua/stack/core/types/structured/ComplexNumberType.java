@@ -78,9 +78,9 @@ public class ComplexNumberType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ComplexNumberType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeFloat(encodable._real);
-            writer.writeFloat(encodable._imaginary);
+        public void encode(SerializationContext context, ComplexNumberType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeFloat(value._real);
+            writer.writeFloat(value._imaginary);
         }
     }
 

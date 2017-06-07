@@ -83,9 +83,9 @@ public class ContentFilterElement implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ContentFilterElement encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeInt32(encodable._filterOperator != null ? encodable._filterOperator.getValue() : 0);
-            writer.writeArray(encodable._filterOperands, writer::writeExtensionObject);
+        public void encode(SerializationContext context, ContentFilterElement value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32(value._filterOperator != null ? value._filterOperator.getValue() : 0);
+            writer.writeArray(value._filterOperands, writer::writeExtensionObject);
         }
     }
 

@@ -108,13 +108,13 @@ public class AddReferencesItem implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, AddReferencesItem encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._sourceNodeId);
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeBoolean(encodable._isForward);
-            writer.writeString(encodable._targetServerUri);
-            writer.writeExpandedNodeId(encodable._targetNodeId);
-            writer.writeInt32(encodable._targetNodeClass != null ? encodable._targetNodeClass.getValue() : 0);
+        public void encode(SerializationContext context, AddReferencesItem value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._sourceNodeId);
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._isForward);
+            writer.writeString(value._targetServerUri);
+            writer.writeExpandedNodeId(value._targetNodeId);
+            writer.writeInt32(value._targetNodeClass != null ? value._targetNodeClass.getValue() : 0);
         }
     }
 

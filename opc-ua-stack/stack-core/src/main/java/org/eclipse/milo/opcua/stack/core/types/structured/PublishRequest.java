@@ -86,10 +86,10 @@ public class PublishRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, PublishRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+        public void encode(SerializationContext context, PublishRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
             writer.writeArray(
-                encodable._subscriptionAcknowledgements,
+                value._subscriptionAcknowledgements,
                 e -> context.encode(SubscriptionAcknowledgement.BinaryEncodingId, e, writer)
             );
         }

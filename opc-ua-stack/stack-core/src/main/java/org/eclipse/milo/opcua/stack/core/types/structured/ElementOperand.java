@@ -73,8 +73,8 @@ public class ElementOperand extends FilterOperand {
         }
 
         @Override
-        public void encode(SerializationContext context, ElementOperand encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._index);
+        public void encode(SerializationContext context, ElementOperand value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._index);
         }
     }
 

@@ -80,9 +80,9 @@ public class MonitoredItemNotification implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemNotification encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._clientHandle);
-            writer.writeDataValue(encodable._value);
+        public void encode(SerializationContext context, MonitoredItemNotification value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._clientHandle);
+            writer.writeDataValue(value._value);
         }
     }
 

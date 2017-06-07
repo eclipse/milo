@@ -116,17 +116,17 @@ public class VariableTypeAttributes extends NodeAttributes {
         }
 
         @Override
-        public void encode(SerializationContext context, VariableTypeAttributes encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._specifiedAttributes);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
-            writer.writeUInt32(encodable._writeMask);
-            writer.writeUInt32(encodable._userWriteMask);
-            writer.writeVariant(encodable._value);
-            writer.writeNodeId(encodable._dataType);
-            writer.writeInt32(encodable._valueRank);
-            writer.writeArray(encodable._arrayDimensions, writer::writeUInt32);
-            writer.writeBoolean(encodable._isAbstract);
+        public void encode(SerializationContext context, VariableTypeAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._specifiedAttributes);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
+            writer.writeVariant(value._value);
+            writer.writeNodeId(value._dataType);
+            writer.writeInt32(value._valueRank);
+            writer.writeArray(value._arrayDimensions, writer::writeUInt32);
+            writer.writeBoolean(value._isAbstract);
         }
     }
 

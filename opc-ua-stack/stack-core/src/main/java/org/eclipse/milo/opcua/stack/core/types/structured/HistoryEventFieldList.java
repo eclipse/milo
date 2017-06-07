@@ -75,8 +75,8 @@ public class HistoryEventFieldList implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryEventFieldList encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(encodable._eventFields, writer::writeVariant);
+        public void encode(SerializationContext context, HistoryEventFieldList value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(value._eventFields, writer::writeVariant);
         }
     }
 

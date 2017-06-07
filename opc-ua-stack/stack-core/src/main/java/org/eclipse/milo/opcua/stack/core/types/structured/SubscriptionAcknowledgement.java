@@ -79,9 +79,9 @@ public class SubscriptionAcknowledgement implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SubscriptionAcknowledgement encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeUInt32(encodable._sequenceNumber);
+        public void encode(SerializationContext context, SubscriptionAcknowledgement value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeUInt32(value._sequenceNumber);
         }
     }
 

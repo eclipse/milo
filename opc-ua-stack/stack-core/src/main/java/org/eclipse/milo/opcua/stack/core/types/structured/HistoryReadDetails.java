@@ -61,7 +61,7 @@ public class HistoryReadDetails implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryReadDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, HistoryReadDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
         }
     }
 

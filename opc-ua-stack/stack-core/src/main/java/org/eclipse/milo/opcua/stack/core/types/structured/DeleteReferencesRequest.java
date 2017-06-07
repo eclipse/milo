@@ -86,10 +86,10 @@ public class DeleteReferencesRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteReferencesRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+        public void encode(SerializationContext context, DeleteReferencesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
             writer.writeArray(
-                encodable._referencesToDelete,
+                value._referencesToDelete,
                 e -> context.encode(DeleteReferencesItem.BinaryEncodingId, e, writer)
             );
         }

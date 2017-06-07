@@ -104,12 +104,12 @@ public class SetTriggeringRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, SetTriggeringRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeUInt32(encodable._triggeringItemId);
-            writer.writeArray(encodable._linksToAdd, writer::writeUInt32);
-            writer.writeArray(encodable._linksToRemove, writer::writeUInt32);
+        public void encode(SerializationContext context, SetTriggeringRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeUInt32(value._triggeringItemId);
+            writer.writeArray(value._linksToAdd, writer::writeUInt32);
+            writer.writeArray(value._linksToRemove, writer::writeUInt32);
         }
     }
 

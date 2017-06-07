@@ -94,11 +94,11 @@ public class WriteValue implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, WriteValue encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeUInt32(encodable._attributeId);
-            writer.writeString(encodable._indexRange);
-            writer.writeDataValue(encodable._value);
+        public void encode(SerializationContext context, WriteValue value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeUInt32(value._attributeId);
+            writer.writeString(value._indexRange);
+            writer.writeDataValue(value._value);
         }
     }
 

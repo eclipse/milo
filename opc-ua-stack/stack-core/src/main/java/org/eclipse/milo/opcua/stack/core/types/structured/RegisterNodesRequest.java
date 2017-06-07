@@ -81,9 +81,9 @@ public class RegisterNodesRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterNodesRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(encodable._nodesToRegister, writer::writeNodeId);
+        public void encode(SerializationContext context, RegisterNodesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeArray(value._nodesToRegister, writer::writeNodeId);
         }
     }
 

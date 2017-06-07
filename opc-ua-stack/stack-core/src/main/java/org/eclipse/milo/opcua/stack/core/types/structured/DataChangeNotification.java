@@ -89,12 +89,12 @@ public class DataChangeNotification extends NotificationData {
         }
 
         @Override
-        public void encode(SerializationContext context, DataChangeNotification encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, DataChangeNotification value, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
-                encodable._monitoredItems,
+                value._monitoredItems,
                 e -> context.encode(MonitoredItemNotification.BinaryEncodingId, e, writer)
             );
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

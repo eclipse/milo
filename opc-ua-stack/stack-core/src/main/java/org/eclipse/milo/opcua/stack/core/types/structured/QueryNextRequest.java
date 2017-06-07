@@ -86,10 +86,10 @@ public class QueryNextRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, QueryNextRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeBoolean(encodable._releaseContinuationPoint);
-            writer.writeByteString(encodable._continuationPoint);
+        public void encode(SerializationContext context, QueryNextRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeBoolean(value._releaseContinuationPoint);
+            writer.writeByteString(value._continuationPoint);
         }
     }
 

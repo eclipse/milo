@@ -90,10 +90,10 @@ public class QueryDataSet implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, QueryDataSet encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId(encodable._nodeId);
-            writer.writeExpandedNodeId(encodable._typeDefinitionNode);
-            writer.writeArray(encodable._values, writer::writeVariant);
+        public void encode(SerializationContext context, QueryDataSet value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeExpandedNodeId(value._nodeId);
+            writer.writeExpandedNodeId(value._typeDefinitionNode);
+            writer.writeArray(value._values, writer::writeVariant);
         }
     }
 

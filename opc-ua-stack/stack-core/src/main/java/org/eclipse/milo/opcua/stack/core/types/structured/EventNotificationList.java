@@ -80,9 +80,9 @@ public class EventNotificationList extends NotificationData {
         }
 
         @Override
-        public void encode(SerializationContext context, EventNotificationList encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, EventNotificationList value, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
-                encodable._events,
+                value._events,
                 e -> context.encode(EventFieldList.BinaryEncodingId, e, writer)
             );
         }

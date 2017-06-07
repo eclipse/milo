@@ -71,8 +71,8 @@ public class CloseSecureChannelRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CloseSecureChannelRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+        public void encode(SerializationContext context, CloseSecureChannelRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
         }
     }
 

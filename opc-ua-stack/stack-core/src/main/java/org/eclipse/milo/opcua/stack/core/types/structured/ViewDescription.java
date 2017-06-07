@@ -87,10 +87,10 @@ public class ViewDescription implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ViewDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._viewId);
-            writer.writeDateTime(encodable._timestamp);
-            writer.writeUInt32(encodable._viewVersion);
+        public void encode(SerializationContext context, ViewDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._viewId);
+            writer.writeDateTime(value._timestamp);
+            writer.writeUInt32(value._viewVersion);
         }
     }
 

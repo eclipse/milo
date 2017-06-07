@@ -97,12 +97,12 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, UpdateEventDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeInt32(encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
-            context.encode(EventFilter.BinaryEncodingId, encodable._filter, writer);
+        public void encode(SerializationContext context, UpdateEventDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeInt32(value._performInsertReplace != null ? value._performInsertReplace.getValue() : 0);
+            context.encode(EventFilter.BinaryEncodingId, value._filter, writer);
             writer.writeArray(
-                encodable._eventData,
+                value._eventData,
                 e -> context.encode(HistoryEventFieldList.BinaryEncodingId, e, writer)
             );
         }

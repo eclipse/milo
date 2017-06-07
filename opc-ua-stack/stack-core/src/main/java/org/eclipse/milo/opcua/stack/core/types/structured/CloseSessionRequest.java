@@ -78,9 +78,9 @@ public class CloseSessionRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CloseSessionRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeBoolean(encodable._deleteSubscriptions);
+        public void encode(SerializationContext context, CloseSessionRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeBoolean(value._deleteSubscriptions);
         }
     }
 

@@ -116,16 +116,16 @@ public class ActivateSessionRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, ActivateSessionRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            context.encode(SignatureData.BinaryEncodingId, encodable._clientSignature, writer);
+        public void encode(SerializationContext context, ActivateSessionRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            context.encode(SignatureData.BinaryEncodingId, value._clientSignature, writer);
             writer.writeArray(
-                encodable._clientSoftwareCertificates,
+                value._clientSoftwareCertificates,
                 e -> context.encode(SignedSoftwareCertificate.BinaryEncodingId, e, writer)
             );
-            writer.writeArray(encodable._localeIds, writer::writeString);
-            writer.writeExtensionObject(encodable._userIdentityToken);
-            context.encode(SignatureData.BinaryEncodingId, encodable._userTokenSignature, writer);
+            writer.writeArray(value._localeIds, writer::writeString);
+            writer.writeExtensionObject(value._userIdentityToken);
+            context.encode(SignatureData.BinaryEncodingId, value._userTokenSignature, writer);
         }
     }
 

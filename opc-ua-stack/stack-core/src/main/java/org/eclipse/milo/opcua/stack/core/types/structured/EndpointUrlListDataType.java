@@ -74,8 +74,8 @@ public class EndpointUrlListDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, EndpointUrlListDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(encodable._endpointUrlList, writer::writeString);
+        public void encode(SerializationContext context, EndpointUrlListDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(value._endpointUrlList, writer::writeString);
         }
     }
 

@@ -78,9 +78,9 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteAtTimeDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeArray(encodable._reqTimes, writer::writeDateTime);
+        public void encode(SerializationContext context, DeleteAtTimeDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeArray(value._reqTimes, writer::writeDateTime);
         }
     }
 

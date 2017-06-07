@@ -80,9 +80,9 @@ public class BrowsePathTarget implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, BrowsePathTarget encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId(encodable._targetId);
-            writer.writeUInt32(encodable._remainingPathIndex);
+        public void encode(SerializationContext context, BrowsePathTarget value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeExpandedNodeId(value._targetId);
+            writer.writeUInt32(value._remainingPathIndex);
         }
     }
 

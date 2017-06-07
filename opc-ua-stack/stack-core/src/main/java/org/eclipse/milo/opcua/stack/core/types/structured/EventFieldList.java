@@ -83,9 +83,9 @@ public class EventFieldList implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, EventFieldList encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._clientHandle);
-            writer.writeArray(encodable._eventFields, writer::writeVariant);
+        public void encode(SerializationContext context, EventFieldList value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._clientHandle);
+            writer.writeArray(value._eventFields, writer::writeVariant);
         }
     }
 

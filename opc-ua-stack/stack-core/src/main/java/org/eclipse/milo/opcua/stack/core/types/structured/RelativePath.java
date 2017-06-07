@@ -79,9 +79,9 @@ public class RelativePath implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, RelativePath encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, RelativePath value, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
-                encodable._elements,
+                value._elements,
                 e -> context.encode(RelativePathElement.BinaryEncodingId, e, writer)
             );
         }

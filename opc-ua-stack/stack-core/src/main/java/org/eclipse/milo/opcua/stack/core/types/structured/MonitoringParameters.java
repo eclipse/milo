@@ -101,12 +101,12 @@ public class MonitoringParameters implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoringParameters encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._clientHandle);
-            writer.writeDouble(encodable._samplingInterval);
-            writer.writeExtensionObject(encodable._filter);
-            writer.writeUInt32(encodable._queueSize);
-            writer.writeBoolean(encodable._discardOldest);
+        public void encode(SerializationContext context, MonitoringParameters value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._clientHandle);
+            writer.writeDouble(value._samplingInterval);
+            writer.writeExtensionObject(value._filter);
+            writer.writeUInt32(value._queueSize);
+            writer.writeBoolean(value._discardOldest);
         }
     }
 

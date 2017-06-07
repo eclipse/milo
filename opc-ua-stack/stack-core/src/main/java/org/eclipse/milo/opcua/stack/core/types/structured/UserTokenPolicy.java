@@ -100,12 +100,12 @@ public class UserTokenPolicy implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UserTokenPolicy encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._policyId);
-            writer.writeInt32(encodable._tokenType != null ? encodable._tokenType.getValue() : 0);
-            writer.writeString(encodable._issuedTokenType);
-            writer.writeString(encodable._issuerEndpointUrl);
-            writer.writeString(encodable._securityPolicyUri);
+        public void encode(SerializationContext context, UserTokenPolicy value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._policyId);
+            writer.writeInt32(value._tokenType != null ? value._tokenType.getValue() : 0);
+            writer.writeString(value._issuedTokenType);
+            writer.writeString(value._issuerEndpointUrl);
+            writer.writeString(value._securityPolicyUri);
         }
     }
 

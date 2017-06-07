@@ -110,13 +110,13 @@ public class ServerStatusDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ServerStatusDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(encodable._startTime);
-            writer.writeDateTime(encodable._currentTime);
-            writer.writeInt32(encodable._state != null ? encodable._state.getValue() : 0);
-            context.encode(BuildInfo.BinaryEncodingId, encodable._buildInfo, writer);
-            writer.writeUInt32(encodable._secondsTillShutdown);
-            writer.writeLocalizedText(encodable._shutdownReason);
+        public void encode(SerializationContext context, ServerStatusDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._startTime);
+            writer.writeDateTime(value._currentTime);
+            writer.writeInt32(value._state != null ? value._state.getValue() : 0);
+            context.encode(BuildInfo.BinaryEncodingId, value._buildInfo, writer);
+            writer.writeUInt32(value._secondsTillShutdown);
+            writer.writeLocalizedText(value._shutdownReason);
         }
     }
 

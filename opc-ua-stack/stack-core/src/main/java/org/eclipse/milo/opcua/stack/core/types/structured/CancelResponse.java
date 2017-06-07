@@ -79,9 +79,9 @@ public class CancelResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CancelResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeUInt32(encodable._cancelCount);
+        public void encode(SerializationContext context, CancelResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeUInt32(value._cancelCount);
         }
     }
 

@@ -91,10 +91,10 @@ public class RegisterServer2Response implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServer2Response encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeArray(encodable._configurationResults, writer::writeStatusCode);
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SerializationContext context, RegisterServer2Response value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeArray(value._configurationResults, writer::writeStatusCode);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

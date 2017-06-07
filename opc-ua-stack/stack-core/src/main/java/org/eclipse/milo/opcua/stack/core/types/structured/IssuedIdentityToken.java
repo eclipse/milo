@@ -82,10 +82,10 @@ public class IssuedIdentityToken extends UserIdentityToken {
         }
 
         @Override
-        public void encode(SerializationContext context, IssuedIdentityToken encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._policyId);
-            writer.writeByteString(encodable._tokenData);
-            writer.writeString(encodable._encryptionAlgorithm);
+        public void encode(SerializationContext context, IssuedIdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._policyId);
+            writer.writeByteString(value._tokenData);
+            writer.writeString(value._encryptionAlgorithm);
         }
     }
 

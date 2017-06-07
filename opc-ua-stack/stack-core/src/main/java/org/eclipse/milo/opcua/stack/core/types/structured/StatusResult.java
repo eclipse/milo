@@ -80,9 +80,9 @@ public class StatusResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, StatusResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeDiagnosticInfo(encodable._diagnosticInfo);
+        public void encode(SerializationContext context, StatusResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeDiagnosticInfo(value._diagnosticInfo);
         }
     }
 

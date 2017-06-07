@@ -82,9 +82,9 @@ public class HistoryUpdateRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryUpdateRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(encodable._historyUpdateDetails, writer::writeExtensionObject);
+        public void encode(SerializationContext context, HistoryUpdateRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeArray(value._historyUpdateDetails, writer::writeExtensionObject);
         }
     }
 

@@ -283,38 +283,38 @@ public class SubscriptionDiagnosticsDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SubscriptionDiagnosticsDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._sessionId);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeByte(encodable._priority);
-            writer.writeDouble(encodable._publishingInterval);
-            writer.writeUInt32(encodable._maxKeepAliveCount);
-            writer.writeUInt32(encodable._maxLifetimeCount);
-            writer.writeUInt32(encodable._maxNotificationsPerPublish);
-            writer.writeBoolean(encodable._publishingEnabled);
-            writer.writeUInt32(encodable._modifyCount);
-            writer.writeUInt32(encodable._enableCount);
-            writer.writeUInt32(encodable._disableCount);
-            writer.writeUInt32(encodable._republishRequestCount);
-            writer.writeUInt32(encodable._republishMessageRequestCount);
-            writer.writeUInt32(encodable._republishMessageCount);
-            writer.writeUInt32(encodable._transferRequestCount);
-            writer.writeUInt32(encodable._transferredToAltClientCount);
-            writer.writeUInt32(encodable._transferredToSameClientCount);
-            writer.writeUInt32(encodable._publishRequestCount);
-            writer.writeUInt32(encodable._dataChangeNotificationsCount);
-            writer.writeUInt32(encodable._eventNotificationsCount);
-            writer.writeUInt32(encodable._notificationsCount);
-            writer.writeUInt32(encodable._latePublishRequestCount);
-            writer.writeUInt32(encodable._currentKeepAliveCount);
-            writer.writeUInt32(encodable._currentLifetimeCount);
-            writer.writeUInt32(encodable._unacknowledgedMessageCount);
-            writer.writeUInt32(encodable._discardedMessageCount);
-            writer.writeUInt32(encodable._monitoredItemCount);
-            writer.writeUInt32(encodable._disabledMonitoredItemCount);
-            writer.writeUInt32(encodable._monitoringQueueOverflowCount);
-            writer.writeUInt32(encodable._nextSequenceNumber);
-            writer.writeUInt32(encodable._eventQueueOverFlowCount);
+        public void encode(SerializationContext context, SubscriptionDiagnosticsDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._sessionId);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeByte(value._priority);
+            writer.writeDouble(value._publishingInterval);
+            writer.writeUInt32(value._maxKeepAliveCount);
+            writer.writeUInt32(value._maxLifetimeCount);
+            writer.writeUInt32(value._maxNotificationsPerPublish);
+            writer.writeBoolean(value._publishingEnabled);
+            writer.writeUInt32(value._modifyCount);
+            writer.writeUInt32(value._enableCount);
+            writer.writeUInt32(value._disableCount);
+            writer.writeUInt32(value._republishRequestCount);
+            writer.writeUInt32(value._republishMessageRequestCount);
+            writer.writeUInt32(value._republishMessageCount);
+            writer.writeUInt32(value._transferRequestCount);
+            writer.writeUInt32(value._transferredToAltClientCount);
+            writer.writeUInt32(value._transferredToSameClientCount);
+            writer.writeUInt32(value._publishRequestCount);
+            writer.writeUInt32(value._dataChangeNotificationsCount);
+            writer.writeUInt32(value._eventNotificationsCount);
+            writer.writeUInt32(value._notificationsCount);
+            writer.writeUInt32(value._latePublishRequestCount);
+            writer.writeUInt32(value._currentKeepAliveCount);
+            writer.writeUInt32(value._currentLifetimeCount);
+            writer.writeUInt32(value._unacknowledgedMessageCount);
+            writer.writeUInt32(value._discardedMessageCount);
+            writer.writeUInt32(value._monitoredItemCount);
+            writer.writeUInt32(value._disabledMonitoredItemCount);
+            writer.writeUInt32(value._monitoringQueueOverflowCount);
+            writer.writeUInt32(value._nextSequenceNumber);
+            writer.writeUInt32(value._eventQueueOverFlowCount);
         }
     }
 

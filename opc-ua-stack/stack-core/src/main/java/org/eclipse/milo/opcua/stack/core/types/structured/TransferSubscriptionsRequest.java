@@ -89,10 +89,10 @@ public class TransferSubscriptionsRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, TransferSubscriptionsRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(encodable._subscriptionIds, writer::writeUInt32);
-            writer.writeBoolean(encodable._sendInitialValues);
+        public void encode(SerializationContext context, TransferSubscriptionsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeArray(value._subscriptionIds, writer::writeUInt32);
+            writer.writeBoolean(value._sendInitialValues);
         }
     }
 

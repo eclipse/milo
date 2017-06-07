@@ -86,10 +86,10 @@ public class MonitoredItemCreateRequest implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemCreateRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ReadValueId.BinaryEncodingId, encodable._itemToMonitor, writer);
-            writer.writeInt32(encodable._monitoringMode != null ? encodable._monitoringMode.getValue() : 0);
-            context.encode(MonitoringParameters.BinaryEncodingId, encodable._requestedParameters, writer);
+        public void encode(SerializationContext context, MonitoredItemCreateRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ReadValueId.BinaryEncodingId, value._itemToMonitor, writer);
+            writer.writeInt32(value._monitoringMode != null ? value._monitoringMode.getValue() : 0);
+            context.encode(MonitoringParameters.BinaryEncodingId, value._requestedParameters, writer);
         }
     }
 

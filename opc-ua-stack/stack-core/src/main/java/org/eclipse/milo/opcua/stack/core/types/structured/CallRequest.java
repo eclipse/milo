@@ -86,10 +86,10 @@ public class CallRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CallRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+        public void encode(SerializationContext context, CallRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
             writer.writeArray(
-                encodable._methodsToCall,
+                value._methodsToCall,
                 e -> context.encode(CallMethodRequest.BinaryEncodingId, e, writer)
             );
         }

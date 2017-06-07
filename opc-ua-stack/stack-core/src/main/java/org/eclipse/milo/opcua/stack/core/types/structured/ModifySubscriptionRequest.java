@@ -115,14 +115,14 @@ public class ModifySubscriptionRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, ModifySubscriptionRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeDouble(encodable._requestedPublishingInterval);
-            writer.writeUInt32(encodable._requestedLifetimeCount);
-            writer.writeUInt32(encodable._requestedMaxKeepAliveCount);
-            writer.writeUInt32(encodable._maxNotificationsPerPublish);
-            writer.writeByte(encodable._priority);
+        public void encode(SerializationContext context, ModifySubscriptionRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeDouble(value._requestedPublishingInterval);
+            writer.writeUInt32(value._requestedLifetimeCount);
+            writer.writeUInt32(value._requestedMaxKeepAliveCount);
+            writer.writeUInt32(value._maxNotificationsPerPublish);
+            writer.writeByte(value._priority);
         }
     }
 

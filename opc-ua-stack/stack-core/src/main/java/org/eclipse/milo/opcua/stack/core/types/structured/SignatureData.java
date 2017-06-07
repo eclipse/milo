@@ -79,9 +79,9 @@ public class SignatureData implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SignatureData encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._algorithm);
-            writer.writeByteString(encodable._signature);
+        public void encode(SerializationContext context, SignatureData value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._algorithm);
+            writer.writeByteString(value._signature);
         }
     }
 

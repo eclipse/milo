@@ -79,9 +79,9 @@ public class OptionSet implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, OptionSet encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeByteString(encodable._value);
-            writer.writeByteString(encodable._validBits);
+        public void encode(SerializationContext context, OptionSet value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeByteString(value._value);
+            writer.writeByteString(value._validBits);
         }
     }
 

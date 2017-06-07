@@ -93,11 +93,11 @@ public class RelativePathElement implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, RelativePathElement encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeBoolean(encodable._isInverse);
-            writer.writeBoolean(encodable._includeSubtypes);
-            writer.writeQualifiedName(encodable._targetName);
+        public void encode(SerializationContext context, RelativePathElement value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._isInverse);
+            writer.writeBoolean(value._includeSubtypes);
+            writer.writeQualifiedName(value._targetName);
         }
     }
 

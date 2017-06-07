@@ -79,9 +79,9 @@ public class ContentFilter implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ContentFilter encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, ContentFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
-                encodable._elements,
+                value._elements,
                 e -> context.encode(ContentFilterElement.BinaryEncodingId, e, writer)
             );
         }

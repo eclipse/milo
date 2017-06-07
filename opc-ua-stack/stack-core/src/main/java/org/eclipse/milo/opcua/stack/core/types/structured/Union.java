@@ -61,7 +61,7 @@ public class Union implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, Union encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, Union value, OpcBinaryStreamWriter writer) throws UaSerializationException {
         }
     }
 

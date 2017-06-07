@@ -86,10 +86,10 @@ public class WriteRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, WriteRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
+        public void encode(SerializationContext context, WriteRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
             writer.writeArray(
-                encodable._nodesToWrite,
+                value._nodesToWrite,
                 e -> context.encode(WriteValue.BinaryEncodingId, e, writer)
             );
         }

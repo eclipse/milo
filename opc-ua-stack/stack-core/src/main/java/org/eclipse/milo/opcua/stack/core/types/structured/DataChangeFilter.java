@@ -88,10 +88,10 @@ public class DataChangeFilter extends MonitoringFilter {
         }
 
         @Override
-        public void encode(SerializationContext context, DataChangeFilter encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeInt32(encodable._trigger != null ? encodable._trigger.getValue() : 0);
-            writer.writeUInt32(encodable._deadbandType);
-            writer.writeDouble(encodable._deadbandValue);
+        public void encode(SerializationContext context, DataChangeFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32(value._trigger != null ? value._trigger.getValue() : 0);
+            writer.writeUInt32(value._deadbandType);
+            writer.writeDouble(value._deadbandValue);
         }
     }
 

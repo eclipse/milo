@@ -91,10 +91,10 @@ public class NotificationMessage implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, NotificationMessage encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._sequenceNumber);
-            writer.writeDateTime(encodable._publishTime);
-            writer.writeArray(encodable._notificationData, writer::writeExtensionObject);
+        public void encode(SerializationContext context, NotificationMessage value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._sequenceNumber);
+            writer.writeDateTime(value._publishTime);
+            writer.writeArray(value._notificationData, writer::writeExtensionObject);
         }
     }
 

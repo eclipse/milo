@@ -86,10 +86,10 @@ public class ReferenceNode implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ReferenceNode encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeBoolean(encodable._isInverse);
-            writer.writeExpandedNodeId(encodable._targetId);
+        public void encode(SerializationContext context, ReferenceNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._isInverse);
+            writer.writeExpandedNodeId(value._targetId);
         }
     }
 

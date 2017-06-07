@@ -78,9 +78,9 @@ public class DeleteNodesItem implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteNodesItem encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeBoolean(encodable._deleteTargetReferences);
+        public void encode(SerializationContext context, DeleteNodesItem value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeBoolean(value._deleteTargetReferences);
         }
     }
 

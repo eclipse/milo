@@ -150,23 +150,23 @@ public class CreateSessionResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CreateSessionResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeNodeId(encodable._sessionId);
-            writer.writeNodeId(encodable._authenticationToken);
-            writer.writeDouble(encodable._revisedSessionTimeout);
-            writer.writeByteString(encodable._serverNonce);
-            writer.writeByteString(encodable._serverCertificate);
+        public void encode(SerializationContext context, CreateSessionResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeNodeId(value._sessionId);
+            writer.writeNodeId(value._authenticationToken);
+            writer.writeDouble(value._revisedSessionTimeout);
+            writer.writeByteString(value._serverNonce);
+            writer.writeByteString(value._serverCertificate);
             writer.writeArray(
-                encodable._serverEndpoints,
+                value._serverEndpoints,
                 e -> context.encode(EndpointDescription.BinaryEncodingId, e, writer)
             );
             writer.writeArray(
-                encodable._serverSoftwareCertificates,
+                value._serverSoftwareCertificates,
                 e -> context.encode(SignedSoftwareCertificate.BinaryEncodingId, e, writer)
             );
-            context.encode(SignatureData.BinaryEncodingId, encodable._serverSignature, writer);
-            writer.writeUInt32(encodable._maxRequestMessageSize);
+            context.encode(SignatureData.BinaryEncodingId, value._serverSignature, writer);
+            writer.writeUInt32(value._maxRequestMessageSize);
         }
     }
 

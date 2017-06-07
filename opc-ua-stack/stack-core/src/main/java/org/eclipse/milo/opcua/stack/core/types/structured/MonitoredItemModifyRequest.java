@@ -79,9 +79,9 @@ public class MonitoredItemModifyRequest implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemModifyRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._monitoredItemId);
-            context.encode(MonitoringParameters.BinaryEncodingId, encodable._requestedParameters, writer);
+        public void encode(SerializationContext context, MonitoredItemModifyRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._monitoredItemId);
+            context.encode(MonitoringParameters.BinaryEncodingId, value._requestedParameters, writer);
         }
     }
 

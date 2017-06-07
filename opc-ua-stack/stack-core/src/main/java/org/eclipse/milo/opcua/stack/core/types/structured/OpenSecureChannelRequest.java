@@ -110,13 +110,13 @@ public class OpenSecureChannelRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, OpenSecureChannelRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._clientProtocolVersion);
-            writer.writeInt32(encodable._requestType != null ? encodable._requestType.getValue() : 0);
-            writer.writeInt32(encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
-            writer.writeByteString(encodable._clientNonce);
-            writer.writeUInt32(encodable._requestedLifetime);
+        public void encode(SerializationContext context, OpenSecureChannelRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._clientProtocolVersion);
+            writer.writeInt32(value._requestType != null ? value._requestType.getValue() : 0);
+            writer.writeInt32(value._securityMode != null ? value._securityMode.getValue() : 0);
+            writer.writeByteString(value._clientNonce);
+            writer.writeUInt32(value._requestedLifetime);
         }
     }
 

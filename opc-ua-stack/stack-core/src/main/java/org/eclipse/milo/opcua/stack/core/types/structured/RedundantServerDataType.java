@@ -87,10 +87,10 @@ public class RedundantServerDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, RedundantServerDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._serverId);
-            writer.writeByte(encodable._serviceLevel);
-            writer.writeInt32(encodable._serverState != null ? encodable._serverState.getValue() : 0);
+        public void encode(SerializationContext context, RedundantServerDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._serverId);
+            writer.writeByte(value._serviceLevel);
+            writer.writeInt32(value._serverState != null ? value._serverState.getValue() : 0);
         }
     }
 

@@ -89,10 +89,10 @@ public class SetPublishingModeRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, SetPublishingModeRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeBoolean(encodable._publishingEnabled);
-            writer.writeArray(encodable._subscriptionIds, writer::writeUInt32);
+        public void encode(SerializationContext context, SetPublishingModeRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeBoolean(value._publishingEnabled);
+            writer.writeArray(value._subscriptionIds, writer::writeUInt32);
         }
     }
 

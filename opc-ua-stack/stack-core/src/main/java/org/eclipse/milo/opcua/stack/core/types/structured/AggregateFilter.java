@@ -94,11 +94,11 @@ public class AggregateFilter extends MonitoringFilter {
         }
 
         @Override
-        public void encode(SerializationContext context, AggregateFilter encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(encodable._startTime);
-            writer.writeNodeId(encodable._aggregateType);
-            writer.writeDouble(encodable._processingInterval);
-            context.encode(AggregateConfiguration.BinaryEncodingId, encodable._aggregateConfiguration, writer);
+        public void encode(SerializationContext context, AggregateFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._startTime);
+            writer.writeNodeId(value._aggregateType);
+            writer.writeDouble(value._processingInterval);
+            context.encode(AggregateConfiguration.BinaryEncodingId, value._aggregateConfiguration, writer);
         }
     }
 

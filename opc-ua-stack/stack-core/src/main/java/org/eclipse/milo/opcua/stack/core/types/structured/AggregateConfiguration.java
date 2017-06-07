@@ -100,12 +100,12 @@ public class AggregateConfiguration implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, AggregateConfiguration encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeBoolean(encodable._useServerCapabilitiesDefaults);
-            writer.writeBoolean(encodable._treatUncertainAsBad);
-            writer.writeByte(encodable._percentDataBad);
-            writer.writeByte(encodable._percentDataGood);
-            writer.writeBoolean(encodable._useSlopedExtrapolation);
+        public void encode(SerializationContext context, AggregateConfiguration value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeBoolean(value._useServerCapabilitiesDefaults);
+            writer.writeBoolean(value._treatUncertainAsBad);
+            writer.writeByte(value._percentDataBad);
+            writer.writeByte(value._percentDataGood);
+            writer.writeBoolean(value._useSlopedExtrapolation);
         }
     }
 

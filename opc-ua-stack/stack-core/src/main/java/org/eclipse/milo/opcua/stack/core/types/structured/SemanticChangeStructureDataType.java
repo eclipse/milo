@@ -78,9 +78,9 @@ public class SemanticChangeStructureDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SemanticChangeStructureDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._affected);
-            writer.writeNodeId(encodable._affectedType);
+        public void encode(SerializationContext context, SemanticChangeStructureDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._affected);
+            writer.writeNodeId(value._affectedType);
         }
     }
 

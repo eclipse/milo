@@ -91,10 +91,10 @@ public class DeleteNodesResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteNodesResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeArray(encodable._results, writer::writeStatusCode);
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SerializationContext context, DeleteNodesResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeArray(value._results, writer::writeStatusCode);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

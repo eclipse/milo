@@ -89,10 +89,10 @@ public class CallMethodRequest implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, CallMethodRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._objectId);
-            writer.writeNodeId(encodable._methodId);
-            writer.writeArray(encodable._inputArguments, writer::writeVariant);
+        public void encode(SerializationContext context, CallMethodRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._objectId);
+            writer.writeNodeId(value._methodId);
+            writer.writeArray(value._inputArguments, writer::writeVariant);
         }
     }
 

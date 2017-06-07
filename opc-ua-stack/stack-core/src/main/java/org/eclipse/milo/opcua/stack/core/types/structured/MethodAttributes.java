@@ -91,14 +91,14 @@ public class MethodAttributes extends NodeAttributes {
         }
 
         @Override
-        public void encode(SerializationContext context, MethodAttributes encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._specifiedAttributes);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
-            writer.writeUInt32(encodable._writeMask);
-            writer.writeUInt32(encodable._userWriteMask);
-            writer.writeBoolean(encodable._executable);
-            writer.writeBoolean(encodable._userExecutable);
+        public void encode(SerializationContext context, MethodAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._specifiedAttributes);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
+            writer.writeBoolean(value._executable);
+            writer.writeBoolean(value._userExecutable);
         }
     }
 

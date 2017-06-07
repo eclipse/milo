@@ -87,10 +87,10 @@ public class ModificationInfo implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ModificationInfo encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(encodable._modificationTime);
-            writer.writeInt32(encodable._updateType != null ? encodable._updateType.getValue() : 0);
-            writer.writeString(encodable._userName);
+        public void encode(SerializationContext context, ModificationInfo value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._modificationTime);
+            writer.writeInt32(value._updateType != null ? value._updateType.getValue() : 0);
+            writer.writeString(value._userName);
         }
     }
 

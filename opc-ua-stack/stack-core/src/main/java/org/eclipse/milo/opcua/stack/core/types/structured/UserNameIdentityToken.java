@@ -89,11 +89,11 @@ public class UserNameIdentityToken extends UserIdentityToken {
         }
 
         @Override
-        public void encode(SerializationContext context, UserNameIdentityToken encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._policyId);
-            writer.writeString(encodable._userName);
-            writer.writeByteString(encodable._password);
-            writer.writeString(encodable._encryptionAlgorithm);
+        public void encode(SerializationContext context, UserNameIdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._policyId);
+            writer.writeString(value._userName);
+            writer.writeByteString(value._password);
+            writer.writeString(value._encryptionAlgorithm);
         }
     }
 

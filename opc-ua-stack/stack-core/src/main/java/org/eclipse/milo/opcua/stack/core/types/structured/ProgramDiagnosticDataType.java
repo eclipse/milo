@@ -149,23 +149,23 @@ public class ProgramDiagnosticDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ProgramDiagnosticDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._createSessionId);
-            writer.writeString(encodable._createClientName);
-            writer.writeDateTime(encodable._invocationCreationTime);
-            writer.writeDateTime(encodable._lastTransitionTime);
-            writer.writeString(encodable._lastMethodCall);
-            writer.writeNodeId(encodable._lastMethodSessionId);
+        public void encode(SerializationContext context, ProgramDiagnosticDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._createSessionId);
+            writer.writeString(value._createClientName);
+            writer.writeDateTime(value._invocationCreationTime);
+            writer.writeDateTime(value._lastTransitionTime);
+            writer.writeString(value._lastMethodCall);
+            writer.writeNodeId(value._lastMethodSessionId);
             writer.writeArray(
-                encodable._lastMethodInputArguments,
+                value._lastMethodInputArguments,
                 e -> context.encode(Argument.BinaryEncodingId, e, writer)
             );
             writer.writeArray(
-                encodable._lastMethodOutputArguments,
+                value._lastMethodOutputArguments,
                 e -> context.encode(Argument.BinaryEncodingId, e, writer)
             );
-            writer.writeDateTime(encodable._lastMethodCallTime);
-            context.encode(StatusResult.BinaryEncodingId, encodable._lastMethodReturnStatus, writer);
+            writer.writeDateTime(value._lastMethodCallTime);
+            context.encode(StatusResult.BinaryEncodingId, value._lastMethodReturnStatus, writer);
         }
     }
 

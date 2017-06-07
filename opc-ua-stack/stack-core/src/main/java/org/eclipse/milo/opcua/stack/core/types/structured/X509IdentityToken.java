@@ -75,9 +75,9 @@ public class X509IdentityToken extends UserIdentityToken {
         }
 
         @Override
-        public void encode(SerializationContext context, X509IdentityToken encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._policyId);
-            writer.writeByteString(encodable._certificateData);
+        public void encode(SerializationContext context, X509IdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._policyId);
+            writer.writeByteString(value._certificateData);
         }
     }
 

@@ -71,8 +71,8 @@ public class UserIdentityToken implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, UserIdentityToken encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._policyId);
+        public void encode(SerializationContext context, UserIdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._policyId);
         }
     }
 

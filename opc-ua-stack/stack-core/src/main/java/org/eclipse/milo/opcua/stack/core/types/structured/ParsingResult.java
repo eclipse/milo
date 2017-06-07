@@ -91,10 +91,10 @@ public class ParsingResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ParsingResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeArray(encodable._dataStatusCodes, writer::writeStatusCode);
-            writer.writeArray(encodable._dataDiagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SerializationContext context, ParsingResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeArray(value._dataStatusCodes, writer::writeStatusCode);
+            writer.writeArray(value._dataDiagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

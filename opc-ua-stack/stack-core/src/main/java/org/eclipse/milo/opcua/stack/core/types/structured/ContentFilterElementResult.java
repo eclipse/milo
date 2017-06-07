@@ -91,10 +91,10 @@ public class ContentFilterElementResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ContentFilterElementResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeArray(encodable._operandStatusCodes, writer::writeStatusCode);
-            writer.writeArray(encodable._operandDiagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SerializationContext context, ContentFilterElementResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeArray(value._operandStatusCodes, writer::writeStatusCode);
+            writer.writeArray(value._operandDiagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

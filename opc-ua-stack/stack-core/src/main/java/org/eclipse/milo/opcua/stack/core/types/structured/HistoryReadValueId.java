@@ -94,11 +94,11 @@ public class HistoryReadValueId implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryReadValueId encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeString(encodable._indexRange);
-            writer.writeQualifiedName(encodable._dataEncoding);
-            writer.writeByteString(encodable._continuationPoint);
+        public void encode(SerializationContext context, HistoryReadValueId value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeString(value._indexRange);
+            writer.writeQualifiedName(value._dataEncoding);
+            writer.writeByteString(value._continuationPoint);
         }
     }
 

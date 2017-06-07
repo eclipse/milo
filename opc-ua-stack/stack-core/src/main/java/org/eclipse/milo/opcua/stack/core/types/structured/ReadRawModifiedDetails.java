@@ -102,12 +102,12 @@ public class ReadRawModifiedDetails extends HistoryReadDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, ReadRawModifiedDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeBoolean(encodable._isReadModified);
-            writer.writeDateTime(encodable._startTime);
-            writer.writeDateTime(encodable._endTime);
-            writer.writeUInt32(encodable._numValuesPerNode);
-            writer.writeBoolean(encodable._returnBounds);
+        public void encode(SerializationContext context, ReadRawModifiedDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeBoolean(value._isReadModified);
+            writer.writeDateTime(value._startTime);
+            writer.writeDateTime(value._endTime);
+            writer.writeUInt32(value._numValuesPerNode);
+            writer.writeBoolean(value._returnBounds);
         }
     }
 

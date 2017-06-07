@@ -96,11 +96,11 @@ public class FindServersOnNetworkRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, FindServersOnNetworkRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._startingRecordId);
-            writer.writeUInt32(encodable._maxRecordsToReturn);
-            writer.writeArray(encodable._serverCapabilityFilter, writer::writeString);
+        public void encode(SerializationContext context, FindServersOnNetworkRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._startingRecordId);
+            writer.writeUInt32(value._maxRecordsToReturn);
+            writer.writeArray(value._serverCapabilityFilter, writer::writeString);
         }
     }
 

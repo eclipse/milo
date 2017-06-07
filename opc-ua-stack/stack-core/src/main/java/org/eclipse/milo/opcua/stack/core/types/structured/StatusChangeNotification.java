@@ -81,9 +81,9 @@ public class StatusChangeNotification extends NotificationData {
         }
 
         @Override
-        public void encode(SerializationContext context, StatusChangeNotification encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._status);
-            writer.writeDiagnosticInfo(encodable._diagnosticInfo);
+        public void encode(SerializationContext context, StatusChangeNotification value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._status);
+            writer.writeDiagnosticInfo(value._diagnosticInfo);
         }
     }
 

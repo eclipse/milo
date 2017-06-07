@@ -89,10 +89,10 @@ public class RegisterServer2Request implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServer2Request encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            context.encode(RegisteredServer.BinaryEncodingId, encodable._server, writer);
-            writer.writeArray(encodable._discoveryConfiguration, writer::writeExtensionObject);
+        public void encode(SerializationContext context, RegisterServer2Request value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            context.encode(RegisteredServer.BinaryEncodingId, value._server, writer);
+            writer.writeArray(value._discoveryConfiguration, writer::writeExtensionObject);
         }
     }
 

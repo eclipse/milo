@@ -87,10 +87,10 @@ public class AggregateFilterResult extends MonitoringFilterResult {
         }
 
         @Override
-        public void encode(SerializationContext context, AggregateFilterResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(encodable._revisedStartTime);
-            writer.writeDouble(encodable._revisedProcessingInterval);
-            context.encode(AggregateConfiguration.BinaryEncodingId, encodable._revisedAggregateConfiguration, writer);
+        public void encode(SerializationContext context, AggregateFilterResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._revisedStartTime);
+            writer.writeDouble(value._revisedProcessingInterval);
+            context.encode(AggregateConfiguration.BinaryEncodingId, value._revisedAggregateConfiguration, writer);
         }
     }
 

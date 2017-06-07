@@ -111,13 +111,13 @@ public class SupportedProfile implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SupportedProfile encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._organizationUri);
-            writer.writeString(encodable._profileId);
-            writer.writeString(encodable._complianceTool);
-            writer.writeDateTime(encodable._complianceDate);
-            writer.writeInt32(encodable._complianceLevel != null ? encodable._complianceLevel.getValue() : 0);
-            writer.writeArray(encodable._unsupportedUnitIds, writer::writeString);
+        public void encode(SerializationContext context, SupportedProfile value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._organizationUri);
+            writer.writeString(value._profileId);
+            writer.writeString(value._complianceTool);
+            writer.writeDateTime(value._complianceDate);
+            writer.writeInt32(value._complianceLevel != null ? value._complianceLevel.getValue() : 0);
+            writer.writeArray(value._unsupportedUnitIds, writer::writeString);
         }
     }
 

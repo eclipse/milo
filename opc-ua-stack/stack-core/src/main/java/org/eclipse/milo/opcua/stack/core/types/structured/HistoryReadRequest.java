@@ -109,13 +109,13 @@ public class HistoryReadRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryReadRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeExtensionObject(encodable._historyReadDetails);
-            writer.writeInt32(encodable._timestampsToReturn != null ? encodable._timestampsToReturn.getValue() : 0);
-            writer.writeBoolean(encodable._releaseContinuationPoints);
+        public void encode(SerializationContext context, HistoryReadRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeExtensionObject(value._historyReadDetails);
+            writer.writeInt32(value._timestampsToReturn != null ? value._timestampsToReturn.getValue() : 0);
+            writer.writeBoolean(value._releaseContinuationPoints);
             writer.writeArray(
-                encodable._nodesToRead,
+                value._nodesToRead,
                 e -> context.encode(HistoryReadValueId.BinaryEncodingId, e, writer)
             );
         }

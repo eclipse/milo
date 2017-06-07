@@ -129,16 +129,16 @@ public class CreateSessionRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CreateSessionRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            context.encode(ApplicationDescription.BinaryEncodingId, encodable._clientDescription, writer);
-            writer.writeString(encodable._serverUri);
-            writer.writeString(encodable._endpointUrl);
-            writer.writeString(encodable._sessionName);
-            writer.writeByteString(encodable._clientNonce);
-            writer.writeByteString(encodable._clientCertificate);
-            writer.writeDouble(encodable._requestedSessionTimeout);
-            writer.writeUInt32(encodable._maxResponseMessageSize);
+        public void encode(SerializationContext context, CreateSessionRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            context.encode(ApplicationDescription.BinaryEncodingId, value._clientDescription, writer);
+            writer.writeString(value._serverUri);
+            writer.writeString(value._endpointUrl);
+            writer.writeString(value._sessionName);
+            writer.writeByteString(value._clientNonce);
+            writer.writeByteString(value._clientCertificate);
+            writer.writeDouble(value._requestedSessionTimeout);
+            writer.writeUInt32(value._maxResponseMessageSize);
         }
     }
 

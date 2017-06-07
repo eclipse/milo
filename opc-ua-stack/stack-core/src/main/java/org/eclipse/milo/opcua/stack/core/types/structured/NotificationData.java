@@ -61,7 +61,7 @@ public class NotificationData implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, NotificationData encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, NotificationData value, OpcBinaryStreamWriter writer) throws UaSerializationException {
         }
     }
 

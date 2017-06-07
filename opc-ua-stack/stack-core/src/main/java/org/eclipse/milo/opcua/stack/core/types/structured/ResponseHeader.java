@@ -114,13 +114,13 @@ public class ResponseHeader implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ResponseHeader encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(encodable._timestamp);
-            writer.writeUInt32(encodable._requestHandle);
-            writer.writeStatusCode(encodable._serviceResult);
-            writer.writeDiagnosticInfo(encodable._serviceDiagnostics);
-            writer.writeArray(encodable._stringTable, writer::writeString);
-            writer.writeExtensionObject(encodable._additionalHeader);
+        public void encode(SerializationContext context, ResponseHeader value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._timestamp);
+            writer.writeUInt32(value._requestHandle);
+            writer.writeStatusCode(value._serviceResult);
+            writer.writeDiagnosticInfo(value._serviceDiagnostics);
+            writer.writeArray(value._stringTable, writer::writeString);
+            writer.writeExtensionObject(value._additionalHeader);
         }
     }
 

@@ -104,12 +104,12 @@ public class AxisInformation implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, AxisInformation encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(EUInformation.BinaryEncodingId, encodable._engineeringUnits, writer);
-            context.encode(Range.BinaryEncodingId, encodable._eURange, writer);
-            writer.writeLocalizedText(encodable._title);
-            writer.writeInt32(encodable._axisScaleType != null ? encodable._axisScaleType.getValue() : 0);
-            writer.writeArray(encodable._axisSteps, writer::writeDouble);
+        public void encode(SerializationContext context, AxisInformation value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(EUInformation.BinaryEncodingId, value._engineeringUnits, writer);
+            context.encode(Range.BinaryEncodingId, value._eURange, writer);
+            writer.writeLocalizedText(value._title);
+            writer.writeInt32(value._axisScaleType != null ? value._axisScaleType.getValue() : 0);
+            writer.writeArray(value._axisSteps, writer::writeDouble);
         }
     }
 

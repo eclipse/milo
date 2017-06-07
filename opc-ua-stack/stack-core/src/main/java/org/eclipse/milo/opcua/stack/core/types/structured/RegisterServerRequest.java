@@ -78,9 +78,9 @@ public class RegisterServerRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServerRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            context.encode(RegisteredServer.BinaryEncodingId, encodable._server, writer);
+        public void encode(SerializationContext context, RegisterServerRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            context.encode(RegisteredServer.BinaryEncodingId, value._server, writer);
         }
     }
 

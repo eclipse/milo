@@ -94,11 +94,11 @@ public class NodeTypeDescription implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, NodeTypeDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId(encodable._typeDefinitionNode);
-            writer.writeBoolean(encodable._includeSubTypes);
+        public void encode(SerializationContext context, NodeTypeDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeExpandedNodeId(value._typeDefinitionNode);
+            writer.writeBoolean(value._includeSubTypes);
             writer.writeArray(
-                encodable._dataToReturn,
+                value._dataToReturn,
                 e -> context.encode(QueryDataDescription.BinaryEncodingId, e, writer)
             );
         }

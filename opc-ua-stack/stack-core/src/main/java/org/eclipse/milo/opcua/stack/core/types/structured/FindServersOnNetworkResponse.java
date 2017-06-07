@@ -94,11 +94,11 @@ public class FindServersOnNetworkResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, FindServersOnNetworkResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeDateTime(encodable._lastCounterResetTime);
+        public void encode(SerializationContext context, FindServersOnNetworkResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeDateTime(value._lastCounterResetTime);
             writer.writeArray(
-                encodable._servers,
+                value._servers,
                 e -> context.encode(ServerOnNetwork.BinaryEncodingId, e, writer)
             );
         }

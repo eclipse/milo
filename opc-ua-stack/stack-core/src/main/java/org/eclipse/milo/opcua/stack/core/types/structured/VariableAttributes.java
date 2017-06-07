@@ -138,20 +138,20 @@ public class VariableAttributes extends NodeAttributes {
         }
 
         @Override
-        public void encode(SerializationContext context, VariableAttributes encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._specifiedAttributes);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
-            writer.writeUInt32(encodable._writeMask);
-            writer.writeUInt32(encodable._userWriteMask);
-            writer.writeVariant(encodable._value);
-            writer.writeNodeId(encodable._dataType);
-            writer.writeInt32(encodable._valueRank);
-            writer.writeArray(encodable._arrayDimensions, writer::writeUInt32);
-            writer.writeByte(encodable._accessLevel);
-            writer.writeByte(encodable._userAccessLevel);
-            writer.writeDouble(encodable._minimumSamplingInterval);
-            writer.writeBoolean(encodable._historizing);
+        public void encode(SerializationContext context, VariableAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._specifiedAttributes);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
+            writer.writeVariant(value._value);
+            writer.writeNodeId(value._dataType);
+            writer.writeInt32(value._valueRank);
+            writer.writeArray(value._arrayDimensions, writer::writeUInt32);
+            writer.writeByte(value._accessLevel);
+            writer.writeByte(value._userAccessLevel);
+            writer.writeDouble(value._minimumSamplingInterval);
+            writer.writeBoolean(value._historizing);
         }
     }
 

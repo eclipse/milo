@@ -93,11 +93,11 @@ public class EUInformation implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, EUInformation encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._namespaceUri);
-            writer.writeInt32(encodable._unitId);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
+        public void encode(SerializationContext context, EUInformation value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._namespaceUri);
+            writer.writeInt32(value._unitId);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
         }
     }
 

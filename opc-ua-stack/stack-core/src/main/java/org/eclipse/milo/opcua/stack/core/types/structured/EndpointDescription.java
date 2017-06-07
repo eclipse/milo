@@ -131,18 +131,18 @@ public class EndpointDescription implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, EndpointDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._endpointUrl);
-            context.encode(ApplicationDescription.BinaryEncodingId, encodable._server, writer);
-            writer.writeByteString(encodable._serverCertificate);
-            writer.writeInt32(encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
-            writer.writeString(encodable._securityPolicyUri);
+        public void encode(SerializationContext context, EndpointDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._endpointUrl);
+            context.encode(ApplicationDescription.BinaryEncodingId, value._server, writer);
+            writer.writeByteString(value._serverCertificate);
+            writer.writeInt32(value._securityMode != null ? value._securityMode.getValue() : 0);
+            writer.writeString(value._securityPolicyUri);
             writer.writeArray(
-                encodable._userIdentityTokens,
+                value._userIdentityTokens,
                 e -> context.encode(UserTokenPolicy.BinaryEncodingId, e, writer)
             );
-            writer.writeString(encodable._transportProfileUri);
-            writer.writeByte(encodable._securityLevel);
+            writer.writeString(value._transportProfileUri);
+            writer.writeByte(value._securityLevel);
         }
     }
 

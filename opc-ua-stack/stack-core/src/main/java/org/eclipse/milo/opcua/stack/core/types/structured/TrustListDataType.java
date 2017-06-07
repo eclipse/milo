@@ -107,12 +107,12 @@ public class TrustListDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, TrustListDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._specifiedLists);
-            writer.writeArray(encodable._trustedCertificates, writer::writeByteString);
-            writer.writeArray(encodable._trustedCrls, writer::writeByteString);
-            writer.writeArray(encodable._issuerCertificates, writer::writeByteString);
-            writer.writeArray(encodable._issuerCrls, writer::writeByteString);
+        public void encode(SerializationContext context, TrustListDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._specifiedLists);
+            writer.writeArray(value._trustedCertificates, writer::writeByteString);
+            writer.writeArray(value._trustedCrls, writer::writeByteString);
+            writer.writeArray(value._issuerCertificates, writer::writeByteString);
+            writer.writeArray(value._issuerCrls, writer::writeByteString);
         }
     }
 

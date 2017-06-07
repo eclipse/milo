@@ -149,19 +149,19 @@ public class ServerDiagnosticsSummaryDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ServerDiagnosticsSummaryDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._serverViewCount);
-            writer.writeUInt32(encodable._currentSessionCount);
-            writer.writeUInt32(encodable._cumulatedSessionCount);
-            writer.writeUInt32(encodable._securityRejectedSessionCount);
-            writer.writeUInt32(encodable._rejectedSessionCount);
-            writer.writeUInt32(encodable._sessionTimeoutCount);
-            writer.writeUInt32(encodable._sessionAbortCount);
-            writer.writeUInt32(encodable._currentSubscriptionCount);
-            writer.writeUInt32(encodable._cumulatedSubscriptionCount);
-            writer.writeUInt32(encodable._publishingIntervalCount);
-            writer.writeUInt32(encodable._securityRejectedRequestsCount);
-            writer.writeUInt32(encodable._rejectedRequestsCount);
+        public void encode(SerializationContext context, ServerDiagnosticsSummaryDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._serverViewCount);
+            writer.writeUInt32(value._currentSessionCount);
+            writer.writeUInt32(value._cumulatedSessionCount);
+            writer.writeUInt32(value._securityRejectedSessionCount);
+            writer.writeUInt32(value._rejectedSessionCount);
+            writer.writeUInt32(value._sessionTimeoutCount);
+            writer.writeUInt32(value._sessionAbortCount);
+            writer.writeUInt32(value._currentSubscriptionCount);
+            writer.writeUInt32(value._cumulatedSubscriptionCount);
+            writer.writeUInt32(value._publishingIntervalCount);
+            writer.writeUInt32(value._securityRejectedRequestsCount);
+            writer.writeUInt32(value._rejectedRequestsCount);
         }
     }
 

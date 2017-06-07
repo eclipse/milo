@@ -93,11 +93,11 @@ public class SamplingIntervalDiagnosticsDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SamplingIntervalDiagnosticsDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDouble(encodable._samplingInterval);
-            writer.writeUInt32(encodable._monitoredItemCount);
-            writer.writeUInt32(encodable._maxMonitoredItemCount);
-            writer.writeUInt32(encodable._disabledMonitoredItemCount);
+        public void encode(SerializationContext context, SamplingIntervalDiagnosticsDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble(value._samplingInterval);
+            writer.writeUInt32(value._monitoredItemCount);
+            writer.writeUInt32(value._maxMonitoredItemCount);
+            writer.writeUInt32(value._disabledMonitoredItemCount);
         }
     }
 

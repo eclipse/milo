@@ -86,10 +86,10 @@ public class RepublishRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, RepublishRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeUInt32(encodable._retransmitSequenceNumber);
+        public void encode(SerializationContext context, RepublishRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeUInt32(value._retransmitSequenceNumber);
         }
     }
 

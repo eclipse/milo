@@ -94,11 +94,11 @@ public class ChannelSecurityToken implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ChannelSecurityToken encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._channelId);
-            writer.writeUInt32(encodable._tokenId);
-            writer.writeDateTime(encodable._createdAt);
-            writer.writeUInt32(encodable._revisedLifetime);
+        public void encode(SerializationContext context, ChannelSecurityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._channelId);
+            writer.writeUInt32(value._tokenId);
+            writer.writeDateTime(value._createdAt);
+            writer.writeUInt32(value._revisedLifetime);
         }
     }
 

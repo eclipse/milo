@@ -86,10 +86,10 @@ public class QueryDataDescription implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, QueryDataDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RelativePath.BinaryEncodingId, encodable._relativePath, writer);
-            writer.writeUInt32(encodable._attributeId);
-            writer.writeString(encodable._indexRange);
+        public void encode(SerializationContext context, QueryDataDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RelativePath.BinaryEncodingId, value._relativePath, writer);
+            writer.writeUInt32(value._attributeId);
+            writer.writeString(value._indexRange);
         }
     }
 

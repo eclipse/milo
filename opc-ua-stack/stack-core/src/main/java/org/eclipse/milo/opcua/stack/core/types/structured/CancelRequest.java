@@ -79,9 +79,9 @@ public class CancelRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CancelRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._requestHandle);
+        public void encode(SerializationContext context, CancelRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._requestHandle);
         }
     }
 

@@ -79,9 +79,9 @@ public class AddNodesResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, AddNodesResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeNodeId(encodable._addedNodeId);
+        public void encode(SerializationContext context, AddNodesResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeNodeId(value._addedNodeId);
         }
     }
 

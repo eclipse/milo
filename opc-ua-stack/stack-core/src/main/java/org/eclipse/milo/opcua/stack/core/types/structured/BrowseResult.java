@@ -95,11 +95,11 @@ public class BrowseResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeByteString(encodable._continuationPoint);
+        public void encode(SerializationContext context, BrowseResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeByteString(value._continuationPoint);
             writer.writeArray(
-                encodable._references,
+                value._references,
                 e -> context.encode(ReferenceDescription.BinaryEncodingId, e, writer)
             );
         }

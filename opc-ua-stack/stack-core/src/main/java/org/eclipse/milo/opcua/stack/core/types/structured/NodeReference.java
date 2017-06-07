@@ -95,11 +95,11 @@ public class NodeReference implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, NodeReference encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeBoolean(encodable._isForward);
-            writer.writeArray(encodable._referencedNodeIds, writer::writeNodeId);
+        public void encode(SerializationContext context, NodeReference value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._isForward);
+            writer.writeArray(value._referencedNodeIds, writer::writeNodeId);
         }
     }
 

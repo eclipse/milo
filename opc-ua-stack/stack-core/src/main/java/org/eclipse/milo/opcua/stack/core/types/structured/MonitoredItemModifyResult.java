@@ -95,11 +95,11 @@ public class MonitoredItemModifyResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemModifyResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeDouble(encodable._revisedSamplingInterval);
-            writer.writeUInt32(encodable._revisedQueueSize);
-            writer.writeExtensionObject(encodable._filterResult);
+        public void encode(SerializationContext context, MonitoredItemModifyResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeDouble(value._revisedSamplingInterval);
+            writer.writeUInt32(value._revisedQueueSize);
+            writer.writeExtensionObject(value._filterResult);
         }
     }
 

@@ -78,9 +78,9 @@ public class XVType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, XVType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDouble(encodable._x);
-            writer.writeFloat(encodable._value);
+        public void encode(SerializationContext context, XVType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble(value._x);
+            writer.writeFloat(value._value);
         }
     }
 

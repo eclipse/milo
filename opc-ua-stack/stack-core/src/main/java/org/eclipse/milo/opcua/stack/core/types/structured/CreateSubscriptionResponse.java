@@ -100,12 +100,12 @@ public class CreateSubscriptionResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CreateSubscriptionResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeDouble(encodable._revisedPublishingInterval);
-            writer.writeUInt32(encodable._revisedLifetimeCount);
-            writer.writeUInt32(encodable._revisedMaxKeepAliveCount);
+        public void encode(SerializationContext context, CreateSubscriptionResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeDouble(value._revisedPublishingInterval);
+            writer.writeUInt32(value._revisedLifetimeCount);
+            writer.writeUInt32(value._revisedMaxKeepAliveCount);
         }
     }
 

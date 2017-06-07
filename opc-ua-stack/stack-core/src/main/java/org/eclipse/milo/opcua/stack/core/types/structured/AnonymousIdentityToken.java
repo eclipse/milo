@@ -68,8 +68,8 @@ public class AnonymousIdentityToken extends UserIdentityToken {
         }
 
         @Override
-        public void encode(SerializationContext context, AnonymousIdentityToken encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._policyId);
+        public void encode(SerializationContext context, AnonymousIdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._policyId);
         }
     }
 

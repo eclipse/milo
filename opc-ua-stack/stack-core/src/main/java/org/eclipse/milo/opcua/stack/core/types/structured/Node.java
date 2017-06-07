@@ -132,16 +132,16 @@ public class Node implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, Node encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeInt32(encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeQualifiedName(encodable._browseName);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
-            writer.writeUInt32(encodable._writeMask);
-            writer.writeUInt32(encodable._userWriteMask);
+        public void encode(SerializationContext context, Node value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
+            writer.writeQualifiedName(value._browseName);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
             writer.writeArray(
-                encodable._references,
+                value._references,
                 e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
             );
         }

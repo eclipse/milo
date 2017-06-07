@@ -83,9 +83,9 @@ public class ReadAtTimeDetails extends HistoryReadDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, ReadAtTimeDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(encodable._reqTimes, writer::writeDateTime);
-            writer.writeBoolean(encodable._useSimpleBounds);
+        public void encode(SerializationContext context, ReadAtTimeDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(value._reqTimes, writer::writeDateTime);
+            writer.writeBoolean(value._useSimpleBounds);
         }
     }
 

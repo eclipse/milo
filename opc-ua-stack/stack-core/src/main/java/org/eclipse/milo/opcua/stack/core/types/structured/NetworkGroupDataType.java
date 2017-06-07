@@ -86,10 +86,10 @@ public class NetworkGroupDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, NetworkGroupDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._serverUri);
+        public void encode(SerializationContext context, NetworkGroupDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._serverUri);
             writer.writeArray(
-                encodable._networkPaths,
+                value._networkPaths,
                 e -> context.encode(EndpointUrlListDataType.BinaryEncodingId, e, writer)
             );
         }

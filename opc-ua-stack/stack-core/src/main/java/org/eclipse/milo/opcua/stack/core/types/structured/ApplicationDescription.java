@@ -118,14 +118,14 @@ public class ApplicationDescription implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ApplicationDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._applicationUri);
-            writer.writeString(encodable._productUri);
-            writer.writeLocalizedText(encodable._applicationName);
-            writer.writeInt32(encodable._applicationType != null ? encodable._applicationType.getValue() : 0);
-            writer.writeString(encodable._gatewayServerUri);
-            writer.writeString(encodable._discoveryProfileUri);
-            writer.writeArray(encodable._discoveryUrls, writer::writeString);
+        public void encode(SerializationContext context, ApplicationDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._applicationUri);
+            writer.writeString(value._productUri);
+            writer.writeLocalizedText(value._applicationName);
+            writer.writeInt32(value._applicationType != null ? value._applicationType.getValue() : 0);
+            writer.writeString(value._gatewayServerUri);
+            writer.writeString(value._discoveryProfileUri);
+            writer.writeArray(value._discoveryUrls, writer::writeString);
         }
     }
 

@@ -100,12 +100,12 @@ public class DeleteReferencesItem implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteReferencesItem encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._sourceNodeId);
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeBoolean(encodable._isForward);
-            writer.writeExpandedNodeId(encodable._targetNodeId);
-            writer.writeBoolean(encodable._deleteBidirectional);
+        public void encode(SerializationContext context, DeleteReferencesItem value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._sourceNodeId);
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._isForward);
+            writer.writeExpandedNodeId(value._targetNodeId);
+            writer.writeBoolean(value._deleteBidirectional);
         }
     }
 

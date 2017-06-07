@@ -95,13 +95,13 @@ public class ModifyMonitoredItemsResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, ModifyMonitoredItemsResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
+        public void encode(SerializationContext context, ModifyMonitoredItemsResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
             writer.writeArray(
-                encodable._results,
+                value._results,
                 e -> context.encode(MonitoredItemModifyResult.BinaryEncodingId, e, writer)
             );
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

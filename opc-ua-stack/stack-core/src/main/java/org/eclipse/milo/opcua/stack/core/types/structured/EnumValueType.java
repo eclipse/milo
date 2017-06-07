@@ -86,10 +86,10 @@ public class EnumValueType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, EnumValueType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeInt64(encodable._value);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeLocalizedText(encodable._description);
+        public void encode(SerializationContext context, EnumValueType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt64(value._value);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
         }
     }
 

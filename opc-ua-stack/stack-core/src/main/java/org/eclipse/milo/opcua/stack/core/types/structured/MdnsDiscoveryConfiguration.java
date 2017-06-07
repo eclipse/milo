@@ -82,9 +82,9 @@ public class MdnsDiscoveryConfiguration extends DiscoveryConfiguration {
         }
 
         @Override
-        public void encode(SerializationContext context, MdnsDiscoveryConfiguration encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._mdnsServerName);
-            writer.writeArray(encodable._serverCapabilities, writer::writeString);
+        public void encode(SerializationContext context, MdnsDiscoveryConfiguration value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._mdnsServerName);
+            writer.writeArray(value._serverCapabilities, writer::writeString);
         }
     }
 

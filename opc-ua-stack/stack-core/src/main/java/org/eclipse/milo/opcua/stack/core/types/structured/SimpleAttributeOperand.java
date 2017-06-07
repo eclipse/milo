@@ -98,11 +98,11 @@ public class SimpleAttributeOperand extends FilterOperand {
         }
 
         @Override
-        public void encode(SerializationContext context, SimpleAttributeOperand encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._typeDefinitionId);
-            writer.writeArray(encodable._browsePath, writer::writeQualifiedName);
-            writer.writeUInt32(encodable._attributeId);
-            writer.writeString(encodable._indexRange);
+        public void encode(SerializationContext context, SimpleAttributeOperand value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._typeDefinitionId);
+            writer.writeArray(value._browsePath, writer::writeQualifiedName);
+            writer.writeUInt32(value._attributeId);
+            writer.writeString(value._indexRange);
         }
     }
 

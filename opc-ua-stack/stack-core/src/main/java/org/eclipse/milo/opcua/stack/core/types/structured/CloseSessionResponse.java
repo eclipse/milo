@@ -71,8 +71,8 @@ public class CloseSessionResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CloseSessionResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
+        public void encode(SerializationContext context, CloseSessionResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
         }
     }
 

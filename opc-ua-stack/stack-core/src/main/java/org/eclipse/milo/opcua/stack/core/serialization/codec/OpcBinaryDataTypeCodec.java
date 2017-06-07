@@ -29,10 +29,10 @@ public interface OpcBinaryDataTypeCodec<T> extends DataTypeCodec<T, OpcBinaryStr
     /**
      * Encode a {@link T} using the provided {@link OpcBinaryStreamWriter}.
      *
-     * @param context   the {@link SerializationContext}.
-     * @param encodable the {@link T} to encode.
-     * @param writer    the {@link OpcBinaryStreamWriter} to encode to.
+     * @param context the {@link SerializationContext}.
+     * @param value   the {@link T} to encode.
+     * @param writer  the {@link OpcBinaryStreamWriter} to encode to.
      */
-    void encode(SerializationContext context, T encodable, OpcBinaryStreamWriter writer) throws UaSerializationException;
+    void encode(SerializationContext context, T value, OpcBinaryStreamWriter writer) throws UaSerializationException;
 
 }

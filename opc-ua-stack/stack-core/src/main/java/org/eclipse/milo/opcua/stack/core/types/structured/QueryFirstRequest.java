@@ -115,16 +115,16 @@ public class QueryFirstRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, QueryFirstRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            context.encode(ViewDescription.BinaryEncodingId, encodable._view, writer);
+        public void encode(SerializationContext context, QueryFirstRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            context.encode(ViewDescription.BinaryEncodingId, value._view, writer);
             writer.writeArray(
-                encodable._nodeTypes,
+                value._nodeTypes,
                 e -> context.encode(NodeTypeDescription.BinaryEncodingId, e, writer)
             );
-            context.encode(ContentFilter.BinaryEncodingId, encodable._filter, writer);
-            writer.writeUInt32(encodable._maxDataSetsToReturn);
-            writer.writeUInt32(encodable._maxReferencesToReturn);
+            context.encode(ContentFilter.BinaryEncodingId, value._filter, writer);
+            writer.writeUInt32(value._maxDataSetsToReturn);
+            writer.writeUInt32(value._maxReferencesToReturn);
         }
     }
 

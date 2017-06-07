@@ -132,16 +132,16 @@ public class SessionSecurityDiagnosticsDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SessionSecurityDiagnosticsDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._sessionId);
-            writer.writeString(encodable._clientUserIdOfSession);
-            writer.writeArray(encodable._clientUserIdHistory, writer::writeString);
-            writer.writeString(encodable._authenticationMechanism);
-            writer.writeString(encodable._encoding);
-            writer.writeString(encodable._transportProtocol);
-            writer.writeInt32(encodable._securityMode != null ? encodable._securityMode.getValue() : 0);
-            writer.writeString(encodable._securityPolicyUri);
-            writer.writeByteString(encodable._clientCertificate);
+        public void encode(SerializationContext context, SessionSecurityDiagnosticsDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._sessionId);
+            writer.writeString(value._clientUserIdOfSession);
+            writer.writeArray(value._clientUserIdHistory, writer::writeString);
+            writer.writeString(value._authenticationMechanism);
+            writer.writeString(value._encoding);
+            writer.writeString(value._transportProtocol);
+            writer.writeInt32(value._securityMode != null ? value._securityMode.getValue() : 0);
+            writer.writeString(value._securityPolicyUri);
+            writer.writeByteString(value._clientCertificate);
         }
     }
 

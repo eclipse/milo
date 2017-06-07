@@ -78,9 +78,9 @@ public class Range implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, Range encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDouble(encodable._low);
-            writer.writeDouble(encodable._high);
+        public void encode(SerializationContext context, Range value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDouble(value._low);
+            writer.writeDouble(value._high);
         }
     }
 

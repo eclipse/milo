@@ -89,10 +89,10 @@ public class BrowseNextRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseNextRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeBoolean(encodable._releaseContinuationPoints);
-            writer.writeArray(encodable._continuationPoints, writer::writeByteString);
+        public void encode(SerializationContext context, BrowseNextRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeBoolean(value._releaseContinuationPoints);
+            writer.writeArray(value._continuationPoints, writer::writeByteString);
         }
     }
 

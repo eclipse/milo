@@ -126,15 +126,15 @@ public class RegisteredServer implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, RegisteredServer encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._serverUri);
-            writer.writeString(encodable._productUri);
-            writer.writeArray(encodable._serverNames, writer::writeLocalizedText);
-            writer.writeInt32(encodable._serverType != null ? encodable._serverType.getValue() : 0);
-            writer.writeString(encodable._gatewayServerUri);
-            writer.writeArray(encodable._discoveryUrls, writer::writeString);
-            writer.writeString(encodable._semaphoreFilePath);
-            writer.writeBoolean(encodable._isOnline);
+        public void encode(SerializationContext context, RegisteredServer value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._serverUri);
+            writer.writeString(value._productUri);
+            writer.writeArray(value._serverNames, writer::writeLocalizedText);
+            writer.writeInt32(value._serverType != null ? value._serverType.getValue() : 0);
+            writer.writeString(value._gatewayServerUri);
+            writer.writeArray(value._discoveryUrls, writer::writeString);
+            writer.writeString(value._semaphoreFilePath);
+            writer.writeBoolean(value._isOnline);
         }
     }
 

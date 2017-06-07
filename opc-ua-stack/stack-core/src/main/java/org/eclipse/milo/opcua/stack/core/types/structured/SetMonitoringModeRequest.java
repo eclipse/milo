@@ -97,11 +97,11 @@ public class SetMonitoringModeRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, SetMonitoringModeRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeInt32(encodable._monitoringMode != null ? encodable._monitoringMode.getValue() : 0);
-            writer.writeArray(encodable._monitoredItemIds, writer::writeUInt32);
+        public void encode(SerializationContext context, SetMonitoringModeRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeInt32(value._monitoringMode != null ? value._monitoringMode.getValue() : 0);
+            writer.writeArray(value._monitoredItemIds, writer::writeUInt32);
         }
     }
 

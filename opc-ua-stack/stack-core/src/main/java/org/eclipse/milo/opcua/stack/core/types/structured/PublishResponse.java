@@ -121,14 +121,14 @@ public class PublishResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, PublishResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeArray(encodable._availableSequenceNumbers, writer::writeUInt32);
-            writer.writeBoolean(encodable._moreNotifications);
-            context.encode(NotificationMessage.BinaryEncodingId, encodable._notificationMessage, writer);
-            writer.writeArray(encodable._results, writer::writeStatusCode);
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SerializationContext context, PublishResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeArray(value._availableSequenceNumbers, writer::writeUInt32);
+            writer.writeBoolean(value._moreNotifications);
+            context.encode(NotificationMessage.BinaryEncodingId, value._notificationMessage, writer);
+            writer.writeArray(value._results, writer::writeStatusCode);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

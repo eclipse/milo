@@ -94,11 +94,11 @@ public class ReadValueId implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ReadValueId encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeUInt32(encodable._attributeId);
-            writer.writeString(encodable._indexRange);
-            writer.writeQualifiedName(encodable._dataEncoding);
+        public void encode(SerializationContext context, ReadValueId value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeUInt32(value._attributeId);
+            writer.writeString(value._indexRange);
+            writer.writeQualifiedName(value._dataEncoding);
         }
     }
 

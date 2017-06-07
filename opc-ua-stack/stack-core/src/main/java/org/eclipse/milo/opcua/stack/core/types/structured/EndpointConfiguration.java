@@ -127,16 +127,16 @@ public class EndpointConfiguration implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, EndpointConfiguration encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeInt32(encodable._operationTimeout);
-            writer.writeBoolean(encodable._useBinaryEncoding);
-            writer.writeInt32(encodable._maxStringLength);
-            writer.writeInt32(encodable._maxByteStringLength);
-            writer.writeInt32(encodable._maxArrayLength);
-            writer.writeInt32(encodable._maxMessageSize);
-            writer.writeInt32(encodable._maxBufferSize);
-            writer.writeInt32(encodable._channelLifetime);
-            writer.writeInt32(encodable._securityTokenLifetime);
+        public void encode(SerializationContext context, EndpointConfiguration value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32(value._operationTimeout);
+            writer.writeBoolean(value._useBinaryEncoding);
+            writer.writeInt32(value._maxStringLength);
+            writer.writeInt32(value._maxByteStringLength);
+            writer.writeInt32(value._maxArrayLength);
+            writer.writeInt32(value._maxMessageSize);
+            writer.writeInt32(value._maxBufferSize);
+            writer.writeInt32(value._channelLifetime);
+            writer.writeInt32(value._securityTokenLifetime);
         }
     }
 

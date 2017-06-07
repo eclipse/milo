@@ -87,12 +87,12 @@ public class EventFilter extends MonitoringFilter {
         }
 
         @Override
-        public void encode(SerializationContext context, EventFilter encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, EventFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
-                encodable._selectClauses,
+                value._selectClauses,
                 e -> context.encode(SimpleAttributeOperand.BinaryEncodingId, e, writer)
             );
-            context.encode(ContentFilter.BinaryEncodingId, encodable._whereClause, writer);
+            context.encode(ContentFilter.BinaryEncodingId, value._whereClause, writer);
         }
     }
 

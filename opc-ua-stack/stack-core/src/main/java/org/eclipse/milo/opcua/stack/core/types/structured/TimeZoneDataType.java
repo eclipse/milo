@@ -78,9 +78,9 @@ public class TimeZoneDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, TimeZoneDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeInt16(encodable._offset);
-            writer.writeBoolean(encodable._daylightSavingInOffset);
+        public void encode(SerializationContext context, TimeZoneDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt16(value._offset);
+            writer.writeBoolean(value._daylightSavingInOffset);
         }
     }
 

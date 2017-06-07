@@ -123,19 +123,19 @@ public class QueryFirstResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, QueryFirstResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
+        public void encode(SerializationContext context, QueryFirstResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
             writer.writeArray(
-                encodable._queryDataSets,
+                value._queryDataSets,
                 e -> context.encode(QueryDataSet.BinaryEncodingId, e, writer)
             );
-            writer.writeByteString(encodable._continuationPoint);
+            writer.writeByteString(value._continuationPoint);
             writer.writeArray(
-                encodable._parsingResults,
+                value._parsingResults,
                 e -> context.encode(ParsingResult.BinaryEncodingId, e, writer)
             );
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
-            context.encode(ContentFilterResult.BinaryEncodingId, encodable._filterResult, writer);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
+            context.encode(ContentFilterResult.BinaryEncodingId, value._filterResult, writer);
         }
     }
 

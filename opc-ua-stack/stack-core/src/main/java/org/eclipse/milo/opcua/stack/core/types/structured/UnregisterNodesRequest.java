@@ -81,9 +81,9 @@ public class UnregisterNodesRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, UnregisterNodesRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(encodable._nodesToUnregister, writer::writeNodeId);
+        public void encode(SerializationContext context, UnregisterNodesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeArray(value._nodesToUnregister, writer::writeNodeId);
         }
     }
 

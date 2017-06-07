@@ -91,10 +91,10 @@ public class HistoryUpdateResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryUpdateResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeArray(encodable._operationResults, writer::writeStatusCode);
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SerializationContext context, HistoryUpdateResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeArray(value._operationResults, writer::writeStatusCode);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

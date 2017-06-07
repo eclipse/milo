@@ -117,14 +117,14 @@ public class ReferenceDescription implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ReferenceDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeBoolean(encodable._isForward);
-            writer.writeExpandedNodeId(encodable._nodeId);
-            writer.writeQualifiedName(encodable._browseName);
-            writer.writeLocalizedText(encodable._displayName);
-            writer.writeInt32(encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeExpandedNodeId(encodable._typeDefinition);
+        public void encode(SerializationContext context, ReferenceDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._isForward);
+            writer.writeExpandedNodeId(value._nodeId);
+            writer.writeQualifiedName(value._browseName);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
+            writer.writeExpandedNodeId(value._typeDefinition);
         }
     }
 

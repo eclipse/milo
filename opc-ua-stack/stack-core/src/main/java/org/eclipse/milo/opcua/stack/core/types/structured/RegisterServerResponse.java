@@ -71,8 +71,8 @@ public class RegisterServerResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServerResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
+        public void encode(SerializationContext context, RegisterServerResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
         }
     }
 

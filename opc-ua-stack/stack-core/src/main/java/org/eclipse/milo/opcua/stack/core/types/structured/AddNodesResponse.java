@@ -95,13 +95,13 @@ public class AddNodesResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, AddNodesResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
+        public void encode(SerializationContext context, AddNodesResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
             writer.writeArray(
-                encodable._results,
+                value._results,
                 e -> context.encode(AddNodesResult.BinaryEncodingId, e, writer)
             );
-            writer.writeArray(encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

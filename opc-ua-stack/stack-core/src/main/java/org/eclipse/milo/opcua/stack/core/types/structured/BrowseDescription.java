@@ -108,13 +108,13 @@ public class BrowseDescription implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseDescription encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeInt32(encodable._browseDirection != null ? encodable._browseDirection.getValue() : 0);
-            writer.writeNodeId(encodable._referenceTypeId);
-            writer.writeBoolean(encodable._includeSubtypes);
-            writer.writeUInt32(encodable._nodeClassMask);
-            writer.writeUInt32(encodable._resultMask);
+        public void encode(SerializationContext context, BrowseDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeInt32(value._browseDirection != null ? value._browseDirection.getValue() : 0);
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._includeSubtypes);
+            writer.writeUInt32(value._nodeClassMask);
+            writer.writeUInt32(value._resultMask);
         }
     }
 

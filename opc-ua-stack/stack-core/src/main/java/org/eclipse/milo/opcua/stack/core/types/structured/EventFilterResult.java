@@ -92,10 +92,10 @@ public class EventFilterResult extends MonitoringFilterResult {
         }
 
         @Override
-        public void encode(SerializationContext context, EventFilterResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(encodable._selectClauseResults, writer::writeStatusCode);
-            writer.writeArray(encodable._selectClauseDiagnosticInfos, writer::writeDiagnosticInfo);
-            context.encode(ContentFilterResult.BinaryEncodingId, encodable._whereClauseResult, writer);
+        public void encode(SerializationContext context, EventFilterResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(value._selectClauseResults, writer::writeStatusCode);
+            writer.writeArray(value._selectClauseDiagnosticInfos, writer::writeDiagnosticInfo);
+            context.encode(ContentFilterResult.BinaryEncodingId, value._whereClauseResult, writer);
         }
     }
 

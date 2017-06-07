@@ -79,9 +79,9 @@ public class ServiceCounterDataType implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ServiceCounterDataType encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._totalCount);
-            writer.writeUInt32(encodable._errorCount);
+        public void encode(SerializationContext context, ServiceCounterDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._totalCount);
+            writer.writeUInt32(value._errorCount);
         }
     }
 

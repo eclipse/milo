@@ -79,9 +79,9 @@ public class SignedSoftwareCertificate implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, SignedSoftwareCertificate encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeByteString(encodable._certificateData);
-            writer.writeByteString(encodable._signature);
+        public void encode(SerializationContext context, SignedSoftwareCertificate value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeByteString(value._certificateData);
+            writer.writeByteString(value._signature);
         }
     }
 

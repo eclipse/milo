@@ -89,10 +89,10 @@ public class DeleteMonitoredItemsRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteMonitoredItemsRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeArray(encodable._monitoredItemIds, writer::writeUInt32);
+        public void encode(SerializationContext context, DeleteMonitoredItemsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeArray(value._monitoredItemIds, writer::writeUInt32);
         }
     }
 

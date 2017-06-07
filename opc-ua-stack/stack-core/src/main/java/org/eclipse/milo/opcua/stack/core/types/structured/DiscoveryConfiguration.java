@@ -61,7 +61,7 @@ public class DiscoveryConfiguration implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, DiscoveryConfiguration encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, DiscoveryConfiguration value, OpcBinaryStreamWriter writer) throws UaSerializationException {
         }
     }
 

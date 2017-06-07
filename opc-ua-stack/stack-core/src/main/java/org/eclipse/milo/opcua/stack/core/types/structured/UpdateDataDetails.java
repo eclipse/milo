@@ -86,10 +86,10 @@ public class UpdateDataDetails extends HistoryUpdateDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, UpdateDataDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeInt32(encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
-            writer.writeArray(encodable._updateValues, writer::writeDataValue);
+        public void encode(SerializationContext context, UpdateDataDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeInt32(value._performInsertReplace != null ? value._performInsertReplace.getValue() : 0);
+            writer.writeArray(value._updateValues, writer::writeDataValue);
         }
     }
 

@@ -61,7 +61,7 @@ public class MonitoringFilterResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoringFilterResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, MonitoringFilterResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
         }
     }
 

@@ -107,12 +107,12 @@ public class SetTriggeringResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, SetTriggeringResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeArray(encodable._addResults, writer::writeStatusCode);
-            writer.writeArray(encodable._addDiagnosticInfos, writer::writeDiagnosticInfo);
-            writer.writeArray(encodable._removeResults, writer::writeStatusCode);
-            writer.writeArray(encodable._removeDiagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SerializationContext context, SetTriggeringResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeArray(value._addResults, writer::writeStatusCode);
+            writer.writeArray(value._addDiagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray(value._removeResults, writer::writeStatusCode);
+            writer.writeArray(value._removeDiagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

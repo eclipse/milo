@@ -94,13 +94,13 @@ public class QueryNextResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, QueryNextResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
+        public void encode(SerializationContext context, QueryNextResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
             writer.writeArray(
-                encodable._queryDataSets,
+                value._queryDataSets,
                 e -> context.encode(QueryDataSet.BinaryEncodingId, e, writer)
             );
-            writer.writeByteString(encodable._revisedContinuationPoint);
+            writer.writeByteString(value._revisedContinuationPoint);
         }
     }
 

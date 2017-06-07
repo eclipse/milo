@@ -116,14 +116,14 @@ public class RequestHeader implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, RequestHeader encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._authenticationToken);
-            writer.writeDateTime(encodable._timestamp);
-            writer.writeUInt32(encodable._requestHandle);
-            writer.writeUInt32(encodable._returnDiagnostics);
-            writer.writeString(encodable._auditEntryId);
-            writer.writeUInt32(encodable._timeoutHint);
-            writer.writeExtensionObject(encodable._additionalHeader);
+        public void encode(SerializationContext context, RequestHeader value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._authenticationToken);
+            writer.writeDateTime(value._timestamp);
+            writer.writeUInt32(value._requestHandle);
+            writer.writeUInt32(value._returnDiagnostics);
+            writer.writeString(value._auditEntryId);
+            writer.writeUInt32(value._timeoutHint);
+            writer.writeExtensionObject(value._additionalHeader);
         }
     }
 

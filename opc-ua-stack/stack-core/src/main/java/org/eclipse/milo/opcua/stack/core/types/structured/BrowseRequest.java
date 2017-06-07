@@ -101,12 +101,12 @@ public class BrowseRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            context.encode(ViewDescription.BinaryEncodingId, encodable._view, writer);
-            writer.writeUInt32(encodable._requestedMaxReferencesPerNode);
+        public void encode(SerializationContext context, BrowseRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            context.encode(ViewDescription.BinaryEncodingId, value._view, writer);
+            writer.writeUInt32(value._requestedMaxReferencesPerNode);
             writer.writeArray(
-                encodable._nodesToBrowse,
+                value._nodesToBrowse,
                 e -> context.encode(BrowseDescription.BinaryEncodingId, e, writer)
             );
         }

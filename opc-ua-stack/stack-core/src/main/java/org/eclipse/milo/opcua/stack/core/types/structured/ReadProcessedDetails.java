@@ -104,12 +104,12 @@ public class ReadProcessedDetails extends HistoryReadDetails {
         }
 
         @Override
-        public void encode(SerializationContext context, ReadProcessedDetails encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(encodable._startTime);
-            writer.writeDateTime(encodable._endTime);
-            writer.writeDouble(encodable._processingInterval);
-            writer.writeArray(encodable._aggregateType, writer::writeNodeId);
-            context.encode(AggregateConfiguration.BinaryEncodingId, encodable._aggregateConfiguration, writer);
+        public void encode(SerializationContext context, ReadProcessedDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._startTime);
+            writer.writeDateTime(value._endTime);
+            writer.writeDouble(value._processingInterval);
+            writer.writeArray(value._aggregateType, writer::writeNodeId);
+            context.encode(AggregateConfiguration.BinaryEncodingId, value._aggregateConfiguration, writer);
         }
     }
 

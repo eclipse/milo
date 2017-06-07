@@ -83,9 +83,9 @@ public class TransferResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, TransferResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeArray(encodable._availableSequenceNumbers, writer::writeUInt32);
+        public void encode(SerializationContext context, TransferResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeArray(value._availableSequenceNumbers, writer::writeUInt32);
         }
     }
 

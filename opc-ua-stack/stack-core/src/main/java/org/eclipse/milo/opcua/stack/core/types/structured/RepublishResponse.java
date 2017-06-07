@@ -78,9 +78,9 @@ public class RepublishResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, RepublishResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            context.encode(NotificationMessage.BinaryEncodingId, encodable._notificationMessage, writer);
+        public void encode(SerializationContext context, RepublishResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            context.encode(NotificationMessage.BinaryEncodingId, value._notificationMessage, writer);
         }
     }
 

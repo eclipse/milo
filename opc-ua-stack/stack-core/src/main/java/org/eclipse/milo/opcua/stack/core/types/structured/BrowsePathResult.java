@@ -87,10 +87,10 @@ public class BrowsePathResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, BrowsePathResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
+        public void encode(SerializationContext context, BrowsePathResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
             writer.writeArray(
-                encodable._targets,
+                value._targets,
                 e -> context.encode(BrowsePathTarget.BinaryEncodingId, e, writer)
             );
         }

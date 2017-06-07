@@ -73,8 +73,8 @@ public class LiteralOperand extends FilterOperand {
         }
 
         @Override
-        public void encode(SerializationContext context, LiteralOperand encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeVariant(encodable._value);
+        public void encode(SerializationContext context, LiteralOperand value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeVariant(value._value);
         }
     }
 

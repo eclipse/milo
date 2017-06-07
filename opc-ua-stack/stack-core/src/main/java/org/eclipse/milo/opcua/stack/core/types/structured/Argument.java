@@ -104,12 +104,12 @@ public class Argument implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, Argument encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(encodable._name);
-            writer.writeNodeId(encodable._dataType);
-            writer.writeInt32(encodable._valueRank);
-            writer.writeArray(encodable._arrayDimensions, writer::writeUInt32);
-            writer.writeLocalizedText(encodable._description);
+        public void encode(SerializationContext context, Argument value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._name);
+            writer.writeNodeId(value._dataType);
+            writer.writeInt32(value._valueRank);
+            writer.writeArray(value._arrayDimensions, writer::writeUInt32);
+            writer.writeLocalizedText(value._description);
         }
     }
 

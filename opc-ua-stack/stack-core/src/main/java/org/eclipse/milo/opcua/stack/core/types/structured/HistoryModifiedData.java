@@ -89,10 +89,10 @@ public class HistoryModifiedData extends HistoryData {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryModifiedData encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(encodable._dataValues, writer::writeDataValue);
+        public void encode(SerializationContext context, HistoryModifiedData value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(value._dataValues, writer::writeDataValue);
             writer.writeArray(
-                encodable._modificationInfos,
+                value._modificationInfos,
                 e -> context.encode(ModificationInfo.BinaryEncodingId, e, writer)
             );
         }

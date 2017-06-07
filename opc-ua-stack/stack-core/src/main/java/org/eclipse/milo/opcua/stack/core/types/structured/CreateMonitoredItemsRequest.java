@@ -102,12 +102,12 @@ public class CreateMonitoredItemsRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, CreateMonitoredItemsRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32(encodable._subscriptionId);
-            writer.writeInt32(encodable._timestampsToReturn != null ? encodable._timestampsToReturn.getValue() : 0);
+        public void encode(SerializationContext context, CreateMonitoredItemsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeInt32(value._timestampsToReturn != null ? value._timestampsToReturn.getValue() : 0);
             writer.writeArray(
-                encodable._itemsToCreate,
+                value._itemsToCreate,
                 e -> context.encode(MonitoredItemCreateRequest.BinaryEncodingId, e, writer)
             );
         }

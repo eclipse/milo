@@ -96,11 +96,11 @@ public class ServerOnNetwork implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ServerOnNetwork encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(encodable._recordId);
-            writer.writeString(encodable._serverName);
-            writer.writeString(encodable._discoveryUrl);
-            writer.writeArray(encodable._serverCapabilities, writer::writeString);
+        public void encode(SerializationContext context, ServerOnNetwork value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._recordId);
+            writer.writeString(value._serverName);
+            writer.writeString(value._discoveryUrl);
+            writer.writeArray(value._serverCapabilities, writer::writeString);
         }
     }
 

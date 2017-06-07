@@ -101,12 +101,12 @@ public class AttributeOperand extends FilterOperand {
         }
 
         @Override
-        public void encode(SerializationContext context, AttributeOperand encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(encodable._nodeId);
-            writer.writeString(encodable._alias);
-            context.encode(RelativePath.BinaryEncodingId, encodable._browsePath, writer);
-            writer.writeUInt32(encodable._attributeId);
-            writer.writeString(encodable._indexRange);
+        public void encode(SerializationContext context, AttributeOperand value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeString(value._alias);
+            context.encode(RelativePath.BinaryEncodingId, value._browsePath, writer);
+            writer.writeUInt32(value._attributeId);
+            writer.writeString(value._indexRange);
         }
     }
 

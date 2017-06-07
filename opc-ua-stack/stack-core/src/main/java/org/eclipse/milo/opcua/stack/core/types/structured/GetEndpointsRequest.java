@@ -96,11 +96,11 @@ public class GetEndpointsRequest implements UaRequestMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, GetEndpointsRequest encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, encodable._requestHeader, writer);
-            writer.writeString(encodable._endpointUrl);
-            writer.writeArray(encodable._localeIds, writer::writeString);
-            writer.writeArray(encodable._profileUris, writer::writeString);
+        public void encode(SerializationContext context, GetEndpointsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeString(value._endpointUrl);
+            writer.writeArray(value._localeIds, writer::writeString);
+            writer.writeArray(value._profileUris, writer::writeString);
         }
     }
 

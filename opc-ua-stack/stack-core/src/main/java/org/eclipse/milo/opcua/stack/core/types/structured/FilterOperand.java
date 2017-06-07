@@ -61,7 +61,7 @@ public class FilterOperand implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, FilterOperand encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, FilterOperand value, OpcBinaryStreamWriter writer) throws UaSerializationException {
         }
     }
 

@@ -88,12 +88,12 @@ public class ContentFilterResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, ContentFilterResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        public void encode(SerializationContext context, ContentFilterResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
             writer.writeArray(
-                encodable._elementResults,
+                value._elementResults,
                 e -> context.encode(ContentFilterElementResult.BinaryEncodingId, e, writer)
             );
-            writer.writeArray(encodable._elementDiagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray(value._elementDiagnosticInfos, writer::writeDiagnosticInfo);
         }
     }
 

@@ -88,10 +88,10 @@ public class HistoryReadResult implements UaStructure {
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryReadResult encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(encodable._statusCode);
-            writer.writeByteString(encodable._continuationPoint);
-            writer.writeExtensionObject(encodable._historyData);
+        public void encode(SerializationContext context, HistoryReadResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeByteString(value._continuationPoint);
+            writer.writeExtensionObject(value._historyData);
         }
     }
 

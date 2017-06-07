@@ -94,11 +94,11 @@ public class OpenSecureChannelResponse implements UaResponseMessage {
         }
 
         @Override
-        public void encode(SerializationContext context, OpenSecureChannelResponse encodable, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, encodable._responseHeader, writer);
-            writer.writeUInt32(encodable._serverProtocolVersion);
-            context.encode(ChannelSecurityToken.BinaryEncodingId, encodable._securityToken, writer);
-            writer.writeByteString(encodable._serverNonce);
+        public void encode(SerializationContext context, OpenSecureChannelResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeUInt32(value._serverProtocolVersion);
+            context.encode(ChannelSecurityToken.BinaryEncodingId, value._securityToken, writer);
+            writer.writeByteString(value._serverNonce);
         }
     }
 
