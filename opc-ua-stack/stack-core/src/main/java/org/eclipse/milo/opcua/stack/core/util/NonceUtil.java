@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 public class NonceUtil {
@@ -74,27 +74,37 @@ public class NonceUtil {
     }
 
     /**
-     * Generate a nonce for the given {@link SecurityAlgorithm}. The length is determined by the algorithm.
+     * Generate a nonce for the given {@link SecurityPolicy}.
+     * <p>
+     * The length is determined by the policy: see {@link #getNonceLength(SecurityPolicy)}.
      *
-     * @param algorithm the algorithm to use when determined the nonce length.
-     * @return a nonce of the appropriate length for the given algorithm.
+     * @param securityPolicy the {@link SecurityPolicy} to use when determining the nonce length.
+     * @return a nonce of the appropriate length for the given security policy.
      */
-    public static ByteString generateNonce(SecurityAlgorithm algorithm) {
-        return generateNonce(getNonceLength(algorithm));
+    public static ByteString generateNonce(SecurityPolicy securityPolicy) {
+        return generateNonce(getNonceLength(securityPolicy));
     }
 
     /**
-     * Get the nonce length for use with {@code algorithm}.
+     * Get the minimum nonce length for use with {@code securityPolicy}.
+     * <p>
+     * For an RSA-based {@link SecurityPolicy}, the nonce shall be a cryptographic random number with a length equal to
+     * the key length specified by policy's SymmetricEncryptionAlgorithm or the length of hash algorithm used by the
+     * policy's KeyDerivationAlgorithm, whichever is greater.
      *
-     * @param algorithm a symmetric encryption algorithm.
-     * @return the nonce length.
+     * @param securityPolicy the {@link SecurityPolicy} in use.
+     * @return the minimum nonce length for use with {@code securityPolicy}.
      */
-    public static int getNonceLength(SecurityAlgorithm algorithm) {
-        switch (algorithm) {
-            case Aes128:
+    public static int getNonceLength(SecurityPolicy securityPolicy) {
+        switch (securityPolicy) {
+            case Basic128Rsa15:
                 return 16;
-            case Aes256:
+            case Basic256:
+            case Basic256Sha256:
+            case Aes128_Sha256_RsaOaep:
+            case Aes256_Sha256_RsaPss:
                 return 32;
+            case None:
             default:
                 return 0;
         }

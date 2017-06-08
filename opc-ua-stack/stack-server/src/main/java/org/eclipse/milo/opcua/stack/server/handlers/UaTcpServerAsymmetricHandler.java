@@ -40,7 +40,6 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeade
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
-import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -322,23 +321,20 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         ChannelSecurity.SecuritySecrets newKeys = null;
 
         if (secureChannel.isSymmetricSigningEnabled()) {
-            SecurityAlgorithm algorithm = secureChannel.getSecurityPolicy().getSymmetricEncryptionAlgorithm();
-
             // Validate the remote nonce; it must be non-null and the correct length for the security algorithm.
             ByteString remoteNonce = request.getClientNonce();
             if (remoteNonce == null || remoteNonce.isNull()) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "remote nonce must be non-null");
             }
-            if (remoteNonce.length() < getNonceLength(algorithm)) {
+            if (remoteNonce.length() < getNonceLength(secureChannel.getSecurityPolicy())) {
                 String message = String.format(
                     "remote nonce length must be at least %d bytes",
-                    getNonceLength(algorithm));
+                    getNonceLength(secureChannel.getSecurityPolicy()));
 
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
             }
 
-
-            ByteString localNonce = generateNonce(getNonceLength(algorithm));
+            ByteString localNonce = generateNonce(secureChannel.getSecurityPolicy());
 
             secureChannel.setLocalNonce(localNonce);
             secureChannel.setRemoteNonce(remoteNonce);
