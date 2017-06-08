@@ -249,6 +249,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         }
 
         @Override
+        public Optional<X509Certificate[]> getCertificateChain() {
+            return stackClientConfig.getCertificateChain();
+        }
+
+        @Override
         public LocalizedText getApplicationName() {
             return stackClientConfig.getApplicationName();
         }

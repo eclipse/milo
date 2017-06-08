@@ -39,17 +39,19 @@ public class ClientSecureChannel extends DefaultAttributeMap implements SecureCh
 
     private final KeyPair keyPair;
     private final X509Certificate localCertificate;
+    private final List<X509Certificate> localCertificateChain;
     private final X509Certificate remoteCertificate;
     private final List<X509Certificate> remoteCertificateChain;
     private final SecurityPolicy securityPolicy;
     private final MessageSecurityMode messageSecurityMode;
 
     public ClientSecureChannel(SecurityPolicy securityPolicy, MessageSecurityMode messageSecurityMode) {
-        this(null, null, null, null, securityPolicy, messageSecurityMode);
+        this(null, null, null, null, null, securityPolicy, messageSecurityMode);
     }
 
     public ClientSecureChannel(KeyPair keyPair,
                                X509Certificate localCertificate,
+                               List<X509Certificate> localCertificateChain,
                                X509Certificate remoteCertificate,
                                List<X509Certificate> remoteCertificateChain,
                                SecurityPolicy securityPolicy,
@@ -57,6 +59,7 @@ public class ClientSecureChannel extends DefaultAttributeMap implements SecureCh
 
         this.keyPair = keyPair;
         this.localCertificate = localCertificate;
+        this.localCertificateChain = localCertificateChain;
         this.remoteCertificate = remoteCertificate;
         this.remoteCertificateChain = remoteCertificateChain;
         this.securityPolicy = securityPolicy;
@@ -120,6 +123,11 @@ public class ClientSecureChannel extends DefaultAttributeMap implements SecureCh
     @Override
     public X509Certificate getLocalCertificate() {
         return localCertificate;
+    }
+
+    @Override
+    public List<X509Certificate> getLocalCertificateChain() {
+        return localCertificateChain;
     }
 
     @Override

@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.MoreObjects;
@@ -35,6 +36,7 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
 
     private volatile KeyPair keyPair;
     private volatile X509Certificate localCertificate;
+    private volatile List<X509Certificate> localCertificateChain;
 
     private volatile X509Certificate remoteCertificate;
     private volatile List<X509Certificate> remoteCertificateChain;
@@ -67,6 +69,10 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
         this.localCertificate = localCertificate;
     }
 
+    public void setLocalCertificateChain(X509Certificate[] localCertificateChain) {
+        this.localCertificateChain = Arrays.asList(localCertificateChain);
+    }
+
     public void setRemoteCertificate(byte[] certificateBytes) throws UaException {
         remoteCertificate = CertificateUtil.decodeCertificate(certificateBytes);
         remoteCertificateChain = CertificateUtil.decodeCertificates(certificateBytes);
@@ -96,6 +102,11 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
     @Override
     public X509Certificate getLocalCertificate() {
         return localCertificate;
+    }
+
+    @Override
+    public List<X509Certificate> getLocalCertificateChain() {
+        return localCertificateChain;
     }
 
     @Override

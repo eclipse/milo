@@ -224,6 +224,10 @@ public class OpcUaServer {
         return stackServer.getCertificateManager().getCertificate(thumbprint);
     }
 
+    public Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
+        return stackServer.getCertificateManager().getCertificateChain(thumbprint);
+    }
+
     public ExecutorService getExecutorService() {
         return stackServer.getExecutorService();
     }
@@ -310,6 +314,7 @@ public class OpcUaServer {
         return hostnames;
     }
 
-    private static class OpcUaServerNodeMap extends AbstractServerNodeMap {}
+    private static class OpcUaServerNodeMap extends AbstractServerNodeMap {
+    }
 
 }

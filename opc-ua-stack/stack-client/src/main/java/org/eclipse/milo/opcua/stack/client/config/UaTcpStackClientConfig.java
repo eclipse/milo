@@ -63,6 +63,13 @@ public interface UaTcpStackClientConfig {
     Optional<X509Certificate> getCertificate();
 
     /**
+     * Get the {@link X509Certificate} to use as well as any certificates in the certificate chain.
+     *
+     * @return the {@link X509Certificate} to use as well as any certificates in the certificate chain.
+     */
+    Optional<X509Certificate[]> getCertificateChain();
+
+    /**
      * @return the name of the client application, as a {@link LocalizedText}.
      */
     LocalizedText getApplicationName();
@@ -137,6 +144,7 @@ public interface UaTcpStackClientConfig {
         config.getEndpoint().ifPresent(builder::setEndpoint);
         config.getKeyPair().ifPresent(builder::setKeyPair);
         config.getCertificate().ifPresent(builder::setCertificate);
+        config.getCertificateChain().ifPresent(builder::setCertificateChain);
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());

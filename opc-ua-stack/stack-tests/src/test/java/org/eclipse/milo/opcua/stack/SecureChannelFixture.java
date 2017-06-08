@@ -13,7 +13,8 @@
 
 package org.eclipse.milo.opcua.stack;
 
-import com.google.common.collect.Lists;
+import java.security.cert.X509Certificate;
+
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
@@ -24,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.generateNonce;
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.getNonceLength;
@@ -39,8 +41,9 @@ public abstract class SecureChannelFixture extends SecurityFixture {
         ClientSecureChannel clientChannel = new ClientSecureChannel(
             securityPolicy == SecurityPolicy.None ? null : clientKeyPair,
             securityPolicy == SecurityPolicy.None ? null : clientCertificate,
+            securityPolicy == SecurityPolicy.None ? null : newArrayList(clientCertificate),
             securityPolicy == SecurityPolicy.None ? null : serverCertificate,
-            securityPolicy == SecurityPolicy.None ? null : Lists.newArrayList(serverCertificate),
+            securityPolicy == SecurityPolicy.None ? null : newArrayList(serverCertificate),
             securityPolicy,
             messageSecurity
         );
@@ -78,6 +81,7 @@ public abstract class SecureChannelFixture extends SecurityFixture {
 
                 serverChannel.setKeyPair(serverKeyPair);
                 serverChannel.setLocalCertificate(serverCertificate);
+                serverChannel.setLocalCertificateChain(new X509Certificate[]{serverCertificate});
                 serverChannel.setRemoteCertificate(clientCertificateBytes);
 
                 if (messageSecurity != MessageSecurityMode.None) {

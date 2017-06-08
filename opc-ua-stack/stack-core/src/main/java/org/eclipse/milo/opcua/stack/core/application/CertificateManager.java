@@ -43,6 +43,18 @@ public interface CertificateManager {
     Optional<X509Certificate> getCertificate(ByteString thumbprint);
 
     /**
+     * Get the {@link X509Certificate} identified by {@code thumbprint} as well as any certificates in its chain.
+     *
+     * // TODO remove default implementation in next API-breaking version
+     *
+     * @param thumbprint the thumbprint of the certificate.
+     * @return the {@link X509Certificate} identified by {@code thumbprint} as well as any certificates in its chain.
+     */
+    default Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
+        return getCertificate(thumbprint).map(c -> new X509Certificate[]{c});
+    }
+
+    /**
      * @return the Set of all managed {@link KeyPair}s.
      */
     Set<KeyPair> getKeyPairs();

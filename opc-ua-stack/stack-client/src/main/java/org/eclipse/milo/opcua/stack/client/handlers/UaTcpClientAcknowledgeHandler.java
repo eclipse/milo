@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.stack.client.handlers;
 import java.nio.ByteOrder;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -93,11 +94,12 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
                     }
                 })
                 .flatMap(t1 -> config.getKeyPair().map(t1::concat))
-                .flatMap(t2 -> config.getCertificate().map(t2::concat))
+                .flatMap(t2 -> config.getCertificateChain().map(t2::concat))
                 .flatMap(t3 -> {
                     EndpointDescription endpoint = t3.v1();
                     KeyPair keyPair = t3.v2();
-                    X509Certificate localCertificate = t3.v3();
+                    List<X509Certificate> localCertificateChain = Arrays.asList(t3.v3());
+                    X509Certificate localCertificate = localCertificateChain.get(0);
 
                     try {
                         X509Certificate remoteCertificate = CertificateUtil
@@ -111,6 +113,7 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
                         ClientSecureChannel secureChannel = new ClientSecureChannel(
                             keyPair,
                             localCertificate,
+                            localCertificateChain,
                             remoteCertificate,
                             remoteCertificateChain,
                             securityPolicy,

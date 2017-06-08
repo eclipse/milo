@@ -216,14 +216,17 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
             if (!securityHeader.getReceiverThumbprint().isNull()) {
                 CertificateManager certificateManager = server.getCertificateManager();
 
-                Optional<X509Certificate> localCertificate = certificateManager
-                    .getCertificate(securityHeader.getReceiverThumbprint());
+                Optional<X509Certificate[]> localCertificateChain = certificateManager
+                    .getCertificateChain(securityHeader.getReceiverThumbprint());
 
                 Optional<KeyPair> keyPair = certificateManager
                     .getKeyPair(securityHeader.getReceiverThumbprint());
 
-                if (localCertificate.isPresent() && keyPair.isPresent()) {
-                    secureChannel.setLocalCertificate(localCertificate.get());
+                if (localCertificateChain.isPresent() && keyPair.isPresent()) {
+                    X509Certificate[] chain = localCertificateChain.get();
+
+                    secureChannel.setLocalCertificate(chain[0]);
+                    secureChannel.setLocalCertificateChain(chain);
                     secureChannel.setKeyPair(keyPair.get());
                 } else {
                     throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
