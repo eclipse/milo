@@ -28,15 +28,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.generateNonce;
-import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.getNonceLength;
 
 public abstract class SecureChannelFixture extends SecurityFixture {
 
     protected SecureChannel[] generateChannels(SecurityPolicy securityPolicy, MessageSecurityMode messageSecurity) throws Exception {
         super.setUp();
 
-        ByteString clientNonce = generateNonce(getNonceLength(securityPolicy.getSymmetricEncryptionAlgorithm()));
-        ByteString serverNonce = generateNonce(getNonceLength(securityPolicy.getSymmetricEncryptionAlgorithm()));
+        ByteString clientNonce = generateNonce(securityPolicy);
+        ByteString serverNonce = generateNonce(securityPolicy);
 
         ClientSecureChannel clientChannel = new ClientSecureChannel(
             securityPolicy == SecurityPolicy.None ? null : clientKeyPair,
