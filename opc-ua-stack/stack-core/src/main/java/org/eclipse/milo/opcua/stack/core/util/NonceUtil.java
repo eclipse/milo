@@ -16,22 +16,25 @@ package org.eclipse.milo.opcua.stack.core.util;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.slf4j.LoggerFactory;
 
 public class NonceUtil {
 
-    private static volatile boolean secureRandomEnabled = false;
+    private static volatile boolean SECURE_RANDOM_ENABLED = true;
 
-    private static volatile SecureRandom secureRandom;
+    private static final AtomicReference<SecureRandom> SECURE_RANDOM = new AtomicReference<>(new SecureRandom());
 
     static {
-        /*
-         * The first call to a SecureRandom causes it to seed, which is potentially blocking, so don't make the
-         * SecureRandom instance available until after its seeded and generated output already.
-         */
+        // The first call to a SecureRandom causes it to seed, which is potentially blocking, so don't make the
+        // SecureRandom instance available until after its seeded and generated output already.
         new Thread(() -> {
+            long start = System.nanoTime();
+
             SecureRandom sr;
             try {
                 sr = SecureRandom.getInstanceStrong();
@@ -39,20 +42,35 @@ public class NonceUtil {
                 sr = new SecureRandom();
             }
             sr.nextBytes(new byte[32]);
-            secureRandom = sr;
+            SECURE_RANDOM.set(sr);
+
+            long delta = System.nanoTime() - start;
+
+            LoggerFactory.getLogger(NonceUtil.class).info(
+                "SecureRandom from getInstanceStrong() finished seeding in %sms.",
+                TimeUnit.NANOSECONDS.convert(delta, TimeUnit.MILLISECONDS));
         }, "SecureRandomGetInstanceStrong").start();
     }
 
+    /**
+     * Enable the use of a {@link SecureRandom} for nonce generation. This is the default.
+     */
     public static void enableSecureRandom() {
-        secureRandomEnabled = true;
+        SECURE_RANDOM_ENABLED = true;
     }
 
+    /**
+     * Disable the use of a {@link SecureRandom} for nonce generation. Not recommended.
+     */
     public static void disableSecureRandom() {
-        secureRandomEnabled = false;
+        SECURE_RANDOM_ENABLED = false;
     }
 
+    /**
+     * @return {@code true} is nonce generation uses a {@link SecureRandom} instance.
+     */
     public static boolean isSecureRandomEnabled() {
-        return secureRandomEnabled;
+        return SECURE_RANDOM_ENABLED;
     }
 
     /**
@@ -64,8 +82,8 @@ public class NonceUtil {
 
         byte[] bs = new byte[length];
 
-        if (secureRandom != null && secureRandomEnabled) {
-            secureRandom.nextBytes(bs);
+        if (SECURE_RANDOM_ENABLED) {
+            SECURE_RANDOM.get().nextBytes(bs);
         } else {
             ThreadLocalRandom.current().nextBytes(bs);
         }
