@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.util.annotations.Description;
 
 
-@SuppressWarnings("unused")
 public class StatusCodes {
 
     private static final ImmutableMap<Long, String[]> DESCRIPTIONS;
