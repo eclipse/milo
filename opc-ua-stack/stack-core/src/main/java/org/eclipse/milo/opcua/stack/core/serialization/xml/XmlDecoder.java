@@ -624,7 +624,6 @@ public class XmlDecoder implements UaDecoder {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends UaEnumeration> T decodeEnumeration(String field, Class<T> clazz) throws UaSerializationException {
         return parseElement(field, content -> {

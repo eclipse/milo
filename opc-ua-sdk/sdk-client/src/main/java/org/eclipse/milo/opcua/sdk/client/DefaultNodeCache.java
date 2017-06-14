@@ -41,7 +41,6 @@ public class DefaultNodeCache implements NodeCache {
     private volatile Cache<NodeId, Map<AttributeId, DataValue>> cache = buildCache();
 
     @Override
-    @SuppressWarnings("unchecked")
     public Optional<DataValue> getAttribute(NodeId nodeId, AttributeId attributeId) {
         Map<AttributeId, DataValue> attributes = cache.getIfPresent(nodeId);
 
