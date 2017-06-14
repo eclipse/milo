@@ -17,10 +17,7 @@ import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 
 public class UaViewLoader {
 
-    private final ServerNodeMap nodeMap;
-
     public UaViewLoader(ServerNodeMap nodeMap) {
-        this.nodeMap = nodeMap;
     }
 
     public void buildNodes() {

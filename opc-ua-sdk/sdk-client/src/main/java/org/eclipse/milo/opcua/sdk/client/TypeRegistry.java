@@ -41,8 +41,6 @@ public class TypeRegistry {
     }
 
     private static class TypeDefinition {
-        final Class<? extends Node> typeClass;
-        final Class<? extends UaNode> nodeClass;
         final NodeFactory nodeFactory;
 
         private TypeDefinition(
@@ -50,8 +48,6 @@ public class TypeRegistry {
             Class<? extends UaNode> nodeClass,
             NodeFactory nodeFactory) {
 
-            this.typeClass = typeClass;
-            this.nodeClass = nodeClass;
             this.nodeFactory = nodeFactory;
         }
     }

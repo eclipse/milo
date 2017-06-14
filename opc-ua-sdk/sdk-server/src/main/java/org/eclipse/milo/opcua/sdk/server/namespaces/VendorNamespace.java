@@ -58,11 +58,9 @@ public class VendorNamespace implements Namespace {
     private final ServerNodeMap nodeMap;
     private final SubscriptionModel subscriptionModel;
 
-    private final OpcUaServer server;
     private final String namespaceUri;
 
     public VendorNamespace(OpcUaServer server, String namespaceUri) {
-        this.server = server;
         this.namespaceUri = namespaceUri;
 
         nodeMap = server.getNodeMap();

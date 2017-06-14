@@ -42,8 +42,8 @@ public class ContentFilterUtil {
         for (int i = 0; i < elements.size(); i++) {
             ContentFilterElement element = elements.get(i);
 
-            FilterOperator operator = element.getFilterOperator();
-            SimpleAttributeOperand[] operands = extract(element.getFilterOperands());
+            element.getFilterOperator();
+            extract(element.getFilterOperands());
 
             throw new UaException(StatusCodes.Bad_FilterOperandInvalid);
         }
@@ -52,8 +52,6 @@ public class ContentFilterUtil {
     private boolean apply(FilterOperator operator, FilterOperand[] operands) {
         if (operator == FilterOperator.Equals) {
             SimpleAttributeOperand op0 = (SimpleAttributeOperand) operands[0];
-            AttributeOperand op1 = (AttributeOperand) operands[1];
-
             op0.getAttributeId();
             op0.getBrowsePath();
             op0.getIndexRange();

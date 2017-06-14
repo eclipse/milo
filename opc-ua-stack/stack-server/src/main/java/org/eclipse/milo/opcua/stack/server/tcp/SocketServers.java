@@ -127,11 +127,9 @@ public class SocketServers {
 
         private final Map<String, UaTcpStackServer> boundServers = Maps.newConcurrentMap();
 
-        private final InetSocketAddress address;
         private final Channel channel;
 
         private SocketServer(InetSocketAddress address, Channel channel) {
-            this.address = address;
             this.channel = channel;
         }
 

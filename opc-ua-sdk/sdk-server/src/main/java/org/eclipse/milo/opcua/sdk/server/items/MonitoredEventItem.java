@@ -29,8 +29,6 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements EventItem {
 
-    private volatile EventFilter filter;
-
     public MonitoredEventItem(
         UInteger id,
         UInteger subscriptionId,
