@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;

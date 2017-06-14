@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.identity;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
