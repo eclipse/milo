@@ -595,8 +595,8 @@ public class SubscriptionManager {
                             Double minimumSamplingInterval = Optional.ofNullable(
                                 (Double) vs.get(2).getValue().getValue()).orElse(0.0);
 
-                            EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(accessLevel);
-                            EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromMask(userAccessLevel);
+                            AccessLevel.fromMask(accessLevel);
+                            AccessLevel.fromMask(userAccessLevel);
 
                             double samplingInterval = parameters.getSamplingInterval();
                             double minSupportedSampleRate = server.getConfig().getLimits().getMinSupportedSampleRate();

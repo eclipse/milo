@@ -52,10 +52,7 @@ public class ChunkDecoder {
     private volatile long lastSequenceNumber = -1L;
     private volatile long lastRequestId;
 
-    private final ChannelParameters parameters;
-
     public ChunkDecoder(ChannelParameters parameters) {
-        this.parameters = parameters;
     }
 
     public ByteBuf decodeAsymmetric(SecureChannel channel, List<ByteBuf> chunkBuffers) throws UaException {

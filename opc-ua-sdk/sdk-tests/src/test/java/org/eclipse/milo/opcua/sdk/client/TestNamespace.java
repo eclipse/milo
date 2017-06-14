@@ -74,11 +74,9 @@ public class TestNamespace implements Namespace {
     private final UaFolderNode testFolder;
     private final SubscriptionModel subscriptionModel;
 
-    private final OpcUaServer server;
     private final UShort namespaceIndex;
 
     public TestNamespace(OpcUaServer server, UShort namespaceIndex) {
-        this.server = server;
         this.namespaceIndex = namespaceIndex;
 
         nodeManager = server.getNodeMap();

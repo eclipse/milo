@@ -78,7 +78,6 @@ public class ProgramDiagnosticNode extends BaseDataVariableNode implements Progr
         Object o = value.getValue().getValue();
 
         if (o instanceof ProgramDiagnosticDataType) {
-            ProgramDiagnosticDataType v = (ProgramDiagnosticDataType) o;
 
         }
     }

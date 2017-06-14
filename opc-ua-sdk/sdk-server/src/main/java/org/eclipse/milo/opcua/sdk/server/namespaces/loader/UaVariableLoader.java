@@ -67,7 +67,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8208"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8208"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8208"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">RedundantServerDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -82,7 +81,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8211"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8211"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8211"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SamplingIntervalDiagnosticsDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -97,7 +95,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8214"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8214"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8214"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ServerDiagnosticsSummaryDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -112,7 +109,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8217"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8217"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8217"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ServerStatusDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -127,7 +123,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8220"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8220"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8220"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SessionDiagnosticsDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -142,7 +137,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8223"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8223"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8223"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SessionSecurityDiagnosticsDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -157,7 +151,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8226"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8226"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8226"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ServiceCounterDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -172,7 +165,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8229"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8229"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8229"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SubscriptionDiagnosticsDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -187,7 +179,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8232"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8232"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8232"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ModelChangeStructureDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -202,7 +193,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8235"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8235"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8235"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SemanticChangeStructureDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -217,7 +207,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8238"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8238"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8238"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">Range</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -232,7 +221,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8241"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8241"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8241"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">EUInformation</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -247,7 +235,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8244"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8244"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8244"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">Annotation</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -262,7 +249,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8247"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8247"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8247"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ProgramDiagnosticDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -412,7 +398,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8254"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8254"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8254"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">http://opcfoundation.org/UA/2008/02/Types.xsd</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -437,7 +422,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8285"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8285"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8285"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='Argument']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -452,7 +436,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8291"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8291"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8291"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='EnumValueType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -467,7 +450,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8294"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8294"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8294"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='StatusResult']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -502,7 +484,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8297"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8297"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8297"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='UserTokenPolicy']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -537,7 +518,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8300"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8300"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8300"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ApplicationDescription']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -552,7 +532,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=111"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=111"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=111"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=77"), NodeClass.ObjectType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:Int32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">1</ns2:Int32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -567,7 +546,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8303"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8303"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8303"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='EndpointDescription']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -581,7 +559,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=112"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=112"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=112"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:Int32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">1</ns2:Int32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -595,7 +572,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=113"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=113"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=113"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:Int32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">2</ns2:Int32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -609,7 +585,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=114"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=83"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=114"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=114"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=83"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:Int32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">3</ns2:Int32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -624,7 +599,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8306"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8306"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8306"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='UserIdentityToken']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -638,7 +612,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=116"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=79"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=116"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=116"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=79"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:Int32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">1</ns2:Int32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -653,7 +626,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8309"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8309"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8309"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='AnonymousIdentityToken']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -668,7 +640,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8312"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8312"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8312"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='UserNameIdentityToken']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -683,7 +654,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8315"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8315"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8315"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='X509IdentityToken']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -698,7 +668,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8318"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8318"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8318"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='IssuedIdentityToken']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -713,7 +682,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8321"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8321"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8321"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='EndpointConfiguration']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -728,7 +696,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8324"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8324"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8324"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SupportedProfile']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -743,7 +710,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8327"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8327"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8327"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='BuildInfo']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -758,7 +724,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8330"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8330"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8330"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SoftwareCertificate']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -773,7 +738,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8333"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8333"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8333"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SignedSoftwareCertificate']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -788,7 +752,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8363"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8363"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8363"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='AddNodesItem']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -803,7 +766,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8366"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8366"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8366"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='AddReferencesItem']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -818,7 +780,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8369"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8369"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8369"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='DeleteNodesItem']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -833,7 +794,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8372"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8372"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8372"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='DeleteReferencesItem']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -868,7 +828,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12506"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12506"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12506"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='KerberosIdentityToken']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -883,7 +842,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12510"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12510"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12510"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">KerberosIdentityToken</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -898,7 +856,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8417"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8417"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8417"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='RegisteredServer']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -923,7 +880,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12544"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12544"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12544"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12543"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -938,7 +894,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12545"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12545"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12545"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12543"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -953,7 +908,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12547"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12547"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12547"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12546"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ApplyChangesRequired</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -968,7 +922,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12549"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12549"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12549"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12548"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificate</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -983,7 +936,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12551"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12551"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12551"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12550"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Thumbprint</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -998,7 +950,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12553"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12553"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12553"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12552"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>0</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>None</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>TrustedCertificates</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>TrustedCrls</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>IssuerCertificates</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>8</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>IssuerCrls</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>15</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>All</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1043,7 +994,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12617"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12617"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12617"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12616"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateGroupId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateTypeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificate</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IssuerCertificates</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>PrivateKeyFormat</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>PrivateKey</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1058,7 +1008,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12618"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12618"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12618"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12616"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ApplyChangesRequired</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1117,7 +1066,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12648"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12647"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12648"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12648"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12647"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1131,7 +1079,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12649"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12647"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12649"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12649"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12647"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1145,7 +1092,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12651"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12650"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12651"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12651"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12650"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1159,7 +1105,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12653"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12652"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12653"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12653"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12652"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1173,7 +1118,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12654"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12652"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12654"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12654"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12652"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1187,7 +1131,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12656"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12655"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12656"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12656"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12655"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1201,7 +1144,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12658"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12657"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12658"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12658"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12657"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1215,7 +1157,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12659"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12657"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12659"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12659"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12657"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1230,7 +1171,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8564"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8564"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8564"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ContentFilterElement']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1244,7 +1184,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12661"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12660"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12661"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12661"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12660"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1268,7 +1207,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8567"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8567"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8567"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ContentFilter']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1282,7 +1220,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12664"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12663"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12664"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12664"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12663"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1296,7 +1233,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12665"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12663"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12665"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12665"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12663"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1311,7 +1247,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8570"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8570"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8570"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='FilterOperand']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1325,7 +1260,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12667"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12666"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12667"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12667"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12666"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ApplyChangesRequired</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1339,7 +1273,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12669"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12668"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12669"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12669"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12668"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificate</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1354,7 +1287,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8573"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8573"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8573"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ElementOperand']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1368,7 +1300,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12671"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12670"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12671"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12671"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12670"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Thumbprint</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1383,7 +1314,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8576"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8576"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8576"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='LiteralOperand']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1398,7 +1328,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8579"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8579"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8579"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='AttributeOperand']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1413,7 +1342,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12677"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12677"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12677"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='TrustListDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1428,7 +1356,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8582"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8582"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8582"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SimpleAttributeOperand']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1443,7 +1370,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12681"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12681"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12681"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">TrustListDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1518,7 +1444,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12705"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12705"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12705"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12546"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1552,7 +1477,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12712"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12712"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12712"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='RelativePathElement']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1567,7 +1491,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12715"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12715"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12715"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='RelativePath']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1582,7 +1505,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12718"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12718"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12718"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">RelativePathElement</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1597,7 +1519,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12721"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12721"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12721"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">RelativePath</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1612,7 +1533,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12732"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12732"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12732"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12731"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateGroupId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateTypeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubjectName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>RegeneratePrivateKey</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Nonce</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1627,7 +1547,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12733"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12733"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12733"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12731"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateRequest</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1642,7 +1561,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8639"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8639"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8639"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='HistoryEvent']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1656,7 +1574,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12738"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12737"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12738"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12738"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12737"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateGroupId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateTypeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubjectName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>RegeneratePrivateKey</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Nonce</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1670,7 +1587,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12739"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12737"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12739"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12739"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12737"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateRequest</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1692,7 +1608,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12747"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12747"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12747"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12746"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>LifetimeInHours</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1707,7 +1622,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12748"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12748"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12748"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12746"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>RevisedLifetimeInHours</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1721,7 +1635,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12750"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12749"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12750"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12750"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12749"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>LifetimeInHours</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1735,7 +1648,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12751"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12749"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12751"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12751"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12749"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>RevisedLifetimeInHours</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1750,7 +1662,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12759"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12759"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12759"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='OptionSet']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1765,7 +1676,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12762"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12762"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12762"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='Union']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1780,7 +1690,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12767"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12767"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12767"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">OptionSet</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1795,7 +1704,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12770"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12770"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12770"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">Union</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1810,7 +1718,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12776"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12776"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12776"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12775"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificates</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -1824,7 +1731,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12778"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12777"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12778"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12778"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12777"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificates</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -2109,7 +2015,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8702"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8702"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8702"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='MonitoringFilter']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -2184,7 +2089,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8708"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8708"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8708"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='EventFilter']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -2229,7 +2133,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8711"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8711"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8711"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='AggregateConfiguration']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -2968,7 +2871,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12872"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12872"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12872"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12871"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -2982,7 +2884,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12874"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12873"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12874"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12874"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12873"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3007,7 +2908,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12884"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12884"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12884"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12883"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>State</ns2:Name><ns2:DataType><ns2:Identifier>i=852</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>EstimatedReturnTime</ns2:Name><ns2:DataType><ns2:Identifier>i=13</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SecondsTillShutdown</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Reason</ns2:Name><ns2:DataType><ns2:Identifier>i=21</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Restart</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3030,7 +2930,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12887"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12886"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12887"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12887"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12886"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>State</ns2:Name><ns2:DataType><ns2:Identifier>i=852</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>EstimatedReturnTime</ns2:Name><ns2:DataType><ns2:Identifier>i=13</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SecondsTillShutdown</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Reason</ns2:Name><ns2:DataType><ns2:Identifier>i=21</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Restart</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3045,7 +2944,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12894"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12894"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12894"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='DiscoveryConfiguration']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3060,7 +2958,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12897"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12897"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12897"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='MdnsDiscoveryConfiguration']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3075,7 +2972,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12902"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12902"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12902"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">DiscoveryConfiguration</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3090,7 +2986,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8807"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8807"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8807"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='HistoryEventFieldList']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3105,7 +3000,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12905"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12905"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12905"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">MdnsDiscoveryConfiguration</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3146,7 +3040,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12913"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12913"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12913"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12912"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=288</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The identifier for the suscription to refresh.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>MonitoredItemId</ns2:Name><ns2:DataType><ns2:Identifier>i=288</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The identifier for the monitored item to refresh.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3161,7 +3054,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8843"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8843"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8843"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='RedundantServerDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3176,7 +3068,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8846"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8846"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8846"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SamplingIntervalDiagnosticsDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3191,7 +3082,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8849"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8849"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8849"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ServerDiagnosticsSummaryDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3206,7 +3096,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8852"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8852"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8852"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ServerStatusDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3221,7 +3110,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8855"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8855"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8855"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SessionDiagnosticsDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3236,7 +3124,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8858"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8858"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8858"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SessionSecurityDiagnosticsDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3251,7 +3138,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8861"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8861"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8861"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ServiceCounterDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3266,7 +3152,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8864"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8864"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8864"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SubscriptionDiagnosticsDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3281,7 +3166,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8867"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8867"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8867"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ModelChangeStructureDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3296,7 +3180,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8870"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8870"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8870"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='SemanticChangeStructureDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3311,7 +3194,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8873"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8873"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8873"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='Range']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3326,7 +3208,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8876"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8876"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8876"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='EUInformation']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3341,7 +3222,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8879"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8879"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8879"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='Annotation']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3356,7 +3236,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8882"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8882"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8882"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ProgramDiagnosticDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3501,7 +3380,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8914"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8914"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8914"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">TimeZoneDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3516,7 +3394,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8918"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8918"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8918"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='TimeZoneDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3745,7 +3622,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9030"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9030"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9030"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9029"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>EventId</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The identifier for the event to comment.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Comment</ns2:Name><ns2:DataType><ns2:Identifier>i=21</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The comment to add to the condition.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3870,7 +3746,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9070"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9070"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9070"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9069"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SelectedResponse</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The response to the dialog condition.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3983,7 +3858,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9112"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9112"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9112"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9111"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>EventId</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The identifier for the event to comment.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Comment</ns2:Name><ns2:DataType><ns2:Identifier>i=21</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The comment to add to the condition.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -3998,7 +3872,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9114"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9114"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9114"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9113"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>EventId</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The identifier for the event to comment.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Comment</ns2:Name><ns2:DataType><ns2:Identifier>i=21</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The comment to add to the condition.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4213,7 +4086,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9214"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9214"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9214"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9213"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ShelvingTime</ns2:Name><ns2:DataType><ns2:Identifier>i=290</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>If not 0, this parameter specifies a fixed time for which the Alarm is to be shelved.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4288,7 +4160,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13356"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13356"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13356"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13355"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>DirectoryName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4303,7 +4174,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13357"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13357"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13357"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13355"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>DirectoryNodeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4318,7 +4188,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13359"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13359"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13359"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13358"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>RequestFileOpen</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4333,7 +4202,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13360"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13360"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13360"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13358"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileNodeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4348,7 +4216,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13362"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13362"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13362"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13361"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ObjectToDelete</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4363,7 +4230,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13364"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13364"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13364"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13363"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ObjectToMoveOrCopy</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>TargetDirectory</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CreateCopy</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>NewName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4378,7 +4244,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13365"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13365"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13365"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13363"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>NewNodeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4433,7 +4298,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13373"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13373"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13373"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13372"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4448,7 +4312,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13374"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13374"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13374"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13372"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4463,7 +4326,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13376"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13376"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13376"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13375"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4478,7 +4340,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13378"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13378"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13378"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13377"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4493,7 +4354,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13379"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13379"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13379"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13377"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4508,7 +4368,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13381"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13381"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13381"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13380"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4523,7 +4382,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13383"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13383"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13383"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13382"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4538,7 +4396,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13384"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13384"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13384"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13382"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4553,7 +4410,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13386"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13386"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13386"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13385"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4568,7 +4424,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13388"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13388"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13388"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13387"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>DirectoryName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4583,7 +4438,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13389"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13389"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13389"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13387"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>DirectoryNodeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4598,7 +4452,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13391"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13391"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13391"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13390"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>RequestFileOpen</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4613,7 +4466,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13392"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13392"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13392"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13390"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileNodeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4628,7 +4480,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13394"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13394"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13394"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13393"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ObjectToDelete</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4643,7 +4494,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13396"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13396"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13396"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13395"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ObjectToMoveOrCopy</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>TargetDirectory</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CreateCopy</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>NewName</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4658,7 +4508,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13397"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13397"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13397"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13395"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>NewNodeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4833,7 +4682,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13606"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13606"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13606"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13605"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4848,7 +4696,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13607"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13607"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13607"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13605"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4863,7 +4710,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13609"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13609"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13609"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13608"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4878,7 +4724,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13611"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13611"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13611"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13610"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4893,7 +4738,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13612"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13612"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13612"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13610"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4908,7 +4752,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13614"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13614"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13614"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13613"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4923,7 +4766,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13616"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13616"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13616"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13615"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4938,7 +4780,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13617"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13617"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13617"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13615"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4953,7 +4794,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13619"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13619"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13619"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13618"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4978,7 +4818,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13622"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13622"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13622"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13621"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -4993,7 +4832,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13623"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13623"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13623"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13621"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5037,7 +4875,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13738"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13737"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13738"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13738"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13737"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateGroupId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>CertificateTypeId</ns2:Name><ns2:DataType><ns2:Identifier>i=17</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificate</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IssuerCertificates</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>PrivateKeyFormat</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>PrivateKey</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5051,7 +4888,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13739"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13737"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13739"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13739"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13737"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ApplyChangesRequired</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5106,7 +4942,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13822"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13822"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13822"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13821"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5121,7 +4956,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13823"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13823"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13823"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13821"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5136,7 +4970,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13825"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13825"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13825"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13824"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5151,7 +4984,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13827"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13827"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13827"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13826"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5166,7 +4998,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13828"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13828"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13828"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13826"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5181,7 +5012,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13830"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13830"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13830"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13829"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5196,7 +5026,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13832"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13832"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13832"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13831"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5211,7 +5040,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13833"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13833"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13833"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13831"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5226,7 +5054,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13835"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13835"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13835"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13834"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5251,7 +5078,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13838"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13838"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13838"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13837"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5266,7 +5092,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13839"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13839"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13839"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13837"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5331,7 +5156,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13856"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13856"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13856"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13855"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5346,7 +5170,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13857"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13857"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13857"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13855"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5361,7 +5184,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13859"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13859"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13859"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13858"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5376,7 +5198,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13861"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13861"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13861"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13860"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5391,7 +5212,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13862"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13862"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13862"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13860"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5406,7 +5226,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13864"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13864"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13864"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13863"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5421,7 +5240,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13866"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13866"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13866"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13865"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5436,7 +5254,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13867"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13867"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13867"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13865"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5451,7 +5268,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13869"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13869"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13869"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13868"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5476,7 +5292,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13872"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13872"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13872"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13871"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5491,7 +5306,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13873"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13873"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13873"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13871"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5556,7 +5370,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13890"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13890"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13890"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13889"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5571,7 +5384,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13891"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13891"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13891"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13889"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5586,7 +5398,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13893"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13893"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13893"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13892"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5601,7 +5412,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13895"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13895"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13895"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13894"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5616,7 +5426,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13896"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13896"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13896"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13894"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5631,7 +5440,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13898"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13898"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13898"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13897"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5646,7 +5454,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13900"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13900"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13900"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13899"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5661,7 +5468,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13901"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13901"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13901"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13899"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5676,7 +5482,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13903"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13903"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13903"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13902"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5701,7 +5506,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13906"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13906"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13906"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13905"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5716,7 +5520,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13907"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13907"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13907"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13905"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5781,7 +5584,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13924"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13924"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13924"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13923"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5796,7 +5598,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13925"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13925"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13925"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13923"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5811,7 +5612,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13927"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13927"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13927"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13926"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5826,7 +5626,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13929"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13929"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13929"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13928"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5841,7 +5640,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13930"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13930"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13930"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13928"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5856,7 +5654,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13932"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13932"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13932"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13931"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5871,7 +5668,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13934"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13934"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13934"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13933"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5886,7 +5682,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13935"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13935"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13935"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13933"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5901,7 +5696,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13937"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13937"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13937"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13936"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5926,7 +5720,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13940"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13940"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13940"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13939"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -5941,7 +5734,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13941"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13941"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13941"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13939"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6006,7 +5798,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13959"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13959"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13959"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13958"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6021,7 +5812,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13960"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13960"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13960"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13958"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6036,7 +5826,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13962"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13962"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13962"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13961"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6051,7 +5840,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13964"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13964"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13964"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13963"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6066,7 +5854,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13965"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13965"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13965"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13963"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6081,7 +5868,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13967"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13967"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13967"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13966"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6096,7 +5882,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13969"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13969"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13969"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13968"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6111,7 +5896,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13970"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13970"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13970"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13968"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6126,7 +5910,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13972"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13972"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13972"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13971"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6151,7 +5934,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13975"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13975"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13975"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13974"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6166,7 +5948,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13976"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13976"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13976"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13974"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6266,7 +6047,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14096"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14095"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14096"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14096"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14095"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6280,7 +6060,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14097"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14095"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14097"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14097"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14095"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6294,7 +6073,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14099"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14098"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14099"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14099"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14098"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6308,7 +6086,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14101"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14100"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14101"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14101"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14100"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6322,7 +6099,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14102"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14100"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14102"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14102"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14100"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6336,7 +6112,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14104"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14103"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14104"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14104"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14103"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6350,7 +6125,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14106"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14105"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14106"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14106"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14105"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6364,7 +6138,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14107"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14105"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14107"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14107"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14105"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6378,7 +6151,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14109"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14108"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14109"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14109"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14108"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6401,7 +6173,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14112"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14111"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14112"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14112"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14111"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6415,7 +6186,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14113"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14111"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14113"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14113"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14111"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6429,7 +6199,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14115"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14114"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14115"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14115"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14114"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6459,7 +6228,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14116"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14114"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14116"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14116"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14114"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ApplyChangesRequired</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6483,7 +6251,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14118"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14117"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14118"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14118"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14117"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificate</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6497,7 +6264,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14120"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14119"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14120"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14120"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14119"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Thumbprint</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6602,7 +6368,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14130"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14129"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14130"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14130"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14129"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6616,7 +6381,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14131"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14129"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14131"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14131"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14129"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6630,7 +6394,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14133"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14132"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14133"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14133"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14132"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6670,7 +6433,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14135"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14134"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14135"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14135"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14134"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6684,7 +6446,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14136"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14134"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14136"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14136"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14134"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6698,7 +6459,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14138"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14137"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14138"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14138"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14137"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6722,7 +6482,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14140"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14139"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14140"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14140"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14139"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6736,7 +6495,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14141"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14139"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14141"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14141"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14139"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6766,7 +6524,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14143"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14142"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14143"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14143"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14142"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6799,7 +6556,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14146"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14145"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14146"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14146"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14145"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Masks</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6813,7 +6569,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14147"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14145"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14147"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14147"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14145"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6837,7 +6592,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14149"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14148"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14149"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14149"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14148"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6851,7 +6605,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14150"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14148"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14150"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14150"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14148"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ApplyChangesRequired</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6865,7 +6618,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14152"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14151"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14152"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14152"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14151"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Certificate</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6879,7 +6631,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14154"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14153"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14154"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14154"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14153"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Thumbprint</ns2:Name><ns2:DataType><ns2:Identifier>i=12</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>IsTrustedCertificate</ns2:Name><ns2:DataType><ns2:Identifier>i=1</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -6920,7 +6671,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14160"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12666"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14160"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14160"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12666"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9317,7 +9067,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2401"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2401"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2401"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2400"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">1</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9332,7 +9081,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2403"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2403"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2403"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2402"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">2</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9347,7 +9095,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2405"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2405"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2405"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2404"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">3</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9362,7 +9109,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2407"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2407"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2407"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2406"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">4</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9377,7 +9123,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2409"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2409"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2409"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2408"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">1</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9392,7 +9137,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2411"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2411"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2411"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2410"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">2</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9407,7 +9151,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2413"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2413"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2413"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2412"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">3</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9422,7 +9165,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2415"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2415"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2415"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2414"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">4</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9437,7 +9179,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2417"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2417"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2417"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2416"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">5</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9452,7 +9193,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2419"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2419"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2419"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2418"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">6</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9467,7 +9207,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2421"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2421"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2421"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2420"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">7</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9482,7 +9221,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2423"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2423"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2423"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2422"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">8</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -9497,7 +9235,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2425"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2425"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2425"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2424"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:UInt32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">9</ns2:UInt32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -10043,7 +9780,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2991"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2991"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2991"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2949"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ShelvingTime</ns2:Name><ns2:DataType><ns2:Identifier>i=290</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>If not 0, this parameter specifies a fixed time for which the Alarm is to be shelved.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -11937,7 +11673,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11490"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11490"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11490"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11489"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -11952,7 +11687,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11491"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11491"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11491"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11489"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ServerHandles</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ClientHandles</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -11966,7 +11700,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11493"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11492"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11493"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11493"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11492"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -11980,7 +11713,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11494"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11492"), NodeClass.Method, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11494"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11494"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11492"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ServerHandles</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>ClientHandles</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12040,7 +11772,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11509"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11508"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11509"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11509"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11508"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:Int32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">2</ns2:Int32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12054,7 +11785,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11511"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11510"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11511"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11511"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11510"), NodeClass.Object, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:Int32 xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">1</ns2:Int32>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12213,7 +11943,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11581"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11581"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11581"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11580"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12228,7 +11957,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11582"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11582"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11582"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11580"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12243,7 +11971,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11584"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11584"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11584"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11583"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12258,7 +11985,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11586"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11586"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11586"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11585"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12273,7 +11999,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11587"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11587"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11587"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11585"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12288,7 +12013,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11589"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11589"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11589"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11588"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12303,7 +12027,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11591"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11591"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11591"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11590"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12318,7 +12041,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11592"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11592"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11592"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11590"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12333,7 +12055,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11594"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11594"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11594"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11593"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12438,7 +12159,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11630"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11630"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11630"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11629"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12453,7 +12173,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11631"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11631"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11631"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11629"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12468,7 +12187,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11633"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11633"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11633"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11632"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12483,7 +12201,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11635"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11635"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11635"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11634"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12498,7 +12215,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11636"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11636"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11636"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11634"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12513,7 +12229,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11638"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11638"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11638"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11637"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12528,7 +12243,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11640"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11640"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11640"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11639"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12543,7 +12257,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11641"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11641"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11641"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11639"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12558,7 +12271,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11643"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11643"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11643"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11642"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12663,7 +12375,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11681"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11681"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11681"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11680"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Mode</ns2:Name><ns2:DataType><ns2:Identifier>i=3</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12678,7 +12389,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11682"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11682"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11682"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11680"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12693,7 +12403,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11684"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11684"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11684"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11683"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12708,7 +12417,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11686"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11686"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11686"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11685"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Length</ns2:Name><ns2:DataType><ns2:Identifier>i=6</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12723,7 +12431,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11687"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11687"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11687"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11685"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12738,7 +12445,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7591"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7591"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7591"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=256"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Numeric</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>String</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Guid</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Opaque</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12753,7 +12459,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11689"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11689"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11689"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11688"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Data</ns2:Name><ns2:DataType><ns2:Identifier>i=15</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12768,7 +12473,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11691"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11691"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11691"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11690"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12783,7 +12487,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7595"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7595"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7595"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=302"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Invalid</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>None</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Sign</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>SignAndEncrypt</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12798,7 +12501,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11692"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11692"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11692"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11690"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12813,7 +12515,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7596"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7596"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7596"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=303"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Anonymous</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>UserName</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Certificate</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>IssuedToken</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Kerberos</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12828,7 +12529,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7597"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7597"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7597"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=307"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Server</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Client</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>ClientAndServer</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>DiscoveryServer</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12843,7 +12543,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11694"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11694"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11694"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11693"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>FileHandle</ns2:Name><ns2:DataType><ns2:Identifier>i=7</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>Position</ns2:Name><ns2:DataType><ns2:Identifier>i=9</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12858,7 +12557,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7598"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7598"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7598"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=315"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Issue</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Renew</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12873,7 +12571,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7599"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7599"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7599"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=334"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Untested</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Partial</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>SelfTested</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Certified</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12938,7 +12635,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7605"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7605"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7605"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=576"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Equals</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>IsNull</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>GreaterThan</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>LessThan</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>GreaterThanOrEqual</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>LessThanOrEqual</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Like</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Not</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Between</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>InList</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>And</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Or</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Cast</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>InView</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>OfType</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>RelatedTo</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>BitwiseAnd</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>BitwiseOr</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -12989,7 +12685,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7611"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7611"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7611"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=851"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>None</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Cold</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Warm</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Hot</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Transparent</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>HotAndMirrored</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13004,7 +12699,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7612"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7612"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7612"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=852"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Running</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Failed</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>NoConfiguration</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Suspended</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Shutdown</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Test</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>CommunicationFault</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Unknown</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13037,7 +12731,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7614"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7614"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7614"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=890"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>AbsoluteValue</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>PercentOfValue</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>PercentOfRange</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>PercentOfEURange</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Unknown</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13223,7 +12916,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7619"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7619"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7619"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">http://opcfoundation.org/UA/</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13238,7 +12930,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7650"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7650"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7650"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">Argument</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13253,7 +12944,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7656"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7656"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7656"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">EnumValueType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13268,7 +12958,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7659"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7659"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7659"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">StatusResult</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13283,7 +12972,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7662"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7662"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7662"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">UserTokenPolicy</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13298,7 +12986,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7665"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7665"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7665"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ApplicationDescription</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13313,7 +13000,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7668"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7668"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7668"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">EndpointDescription</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13328,7 +13014,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7671"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7671"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7671"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">UserIdentityToken</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13343,7 +13028,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7674"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7674"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7674"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">AnonymousIdentityToken</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13358,7 +13042,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7677"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7677"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7677"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">UserNameIdentityToken</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13373,7 +13056,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7680"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7680"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7680"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">X509IdentityToken</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13388,7 +13070,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7683"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7683"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7683"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">IssuedIdentityToken</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13403,7 +13084,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7686"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7686"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7686"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">EndpointConfiguration</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13418,7 +13098,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7689"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7689"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7689"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SupportedProfile</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13433,7 +13112,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7692"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7692"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7692"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">BuildInfo</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13448,7 +13126,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7695"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7695"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7695"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SoftwareCertificate</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13463,7 +13140,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7698"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7698"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7698"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SignedSoftwareCertificate</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13478,7 +13154,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7728"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7728"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7728"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">AddNodesItem</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13493,7 +13168,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7731"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7731"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7731"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">AddReferencesItem</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13508,7 +13182,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7734"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7734"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7734"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">DeleteNodesItem</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13523,7 +13196,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7737"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7737"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7737"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">DeleteReferencesItem</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13598,7 +13270,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11878"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11878"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11878"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=257"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>0</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Unspecified</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>No classes are selected.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Object</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is an object.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Variable</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is a variable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Method</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is a method.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>8</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ObjectType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is an object type.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>16</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>VariableType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is an variable type.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>32</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ReferenceType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is a reference type.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>64</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>DataType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is a data type.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>128</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>View</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node is a view.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13613,7 +13284,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7782"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7782"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7782"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">RegisteredServer</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13628,7 +13298,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11881"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11881"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11881"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=348"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>0</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>None</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>No attribuites provided.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>AccessLevel</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The access level attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ArrayDimensions</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The array dimensions attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>BrowseName</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The browse name attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>8</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ContainsNoLoops</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The contains no loops attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>16</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>DataType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The data type attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>32</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Description</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The description attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>64</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>DisplayName</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The display name attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>128</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>EventNotifier</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The event notifier attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>256</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Executable</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The executable attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>512</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Historizing</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The historizing attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1024</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>InverseName</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The inverse name attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2048</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>IsAbstract</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The is abstract attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4096</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>MinimumSamplingInterval</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The minimum sampling interval attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>8192</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>NodeClass</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node class attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>16384</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>NodeId</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node id attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>32768</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Symmetric</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The symmetric attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>65536</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>UserAccessLevel</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The user access level attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>131072</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>UserExecutable</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The user executable attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>262144</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>UserWriteMask</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The user write mask attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>524288</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ValueRank</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The value rank attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1048576</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>WriteMask</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The write mask attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2097152</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Value</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The value attribute is specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4194303</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>All</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1335396</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>BaseNode</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All base attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1335524</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Object</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All object attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1337444</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ObjectTypeOrDataType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All object type or data type attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4026999</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Variable</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All variable attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>3958902</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>VariableType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All variable type attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1466724</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Method</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All method attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1371236</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ReferenceType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All reference type attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1335532</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>View</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>All view attributes are specified.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13643,7 +13312,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11882"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11882"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11882"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=347"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>0</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>None</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>No attributes are writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>AccessLevel</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The access level attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ArrayDimensions</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The array dimensions attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>BrowseName</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The browse name attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>8</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ContainsNoLoops</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The contains no loops attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>16</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>DataType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The data type attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>32</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Description</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The description attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>64</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>DisplayName</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The display name attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>128</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>EventNotifier</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The event notifier attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>256</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Executable</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The executable attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>512</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Historizing</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The historizing attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1024</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>InverseName</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The inverse name attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2048</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>IsAbstract</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The is abstract attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4096</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>MinimumSamplingInterval</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The minimum sampling interval attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>8192</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>NodeClass</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node class attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>16384</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>NodeId</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The node id attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>32768</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Symmetric</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The symmetric attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>65536</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>UserAccessLevel</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The user access level attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>131072</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>UserExecutable</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The user executable attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>262144</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>UserWriteMask</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The user write mask attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>524288</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ValueRank</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The value rank attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1048576</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>WriteMask</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The write mask attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2097152</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>ValueForVariableType</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The value attribute is writable.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13658,7 +13326,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11884"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11884"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11884"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11234"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Insert</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Replace</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>3</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Update</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Delete</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13673,7 +13340,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11885"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11885"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11885"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11293"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Insert</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Replace</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>3</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Update</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Remove</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13688,7 +13354,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11886"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11886"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11886"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=398"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Red</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>Operation has halted.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Yellow</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>Operation is proceeding with caution.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>5</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Green</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>Operation is proceeding normally.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13878,7 +13543,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11940"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11940"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11940"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11939"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Read</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Write</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>4</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>EraseExisting</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>8</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Append</ns2:Text></ns2:DisplayName><ns2:Description xsi:nil=\"true\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"/></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13923,7 +13587,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11951"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11951"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11951"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='EndpointUrlListDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13938,7 +13601,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11954"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11954"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11954"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='NetworkGroupDataType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13953,7 +13615,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11959"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11959"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11959"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">EndpointUrlListDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -13968,7 +13629,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11962"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11962"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11962"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">NetworkGroupDataType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14059,7 +13719,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7929"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7929"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7929"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ContentFilterElement</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14130,7 +13789,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7932"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7932"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7932"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ContentFilter</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14165,7 +13823,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7935"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7935"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7935"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">FilterOperand</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14210,7 +13867,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7938"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7938"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7938"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ElementOperand</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14265,7 +13921,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7941"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7941"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7941"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">LiteralOperand</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14310,7 +13965,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7944"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7944"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7944"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">AttributeOperand</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14335,7 +13989,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=7947"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7947"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=7947"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">SimpleAttributeOperand</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14420,7 +14073,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=3876"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3876"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3876"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=3875"), NodeClass.Method, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=297</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:Argument><ns2:Name>SubscriptionId</ns2:Name><ns2:DataType><ns2:Identifier>i=288</ns2:Identifier></ns2:DataType><ns2:ValueRank>-1</ns2:ValueRank><ns2:ArrayDimensions/><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The identifier for the suscription to refresh.</ns2:Text></ns2:Description></ns2:Argument></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14445,7 +14097,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12078"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12078"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12078"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12077"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfLocalizedText xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Linear</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Log</ns2:Text></ns2:LocalizedText><ns2:LocalizedText><ns2:Locale>\n          </ns2:Locale><ns2:Text>Ln</ns2:Text></ns2:LocalizedText></ns2:ListOfLocalizedText>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14460,7 +14111,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12083"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12083"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12083"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='AxisInformation']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14475,7 +14125,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12086"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12086"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12086"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='XVType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14490,7 +14139,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12091"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12091"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12091"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">AxisInformation</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14505,7 +14153,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12094"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12094"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12094"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">XVType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -14636,7 +14283,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8004"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8004"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8004"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">HistoryEvent</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15219,7 +14865,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8067"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8067"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8067"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">MonitoringFilter</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15280,7 +14925,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12169"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=68"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12169"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12169"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=120"), NodeClass.DataType, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:ListOfExtensionObject xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\"><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>1</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Mandatory</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The BrowseName must appear in all instances of the type.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>2</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Optional</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The BrowseName may appear in an instance of the type.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject><ns2:ExtensionObject><ns2:TypeId><ns2:Identifier>i=7616</ns2:Identifier></ns2:TypeId><ns2:Body><ns2:EnumValueType><ns2:Value>3</ns2:Value><ns2:DisplayName><ns2:Locale>\n                </ns2:Locale><ns2:Text>Constraint</ns2:Text></ns2:DisplayName><ns2:Description><ns2:Locale>\n                </ns2:Locale><ns2:Text>The modelling rule defines a constraint and the BrowseName is not used in an instance of the type.</ns2:Text></ns2:Description></ns2:EnumValueType></ns2:Body></ns2:ExtensionObject></ns2:ListOfExtensionObject>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15295,7 +14939,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8073"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8073"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8073"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">EventFilter</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15317,7 +14960,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8076"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8076"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8076"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">AggregateConfiguration</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15332,7 +14974,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12175"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12175"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12175"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ComplexNumberType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15347,7 +14988,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12178"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12178"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12178"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='DoubleComplexNumberType']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15362,7 +15002,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12183"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12183"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12183"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ComplexNumberType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15377,7 +15016,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12186"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12186"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12186"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">DoubleComplexNumberType</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15392,7 +15030,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12201"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12201"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12201"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=8252"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">//xs:element[@name='ServerOnNetwork']</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15407,7 +15044,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12213"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12213"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12213"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">ServerOnNetwork</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
@@ -15422,7 +15058,6 @@ public class UaVariableLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=8172"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8172"), NodeId.parse("ns=0;i=40"), ExpandedNodeId.parse("svr=0;i=69"), NodeClass.VariableType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=8172"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=7617"), NodeClass.Variable, false));
-        String valueXml;
         XmlDecoder decoder = new XmlDecoder(new StringReader(new String("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ns2:String xmlns=\"http://opcfoundation.org/BinarySchema/\" xmlns:ns2=\"http://opcfoundation.org/UA/2008/02/Types.xsd\" xmlns:ns3=\"http://opcfoundation.org/UA/2011/03/UANodeSet.xsd\">HistoryEventFieldList</ns2:String>")));
         Object valueObject = decoder.decodeVariantValue();
         DataValue value = new DataValue(new Variant(valueObject));
