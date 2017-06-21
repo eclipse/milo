@@ -16,6 +16,7 @@
         <protonpack.version>1.8</protonpack.version>
         <slf4j.version>1.7.21</slf4j.version>
         <testng.version>6.11</testng.version>
+        <mockito.version>2.12.0</mockito.version>
     </properties>
 
     <modules>

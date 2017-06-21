@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,14 +11,22 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.server.api;
+package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import com.google.common.eventbus.Subscribe;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.testng.annotations.Test;
 
-public interface EventItem extends MonitoredItem {
+import static org.testng.Assert.fail;
 
-    @Subscribe
-    void onEvent(BaseEventNode eventNode);
+public class ByteStringConversionsTest {
+
+    @Test
+    public void testByteStringToGuid() {
+        fail("not implemented");
+    }
+
+    @Test
+    public void testByteStringToString() {
+        fail("not implemented");
+    }
 
 }

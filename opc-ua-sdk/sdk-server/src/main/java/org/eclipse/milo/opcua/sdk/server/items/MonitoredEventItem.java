@@ -13,25 +13,42 @@
 
 package org.eclipse.milo.opcua.sdk.server.items;
 
+import java.util.Optional;
+
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
-import org.eclipse.milo.opcua.sdk.server.model.types.objects.BaseEventType;
+import org.eclipse.milo.opcua.sdk.server.events.EventContentFilter;
+import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements EventItem {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private volatile EventFilter filter;
 
+    private final FilterContext filterContext;
+
     public MonitoredEventItem(
+        OpcUaServer server,
+        Session session,
         UInteger id,
         UInteger subscriptionId,
         ReadValueId readValueId,
@@ -43,25 +60,51 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         boolean discardOldest,
         ExtensionObject filter) throws UaException {
 
-        super(id, subscriptionId, readValueId, monitoringMode,
+        super(server, session, id, subscriptionId, readValueId, monitoringMode,
             timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
 
         installFilter(filter);
+
+        filterContext = new FilterContext() {
+            @Override
+            public OpcUaServer getServer() {
+                return server;
+            }
+
+            @Override
+            public Optional<Session> getSession() {
+                return Optional.of(session);
+            }
+        };
     }
 
     @Override
-    public void setEvent(BaseEventType event) {
-        // TODO Apply EventFilter...
+    public void onEvent(BaseEventNode eventNode) {
+        try {
+            ContentFilter whereClause = filter.getWhereClause();
 
-        Variant[] variants = new Variant[]{
-            new Variant(event.getEventId()),
-            new Variant(event.getEventType()),
-            new Variant(event.getSourceNode()),
-            new Variant(event.getSourceNode()),
-            new Variant(event.getTime())
-        };
+            boolean matches = EventContentFilter.evaluate(
+                filterContext,
+                whereClause,
+                eventNode
+            );
 
-        enqueue(variants);
+            if (matches) {
+                SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
+
+                if (selectClauses != null) {
+                    Variant[] variants = EventContentFilter.select(
+                        filterContext,
+                        selectClauses,
+                        eventNode
+                    );
+
+                    enqueue(variants);
+                }
+            }
+        } catch (UaException e) {
+            logger.error("Filter evaluation failed: {}", e.getMessage(), e);
+        }
     }
 
     @Override
@@ -87,7 +130,15 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Override
     protected void installFilter(ExtensionObject filterXo) throws UaException {
+        // TODO Is there a "default" EventFilter like there is for DataChangeFilter?
 
+        Object filterObject = filterXo != null ? filterXo.decode() : null;
+
+        if (filterObject instanceof EventFilter) {
+            this.filter = (EventFilter) filterObject;
+        } else {
+            throw new UaException(StatusCodes.Bad_MonitoredItemFilterInvalid);
+        }
     }
 
     @Override

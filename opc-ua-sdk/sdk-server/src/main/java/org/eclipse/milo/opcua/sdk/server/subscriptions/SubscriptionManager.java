@@ -228,8 +228,8 @@ public class SubscriptionManager {
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 
                 /*
-                * Notify namespaces of the items we just deleted.
-                */
+                 * Notify namespaces of the items we just deleted.
+                 */
 
                 Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
                     .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
@@ -376,6 +376,8 @@ public class SubscriptionManager {
                             }
 
                             MonitoredEventItem item = new MonitoredEventItem(
+                                server,
+                                session,
                                 uint(subscription.nextItemId()),
                                 subscriptionId,
                                 r.getItemToMonitor(),
@@ -385,7 +387,8 @@ public class SubscriptionManager {
                                 0.0,
                                 r.getRequestedParameters().getQueueSize(),
                                 r.getRequestedParameters().getDiscardOldest(),
-                                r.getRequestedParameters().getFilter());
+                                r.getRequestedParameters().getFilter()
+                            );
 
                             createdItems.add(item);
 
@@ -448,6 +451,8 @@ public class SubscriptionManager {
                             if (indexRange != null) NumericRange.parse(indexRange);
 
                             MonitoredDataItem item = new MonitoredDataItem(
+                                server,
+                                session,
                                 uint(subscription.nextItemId()),
                                 subscriptionId,
                                 r.getItemToMonitor(),
@@ -457,7 +462,8 @@ public class SubscriptionManager {
                                 samplingInterval,
                                 r.getRequestedParameters().getFilter(),
                                 r.getRequestedParameters().getQueueSize(),
-                                r.getRequestedParameters().getDiscardOldest());
+                                r.getRequestedParameters().getDiscardOldest()
+                            );
 
                             createdItems.add(item);
 
