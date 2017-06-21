@@ -28,17 +28,15 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractServerNodeMap;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.UaStackServer;
@@ -66,7 +64,7 @@ import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcUaServer {
+public class OpcUaServer implements UaNodeContext {
 
     public static final String SDK_VERSION =
         ManifestUtil.read("X-SDK-Version").orElse("dev");
@@ -81,12 +79,11 @@ public class OpcUaServer {
 
     private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
 
-    private final ServerNodeMap nodeMap = new OpcUaServerNodeMap();
-
     private final Map<NodeId, ReferenceType> referenceTypes = Maps.newConcurrentMap();
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
+    private final UaNodeManager nodeManager = new UaNodeManager();
     private final NamespaceManager namespaceManager = new NamespaceManager();
     private final SessionManager sessionManager = new SessionManager(this);
     private final ServerTable serverTable = new ServerTable();
@@ -234,12 +231,17 @@ public class OpcUaServer {
         return config;
     }
 
+    @Override
+    public OpcUaServer getServer() {
+        return this;
+    }
+
     public NamespaceManager getNamespaceManager() {
         return namespaceManager;
     }
 
-    public ServerNodeMap getNodeMap() {
-        return nodeMap;
+    public UaNodeManager getNodeManager() {
+        return nodeManager;
     }
 
     public SessionManager getSessionManager() {
@@ -314,7 +316,7 @@ public class OpcUaServer {
         stackServer.closeSecureChannel(secureChannel);
     }
 
-    public UaStackServer getServer() {
+    public UaStackServer getStackServer() {
         return stackServer;
     }
 
@@ -324,14 +326,6 @@ public class OpcUaServer {
 
     public Map<ByteString, BrowseContinuationPoint> getBrowseContinuationPoints() {
         return browseContinuationPoints;
-    }
-
-
-    private class OpcUaServerNodeMap extends AbstractServerNodeMap {
-        @Override
-        public NamespaceTable getNamespaceTable() {
-            return namespaceManager.getNamespaceTable();
-        }
     }
 
 }

@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -39,7 +38,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     private volatile Boolean isAbstract;
 
     public UaObjectTypeNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -48,7 +47,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         UInteger userWriteMask,
         Boolean isAbstract) {
 
-        super(nodeMap, nodeId, NodeClass.ObjectType,
+        super(context, nodeId, NodeClass.ObjectType,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.isAbstract = isAbstract;
@@ -138,8 +137,8 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         ByteString.class
     );
 
-    public static UaObjectTypeNodeBuilder builder(ServerNodeMap nodeMap) {
-        return new UaObjectTypeNodeBuilder(nodeMap);
+    public static UaObjectTypeNodeBuilder builder(UaNodeContext context) {
+        return new UaObjectTypeNodeBuilder(context);
     }
 
     public static class UaObjectTypeNodeBuilder implements Supplier<UaObjectTypeNode> {
@@ -154,10 +153,10 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         private UInteger userWriteMask = UInteger.MIN;
         private boolean isAbstract = false;
 
-        private final ServerNodeMap nodeMap;
+        private final UaNodeContext context;
 
-        public UaObjectTypeNodeBuilder(ServerNodeMap nodeMap) {
-            this.nodeMap = nodeMap;
+        public UaObjectTypeNodeBuilder(UaNodeContext context) {
+            this.context = context;
         }
 
         public UaObjectTypeNodeBuilder setNodeId(NodeId nodeId) {
@@ -211,7 +210,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
             return new UaObjectTypeNode(
-                nodeMap,
+                context,
                 nodeId,
                 browseName,
                 displayName,

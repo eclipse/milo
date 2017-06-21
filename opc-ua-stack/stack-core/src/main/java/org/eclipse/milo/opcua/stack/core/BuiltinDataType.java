@@ -135,7 +135,7 @@ public enum BuiltinDataType {
 
     @Nullable
     public static BuiltinDataType fromBackingClass(Class<?> backingClass) {
-        NodeId nodeId = BackingClassesByNodeId.inverse().get(maybeBoxPrimitive(backingClass));
+        NodeId nodeId = BackingClassesByNodeId.inverse().get(backingClass);
 
         return nodeId != null ? DataTypesByNodeId.get(nodeId) : null;
     }

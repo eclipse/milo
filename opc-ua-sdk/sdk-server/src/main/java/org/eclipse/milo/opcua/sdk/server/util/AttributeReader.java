@@ -19,11 +19,12 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -46,7 +47,7 @@ public class AttributeReader {
 
     public static DataValue readAttribute(
         AttributeContext context,
-        ServerNode node,
+        UaServerNode node,
         AttributeId attributeId,
         @Nullable TimestampsToReturn timestamps,
         @Nullable String indexRange,
@@ -83,7 +84,7 @@ public class AttributeReader {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
                 }
 
-                boolean structured = isStructureSubtype(context.getServer().getNodeMap(), dataTypeId);
+                boolean structured = isStructureSubtype(context.getServer().getNodeManager(), dataTypeId);
 
                 if (!structured) {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
@@ -121,8 +122,8 @@ public class AttributeReader {
         }
     }
 
-    private static boolean isStructureSubtype(ServerNodeMap nodeMap, NodeId dataTypeId) {
-        ServerNode dataTypeNode = nodeMap.get(dataTypeId);
+    private static boolean isStructureSubtype(UaNodeManager nodeManager, NodeId dataTypeId) {
+        UaNode dataTypeNode = nodeManager.get(dataTypeId);
 
         Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
             .filter(r ->
@@ -133,7 +134,7 @@ public class AttributeReader {
             .findFirst();
 
         return superTypeId
-            .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeMap, id))
+            .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeManager, id))
             .orElse(false);
     }
 

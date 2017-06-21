@@ -17,8 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -69,7 +72,19 @@ public class AttributeDelegateChainTest {
             }
         );
 
-        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(null)
+        UaNodeContext context = new UaNodeContext() {
+            @Override
+            public UaNodeManager getNodeManager() {
+                return new UaNodeManager();
+            }
+
+            @Override
+            public OpcUaServer getServer() {
+                return null;
+            }
+        };
+
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(context)
             .setNodeId(NodeId.NULL_VALUE)
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
             .setBrowseName(QualifiedName.NULL_VALUE)

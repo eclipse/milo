@@ -24,7 +24,6 @@ import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -50,7 +49,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     private volatile Boolean userExecutable;
 
     public UaMethodNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -60,7 +59,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
         Boolean executable,
         Boolean userExecutable) {
 
-        super(nodeMap, nodeId, NodeClass.Method,
+        super(context, nodeId, NodeClass.Method,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.executable = executable;
@@ -176,8 +175,8 @@ public class UaMethodNode extends UaNode implements MethodNode {
     /**
      * @return a new {@link UaMethodNodeBuilder}.
      */
-    public static UaMethodNodeBuilder builder(ServerNodeMap nodeMap) {
-        return new UaMethodNodeBuilder(nodeMap);
+    public static UaMethodNodeBuilder builder(UaNodeContext context) {
+        return new UaMethodNodeBuilder(context);
     }
 
     public static class UaMethodNodeBuilder implements Supplier<UaMethodNode> {
@@ -192,10 +191,10 @@ public class UaMethodNode extends UaNode implements MethodNode {
         private boolean executable = true;
         private boolean userExecutable = true;
 
-        private final ServerNodeMap nodeMap;
+        private final UaNodeContext context;
 
-        public UaMethodNodeBuilder(ServerNodeMap nodeMap) {
-            this.nodeMap = nodeMap;
+        public UaMethodNodeBuilder(UaNodeContext context) {
+            this.context = context;
         }
 
         @Override
@@ -209,7 +208,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
             return new UaMethodNode(
-                nodeMap,
+                context,
                 nodeId,
                 browseName,
                 displayName,

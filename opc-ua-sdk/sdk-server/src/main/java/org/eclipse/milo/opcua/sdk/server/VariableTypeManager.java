@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Maps;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -58,7 +58,7 @@ public class VariableTypeManager {
     @FunctionalInterface
     public interface VariableNodeConstructor {
         UaVariableNode apply(
-            ServerNodeMap nodeMap,
+            UaNodeContext context,
             NodeId nodeId,
             QualifiedName browseName,
             LocalizedText displayName,
