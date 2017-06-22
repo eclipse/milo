@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
@@ -82,27 +87,48 @@ public class UserTokenPolicy implements UaStructure {
             .toString();
     }
 
-    public static void encode(UserTokenPolicy userTokenPolicy, UaEncoder encoder) {
-        encoder.encodeString("PolicyId", userTokenPolicy._policyId);
-        encoder.encodeEnumeration("TokenType", userTokenPolicy._tokenType);
-        encoder.encodeString("IssuedTokenType", userTokenPolicy._issuedTokenType);
-        encoder.encodeString("IssuerEndpointUrl", userTokenPolicy._issuerEndpointUrl);
-        encoder.encodeString("SecurityPolicyUri", userTokenPolicy._securityPolicyUri);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UserTokenPolicy> {
+        @Override
+        public UserTokenPolicy decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            String _policyId = reader.readString();
+            UserTokenType _tokenType = UserTokenType.from(reader.readInt32());
+            String _issuedTokenType = reader.readString();
+            String _issuerEndpointUrl = reader.readString();
+            String _securityPolicyUri = reader.readString();
+
+            return new UserTokenPolicy(_policyId, _tokenType, _issuedTokenType, _issuerEndpointUrl, _securityPolicyUri);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UserTokenPolicy value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._policyId);
+            writer.writeInt32(value._tokenType != null ? value._tokenType.getValue() : 0);
+            writer.writeString(value._issuedTokenType);
+            writer.writeString(value._issuerEndpointUrl);
+            writer.writeString(value._securityPolicyUri);
+        }
     }
 
-    public static UserTokenPolicy decode(UaDecoder decoder) {
-        String _policyId = decoder.decodeString("PolicyId");
-        UserTokenType _tokenType = decoder.decodeEnumeration("TokenType", UserTokenType.class);
-        String _issuedTokenType = decoder.decodeString("IssuedTokenType");
-        String _issuerEndpointUrl = decoder.decodeString("IssuerEndpointUrl");
-        String _securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<UserTokenPolicy> {
+        @Override
+        public UserTokenPolicy decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            String _policyId = reader.readString("PolicyId");
+            UserTokenType _tokenType = UserTokenType.from(reader.readInt32("TokenType"));
+            String _issuedTokenType = reader.readString("IssuedTokenType");
+            String _issuerEndpointUrl = reader.readString("IssuerEndpointUrl");
+            String _securityPolicyUri = reader.readString("SecurityPolicyUri");
 
-        return new UserTokenPolicy(_policyId, _tokenType, _issuedTokenType, _issuerEndpointUrl, _securityPolicyUri);
-    }
+            return new UserTokenPolicy(_policyId, _tokenType, _issuedTokenType, _issuerEndpointUrl, _securityPolicyUri);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(UserTokenPolicy::encode, UserTokenPolicy.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(UserTokenPolicy::decode, UserTokenPolicy.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, UserTokenPolicy encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeString("PolicyId", encodable._policyId);
+            writer.writeInt32("TokenType", encodable._tokenType != null ? encodable._tokenType.getValue() : 0);
+            writer.writeString("IssuedTokenType", encodable._issuedTokenType);
+            writer.writeString("IssuerEndpointUrl", encodable._issuerEndpointUrl);
+            writer.writeString("SecurityPolicyUri", encodable._securityPolicyUri);
+        }
     }
 
 }

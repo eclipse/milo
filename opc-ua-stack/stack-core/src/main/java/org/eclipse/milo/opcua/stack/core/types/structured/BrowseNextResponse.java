@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -74,23 +79,58 @@ public class BrowseNextResponse implements UaResponseMessage {
             .toString();
     }
 
-    public static void encode(BrowseNextResponse browseNextResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", browseNextResponse._responseHeader != null ? browseNextResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Results", browseNextResponse._results, encoder::encodeSerializable);
-        encoder.encodeArray("DiagnosticInfos", browseNextResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<BrowseNextResponse> {
+        @Override
+        public BrowseNextResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
+            BrowseResult[] _results =
+                reader.readArray(
+                    () -> (BrowseResult) context.decode(
+                        BrowseResult.BinaryEncodingId, reader),
+                    BrowseResult.class
+                );
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+
+            return new BrowseNextResponse(_responseHeader, _results, _diagnosticInfos);
+        }
+
+        @Override
+        public void encode(SerializationContext context, BrowseNextResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeArray(
+                value._results,
+                e -> context.encode(BrowseResult.BinaryEncodingId, e, writer)
+            );
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
-    public static BrowseNextResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        BrowseResult[] _results = decoder.decodeArray("Results", decoder::decodeSerializable, BrowseResult.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<BrowseNextResponse> {
+        @Override
+        public BrowseNextResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
+            BrowseResult[] _results =
+                reader.readArray(
+                    "Results",
+                    f -> (BrowseResult) context.decode(
+                        BrowseResult.XmlEncodingId, reader),
+                    BrowseResult.class
+                );
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
 
-        return new BrowseNextResponse(_responseHeader, _results, _diagnosticInfos);
-    }
+            return new BrowseNextResponse(_responseHeader, _results, _diagnosticInfos);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(BrowseNextResponse::encode, BrowseNextResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(BrowseNextResponse::decode, BrowseNextResponse.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, BrowseNextResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
+            writer.writeArray(
+                "Results",
+                encodable._results,
+                (f, e) -> context.encode(BrowseResult.XmlEncodingId, e, writer)
+            );
+            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
 }

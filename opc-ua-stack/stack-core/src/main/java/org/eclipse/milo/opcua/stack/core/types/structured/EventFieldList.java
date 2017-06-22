@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -68,21 +73,36 @@ public class EventFieldList implements UaStructure {
             .toString();
     }
 
-    public static void encode(EventFieldList eventFieldList, UaEncoder encoder) {
-        encoder.encodeUInt32("ClientHandle", eventFieldList._clientHandle);
-        encoder.encodeArray("EventFields", eventFieldList._eventFields, encoder::encodeVariant);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EventFieldList> {
+        @Override
+        public EventFieldList decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _clientHandle = reader.readUInt32();
+            Variant[] _eventFields = reader.readArray(reader::readVariant, Variant.class);
+
+            return new EventFieldList(_clientHandle, _eventFields);
+        }
+
+        @Override
+        public void encode(SerializationContext context, EventFieldList value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._clientHandle);
+            writer.writeArray(value._eventFields, writer::writeVariant);
+        }
     }
 
-    public static EventFieldList decode(UaDecoder decoder) {
-        UInteger _clientHandle = decoder.decodeUInt32("ClientHandle");
-        Variant[] _eventFields = decoder.decodeArray("EventFields", decoder::decodeVariant, Variant.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<EventFieldList> {
+        @Override
+        public EventFieldList decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _clientHandle = reader.readUInt32("ClientHandle");
+            Variant[] _eventFields = reader.readArray("EventFields", reader::readVariant, Variant.class);
 
-        return new EventFieldList(_clientHandle, _eventFields);
-    }
+            return new EventFieldList(_clientHandle, _eventFields);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(EventFieldList::encode, EventFieldList.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EventFieldList::decode, EventFieldList.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, EventFieldList encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("ClientHandle", encodable._clientHandle);
+            writer.writeArray("EventFields", encodable._eventFields, writer::writeVariant);
+        }
     }
 
 }

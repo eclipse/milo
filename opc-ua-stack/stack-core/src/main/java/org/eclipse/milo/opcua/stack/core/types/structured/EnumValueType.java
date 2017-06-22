@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -70,23 +75,40 @@ public class EnumValueType implements UaStructure {
             .toString();
     }
 
-    public static void encode(EnumValueType enumValueType, UaEncoder encoder) {
-        encoder.encodeInt64("Value", enumValueType._value);
-        encoder.encodeLocalizedText("DisplayName", enumValueType._displayName);
-        encoder.encodeLocalizedText("Description", enumValueType._description);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EnumValueType> {
+        @Override
+        public EnumValueType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            Long _value = reader.readInt64();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+
+            return new EnumValueType(_value, _displayName, _description);
+        }
+
+        @Override
+        public void encode(SerializationContext context, EnumValueType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt64(value._value);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+        }
     }
 
-    public static EnumValueType decode(UaDecoder decoder) {
-        Long _value = decoder.decodeInt64("Value");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<EnumValueType> {
+        @Override
+        public EnumValueType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            Long _value = reader.readInt64("Value");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
 
-        return new EnumValueType(_value, _displayName, _description);
-    }
+            return new EnumValueType(_value, _displayName, _description);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(EnumValueType::encode, EnumValueType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EnumValueType::decode, EnumValueType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, EnumValueType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeInt64("Value", encodable._value);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+        }
     }
 
 }

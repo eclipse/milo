@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -70,23 +75,40 @@ public class QueryNextRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(QueryNextRequest queryNextRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", queryNextRequest._requestHeader != null ? queryNextRequest._requestHeader : new RequestHeader());
-        encoder.encodeBoolean("ReleaseContinuationPoint", queryNextRequest._releaseContinuationPoint);
-        encoder.encodeByteString("ContinuationPoint", queryNextRequest._continuationPoint);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<QueryNextRequest> {
+        @Override
+        public QueryNextRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            Boolean _releaseContinuationPoint = reader.readBoolean();
+            ByteString _continuationPoint = reader.readByteString();
+
+            return new QueryNextRequest(_requestHeader, _releaseContinuationPoint, _continuationPoint);
+        }
+
+        @Override
+        public void encode(SerializationContext context, QueryNextRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeBoolean(value._releaseContinuationPoint);
+            writer.writeByteString(value._continuationPoint);
+        }
     }
 
-    public static QueryNextRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        Boolean _releaseContinuationPoint = decoder.decodeBoolean("ReleaseContinuationPoint");
-        ByteString _continuationPoint = decoder.decodeByteString("ContinuationPoint");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<QueryNextRequest> {
+        @Override
+        public QueryNextRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            Boolean _releaseContinuationPoint = reader.readBoolean("ReleaseContinuationPoint");
+            ByteString _continuationPoint = reader.readByteString("ContinuationPoint");
 
-        return new QueryNextRequest(_requestHeader, _releaseContinuationPoint, _continuationPoint);
-    }
+            return new QueryNextRequest(_requestHeader, _releaseContinuationPoint, _continuationPoint);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(QueryNextRequest::encode, QueryNextRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryNextRequest::decode, QueryNextRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, QueryNextRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeBoolean("ReleaseContinuationPoint", encodable._releaseContinuationPoint);
+            writer.writeByteString("ContinuationPoint", encodable._continuationPoint);
+        }
     }
 
 }

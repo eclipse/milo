@@ -24,15 +24,15 @@ public class XmlElementSerializationTest extends BinarySerializationFixture {
     @DataProvider(name = "XmlElementProvider")
     public Object[][] getXmlElements() {
         return new Object[][]{
-                {new XmlElement(null)},
-                {new XmlElement("<tag>hello, world</tag>")},
+            {new XmlElement(null)},
+            {new XmlElement("<tag>hello, world</tag>")},
         };
     }
 
     @Test(dataProvider = "XmlElementProvider", description = "XmlElement is round-trip serializable.")
     public void testXmlElementRoundTrip(XmlElement element) throws Exception {
-        encoder.encodeXmlElement(null, element);
-        XmlElement decoded = decoder.decodeXmlElement(null);
+        writer.writeXmlElement(element);
+        XmlElement decoded = reader.readXmlElement();
 
         assertEquals(decoded, element);
     }

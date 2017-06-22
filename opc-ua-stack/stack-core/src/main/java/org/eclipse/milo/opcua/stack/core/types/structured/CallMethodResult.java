@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -83,25 +88,44 @@ public class CallMethodResult implements UaStructure {
             .toString();
     }
 
-    public static void encode(CallMethodResult callMethodResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", callMethodResult._statusCode);
-        encoder.encodeArray("InputArgumentResults", callMethodResult._inputArgumentResults, encoder::encodeStatusCode);
-        encoder.encodeArray("InputArgumentDiagnosticInfos", callMethodResult._inputArgumentDiagnosticInfos, encoder::encodeDiagnosticInfo);
-        encoder.encodeArray("OutputArguments", callMethodResult._outputArguments, encoder::encodeVariant);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CallMethodResult> {
+        @Override
+        public CallMethodResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            StatusCode _statusCode = reader.readStatusCode();
+            StatusCode[] _inputArgumentResults = reader.readArray(reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _inputArgumentDiagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+            Variant[] _outputArguments = reader.readArray(reader::readVariant, Variant.class);
+
+            return new CallMethodResult(_statusCode, _inputArgumentResults, _inputArgumentDiagnosticInfos, _outputArguments);
+        }
+
+        @Override
+        public void encode(SerializationContext context, CallMethodResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode(value._statusCode);
+            writer.writeArray(value._inputArgumentResults, writer::writeStatusCode);
+            writer.writeArray(value._inputArgumentDiagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray(value._outputArguments, writer::writeVariant);
+        }
     }
 
-    public static CallMethodResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        StatusCode[] _inputArgumentResults = decoder.decodeArray("InputArgumentResults", decoder::decodeStatusCode, StatusCode.class);
-        DiagnosticInfo[] _inputArgumentDiagnosticInfos = decoder.decodeArray("InputArgumentDiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
-        Variant[] _outputArguments = decoder.decodeArray("OutputArguments", decoder::decodeVariant, Variant.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<CallMethodResult> {
+        @Override
+        public CallMethodResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            StatusCode _statusCode = reader.readStatusCode("StatusCode");
+            StatusCode[] _inputArgumentResults = reader.readArray("InputArgumentResults", reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _inputArgumentDiagnosticInfos = reader.readArray("InputArgumentDiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
+            Variant[] _outputArguments = reader.readArray("OutputArguments", reader::readVariant, Variant.class);
 
-        return new CallMethodResult(_statusCode, _inputArgumentResults, _inputArgumentDiagnosticInfos, _outputArguments);
-    }
+            return new CallMethodResult(_statusCode, _inputArgumentResults, _inputArgumentDiagnosticInfos, _outputArguments);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(CallMethodResult::encode, CallMethodResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CallMethodResult::decode, CallMethodResult.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, CallMethodResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeStatusCode("StatusCode", encodable._statusCode);
+            writer.writeArray("InputArgumentResults", encodable._inputArgumentResults, writer::writeStatusCode);
+            writer.writeArray("InputArgumentDiagnosticInfos", encodable._inputArgumentDiagnosticInfos, writer::writeDiagnosticInfo);
+            writer.writeArray("OutputArguments", encodable._outputArguments, writer::writeVariant);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
@@ -70,23 +75,40 @@ public class MonitoredItemCreateRequest implements UaStructure {
             .toString();
     }
 
-    public static void encode(MonitoredItemCreateRequest monitoredItemCreateRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("ItemToMonitor", monitoredItemCreateRequest._itemToMonitor != null ? monitoredItemCreateRequest._itemToMonitor : new ReadValueId());
-        encoder.encodeEnumeration("MonitoringMode", monitoredItemCreateRequest._monitoringMode);
-        encoder.encodeSerializable("RequestedParameters", monitoredItemCreateRequest._requestedParameters != null ? monitoredItemCreateRequest._requestedParameters : new MonitoringParameters());
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoredItemCreateRequest> {
+        @Override
+        public MonitoredItemCreateRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ReadValueId _itemToMonitor = (ReadValueId) context.decode(ReadValueId.BinaryEncodingId, reader);
+            MonitoringMode _monitoringMode = MonitoringMode.from(reader.readInt32());
+            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.BinaryEncodingId, reader);
+
+            return new MonitoredItemCreateRequest(_itemToMonitor, _monitoringMode, _requestedParameters);
+        }
+
+        @Override
+        public void encode(SerializationContext context, MonitoredItemCreateRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ReadValueId.BinaryEncodingId, value._itemToMonitor, writer);
+            writer.writeInt32(value._monitoringMode != null ? value._monitoringMode.getValue() : 0);
+            context.encode(MonitoringParameters.BinaryEncodingId, value._requestedParameters, writer);
+        }
     }
 
-    public static MonitoredItemCreateRequest decode(UaDecoder decoder) {
-        ReadValueId _itemToMonitor = decoder.decodeSerializable("ItemToMonitor", ReadValueId.class);
-        MonitoringMode _monitoringMode = decoder.decodeEnumeration("MonitoringMode", MonitoringMode.class);
-        MonitoringParameters _requestedParameters = decoder.decodeSerializable("RequestedParameters", MonitoringParameters.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoredItemCreateRequest> {
+        @Override
+        public MonitoredItemCreateRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ReadValueId _itemToMonitor = (ReadValueId) context.decode(ReadValueId.XmlEncodingId, reader);
+            MonitoringMode _monitoringMode = MonitoringMode.from(reader.readInt32("MonitoringMode"));
+            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.XmlEncodingId, reader);
 
-        return new MonitoredItemCreateRequest(_itemToMonitor, _monitoringMode, _requestedParameters);
-    }
+            return new MonitoredItemCreateRequest(_itemToMonitor, _monitoringMode, _requestedParameters);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoredItemCreateRequest::encode, MonitoredItemCreateRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoredItemCreateRequest::decode, MonitoredItemCreateRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MonitoredItemCreateRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(ReadValueId.XmlEncodingId, encodable._itemToMonitor, writer);
+            writer.writeInt32("MonitoringMode", encodable._monitoringMode != null ? encodable._monitoringMode.getValue() : 0);
+            context.encode(MonitoringParameters.XmlEncodingId, encodable._requestedParameters, writer);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -91,29 +96,52 @@ public class ServerStatusDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(ServerStatusDataType serverStatusDataType, UaEncoder encoder) {
-        encoder.encodeDateTime("StartTime", serverStatusDataType._startTime);
-        encoder.encodeDateTime("CurrentTime", serverStatusDataType._currentTime);
-        encoder.encodeEnumeration("State", serverStatusDataType._state);
-        encoder.encodeSerializable("BuildInfo", serverStatusDataType._buildInfo != null ? serverStatusDataType._buildInfo : new BuildInfo());
-        encoder.encodeUInt32("SecondsTillShutdown", serverStatusDataType._secondsTillShutdown);
-        encoder.encodeLocalizedText("ShutdownReason", serverStatusDataType._shutdownReason);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ServerStatusDataType> {
+        @Override
+        public ServerStatusDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            DateTime _startTime = reader.readDateTime();
+            DateTime _currentTime = reader.readDateTime();
+            ServerState _state = ServerState.from(reader.readInt32());
+            BuildInfo _buildInfo = (BuildInfo) context.decode(BuildInfo.BinaryEncodingId, reader);
+            UInteger _secondsTillShutdown = reader.readUInt32();
+            LocalizedText _shutdownReason = reader.readLocalizedText();
+
+            return new ServerStatusDataType(_startTime, _currentTime, _state, _buildInfo, _secondsTillShutdown, _shutdownReason);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ServerStatusDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._startTime);
+            writer.writeDateTime(value._currentTime);
+            writer.writeInt32(value._state != null ? value._state.getValue() : 0);
+            context.encode(BuildInfo.BinaryEncodingId, value._buildInfo, writer);
+            writer.writeUInt32(value._secondsTillShutdown);
+            writer.writeLocalizedText(value._shutdownReason);
+        }
     }
 
-    public static ServerStatusDataType decode(UaDecoder decoder) {
-        DateTime _startTime = decoder.decodeDateTime("StartTime");
-        DateTime _currentTime = decoder.decodeDateTime("CurrentTime");
-        ServerState _state = decoder.decodeEnumeration("State", ServerState.class);
-        BuildInfo _buildInfo = decoder.decodeSerializable("BuildInfo", BuildInfo.class);
-        UInteger _secondsTillShutdown = decoder.decodeUInt32("SecondsTillShutdown");
-        LocalizedText _shutdownReason = decoder.decodeLocalizedText("ShutdownReason");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ServerStatusDataType> {
+        @Override
+        public ServerStatusDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            DateTime _startTime = reader.readDateTime("StartTime");
+            DateTime _currentTime = reader.readDateTime("CurrentTime");
+            ServerState _state = ServerState.from(reader.readInt32("State"));
+            BuildInfo _buildInfo = (BuildInfo) context.decode(BuildInfo.XmlEncodingId, reader);
+            UInteger _secondsTillShutdown = reader.readUInt32("SecondsTillShutdown");
+            LocalizedText _shutdownReason = reader.readLocalizedText("ShutdownReason");
 
-        return new ServerStatusDataType(_startTime, _currentTime, _state, _buildInfo, _secondsTillShutdown, _shutdownReason);
-    }
+            return new ServerStatusDataType(_startTime, _currentTime, _state, _buildInfo, _secondsTillShutdown, _shutdownReason);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ServerStatusDataType::encode, ServerStatusDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ServerStatusDataType::decode, ServerStatusDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ServerStatusDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime("StartTime", encodable._startTime);
+            writer.writeDateTime("CurrentTime", encodable._currentTime);
+            writer.writeInt32("State", encodable._state != null ? encodable._state.getValue() : 0);
+            context.encode(BuildInfo.XmlEncodingId, encodable._buildInfo, writer);
+            writer.writeUInt32("SecondsTillShutdown", encodable._secondsTillShutdown);
+            writer.writeLocalizedText("ShutdownReason", encodable._shutdownReason);
+        }
     }
 
 }

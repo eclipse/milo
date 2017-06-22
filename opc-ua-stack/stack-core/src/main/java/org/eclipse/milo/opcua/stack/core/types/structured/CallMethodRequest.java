@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
@@ -73,23 +78,40 @@ public class CallMethodRequest implements UaStructure {
             .toString();
     }
 
-    public static void encode(CallMethodRequest callMethodRequest, UaEncoder encoder) {
-        encoder.encodeNodeId("ObjectId", callMethodRequest._objectId);
-        encoder.encodeNodeId("MethodId", callMethodRequest._methodId);
-        encoder.encodeArray("InputArguments", callMethodRequest._inputArguments, encoder::encodeVariant);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CallMethodRequest> {
+        @Override
+        public CallMethodRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _objectId = reader.readNodeId();
+            NodeId _methodId = reader.readNodeId();
+            Variant[] _inputArguments = reader.readArray(reader::readVariant, Variant.class);
+
+            return new CallMethodRequest(_objectId, _methodId, _inputArguments);
+        }
+
+        @Override
+        public void encode(SerializationContext context, CallMethodRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._objectId);
+            writer.writeNodeId(value._methodId);
+            writer.writeArray(value._inputArguments, writer::writeVariant);
+        }
     }
 
-    public static CallMethodRequest decode(UaDecoder decoder) {
-        NodeId _objectId = decoder.decodeNodeId("ObjectId");
-        NodeId _methodId = decoder.decodeNodeId("MethodId");
-        Variant[] _inputArguments = decoder.decodeArray("InputArguments", decoder::decodeVariant, Variant.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<CallMethodRequest> {
+        @Override
+        public CallMethodRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _objectId = reader.readNodeId("ObjectId");
+            NodeId _methodId = reader.readNodeId("MethodId");
+            Variant[] _inputArguments = reader.readArray("InputArguments", reader::readVariant, Variant.class);
 
-        return new CallMethodRequest(_objectId, _methodId, _inputArguments);
-    }
+            return new CallMethodRequest(_objectId, _methodId, _inputArguments);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(CallMethodRequest::encode, CallMethodRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CallMethodRequest::decode, CallMethodRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, CallMethodRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("ObjectId", encodable._objectId);
+            writer.writeNodeId("MethodId", encodable._methodId);
+            writer.writeArray("InputArguments", encodable._inputArguments, writer::writeVariant);
+        }
     }
 
 }

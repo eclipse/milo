@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -59,19 +64,32 @@ public class ElementOperand extends FilterOperand {
             .toString();
     }
 
-    public static void encode(ElementOperand elementOperand, UaEncoder encoder) {
-        encoder.encodeUInt32("Index", elementOperand._index);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ElementOperand> {
+        @Override
+        public ElementOperand decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _index = reader.readUInt32();
+
+            return new ElementOperand(_index);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ElementOperand value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._index);
+        }
     }
 
-    public static ElementOperand decode(UaDecoder decoder) {
-        UInteger _index = decoder.decodeUInt32("Index");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ElementOperand> {
+        @Override
+        public ElementOperand decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _index = reader.readUInt32("Index");
 
-        return new ElementOperand(_index);
-    }
+            return new ElementOperand(_index);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ElementOperand::encode, ElementOperand.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ElementOperand::decode, ElementOperand.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ElementOperand encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("Index", encodable._index);
+        }
     }
 
 }

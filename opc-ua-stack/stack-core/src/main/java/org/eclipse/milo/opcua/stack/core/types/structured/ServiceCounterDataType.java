@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -64,21 +69,36 @@ public class ServiceCounterDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(ServiceCounterDataType serviceCounterDataType, UaEncoder encoder) {
-        encoder.encodeUInt32("TotalCount", serviceCounterDataType._totalCount);
-        encoder.encodeUInt32("ErrorCount", serviceCounterDataType._errorCount);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ServiceCounterDataType> {
+        @Override
+        public ServiceCounterDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _totalCount = reader.readUInt32();
+            UInteger _errorCount = reader.readUInt32();
+
+            return new ServiceCounterDataType(_totalCount, _errorCount);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ServiceCounterDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._totalCount);
+            writer.writeUInt32(value._errorCount);
+        }
     }
 
-    public static ServiceCounterDataType decode(UaDecoder decoder) {
-        UInteger _totalCount = decoder.decodeUInt32("TotalCount");
-        UInteger _errorCount = decoder.decodeUInt32("ErrorCount");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ServiceCounterDataType> {
+        @Override
+        public ServiceCounterDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _totalCount = reader.readUInt32("TotalCount");
+            UInteger _errorCount = reader.readUInt32("ErrorCount");
 
-        return new ServiceCounterDataType(_totalCount, _errorCount);
-    }
+            return new ServiceCounterDataType(_totalCount, _errorCount);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ServiceCounterDataType::encode, ServiceCounterDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ServiceCounterDataType::decode, ServiceCounterDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ServiceCounterDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("TotalCount", encodable._totalCount);
+            writer.writeUInt32("ErrorCount", encodable._errorCount);
+        }
     }
 
 }

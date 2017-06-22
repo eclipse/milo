@@ -16,6 +16,8 @@ package org.eclipse.milo.opcua.stack.examples.server;
 import java.io.File;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -24,13 +26,20 @@ import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
+
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class ServerExample {
 
@@ -72,12 +81,24 @@ public class ServerExample {
             MessageSecurityMode.SignAndEncrypt
         );
 
-        server.addRequestHandler(TestStackRequest.class, service -> {
-            TestStackRequest request = service.getRequest();
+        server.addRequestHandler(ReadRequest.class, service -> {
+            ReadRequest request = service.getRequest();
 
-            ResponseHeader header = service.createResponseHeader();
+            ResponseHeader header = new ResponseHeader(
+                DateTime.now(),
+                request.getRequestHeader().getRequestHandle(),
+                StatusCode.GOOD,
+                null,
+                null,
+                null
+            );
 
-            service.setResponse(new TestStackResponse(header, request.getInput()));
+            List<ReadValueId> nodesToRead = l(request.getNodesToRead());
+            List<DataValue> results = Collections.nCopies(nodesToRead.size(), new DataValue(42));
+
+            ReadResponse response = new ReadResponse(header, a(results, DataValue.class), null);
+
+            service.setResponse(response);
         });
     }
 

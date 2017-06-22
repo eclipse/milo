@@ -15,8 +15,8 @@ package org.eclipse.milo.opcua.stack.core.channel.messages;
 
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class ErrorMessage {
@@ -58,11 +58,11 @@ public class ErrorMessage {
     }
 
     private static void encodeString(String s, ByteBuf buffer) {
-        new BinaryEncoder().setBuffer(buffer).encodeString(null, s);
+        new OpcBinaryStreamWriter(buffer).writeString(s);
     }
 
     private static String decodeString(ByteBuf buffer) {
-        return new BinaryDecoder().setBuffer(buffer).decodeString(null);
+        return new OpcBinaryStreamReader(buffer).readString();
     }
 
 }

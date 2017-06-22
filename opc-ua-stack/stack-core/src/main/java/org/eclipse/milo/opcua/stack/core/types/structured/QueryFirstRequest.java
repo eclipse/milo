@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -91,29 +96,70 @@ public class QueryFirstRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(QueryFirstRequest queryFirstRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", queryFirstRequest._requestHeader != null ? queryFirstRequest._requestHeader : new RequestHeader());
-        encoder.encodeSerializable("View", queryFirstRequest._view != null ? queryFirstRequest._view : new ViewDescription());
-        encoder.encodeArray("NodeTypes", queryFirstRequest._nodeTypes, encoder::encodeSerializable);
-        encoder.encodeSerializable("Filter", queryFirstRequest._filter != null ? queryFirstRequest._filter : new ContentFilter());
-        encoder.encodeUInt32("MaxDataSetsToReturn", queryFirstRequest._maxDataSetsToReturn);
-        encoder.encodeUInt32("MaxReferencesToReturn", queryFirstRequest._maxReferencesToReturn);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<QueryFirstRequest> {
+        @Override
+        public QueryFirstRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            ViewDescription _view = (ViewDescription) context.decode(ViewDescription.BinaryEncodingId, reader);
+            NodeTypeDescription[] _nodeTypes =
+                reader.readArray(
+                    () -> (NodeTypeDescription) context.decode(
+                        NodeTypeDescription.BinaryEncodingId, reader),
+                    NodeTypeDescription.class
+                );
+            ContentFilter _filter = (ContentFilter) context.decode(ContentFilter.BinaryEncodingId, reader);
+            UInteger _maxDataSetsToReturn = reader.readUInt32();
+            UInteger _maxReferencesToReturn = reader.readUInt32();
+
+            return new QueryFirstRequest(_requestHeader, _view, _nodeTypes, _filter, _maxDataSetsToReturn, _maxReferencesToReturn);
+        }
+
+        @Override
+        public void encode(SerializationContext context, QueryFirstRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            context.encode(ViewDescription.BinaryEncodingId, value._view, writer);
+            writer.writeArray(
+                value._nodeTypes,
+                e -> context.encode(NodeTypeDescription.BinaryEncodingId, e, writer)
+            );
+            context.encode(ContentFilter.BinaryEncodingId, value._filter, writer);
+            writer.writeUInt32(value._maxDataSetsToReturn);
+            writer.writeUInt32(value._maxReferencesToReturn);
+        }
     }
 
-    public static QueryFirstRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        ViewDescription _view = decoder.decodeSerializable("View", ViewDescription.class);
-        NodeTypeDescription[] _nodeTypes = decoder.decodeArray("NodeTypes", decoder::decodeSerializable, NodeTypeDescription.class);
-        ContentFilter _filter = decoder.decodeSerializable("Filter", ContentFilter.class);
-        UInteger _maxDataSetsToReturn = decoder.decodeUInt32("MaxDataSetsToReturn");
-        UInteger _maxReferencesToReturn = decoder.decodeUInt32("MaxReferencesToReturn");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<QueryFirstRequest> {
+        @Override
+        public QueryFirstRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            ViewDescription _view = (ViewDescription) context.decode(ViewDescription.XmlEncodingId, reader);
+            NodeTypeDescription[] _nodeTypes =
+                reader.readArray(
+                    "NodeTypes",
+                    f -> (NodeTypeDescription) context.decode(
+                        NodeTypeDescription.XmlEncodingId, reader),
+                    NodeTypeDescription.class
+                );
+            ContentFilter _filter = (ContentFilter) context.decode(ContentFilter.XmlEncodingId, reader);
+            UInteger _maxDataSetsToReturn = reader.readUInt32("MaxDataSetsToReturn");
+            UInteger _maxReferencesToReturn = reader.readUInt32("MaxReferencesToReturn");
 
-        return new QueryFirstRequest(_requestHeader, _view, _nodeTypes, _filter, _maxDataSetsToReturn, _maxReferencesToReturn);
-    }
+            return new QueryFirstRequest(_requestHeader, _view, _nodeTypes, _filter, _maxDataSetsToReturn, _maxReferencesToReturn);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(QueryFirstRequest::encode, QueryFirstRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryFirstRequest::decode, QueryFirstRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, QueryFirstRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            context.encode(ViewDescription.XmlEncodingId, encodable._view, writer);
+            writer.writeArray(
+                "NodeTypes",
+                encodable._nodeTypes,
+                (f, e) -> context.encode(NodeTypeDescription.XmlEncodingId, e, writer)
+            );
+            context.encode(ContentFilter.XmlEncodingId, encodable._filter, writer);
+            writer.writeUInt32("MaxDataSetsToReturn", encodable._maxDataSetsToReturn);
+            writer.writeUInt32("MaxReferencesToReturn", encodable._maxReferencesToReturn);
+        }
     }
 
 }

@@ -55,7 +55,6 @@ import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHand
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
 import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.TestServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
@@ -131,8 +130,6 @@ public class UaTcpStackServer implements UaStackServer {
         addServiceSet(new SessionServiceSet() {
         });
         addServiceSet(new SubscriptionServiceSet() {
-        });
-        addServiceSet(new TestServiceSet() {
         });
         addServiceSet(new ViewServiceSet() {
         });

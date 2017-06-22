@@ -92,6 +92,17 @@ public interface UaEncoder {
 
     <T extends UaSerializable> void encodeSerializable(String field, T value) throws UaSerializationException;
 
+    <T> void encodeStructuredType(
+        String field,
+        T value,
+        String namespaceUri) throws UaSerializationException;
+
+    void encodeStructuredType(
+        String field,
+        Object value,
+        String namespaceUri,
+        String typeName) throws UaSerializationException;
+
     <T> void encodeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException;
 
 }

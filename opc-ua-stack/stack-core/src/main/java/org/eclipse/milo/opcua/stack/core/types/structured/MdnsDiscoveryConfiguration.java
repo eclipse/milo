@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,14 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -67,21 +72,36 @@ public class MdnsDiscoveryConfiguration extends DiscoveryConfiguration {
             .toString();
     }
 
-    public static void encode(MdnsDiscoveryConfiguration mdnsDiscoveryConfiguration, UaEncoder encoder) {
-        encoder.encodeString("MdnsServerName", mdnsDiscoveryConfiguration._mdnsServerName);
-        encoder.encodeArray("ServerCapabilities", mdnsDiscoveryConfiguration._serverCapabilities, encoder::encodeString);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MdnsDiscoveryConfiguration> {
+        @Override
+        public MdnsDiscoveryConfiguration decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            String _mdnsServerName = reader.readString();
+            String[] _serverCapabilities = reader.readArray(reader::readString, String.class);
+
+            return new MdnsDiscoveryConfiguration(_mdnsServerName, _serverCapabilities);
+        }
+
+        @Override
+        public void encode(SerializationContext context, MdnsDiscoveryConfiguration value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._mdnsServerName);
+            writer.writeArray(value._serverCapabilities, writer::writeString);
+        }
     }
 
-    public static MdnsDiscoveryConfiguration decode(UaDecoder decoder) {
-        String _mdnsServerName = decoder.decodeString("MdnsServerName");
-        String[] _serverCapabilities = decoder.decodeArray("ServerCapabilities", decoder::decodeString, String.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MdnsDiscoveryConfiguration> {
+        @Override
+        public MdnsDiscoveryConfiguration decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            String _mdnsServerName = reader.readString("MdnsServerName");
+            String[] _serverCapabilities = reader.readArray("ServerCapabilities", reader::readString, String.class);
 
-        return new MdnsDiscoveryConfiguration(_mdnsServerName, _serverCapabilities);
-    }
+            return new MdnsDiscoveryConfiguration(_mdnsServerName, _serverCapabilities);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MdnsDiscoveryConfiguration::encode, MdnsDiscoveryConfiguration.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MdnsDiscoveryConfiguration::decode, MdnsDiscoveryConfiguration.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MdnsDiscoveryConfiguration encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeString("MdnsServerName", encodable._mdnsServerName);
+            writer.writeArray("ServerCapabilities", encodable._serverCapabilities, writer::writeString);
+        }
     }
 
 }

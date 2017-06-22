@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -66,21 +71,54 @@ public class FindServersResponse implements UaResponseMessage {
             .toString();
     }
 
-    public static void encode(FindServersResponse findServersResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", findServersResponse._responseHeader != null ? findServersResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Servers", findServersResponse._servers, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<FindServersResponse> {
+        @Override
+        public FindServersResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
+            ApplicationDescription[] _servers =
+                reader.readArray(
+                    () -> (ApplicationDescription) context.decode(
+                        ApplicationDescription.BinaryEncodingId, reader),
+                    ApplicationDescription.class
+                );
+
+            return new FindServersResponse(_responseHeader, _servers);
+        }
+
+        @Override
+        public void encode(SerializationContext context, FindServersResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeArray(
+                value._servers,
+                e -> context.encode(ApplicationDescription.BinaryEncodingId, e, writer)
+            );
+        }
     }
 
-    public static FindServersResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        ApplicationDescription[] _servers = decoder.decodeArray("Servers", decoder::decodeSerializable, ApplicationDescription.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<FindServersResponse> {
+        @Override
+        public FindServersResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
+            ApplicationDescription[] _servers =
+                reader.readArray(
+                    "Servers",
+                    f -> (ApplicationDescription) context.decode(
+                        ApplicationDescription.XmlEncodingId, reader),
+                    ApplicationDescription.class
+                );
 
-        return new FindServersResponse(_responseHeader, _servers);
-    }
+            return new FindServersResponse(_responseHeader, _servers);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(FindServersResponse::encode, FindServersResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(FindServersResponse::decode, FindServersResponse.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, FindServersResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
+            writer.writeArray(
+                "Servers",
+                encodable._servers,
+                (f, e) -> context.encode(ApplicationDescription.XmlEncodingId, e, writer)
+            );
+        }
     }
 
 }

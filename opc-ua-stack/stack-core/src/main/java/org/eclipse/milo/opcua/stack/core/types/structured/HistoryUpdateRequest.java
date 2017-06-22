@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -67,21 +72,36 @@ public class HistoryUpdateRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(HistoryUpdateRequest historyUpdateRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", historyUpdateRequest._requestHeader != null ? historyUpdateRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("HistoryUpdateDetails", historyUpdateRequest._historyUpdateDetails, encoder::encodeExtensionObject);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryUpdateRequest> {
+        @Override
+        public HistoryUpdateRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            ExtensionObject[] _historyUpdateDetails = reader.readArray(reader::readExtensionObject, ExtensionObject.class);
+
+            return new HistoryUpdateRequest(_requestHeader, _historyUpdateDetails);
+        }
+
+        @Override
+        public void encode(SerializationContext context, HistoryUpdateRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeArray(value._historyUpdateDetails, writer::writeExtensionObject);
+        }
     }
 
-    public static HistoryUpdateRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        ExtensionObject[] _historyUpdateDetails = decoder.decodeArray("HistoryUpdateDetails", decoder::decodeExtensionObject, ExtensionObject.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryUpdateRequest> {
+        @Override
+        public HistoryUpdateRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            ExtensionObject[] _historyUpdateDetails = reader.readArray("HistoryUpdateDetails", reader::readExtensionObject, ExtensionObject.class);
 
-        return new HistoryUpdateRequest(_requestHeader, _historyUpdateDetails);
-    }
+            return new HistoryUpdateRequest(_requestHeader, _historyUpdateDetails);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryUpdateRequest::encode, HistoryUpdateRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryUpdateRequest::decode, HistoryUpdateRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, HistoryUpdateRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeArray("HistoryUpdateDetails", encodable._historyUpdateDetails, writer::writeExtensionObject);
+        }
     }
 
 }

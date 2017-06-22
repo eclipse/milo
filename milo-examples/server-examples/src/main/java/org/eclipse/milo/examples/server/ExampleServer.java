@@ -27,11 +27,6 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackExResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
 import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +75,7 @@ public class ExampleServer {
 
                 boolean userOk = "user".equals(username) && "password1".equals(password);
                 boolean adminOk = "admin".equals(username) && "password2".equals(password);
-            
+
                 return userOk || adminOk;
             }
         );
@@ -119,22 +114,6 @@ public class ExampleServer {
         server.getNamespaceManager().registerAndAdd(
             ExampleNamespace.NAMESPACE_URI,
             idx -> new ExampleNamespace(server, idx));
-
-        server.getServer().addRequestHandler(TestStackRequest.class, service -> {
-            TestStackRequest request = service.getRequest();
-
-            ResponseHeader header = service.createResponseHeader();
-
-            service.setResponse(new TestStackResponse(header, request.getInput()));
-        });
-
-        server.getServer().addRequestHandler(TestStackExRequest.class, service -> {
-            TestStackExRequest request = service.getRequest();
-
-            ResponseHeader header = service.createResponseHeader();
-
-            service.setResponse(new TestStackExResponse(header, request.getInput()));
-        });
     }
 
     public OpcUaServer getServer() {

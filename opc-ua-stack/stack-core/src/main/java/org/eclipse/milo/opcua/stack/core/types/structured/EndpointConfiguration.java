@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -105,35 +110,64 @@ public class EndpointConfiguration implements UaStructure {
             .toString();
     }
 
-    public static void encode(EndpointConfiguration endpointConfiguration, UaEncoder encoder) {
-        encoder.encodeInt32("OperationTimeout", endpointConfiguration._operationTimeout);
-        encoder.encodeBoolean("UseBinaryEncoding", endpointConfiguration._useBinaryEncoding);
-        encoder.encodeInt32("MaxStringLength", endpointConfiguration._maxStringLength);
-        encoder.encodeInt32("MaxByteStringLength", endpointConfiguration._maxByteStringLength);
-        encoder.encodeInt32("MaxArrayLength", endpointConfiguration._maxArrayLength);
-        encoder.encodeInt32("MaxMessageSize", endpointConfiguration._maxMessageSize);
-        encoder.encodeInt32("MaxBufferSize", endpointConfiguration._maxBufferSize);
-        encoder.encodeInt32("ChannelLifetime", endpointConfiguration._channelLifetime);
-        encoder.encodeInt32("SecurityTokenLifetime", endpointConfiguration._securityTokenLifetime);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EndpointConfiguration> {
+        @Override
+        public EndpointConfiguration decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            Integer _operationTimeout = reader.readInt32();
+            Boolean _useBinaryEncoding = reader.readBoolean();
+            Integer _maxStringLength = reader.readInt32();
+            Integer _maxByteStringLength = reader.readInt32();
+            Integer _maxArrayLength = reader.readInt32();
+            Integer _maxMessageSize = reader.readInt32();
+            Integer _maxBufferSize = reader.readInt32();
+            Integer _channelLifetime = reader.readInt32();
+            Integer _securityTokenLifetime = reader.readInt32();
+
+            return new EndpointConfiguration(_operationTimeout, _useBinaryEncoding, _maxStringLength, _maxByteStringLength, _maxArrayLength, _maxMessageSize, _maxBufferSize, _channelLifetime, _securityTokenLifetime);
+        }
+
+        @Override
+        public void encode(SerializationContext context, EndpointConfiguration value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32(value._operationTimeout);
+            writer.writeBoolean(value._useBinaryEncoding);
+            writer.writeInt32(value._maxStringLength);
+            writer.writeInt32(value._maxByteStringLength);
+            writer.writeInt32(value._maxArrayLength);
+            writer.writeInt32(value._maxMessageSize);
+            writer.writeInt32(value._maxBufferSize);
+            writer.writeInt32(value._channelLifetime);
+            writer.writeInt32(value._securityTokenLifetime);
+        }
     }
 
-    public static EndpointConfiguration decode(UaDecoder decoder) {
-        Integer _operationTimeout = decoder.decodeInt32("OperationTimeout");
-        Boolean _useBinaryEncoding = decoder.decodeBoolean("UseBinaryEncoding");
-        Integer _maxStringLength = decoder.decodeInt32("MaxStringLength");
-        Integer _maxByteStringLength = decoder.decodeInt32("MaxByteStringLength");
-        Integer _maxArrayLength = decoder.decodeInt32("MaxArrayLength");
-        Integer _maxMessageSize = decoder.decodeInt32("MaxMessageSize");
-        Integer _maxBufferSize = decoder.decodeInt32("MaxBufferSize");
-        Integer _channelLifetime = decoder.decodeInt32("ChannelLifetime");
-        Integer _securityTokenLifetime = decoder.decodeInt32("SecurityTokenLifetime");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<EndpointConfiguration> {
+        @Override
+        public EndpointConfiguration decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            Integer _operationTimeout = reader.readInt32("OperationTimeout");
+            Boolean _useBinaryEncoding = reader.readBoolean("UseBinaryEncoding");
+            Integer _maxStringLength = reader.readInt32("MaxStringLength");
+            Integer _maxByteStringLength = reader.readInt32("MaxByteStringLength");
+            Integer _maxArrayLength = reader.readInt32("MaxArrayLength");
+            Integer _maxMessageSize = reader.readInt32("MaxMessageSize");
+            Integer _maxBufferSize = reader.readInt32("MaxBufferSize");
+            Integer _channelLifetime = reader.readInt32("ChannelLifetime");
+            Integer _securityTokenLifetime = reader.readInt32("SecurityTokenLifetime");
 
-        return new EndpointConfiguration(_operationTimeout, _useBinaryEncoding, _maxStringLength, _maxByteStringLength, _maxArrayLength, _maxMessageSize, _maxBufferSize, _channelLifetime, _securityTokenLifetime);
-    }
+            return new EndpointConfiguration(_operationTimeout, _useBinaryEncoding, _maxStringLength, _maxByteStringLength, _maxArrayLength, _maxMessageSize, _maxBufferSize, _channelLifetime, _securityTokenLifetime);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(EndpointConfiguration::encode, EndpointConfiguration.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EndpointConfiguration::decode, EndpointConfiguration.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, EndpointConfiguration encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32("OperationTimeout", encodable._operationTimeout);
+            writer.writeBoolean("UseBinaryEncoding", encodable._useBinaryEncoding);
+            writer.writeInt32("MaxStringLength", encodable._maxStringLength);
+            writer.writeInt32("MaxByteStringLength", encodable._maxByteStringLength);
+            writer.writeInt32("MaxArrayLength", encodable._maxArrayLength);
+            writer.writeInt32("MaxMessageSize", encodable._maxMessageSize);
+            writer.writeInt32("MaxBufferSize", encodable._maxBufferSize);
+            writer.writeInt32("ChannelLifetime", encodable._channelLifetime);
+            writer.writeInt32("SecurityTokenLifetime", encodable._securityTokenLifetime);
+        }
     }
 
 }

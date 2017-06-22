@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,14 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -67,21 +72,54 @@ public class EventFilter extends MonitoringFilter {
             .toString();
     }
 
-    public static void encode(EventFilter eventFilter, UaEncoder encoder) {
-        encoder.encodeArray("SelectClauses", eventFilter._selectClauses, encoder::encodeSerializable);
-        encoder.encodeSerializable("WhereClause", eventFilter._whereClause != null ? eventFilter._whereClause : new ContentFilter());
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EventFilter> {
+        @Override
+        public EventFilter decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            SimpleAttributeOperand[] _selectClauses =
+                reader.readArray(
+                    () -> (SimpleAttributeOperand) context.decode(
+                        SimpleAttributeOperand.BinaryEncodingId, reader),
+                    SimpleAttributeOperand.class
+                );
+            ContentFilter _whereClause = (ContentFilter) context.decode(ContentFilter.BinaryEncodingId, reader);
+
+            return new EventFilter(_selectClauses, _whereClause);
+        }
+
+        @Override
+        public void encode(SerializationContext context, EventFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                value._selectClauses,
+                e -> context.encode(SimpleAttributeOperand.BinaryEncodingId, e, writer)
+            );
+            context.encode(ContentFilter.BinaryEncodingId, value._whereClause, writer);
+        }
     }
 
-    public static EventFilter decode(UaDecoder decoder) {
-        SimpleAttributeOperand[] _selectClauses = decoder.decodeArray("SelectClauses", decoder::decodeSerializable, SimpleAttributeOperand.class);
-        ContentFilter _whereClause = decoder.decodeSerializable("WhereClause", ContentFilter.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<EventFilter> {
+        @Override
+        public EventFilter decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            SimpleAttributeOperand[] _selectClauses =
+                reader.readArray(
+                    "SelectClauses",
+                    f -> (SimpleAttributeOperand) context.decode(
+                        SimpleAttributeOperand.XmlEncodingId, reader),
+                    SimpleAttributeOperand.class
+                );
+            ContentFilter _whereClause = (ContentFilter) context.decode(ContentFilter.XmlEncodingId, reader);
 
-        return new EventFilter(_selectClauses, _whereClause);
-    }
+            return new EventFilter(_selectClauses, _whereClause);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(EventFilter::encode, EventFilter.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EventFilter::decode, EventFilter.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, EventFilter encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                "SelectClauses",
+                encodable._selectClauses,
+                (f, e) -> context.encode(SimpleAttributeOperand.XmlEncodingId, e, writer)
+            );
+            context.encode(ContentFilter.XmlEncodingId, encodable._whereClause, writer);
+        }
     }
 
 }

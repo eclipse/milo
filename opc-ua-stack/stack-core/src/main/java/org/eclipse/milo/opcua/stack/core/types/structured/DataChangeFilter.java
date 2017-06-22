@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -72,23 +77,40 @@ public class DataChangeFilter extends MonitoringFilter {
             .toString();
     }
 
-    public static void encode(DataChangeFilter dataChangeFilter, UaEncoder encoder) {
-        encoder.encodeEnumeration("Trigger", dataChangeFilter._trigger);
-        encoder.encodeUInt32("DeadbandType", dataChangeFilter._deadbandType);
-        encoder.encodeDouble("DeadbandValue", dataChangeFilter._deadbandValue);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DataChangeFilter> {
+        @Override
+        public DataChangeFilter decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            DataChangeTrigger _trigger = DataChangeTrigger.from(reader.readInt32());
+            UInteger _deadbandType = reader.readUInt32();
+            Double _deadbandValue = reader.readDouble();
+
+            return new DataChangeFilter(_trigger, _deadbandType, _deadbandValue);
+        }
+
+        @Override
+        public void encode(SerializationContext context, DataChangeFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32(value._trigger != null ? value._trigger.getValue() : 0);
+            writer.writeUInt32(value._deadbandType);
+            writer.writeDouble(value._deadbandValue);
+        }
     }
 
-    public static DataChangeFilter decode(UaDecoder decoder) {
-        DataChangeTrigger _trigger = decoder.decodeEnumeration("Trigger", DataChangeTrigger.class);
-        UInteger _deadbandType = decoder.decodeUInt32("DeadbandType");
-        Double _deadbandValue = decoder.decodeDouble("DeadbandValue");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<DataChangeFilter> {
+        @Override
+        public DataChangeFilter decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            DataChangeTrigger _trigger = DataChangeTrigger.from(reader.readInt32("Trigger"));
+            UInteger _deadbandType = reader.readUInt32("DeadbandType");
+            Double _deadbandValue = reader.readDouble("DeadbandValue");
 
-        return new DataChangeFilter(_trigger, _deadbandType, _deadbandValue);
-    }
+            return new DataChangeFilter(_trigger, _deadbandType, _deadbandValue);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(DataChangeFilter::encode, DataChangeFilter.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DataChangeFilter::decode, DataChangeFilter.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, DataChangeFilter encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32("Trigger", encodable._trigger != null ? encodable._trigger.getValue() : 0);
+            writer.writeUInt32("DeadbandType", encodable._deadbandType);
+            writer.writeDouble("DeadbandValue", encodable._deadbandValue);
+        }
     }
 
 }

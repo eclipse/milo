@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -66,21 +71,54 @@ public class DeleteNodesRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(DeleteNodesRequest deleteNodesRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", deleteNodesRequest._requestHeader != null ? deleteNodesRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("NodesToDelete", deleteNodesRequest._nodesToDelete, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DeleteNodesRequest> {
+        @Override
+        public DeleteNodesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            DeleteNodesItem[] _nodesToDelete =
+                reader.readArray(
+                    () -> (DeleteNodesItem) context.decode(
+                        DeleteNodesItem.BinaryEncodingId, reader),
+                    DeleteNodesItem.class
+                );
+
+            return new DeleteNodesRequest(_requestHeader, _nodesToDelete);
+        }
+
+        @Override
+        public void encode(SerializationContext context, DeleteNodesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeArray(
+                value._nodesToDelete,
+                e -> context.encode(DeleteNodesItem.BinaryEncodingId, e, writer)
+            );
+        }
     }
 
-    public static DeleteNodesRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        DeleteNodesItem[] _nodesToDelete = decoder.decodeArray("NodesToDelete", decoder::decodeSerializable, DeleteNodesItem.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<DeleteNodesRequest> {
+        @Override
+        public DeleteNodesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            DeleteNodesItem[] _nodesToDelete =
+                reader.readArray(
+                    "NodesToDelete",
+                    f -> (DeleteNodesItem) context.decode(
+                        DeleteNodesItem.XmlEncodingId, reader),
+                    DeleteNodesItem.class
+                );
 
-        return new DeleteNodesRequest(_requestHeader, _nodesToDelete);
-    }
+            return new DeleteNodesRequest(_requestHeader, _nodesToDelete);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteNodesRequest::encode, DeleteNodesRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteNodesRequest::decode, DeleteNodesRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, DeleteNodesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeArray(
+                "NodesToDelete",
+                encodable._nodesToDelete,
+                (f, e) -> context.encode(DeleteNodesItem.XmlEncodingId, e, writer)
+            );
+        }
     }
 
 }

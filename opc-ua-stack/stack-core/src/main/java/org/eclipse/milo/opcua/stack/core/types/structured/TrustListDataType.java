@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -89,27 +94,48 @@ public class TrustListDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(TrustListDataType trustListDataType, UaEncoder encoder) {
-        encoder.encodeUInt32("SpecifiedLists", trustListDataType._specifiedLists);
-        encoder.encodeArray("TrustedCertificates", trustListDataType._trustedCertificates, encoder::encodeByteString);
-        encoder.encodeArray("TrustedCrls", trustListDataType._trustedCrls, encoder::encodeByteString);
-        encoder.encodeArray("IssuerCertificates", trustListDataType._issuerCertificates, encoder::encodeByteString);
-        encoder.encodeArray("IssuerCrls", trustListDataType._issuerCrls, encoder::encodeByteString);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<TrustListDataType> {
+        @Override
+        public TrustListDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedLists = reader.readUInt32();
+            ByteString[] _trustedCertificates = reader.readArray(reader::readByteString, ByteString.class);
+            ByteString[] _trustedCrls = reader.readArray(reader::readByteString, ByteString.class);
+            ByteString[] _issuerCertificates = reader.readArray(reader::readByteString, ByteString.class);
+            ByteString[] _issuerCrls = reader.readArray(reader::readByteString, ByteString.class);
+
+            return new TrustListDataType(_specifiedLists, _trustedCertificates, _trustedCrls, _issuerCertificates, _issuerCrls);
+        }
+
+        @Override
+        public void encode(SerializationContext context, TrustListDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._specifiedLists);
+            writer.writeArray(value._trustedCertificates, writer::writeByteString);
+            writer.writeArray(value._trustedCrls, writer::writeByteString);
+            writer.writeArray(value._issuerCertificates, writer::writeByteString);
+            writer.writeArray(value._issuerCrls, writer::writeByteString);
+        }
     }
 
-    public static TrustListDataType decode(UaDecoder decoder) {
-        UInteger _specifiedLists = decoder.decodeUInt32("SpecifiedLists");
-        ByteString[] _trustedCertificates = decoder.decodeArray("TrustedCertificates", decoder::decodeByteString, ByteString.class);
-        ByteString[] _trustedCrls = decoder.decodeArray("TrustedCrls", decoder::decodeByteString, ByteString.class);
-        ByteString[] _issuerCertificates = decoder.decodeArray("IssuerCertificates", decoder::decodeByteString, ByteString.class);
-        ByteString[] _issuerCrls = decoder.decodeArray("IssuerCrls", decoder::decodeByteString, ByteString.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<TrustListDataType> {
+        @Override
+        public TrustListDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedLists = reader.readUInt32("SpecifiedLists");
+            ByteString[] _trustedCertificates = reader.readArray("TrustedCertificates", reader::readByteString, ByteString.class);
+            ByteString[] _trustedCrls = reader.readArray("TrustedCrls", reader::readByteString, ByteString.class);
+            ByteString[] _issuerCertificates = reader.readArray("IssuerCertificates", reader::readByteString, ByteString.class);
+            ByteString[] _issuerCrls = reader.readArray("IssuerCrls", reader::readByteString, ByteString.class);
 
-        return new TrustListDataType(_specifiedLists, _trustedCertificates, _trustedCrls, _issuerCertificates, _issuerCrls);
-    }
+            return new TrustListDataType(_specifiedLists, _trustedCertificates, _trustedCrls, _issuerCertificates, _issuerCrls);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(TrustListDataType::encode, TrustListDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(TrustListDataType::decode, TrustListDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, TrustListDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("SpecifiedLists", encodable._specifiedLists);
+            writer.writeArray("TrustedCertificates", encodable._trustedCertificates, writer::writeByteString);
+            writer.writeArray("TrustedCrls", encodable._trustedCrls, writer::writeByteString);
+            writer.writeArray("IssuerCertificates", encodable._issuerCertificates, writer::writeByteString);
+            writer.writeArray("IssuerCrls", encodable._issuerCrls, writer::writeByteString);
+        }
     }
 
 }

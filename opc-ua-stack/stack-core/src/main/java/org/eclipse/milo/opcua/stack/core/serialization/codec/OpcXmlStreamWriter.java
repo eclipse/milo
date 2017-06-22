@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.xml;
+package org.eclipse.milo.opcua.stack.core.serialization.codec;
 
 import java.io.OutputStream;
 import java.io.Writer;
@@ -27,7 +27,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.UaSerializable;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
@@ -51,25 +51,36 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.jooq.lambda.Unchecked;
 
-public class XmlEncoder implements UaEncoder {
+public class OpcXmlStreamWriter {
 
     private final Calendar calendar = Calendar.getInstance();
     private final XMLOutputFactory factory = XMLOutputFactory.newFactory();
 
     private volatile XMLStreamWriter streamWriter;
 
-    public XmlEncoder() {
+    private final int maxArrayLength;
+    private final int maxStringLength;
+
+    public OpcXmlStreamWriter() {
+        this(ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH, ChannelConfig.DEFAULT_MAX_STRING_LENGTH);
     }
 
-    public XmlEncoder(OutputStream outputStream) throws XMLStreamException {
+    public OpcXmlStreamWriter(int maxArrayLength, int maxStringLength) {
+        this.maxArrayLength = maxArrayLength;
+        this.maxStringLength = maxStringLength;
+    }
+
+    public OpcXmlStreamWriter(OutputStream outputStream) throws XMLStreamException {
+        this();
         setOutput(outputStream);
     }
 
-    public XmlEncoder(Writer writer) throws XMLStreamException {
+    public OpcXmlStreamWriter(Writer writer) throws XMLStreamException {
+        this();
         setOutput(writer);
     }
 
-    public XmlEncoder setOutput(OutputStream outputStream) throws XMLStreamException {
+    public OpcXmlStreamWriter setOutput(OutputStream outputStream) throws XMLStreamException {
         streamWriter = factory.createXMLStreamWriter(outputStream);
         streamWriter.setPrefix("xsi", Namespaces.XML_SCHEMA_INSTANCE);
         streamWriter.setPrefix("tns", Namespaces.OPC_UA_XSD);
@@ -77,7 +88,7 @@ public class XmlEncoder implements UaEncoder {
         return this;
     }
 
-    public XmlEncoder setOutput(Writer writer) throws XMLStreamException {
+    public OpcXmlStreamWriter setOutput(Writer writer) throws XMLStreamException {
         streamWriter = factory.createXMLStreamWriter(writer);
         streamWriter.setPrefix("xsi", Namespaces.XML_SCHEMA_INSTANCE);
         streamWriter.setPrefix("tns", Namespaces.OPC_UA_XSD);
@@ -85,92 +96,95 @@ public class XmlEncoder implements UaEncoder {
         return this;
     }
 
-    @Override
-    public void encodeBoolean(String field, Boolean value) {
+    public XMLStreamWriter getStreamWriter() {
+        return streamWriter;
+    }
+
+    public void writeBoolean(String field, Boolean value) {
         if (value == null) value = false;
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeSByte(String field, Byte value) {
+
+    public void writeSByte(String field, Byte value) {
         if (value == null) value = 0;
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeInt16(String field, Short value) {
+
+    public void writeInt16(String field, Short value) {
         if (value == null) value = 0;
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeInt32(String field, Integer value) {
+
+    public void writeInt32(String field, Integer value) {
         if (value == null) value = 0;
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeInt64(String field, Long value) {
+
+    public void writeInt64(String field, Long value) {
         if (value == null) value = 0L;
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeByte(String field, UByte value) throws UaSerializationException {
+
+    public void writeByte(String field, UByte value) throws UaSerializationException {
         if (value == null) value = Unsigned.ubyte(0);
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeUInt16(String field, UShort value) throws UaSerializationException {
+
+    public void writeUInt16(String field, UShort value) throws UaSerializationException {
         if (value == null) value = Unsigned.ushort(0);
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeUInt32(String field, UInteger value) throws UaSerializationException {
+
+    public void writeUInt32(String field, UInteger value) throws UaSerializationException {
         if (value == null) value = Unsigned.uint(0);
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeUInt64(String field, ULong value) throws UaSerializationException {
+
+    public void writeUInt64(String field, ULong value) throws UaSerializationException {
         if (value == null) value = Unsigned.ulong(0);
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeFloat(String field, Float value) {
+
+    public void writeFloat(String field, Float value) {
         if (value == null) value = 0f;
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeDouble(String field, Double value) {
+
+    public void writeDouble(String field, Double value) {
         if (value == null) value = 0.0;
 
         writeValue(field, value.toString());
     }
 
-    @Override
-    public void encodeString(String field, String value) {
+
+    public void writeString(String field, String value) {
         if (value == null) value = "";
 
         writeValue(field, value);
     }
 
-    @Override
-    public void encodeDateTime(String field, DateTime value) {
+
+    public void writeDateTime(String field, DateTime value) {
         if (value == null) value = DateTime.MIN_VALUE;
 
         calendar.setTime(value.getJavaDate());
@@ -178,8 +192,8 @@ public class XmlEncoder implements UaEncoder {
         writeValue(field, DatatypeConverter.printDateTime(calendar));
     }
 
-    @Override
-    public void encodeGuid(String field, UUID value) {
+
+    public void writeGuid(String field, UUID value) {
         if (value != null) {
             write(field, Unchecked.consumer(w -> {
                 w.writeStartElement("String");
@@ -197,8 +211,8 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    @Override
-    public void encodeByteString(String field, ByteString value) {
+
+    public void writeByteString(String field, ByteString value) {
         if (value == null) value = ByteString.NULL_VALUE;
 
         if (value.isNotNull()) {
@@ -210,15 +224,15 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    @Override
-    public void encodeXmlElement(String field, XmlElement value) {
+
+    public void writeXmlElement(String field, XmlElement value) {
         if (value == null) value = XmlElement.of("");
 
         writeValue(field, value.getFragment());
     }
 
-    @Override
-    public void encodeNodeId(String field, NodeId value) {
+
+    public void writeNodeId(String field, NodeId value) {
         if (value != null) {
             write(field, Unchecked.consumer(w -> {
                 w.writeStartElement("Identifier");
@@ -236,8 +250,8 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    @Override
-    public void encodeExpandedNodeId(String field, ExpandedNodeId value) {
+
+    public void writeExpandedNodeId(String field, ExpandedNodeId value) {
         if (value != null) {
             write(field, Unchecked.consumer(w -> {
                 w.writeStartElement("Identifier");
@@ -255,10 +269,10 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    @Override
-    public void encodeStatusCode(String field, StatusCode value) {
+
+    public void writeStatusCode(String field, StatusCode value) {
         if (value != null) {
-            write(field, Unchecked.consumer(w -> encodeStatusCode("Identifier", value)));
+            write(field, Unchecked.consumer(w -> writeStatusCode("Identifier", value)));
         } else {
             if (field != null) {
                 try {
@@ -270,12 +284,12 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    @Override
-    public void encodeQualifiedName(String field, QualifiedName value) {
+
+    public void writeQualifiedName(String field, QualifiedName value) {
         if (value != null) {
             write(field, Unchecked.consumer(w -> {
-                encodeUInt16("NamespaceIndex", value.getNamespaceIndex());
-                encodeString("Name", value.getName());
+                writeUInt16("NamespaceIndex", value.getNamespaceIndex());
+                writeString("Name", value.getName());
             }));
         } else {
             if (field != null) {
@@ -288,12 +302,12 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    @Override
-    public void encodeLocalizedText(String field, LocalizedText value) {
+
+    public void writeLocalizedText(String field, LocalizedText value) {
         if (value != null) {
             write(field, Unchecked.consumer(w -> {
-                encodeString("Locale", value.getLocale());
-                encodeString("Text", value.getText());
+                writeString("Locale", value.getLocale());
+                writeString("Text", value.getText());
             }));
         } else {
             if (field != null) {
@@ -306,66 +320,83 @@ public class XmlEncoder implements UaEncoder {
         }
     }
 
-    @Override
-    public void encodeExtensionObject(String field, ExtensionObject value) {
+
+    public void writeExtensionObject(String field, ExtensionObject value) {
         if (value != null) {
             write(field, Unchecked.consumer(w -> {
-                encodeNodeId("TypeId", value.getEncodingTypeId());
+                writeNodeId("TypeId", value.getEncodingTypeId());
 
                 Object object = value.getEncoded();
 
                 if (object instanceof UaSerializable) {
                     UaSerializable serializable = (UaSerializable) object;
 
-                    encodeSerializable("Body", serializable);
+                    writeSerializable("Body", serializable);
                 } else if (object instanceof ByteString) {
                     ByteString byteString = (ByteString) object;
 
                     streamWriter.writeStartElement("Body");
-                    encodeByteString("ByteString", byteString);
+                    writeByteString("ByteString", byteString);
                     streamWriter.writeEndElement();
                 } else if (object instanceof XmlElement) {
                     XmlElement xmlElement = (XmlElement) object;
 
-                    encodeXmlElement("Body", xmlElement);
+                    writeXmlElement("Body", xmlElement);
                 }
             }));
         }
     }
 
-    @Override
-    public void encodeDataValue(String field, DataValue value) {
+
+    public void writeDataValue(String field, DataValue value) {
 
     }
 
-    @Override
-    public void encodeVariant(String field, Variant value) {
+
+    public void writeVariant(String field, Variant value) {
 
     }
 
-    @Override
-    public void encodeDiagnosticInfo(String field, DiagnosticInfo value) {
+
+    public void writeDiagnosticInfo(String field, DiagnosticInfo value) {
 
     }
 
-    @Override
-    public <T extends UaStructure> void encodeMessage(String field, T message) {
+
+    public <T extends UaStructure> void writeMessage(String field, T message) {
 
     }
 
-    @Override
-    public <T extends UaEnumeration> void encodeEnumeration(String field, T value) throws UaSerializationException {
+
+    public <T extends UaEnumeration> void writeEnumeration(String field, T value) throws UaSerializationException {
         String s = value == null ? null : value.toString() + "_" + value.getValue();
         writeValue(field, s != null ? s : "");
     }
 
-    @Override
-    public <T extends UaSerializable> void encodeSerializable(String field, T value) {
+
+    public <T extends UaSerializable> void writeSerializable(String field, T value) {
 
     }
 
-    @Override
-    public <T> void encodeArray(String field, T[] values, BiConsumer<String, T> encoder) {
+
+    public <T> void writeStructuredType(
+        String field,
+        T value,
+        String namespaceUri) throws UaSerializationException {
+
+    }
+
+
+    public void writeStructuredType(
+        String field,
+        Object value,
+        String namespaceUri,
+        String typeName) throws UaSerializationException {
+
+    }
+
+
+    public <T> void writeArray(String field, T[] values, BiConsumer<String, T> writer) {
 
     }
 

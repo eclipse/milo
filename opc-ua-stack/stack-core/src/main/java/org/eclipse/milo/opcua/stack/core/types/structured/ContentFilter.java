@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -60,19 +65,50 @@ public class ContentFilter implements UaStructure {
             .toString();
     }
 
-    public static void encode(ContentFilter contentFilter, UaEncoder encoder) {
-        encoder.encodeArray("Elements", contentFilter._elements, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ContentFilter> {
+        @Override
+        public ContentFilter decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ContentFilterElement[] _elements =
+                reader.readArray(
+                    () -> (ContentFilterElement) context.decode(
+                        ContentFilterElement.BinaryEncodingId, reader),
+                    ContentFilterElement.class
+                );
+
+            return new ContentFilter(_elements);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ContentFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                value._elements,
+                e -> context.encode(ContentFilterElement.BinaryEncodingId, e, writer)
+            );
+        }
     }
 
-    public static ContentFilter decode(UaDecoder decoder) {
-        ContentFilterElement[] _elements = decoder.decodeArray("Elements", decoder::decodeSerializable, ContentFilterElement.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ContentFilter> {
+        @Override
+        public ContentFilter decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ContentFilterElement[] _elements =
+                reader.readArray(
+                    "Elements",
+                    f -> (ContentFilterElement) context.decode(
+                        ContentFilterElement.XmlEncodingId, reader),
+                    ContentFilterElement.class
+                );
 
-        return new ContentFilter(_elements);
-    }
+            return new ContentFilter(_elements);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ContentFilter::encode, ContentFilter.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ContentFilter::decode, ContentFilter.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ContentFilter encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                "Elements",
+                encodable._elements,
+                (f, e) -> context.encode(ContentFilterElement.XmlEncodingId, e, writer)
+            );
+        }
     }
 
 }

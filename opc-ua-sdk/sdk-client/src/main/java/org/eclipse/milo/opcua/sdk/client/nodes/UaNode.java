@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -26,12 +27,8 @@ import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DecoderDelegate;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -347,9 +344,15 @@ public abstract class UaNode implements Node {
      */
     protected static <T> T cast(Object o, Class<T> clazz) {
         if (UaEnumeration.class.isAssignableFrom(clazz) && o instanceof Integer) {
-            return DelegateRegistry.getInstance().getDecoder(clazz).decode(
-                new EnumDecoder((Integer) o)
-            );
+            try {
+                Object enumeration = clazz
+                    .getMethod("from", new Class[]{Integer.class})
+                    .invoke(null, (Integer) o);
+
+                return clazz.cast(enumeration);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
+            }
         } else if (UaStructure.class.isAssignableFrom(clazz) && o instanceof ExtensionObject) {
             Object decoded = ((ExtensionObject) o).decode();
             return clazz.cast(decoded);
@@ -358,28 +361,5 @@ public abstract class UaNode implements Node {
         }
     }
 
-    private static class EnumDecoder extends BinaryDecoder {
-
-        private final int value;
-
-        EnumDecoder(int value) {
-            this.value = value;
-        }
-
-        @Override
-        public Integer decodeInt32(String field) throws UaSerializationException {
-            return value;
-        }
-
-        @Override
-        public <T extends UaEnumeration> T decodeEnumeration(
-            String field, Class<T> clazz) throws UaSerializationException {
-
-            DecoderDelegate<T> delegate = DelegateRegistry.getInstance().getDecoder(clazz);
-
-            return delegate.decode(this);
-        }
-
-    }
 
 }

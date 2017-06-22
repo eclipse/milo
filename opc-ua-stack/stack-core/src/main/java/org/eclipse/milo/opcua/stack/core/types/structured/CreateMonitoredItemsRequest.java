@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -80,25 +85,62 @@ public class CreateMonitoredItemsRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(CreateMonitoredItemsRequest createMonitoredItemsRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", createMonitoredItemsRequest._requestHeader != null ? createMonitoredItemsRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("SubscriptionId", createMonitoredItemsRequest._subscriptionId);
-        encoder.encodeEnumeration("TimestampsToReturn", createMonitoredItemsRequest._timestampsToReturn);
-        encoder.encodeArray("ItemsToCreate", createMonitoredItemsRequest._itemsToCreate, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CreateMonitoredItemsRequest> {
+        @Override
+        public CreateMonitoredItemsRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            UInteger _subscriptionId = reader.readUInt32();
+            TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32());
+            MonitoredItemCreateRequest[] _itemsToCreate =
+                reader.readArray(
+                    () -> (MonitoredItemCreateRequest) context.decode(
+                        MonitoredItemCreateRequest.BinaryEncodingId, reader),
+                    MonitoredItemCreateRequest.class
+                );
+
+            return new CreateMonitoredItemsRequest(_requestHeader, _subscriptionId, _timestampsToReturn, _itemsToCreate);
+        }
+
+        @Override
+        public void encode(SerializationContext context, CreateMonitoredItemsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeInt32(value._timestampsToReturn != null ? value._timestampsToReturn.getValue() : 0);
+            writer.writeArray(
+                value._itemsToCreate,
+                e -> context.encode(MonitoredItemCreateRequest.BinaryEncodingId, e, writer)
+            );
+        }
     }
 
-    public static CreateMonitoredItemsRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        TimestampsToReturn _timestampsToReturn = decoder.decodeEnumeration("TimestampsToReturn", TimestampsToReturn.class);
-        MonitoredItemCreateRequest[] _itemsToCreate = decoder.decodeArray("ItemsToCreate", decoder::decodeSerializable, MonitoredItemCreateRequest.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<CreateMonitoredItemsRequest> {
+        @Override
+        public CreateMonitoredItemsRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
+            TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32("TimestampsToReturn"));
+            MonitoredItemCreateRequest[] _itemsToCreate =
+                reader.readArray(
+                    "ItemsToCreate",
+                    f -> (MonitoredItemCreateRequest) context.decode(
+                        MonitoredItemCreateRequest.XmlEncodingId, reader),
+                    MonitoredItemCreateRequest.class
+                );
 
-        return new CreateMonitoredItemsRequest(_requestHeader, _subscriptionId, _timestampsToReturn, _itemsToCreate);
-    }
+            return new CreateMonitoredItemsRequest(_requestHeader, _subscriptionId, _timestampsToReturn, _itemsToCreate);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(CreateMonitoredItemsRequest::encode, CreateMonitoredItemsRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CreateMonitoredItemsRequest::decode, CreateMonitoredItemsRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, CreateMonitoredItemsRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
+            writer.writeInt32("TimestampsToReturn", encodable._timestampsToReturn != null ? encodable._timestampsToReturn.getValue() : 0);
+            writer.writeArray(
+                "ItemsToCreate",
+                encodable._itemsToCreate,
+                (f, e) -> context.encode(MonitoredItemCreateRequest.XmlEncodingId, e, writer)
+            );
+        }
     }
 
 }

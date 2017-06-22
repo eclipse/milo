@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -314,103 +319,200 @@ public class SessionDiagnosticsDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(SessionDiagnosticsDataType sessionDiagnosticsDataType, UaEncoder encoder) {
-        encoder.encodeNodeId("SessionId", sessionDiagnosticsDataType._sessionId);
-        encoder.encodeString("SessionName", sessionDiagnosticsDataType._sessionName);
-        encoder.encodeSerializable("ClientDescription", sessionDiagnosticsDataType._clientDescription != null ? sessionDiagnosticsDataType._clientDescription : new ApplicationDescription());
-        encoder.encodeString("ServerUri", sessionDiagnosticsDataType._serverUri);
-        encoder.encodeString("EndpointUrl", sessionDiagnosticsDataType._endpointUrl);
-        encoder.encodeArray("LocaleIds", sessionDiagnosticsDataType._localeIds, encoder::encodeString);
-        encoder.encodeDouble("ActualSessionTimeout", sessionDiagnosticsDataType._actualSessionTimeout);
-        encoder.encodeUInt32("MaxResponseMessageSize", sessionDiagnosticsDataType._maxResponseMessageSize);
-        encoder.encodeDateTime("ClientConnectionTime", sessionDiagnosticsDataType._clientConnectionTime);
-        encoder.encodeDateTime("ClientLastContactTime", sessionDiagnosticsDataType._clientLastContactTime);
-        encoder.encodeUInt32("CurrentSubscriptionsCount", sessionDiagnosticsDataType._currentSubscriptionsCount);
-        encoder.encodeUInt32("CurrentMonitoredItemsCount", sessionDiagnosticsDataType._currentMonitoredItemsCount);
-        encoder.encodeUInt32("CurrentPublishRequestsInQueue", sessionDiagnosticsDataType._currentPublishRequestsInQueue);
-        encoder.encodeSerializable("TotalRequestCount", sessionDiagnosticsDataType._totalRequestCount != null ? sessionDiagnosticsDataType._totalRequestCount : new ServiceCounterDataType());
-        encoder.encodeUInt32("UnauthorizedRequestCount", sessionDiagnosticsDataType._unauthorizedRequestCount);
-        encoder.encodeSerializable("ReadCount", sessionDiagnosticsDataType._readCount != null ? sessionDiagnosticsDataType._readCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("HistoryReadCount", sessionDiagnosticsDataType._historyReadCount != null ? sessionDiagnosticsDataType._historyReadCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("WriteCount", sessionDiagnosticsDataType._writeCount != null ? sessionDiagnosticsDataType._writeCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("HistoryUpdateCount", sessionDiagnosticsDataType._historyUpdateCount != null ? sessionDiagnosticsDataType._historyUpdateCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("CallCount", sessionDiagnosticsDataType._callCount != null ? sessionDiagnosticsDataType._callCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("CreateMonitoredItemsCount", sessionDiagnosticsDataType._createMonitoredItemsCount != null ? sessionDiagnosticsDataType._createMonitoredItemsCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("ModifyMonitoredItemsCount", sessionDiagnosticsDataType._modifyMonitoredItemsCount != null ? sessionDiagnosticsDataType._modifyMonitoredItemsCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("SetMonitoringModeCount", sessionDiagnosticsDataType._setMonitoringModeCount != null ? sessionDiagnosticsDataType._setMonitoringModeCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("SetTriggeringCount", sessionDiagnosticsDataType._setTriggeringCount != null ? sessionDiagnosticsDataType._setTriggeringCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("DeleteMonitoredItemsCount", sessionDiagnosticsDataType._deleteMonitoredItemsCount != null ? sessionDiagnosticsDataType._deleteMonitoredItemsCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("CreateSubscriptionCount", sessionDiagnosticsDataType._createSubscriptionCount != null ? sessionDiagnosticsDataType._createSubscriptionCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("ModifySubscriptionCount", sessionDiagnosticsDataType._modifySubscriptionCount != null ? sessionDiagnosticsDataType._modifySubscriptionCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("SetPublishingModeCount", sessionDiagnosticsDataType._setPublishingModeCount != null ? sessionDiagnosticsDataType._setPublishingModeCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("PublishCount", sessionDiagnosticsDataType._publishCount != null ? sessionDiagnosticsDataType._publishCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("RepublishCount", sessionDiagnosticsDataType._republishCount != null ? sessionDiagnosticsDataType._republishCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("TransferSubscriptionsCount", sessionDiagnosticsDataType._transferSubscriptionsCount != null ? sessionDiagnosticsDataType._transferSubscriptionsCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("DeleteSubscriptionsCount", sessionDiagnosticsDataType._deleteSubscriptionsCount != null ? sessionDiagnosticsDataType._deleteSubscriptionsCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("AddNodesCount", sessionDiagnosticsDataType._addNodesCount != null ? sessionDiagnosticsDataType._addNodesCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("AddReferencesCount", sessionDiagnosticsDataType._addReferencesCount != null ? sessionDiagnosticsDataType._addReferencesCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("DeleteNodesCount", sessionDiagnosticsDataType._deleteNodesCount != null ? sessionDiagnosticsDataType._deleteNodesCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("DeleteReferencesCount", sessionDiagnosticsDataType._deleteReferencesCount != null ? sessionDiagnosticsDataType._deleteReferencesCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("BrowseCount", sessionDiagnosticsDataType._browseCount != null ? sessionDiagnosticsDataType._browseCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("BrowseNextCount", sessionDiagnosticsDataType._browseNextCount != null ? sessionDiagnosticsDataType._browseNextCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("TranslateBrowsePathsToNodeIdsCount", sessionDiagnosticsDataType._translateBrowsePathsToNodeIdsCount != null ? sessionDiagnosticsDataType._translateBrowsePathsToNodeIdsCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("QueryFirstCount", sessionDiagnosticsDataType._queryFirstCount != null ? sessionDiagnosticsDataType._queryFirstCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("QueryNextCount", sessionDiagnosticsDataType._queryNextCount != null ? sessionDiagnosticsDataType._queryNextCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("RegisterNodesCount", sessionDiagnosticsDataType._registerNodesCount != null ? sessionDiagnosticsDataType._registerNodesCount : new ServiceCounterDataType());
-        encoder.encodeSerializable("UnregisterNodesCount", sessionDiagnosticsDataType._unregisterNodesCount != null ? sessionDiagnosticsDataType._unregisterNodesCount : new ServiceCounterDataType());
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SessionDiagnosticsDataType> {
+        @Override
+        public SessionDiagnosticsDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _sessionId = reader.readNodeId();
+            String _sessionName = reader.readString();
+            ApplicationDescription _clientDescription = (ApplicationDescription) context.decode(ApplicationDescription.BinaryEncodingId, reader);
+            String _serverUri = reader.readString();
+            String _endpointUrl = reader.readString();
+            String[] _localeIds = reader.readArray(reader::readString, String.class);
+            Double _actualSessionTimeout = reader.readDouble();
+            UInteger _maxResponseMessageSize = reader.readUInt32();
+            DateTime _clientConnectionTime = reader.readDateTime();
+            DateTime _clientLastContactTime = reader.readDateTime();
+            UInteger _currentSubscriptionsCount = reader.readUInt32();
+            UInteger _currentMonitoredItemsCount = reader.readUInt32();
+            UInteger _currentPublishRequestsInQueue = reader.readUInt32();
+            ServiceCounterDataType _totalRequestCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            UInteger _unauthorizedRequestCount = reader.readUInt32();
+            ServiceCounterDataType _readCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _historyReadCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _writeCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _historyUpdateCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _callCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _createMonitoredItemsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _modifyMonitoredItemsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _setMonitoringModeCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _setTriggeringCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _deleteMonitoredItemsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _createSubscriptionCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _modifySubscriptionCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _setPublishingModeCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _publishCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _republishCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _transferSubscriptionsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _deleteSubscriptionsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _addNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _addReferencesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _deleteNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _deleteReferencesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _browseCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _browseNextCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _translateBrowsePathsToNodeIdsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _queryFirstCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _queryNextCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _registerNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+            ServiceCounterDataType _unregisterNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.BinaryEncodingId, reader);
+
+            return new SessionDiagnosticsDataType(_sessionId, _sessionName, _clientDescription, _serverUri, _endpointUrl, _localeIds, _actualSessionTimeout, _maxResponseMessageSize, _clientConnectionTime, _clientLastContactTime, _currentSubscriptionsCount, _currentMonitoredItemsCount, _currentPublishRequestsInQueue, _totalRequestCount, _unauthorizedRequestCount, _readCount, _historyReadCount, _writeCount, _historyUpdateCount, _callCount, _createMonitoredItemsCount, _modifyMonitoredItemsCount, _setMonitoringModeCount, _setTriggeringCount, _deleteMonitoredItemsCount, _createSubscriptionCount, _modifySubscriptionCount, _setPublishingModeCount, _publishCount, _republishCount, _transferSubscriptionsCount, _deleteSubscriptionsCount, _addNodesCount, _addReferencesCount, _deleteNodesCount, _deleteReferencesCount, _browseCount, _browseNextCount, _translateBrowsePathsToNodeIdsCount, _queryFirstCount, _queryNextCount, _registerNodesCount, _unregisterNodesCount);
+        }
+
+        @Override
+        public void encode(SerializationContext context, SessionDiagnosticsDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._sessionId);
+            writer.writeString(value._sessionName);
+            context.encode(ApplicationDescription.BinaryEncodingId, value._clientDescription, writer);
+            writer.writeString(value._serverUri);
+            writer.writeString(value._endpointUrl);
+            writer.writeArray(value._localeIds, writer::writeString);
+            writer.writeDouble(value._actualSessionTimeout);
+            writer.writeUInt32(value._maxResponseMessageSize);
+            writer.writeDateTime(value._clientConnectionTime);
+            writer.writeDateTime(value._clientLastContactTime);
+            writer.writeUInt32(value._currentSubscriptionsCount);
+            writer.writeUInt32(value._currentMonitoredItemsCount);
+            writer.writeUInt32(value._currentPublishRequestsInQueue);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._totalRequestCount, writer);
+            writer.writeUInt32(value._unauthorizedRequestCount);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._readCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._historyReadCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._writeCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._historyUpdateCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._callCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._createMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._modifyMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._setMonitoringModeCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._setTriggeringCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._createSubscriptionCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._modifySubscriptionCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._setPublishingModeCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._publishCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._republishCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._transferSubscriptionsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteSubscriptionsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._addNodesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._addReferencesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteNodesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._deleteReferencesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._browseCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._browseNextCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._translateBrowsePathsToNodeIdsCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._queryFirstCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._queryNextCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._registerNodesCount, writer);
+            context.encode(ServiceCounterDataType.BinaryEncodingId, value._unregisterNodesCount, writer);
+        }
     }
 
-    public static SessionDiagnosticsDataType decode(UaDecoder decoder) {
-        NodeId _sessionId = decoder.decodeNodeId("SessionId");
-        String _sessionName = decoder.decodeString("SessionName");
-        ApplicationDescription _clientDescription = decoder.decodeSerializable("ClientDescription", ApplicationDescription.class);
-        String _serverUri = decoder.decodeString("ServerUri");
-        String _endpointUrl = decoder.decodeString("EndpointUrl");
-        String[] _localeIds = decoder.decodeArray("LocaleIds", decoder::decodeString, String.class);
-        Double _actualSessionTimeout = decoder.decodeDouble("ActualSessionTimeout");
-        UInteger _maxResponseMessageSize = decoder.decodeUInt32("MaxResponseMessageSize");
-        DateTime _clientConnectionTime = decoder.decodeDateTime("ClientConnectionTime");
-        DateTime _clientLastContactTime = decoder.decodeDateTime("ClientLastContactTime");
-        UInteger _currentSubscriptionsCount = decoder.decodeUInt32("CurrentSubscriptionsCount");
-        UInteger _currentMonitoredItemsCount = decoder.decodeUInt32("CurrentMonitoredItemsCount");
-        UInteger _currentPublishRequestsInQueue = decoder.decodeUInt32("CurrentPublishRequestsInQueue");
-        ServiceCounterDataType _totalRequestCount = decoder.decodeSerializable("TotalRequestCount", ServiceCounterDataType.class);
-        UInteger _unauthorizedRequestCount = decoder.decodeUInt32("UnauthorizedRequestCount");
-        ServiceCounterDataType _readCount = decoder.decodeSerializable("ReadCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _historyReadCount = decoder.decodeSerializable("HistoryReadCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _writeCount = decoder.decodeSerializable("WriteCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _historyUpdateCount = decoder.decodeSerializable("HistoryUpdateCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _callCount = decoder.decodeSerializable("CallCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _createMonitoredItemsCount = decoder.decodeSerializable("CreateMonitoredItemsCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _modifyMonitoredItemsCount = decoder.decodeSerializable("ModifyMonitoredItemsCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _setMonitoringModeCount = decoder.decodeSerializable("SetMonitoringModeCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _setTriggeringCount = decoder.decodeSerializable("SetTriggeringCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _deleteMonitoredItemsCount = decoder.decodeSerializable("DeleteMonitoredItemsCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _createSubscriptionCount = decoder.decodeSerializable("CreateSubscriptionCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _modifySubscriptionCount = decoder.decodeSerializable("ModifySubscriptionCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _setPublishingModeCount = decoder.decodeSerializable("SetPublishingModeCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _publishCount = decoder.decodeSerializable("PublishCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _republishCount = decoder.decodeSerializable("RepublishCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _transferSubscriptionsCount = decoder.decodeSerializable("TransferSubscriptionsCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _deleteSubscriptionsCount = decoder.decodeSerializable("DeleteSubscriptionsCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _addNodesCount = decoder.decodeSerializable("AddNodesCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _addReferencesCount = decoder.decodeSerializable("AddReferencesCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _deleteNodesCount = decoder.decodeSerializable("DeleteNodesCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _deleteReferencesCount = decoder.decodeSerializable("DeleteReferencesCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _browseCount = decoder.decodeSerializable("BrowseCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _browseNextCount = decoder.decodeSerializable("BrowseNextCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _translateBrowsePathsToNodeIdsCount = decoder.decodeSerializable("TranslateBrowsePathsToNodeIdsCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _queryFirstCount = decoder.decodeSerializable("QueryFirstCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _queryNextCount = decoder.decodeSerializable("QueryNextCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _registerNodesCount = decoder.decodeSerializable("RegisterNodesCount", ServiceCounterDataType.class);
-        ServiceCounterDataType _unregisterNodesCount = decoder.decodeSerializable("UnregisterNodesCount", ServiceCounterDataType.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<SessionDiagnosticsDataType> {
+        @Override
+        public SessionDiagnosticsDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _sessionId = reader.readNodeId("SessionId");
+            String _sessionName = reader.readString("SessionName");
+            ApplicationDescription _clientDescription = (ApplicationDescription) context.decode(ApplicationDescription.XmlEncodingId, reader);
+            String _serverUri = reader.readString("ServerUri");
+            String _endpointUrl = reader.readString("EndpointUrl");
+            String[] _localeIds = reader.readArray("LocaleIds", reader::readString, String.class);
+            Double _actualSessionTimeout = reader.readDouble("ActualSessionTimeout");
+            UInteger _maxResponseMessageSize = reader.readUInt32("MaxResponseMessageSize");
+            DateTime _clientConnectionTime = reader.readDateTime("ClientConnectionTime");
+            DateTime _clientLastContactTime = reader.readDateTime("ClientLastContactTime");
+            UInteger _currentSubscriptionsCount = reader.readUInt32("CurrentSubscriptionsCount");
+            UInteger _currentMonitoredItemsCount = reader.readUInt32("CurrentMonitoredItemsCount");
+            UInteger _currentPublishRequestsInQueue = reader.readUInt32("CurrentPublishRequestsInQueue");
+            ServiceCounterDataType _totalRequestCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            UInteger _unauthorizedRequestCount = reader.readUInt32("UnauthorizedRequestCount");
+            ServiceCounterDataType _readCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _historyReadCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _writeCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _historyUpdateCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _callCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _createMonitoredItemsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _modifyMonitoredItemsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _setMonitoringModeCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _setTriggeringCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _deleteMonitoredItemsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _createSubscriptionCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _modifySubscriptionCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _setPublishingModeCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _publishCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _republishCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _transferSubscriptionsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _deleteSubscriptionsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _addNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _addReferencesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _deleteNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _deleteReferencesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _browseCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _browseNextCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _translateBrowsePathsToNodeIdsCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _queryFirstCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _queryNextCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _registerNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
+            ServiceCounterDataType _unregisterNodesCount = (ServiceCounterDataType) context.decode(ServiceCounterDataType.XmlEncodingId, reader);
 
-        return new SessionDiagnosticsDataType(_sessionId, _sessionName, _clientDescription, _serverUri, _endpointUrl, _localeIds, _actualSessionTimeout, _maxResponseMessageSize, _clientConnectionTime, _clientLastContactTime, _currentSubscriptionsCount, _currentMonitoredItemsCount, _currentPublishRequestsInQueue, _totalRequestCount, _unauthorizedRequestCount, _readCount, _historyReadCount, _writeCount, _historyUpdateCount, _callCount, _createMonitoredItemsCount, _modifyMonitoredItemsCount, _setMonitoringModeCount, _setTriggeringCount, _deleteMonitoredItemsCount, _createSubscriptionCount, _modifySubscriptionCount, _setPublishingModeCount, _publishCount, _republishCount, _transferSubscriptionsCount, _deleteSubscriptionsCount, _addNodesCount, _addReferencesCount, _deleteNodesCount, _deleteReferencesCount, _browseCount, _browseNextCount, _translateBrowsePathsToNodeIdsCount, _queryFirstCount, _queryNextCount, _registerNodesCount, _unregisterNodesCount);
-    }
+            return new SessionDiagnosticsDataType(_sessionId, _sessionName, _clientDescription, _serverUri, _endpointUrl, _localeIds, _actualSessionTimeout, _maxResponseMessageSize, _clientConnectionTime, _clientLastContactTime, _currentSubscriptionsCount, _currentMonitoredItemsCount, _currentPublishRequestsInQueue, _totalRequestCount, _unauthorizedRequestCount, _readCount, _historyReadCount, _writeCount, _historyUpdateCount, _callCount, _createMonitoredItemsCount, _modifyMonitoredItemsCount, _setMonitoringModeCount, _setTriggeringCount, _deleteMonitoredItemsCount, _createSubscriptionCount, _modifySubscriptionCount, _setPublishingModeCount, _publishCount, _republishCount, _transferSubscriptionsCount, _deleteSubscriptionsCount, _addNodesCount, _addReferencesCount, _deleteNodesCount, _deleteReferencesCount, _browseCount, _browseNextCount, _translateBrowsePathsToNodeIdsCount, _queryFirstCount, _queryNextCount, _registerNodesCount, _unregisterNodesCount);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(SessionDiagnosticsDataType::encode, SessionDiagnosticsDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SessionDiagnosticsDataType::decode, SessionDiagnosticsDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, SessionDiagnosticsDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("SessionId", encodable._sessionId);
+            writer.writeString("SessionName", encodable._sessionName);
+            context.encode(ApplicationDescription.XmlEncodingId, encodable._clientDescription, writer);
+            writer.writeString("ServerUri", encodable._serverUri);
+            writer.writeString("EndpointUrl", encodable._endpointUrl);
+            writer.writeArray("LocaleIds", encodable._localeIds, writer::writeString);
+            writer.writeDouble("ActualSessionTimeout", encodable._actualSessionTimeout);
+            writer.writeUInt32("MaxResponseMessageSize", encodable._maxResponseMessageSize);
+            writer.writeDateTime("ClientConnectionTime", encodable._clientConnectionTime);
+            writer.writeDateTime("ClientLastContactTime", encodable._clientLastContactTime);
+            writer.writeUInt32("CurrentSubscriptionsCount", encodable._currentSubscriptionsCount);
+            writer.writeUInt32("CurrentMonitoredItemsCount", encodable._currentMonitoredItemsCount);
+            writer.writeUInt32("CurrentPublishRequestsInQueue", encodable._currentPublishRequestsInQueue);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._totalRequestCount, writer);
+            writer.writeUInt32("UnauthorizedRequestCount", encodable._unauthorizedRequestCount);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._readCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._historyReadCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._writeCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._historyUpdateCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._callCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._createMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._modifyMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._setMonitoringModeCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._setTriggeringCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._deleteMonitoredItemsCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._createSubscriptionCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._modifySubscriptionCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._setPublishingModeCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._publishCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._republishCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._transferSubscriptionsCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._deleteSubscriptionsCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._addNodesCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._addReferencesCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._deleteNodesCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._deleteReferencesCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._browseCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._browseNextCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._translateBrowsePathsToNodeIdsCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._queryFirstCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._queryNextCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._registerNodesCount, writer);
+            context.encode(ServiceCounterDataType.XmlEncodingId, encodable._unregisterNodesCount, writer);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -86,27 +91,66 @@ public class HistoryReadRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(HistoryReadRequest historyReadRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", historyReadRequest._requestHeader != null ? historyReadRequest._requestHeader : new RequestHeader());
-        encoder.encodeExtensionObject("HistoryReadDetails", historyReadRequest._historyReadDetails);
-        encoder.encodeEnumeration("TimestampsToReturn", historyReadRequest._timestampsToReturn);
-        encoder.encodeBoolean("ReleaseContinuationPoints", historyReadRequest._releaseContinuationPoints);
-        encoder.encodeArray("NodesToRead", historyReadRequest._nodesToRead, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryReadRequest> {
+        @Override
+        public HistoryReadRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            ExtensionObject _historyReadDetails = reader.readExtensionObject();
+            TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32());
+            Boolean _releaseContinuationPoints = reader.readBoolean();
+            HistoryReadValueId[] _nodesToRead =
+                reader.readArray(
+                    () -> (HistoryReadValueId) context.decode(
+                        HistoryReadValueId.BinaryEncodingId, reader),
+                    HistoryReadValueId.class
+                );
+
+            return new HistoryReadRequest(_requestHeader, _historyReadDetails, _timestampsToReturn, _releaseContinuationPoints, _nodesToRead);
+        }
+
+        @Override
+        public void encode(SerializationContext context, HistoryReadRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeExtensionObject(value._historyReadDetails);
+            writer.writeInt32(value._timestampsToReturn != null ? value._timestampsToReturn.getValue() : 0);
+            writer.writeBoolean(value._releaseContinuationPoints);
+            writer.writeArray(
+                value._nodesToRead,
+                e -> context.encode(HistoryReadValueId.BinaryEncodingId, e, writer)
+            );
+        }
     }
 
-    public static HistoryReadRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        ExtensionObject _historyReadDetails = decoder.decodeExtensionObject("HistoryReadDetails");
-        TimestampsToReturn _timestampsToReturn = decoder.decodeEnumeration("TimestampsToReturn", TimestampsToReturn.class);
-        Boolean _releaseContinuationPoints = decoder.decodeBoolean("ReleaseContinuationPoints");
-        HistoryReadValueId[] _nodesToRead = decoder.decodeArray("NodesToRead", decoder::decodeSerializable, HistoryReadValueId.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryReadRequest> {
+        @Override
+        public HistoryReadRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            ExtensionObject _historyReadDetails = reader.readExtensionObject("HistoryReadDetails");
+            TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32("TimestampsToReturn"));
+            Boolean _releaseContinuationPoints = reader.readBoolean("ReleaseContinuationPoints");
+            HistoryReadValueId[] _nodesToRead =
+                reader.readArray(
+                    "NodesToRead",
+                    f -> (HistoryReadValueId) context.decode(
+                        HistoryReadValueId.XmlEncodingId, reader),
+                    HistoryReadValueId.class
+                );
 
-        return new HistoryReadRequest(_requestHeader, _historyReadDetails, _timestampsToReturn, _releaseContinuationPoints, _nodesToRead);
-    }
+            return new HistoryReadRequest(_requestHeader, _historyReadDetails, _timestampsToReturn, _releaseContinuationPoints, _nodesToRead);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryReadRequest::encode, HistoryReadRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryReadRequest::decode, HistoryReadRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, HistoryReadRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeExtensionObject("HistoryReadDetails", encodable._historyReadDetails);
+            writer.writeInt32("TimestampsToReturn", encodable._timestampsToReturn != null ? encodable._timestampsToReturn.getValue() : 0);
+            writer.writeBoolean("ReleaseContinuationPoints", encodable._releaseContinuationPoints);
+            writer.writeArray(
+                "NodesToRead",
+                encodable._nodesToRead,
+                (f, e) -> context.encode(HistoryReadValueId.XmlEncodingId, e, writer)
+            );
+        }
     }
 
 }

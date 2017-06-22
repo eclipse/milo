@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,14 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -63,21 +68,36 @@ public class DeleteEventDetails extends HistoryUpdateDetails {
             .toString();
     }
 
-    public static void encode(DeleteEventDetails deleteEventDetails, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", deleteEventDetails._nodeId);
-        encoder.encodeArray("EventIds", deleteEventDetails._eventIds, encoder::encodeByteString);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DeleteEventDetails> {
+        @Override
+        public DeleteEventDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            ByteString[] _eventIds = reader.readArray(reader::readByteString, ByteString.class);
+
+            return new DeleteEventDetails(_nodeId, _eventIds);
+        }
+
+        @Override
+        public void encode(SerializationContext context, DeleteEventDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeArray(value._eventIds, writer::writeByteString);
+        }
     }
 
-    public static DeleteEventDetails decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        ByteString[] _eventIds = decoder.decodeArray("EventIds", decoder::decodeByteString, ByteString.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<DeleteEventDetails> {
+        @Override
+        public DeleteEventDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            ByteString[] _eventIds = reader.readArray("EventIds", reader::readByteString, ByteString.class);
 
-        return new DeleteEventDetails(_nodeId, _eventIds);
-    }
+            return new DeleteEventDetails(_nodeId, _eventIds);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteEventDetails::encode, DeleteEventDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteEventDetails::decode, DeleteEventDetails.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, DeleteEventDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeArray("EventIds", encodable._eventIds, writer::writeByteString);
+        }
     }
 
 }
