@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -48,17 +53,28 @@ public class Union implements UaStructure {
             .toString();
     }
 
-    public static void encode(Union union, UaEncoder encoder) {
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<Union> {
+        @Override
+        public Union decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+
+            return new Union();
+        }
+
+        @Override
+        public void encode(SerializationContext context, Union value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+        }
     }
 
-    public static Union decode(UaDecoder decoder) {
+    public static class XmlCodec implements OpcXmlDataTypeCodec<Union> {
+        @Override
+        public Union decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
 
-        return new Union();
-    }
+            return new Union();
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(Union::encode, Union.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(Union::decode, Union.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, Union encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+        }
     }
 
 }

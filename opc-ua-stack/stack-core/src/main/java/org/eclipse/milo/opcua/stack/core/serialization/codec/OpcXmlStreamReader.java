@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.xml;
+package org.eclipse.milo.opcua.stack.core.serialization.codec;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -31,7 +31,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.UaSerializable;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
@@ -54,101 +54,115 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
-public class XmlDecoder implements UaDecoder {
+public class OpcXmlStreamReader {
 
     private final XMLInputFactory factory = XMLInputFactory.newFactory();
 
     private volatile XMLStreamReader streamReader;
 
-    public XmlDecoder() {
+    private final int maxArrayLength;
+    private final int maxStringLength;
+
+    public OpcXmlStreamReader() {
+        this(ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH, ChannelConfig.DEFAULT_MAX_STRING_LENGTH);
     }
 
-    public XmlDecoder(InputStream inputStream) throws XMLStreamException {
+    public OpcXmlStreamReader(int maxArrayLength, int maxStringLength) {
+        this.maxArrayLength = maxArrayLength;
+        this.maxStringLength = maxStringLength;
+    }
+
+    public OpcXmlStreamReader(InputStream inputStream) throws XMLStreamException {
+        this();
         setInput(inputStream);
     }
 
-    public XmlDecoder(Reader reader) throws XMLStreamException {
+    public OpcXmlStreamReader(Reader reader) throws XMLStreamException {
+        this();
         setInput(reader);
     }
 
-    public XmlDecoder setInput(InputStream inputStream) throws XMLStreamException {
+    public OpcXmlStreamReader setInput(InputStream inputStream) throws XMLStreamException {
         streamReader = factory.createXMLStreamReader(inputStream);
 
         return this;
     }
 
-    public XmlDecoder setInput(Reader reader) throws XMLStreamException {
+    public OpcXmlStreamReader setInput(Reader reader) throws XMLStreamException {
         streamReader = factory.createXMLStreamReader(reader);
 
         return this;
+    }
+
+    public XMLStreamReader getStreamReader() {
+        return streamReader;
     }
 
     public void skipElement() throws XMLStreamException {
         streamReader.nextTag();
     }
 
-    @Override
-    public Boolean decodeBoolean(String field) throws UaSerializationException {
+
+    public Boolean readBoolean(String field) throws UaSerializationException {
         return parseElement(field, Boolean::valueOf);
     }
 
-    @Override
-    public Byte decodeSByte(String field) throws UaSerializationException {
+
+    public Byte readSByte(String field) throws UaSerializationException {
         return parseElement(field, Byte::parseByte);
     }
 
-    @Override
-    public Short decodeInt16(String field) throws UaSerializationException {
+
+    public Short readInt16(String field) throws UaSerializationException {
         return parseElement(field, Short::parseShort);
     }
 
-    @Override
-    public Integer decodeInt32(String field) throws UaSerializationException {
+    public Integer readInt32(String field) throws UaSerializationException {
         return parseElement(field, Integer::parseInt);
     }
 
-    @Override
-    public Long decodeInt64(String field) throws UaSerializationException {
+
+    public Long readInt64(String field) throws UaSerializationException {
         return parseElement(field, Long::parseLong);
     }
 
-    @Override
-    public UByte decodeByte(String field) throws UaSerializationException {
+
+    public UByte readByte(String field) throws UaSerializationException {
         return parseElement(field, s -> Unsigned.ubyte(Short.parseShort(s)));
     }
 
-    @Override
-    public UShort decodeUInt16(String field) throws UaSerializationException {
+
+    public UShort readUInt16(String field) throws UaSerializationException {
         return parseElement(field, s -> Unsigned.ushort(Integer.parseInt(s)));
     }
 
-    @Override
-    public UInteger decodeUInt32(String field) throws UaSerializationException {
+
+    public UInteger readUInt32(String field) throws UaSerializationException {
         return parseElement(field, s -> Unsigned.uint(Long.parseLong(s)));
     }
 
-    @Override
-    public ULong decodeUInt64(String field) throws UaSerializationException {
+
+    public ULong readUInt64(String field) throws UaSerializationException {
         return parseElement(field, s -> Unsigned.ulong(Long.parseUnsignedLong(s)));
     }
 
-    @Override
-    public Float decodeFloat(String field) throws UaSerializationException {
+
+    public Float readFloat(String field) throws UaSerializationException {
         return parseElement(field, Float::parseFloat);
     }
 
-    @Override
-    public Double decodeDouble(String field) throws UaSerializationException {
+
+    public Double readDouble(String field) throws UaSerializationException {
         return parseElement(field, Double::parseDouble);
     }
 
-    @Override
-    public String decodeString(String field) throws UaSerializationException {
+
+    public String readString(String field) throws UaSerializationException {
         return parseElement(field, content -> content);
     }
 
-    @Override
-    public DateTime decodeDateTime(String field) throws UaSerializationException {
+
+    public DateTime readDateTime(String field) throws UaSerializationException {
         return parseElement(field, content -> {
             Calendar calendar = DatatypeConverter.parseDateTime(content);
 
@@ -156,8 +170,8 @@ public class XmlDecoder implements UaDecoder {
         });
     }
 
-    @Override
-    public UUID decodeGuid(String field) throws UaSerializationException {
+
+    public UUID readGuid(String field) throws UaSerializationException {
         requireNextStartElement(field);
 
         UUID uuid;
@@ -182,8 +196,8 @@ public class XmlDecoder implements UaDecoder {
         return uuid;
     }
 
-    @Override
-    public ByteString decodeByteString(String field) throws UaSerializationException {
+
+    public ByteString readByteString(String field) throws UaSerializationException {
         return parseNillableElement(field, content -> {
             if (content != null) {
                 byte[] bs = DatatypeConverter.parseBase64Binary(content);
@@ -195,13 +209,13 @@ public class XmlDecoder implements UaDecoder {
         });
     }
 
-    @Override
-    public XmlElement decodeXmlElement(String field) {
+
+    public XmlElement readXmlElement(String field) {
         return null;
     }
 
-    @Override
-    public NodeId decodeNodeId(String field) throws UaSerializationException {
+
+    public NodeId readNodeId(String field) throws UaSerializationException {
         requireNextStartElement(field);
 
         NodeId nodeId;
@@ -224,8 +238,8 @@ public class XmlDecoder implements UaDecoder {
         return nodeId;
     }
 
-    @Override
-    public ExpandedNodeId decodeExpandedNodeId(String field) {
+
+    public ExpandedNodeId readExpandedNodeId(String field) {
         requireNextStartElement(field);
 
         ExpandedNodeId nodeId;
@@ -246,13 +260,13 @@ public class XmlDecoder implements UaDecoder {
         return nodeId;
     }
 
-    @Override
-    public StatusCode decodeStatusCode(String field) {
+
+    public StatusCode readStatusCode(String field) {
         if (nextStartElement(field)) {
             UInteger value = Unsigned.uint(0);
 
             if (nextStartElement("Code")) {
-                value = decodeUInt32(null);
+                value = readUInt32(null);
                 requireNextEndElement("Code");
             }
 
@@ -264,19 +278,19 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    @Override
-    public QualifiedName decodeQualifiedName(String field) {
+
+    public QualifiedName readQualifiedName(String field) {
         if (nextStartElement(field)) {
             UShort namespaceIndex = Unsigned.ushort(0);
             String name = "";
 
             if (nextStartElement("NamespaceIndex")) {
-                namespaceIndex = decodeUInt16(null);
+                namespaceIndex = readUInt16(null);
                 requireNextEndElement("NamespaceIndex");
             }
 
             if (nextStartElement("Name")) {
-                name = decodeString(null);
+                name = readString(null);
                 requireNextEndElement("Name");
             }
 
@@ -288,8 +302,8 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    @Override
-    public LocalizedText decodeLocalizedText(String field) {
+
+    public LocalizedText readLocalizedText(String field) {
         if (nextStartElement(field)) {
             String locale = LocalizedText.NULL_VALUE.getLocale();
             String text = LocalizedText.NULL_VALUE.getText();
@@ -310,21 +324,21 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    @Override
-    public ExtensionObject decodeExtensionObject(String field) {
+
+    public ExtensionObject readExtensionObject(String field) {
         if (nextStartElement(field)) {
             NodeId encodingTypeId = NodeId.NULL_VALUE;
             Object body = null;
 
             if (nextStartElement("TypeId")) {
-                encodingTypeId = decodeNodeId(null);
+                encodingTypeId = readNodeId(null);
 
                 requireNextEndElement("TypeId");
             }
 
             if (nextStartElement("Body")) {
                 try {
-                    body = decodeExtensionObjectBody();
+                    body = readExtensionObjectBody();
                 } catch (XMLStreamException e) {
                     throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
                 }
@@ -347,11 +361,11 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    private Object decodeExtensionObjectBody() throws XMLStreamException {
+    private Object readExtensionObjectBody() throws XMLStreamException {
         String bodyStartElement = getNextStartElement();
 
         if ("ByteString".equals(bodyStartElement)) {
-            ByteString byteString = decodeByteString(null);
+            ByteString byteString = readByteString(null);
 
             requireNextEndElement("ByteString");
 
@@ -389,8 +403,8 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    @Override
-    public DataValue decodeDataValue(String field) {
+
+    public DataValue readDataValue(String field) {
         if (nextStartElement(field)) {
             Variant value = Variant.NULL_VALUE;
             StatusCode statusCode = new StatusCode(0);
@@ -400,37 +414,37 @@ public class XmlDecoder implements UaDecoder {
             UShort serverPicoseconds = Unsigned.ushort(0);
 
             if (nextStartElement("Value")) {
-                value = decodeVariant(null);
+                value = readVariant(null);
 
                 requireNextEndElement("Value");
             }
 
             if (nextStartElement("StatusCode")) {
-                statusCode = decodeStatusCode(null);
+                statusCode = readStatusCode(null);
 
                 requireNextEndElement("StatusCode");
             }
 
             if (nextStartElement("SourceTimestamp")) {
-                sourceTimestamp = decodeDateTime(null);
+                sourceTimestamp = readDateTime(null);
 
                 requireNextEndElement("SourceTimestamp");
             }
 
             if (nextStartElement("SourcePicoseconds")) {
-                sourcePicoseconds = decodeUInt16(null);
+                sourcePicoseconds = readUInt16(null);
 
                 requireNextEndElement("SourcePicoseconds");
             }
 
             if (nextStartElement("ServerTimestamp")) {
-                serverTimestamp = decodeDateTime(null);
+                serverTimestamp = readDateTime(null);
 
                 requireNextEndElement("ServerTimestamp");
             }
 
             if (nextStartElement("ServerPicoseconds")) {
-                serverPicoseconds = decodeUInt16(null);
+                serverPicoseconds = readUInt16(null);
 
                 requireNextEndElement("ServerPicoseconds");
             }
@@ -446,14 +460,14 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    @Override
-    public Variant decodeVariant(String field) {
+
+    public Variant readVariant(String field) {
         if (nextStartElement(field)) {
             Object value = null;
 
             if (nextStartElement("Value")) {
                 try {
-                    value = decodeVariantValue();
+                    value = readVariantValue();
                 } catch (XMLStreamException e) {
                     throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
                 }
@@ -469,7 +483,7 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    public Object decodeVariantValue() throws XMLStreamException {
+    public Object readVariantValue() throws XMLStreamException {
         String valueStartElement = getNextStartElement();
 
         if (valueStartElement.startsWith("ListOf")) {
@@ -478,7 +492,7 @@ public class XmlDecoder implements UaDecoder {
 
             while (true) {
                 if (nextStartElement(valueType)) {
-                    values.add(decodeBuiltinType(valueType));
+                    values.add(readBuiltinType(valueType));
 
                     requireNextEndElement(valueType);
                 } else {
@@ -497,7 +511,7 @@ public class XmlDecoder implements UaDecoder {
                 return null;
             }
         } else {
-            Object value = decodeBuiltinType(valueStartElement);
+            Object value = readBuiltinType(valueStartElement);
 
             requireNextEndElement(valueStartElement);
 
@@ -505,65 +519,65 @@ public class XmlDecoder implements UaDecoder {
         }
     }
 
-    private Object decodeBuiltinType(String type) throws UaSerializationException {
+    private Object readBuiltinType(String type) throws UaSerializationException {
         switch (type) {
             case "Boolean":
-                return decodeBoolean(null);
+                return readBoolean(null);
             case "SByte":
-                return decodeSByte(null);
+                return readSByte(null);
             case "Byte":
-                return decodeByte(null);
+                return readByte(null);
             case "Int16":
-                return decodeInt16(null);
+                return readInt16(null);
             case "UInt16":
-                return decodeUInt16(null);
+                return readUInt16(null);
             case "Int32":
-                return decodeInt32(null);
+                return readInt32(null);
             case "UInt32":
-                return decodeUInt32(null);
+                return readUInt32(null);
             case "Int64":
-                return decodeInt64(null);
+                return readInt64(null);
             case "UInt64":
-                return decodeUInt64(null);
+                return readUInt64(null);
             case "Float":
-                return decodeFloat(null);
+                return readFloat(null);
             case "Double":
-                return decodeDouble(null);
+                return readDouble(null);
             case "String":
-                return decodeString(null);
+                return readString(null);
             case "DateTime":
-                return decodeDateTime(null);
+                return readDateTime(null);
             case "Guid":
-                return decodeGuid(null);
+                return readGuid(null);
             case "ByteString":
-                return decodeByteString(null);
+                return readByteString(null);
             case "XmlElement":
-                return decodeXmlElement(null);
+                return readXmlElement(null);
             case "NodeId":
-                return decodeNodeId(null);
+                return readNodeId(null);
             case "ExpandedNodeId":
-                return decodeExpandedNodeId(null);
+                return readExpandedNodeId(null);
             case "StatusCode":
-                return decodeStatusCode(null);
+                return readStatusCode(null);
             case "QualifiedName":
-                return decodeQualifiedName(null);
+                return readQualifiedName(null);
             case "LocalizedText":
-                return decodeLocalizedText(null);
+                return readLocalizedText(null);
             case "ExtensionObject":
-                return decodeExtensionObject(null);
+                return readExtensionObject(null);
             case "DataValue":
-                return decodeDataValue(null);
+                return readDataValue(null);
             case "Variant":
-                return decodeVariant(null);
+                return readVariant(null);
             case "DiagnosticInfo":
-                return decodeDiagnosticInfo(null);
+                return readDiagnosticInfo(null);
             default:
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError, "unknown builtin type: " + type);
         }
     }
 
-    @Override
-    public DiagnosticInfo decodeDiagnosticInfo(String field) {
+
+    public DiagnosticInfo readDiagnosticInfo(String field) {
         int symbolicId = -1;
         int namespaceUri = -1;
         int localizedText = -1;
@@ -573,43 +587,43 @@ public class XmlDecoder implements UaDecoder {
         DiagnosticInfo innerDiagnosticInfo = null;
 
         if (nextStartElement("SymbolicId")) {
-            symbolicId = decodeInt32(null);
+            symbolicId = readInt32(null);
 
             requireNextEndElement("SymbolicId");
         }
 
         if (nextStartElement("NamespaceUri")) {
-            namespaceUri = decodeInt32(null);
+            namespaceUri = readInt32(null);
 
             requireNextEndElement("NamespaceUri");
         }
 
         if (nextStartElement("LocalizedText")) {
-            localizedText = decodeInt32(null);
+            localizedText = readInt32(null);
 
             requireNextEndElement("LocalizedText");
         }
 
         if (nextStartElement("Locale")) {
-            locale = decodeInt32(null);
+            locale = readInt32(null);
 
             requireNextEndElement("Locale");
         }
 
         if (nextStartElement("AdditionalInfo")) {
-            additionalInfo = decodeString(null);
+            additionalInfo = readString(null);
 
             requireNextEndElement("AdditionalInfo");
         }
 
         if (nextStartElement("InnerStatusCode")) {
-            innerStatusCode = decodeStatusCode(null);
+            innerStatusCode = readStatusCode(null);
 
             requireNextEndElement("InnerStatusCode");
         }
 
         if (nextStartElement("InnerDiagnosticInfo")) {
-            innerDiagnosticInfo = decodeDiagnosticInfo(null);
+            innerDiagnosticInfo = readDiagnosticInfo(null);
 
             requireNextEndElement("InnerDiagnosticInfo");
         }
@@ -619,13 +633,14 @@ public class XmlDecoder implements UaDecoder {
             additionalInfo, innerStatusCode, innerDiagnosticInfo);
     }
 
-    @Override
-    public <T extends UaStructure> T decodeMessage(String field) {
+
+    public <T extends UaStructure> T readMessage(String field) {
         return null;
     }
 
-    @Override
-    public <T extends UaEnumeration> T decodeEnumeration(String field, Class<T> clazz) throws UaSerializationException {
+    @SuppressWarnings("unchecked")
+
+    public <T extends UaEnumeration> T readEnumeration(String field, Class<T> clazz) throws UaSerializationException {
         return parseElement(field, content -> {
             int separator = content.lastIndexOf('_');
             String name = separator < 1 ? content : content.substring(0, separator);
@@ -636,18 +651,36 @@ public class XmlDecoder implements UaDecoder {
         });
     }
 
-    @Override
-    public <T extends UaSerializable> T decodeSerializable(String field, Class<T> clazz) {
+
+    public <T extends UaSerializable> T readSerializable(String field, Class<T> clazz) {
         return null;
     }
 
-    @Override
-    public <T> T[] decodeArray(String field, Function<String, T> decoder, Class<T> clazz) {
+
+    public <T> T readStructuredType(
+        String field,
+        String namespaceUri,
+        Class<T> typeClass) throws UaSerializationException {
+
         return null;
     }
 
-    @Override
-    public <T> T[] decodeArray(String field, BiFunction<String, Class<T>, T> decoder, Class<T> clazz) {
+
+    public Object readStructuredType(
+        String field,
+        String namespaceUri,
+        String typeName) throws UaSerializationException {
+
+        return null;
+    }
+
+
+    public <T> T[] readArray(String field, Function<String, T> reader, Class<T> clazz) {
+        return null;
+    }
+
+
+    public <T> T[] readArray(String field, BiFunction<String, Class<T>, T> reader, Class<T> clazz) {
         return null;
     }
 
@@ -771,4 +804,5 @@ public class XmlDecoder implements UaDecoder {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }
     }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -68,21 +73,36 @@ public class ContentFilterElement implements UaStructure {
             .toString();
     }
 
-    public static void encode(ContentFilterElement contentFilterElement, UaEncoder encoder) {
-        encoder.encodeEnumeration("FilterOperator", contentFilterElement._filterOperator);
-        encoder.encodeArray("FilterOperands", contentFilterElement._filterOperands, encoder::encodeExtensionObject);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ContentFilterElement> {
+        @Override
+        public ContentFilterElement decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            FilterOperator _filterOperator = FilterOperator.from(reader.readInt32());
+            ExtensionObject[] _filterOperands = reader.readArray(reader::readExtensionObject, ExtensionObject.class);
+
+            return new ContentFilterElement(_filterOperator, _filterOperands);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ContentFilterElement value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32(value._filterOperator != null ? value._filterOperator.getValue() : 0);
+            writer.writeArray(value._filterOperands, writer::writeExtensionObject);
+        }
     }
 
-    public static ContentFilterElement decode(UaDecoder decoder) {
-        FilterOperator _filterOperator = decoder.decodeEnumeration("FilterOperator", FilterOperator.class);
-        ExtensionObject[] _filterOperands = decoder.decodeArray("FilterOperands", decoder::decodeExtensionObject, ExtensionObject.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ContentFilterElement> {
+        @Override
+        public ContentFilterElement decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            FilterOperator _filterOperator = FilterOperator.from(reader.readInt32("FilterOperator"));
+            ExtensionObject[] _filterOperands = reader.readArray("FilterOperands", reader::readExtensionObject, ExtensionObject.class);
 
-        return new ContentFilterElement(_filterOperator, _filterOperands);
-    }
+            return new ContentFilterElement(_filterOperator, _filterOperands);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ContentFilterElement::encode, ContentFilterElement.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ContentFilterElement::decode, ContentFilterElement.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ContentFilterElement encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeInt32("FilterOperator", encodable._filterOperator != null ? encodable._filterOperator.getValue() : 0);
+            writer.writeArray("FilterOperands", encodable._filterOperands, writer::writeExtensionObject);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -75,23 +80,40 @@ public class NotificationMessage implements UaStructure {
             .toString();
     }
 
-    public static void encode(NotificationMessage notificationMessage, UaEncoder encoder) {
-        encoder.encodeUInt32("SequenceNumber", notificationMessage._sequenceNumber);
-        encoder.encodeDateTime("PublishTime", notificationMessage._publishTime);
-        encoder.encodeArray("NotificationData", notificationMessage._notificationData, encoder::encodeExtensionObject);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<NotificationMessage> {
+        @Override
+        public NotificationMessage decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _sequenceNumber = reader.readUInt32();
+            DateTime _publishTime = reader.readDateTime();
+            ExtensionObject[] _notificationData = reader.readArray(reader::readExtensionObject, ExtensionObject.class);
+
+            return new NotificationMessage(_sequenceNumber, _publishTime, _notificationData);
+        }
+
+        @Override
+        public void encode(SerializationContext context, NotificationMessage value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._sequenceNumber);
+            writer.writeDateTime(value._publishTime);
+            writer.writeArray(value._notificationData, writer::writeExtensionObject);
+        }
     }
 
-    public static NotificationMessage decode(UaDecoder decoder) {
-        UInteger _sequenceNumber = decoder.decodeUInt32("SequenceNumber");
-        DateTime _publishTime = decoder.decodeDateTime("PublishTime");
-        ExtensionObject[] _notificationData = decoder.decodeArray("NotificationData", decoder::decodeExtensionObject, ExtensionObject.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<NotificationMessage> {
+        @Override
+        public NotificationMessage decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _sequenceNumber = reader.readUInt32("SequenceNumber");
+            DateTime _publishTime = reader.readDateTime("PublishTime");
+            ExtensionObject[] _notificationData = reader.readArray("NotificationData", reader::readExtensionObject, ExtensionObject.class);
 
-        return new NotificationMessage(_sequenceNumber, _publishTime, _notificationData);
-    }
+            return new NotificationMessage(_sequenceNumber, _publishTime, _notificationData);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(NotificationMessage::encode, NotificationMessage.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(NotificationMessage::decode, NotificationMessage.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, NotificationMessage encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("SequenceNumber", encodable._sequenceNumber);
+            writer.writeDateTime("PublishTime", encodable._publishTime);
+            writer.writeArray("NotificationData", encodable._notificationData, writer::writeExtensionObject);
+        }
     }
 
 }
