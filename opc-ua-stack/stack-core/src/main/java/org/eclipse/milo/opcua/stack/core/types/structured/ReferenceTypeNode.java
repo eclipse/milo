@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,14 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -90,39 +95,90 @@ public class ReferenceTypeNode extends TypeNode {
             .toString();
     }
 
-    public static void encode(ReferenceTypeNode referenceTypeNode, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", referenceTypeNode._nodeId);
-        encoder.encodeEnumeration("NodeClass", referenceTypeNode._nodeClass);
-        encoder.encodeQualifiedName("BrowseName", referenceTypeNode._browseName);
-        encoder.encodeLocalizedText("DisplayName", referenceTypeNode._displayName);
-        encoder.encodeLocalizedText("Description", referenceTypeNode._description);
-        encoder.encodeUInt32("WriteMask", referenceTypeNode._writeMask);
-        encoder.encodeUInt32("UserWriteMask", referenceTypeNode._userWriteMask);
-        encoder.encodeArray("References", referenceTypeNode._references, encoder::encodeSerializable);
-        encoder.encodeBoolean("IsAbstract", referenceTypeNode._isAbstract);
-        encoder.encodeBoolean("Symmetric", referenceTypeNode._symmetric);
-        encoder.encodeLocalizedText("InverseName", referenceTypeNode._inverseName);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReferenceTypeNode> {
+        @Override
+        public ReferenceTypeNode decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
+            QualifiedName _browseName = reader.readQualifiedName();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+            UInteger _writeMask = reader.readUInt32();
+            UInteger _userWriteMask = reader.readUInt32();
+            ReferenceNode[] _references =
+                reader.readArray(
+                    () -> (ReferenceNode) context.decode(
+                        ReferenceNode.BinaryEncodingId, reader),
+                    ReferenceNode.class
+                );
+            Boolean _isAbstract = reader.readBoolean();
+            Boolean _symmetric = reader.readBoolean();
+            LocalizedText _inverseName = reader.readLocalizedText();
+
+            return new ReferenceTypeNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _isAbstract, _symmetric, _inverseName);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ReferenceTypeNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
+            writer.writeQualifiedName(value._browseName);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
+            writer.writeArray(
+                value._references,
+                e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
+            );
+            writer.writeBoolean(value._isAbstract);
+            writer.writeBoolean(value._symmetric);
+            writer.writeLocalizedText(value._inverseName);
+        }
     }
 
-    public static ReferenceTypeNode decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        NodeClass _nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        QualifiedName _browseName = decoder.decodeQualifiedName("BrowseName");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        ReferenceNode[] _references = decoder.decodeArray("References", decoder::decodeSerializable, ReferenceNode.class);
-        Boolean _isAbstract = decoder.decodeBoolean("IsAbstract");
-        Boolean _symmetric = decoder.decodeBoolean("Symmetric");
-        LocalizedText _inverseName = decoder.decodeLocalizedText("InverseName");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ReferenceTypeNode> {
+        @Override
+        public ReferenceTypeNode decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
+            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
+            UInteger _writeMask = reader.readUInt32("WriteMask");
+            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
+            ReferenceNode[] _references =
+                reader.readArray(
+                    "References",
+                    f -> (ReferenceNode) context.decode(
+                        ReferenceNode.XmlEncodingId, reader),
+                    ReferenceNode.class
+                );
+            Boolean _isAbstract = reader.readBoolean("IsAbstract");
+            Boolean _symmetric = reader.readBoolean("Symmetric");
+            LocalizedText _inverseName = reader.readLocalizedText("InverseName");
 
-        return new ReferenceTypeNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _isAbstract, _symmetric, _inverseName);
-    }
+            return new ReferenceTypeNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _isAbstract, _symmetric, _inverseName);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ReferenceTypeNode::encode, ReferenceTypeNode.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReferenceTypeNode::decode, ReferenceTypeNode.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ReferenceTypeNode encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
+            writer.writeQualifiedName("BrowseName", encodable._browseName);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+            writer.writeUInt32("WriteMask", encodable._writeMask);
+            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+            writer.writeArray(
+                "References",
+                encodable._references,
+                (f, e) -> context.encode(ReferenceNode.XmlEncodingId, e, writer)
+            );
+            writer.writeBoolean("IsAbstract", encodable._isAbstract);
+            writer.writeBoolean("Symmetric", encodable._symmetric);
+            writer.writeLocalizedText("InverseName", encodable._inverseName);
+        }
     }
 
 }

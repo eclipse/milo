@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -70,23 +75,40 @@ public class RepublishRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(RepublishRequest republishRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", republishRequest._requestHeader != null ? republishRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("SubscriptionId", republishRequest._subscriptionId);
-        encoder.encodeUInt32("RetransmitSequenceNumber", republishRequest._retransmitSequenceNumber);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RepublishRequest> {
+        @Override
+        public RepublishRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            UInteger _subscriptionId = reader.readUInt32();
+            UInteger _retransmitSequenceNumber = reader.readUInt32();
+
+            return new RepublishRequest(_requestHeader, _subscriptionId, _retransmitSequenceNumber);
+        }
+
+        @Override
+        public void encode(SerializationContext context, RepublishRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeUInt32(value._retransmitSequenceNumber);
+        }
     }
 
-    public static RepublishRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        UInteger _retransmitSequenceNumber = decoder.decodeUInt32("RetransmitSequenceNumber");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<RepublishRequest> {
+        @Override
+        public RepublishRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
+            UInteger _retransmitSequenceNumber = reader.readUInt32("RetransmitSequenceNumber");
 
-        return new RepublishRequest(_requestHeader, _subscriptionId, _retransmitSequenceNumber);
-    }
+            return new RepublishRequest(_requestHeader, _subscriptionId, _retransmitSequenceNumber);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(RepublishRequest::encode, RepublishRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RepublishRequest::decode, RepublishRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, RepublishRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
+            writer.writeUInt32("RetransmitSequenceNumber", encodable._retransmitSequenceNumber);
+        }
     }
 
 }

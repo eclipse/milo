@@ -11,14 +11,12 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.xml;
-
-import static org.testng.Assert.assertTrue;
+package org.eclipse.milo.opcua.stack.core.serialization.codec;
 
 import java.io.StringWriter;
-
 import javax.xml.stream.XMLStreamException;
 
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -27,7 +25,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.testng.annotations.Test;
 
-public class XmlEncoderTest {
+import static org.testng.Assert.assertTrue;
+
+public class OpcXmlStreamWriterTest {
 
     @Test
     public void testByteString() throws XMLStreamException {
@@ -35,9 +35,9 @@ public class XmlEncoderTest {
 
         StringWriter writer = new StringWriter(128);
 
-        XmlEncoder encoder = new XmlEncoder();
+        OpcXmlStreamWriter encoder = new OpcXmlStreamWriter();
         encoder.setOutput(writer);
-        encoder.encodeByteString("Value", bs);
+        encoder.writeByteString("Value", bs);
 
         String output = writer.toString();
         System.out.println(output);
@@ -45,21 +45,20 @@ public class XmlEncoderTest {
 
     @Test
     public void testEncodeReferenceDescription() throws XMLStreamException {
+        StringWriter sw = new StringWriter(128);
 
-        StringWriter writer = new StringWriter(128);
+        OpcXmlStreamWriter writer = new OpcXmlStreamWriter();
+        writer.setOutput(sw);
 
-        XmlEncoder encoder = new XmlEncoder();
-        encoder.setOutput(writer);
+        writer.writeNodeId("ReferenceTypeId", NodeId.parse("ns=0;i=46"));
+        writer.writeBoolean("IsForward", Boolean.TRUE);
+        writer.writeExpandedNodeId("NodeId", ExpandedNodeId.parse("svr=0;i=2994"));
+        writer.writeQualifiedName("BrowseName", QualifiedName.parse("0:Auditing"));
+        writer.writeLocalizedText("DisplayName", new LocalizedText("", "Auditing"));
+        writer.writeEnumeration("NodeClass", NodeClass.Variable);
+        writer.writeExpandedNodeId("TypeDefinition", ExpandedNodeId.parse("svr=0;i=68"));
 
-        encoder.encodeNodeId("ReferenceTypeId", NodeId.parse("ns=0;i=46"));
-        encoder.encodeBoolean("IsForward", Boolean.TRUE);
-        encoder.encodeExpandedNodeId("NodeId", ExpandedNodeId.parse("svr=0;i=2994"));
-        encoder.encodeQualifiedName("BrowseName", QualifiedName.parse("0:Auditing"));
-        encoder.encodeLocalizedText("DisplayName", new LocalizedText("", "Auditing"));
-        encoder.encodeEnumeration("NodeClass", NodeClass.Variable);
-        encoder.encodeExpandedNodeId("TypeDefinition", ExpandedNodeId.parse("svr=0;i=68"));
-
-        String output = writer.toString();
+        String output = sw.toString();
         System.out.println(output);
 
         assertTrue(output.contains("<ReferenceTypeId><Identifier>ns=0;i=46</Identifier></ReferenceTypeId>"));
@@ -69,9 +68,6 @@ public class XmlEncoderTest {
         assertTrue(output.contains("<DisplayName>") && output.contains("<Text>Auditing</Text>"));
         assertTrue(output.contains("<NodeClass>Variable_2</NodeClass>"));
         assertTrue(output.contains("<TypeDefinition><Identifier>svr=0;i=68</Identifier></TypeDefinition>"));
-
-
-
     }
 
 }

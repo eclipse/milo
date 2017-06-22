@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -77,25 +82,44 @@ public class AggregateFilter extends MonitoringFilter {
             .toString();
     }
 
-    public static void encode(AggregateFilter aggregateFilter, UaEncoder encoder) {
-        encoder.encodeDateTime("StartTime", aggregateFilter._startTime);
-        encoder.encodeNodeId("AggregateType", aggregateFilter._aggregateType);
-        encoder.encodeDouble("ProcessingInterval", aggregateFilter._processingInterval);
-        encoder.encodeSerializable("AggregateConfiguration", aggregateFilter._aggregateConfiguration != null ? aggregateFilter._aggregateConfiguration : new AggregateConfiguration());
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AggregateFilter> {
+        @Override
+        public AggregateFilter decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            DateTime _startTime = reader.readDateTime();
+            NodeId _aggregateType = reader.readNodeId();
+            Double _processingInterval = reader.readDouble();
+            AggregateConfiguration _aggregateConfiguration = (AggregateConfiguration) context.decode(AggregateConfiguration.BinaryEncodingId, reader);
+
+            return new AggregateFilter(_startTime, _aggregateType, _processingInterval, _aggregateConfiguration);
+        }
+
+        @Override
+        public void encode(SerializationContext context, AggregateFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime(value._startTime);
+            writer.writeNodeId(value._aggregateType);
+            writer.writeDouble(value._processingInterval);
+            context.encode(AggregateConfiguration.BinaryEncodingId, value._aggregateConfiguration, writer);
+        }
     }
 
-    public static AggregateFilter decode(UaDecoder decoder) {
-        DateTime _startTime = decoder.decodeDateTime("StartTime");
-        NodeId _aggregateType = decoder.decodeNodeId("AggregateType");
-        Double _processingInterval = decoder.decodeDouble("ProcessingInterval");
-        AggregateConfiguration _aggregateConfiguration = decoder.decodeSerializable("AggregateConfiguration", AggregateConfiguration.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<AggregateFilter> {
+        @Override
+        public AggregateFilter decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            DateTime _startTime = reader.readDateTime("StartTime");
+            NodeId _aggregateType = reader.readNodeId("AggregateType");
+            Double _processingInterval = reader.readDouble("ProcessingInterval");
+            AggregateConfiguration _aggregateConfiguration = (AggregateConfiguration) context.decode(AggregateConfiguration.XmlEncodingId, reader);
 
-        return new AggregateFilter(_startTime, _aggregateType, _processingInterval, _aggregateConfiguration);
-    }
+            return new AggregateFilter(_startTime, _aggregateType, _processingInterval, _aggregateConfiguration);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(AggregateFilter::encode, AggregateFilter.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(AggregateFilter::decode, AggregateFilter.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, AggregateFilter encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeDateTime("StartTime", encodable._startTime);
+            writer.writeNodeId("AggregateType", encodable._aggregateType);
+            writer.writeDouble("ProcessingInterval", encodable._processingInterval);
+            context.encode(AggregateConfiguration.XmlEncodingId, encodable._aggregateConfiguration, writer);
+        }
     }
 
 }

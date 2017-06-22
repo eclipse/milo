@@ -18,6 +18,7 @@ import java.nio.ByteOrder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -36,23 +37,23 @@ public class VariantSerializationTest extends BinarySerializationFixture {
     @DataProvider(name = "VariantProvider")
     public Object[][] getVariants() {
         return new Object[][]{
-                {new Variant(null)},
-                {new Variant("hello, world")},
-                {new Variant(42)},
-                {new Variant(new Integer[]{0, 1, 2, 3})},
-                {new Variant(new Integer[][]{{0, 1}, {2, 3}})},
-                {new Variant(new Long[]{0L, 1L, 2L, 3L})},
-                {new Variant(new Long[][]{{0L, 1L}, {2L, 3L}})},
-                {new Variant(new UInteger[]{Unsigned.uint(0), Unsigned.uint(1), Unsigned.uint(2), Unsigned.uint(3)})},
-                {new Variant(new UInteger[][]{{Unsigned.uint(0), Unsigned.uint(1)}, {Unsigned.uint(2), Unsigned.uint(3)}})},
-                {new Variant(new Variant[] {new Variant(0), new Variant(1), new Variant(2)})}
+            {new Variant(null)},
+            {new Variant("hello, world")},
+            {new Variant(42)},
+            {new Variant(new Integer[]{0, 1, 2, 3})},
+            {new Variant(new Integer[][]{{0, 1}, {2, 3}})},
+            {new Variant(new Long[]{0L, 1L, 2L, 3L})},
+            {new Variant(new Long[][]{{0L, 1L}, {2L, 3L}})},
+            {new Variant(new UInteger[]{Unsigned.uint(0), Unsigned.uint(1), Unsigned.uint(2), Unsigned.uint(3)})},
+            {new Variant(new UInteger[][]{{Unsigned.uint(0), Unsigned.uint(1)}, {Unsigned.uint(2), Unsigned.uint(3)}})},
+            {new Variant(new Variant[]{new Variant(0), new Variant(1), new Variant(2)})}
         };
     }
 
     @Test(dataProvider = "VariantProvider")
     public void testVariantRoundTrip(Variant variant) {
-        encoder.encodeVariant(null, variant);
-        Variant decoded = decoder.decodeVariant(null);
+        writer.writeVariant(variant);
+        Variant decoded = reader.readVariant();
 
         assertEquals(decoded, variant);
     }
@@ -62,8 +63,8 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         ServiceCounterDataType sc1 = new ServiceCounterDataType(Unsigned.uint(1), Unsigned.uint(2));
 
         Variant v = new Variant(sc1);
-        encoder.encodeVariant(null, v);
-        Variant decoded = decoder.decodeVariant(null);
+        writer.writeVariant(v);
+        Variant decoded = reader.readVariant();
 
         ExtensionObject extensionObject = (ExtensionObject) decoded.getValue();
         ServiceCounterDataType sc2 = extensionObject.decode();
@@ -75,25 +76,25 @@ public class VariantSerializationTest extends BinarySerializationFixture {
     @DataProvider(name = "PrimitiveArrayVariantProvider")
     public Object[][] getPrimitiveArrayVariants() {
         return new Object[][]{
-                {new Variant(new int[]{0, 1, 2, 3}),
-                        new Variant(new Integer[]{0, 1, 2, 3})},
+            {new Variant(new int[]{0, 1, 2, 3}),
+                new Variant(new Integer[]{0, 1, 2, 3})},
 
-                {new Variant(new int[][]{{0, 1}, {2, 3}}),
-                        new Variant(new Integer[][]{{0, 1}, {2, 3}})},
+            {new Variant(new int[][]{{0, 1}, {2, 3}}),
+                new Variant(new Integer[][]{{0, 1}, {2, 3}})},
 
-                {new Variant(new long[]{0L, 1L, 2L, 3L}),
-                        new Variant(new Long[]{0L, 1L, 2L, 3L})},
+            {new Variant(new long[]{0L, 1L, 2L, 3L}),
+                new Variant(new Long[]{0L, 1L, 2L, 3L})},
 
-                {new Variant(new long[][]{{0L, 1L}, {2L, 3L}}),
-                        new Variant(new Long[][]{{0L, 1L}, {2L, 3L}})}
+            {new Variant(new long[][]{{0L, 1L}, {2L, 3L}}),
+                new Variant(new Long[][]{{0L, 1L}, {2L, 3L}})}
         };
     }
 
     @Test(dataProvider = "PrimitiveArrayVariantProvider",
-            description = "Test that after primitive array types given to variants come out as expected after encoding/decoding.")
+        description = "Test that after primitive array types given to variants come out as expected after encoding/decoding.")
     public void testPrimitiveArrayVariantRoundTrip(Variant variant, Variant expected) {
-        encoder.encodeVariant(null, variant);
-        Variant decoded = decoder.decodeVariant(null);
+        writer.writeVariant(variant);
+        Variant decoded = reader.readVariant();
 
         assertEquals(decoded, expected);
     }
@@ -105,9 +106,9 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         buffer.writeByte(BuiltinDataType.Int16.getTypeId() | (1 << 7));
         buffer.writeInt(-1);
 
-        BinaryDecoder decoder = new BinaryDecoder().setBuffer(buffer);
+        OpcBinaryStreamReader reader = new OpcBinaryStreamReader(buffer);
 
-        Variant v = decoder.decodeVariant(null);
+        Variant v = reader.readVariant();
 
         assertNotNull(v);
         assertNull(v.getValue());

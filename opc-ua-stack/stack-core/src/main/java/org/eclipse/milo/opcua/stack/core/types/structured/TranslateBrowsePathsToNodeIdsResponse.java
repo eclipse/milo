@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -74,23 +79,58 @@ public class TranslateBrowsePathsToNodeIdsResponse implements UaResponseMessage 
             .toString();
     }
 
-    public static void encode(TranslateBrowsePathsToNodeIdsResponse translateBrowsePathsToNodeIdsResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", translateBrowsePathsToNodeIdsResponse._responseHeader != null ? translateBrowsePathsToNodeIdsResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Results", translateBrowsePathsToNodeIdsResponse._results, encoder::encodeSerializable);
-        encoder.encodeArray("DiagnosticInfos", translateBrowsePathsToNodeIdsResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<TranslateBrowsePathsToNodeIdsResponse> {
+        @Override
+        public TranslateBrowsePathsToNodeIdsResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
+            BrowsePathResult[] _results =
+                reader.readArray(
+                    () -> (BrowsePathResult) context.decode(
+                        BrowsePathResult.BinaryEncodingId, reader),
+                    BrowsePathResult.class
+                );
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+
+            return new TranslateBrowsePathsToNodeIdsResponse(_responseHeader, _results, _diagnosticInfos);
+        }
+
+        @Override
+        public void encode(SerializationContext context, TranslateBrowsePathsToNodeIdsResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeArray(
+                value._results,
+                e -> context.encode(BrowsePathResult.BinaryEncodingId, e, writer)
+            );
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
-    public static TranslateBrowsePathsToNodeIdsResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        BrowsePathResult[] _results = decoder.decodeArray("Results", decoder::decodeSerializable, BrowsePathResult.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<TranslateBrowsePathsToNodeIdsResponse> {
+        @Override
+        public TranslateBrowsePathsToNodeIdsResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
+            BrowsePathResult[] _results =
+                reader.readArray(
+                    "Results",
+                    f -> (BrowsePathResult) context.decode(
+                        BrowsePathResult.XmlEncodingId, reader),
+                    BrowsePathResult.class
+                );
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
 
-        return new TranslateBrowsePathsToNodeIdsResponse(_responseHeader, _results, _diagnosticInfos);
-    }
+            return new TranslateBrowsePathsToNodeIdsResponse(_responseHeader, _results, _diagnosticInfos);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(TranslateBrowsePathsToNodeIdsResponse::encode, TranslateBrowsePathsToNodeIdsResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(TranslateBrowsePathsToNodeIdsResponse::decode, TranslateBrowsePathsToNodeIdsResponse.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, TranslateBrowsePathsToNodeIdsResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
+            writer.writeArray(
+                "Results",
+                encodable._results,
+                (f, e) -> context.encode(BrowsePathResult.XmlEncodingId, e, writer)
+            );
+            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
 }

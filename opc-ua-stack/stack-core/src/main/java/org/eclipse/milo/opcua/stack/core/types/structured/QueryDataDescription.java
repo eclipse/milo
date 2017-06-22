@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -70,23 +75,40 @@ public class QueryDataDescription implements UaStructure {
             .toString();
     }
 
-    public static void encode(QueryDataDescription queryDataDescription, UaEncoder encoder) {
-        encoder.encodeSerializable("RelativePath", queryDataDescription._relativePath != null ? queryDataDescription._relativePath : new RelativePath());
-        encoder.encodeUInt32("AttributeId", queryDataDescription._attributeId);
-        encoder.encodeString("IndexRange", queryDataDescription._indexRange);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<QueryDataDescription> {
+        @Override
+        public QueryDataDescription decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RelativePath _relativePath = (RelativePath) context.decode(RelativePath.BinaryEncodingId, reader);
+            UInteger _attributeId = reader.readUInt32();
+            String _indexRange = reader.readString();
+
+            return new QueryDataDescription(_relativePath, _attributeId, _indexRange);
+        }
+
+        @Override
+        public void encode(SerializationContext context, QueryDataDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RelativePath.BinaryEncodingId, value._relativePath, writer);
+            writer.writeUInt32(value._attributeId);
+            writer.writeString(value._indexRange);
+        }
     }
 
-    public static QueryDataDescription decode(UaDecoder decoder) {
-        RelativePath _relativePath = decoder.decodeSerializable("RelativePath", RelativePath.class);
-        UInteger _attributeId = decoder.decodeUInt32("AttributeId");
-        String _indexRange = decoder.decodeString("IndexRange");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<QueryDataDescription> {
+        @Override
+        public QueryDataDescription decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RelativePath _relativePath = (RelativePath) context.decode(RelativePath.XmlEncodingId, reader);
+            UInteger _attributeId = reader.readUInt32("AttributeId");
+            String _indexRange = reader.readString("IndexRange");
 
-        return new QueryDataDescription(_relativePath, _attributeId, _indexRange);
-    }
+            return new QueryDataDescription(_relativePath, _attributeId, _indexRange);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(QueryDataDescription::encode, QueryDataDescription.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryDataDescription::decode, QueryDataDescription.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, QueryDataDescription encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RelativePath.XmlEncodingId, encodable._relativePath, writer);
+            writer.writeUInt32("AttributeId", encodable._attributeId);
+            writer.writeString("IndexRange", encodable._indexRange);
+        }
     }
 
 }

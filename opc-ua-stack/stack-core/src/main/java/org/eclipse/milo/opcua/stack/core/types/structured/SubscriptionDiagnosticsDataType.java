@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -239,79 +244,152 @@ public class SubscriptionDiagnosticsDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(SubscriptionDiagnosticsDataType subscriptionDiagnosticsDataType, UaEncoder encoder) {
-        encoder.encodeNodeId("SessionId", subscriptionDiagnosticsDataType._sessionId);
-        encoder.encodeUInt32("SubscriptionId", subscriptionDiagnosticsDataType._subscriptionId);
-        encoder.encodeByte("Priority", subscriptionDiagnosticsDataType._priority);
-        encoder.encodeDouble("PublishingInterval", subscriptionDiagnosticsDataType._publishingInterval);
-        encoder.encodeUInt32("MaxKeepAliveCount", subscriptionDiagnosticsDataType._maxKeepAliveCount);
-        encoder.encodeUInt32("MaxLifetimeCount", subscriptionDiagnosticsDataType._maxLifetimeCount);
-        encoder.encodeUInt32("MaxNotificationsPerPublish", subscriptionDiagnosticsDataType._maxNotificationsPerPublish);
-        encoder.encodeBoolean("PublishingEnabled", subscriptionDiagnosticsDataType._publishingEnabled);
-        encoder.encodeUInt32("ModifyCount", subscriptionDiagnosticsDataType._modifyCount);
-        encoder.encodeUInt32("EnableCount", subscriptionDiagnosticsDataType._enableCount);
-        encoder.encodeUInt32("DisableCount", subscriptionDiagnosticsDataType._disableCount);
-        encoder.encodeUInt32("RepublishRequestCount", subscriptionDiagnosticsDataType._republishRequestCount);
-        encoder.encodeUInt32("RepublishMessageRequestCount", subscriptionDiagnosticsDataType._republishMessageRequestCount);
-        encoder.encodeUInt32("RepublishMessageCount", subscriptionDiagnosticsDataType._republishMessageCount);
-        encoder.encodeUInt32("TransferRequestCount", subscriptionDiagnosticsDataType._transferRequestCount);
-        encoder.encodeUInt32("TransferredToAltClientCount", subscriptionDiagnosticsDataType._transferredToAltClientCount);
-        encoder.encodeUInt32("TransferredToSameClientCount", subscriptionDiagnosticsDataType._transferredToSameClientCount);
-        encoder.encodeUInt32("PublishRequestCount", subscriptionDiagnosticsDataType._publishRequestCount);
-        encoder.encodeUInt32("DataChangeNotificationsCount", subscriptionDiagnosticsDataType._dataChangeNotificationsCount);
-        encoder.encodeUInt32("EventNotificationsCount", subscriptionDiagnosticsDataType._eventNotificationsCount);
-        encoder.encodeUInt32("NotificationsCount", subscriptionDiagnosticsDataType._notificationsCount);
-        encoder.encodeUInt32("LatePublishRequestCount", subscriptionDiagnosticsDataType._latePublishRequestCount);
-        encoder.encodeUInt32("CurrentKeepAliveCount", subscriptionDiagnosticsDataType._currentKeepAliveCount);
-        encoder.encodeUInt32("CurrentLifetimeCount", subscriptionDiagnosticsDataType._currentLifetimeCount);
-        encoder.encodeUInt32("UnacknowledgedMessageCount", subscriptionDiagnosticsDataType._unacknowledgedMessageCount);
-        encoder.encodeUInt32("DiscardedMessageCount", subscriptionDiagnosticsDataType._discardedMessageCount);
-        encoder.encodeUInt32("MonitoredItemCount", subscriptionDiagnosticsDataType._monitoredItemCount);
-        encoder.encodeUInt32("DisabledMonitoredItemCount", subscriptionDiagnosticsDataType._disabledMonitoredItemCount);
-        encoder.encodeUInt32("MonitoringQueueOverflowCount", subscriptionDiagnosticsDataType._monitoringQueueOverflowCount);
-        encoder.encodeUInt32("NextSequenceNumber", subscriptionDiagnosticsDataType._nextSequenceNumber);
-        encoder.encodeUInt32("EventQueueOverFlowCount", subscriptionDiagnosticsDataType._eventQueueOverFlowCount);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SubscriptionDiagnosticsDataType> {
+        @Override
+        public SubscriptionDiagnosticsDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _sessionId = reader.readNodeId();
+            UInteger _subscriptionId = reader.readUInt32();
+            UByte _priority = reader.readByte();
+            Double _publishingInterval = reader.readDouble();
+            UInteger _maxKeepAliveCount = reader.readUInt32();
+            UInteger _maxLifetimeCount = reader.readUInt32();
+            UInteger _maxNotificationsPerPublish = reader.readUInt32();
+            Boolean _publishingEnabled = reader.readBoolean();
+            UInteger _modifyCount = reader.readUInt32();
+            UInteger _enableCount = reader.readUInt32();
+            UInteger _disableCount = reader.readUInt32();
+            UInteger _republishRequestCount = reader.readUInt32();
+            UInteger _republishMessageRequestCount = reader.readUInt32();
+            UInteger _republishMessageCount = reader.readUInt32();
+            UInteger _transferRequestCount = reader.readUInt32();
+            UInteger _transferredToAltClientCount = reader.readUInt32();
+            UInteger _transferredToSameClientCount = reader.readUInt32();
+            UInteger _publishRequestCount = reader.readUInt32();
+            UInteger _dataChangeNotificationsCount = reader.readUInt32();
+            UInteger _eventNotificationsCount = reader.readUInt32();
+            UInteger _notificationsCount = reader.readUInt32();
+            UInteger _latePublishRequestCount = reader.readUInt32();
+            UInteger _currentKeepAliveCount = reader.readUInt32();
+            UInteger _currentLifetimeCount = reader.readUInt32();
+            UInteger _unacknowledgedMessageCount = reader.readUInt32();
+            UInteger _discardedMessageCount = reader.readUInt32();
+            UInteger _monitoredItemCount = reader.readUInt32();
+            UInteger _disabledMonitoredItemCount = reader.readUInt32();
+            UInteger _monitoringQueueOverflowCount = reader.readUInt32();
+            UInteger _nextSequenceNumber = reader.readUInt32();
+            UInteger _eventQueueOverFlowCount = reader.readUInt32();
+
+            return new SubscriptionDiagnosticsDataType(_sessionId, _subscriptionId, _priority, _publishingInterval, _maxKeepAliveCount, _maxLifetimeCount, _maxNotificationsPerPublish, _publishingEnabled, _modifyCount, _enableCount, _disableCount, _republishRequestCount, _republishMessageRequestCount, _republishMessageCount, _transferRequestCount, _transferredToAltClientCount, _transferredToSameClientCount, _publishRequestCount, _dataChangeNotificationsCount, _eventNotificationsCount, _notificationsCount, _latePublishRequestCount, _currentKeepAliveCount, _currentLifetimeCount, _unacknowledgedMessageCount, _discardedMessageCount, _monitoredItemCount, _disabledMonitoredItemCount, _monitoringQueueOverflowCount, _nextSequenceNumber, _eventQueueOverFlowCount);
+        }
+
+        @Override
+        public void encode(SerializationContext context, SubscriptionDiagnosticsDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._sessionId);
+            writer.writeUInt32(value._subscriptionId);
+            writer.writeByte(value._priority);
+            writer.writeDouble(value._publishingInterval);
+            writer.writeUInt32(value._maxKeepAliveCount);
+            writer.writeUInt32(value._maxLifetimeCount);
+            writer.writeUInt32(value._maxNotificationsPerPublish);
+            writer.writeBoolean(value._publishingEnabled);
+            writer.writeUInt32(value._modifyCount);
+            writer.writeUInt32(value._enableCount);
+            writer.writeUInt32(value._disableCount);
+            writer.writeUInt32(value._republishRequestCount);
+            writer.writeUInt32(value._republishMessageRequestCount);
+            writer.writeUInt32(value._republishMessageCount);
+            writer.writeUInt32(value._transferRequestCount);
+            writer.writeUInt32(value._transferredToAltClientCount);
+            writer.writeUInt32(value._transferredToSameClientCount);
+            writer.writeUInt32(value._publishRequestCount);
+            writer.writeUInt32(value._dataChangeNotificationsCount);
+            writer.writeUInt32(value._eventNotificationsCount);
+            writer.writeUInt32(value._notificationsCount);
+            writer.writeUInt32(value._latePublishRequestCount);
+            writer.writeUInt32(value._currentKeepAliveCount);
+            writer.writeUInt32(value._currentLifetimeCount);
+            writer.writeUInt32(value._unacknowledgedMessageCount);
+            writer.writeUInt32(value._discardedMessageCount);
+            writer.writeUInt32(value._monitoredItemCount);
+            writer.writeUInt32(value._disabledMonitoredItemCount);
+            writer.writeUInt32(value._monitoringQueueOverflowCount);
+            writer.writeUInt32(value._nextSequenceNumber);
+            writer.writeUInt32(value._eventQueueOverFlowCount);
+        }
     }
 
-    public static SubscriptionDiagnosticsDataType decode(UaDecoder decoder) {
-        NodeId _sessionId = decoder.decodeNodeId("SessionId");
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        UByte _priority = decoder.decodeByte("Priority");
-        Double _publishingInterval = decoder.decodeDouble("PublishingInterval");
-        UInteger _maxKeepAliveCount = decoder.decodeUInt32("MaxKeepAliveCount");
-        UInteger _maxLifetimeCount = decoder.decodeUInt32("MaxLifetimeCount");
-        UInteger _maxNotificationsPerPublish = decoder.decodeUInt32("MaxNotificationsPerPublish");
-        Boolean _publishingEnabled = decoder.decodeBoolean("PublishingEnabled");
-        UInteger _modifyCount = decoder.decodeUInt32("ModifyCount");
-        UInteger _enableCount = decoder.decodeUInt32("EnableCount");
-        UInteger _disableCount = decoder.decodeUInt32("DisableCount");
-        UInteger _republishRequestCount = decoder.decodeUInt32("RepublishRequestCount");
-        UInteger _republishMessageRequestCount = decoder.decodeUInt32("RepublishMessageRequestCount");
-        UInteger _republishMessageCount = decoder.decodeUInt32("RepublishMessageCount");
-        UInteger _transferRequestCount = decoder.decodeUInt32("TransferRequestCount");
-        UInteger _transferredToAltClientCount = decoder.decodeUInt32("TransferredToAltClientCount");
-        UInteger _transferredToSameClientCount = decoder.decodeUInt32("TransferredToSameClientCount");
-        UInteger _publishRequestCount = decoder.decodeUInt32("PublishRequestCount");
-        UInteger _dataChangeNotificationsCount = decoder.decodeUInt32("DataChangeNotificationsCount");
-        UInteger _eventNotificationsCount = decoder.decodeUInt32("EventNotificationsCount");
-        UInteger _notificationsCount = decoder.decodeUInt32("NotificationsCount");
-        UInteger _latePublishRequestCount = decoder.decodeUInt32("LatePublishRequestCount");
-        UInteger _currentKeepAliveCount = decoder.decodeUInt32("CurrentKeepAliveCount");
-        UInteger _currentLifetimeCount = decoder.decodeUInt32("CurrentLifetimeCount");
-        UInteger _unacknowledgedMessageCount = decoder.decodeUInt32("UnacknowledgedMessageCount");
-        UInteger _discardedMessageCount = decoder.decodeUInt32("DiscardedMessageCount");
-        UInteger _monitoredItemCount = decoder.decodeUInt32("MonitoredItemCount");
-        UInteger _disabledMonitoredItemCount = decoder.decodeUInt32("DisabledMonitoredItemCount");
-        UInteger _monitoringQueueOverflowCount = decoder.decodeUInt32("MonitoringQueueOverflowCount");
-        UInteger _nextSequenceNumber = decoder.decodeUInt32("NextSequenceNumber");
-        UInteger _eventQueueOverFlowCount = decoder.decodeUInt32("EventQueueOverFlowCount");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<SubscriptionDiagnosticsDataType> {
+        @Override
+        public SubscriptionDiagnosticsDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _sessionId = reader.readNodeId("SessionId");
+            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
+            UByte _priority = reader.readByte("Priority");
+            Double _publishingInterval = reader.readDouble("PublishingInterval");
+            UInteger _maxKeepAliveCount = reader.readUInt32("MaxKeepAliveCount");
+            UInteger _maxLifetimeCount = reader.readUInt32("MaxLifetimeCount");
+            UInteger _maxNotificationsPerPublish = reader.readUInt32("MaxNotificationsPerPublish");
+            Boolean _publishingEnabled = reader.readBoolean("PublishingEnabled");
+            UInteger _modifyCount = reader.readUInt32("ModifyCount");
+            UInteger _enableCount = reader.readUInt32("EnableCount");
+            UInteger _disableCount = reader.readUInt32("DisableCount");
+            UInteger _republishRequestCount = reader.readUInt32("RepublishRequestCount");
+            UInteger _republishMessageRequestCount = reader.readUInt32("RepublishMessageRequestCount");
+            UInteger _republishMessageCount = reader.readUInt32("RepublishMessageCount");
+            UInteger _transferRequestCount = reader.readUInt32("TransferRequestCount");
+            UInteger _transferredToAltClientCount = reader.readUInt32("TransferredToAltClientCount");
+            UInteger _transferredToSameClientCount = reader.readUInt32("TransferredToSameClientCount");
+            UInteger _publishRequestCount = reader.readUInt32("PublishRequestCount");
+            UInteger _dataChangeNotificationsCount = reader.readUInt32("DataChangeNotificationsCount");
+            UInteger _eventNotificationsCount = reader.readUInt32("EventNotificationsCount");
+            UInteger _notificationsCount = reader.readUInt32("NotificationsCount");
+            UInteger _latePublishRequestCount = reader.readUInt32("LatePublishRequestCount");
+            UInteger _currentKeepAliveCount = reader.readUInt32("CurrentKeepAliveCount");
+            UInteger _currentLifetimeCount = reader.readUInt32("CurrentLifetimeCount");
+            UInteger _unacknowledgedMessageCount = reader.readUInt32("UnacknowledgedMessageCount");
+            UInteger _discardedMessageCount = reader.readUInt32("DiscardedMessageCount");
+            UInteger _monitoredItemCount = reader.readUInt32("MonitoredItemCount");
+            UInteger _disabledMonitoredItemCount = reader.readUInt32("DisabledMonitoredItemCount");
+            UInteger _monitoringQueueOverflowCount = reader.readUInt32("MonitoringQueueOverflowCount");
+            UInteger _nextSequenceNumber = reader.readUInt32("NextSequenceNumber");
+            UInteger _eventQueueOverFlowCount = reader.readUInt32("EventQueueOverFlowCount");
 
-        return new SubscriptionDiagnosticsDataType(_sessionId, _subscriptionId, _priority, _publishingInterval, _maxKeepAliveCount, _maxLifetimeCount, _maxNotificationsPerPublish, _publishingEnabled, _modifyCount, _enableCount, _disableCount, _republishRequestCount, _republishMessageRequestCount, _republishMessageCount, _transferRequestCount, _transferredToAltClientCount, _transferredToSameClientCount, _publishRequestCount, _dataChangeNotificationsCount, _eventNotificationsCount, _notificationsCount, _latePublishRequestCount, _currentKeepAliveCount, _currentLifetimeCount, _unacknowledgedMessageCount, _discardedMessageCount, _monitoredItemCount, _disabledMonitoredItemCount, _monitoringQueueOverflowCount, _nextSequenceNumber, _eventQueueOverFlowCount);
-    }
+            return new SubscriptionDiagnosticsDataType(_sessionId, _subscriptionId, _priority, _publishingInterval, _maxKeepAliveCount, _maxLifetimeCount, _maxNotificationsPerPublish, _publishingEnabled, _modifyCount, _enableCount, _disableCount, _republishRequestCount, _republishMessageRequestCount, _republishMessageCount, _transferRequestCount, _transferredToAltClientCount, _transferredToSameClientCount, _publishRequestCount, _dataChangeNotificationsCount, _eventNotificationsCount, _notificationsCount, _latePublishRequestCount, _currentKeepAliveCount, _currentLifetimeCount, _unacknowledgedMessageCount, _discardedMessageCount, _monitoredItemCount, _disabledMonitoredItemCount, _monitoringQueueOverflowCount, _nextSequenceNumber, _eventQueueOverFlowCount);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(SubscriptionDiagnosticsDataType::encode, SubscriptionDiagnosticsDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SubscriptionDiagnosticsDataType::decode, SubscriptionDiagnosticsDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, SubscriptionDiagnosticsDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("SessionId", encodable._sessionId);
+            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
+            writer.writeByte("Priority", encodable._priority);
+            writer.writeDouble("PublishingInterval", encodable._publishingInterval);
+            writer.writeUInt32("MaxKeepAliveCount", encodable._maxKeepAliveCount);
+            writer.writeUInt32("MaxLifetimeCount", encodable._maxLifetimeCount);
+            writer.writeUInt32("MaxNotificationsPerPublish", encodable._maxNotificationsPerPublish);
+            writer.writeBoolean("PublishingEnabled", encodable._publishingEnabled);
+            writer.writeUInt32("ModifyCount", encodable._modifyCount);
+            writer.writeUInt32("EnableCount", encodable._enableCount);
+            writer.writeUInt32("DisableCount", encodable._disableCount);
+            writer.writeUInt32("RepublishRequestCount", encodable._republishRequestCount);
+            writer.writeUInt32("RepublishMessageRequestCount", encodable._republishMessageRequestCount);
+            writer.writeUInt32("RepublishMessageCount", encodable._republishMessageCount);
+            writer.writeUInt32("TransferRequestCount", encodable._transferRequestCount);
+            writer.writeUInt32("TransferredToAltClientCount", encodable._transferredToAltClientCount);
+            writer.writeUInt32("TransferredToSameClientCount", encodable._transferredToSameClientCount);
+            writer.writeUInt32("PublishRequestCount", encodable._publishRequestCount);
+            writer.writeUInt32("DataChangeNotificationsCount", encodable._dataChangeNotificationsCount);
+            writer.writeUInt32("EventNotificationsCount", encodable._eventNotificationsCount);
+            writer.writeUInt32("NotificationsCount", encodable._notificationsCount);
+            writer.writeUInt32("LatePublishRequestCount", encodable._latePublishRequestCount);
+            writer.writeUInt32("CurrentKeepAliveCount", encodable._currentKeepAliveCount);
+            writer.writeUInt32("CurrentLifetimeCount", encodable._currentLifetimeCount);
+            writer.writeUInt32("UnacknowledgedMessageCount", encodable._unacknowledgedMessageCount);
+            writer.writeUInt32("DiscardedMessageCount", encodable._discardedMessageCount);
+            writer.writeUInt32("MonitoredItemCount", encodable._monitoredItemCount);
+            writer.writeUInt32("DisabledMonitoredItemCount", encodable._disabledMonitoredItemCount);
+            writer.writeUInt32("MonitoringQueueOverflowCount", encodable._monitoringQueueOverflowCount);
+            writer.writeUInt32("NextSequenceNumber", encodable._nextSequenceNumber);
+            writer.writeUInt32("EventQueueOverFlowCount", encodable._eventQueueOverFlowCount);
+        }
     }
 
 }

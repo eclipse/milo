@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -57,19 +62,32 @@ public class UnregisterNodesResponse implements UaResponseMessage {
             .toString();
     }
 
-    public static void encode(UnregisterNodesResponse unregisterNodesResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", unregisterNodesResponse._responseHeader != null ? unregisterNodesResponse._responseHeader : new ResponseHeader());
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UnregisterNodesResponse> {
+        @Override
+        public UnregisterNodesResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
+
+            return new UnregisterNodesResponse(_responseHeader);
+        }
+
+        @Override
+        public void encode(SerializationContext context, UnregisterNodesResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+        }
     }
 
-    public static UnregisterNodesResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<UnregisterNodesResponse> {
+        @Override
+        public UnregisterNodesResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
 
-        return new UnregisterNodesResponse(_responseHeader);
-    }
+            return new UnregisterNodesResponse(_responseHeader);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(UnregisterNodesResponse::encode, UnregisterNodesResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(UnregisterNodesResponse::decode, UnregisterNodesResponse.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, UnregisterNodesResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
+        }
     }
 
 }
