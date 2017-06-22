@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -63,21 +68,36 @@ public class TimeZoneDataType implements UaStructure {
             .toString();
     }
 
-    public static void encode(TimeZoneDataType timeZoneDataType, UaEncoder encoder) {
-        encoder.encodeInt16("Offset", timeZoneDataType._offset);
-        encoder.encodeBoolean("DaylightSavingInOffset", timeZoneDataType._daylightSavingInOffset);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<TimeZoneDataType> {
+        @Override
+        public TimeZoneDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            Short _offset = reader.readInt16();
+            Boolean _daylightSavingInOffset = reader.readBoolean();
+
+            return new TimeZoneDataType(_offset, _daylightSavingInOffset);
+        }
+
+        @Override
+        public void encode(SerializationContext context, TimeZoneDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeInt16(value._offset);
+            writer.writeBoolean(value._daylightSavingInOffset);
+        }
     }
 
-    public static TimeZoneDataType decode(UaDecoder decoder) {
-        Short _offset = decoder.decodeInt16("Offset");
-        Boolean _daylightSavingInOffset = decoder.decodeBoolean("DaylightSavingInOffset");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<TimeZoneDataType> {
+        @Override
+        public TimeZoneDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            Short _offset = reader.readInt16("Offset");
+            Boolean _daylightSavingInOffset = reader.readBoolean("DaylightSavingInOffset");
 
-        return new TimeZoneDataType(_offset, _daylightSavingInOffset);
-    }
+            return new TimeZoneDataType(_offset, _daylightSavingInOffset);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(TimeZoneDataType::encode, TimeZoneDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(TimeZoneDataType::decode, TimeZoneDataType.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, TimeZoneDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeInt16("Offset", encodable._offset);
+            writer.writeBoolean("DaylightSavingInOffset", encodable._daylightSavingInOffset);
+        }
     }
 
 }

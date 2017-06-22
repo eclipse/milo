@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -64,21 +69,36 @@ public class CancelRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(CancelRequest cancelRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", cancelRequest._requestHeader != null ? cancelRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("RequestHandle", cancelRequest._requestHandle);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CancelRequest> {
+        @Override
+        public CancelRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            UInteger _requestHandle = reader.readUInt32();
+
+            return new CancelRequest(_requestHeader, _requestHandle);
+        }
+
+        @Override
+        public void encode(SerializationContext context, CancelRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeUInt32(value._requestHandle);
+        }
     }
 
-    public static CancelRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _requestHandle = decoder.decodeUInt32("RequestHandle");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<CancelRequest> {
+        @Override
+        public CancelRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            UInteger _requestHandle = reader.readUInt32("RequestHandle");
 
-        return new CancelRequest(_requestHeader, _requestHandle);
-    }
+            return new CancelRequest(_requestHeader, _requestHandle);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(CancelRequest::encode, CancelRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CancelRequest::decode, CancelRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, CancelRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeUInt32("RequestHandle", encodable._requestHandle);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -64,21 +69,36 @@ public class MonitoredItemModifyRequest implements UaStructure {
             .toString();
     }
 
-    public static void encode(MonitoredItemModifyRequest monitoredItemModifyRequest, UaEncoder encoder) {
-        encoder.encodeUInt32("MonitoredItemId", monitoredItemModifyRequest._monitoredItemId);
-        encoder.encodeSerializable("RequestedParameters", monitoredItemModifyRequest._requestedParameters != null ? monitoredItemModifyRequest._requestedParameters : new MonitoringParameters());
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoredItemModifyRequest> {
+        @Override
+        public MonitoredItemModifyRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _monitoredItemId = reader.readUInt32();
+            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.BinaryEncodingId, reader);
+
+            return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
+        }
+
+        @Override
+        public void encode(SerializationContext context, MonitoredItemModifyRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._monitoredItemId);
+            context.encode(MonitoringParameters.BinaryEncodingId, value._requestedParameters, writer);
+        }
     }
 
-    public static MonitoredItemModifyRequest decode(UaDecoder decoder) {
-        UInteger _monitoredItemId = decoder.decodeUInt32("MonitoredItemId");
-        MonitoringParameters _requestedParameters = decoder.decodeSerializable("RequestedParameters", MonitoringParameters.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoredItemModifyRequest> {
+        @Override
+        public MonitoredItemModifyRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _monitoredItemId = reader.readUInt32("MonitoredItemId");
+            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.XmlEncodingId, reader);
 
-        return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
-    }
+            return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoredItemModifyRequest::encode, MonitoredItemModifyRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoredItemModifyRequest::decode, MonitoredItemModifyRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, MonitoredItemModifyRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("MonitoredItemId", encodable._monitoredItemId);
+            context.encode(MonitoringParameters.XmlEncodingId, encodable._requestedParameters, writer);
+        }
     }
 
 }

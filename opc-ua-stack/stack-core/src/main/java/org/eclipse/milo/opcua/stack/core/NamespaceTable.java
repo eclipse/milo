@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.core;
+package org.eclipse.milo.opcua.stack.core;
 
 import java.util.List;
 import java.util.Map;
@@ -19,20 +19,18 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 public class NamespaceTable {
 
-    public static final String OpcUaNamespace = "http://opcfoundation.org/UA/";
+    public static final String OPC_UA_NAMESPACE = "http://opcfoundation.org/UA/";
 
     private final BiMap<UShort, String> uriTable = HashBiMap.create();
 
     public NamespaceTable() {
-        uriTable.put(ushort(0), OpcUaNamespace);
+        uriTable.put(ushort(0), OPC_UA_NAMESPACE);
     }
 
     public synchronized UShort addUri(String uri) {

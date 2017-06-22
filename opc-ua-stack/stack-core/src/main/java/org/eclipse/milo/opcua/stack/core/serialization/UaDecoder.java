@@ -93,6 +93,16 @@ public interface UaDecoder {
 
     <T extends UaSerializable> T decodeSerializable(String field, Class<T> clazz) throws UaSerializationException;
 
+    <T> T decodeStructuredType(
+        String field,
+        String namespaceUri,
+        Class<T> typeClass) throws UaSerializationException;
+
+    Object decodeStructuredType(
+        String field,
+        String namespaceUri,
+        String typeName) throws UaSerializationException;
+
     <T> T[] decodeArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
 
     <T> T[] decodeArray(

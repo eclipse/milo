@@ -17,8 +17,8 @@ import javax.annotation.Nonnull;
 
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
 import org.eclipse.milo.opcua.stack.core.util.annotations.UInt32Primitive;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -163,11 +163,11 @@ public class HelloMessage {
     }
 
     private static void encodeString(String s, ByteBuf buffer) {
-        new BinaryEncoder().setBuffer(buffer).encodeString(null, s);
+        new OpcBinaryStreamWriter(buffer).writeString(s);
     }
 
     private static String decodeString(ByteBuf buffer) {
-        return new BinaryDecoder().setBuffer(buffer).decodeString(null);
+        return new OpcBinaryStreamReader(buffer).readString();
     }
 
 }

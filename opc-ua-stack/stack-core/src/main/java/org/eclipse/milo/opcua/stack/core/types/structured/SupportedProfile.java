@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -92,29 +97,52 @@ public class SupportedProfile implements UaStructure {
             .toString();
     }
 
-    public static void encode(SupportedProfile supportedProfile, UaEncoder encoder) {
-        encoder.encodeString("OrganizationUri", supportedProfile._organizationUri);
-        encoder.encodeString("ProfileId", supportedProfile._profileId);
-        encoder.encodeString("ComplianceTool", supportedProfile._complianceTool);
-        encoder.encodeDateTime("ComplianceDate", supportedProfile._complianceDate);
-        encoder.encodeEnumeration("ComplianceLevel", supportedProfile._complianceLevel);
-        encoder.encodeArray("UnsupportedUnitIds", supportedProfile._unsupportedUnitIds, encoder::encodeString);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SupportedProfile> {
+        @Override
+        public SupportedProfile decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            String _organizationUri = reader.readString();
+            String _profileId = reader.readString();
+            String _complianceTool = reader.readString();
+            DateTime _complianceDate = reader.readDateTime();
+            ComplianceLevel _complianceLevel = ComplianceLevel.from(reader.readInt32());
+            String[] _unsupportedUnitIds = reader.readArray(reader::readString, String.class);
+
+            return new SupportedProfile(_organizationUri, _profileId, _complianceTool, _complianceDate, _complianceLevel, _unsupportedUnitIds);
+        }
+
+        @Override
+        public void encode(SerializationContext context, SupportedProfile value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeString(value._organizationUri);
+            writer.writeString(value._profileId);
+            writer.writeString(value._complianceTool);
+            writer.writeDateTime(value._complianceDate);
+            writer.writeInt32(value._complianceLevel != null ? value._complianceLevel.getValue() : 0);
+            writer.writeArray(value._unsupportedUnitIds, writer::writeString);
+        }
     }
 
-    public static SupportedProfile decode(UaDecoder decoder) {
-        String _organizationUri = decoder.decodeString("OrganizationUri");
-        String _profileId = decoder.decodeString("ProfileId");
-        String _complianceTool = decoder.decodeString("ComplianceTool");
-        DateTime _complianceDate = decoder.decodeDateTime("ComplianceDate");
-        ComplianceLevel _complianceLevel = decoder.decodeEnumeration("ComplianceLevel", ComplianceLevel.class);
-        String[] _unsupportedUnitIds = decoder.decodeArray("UnsupportedUnitIds", decoder::decodeString, String.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<SupportedProfile> {
+        @Override
+        public SupportedProfile decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            String _organizationUri = reader.readString("OrganizationUri");
+            String _profileId = reader.readString("ProfileId");
+            String _complianceTool = reader.readString("ComplianceTool");
+            DateTime _complianceDate = reader.readDateTime("ComplianceDate");
+            ComplianceLevel _complianceLevel = ComplianceLevel.from(reader.readInt32("ComplianceLevel"));
+            String[] _unsupportedUnitIds = reader.readArray("UnsupportedUnitIds", reader::readString, String.class);
 
-        return new SupportedProfile(_organizationUri, _profileId, _complianceTool, _complianceDate, _complianceLevel, _unsupportedUnitIds);
-    }
+            return new SupportedProfile(_organizationUri, _profileId, _complianceTool, _complianceDate, _complianceLevel, _unsupportedUnitIds);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(SupportedProfile::encode, SupportedProfile.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SupportedProfile::decode, SupportedProfile.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, SupportedProfile encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeString("OrganizationUri", encodable._organizationUri);
+            writer.writeString("ProfileId", encodable._profileId);
+            writer.writeString("ComplianceTool", encodable._complianceTool);
+            writer.writeDateTime("ComplianceDate", encodable._complianceDate);
+            writer.writeInt32("ComplianceLevel", encodable._complianceLevel != null ? encodable._complianceLevel.getValue() : 0);
+            writer.writeArray("UnsupportedUnitIds", encodable._unsupportedUnitIds, writer::writeString);
+        }
     }
 
 }

@@ -14,20 +14,61 @@
 package org.eclipse.milo.opcua.stack.core.serialization;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 
 public interface DataTypeEncoding {
 
-    public static final DataTypeEncoding OPC_UA = new OpcUaDataTypeEncoding();
+    DataTypeEncoding OPC_UA = new OpcUaDataTypeEncoding();
 
-    ByteString encodeToByteString(Object object, NodeId encodingTypeId) throws UaSerializationException;
+    ByteString encodeToByteString(
+        Object object,
+        NodeId encodingTypeId,
+        DataTypeManager dataTypeManager) throws UaSerializationException;
 
-    Object decodeFromByteString(ByteString encoded, NodeId encodingTypeId) throws UaSerializationException;
+    XmlElement encodeToXmlElement(
+        Object object,
+        NodeId encodingTypeId,
+        DataTypeManager dataTypeManager) throws UaSerializationException;
 
-    XmlElement encodeToXmlElement(Object object, NodeId encodingTypeId) throws UaSerializationException;
+    Object decodeFromByteString(
+        ByteString encoded,
+        NodeId encodingTypeId,
+        DataTypeManager dataTypeManager) throws UaSerializationException;
 
-    Object decodeFromXmlElement(XmlElement encoded, NodeId encodingTypeId) throws UaSerializationException;
+    Object decodeFromXmlElement(
+        XmlElement encoded,
+        NodeId encodingTypeId,
+        DataTypeManager dataTypeManager) throws UaSerializationException;
+
+    default ByteString encodeToByteString(
+        Object object,
+        NodeId encodingTypeId) throws UaSerializationException {
+
+        return encodeToByteString(object, encodingTypeId, OpcUaDataTypeManager.getInstance());
+    }
+
+    default XmlElement encodeToXmlElement(
+        Object object,
+        NodeId encodingTypeId) throws UaSerializationException {
+
+        return encodeToXmlElement(object, encodingTypeId, OpcUaDataTypeManager.getInstance());
+    }
+
+    default Object decodeFromByteString(
+        ByteString encoded,
+        NodeId encodingTypeId) throws UaSerializationException {
+
+        return decodeFromByteString(encoded, encodingTypeId, OpcUaDataTypeManager.getInstance());
+    }
+
+    default Object decodeFromXmlElement(
+        XmlElement encoded,
+        NodeId encodingTypeId) throws UaSerializationException {
+
+        return decodeFromXmlElement(encoded, encodingTypeId, OpcUaDataTypeManager.getInstance());
+    }
 
 }
