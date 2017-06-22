@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -73,23 +78,40 @@ public class SetPublishingModeRequest implements UaRequestMessage {
             .toString();
     }
 
-    public static void encode(SetPublishingModeRequest setPublishingModeRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", setPublishingModeRequest._requestHeader != null ? setPublishingModeRequest._requestHeader : new RequestHeader());
-        encoder.encodeBoolean("PublishingEnabled", setPublishingModeRequest._publishingEnabled);
-        encoder.encodeArray("SubscriptionIds", setPublishingModeRequest._subscriptionIds, encoder::encodeUInt32);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SetPublishingModeRequest> {
+        @Override
+        public SetPublishingModeRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+            Boolean _publishingEnabled = reader.readBoolean();
+            UInteger[] _subscriptionIds = reader.readArray(reader::readUInt32, UInteger.class);
+
+            return new SetPublishingModeRequest(_requestHeader, _publishingEnabled, _subscriptionIds);
+        }
+
+        @Override
+        public void encode(SerializationContext context, SetPublishingModeRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
+            writer.writeBoolean(value._publishingEnabled);
+            writer.writeArray(value._subscriptionIds, writer::writeUInt32);
+        }
     }
 
-    public static SetPublishingModeRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        Boolean _publishingEnabled = decoder.decodeBoolean("PublishingEnabled");
-        UInteger[] _subscriptionIds = decoder.decodeArray("SubscriptionIds", decoder::decodeUInt32, UInteger.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<SetPublishingModeRequest> {
+        @Override
+        public SetPublishingModeRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
+            Boolean _publishingEnabled = reader.readBoolean("PublishingEnabled");
+            UInteger[] _subscriptionIds = reader.readArray("SubscriptionIds", reader::readUInt32, UInteger.class);
 
-        return new SetPublishingModeRequest(_requestHeader, _publishingEnabled, _subscriptionIds);
-    }
+            return new SetPublishingModeRequest(_requestHeader, _publishingEnabled, _subscriptionIds);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(SetPublishingModeRequest::encode, SetPublishingModeRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SetPublishingModeRequest::decode, SetPublishingModeRequest.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, SetPublishingModeRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+            writer.writeBoolean("PublishingEnabled", encodable._publishingEnabled);
+            writer.writeArray("SubscriptionIds", encodable._subscriptionIds, writer::writeUInt32);
+        }
     }
 
 }

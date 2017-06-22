@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,9 +15,14 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -65,29 +70,52 @@ public class ObjectTypeAttributes extends NodeAttributes {
             .toString();
     }
 
-    public static void encode(ObjectTypeAttributes objectTypeAttributes, UaEncoder encoder) {
-        encoder.encodeUInt32("SpecifiedAttributes", objectTypeAttributes._specifiedAttributes);
-        encoder.encodeLocalizedText("DisplayName", objectTypeAttributes._displayName);
-        encoder.encodeLocalizedText("Description", objectTypeAttributes._description);
-        encoder.encodeUInt32("WriteMask", objectTypeAttributes._writeMask);
-        encoder.encodeUInt32("UserWriteMask", objectTypeAttributes._userWriteMask);
-        encoder.encodeBoolean("IsAbstract", objectTypeAttributes._isAbstract);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ObjectTypeAttributes> {
+        @Override
+        public ObjectTypeAttributes decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32();
+            LocalizedText _displayName = reader.readLocalizedText();
+            LocalizedText _description = reader.readLocalizedText();
+            UInteger _writeMask = reader.readUInt32();
+            UInteger _userWriteMask = reader.readUInt32();
+            Boolean _isAbstract = reader.readBoolean();
+
+            return new ObjectTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ObjectTypeAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32(value._specifiedAttributes);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeLocalizedText(value._description);
+            writer.writeUInt32(value._writeMask);
+            writer.writeUInt32(value._userWriteMask);
+            writer.writeBoolean(value._isAbstract);
+        }
     }
 
-    public static ObjectTypeAttributes decode(UaDecoder decoder) {
-        UInteger _specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        Boolean _isAbstract = decoder.decodeBoolean("IsAbstract");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ObjectTypeAttributes> {
+        @Override
+        public ObjectTypeAttributes decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            UInteger _specifiedAttributes = reader.readUInt32("SpecifiedAttributes");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            LocalizedText _description = reader.readLocalizedText("Description");
+            UInteger _writeMask = reader.readUInt32("WriteMask");
+            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
+            Boolean _isAbstract = reader.readBoolean("IsAbstract");
 
-        return new ObjectTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract);
-    }
+            return new ObjectTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ObjectTypeAttributes::encode, ObjectTypeAttributes.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ObjectTypeAttributes::decode, ObjectTypeAttributes.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ObjectTypeAttributes encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeUInt32("SpecifiedAttributes", encodable._specifiedAttributes);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeLocalizedText("Description", encodable._description);
+            writer.writeUInt32("WriteMask", encodable._writeMask);
+            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+            writer.writeBoolean("IsAbstract", encodable._isAbstract);
+        }
     }
 
 }

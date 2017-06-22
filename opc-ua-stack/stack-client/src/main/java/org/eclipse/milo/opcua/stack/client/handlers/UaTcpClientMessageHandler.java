@@ -49,6 +49,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
@@ -278,13 +279,16 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
         CompletableFuture<Tuple2<Long, List<ByteBuf>>> future = new CompletableFuture<>();
 
-        serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
+        serializationQueue.encode((context, writer, chunkEncoder) -> {
             ByteBuf messageBuffer = null;
 
             try {
                 messageBuffer = BufferUtil.buffer();
-                binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.encodeMessage(null, request);
+                writer.setBuffer(messageBuffer);
+
+                NodeId encodingId = request.getBinaryEncodingId();
+                writer.writeNodeId(encodingId);
+                context.encode(encodingId, request, writer);
 
                 List<ByteBuf> chunks;
 
@@ -408,31 +412,32 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
             final List<ByteBuf> buffersToDecode = ImmutableList.copyOf(chunkBuffers);
             chunkBuffers = new LinkedList<>();
 
-            serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+            serializationQueue.decode((context, reader, chunkDecoder) -> {
                 ByteBuf decodedBuffer = null;
 
                 try {
                     decodedBuffer = chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode);
 
-                    UaResponseMessage responseMessage = binaryDecoder
-                        .setBuffer(decodedBuffer)
-                        .decodeMessage(null);
+                    reader.setBuffer(decodedBuffer);
 
-                    StatusCode serviceResult = responseMessage.getResponseHeader().getServiceResult();
+                    NodeId encodingId = reader.readNodeId();
+                    UaResponseMessage response = (UaResponseMessage) context.decode(encodingId, reader);
+
+                    StatusCode serviceResult = response.getResponseHeader().getServiceResult();
 
                     if (serviceResult.isGood()) {
-                        OpenSecureChannelResponse response = (OpenSecureChannelResponse) responseMessage;
+                        OpenSecureChannelResponse oscr = (OpenSecureChannelResponse) response;
 
-                        secureChannel.setChannelId(response.getSecurityToken().getChannelId().longValue());
+                        secureChannel.setChannelId(oscr.getSecurityToken().getChannelId().longValue());
                         logger.debug("Received OpenSecureChannelResponse.");
 
-                        installSecurityToken(ctx, response);
+                        installSecurityToken(ctx, oscr);
 
                         handshakeFuture.complete(secureChannel);
                     } else {
-                        ServiceFault serviceFault = (responseMessage instanceof ServiceFault) ?
-                            (ServiceFault) responseMessage :
-                            new ServiceFault(responseMessage.getResponseHeader());
+                        ServiceFault serviceFault = (response instanceof ServiceFault) ?
+                            (ServiceFault) response :
+                            new ServiceFault(response.getResponseHeader());
 
                         handshakeFuture.completeExceptionally(new UaServiceFaultException(serviceFault));
                         ctx.close();
@@ -524,14 +529,16 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
             final List<ByteBuf> buffersToDecode = ImmutableList.copyOf(chunkBuffers);
             chunkBuffers = new LinkedList<>();
 
-            serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
+            serializationQueue.decode((context, reader, chunkDecoder) -> {
                 ByteBuf decodedBuffer = null;
 
                 try {
                     decodedBuffer = chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode);
 
-                    binaryDecoder.setBuffer(decodedBuffer);
-                    UaResponseMessage response = binaryDecoder.decodeMessage(null);
+                    reader.setBuffer(decodedBuffer);
+
+                    NodeId encodingId = reader.readNodeId();
+                    UaResponseMessage response = (UaResponseMessage) context.decode(encodingId, reader);
 
                     UaRequestFuture request = pending.remove(chunkDecoder.getLastRequestId());
 

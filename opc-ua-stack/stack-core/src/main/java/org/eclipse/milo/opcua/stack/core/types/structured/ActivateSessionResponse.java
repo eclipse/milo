@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,15 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -82,25 +87,44 @@ public class ActivateSessionResponse implements UaResponseMessage {
             .toString();
     }
 
-    public static void encode(ActivateSessionResponse activateSessionResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", activateSessionResponse._responseHeader != null ? activateSessionResponse._responseHeader : new ResponseHeader());
-        encoder.encodeByteString("ServerNonce", activateSessionResponse._serverNonce);
-        encoder.encodeArray("Results", activateSessionResponse._results, encoder::encodeStatusCode);
-        encoder.encodeArray("DiagnosticInfos", activateSessionResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ActivateSessionResponse> {
+        @Override
+        public ActivateSessionResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
+            ByteString _serverNonce = reader.readByteString();
+            StatusCode[] _results = reader.readArray(reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+
+            return new ActivateSessionResponse(_responseHeader, _serverNonce, _results, _diagnosticInfos);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ActivateSessionResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
+            writer.writeByteString(value._serverNonce);
+            writer.writeArray(value._results, writer::writeStatusCode);
+            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
-    public static ActivateSessionResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        ByteString _serverNonce = decoder.decodeByteString("ServerNonce");
-        StatusCode[] _results = decoder.decodeArray("Results", decoder::decodeStatusCode, StatusCode.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ActivateSessionResponse> {
+        @Override
+        public ActivateSessionResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
+            ByteString _serverNonce = reader.readByteString("ServerNonce");
+            StatusCode[] _results = reader.readArray("Results", reader::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
 
-        return new ActivateSessionResponse(_responseHeader, _serverNonce, _results, _diagnosticInfos);
-    }
+            return new ActivateSessionResponse(_responseHeader, _serverNonce, _results, _diagnosticInfos);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ActivateSessionResponse::encode, ActivateSessionResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ActivateSessionResponse::decode, ActivateSessionResponse.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ActivateSessionResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
+            writer.writeByteString("ServerNonce", encodable._serverNonce);
+            writer.writeArray("Results", encodable._results, writer::writeStatusCode);
+            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        }
     }
 
 }

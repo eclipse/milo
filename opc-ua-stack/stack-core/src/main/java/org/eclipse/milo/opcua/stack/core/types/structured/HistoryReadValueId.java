@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -77,25 +82,44 @@ public class HistoryReadValueId implements UaStructure {
             .toString();
     }
 
-    public static void encode(HistoryReadValueId historyReadValueId, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", historyReadValueId._nodeId);
-        encoder.encodeString("IndexRange", historyReadValueId._indexRange);
-        encoder.encodeQualifiedName("DataEncoding", historyReadValueId._dataEncoding);
-        encoder.encodeByteString("ContinuationPoint", historyReadValueId._continuationPoint);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryReadValueId> {
+        @Override
+        public HistoryReadValueId decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId();
+            String _indexRange = reader.readString();
+            QualifiedName _dataEncoding = reader.readQualifiedName();
+            ByteString _continuationPoint = reader.readByteString();
+
+            return new HistoryReadValueId(_nodeId, _indexRange, _dataEncoding, _continuationPoint);
+        }
+
+        @Override
+        public void encode(SerializationContext context, HistoryReadValueId value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._nodeId);
+            writer.writeString(value._indexRange);
+            writer.writeQualifiedName(value._dataEncoding);
+            writer.writeByteString(value._continuationPoint);
+        }
     }
 
-    public static HistoryReadValueId decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        String _indexRange = decoder.decodeString("IndexRange");
-        QualifiedName _dataEncoding = decoder.decodeQualifiedName("DataEncoding");
-        ByteString _continuationPoint = decoder.decodeByteString("ContinuationPoint");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryReadValueId> {
+        @Override
+        public HistoryReadValueId decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _nodeId = reader.readNodeId("NodeId");
+            String _indexRange = reader.readString("IndexRange");
+            QualifiedName _dataEncoding = reader.readQualifiedName("DataEncoding");
+            ByteString _continuationPoint = reader.readByteString("ContinuationPoint");
 
-        return new HistoryReadValueId(_nodeId, _indexRange, _dataEncoding, _continuationPoint);
-    }
+            return new HistoryReadValueId(_nodeId, _indexRange, _dataEncoding, _continuationPoint);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryReadValueId::encode, HistoryReadValueId.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryReadValueId::decode, HistoryReadValueId.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, HistoryReadValueId encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("NodeId", encodable._nodeId);
+            writer.writeString("IndexRange", encodable._indexRange);
+            writer.writeQualifiedName("DataEncoding", encodable._dataEncoding);
+            writer.writeByteString("ContinuationPoint", encodable._continuationPoint);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,10 +15,15 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -97,31 +102,56 @@ public class ReferenceDescription implements UaStructure {
             .toString();
     }
 
-    public static void encode(ReferenceDescription referenceDescription, UaEncoder encoder) {
-        encoder.encodeNodeId("ReferenceTypeId", referenceDescription._referenceTypeId);
-        encoder.encodeBoolean("IsForward", referenceDescription._isForward);
-        encoder.encodeExpandedNodeId("NodeId", referenceDescription._nodeId);
-        encoder.encodeQualifiedName("BrowseName", referenceDescription._browseName);
-        encoder.encodeLocalizedText("DisplayName", referenceDescription._displayName);
-        encoder.encodeEnumeration("NodeClass", referenceDescription._nodeClass);
-        encoder.encodeExpandedNodeId("TypeDefinition", referenceDescription._typeDefinition);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReferenceDescription> {
+        @Override
+        public ReferenceDescription decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            NodeId _referenceTypeId = reader.readNodeId();
+            Boolean _isForward = reader.readBoolean();
+            ExpandedNodeId _nodeId = reader.readExpandedNodeId();
+            QualifiedName _browseName = reader.readQualifiedName();
+            LocalizedText _displayName = reader.readLocalizedText();
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
+            ExpandedNodeId _typeDefinition = reader.readExpandedNodeId();
+
+            return new ReferenceDescription(_referenceTypeId, _isForward, _nodeId, _browseName, _displayName, _nodeClass, _typeDefinition);
+        }
+
+        @Override
+        public void encode(SerializationContext context, ReferenceDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId(value._referenceTypeId);
+            writer.writeBoolean(value._isForward);
+            writer.writeExpandedNodeId(value._nodeId);
+            writer.writeQualifiedName(value._browseName);
+            writer.writeLocalizedText(value._displayName);
+            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
+            writer.writeExpandedNodeId(value._typeDefinition);
+        }
     }
 
-    public static ReferenceDescription decode(UaDecoder decoder) {
-        NodeId _referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
-        Boolean _isForward = decoder.decodeBoolean("IsForward");
-        ExpandedNodeId _nodeId = decoder.decodeExpandedNodeId("NodeId");
-        QualifiedName _browseName = decoder.decodeQualifiedName("BrowseName");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        NodeClass _nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        ExpandedNodeId _typeDefinition = decoder.decodeExpandedNodeId("TypeDefinition");
+    public static class XmlCodec implements OpcXmlDataTypeCodec<ReferenceDescription> {
+        @Override
+        public ReferenceDescription decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            NodeId _referenceTypeId = reader.readNodeId("ReferenceTypeId");
+            Boolean _isForward = reader.readBoolean("IsForward");
+            ExpandedNodeId _nodeId = reader.readExpandedNodeId("NodeId");
+            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
+            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
+            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
+            ExpandedNodeId _typeDefinition = reader.readExpandedNodeId("TypeDefinition");
 
-        return new ReferenceDescription(_referenceTypeId, _isForward, _nodeId, _browseName, _displayName, _nodeClass, _typeDefinition);
-    }
+            return new ReferenceDescription(_referenceTypeId, _isForward, _nodeId, _browseName, _displayName, _nodeClass, _typeDefinition);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(ReferenceDescription::encode, ReferenceDescription.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReferenceDescription::decode, ReferenceDescription.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, ReferenceDescription encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeNodeId("ReferenceTypeId", encodable._referenceTypeId);
+            writer.writeBoolean("IsForward", encodable._isForward);
+            writer.writeExpandedNodeId("NodeId", encodable._nodeId);
+            writer.writeQualifiedName("BrowseName", encodable._browseName);
+            writer.writeLocalizedText("DisplayName", encodable._displayName);
+            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
+            writer.writeExpandedNodeId("TypeDefinition", encodable._typeDefinition);
+        }
     }
 
 }

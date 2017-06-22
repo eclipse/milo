@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,9 +17,14 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
-import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.UaDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -61,19 +66,50 @@ public class EventNotificationList extends NotificationData {
             .toString();
     }
 
-    public static void encode(EventNotificationList eventNotificationList, UaEncoder encoder) {
-        encoder.encodeArray("Events", eventNotificationList._events, encoder::encodeSerializable);
+    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EventNotificationList> {
+        @Override
+        public EventNotificationList decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+            EventFieldList[] _events =
+                reader.readArray(
+                    () -> (EventFieldList) context.decode(
+                        EventFieldList.BinaryEncodingId, reader),
+                    EventFieldList.class
+                );
+
+            return new EventNotificationList(_events);
+        }
+
+        @Override
+        public void encode(SerializationContext context, EventNotificationList value, OpcBinaryStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                value._events,
+                e -> context.encode(EventFieldList.BinaryEncodingId, e, writer)
+            );
+        }
     }
 
-    public static EventNotificationList decode(UaDecoder decoder) {
-        EventFieldList[] _events = decoder.decodeArray("Events", decoder::decodeSerializable, EventFieldList.class);
+    public static class XmlCodec implements OpcXmlDataTypeCodec<EventNotificationList> {
+        @Override
+        public EventNotificationList decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
+            EventFieldList[] _events =
+                reader.readArray(
+                    "Events",
+                    f -> (EventFieldList) context.decode(
+                        EventFieldList.XmlEncodingId, reader),
+                    EventFieldList.class
+                );
 
-        return new EventNotificationList(_events);
-    }
+            return new EventNotificationList(_events);
+        }
 
-    static {
-        DelegateRegistry.registerEncoder(EventNotificationList::encode, EventNotificationList.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EventNotificationList::decode, EventNotificationList.class, BinaryEncodingId, XmlEncodingId);
+        @Override
+        public void encode(SerializationContext context, EventNotificationList encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+            writer.writeArray(
+                "Events",
+                encodable._events,
+                (f, e) -> context.encode(EventFieldList.XmlEncodingId, e, writer)
+            );
+        }
     }
 
 }
