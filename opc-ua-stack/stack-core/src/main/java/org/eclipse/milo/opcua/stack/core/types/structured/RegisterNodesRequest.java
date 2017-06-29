@@ -18,41 +18,35 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RegisterNodesRequest")
 public class RegisterNodesRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterNodesRequest;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterNodesRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterNodesRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final NodeId[] _nodesToRegister;
+    protected final RequestHeader requestHeader;
+    protected final NodeId[] nodesToRegister;
 
     public RegisterNodesRequest() {
-        this._requestHeader = null;
-        this._nodesToRegister = null;
+        this.requestHeader = null;
+        this.nodesToRegister = null;
     }
 
-    public RegisterNodesRequest(RequestHeader _requestHeader, NodeId[] _nodesToRegister) {
-        this._requestHeader = _requestHeader;
-        this._nodesToRegister = _nodesToRegister;
+    public RegisterNodesRequest(RequestHeader requestHeader, NodeId[] nodesToRegister) {
+        this.requestHeader = requestHeader;
+        this.nodesToRegister = nodesToRegister;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public NodeId[] getNodesToRegister() { return _nodesToRegister; }
+    public NodeId[] getNodesToRegister() { return nodesToRegister; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,40 +60,30 @@ public class RegisterNodesRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("NodesToRegister", _nodesToRegister)
+            .add("RequestHeader", requestHeader)
+            .add("NodesToRegister", nodesToRegister)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RegisterNodesRequest> {
-        @Override
-        public RegisterNodesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            NodeId[] _nodesToRegister = reader.readArray(reader::readNodeId, NodeId.class);
+    public static class Codec extends BuiltinDataTypeCodec<RegisterNodesRequest> {
 
-            return new RegisterNodesRequest(_requestHeader, _nodesToRegister);
+        @Override
+        public Class<RegisterNodesRequest> getType() {
+            return RegisterNodesRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterNodesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(value._nodesToRegister, writer::writeNodeId);
-        }
-    }
+        public RegisterNodesRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            NodeId[] nodesToRegister = decoder.readArray("NodesToRegister", decoder::readNodeId, NodeId.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<RegisterNodesRequest> {
-        @Override
-        public RegisterNodesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            NodeId[] _nodesToRegister = reader.readArray("NodesToRegister", reader::readNodeId, NodeId.class);
-
-            return new RegisterNodesRequest(_requestHeader, _nodesToRegister);
+            return new RegisterNodesRequest(requestHeader, nodesToRegister);
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterNodesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray("NodesToRegister", encodable._nodesToRegister, writer::writeNodeId);
+        public void encode(RegisterNodesRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeArray("NodesToRegister", value.nodesToRegister, encoder::writeNodeId);
         }
     }
 

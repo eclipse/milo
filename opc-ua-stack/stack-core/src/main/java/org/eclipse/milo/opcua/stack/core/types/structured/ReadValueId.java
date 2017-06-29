@@ -16,52 +16,46 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ReadValueId")
 public class ReadValueId implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ReadValueId;
     public static final NodeId BinaryEncodingId = Identifiers.ReadValueId_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadValueId_Encoding_DefaultXml;
 
-    protected final NodeId _nodeId;
-    protected final UInteger _attributeId;
-    protected final String _indexRange;
-    protected final QualifiedName _dataEncoding;
+    protected final NodeId nodeId;
+    protected final UInteger attributeId;
+    protected final String indexRange;
+    protected final QualifiedName dataEncoding;
 
     public ReadValueId() {
-        this._nodeId = null;
-        this._attributeId = null;
-        this._indexRange = null;
-        this._dataEncoding = null;
+        this.nodeId = null;
+        this.attributeId = null;
+        this.indexRange = null;
+        this.dataEncoding = null;
     }
 
-    public ReadValueId(NodeId _nodeId, UInteger _attributeId, String _indexRange, QualifiedName _dataEncoding) {
-        this._nodeId = _nodeId;
-        this._attributeId = _attributeId;
-        this._indexRange = _indexRange;
-        this._dataEncoding = _dataEncoding;
+    public ReadValueId(NodeId nodeId, UInteger attributeId, String indexRange, QualifiedName dataEncoding) {
+        this.nodeId = nodeId;
+        this.attributeId = attributeId;
+        this.indexRange = indexRange;
+        this.dataEncoding = dataEncoding;
     }
 
-    public NodeId getNodeId() { return _nodeId; }
+    public NodeId getNodeId() { return nodeId; }
 
-    public UInteger getAttributeId() { return _attributeId; }
+    public UInteger getAttributeId() { return attributeId; }
 
-    public String getIndexRange() { return _indexRange; }
+    public String getIndexRange() { return indexRange; }
 
-    public QualifiedName getDataEncoding() { return _dataEncoding; }
+    public QualifiedName getDataEncoding() { return dataEncoding; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -75,50 +69,36 @@ public class ReadValueId implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("AttributeId", _attributeId)
-            .add("IndexRange", _indexRange)
-            .add("DataEncoding", _dataEncoding)
+            .add("NodeId", nodeId)
+            .add("AttributeId", attributeId)
+            .add("IndexRange", indexRange)
+            .add("DataEncoding", dataEncoding)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReadValueId> {
-        @Override
-        public ReadValueId decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            UInteger _attributeId = reader.readUInt32();
-            String _indexRange = reader.readString();
-            QualifiedName _dataEncoding = reader.readQualifiedName();
+    public static class Codec extends BuiltinDataTypeCodec<ReadValueId> {
 
-            return new ReadValueId(_nodeId, _attributeId, _indexRange, _dataEncoding);
+        @Override
+        public Class<ReadValueId> getType() {
+            return ReadValueId.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReadValueId value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeUInt32(value._attributeId);
-            writer.writeString(value._indexRange);
-            writer.writeQualifiedName(value._dataEncoding);
-        }
-    }
+        public ReadValueId decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            UInteger attributeId = decoder.readUInt32("AttributeId");
+            String indexRange = decoder.readString("IndexRange");
+            QualifiedName dataEncoding = decoder.readQualifiedName("DataEncoding");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReadValueId> {
-        @Override
-        public ReadValueId decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            UInteger _attributeId = reader.readUInt32("AttributeId");
-            String _indexRange = reader.readString("IndexRange");
-            QualifiedName _dataEncoding = reader.readQualifiedName("DataEncoding");
-
-            return new ReadValueId(_nodeId, _attributeId, _indexRange, _dataEncoding);
+            return new ReadValueId(nodeId, attributeId, indexRange, dataEncoding);
         }
 
         @Override
-        public void encode(SerializationContext context, ReadValueId encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeUInt32("AttributeId", encodable._attributeId);
-            writer.writeString("IndexRange", encodable._indexRange);
-            writer.writeQualifiedName("DataEncoding", encodable._dataEncoding);
+        public void encode(ReadValueId value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeUInt32("AttributeId", value.attributeId);
+            encoder.writeString("IndexRange", value.indexRange);
+            encoder.writeQualifiedName("DataEncoding", value.dataEncoding);
         }
     }
 

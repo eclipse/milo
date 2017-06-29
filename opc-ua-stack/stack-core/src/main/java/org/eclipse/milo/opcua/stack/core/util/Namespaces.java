@@ -17,6 +17,8 @@ public class Namespaces {
 
     public static final String OPC_UA = "http://opcfoundation.org/UA/";
 
+    public static final String OPC_UA_BSD = "http://opcfoundation.org/BinarySchema/";
+
     public static final String OPC_UA_XSD = "http://opcfoundation.org/UA/2008/02/Types.xsd";
 
     public static final String XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";

@@ -16,40 +16,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RepublishResponse")
 public class RepublishResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.RepublishResponse;
     public static final NodeId BinaryEncodingId = Identifiers.RepublishResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RepublishResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final NotificationMessage _notificationMessage;
+    protected final ResponseHeader responseHeader;
+    protected final NotificationMessage notificationMessage;
 
     public RepublishResponse() {
-        this._responseHeader = null;
-        this._notificationMessage = null;
+        this.responseHeader = null;
+        this.notificationMessage = null;
     }
 
-    public RepublishResponse(ResponseHeader _responseHeader, NotificationMessage _notificationMessage) {
-        this._responseHeader = _responseHeader;
-        this._notificationMessage = _notificationMessage;
+    public RepublishResponse(ResponseHeader responseHeader, NotificationMessage notificationMessage) {
+        this.responseHeader = responseHeader;
+        this.notificationMessage = notificationMessage;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
-    public NotificationMessage getNotificationMessage() { return _notificationMessage; }
+    public NotificationMessage getNotificationMessage() { return notificationMessage; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class RepublishResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("NotificationMessage", _notificationMessage)
+            .add("ResponseHeader", responseHeader)
+            .add("NotificationMessage", notificationMessage)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RepublishResponse> {
-        @Override
-        public RepublishResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(NotificationMessage.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<RepublishResponse> {
 
-            return new RepublishResponse(_responseHeader, _notificationMessage);
+        @Override
+        public Class<RepublishResponse> getType() {
+            return RepublishResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, RepublishResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            context.encode(NotificationMessage.BinaryEncodingId, value._notificationMessage, writer);
-        }
-    }
+        public RepublishResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            NotificationMessage notificationMessage = (NotificationMessage) decoder.readBuiltinStruct("NotificationMessage", NotificationMessage.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<RepublishResponse> {
-        @Override
-        public RepublishResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(NotificationMessage.XmlEncodingId, reader);
-
-            return new RepublishResponse(_responseHeader, _notificationMessage);
+            return new RepublishResponse(responseHeader, notificationMessage);
         }
 
         @Override
-        public void encode(SerializationContext context, RepublishResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            context.encode(NotificationMessage.XmlEncodingId, encodable._notificationMessage, writer);
+        public void encode(RepublishResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStruct("NotificationMessage", value.notificationMessage, NotificationMessage.class);
         }
     }
 

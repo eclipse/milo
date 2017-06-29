@@ -16,45 +16,39 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("MethodNode")
 public class MethodNode extends InstanceNode {
 
     public static final NodeId TypeId = Identifiers.MethodNode;
     public static final NodeId BinaryEncodingId = Identifiers.MethodNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.MethodNode_Encoding_DefaultXml;
 
-    protected final Boolean _executable;
-    protected final Boolean _userExecutable;
+    protected final Boolean executable;
+    protected final Boolean userExecutable;
 
     public MethodNode() {
         super(null, null, null, null, null, null, null, null);
-        this._executable = null;
-        this._userExecutable = null;
+        this.executable = null;
+        this.userExecutable = null;
     }
 
-    public MethodNode(NodeId _nodeId, NodeClass _nodeClass, QualifiedName _browseName, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, ReferenceNode[] _references, Boolean _executable, Boolean _userExecutable) {
-        super(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
-        this._executable = _executable;
-        this._userExecutable = _userExecutable;
+    public MethodNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Boolean executable, Boolean userExecutable) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+        this.executable = executable;
+        this.userExecutable = userExecutable;
     }
 
-    public Boolean getExecutable() { return _executable; }
+    public Boolean getExecutable() { return executable; }
 
-    public Boolean getUserExecutable() { return _userExecutable; }
+    public Boolean getUserExecutable() { return userExecutable; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,98 +62,62 @@ public class MethodNode extends InstanceNode {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("NodeClass", _nodeClass)
-            .add("BrowseName", _browseName)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("References", _references)
-            .add("Executable", _executable)
-            .add("UserExecutable", _userExecutable)
+            .add("NodeId", nodeId)
+            .add("NodeClass", nodeClass)
+            .add("BrowseName", browseName)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("References", references)
+            .add("Executable", executable)
+            .add("UserExecutable", userExecutable)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MethodNode> {
-        @Override
-        public MethodNode decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
-            QualifiedName _browseName = reader.readQualifiedName();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
-            UInteger _writeMask = reader.readUInt32();
-            UInteger _userWriteMask = reader.readUInt32();
-            ReferenceNode[] _references =
-                reader.readArray(
-                    () -> (ReferenceNode) context.decode(
-                        ReferenceNode.BinaryEncodingId, reader),
-                    ReferenceNode.class
-                );
-            Boolean _executable = reader.readBoolean();
-            Boolean _userExecutable = reader.readBoolean();
+    public static class Codec extends BuiltinDataTypeCodec<MethodNode> {
 
-            return new MethodNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _executable, _userExecutable);
+        @Override
+        public Class<MethodNode> getType() {
+            return MethodNode.class;
         }
 
         @Override
-        public void encode(SerializationContext context, MethodNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
-            writer.writeQualifiedName(value._browseName);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-            writer.writeUInt32(value._writeMask);
-            writer.writeUInt32(value._userWriteMask);
-            writer.writeArray(
-                value._references,
-                e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
-            );
-            writer.writeBoolean(value._executable);
-            writer.writeBoolean(value._userExecutable);
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<MethodNode> {
-        @Override
-        public MethodNode decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
-            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-            UInteger _writeMask = reader.readUInt32("WriteMask");
-            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
-            ReferenceNode[] _references =
-                reader.readArray(
+        public MethodNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            ReferenceNode[] references =
+                decoder.readBuiltinStructArray(
                     "References",
-                    f -> (ReferenceNode) context.decode(
-                        ReferenceNode.XmlEncodingId, reader),
                     ReferenceNode.class
                 );
-            Boolean _executable = reader.readBoolean("Executable");
-            Boolean _userExecutable = reader.readBoolean("UserExecutable");
+            Boolean executable = decoder.readBoolean("Executable");
+            Boolean userExecutable = decoder.readBoolean("UserExecutable");
 
-            return new MethodNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _executable, _userExecutable);
+            return new MethodNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, executable, userExecutable);
         }
 
         @Override
-        public void encode(SerializationContext context, MethodNode encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeQualifiedName("BrowseName", encodable._browseName);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
-            writer.writeUInt32("WriteMask", encodable._writeMask);
-            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
-            writer.writeArray(
+        public void encode(MethodNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBuiltinStructArray(
                 "References",
-                encodable._references,
-                (f, e) -> context.encode(ReferenceNode.XmlEncodingId, e, writer)
+                value.references,
+                ReferenceNode.class
             );
-            writer.writeBoolean("Executable", encodable._executable);
-            writer.writeBoolean("UserExecutable", encodable._userExecutable);
+            encoder.writeBoolean("Executable", value.executable);
+            encoder.writeBoolean("UserExecutable", value.userExecutable);
         }
     }
 

@@ -18,38 +18,32 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("DeleteAtTimeDetails")
 public class DeleteAtTimeDetails extends HistoryUpdateDetails {
 
     public static final NodeId TypeId = Identifiers.DeleteAtTimeDetails;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteAtTimeDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteAtTimeDetails_Encoding_DefaultXml;
 
-    protected final DateTime[] _reqTimes;
+    protected final DateTime[] reqTimes;
 
     public DeleteAtTimeDetails() {
         super(null);
-        this._reqTimes = null;
+        this.reqTimes = null;
     }
 
-    public DeleteAtTimeDetails(NodeId _nodeId, DateTime[] _reqTimes) {
-        super(_nodeId);
-        this._reqTimes = _reqTimes;
+    public DeleteAtTimeDetails(NodeId nodeId, DateTime[] reqTimes) {
+        super(nodeId);
+        this.reqTimes = reqTimes;
     }
 
     @Nullable
-    public DateTime[] getReqTimes() { return _reqTimes; }
+    public DateTime[] getReqTimes() { return reqTimes; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("ReqTimes", _reqTimes)
+            .add("NodeId", nodeId)
+            .add("ReqTimes", reqTimes)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DeleteAtTimeDetails> {
-        @Override
-        public DeleteAtTimeDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            DateTime[] _reqTimes = reader.readArray(reader::readDateTime, DateTime.class);
+    public static class Codec extends BuiltinDataTypeCodec<DeleteAtTimeDetails> {
 
-            return new DeleteAtTimeDetails(_nodeId, _reqTimes);
+        @Override
+        public Class<DeleteAtTimeDetails> getType() {
+            return DeleteAtTimeDetails.class;
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteAtTimeDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeArray(value._reqTimes, writer::writeDateTime);
-        }
-    }
+        public DeleteAtTimeDetails decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            DateTime[] reqTimes = decoder.readArray("ReqTimes", decoder::readDateTime, DateTime.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<DeleteAtTimeDetails> {
-        @Override
-        public DeleteAtTimeDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            DateTime[] _reqTimes = reader.readArray("ReqTimes", reader::readDateTime, DateTime.class);
-
-            return new DeleteAtTimeDetails(_nodeId, _reqTimes);
+            return new DeleteAtTimeDetails(nodeId, reqTimes);
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteAtTimeDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeArray("ReqTimes", encodable._reqTimes, writer::writeDateTime);
+        public void encode(DeleteAtTimeDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeArray("ReqTimes", value.reqTimes, encoder::writeDateTime);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,13 +11,14 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.codec;
+package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
@@ -26,6 +27,11 @@ import io.netty.buffer.ByteBufProcessor;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -51,7 +57,9 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class OpcBinaryStreamReader {
+public class OpcUaBinaryStreamDecoder implements UaDecoder {
+
+    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
 
     private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
     private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
@@ -64,26 +72,26 @@ public class OpcBinaryStreamReader {
     private final int maxArrayLength;
     private final int maxStringLength;
 
-    public OpcBinaryStreamReader() {
+    public OpcUaBinaryStreamDecoder() {
         this(ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH, ChannelConfig.DEFAULT_MAX_STRING_LENGTH);
     }
 
-    public OpcBinaryStreamReader(ByteBuf buffer) {
+    public OpcUaBinaryStreamDecoder(ByteBuf buffer) {
         this(buffer, ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH, ChannelConfig.DEFAULT_MAX_STRING_LENGTH);
     }
 
-    public OpcBinaryStreamReader(int maxArrayLength, int maxStringLength) {
+    public OpcUaBinaryStreamDecoder(int maxArrayLength, int maxStringLength) {
         this.maxArrayLength = maxArrayLength;
         this.maxStringLength = maxStringLength;
     }
 
-    public OpcBinaryStreamReader(ByteBuf buffer, int maxArrayLength, int maxStringLength) {
+    public OpcUaBinaryStreamDecoder(ByteBuf buffer, int maxArrayLength, int maxStringLength) {
         this.buffer = buffer;
         this.maxArrayLength = maxArrayLength;
         this.maxStringLength = maxStringLength;
     }
 
-    public OpcBinaryStreamReader setBuffer(ByteBuf buffer) {
+    public OpcUaBinaryStreamDecoder setBuffer(ByteBuf buffer) {
         this.buffer = buffer;
         return this;
     }
@@ -514,6 +522,254 @@ public class OpcBinaryStreamReader {
             default:
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError, "unknown builtin type: " + typeId);
         }
+    }
+
+    @Override
+    public Boolean readBoolean(String field) throws UaSerializationException {
+        return readBoolean();
+    }
+
+    @Override
+    public Byte readSByte(String field) throws UaSerializationException {
+        return readSByte();
+    }
+
+    @Override
+    public Short readInt16(String field) throws UaSerializationException {
+        return readInt16();
+    }
+
+    @Override
+    public Integer readInt32(String field) throws UaSerializationException {
+        return readInt32();
+    }
+
+    @Override
+    public Long readInt64(String field) throws UaSerializationException {
+        return readInt64();
+    }
+
+    @Override
+    public UByte readByte(String field) throws UaSerializationException {
+        return readByte();
+    }
+
+    @Override
+    public UShort readUInt16(String field) throws UaSerializationException {
+        return readUInt16();
+    }
+
+    @Override
+    public UInteger readUInt32(String field) throws UaSerializationException {
+        return readUInt32();
+    }
+
+    @Override
+    public ULong readUInt64(String field) throws UaSerializationException {
+        return readUInt64();
+    }
+
+    @Override
+    public Float readFloat(String field) throws UaSerializationException {
+        return readFloat();
+    }
+
+    @Override
+    public Double readDouble(String field) throws UaSerializationException {
+        return readDouble();
+    }
+
+    @Override
+    public String readString(String field) throws UaSerializationException {
+        return readString();
+    }
+
+    @Override
+    public DateTime readDateTime(String field) throws UaSerializationException {
+        return readDateTime();
+    }
+
+    @Override
+    public UUID readGuid(String field) throws UaSerializationException {
+        return readGuid();
+    }
+
+    @Override
+    public ByteString readByteString(String field) throws UaSerializationException {
+        return readByteString();
+    }
+
+    @Override
+    public XmlElement readXmlElement(String field) throws UaSerializationException {
+        return readXmlElement();
+    }
+
+    @Override
+    public NodeId readNodeId(String field) throws UaSerializationException {
+        return readNodeId();
+    }
+
+    @Override
+    public ExpandedNodeId readExpandedNodeId(String field) throws UaSerializationException {
+        return readExpandedNodeId();
+    }
+
+    @Override
+    public StatusCode readStatusCode(String field) throws UaSerializationException {
+        return readStatusCode();
+    }
+
+    @Override
+    public QualifiedName readQualifiedName(String field) throws UaSerializationException {
+        return readQualifiedName();
+    }
+
+    @Override
+    public LocalizedText readLocalizedText(String field) throws UaSerializationException {
+        return readLocalizedText();
+    }
+
+    @Override
+    public ExtensionObject readExtensionObject(String field) throws UaSerializationException {
+        return readExtensionObject();
+    }
+
+    @Override
+    public DataValue readDataValue(String field) throws UaSerializationException {
+        return readDataValue();
+    }
+
+    @Override
+    public Variant readVariant(String field) throws UaSerializationException {
+        return readVariant();
+    }
+
+    @Override
+    public DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException {
+        return readDiagnosticInfo();
+    }
+
+    @Override
+    public <T> T[] readArray(
+        String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException {
+
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            if (length > maxArrayLength) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingLimitsExceeded,
+                    String.format("max array length exceeded (length=%s, max=%s)", length, maxArrayLength)
+                );
+            }
+
+            @SuppressWarnings("unchecked")
+            T[] array = (T[]) Array.newInstance(clazz, length);
+
+            for (int i = 0; i < length; i++) {
+                Array.set(array, i, decoder.apply(field));
+            }
+
+            return array;
+        }
+    }
+
+    @Override
+    public <T extends UaStructure> T readBuiltinStruct(String field, Class<T> clazz) throws UaSerializationException {
+        try {
+            @SuppressWarnings("unchecked")
+            BuiltinDataTypeCodec<UaStructure> codec =
+                (BuiltinDataTypeCodec<UaStructure>) BuiltinDataTypeDictionary.getBuiltinCodec(clazz);
+
+            if (codec == null) {
+                throw new UaSerializationException(StatusCodes.Bad_DecodingError, "No codec registered:" + clazz);
+            } else {
+                @SuppressWarnings("unchecked")
+                T value = (T) codec.decode(SERIALIZATION_CONTEXT, this);
+
+                return value;
+            }
+        } catch (ClassCastException e) {
+            throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
+        }
+    }
+
+    @Override
+    public <T extends UaStructure> T[] readBuiltinStructArray(
+        String field, Class<T> clazz) throws UaSerializationException {
+
+        return readArray(field, s -> readBuiltinStruct(s, clazz), clazz);
+    }
+
+    @Override
+    public Object readStruct(String field, NodeId encodingId) throws UaSerializationException {
+        OpcUaBinaryDataTypeCodec<?> binaryCodec =
+            OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
+
+        if (binaryCodec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + encodingId
+            );
+        }
+
+        return binaryCodec.decode(null, this);
+    }
+
+    @Override
+    public Object[] readStructArray(String field, NodeId encodingId) throws UaSerializationException {
+        int length = readInt32();
+
+        if (length == -1) {
+            return null;
+        } else {
+            if (length > maxArrayLength) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingLimitsExceeded,
+                    String.format("max array length exceeded (length=%s, max=%s)", length, maxArrayLength)
+                );
+            }
+
+            OpcUaBinaryDataTypeCodec<?> binaryCodec =
+                OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
+
+            if (binaryCodec == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_DecodingError,
+                    "no codec registered: " + encodingId
+                );
+            }
+
+            Class<?> clazz = binaryCodec.getType();
+            Object array = Array.newInstance(clazz, length);
+
+            for (int i = 0; i < length; i++) {
+                Object value = binaryCodec.decode(SERIALIZATION_CONTEXT, this);
+
+                Array.set(array, i, value);
+            }
+
+            return (Object[]) array;
+        }
+    }
+
+    @Override
+    public UaMessage readMessage(String field) throws UaSerializationException {
+        NodeId encodingId = readNodeId();
+
+        OpcUaBinaryDataTypeCodec<?> binaryCodec =
+            OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
+
+        if (binaryCodec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + encodingId
+            );
+        }
+
+        return (UaMessage) binaryCodec.decode(SERIALIZATION_CONTEXT, this);
     }
 
 }

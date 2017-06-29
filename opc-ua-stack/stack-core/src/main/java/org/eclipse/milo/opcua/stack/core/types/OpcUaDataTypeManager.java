@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,17 +11,15 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization;
+package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Maps;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.DataTypeDictionary;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class OpcUaDataTypeManager implements DataTypeManager {
@@ -66,11 +64,11 @@ public class OpcUaDataTypeManager implements DataTypeManager {
 
     @Nullable
     @Override
-    public OpcBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId) {
+    public OpcUaBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId) {
         DataTypeCodec codec = codecs.get(encodingId);
 
-        if (codec instanceof OpcBinaryDataTypeCodec) {
-            return (OpcBinaryDataTypeCodec) codec;
+        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+            return (OpcUaBinaryDataTypeCodec) codec;
         } else {
             return null;
         }
@@ -78,11 +76,11 @@ public class OpcUaDataTypeManager implements DataTypeManager {
 
     @Nullable
     @Override
-    public OpcXmlDataTypeCodec<?> getXmlCodec(NodeId encodingId) {
+    public OpcUaXmlDataTypeCodec<?> getXmlCodec(NodeId encodingId) {
         DataTypeCodec codec = codecs.get(encodingId);
 
-        if (codec instanceof OpcXmlDataTypeCodec) {
-            return (OpcXmlDataTypeCodec) codec;
+        if (codec instanceof OpcUaXmlDataTypeCodec) {
+            return (OpcUaXmlDataTypeCodec) codec;
         } else {
             return null;
         }

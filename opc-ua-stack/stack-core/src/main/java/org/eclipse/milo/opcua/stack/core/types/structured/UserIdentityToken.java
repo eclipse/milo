@@ -16,35 +16,29 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("UserIdentityToken")
 public class UserIdentityToken implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.UserIdentityToken;
     public static final NodeId BinaryEncodingId = Identifiers.UserIdentityToken_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.UserIdentityToken_Encoding_DefaultXml;
 
-    protected final String _policyId;
+    protected final String policyId;
 
     public UserIdentityToken() {
-        this._policyId = null;
+        this.policyId = null;
     }
 
-    public UserIdentityToken(String _policyId) {
-        this._policyId = _policyId;
+    public UserIdentityToken(String policyId) {
+        this.policyId = policyId;
     }
 
-    public String getPolicyId() { return _policyId; }
+    public String getPolicyId() { return policyId; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,35 +52,27 @@ public class UserIdentityToken implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("PolicyId", _policyId)
+            .add("PolicyId", policyId)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UserIdentityToken> {
-        @Override
-        public UserIdentityToken decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString();
+    public static class Codec extends BuiltinDataTypeCodec<UserIdentityToken> {
 
-            return new UserIdentityToken(_policyId);
+        @Override
+        public Class<UserIdentityToken> getType() {
+            return UserIdentityToken.class;
         }
 
         @Override
-        public void encode(SerializationContext context, UserIdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._policyId);
-        }
-    }
+        public UserIdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+            String policyId = decoder.readString("PolicyId");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<UserIdentityToken> {
-        @Override
-        public UserIdentityToken decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString("PolicyId");
-
-            return new UserIdentityToken(_policyId);
+            return new UserIdentityToken(policyId);
         }
 
         @Override
-        public void encode(SerializationContext context, UserIdentityToken encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("PolicyId", encodable._policyId);
+        public void encode(UserIdentityToken value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("PolicyId", value.policyId);
         }
     }
 

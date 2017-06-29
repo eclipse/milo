@@ -18,43 +18,37 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReadAtTimeDetails")
 public class ReadAtTimeDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadAtTimeDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadAtTimeDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadAtTimeDetails_Encoding_DefaultXml;
 
-    protected final DateTime[] _reqTimes;
-    protected final Boolean _useSimpleBounds;
+    protected final DateTime[] reqTimes;
+    protected final Boolean useSimpleBounds;
 
     public ReadAtTimeDetails() {
         super();
-        this._reqTimes = null;
-        this._useSimpleBounds = null;
+        this.reqTimes = null;
+        this.useSimpleBounds = null;
     }
 
-    public ReadAtTimeDetails(DateTime[] _reqTimes, Boolean _useSimpleBounds) {
+    public ReadAtTimeDetails(DateTime[] reqTimes, Boolean useSimpleBounds) {
         super();
-        this._reqTimes = _reqTimes;
-        this._useSimpleBounds = _useSimpleBounds;
+        this.reqTimes = reqTimes;
+        this.useSimpleBounds = useSimpleBounds;
     }
 
     @Nullable
-    public DateTime[] getReqTimes() { return _reqTimes; }
+    public DateTime[] getReqTimes() { return reqTimes; }
 
-    public Boolean getUseSimpleBounds() { return _useSimpleBounds; }
+    public Boolean getUseSimpleBounds() { return useSimpleBounds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,40 +62,30 @@ public class ReadAtTimeDetails extends HistoryReadDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ReqTimes", _reqTimes)
-            .add("UseSimpleBounds", _useSimpleBounds)
+            .add("ReqTimes", reqTimes)
+            .add("UseSimpleBounds", useSimpleBounds)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReadAtTimeDetails> {
-        @Override
-        public ReadAtTimeDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            DateTime[] _reqTimes = reader.readArray(reader::readDateTime, DateTime.class);
-            Boolean _useSimpleBounds = reader.readBoolean();
+    public static class Codec extends BuiltinDataTypeCodec<ReadAtTimeDetails> {
 
-            return new ReadAtTimeDetails(_reqTimes, _useSimpleBounds);
+        @Override
+        public Class<ReadAtTimeDetails> getType() {
+            return ReadAtTimeDetails.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReadAtTimeDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(value._reqTimes, writer::writeDateTime);
-            writer.writeBoolean(value._useSimpleBounds);
-        }
-    }
+        public ReadAtTimeDetails decode(UaDecoder decoder) throws UaSerializationException {
+            DateTime[] reqTimes = decoder.readArray("ReqTimes", decoder::readDateTime, DateTime.class);
+            Boolean useSimpleBounds = decoder.readBoolean("UseSimpleBounds");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReadAtTimeDetails> {
-        @Override
-        public ReadAtTimeDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            DateTime[] _reqTimes = reader.readArray("ReqTimes", reader::readDateTime, DateTime.class);
-            Boolean _useSimpleBounds = reader.readBoolean("UseSimpleBounds");
-
-            return new ReadAtTimeDetails(_reqTimes, _useSimpleBounds);
+            return new ReadAtTimeDetails(reqTimes, useSimpleBounds);
         }
 
         @Override
-        public void encode(SerializationContext context, ReadAtTimeDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeArray("ReqTimes", encodable._reqTimes, writer::writeDateTime);
-            writer.writeBoolean("UseSimpleBounds", encodable._useSimpleBounds);
+        public void encode(ReadAtTimeDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeArray("ReqTimes", value.reqTimes, encoder::writeDateTime);
+            encoder.writeBoolean("UseSimpleBounds", value.useSimpleBounds);
         }
     }
 

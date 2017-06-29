@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.util.UUID;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -37,77 +36,69 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface UaDecoder {
 
-    Boolean decodeBoolean(String field) throws UaSerializationException;
+    Boolean readBoolean(String field) throws UaSerializationException;
 
-    Byte decodeSByte(String field) throws UaSerializationException;
+    Byte readSByte(String field) throws UaSerializationException;
 
-    Short decodeInt16(String field) throws UaSerializationException;
+    Short readInt16(String field) throws UaSerializationException;
 
-    Integer decodeInt32(String field) throws UaSerializationException;
+    Integer readInt32(String field) throws UaSerializationException;
 
-    Long decodeInt64(String field) throws UaSerializationException;
+    Long readInt64(String field) throws UaSerializationException;
 
-    UByte decodeByte(String field) throws UaSerializationException;
+    UByte readByte(String field) throws UaSerializationException;
 
-    UShort decodeUInt16(String field) throws UaSerializationException;
+    UShort readUInt16(String field) throws UaSerializationException;
 
-    UInteger decodeUInt32(String field) throws UaSerializationException;
+    UInteger readUInt32(String field) throws UaSerializationException;
 
-    ULong decodeUInt64(String field) throws UaSerializationException;
+    ULong readUInt64(String field) throws UaSerializationException;
 
-    Float decodeFloat(String field) throws UaSerializationException;
+    Float readFloat(String field) throws UaSerializationException;
 
-    Double decodeDouble(String field) throws UaSerializationException;
+    Double readDouble(String field) throws UaSerializationException;
 
-    String decodeString(String field) throws UaSerializationException;
+    String readString(String field) throws UaSerializationException;
 
-    DateTime decodeDateTime(String field) throws UaSerializationException;
+    DateTime readDateTime(String field) throws UaSerializationException;
 
-    UUID decodeGuid(String field) throws UaSerializationException;
+    UUID readGuid(String field) throws UaSerializationException;
 
-    ByteString decodeByteString(String field) throws UaSerializationException;
+    ByteString readByteString(String field) throws UaSerializationException;
 
-    XmlElement decodeXmlElement(String field) throws UaSerializationException;
+    XmlElement readXmlElement(String field) throws UaSerializationException;
 
-    NodeId decodeNodeId(String field) throws UaSerializationException;
+    NodeId readNodeId(String field) throws UaSerializationException;
 
-    ExpandedNodeId decodeExpandedNodeId(String field) throws UaSerializationException;
+    ExpandedNodeId readExpandedNodeId(String field) throws UaSerializationException;
 
-    StatusCode decodeStatusCode(String field) throws UaSerializationException;
+    StatusCode readStatusCode(String field) throws UaSerializationException;
 
-    QualifiedName decodeQualifiedName(String field) throws UaSerializationException;
+    QualifiedName readQualifiedName(String field) throws UaSerializationException;
 
-    LocalizedText decodeLocalizedText(String field) throws UaSerializationException;
+    LocalizedText readLocalizedText(String field) throws UaSerializationException;
 
-    ExtensionObject decodeExtensionObject(String field) throws UaSerializationException;
+    ExtensionObject readExtensionObject(String field) throws UaSerializationException;
 
-    DataValue decodeDataValue(String field) throws UaSerializationException;
+    DataValue readDataValue(String field) throws UaSerializationException;
 
-    Variant decodeVariant(String field) throws UaSerializationException;
+    Variant readVariant(String field) throws UaSerializationException;
 
-    DiagnosticInfo decodeDiagnosticInfo(String field) throws UaSerializationException;
+    DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException;
 
-    <T extends UaStructure> T decodeMessage(String field) throws UaSerializationException;
+    <T> T[] readArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
 
-    <T extends UaEnumeration> T decodeEnumeration(String field, Class<T> clazz) throws UaSerializationException;
+    <T extends UaStructure> T readBuiltinStruct(String field, Class<T> typeClass) throws UaSerializationException;
 
-    <T extends UaSerializable> T decodeSerializable(String field, Class<T> clazz) throws UaSerializationException;
-
-    <T> T decodeStructuredType(
+    <T extends UaStructure> T[] readBuiltinStructArray(
         String field,
-        String namespaceUri,
-        Class<T> typeClass) throws UaSerializationException;
+        Class<T> clazz
+    ) throws UaSerializationException;
 
-    Object decodeStructuredType(
-        String field,
-        String namespaceUri,
-        String typeName) throws UaSerializationException;
+    Object readStruct(String field, NodeId encodingId) throws UaSerializationException;
 
-    <T> T[] decodeArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
+    Object[] readStructArray(String field, NodeId encodingId) throws UaSerializationException;
 
-    <T> T[] decodeArray(
-        String field,
-        BiFunction<String, Class<T>, T> decoder,
-        Class<T> clazz) throws UaSerializationException;
+    UaMessage readMessage(String field) throws UaSerializationException;
 
 }

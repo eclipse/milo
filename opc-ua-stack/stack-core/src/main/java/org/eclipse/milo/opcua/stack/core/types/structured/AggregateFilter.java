@@ -16,52 +16,46 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("AggregateFilter")
 public class AggregateFilter extends MonitoringFilter {
 
     public static final NodeId TypeId = Identifiers.AggregateFilter;
     public static final NodeId BinaryEncodingId = Identifiers.AggregateFilter_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AggregateFilter_Encoding_DefaultXml;
 
-    protected final DateTime _startTime;
-    protected final NodeId _aggregateType;
-    protected final Double _processingInterval;
-    protected final AggregateConfiguration _aggregateConfiguration;
+    protected final DateTime startTime;
+    protected final NodeId aggregateType;
+    protected final Double processingInterval;
+    protected final AggregateConfiguration aggregateConfiguration;
 
     public AggregateFilter() {
         super();
-        this._startTime = null;
-        this._aggregateType = null;
-        this._processingInterval = null;
-        this._aggregateConfiguration = null;
+        this.startTime = null;
+        this.aggregateType = null;
+        this.processingInterval = null;
+        this.aggregateConfiguration = null;
     }
 
-    public AggregateFilter(DateTime _startTime, NodeId _aggregateType, Double _processingInterval, AggregateConfiguration _aggregateConfiguration) {
+    public AggregateFilter(DateTime startTime, NodeId aggregateType, Double processingInterval, AggregateConfiguration aggregateConfiguration) {
         super();
-        this._startTime = _startTime;
-        this._aggregateType = _aggregateType;
-        this._processingInterval = _processingInterval;
-        this._aggregateConfiguration = _aggregateConfiguration;
+        this.startTime = startTime;
+        this.aggregateType = aggregateType;
+        this.processingInterval = processingInterval;
+        this.aggregateConfiguration = aggregateConfiguration;
     }
 
-    public DateTime getStartTime() { return _startTime; }
+    public DateTime getStartTime() { return startTime; }
 
-    public NodeId getAggregateType() { return _aggregateType; }
+    public NodeId getAggregateType() { return aggregateType; }
 
-    public Double getProcessingInterval() { return _processingInterval; }
+    public Double getProcessingInterval() { return processingInterval; }
 
-    public AggregateConfiguration getAggregateConfiguration() { return _aggregateConfiguration; }
+    public AggregateConfiguration getAggregateConfiguration() { return aggregateConfiguration; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -75,50 +69,36 @@ public class AggregateFilter extends MonitoringFilter {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StartTime", _startTime)
-            .add("AggregateType", _aggregateType)
-            .add("ProcessingInterval", _processingInterval)
-            .add("AggregateConfiguration", _aggregateConfiguration)
+            .add("StartTime", startTime)
+            .add("AggregateType", aggregateType)
+            .add("ProcessingInterval", processingInterval)
+            .add("AggregateConfiguration", aggregateConfiguration)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AggregateFilter> {
-        @Override
-        public AggregateFilter decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            DateTime _startTime = reader.readDateTime();
-            NodeId _aggregateType = reader.readNodeId();
-            Double _processingInterval = reader.readDouble();
-            AggregateConfiguration _aggregateConfiguration = (AggregateConfiguration) context.decode(AggregateConfiguration.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<AggregateFilter> {
 
-            return new AggregateFilter(_startTime, _aggregateType, _processingInterval, _aggregateConfiguration);
+        @Override
+        public Class<AggregateFilter> getType() {
+            return AggregateFilter.class;
         }
 
         @Override
-        public void encode(SerializationContext context, AggregateFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(value._startTime);
-            writer.writeNodeId(value._aggregateType);
-            writer.writeDouble(value._processingInterval);
-            context.encode(AggregateConfiguration.BinaryEncodingId, value._aggregateConfiguration, writer);
-        }
-    }
+        public AggregateFilter decode(UaDecoder decoder) throws UaSerializationException {
+            DateTime startTime = decoder.readDateTime("StartTime");
+            NodeId aggregateType = decoder.readNodeId("AggregateType");
+            Double processingInterval = decoder.readDouble("ProcessingInterval");
+            AggregateConfiguration aggregateConfiguration = (AggregateConfiguration) decoder.readBuiltinStruct("AggregateConfiguration", AggregateConfiguration.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<AggregateFilter> {
-        @Override
-        public AggregateFilter decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            DateTime _startTime = reader.readDateTime("StartTime");
-            NodeId _aggregateType = reader.readNodeId("AggregateType");
-            Double _processingInterval = reader.readDouble("ProcessingInterval");
-            AggregateConfiguration _aggregateConfiguration = (AggregateConfiguration) context.decode(AggregateConfiguration.XmlEncodingId, reader);
-
-            return new AggregateFilter(_startTime, _aggregateType, _processingInterval, _aggregateConfiguration);
+            return new AggregateFilter(startTime, aggregateType, processingInterval, aggregateConfiguration);
         }
 
         @Override
-        public void encode(SerializationContext context, AggregateFilter encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime("StartTime", encodable._startTime);
-            writer.writeNodeId("AggregateType", encodable._aggregateType);
-            writer.writeDouble("ProcessingInterval", encodable._processingInterval);
-            context.encode(AggregateConfiguration.XmlEncodingId, encodable._aggregateConfiguration, writer);
+        public void encode(AggregateFilter value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeDateTime("StartTime", value.startTime);
+            encoder.writeNodeId("AggregateType", value.aggregateType);
+            encoder.writeDouble("ProcessingInterval", value.processingInterval);
+            encoder.writeBuiltinStruct("AggregateConfiguration", value.aggregateConfiguration, AggregateConfiguration.class);
         }
     }
 

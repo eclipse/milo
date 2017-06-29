@@ -18,56 +18,50 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-@UaDataType("CallMethodResult")
 public class CallMethodResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.CallMethodResult;
     public static final NodeId BinaryEncodingId = Identifiers.CallMethodResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CallMethodResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final StatusCode[] _inputArgumentResults;
-    protected final DiagnosticInfo[] _inputArgumentDiagnosticInfos;
-    protected final Variant[] _outputArguments;
+    protected final StatusCode statusCode;
+    protected final StatusCode[] inputArgumentResults;
+    protected final DiagnosticInfo[] inputArgumentDiagnosticInfos;
+    protected final Variant[] outputArguments;
 
     public CallMethodResult() {
-        this._statusCode = null;
-        this._inputArgumentResults = null;
-        this._inputArgumentDiagnosticInfos = null;
-        this._outputArguments = null;
+        this.statusCode = null;
+        this.inputArgumentResults = null;
+        this.inputArgumentDiagnosticInfos = null;
+        this.outputArguments = null;
     }
 
-    public CallMethodResult(StatusCode _statusCode, StatusCode[] _inputArgumentResults, DiagnosticInfo[] _inputArgumentDiagnosticInfos, Variant[] _outputArguments) {
-        this._statusCode = _statusCode;
-        this._inputArgumentResults = _inputArgumentResults;
-        this._inputArgumentDiagnosticInfos = _inputArgumentDiagnosticInfos;
-        this._outputArguments = _outputArguments;
+    public CallMethodResult(StatusCode statusCode, StatusCode[] inputArgumentResults, DiagnosticInfo[] inputArgumentDiagnosticInfos, Variant[] outputArguments) {
+        this.statusCode = statusCode;
+        this.inputArgumentResults = inputArgumentResults;
+        this.inputArgumentDiagnosticInfos = inputArgumentDiagnosticInfos;
+        this.outputArguments = outputArguments;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
     @Nullable
-    public StatusCode[] getInputArgumentResults() { return _inputArgumentResults; }
+    public StatusCode[] getInputArgumentResults() { return inputArgumentResults; }
 
     @Nullable
-    public DiagnosticInfo[] getInputArgumentDiagnosticInfos() { return _inputArgumentDiagnosticInfos; }
+    public DiagnosticInfo[] getInputArgumentDiagnosticInfos() { return inputArgumentDiagnosticInfos; }
 
     @Nullable
-    public Variant[] getOutputArguments() { return _outputArguments; }
+    public Variant[] getOutputArguments() { return outputArguments; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -81,50 +75,36 @@ public class CallMethodResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("InputArgumentResults", _inputArgumentResults)
-            .add("InputArgumentDiagnosticInfos", _inputArgumentDiagnosticInfos)
-            .add("OutputArguments", _outputArguments)
+            .add("StatusCode", statusCode)
+            .add("InputArgumentResults", inputArgumentResults)
+            .add("InputArgumentDiagnosticInfos", inputArgumentDiagnosticInfos)
+            .add("OutputArguments", outputArguments)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CallMethodResult> {
-        @Override
-        public CallMethodResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode();
-            StatusCode[] _inputArgumentResults = reader.readArray(reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _inputArgumentDiagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
-            Variant[] _outputArguments = reader.readArray(reader::readVariant, Variant.class);
+    public static class Codec extends BuiltinDataTypeCodec<CallMethodResult> {
 
-            return new CallMethodResult(_statusCode, _inputArgumentResults, _inputArgumentDiagnosticInfos, _outputArguments);
+        @Override
+        public Class<CallMethodResult> getType() {
+            return CallMethodResult.class;
         }
 
         @Override
-        public void encode(SerializationContext context, CallMethodResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(value._statusCode);
-            writer.writeArray(value._inputArgumentResults, writer::writeStatusCode);
-            writer.writeArray(value._inputArgumentDiagnosticInfos, writer::writeDiagnosticInfo);
-            writer.writeArray(value._outputArguments, writer::writeVariant);
-        }
-    }
+        public CallMethodResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            StatusCode[] inputArgumentResults = decoder.readArray("InputArgumentResults", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] inputArgumentDiagnosticInfos = decoder.readArray("InputArgumentDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
+            Variant[] outputArguments = decoder.readArray("OutputArguments", decoder::readVariant, Variant.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<CallMethodResult> {
-        @Override
-        public CallMethodResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode("StatusCode");
-            StatusCode[] _inputArgumentResults = reader.readArray("InputArgumentResults", reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _inputArgumentDiagnosticInfos = reader.readArray("InputArgumentDiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-            Variant[] _outputArguments = reader.readArray("OutputArguments", reader::readVariant, Variant.class);
-
-            return new CallMethodResult(_statusCode, _inputArgumentResults, _inputArgumentDiagnosticInfos, _outputArguments);
+            return new CallMethodResult(statusCode, inputArgumentResults, inputArgumentDiagnosticInfos, outputArguments);
         }
 
         @Override
-        public void encode(SerializationContext context, CallMethodResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode("StatusCode", encodable._statusCode);
-            writer.writeArray("InputArgumentResults", encodable._inputArgumentResults, writer::writeStatusCode);
-            writer.writeArray("InputArgumentDiagnosticInfos", encodable._inputArgumentDiagnosticInfos, writer::writeDiagnosticInfo);
-            writer.writeArray("OutputArguments", encodable._outputArguments, writer::writeVariant);
+        public void encode(CallMethodResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeArray("InputArgumentResults", value.inputArgumentResults, encoder::writeStatusCode);
+            encoder.writeArray("InputArgumentDiagnosticInfos", value.inputArgumentDiagnosticInfos, encoder::writeDiagnosticInfo);
+            encoder.writeArray("OutputArguments", value.outputArguments, encoder::writeVariant);
         }
     }
 

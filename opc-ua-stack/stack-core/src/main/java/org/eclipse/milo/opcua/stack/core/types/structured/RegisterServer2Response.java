@@ -18,49 +18,43 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("RegisterServer2Response")
 public class RegisterServer2Response implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterServer2Response;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterServer2Response_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterServer2Response_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final StatusCode[] _configurationResults;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final StatusCode[] configurationResults;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public RegisterServer2Response() {
-        this._responseHeader = null;
-        this._configurationResults = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.configurationResults = null;
+        this.diagnosticInfos = null;
     }
 
-    public RegisterServer2Response(ResponseHeader _responseHeader, StatusCode[] _configurationResults, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._configurationResults = _configurationResults;
-        this._diagnosticInfos = _diagnosticInfos;
+    public RegisterServer2Response(ResponseHeader responseHeader, StatusCode[] configurationResults, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.configurationResults = configurationResults;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public StatusCode[] getConfigurationResults() { return _configurationResults; }
+    public StatusCode[] getConfigurationResults() { return configurationResults; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -74,45 +68,33 @@ public class RegisterServer2Response implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("ConfigurationResults", _configurationResults)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("ConfigurationResults", configurationResults)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RegisterServer2Response> {
-        @Override
-        public RegisterServer2Response decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            StatusCode[] _configurationResults = reader.readArray(reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+    public static class Codec extends BuiltinDataTypeCodec<RegisterServer2Response> {
 
-            return new RegisterServer2Response(_responseHeader, _configurationResults, _diagnosticInfos);
+        @Override
+        public Class<RegisterServer2Response> getType() {
+            return RegisterServer2Response.class;
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServer2Response value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeArray(value._configurationResults, writer::writeStatusCode);
-            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
-        }
-    }
+        public RegisterServer2Response decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            StatusCode[] configurationResults = decoder.readArray("ConfigurationResults", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<RegisterServer2Response> {
-        @Override
-        public RegisterServer2Response decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            StatusCode[] _configurationResults = reader.readArray("ConfigurationResults", reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-
-            return new RegisterServer2Response(_responseHeader, _configurationResults, _diagnosticInfos);
+            return new RegisterServer2Response(responseHeader, configurationResults, diagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServer2Response encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeArray("ConfigurationResults", encodable._configurationResults, writer::writeStatusCode);
-            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(RegisterServer2Response value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeArray("ConfigurationResults", value.configurationResults, encoder::writeStatusCode);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
         }
     }
 

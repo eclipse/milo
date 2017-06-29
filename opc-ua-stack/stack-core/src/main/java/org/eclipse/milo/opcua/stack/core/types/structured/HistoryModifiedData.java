@@ -18,44 +18,38 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("HistoryModifiedData")
 public class HistoryModifiedData extends HistoryData {
 
     public static final NodeId TypeId = Identifiers.HistoryModifiedData;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryModifiedData_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryModifiedData_Encoding_DefaultXml;
 
-    protected final DataValue[] _dataValues;
-    protected final ModificationInfo[] _modificationInfos;
+    protected final DataValue[] dataValues;
+    protected final ModificationInfo[] modificationInfos;
 
     public HistoryModifiedData() {
         super();
-        this._dataValues = null;
-        this._modificationInfos = null;
+        this.dataValues = null;
+        this.modificationInfos = null;
     }
 
-    public HistoryModifiedData(DataValue[] _dataValues, ModificationInfo[] _modificationInfos) {
+    public HistoryModifiedData(DataValue[] dataValues, ModificationInfo[] modificationInfos) {
         super();
-        this._dataValues = _dataValues;
-        this._modificationInfos = _modificationInfos;
+        this.dataValues = dataValues;
+        this.modificationInfos = modificationInfos;
     }
 
     @Nullable
-    public DataValue[] getDataValues() { return _dataValues; }
+    public DataValue[] getDataValues() { return dataValues; }
 
     @Nullable
-    public ModificationInfo[] getModificationInfos() { return _modificationInfos; }
+    public ModificationInfo[] getModificationInfos() { return modificationInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,57 +63,37 @@ public class HistoryModifiedData extends HistoryData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("DataValues", _dataValues)
-            .add("ModificationInfos", _modificationInfos)
+            .add("DataValues", dataValues)
+            .add("ModificationInfos", modificationInfos)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryModifiedData> {
-        @Override
-        public HistoryModifiedData decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            DataValue[] _dataValues = reader.readArray(reader::readDataValue, DataValue.class);
-            ModificationInfo[] _modificationInfos =
-                reader.readArray(
-                    () -> (ModificationInfo) context.decode(
-                        ModificationInfo.BinaryEncodingId, reader),
-                    ModificationInfo.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<HistoryModifiedData> {
 
-            return new HistoryModifiedData(_dataValues, _modificationInfos);
+        @Override
+        public Class<HistoryModifiedData> getType() {
+            return HistoryModifiedData.class;
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryModifiedData value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(value._dataValues, writer::writeDataValue);
-            writer.writeArray(
-                value._modificationInfos,
-                e -> context.encode(ModificationInfo.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryModifiedData> {
-        @Override
-        public HistoryModifiedData decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            DataValue[] _dataValues = reader.readArray("DataValues", reader::readDataValue, DataValue.class);
-            ModificationInfo[] _modificationInfos =
-                reader.readArray(
+        public HistoryModifiedData decode(UaDecoder decoder) throws UaSerializationException {
+            DataValue[] dataValues = decoder.readArray("DataValues", decoder::readDataValue, DataValue.class);
+            ModificationInfo[] modificationInfos =
+                decoder.readBuiltinStructArray(
                     "ModificationInfos",
-                    f -> (ModificationInfo) context.decode(
-                        ModificationInfo.XmlEncodingId, reader),
                     ModificationInfo.class
                 );
 
-            return new HistoryModifiedData(_dataValues, _modificationInfos);
+            return new HistoryModifiedData(dataValues, modificationInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryModifiedData encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeArray("DataValues", encodable._dataValues, writer::writeDataValue);
-            writer.writeArray(
+        public void encode(HistoryModifiedData value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeArray("DataValues", value.dataValues, encoder::writeDataValue);
+            encoder.writeBuiltinStructArray(
                 "ModificationInfos",
-                encodable._modificationInfos,
-                (f, e) -> context.encode(ModificationInfo.XmlEncodingId, e, writer)
+                value.modificationInfos,
+                ModificationInfo.class
             );
         }
     }

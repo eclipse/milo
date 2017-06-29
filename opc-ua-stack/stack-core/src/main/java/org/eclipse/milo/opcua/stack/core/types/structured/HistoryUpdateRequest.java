@@ -18,42 +18,36 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("HistoryUpdateRequest")
 public class HistoryUpdateRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.HistoryUpdateRequest;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryUpdateRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryUpdateRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final ExtensionObject[] _historyUpdateDetails;
+    protected final RequestHeader requestHeader;
+    protected final ExtensionObject[] historyUpdateDetails;
 
     public HistoryUpdateRequest() {
-        this._requestHeader = null;
-        this._historyUpdateDetails = null;
+        this.requestHeader = null;
+        this.historyUpdateDetails = null;
     }
 
-    public HistoryUpdateRequest(RequestHeader _requestHeader, ExtensionObject[] _historyUpdateDetails) {
-        this._requestHeader = _requestHeader;
-        this._historyUpdateDetails = _historyUpdateDetails;
+    public HistoryUpdateRequest(RequestHeader requestHeader, ExtensionObject[] historyUpdateDetails) {
+        this.requestHeader = requestHeader;
+        this.historyUpdateDetails = historyUpdateDetails;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public ExtensionObject[] getHistoryUpdateDetails() { return _historyUpdateDetails; }
+    public ExtensionObject[] getHistoryUpdateDetails() { return historyUpdateDetails; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,40 +61,30 @@ public class HistoryUpdateRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("HistoryUpdateDetails", _historyUpdateDetails)
+            .add("RequestHeader", requestHeader)
+            .add("HistoryUpdateDetails", historyUpdateDetails)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryUpdateRequest> {
-        @Override
-        public HistoryUpdateRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            ExtensionObject[] _historyUpdateDetails = reader.readArray(reader::readExtensionObject, ExtensionObject.class);
+    public static class Codec extends BuiltinDataTypeCodec<HistoryUpdateRequest> {
 
-            return new HistoryUpdateRequest(_requestHeader, _historyUpdateDetails);
+        @Override
+        public Class<HistoryUpdateRequest> getType() {
+            return HistoryUpdateRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryUpdateRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(value._historyUpdateDetails, writer::writeExtensionObject);
-        }
-    }
+        public HistoryUpdateRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            ExtensionObject[] historyUpdateDetails = decoder.readArray("HistoryUpdateDetails", decoder::readExtensionObject, ExtensionObject.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryUpdateRequest> {
-        @Override
-        public HistoryUpdateRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            ExtensionObject[] _historyUpdateDetails = reader.readArray("HistoryUpdateDetails", reader::readExtensionObject, ExtensionObject.class);
-
-            return new HistoryUpdateRequest(_requestHeader, _historyUpdateDetails);
+            return new HistoryUpdateRequest(requestHeader, historyUpdateDetails);
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryUpdateRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray("HistoryUpdateDetails", encodable._historyUpdateDetails, writer::writeExtensionObject);
+        public void encode(HistoryUpdateRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeArray("HistoryUpdateDetails", value.historyUpdateDetails, encoder::writeExtensionObject);
         }
     }
 
