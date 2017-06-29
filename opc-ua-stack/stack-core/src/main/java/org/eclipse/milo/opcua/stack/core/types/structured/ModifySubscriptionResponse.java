@@ -16,51 +16,45 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ModifySubscriptionResponse")
 public class ModifySubscriptionResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.ModifySubscriptionResponse;
     public static final NodeId BinaryEncodingId = Identifiers.ModifySubscriptionResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ModifySubscriptionResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final Double _revisedPublishingInterval;
-    protected final UInteger _revisedLifetimeCount;
-    protected final UInteger _revisedMaxKeepAliveCount;
+    protected final ResponseHeader responseHeader;
+    protected final Double revisedPublishingInterval;
+    protected final UInteger revisedLifetimeCount;
+    protected final UInteger revisedMaxKeepAliveCount;
 
     public ModifySubscriptionResponse() {
-        this._responseHeader = null;
-        this._revisedPublishingInterval = null;
-        this._revisedLifetimeCount = null;
-        this._revisedMaxKeepAliveCount = null;
+        this.responseHeader = null;
+        this.revisedPublishingInterval = null;
+        this.revisedLifetimeCount = null;
+        this.revisedMaxKeepAliveCount = null;
     }
 
-    public ModifySubscriptionResponse(ResponseHeader _responseHeader, Double _revisedPublishingInterval, UInteger _revisedLifetimeCount, UInteger _revisedMaxKeepAliveCount) {
-        this._responseHeader = _responseHeader;
-        this._revisedPublishingInterval = _revisedPublishingInterval;
-        this._revisedLifetimeCount = _revisedLifetimeCount;
-        this._revisedMaxKeepAliveCount = _revisedMaxKeepAliveCount;
+    public ModifySubscriptionResponse(ResponseHeader responseHeader, Double revisedPublishingInterval, UInteger revisedLifetimeCount, UInteger revisedMaxKeepAliveCount) {
+        this.responseHeader = responseHeader;
+        this.revisedPublishingInterval = revisedPublishingInterval;
+        this.revisedLifetimeCount = revisedLifetimeCount;
+        this.revisedMaxKeepAliveCount = revisedMaxKeepAliveCount;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
-    public Double getRevisedPublishingInterval() { return _revisedPublishingInterval; }
+    public Double getRevisedPublishingInterval() { return revisedPublishingInterval; }
 
-    public UInteger getRevisedLifetimeCount() { return _revisedLifetimeCount; }
+    public UInteger getRevisedLifetimeCount() { return revisedLifetimeCount; }
 
-    public UInteger getRevisedMaxKeepAliveCount() { return _revisedMaxKeepAliveCount; }
+    public UInteger getRevisedMaxKeepAliveCount() { return revisedMaxKeepAliveCount; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -74,50 +68,36 @@ public class ModifySubscriptionResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("RevisedPublishingInterval", _revisedPublishingInterval)
-            .add("RevisedLifetimeCount", _revisedLifetimeCount)
-            .add("RevisedMaxKeepAliveCount", _revisedMaxKeepAliveCount)
+            .add("ResponseHeader", responseHeader)
+            .add("RevisedPublishingInterval", revisedPublishingInterval)
+            .add("RevisedLifetimeCount", revisedLifetimeCount)
+            .add("RevisedMaxKeepAliveCount", revisedMaxKeepAliveCount)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ModifySubscriptionResponse> {
-        @Override
-        public ModifySubscriptionResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            Double _revisedPublishingInterval = reader.readDouble();
-            UInteger _revisedLifetimeCount = reader.readUInt32();
-            UInteger _revisedMaxKeepAliveCount = reader.readUInt32();
+    public static class Codec extends BuiltinDataTypeCodec<ModifySubscriptionResponse> {
 
-            return new ModifySubscriptionResponse(_responseHeader, _revisedPublishingInterval, _revisedLifetimeCount, _revisedMaxKeepAliveCount);
+        @Override
+        public Class<ModifySubscriptionResponse> getType() {
+            return ModifySubscriptionResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ModifySubscriptionResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeDouble(value._revisedPublishingInterval);
-            writer.writeUInt32(value._revisedLifetimeCount);
-            writer.writeUInt32(value._revisedMaxKeepAliveCount);
-        }
-    }
+        public ModifySubscriptionResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            Double revisedPublishingInterval = decoder.readDouble("RevisedPublishingInterval");
+            UInteger revisedLifetimeCount = decoder.readUInt32("RevisedLifetimeCount");
+            UInteger revisedMaxKeepAliveCount = decoder.readUInt32("RevisedMaxKeepAliveCount");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ModifySubscriptionResponse> {
-        @Override
-        public ModifySubscriptionResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            Double _revisedPublishingInterval = reader.readDouble("RevisedPublishingInterval");
-            UInteger _revisedLifetimeCount = reader.readUInt32("RevisedLifetimeCount");
-            UInteger _revisedMaxKeepAliveCount = reader.readUInt32("RevisedMaxKeepAliveCount");
-
-            return new ModifySubscriptionResponse(_responseHeader, _revisedPublishingInterval, _revisedLifetimeCount, _revisedMaxKeepAliveCount);
+            return new ModifySubscriptionResponse(responseHeader, revisedPublishingInterval, revisedLifetimeCount, revisedMaxKeepAliveCount);
         }
 
         @Override
-        public void encode(SerializationContext context, ModifySubscriptionResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeDouble("RevisedPublishingInterval", encodable._revisedPublishingInterval);
-            writer.writeUInt32("RevisedLifetimeCount", encodable._revisedLifetimeCount);
-            writer.writeUInt32("RevisedMaxKeepAliveCount", encodable._revisedMaxKeepAliveCount);
+        public void encode(ModifySubscriptionResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeDouble("RevisedPublishingInterval", value.revisedPublishingInterval);
+            encoder.writeUInt32("RevisedLifetimeCount", value.revisedLifetimeCount);
+            encoder.writeUInt32("RevisedMaxKeepAliveCount", value.revisedMaxKeepAliveCount);
         }
     }
 

@@ -18,58 +18,52 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReadProcessedDetails")
 public class ReadProcessedDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadProcessedDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadProcessedDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadProcessedDetails_Encoding_DefaultXml;
 
-    protected final DateTime _startTime;
-    protected final DateTime _endTime;
-    protected final Double _processingInterval;
-    protected final NodeId[] _aggregateType;
-    protected final AggregateConfiguration _aggregateConfiguration;
+    protected final DateTime startTime;
+    protected final DateTime endTime;
+    protected final Double processingInterval;
+    protected final NodeId[] aggregateType;
+    protected final AggregateConfiguration aggregateConfiguration;
 
     public ReadProcessedDetails() {
         super();
-        this._startTime = null;
-        this._endTime = null;
-        this._processingInterval = null;
-        this._aggregateType = null;
-        this._aggregateConfiguration = null;
+        this.startTime = null;
+        this.endTime = null;
+        this.processingInterval = null;
+        this.aggregateType = null;
+        this.aggregateConfiguration = null;
     }
 
-    public ReadProcessedDetails(DateTime _startTime, DateTime _endTime, Double _processingInterval, NodeId[] _aggregateType, AggregateConfiguration _aggregateConfiguration) {
+    public ReadProcessedDetails(DateTime startTime, DateTime endTime, Double processingInterval, NodeId[] aggregateType, AggregateConfiguration aggregateConfiguration) {
         super();
-        this._startTime = _startTime;
-        this._endTime = _endTime;
-        this._processingInterval = _processingInterval;
-        this._aggregateType = _aggregateType;
-        this._aggregateConfiguration = _aggregateConfiguration;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.processingInterval = processingInterval;
+        this.aggregateType = aggregateType;
+        this.aggregateConfiguration = aggregateConfiguration;
     }
 
-    public DateTime getStartTime() { return _startTime; }
+    public DateTime getStartTime() { return startTime; }
 
-    public DateTime getEndTime() { return _endTime; }
+    public DateTime getEndTime() { return endTime; }
 
-    public Double getProcessingInterval() { return _processingInterval; }
+    public Double getProcessingInterval() { return processingInterval; }
 
     @Nullable
-    public NodeId[] getAggregateType() { return _aggregateType; }
+    public NodeId[] getAggregateType() { return aggregateType; }
 
-    public AggregateConfiguration getAggregateConfiguration() { return _aggregateConfiguration; }
+    public AggregateConfiguration getAggregateConfiguration() { return aggregateConfiguration; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -83,55 +77,39 @@ public class ReadProcessedDetails extends HistoryReadDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StartTime", _startTime)
-            .add("EndTime", _endTime)
-            .add("ProcessingInterval", _processingInterval)
-            .add("AggregateType", _aggregateType)
-            .add("AggregateConfiguration", _aggregateConfiguration)
+            .add("StartTime", startTime)
+            .add("EndTime", endTime)
+            .add("ProcessingInterval", processingInterval)
+            .add("AggregateType", aggregateType)
+            .add("AggregateConfiguration", aggregateConfiguration)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReadProcessedDetails> {
-        @Override
-        public ReadProcessedDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            DateTime _startTime = reader.readDateTime();
-            DateTime _endTime = reader.readDateTime();
-            Double _processingInterval = reader.readDouble();
-            NodeId[] _aggregateType = reader.readArray(reader::readNodeId, NodeId.class);
-            AggregateConfiguration _aggregateConfiguration = (AggregateConfiguration) context.decode(AggregateConfiguration.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<ReadProcessedDetails> {
 
-            return new ReadProcessedDetails(_startTime, _endTime, _processingInterval, _aggregateType, _aggregateConfiguration);
+        @Override
+        public Class<ReadProcessedDetails> getType() {
+            return ReadProcessedDetails.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReadProcessedDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime(value._startTime);
-            writer.writeDateTime(value._endTime);
-            writer.writeDouble(value._processingInterval);
-            writer.writeArray(value._aggregateType, writer::writeNodeId);
-            context.encode(AggregateConfiguration.BinaryEncodingId, value._aggregateConfiguration, writer);
-        }
-    }
+        public ReadProcessedDetails decode(UaDecoder decoder) throws UaSerializationException {
+            DateTime startTime = decoder.readDateTime("StartTime");
+            DateTime endTime = decoder.readDateTime("EndTime");
+            Double processingInterval = decoder.readDouble("ProcessingInterval");
+            NodeId[] aggregateType = decoder.readArray("AggregateType", decoder::readNodeId, NodeId.class);
+            AggregateConfiguration aggregateConfiguration = (AggregateConfiguration) decoder.readBuiltinStruct("AggregateConfiguration", AggregateConfiguration.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReadProcessedDetails> {
-        @Override
-        public ReadProcessedDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            DateTime _startTime = reader.readDateTime("StartTime");
-            DateTime _endTime = reader.readDateTime("EndTime");
-            Double _processingInterval = reader.readDouble("ProcessingInterval");
-            NodeId[] _aggregateType = reader.readArray("AggregateType", reader::readNodeId, NodeId.class);
-            AggregateConfiguration _aggregateConfiguration = (AggregateConfiguration) context.decode(AggregateConfiguration.XmlEncodingId, reader);
-
-            return new ReadProcessedDetails(_startTime, _endTime, _processingInterval, _aggregateType, _aggregateConfiguration);
+            return new ReadProcessedDetails(startTime, endTime, processingInterval, aggregateType, aggregateConfiguration);
         }
 
         @Override
-        public void encode(SerializationContext context, ReadProcessedDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeDateTime("StartTime", encodable._startTime);
-            writer.writeDateTime("EndTime", encodable._endTime);
-            writer.writeDouble("ProcessingInterval", encodable._processingInterval);
-            writer.writeArray("AggregateType", encodable._aggregateType, writer::writeNodeId);
-            context.encode(AggregateConfiguration.XmlEncodingId, encodable._aggregateConfiguration, writer);
+        public void encode(ReadProcessedDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeDateTime("StartTime", value.startTime);
+            encoder.writeDateTime("EndTime", value.endTime);
+            encoder.writeDouble("ProcessingInterval", value.processingInterval);
+            encoder.writeArray("AggregateType", value.aggregateType, encoder::writeNodeId);
+            encoder.writeBuiltinStruct("AggregateConfiguration", value.aggregateConfiguration, AggregateConfiguration.class);
         }
     }
 

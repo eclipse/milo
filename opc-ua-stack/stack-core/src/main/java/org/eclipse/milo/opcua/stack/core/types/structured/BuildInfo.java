@@ -16,61 +16,55 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("BuildInfo")
 public class BuildInfo implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.BuildInfo;
     public static final NodeId BinaryEncodingId = Identifiers.BuildInfo_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BuildInfo_Encoding_DefaultXml;
 
-    protected final String _productUri;
-    protected final String _manufacturerName;
-    protected final String _productName;
-    protected final String _softwareVersion;
-    protected final String _buildNumber;
-    protected final DateTime _buildDate;
+    protected final String productUri;
+    protected final String manufacturerName;
+    protected final String productName;
+    protected final String softwareVersion;
+    protected final String buildNumber;
+    protected final DateTime buildDate;
 
     public BuildInfo() {
-        this._productUri = null;
-        this._manufacturerName = null;
-        this._productName = null;
-        this._softwareVersion = null;
-        this._buildNumber = null;
-        this._buildDate = null;
+        this.productUri = null;
+        this.manufacturerName = null;
+        this.productName = null;
+        this.softwareVersion = null;
+        this.buildNumber = null;
+        this.buildDate = null;
     }
 
-    public BuildInfo(String _productUri, String _manufacturerName, String _productName, String _softwareVersion, String _buildNumber, DateTime _buildDate) {
-        this._productUri = _productUri;
-        this._manufacturerName = _manufacturerName;
-        this._productName = _productName;
-        this._softwareVersion = _softwareVersion;
-        this._buildNumber = _buildNumber;
-        this._buildDate = _buildDate;
+    public BuildInfo(String productUri, String manufacturerName, String productName, String softwareVersion, String buildNumber, DateTime buildDate) {
+        this.productUri = productUri;
+        this.manufacturerName = manufacturerName;
+        this.productName = productName;
+        this.softwareVersion = softwareVersion;
+        this.buildNumber = buildNumber;
+        this.buildDate = buildDate;
     }
 
-    public String getProductUri() { return _productUri; }
+    public String getProductUri() { return productUri; }
 
-    public String getManufacturerName() { return _manufacturerName; }
+    public String getManufacturerName() { return manufacturerName; }
 
-    public String getProductName() { return _productName; }
+    public String getProductName() { return productName; }
 
-    public String getSoftwareVersion() { return _softwareVersion; }
+    public String getSoftwareVersion() { return softwareVersion; }
 
-    public String getBuildNumber() { return _buildNumber; }
+    public String getBuildNumber() { return buildNumber; }
 
-    public DateTime getBuildDate() { return _buildDate; }
+    public DateTime getBuildDate() { return buildDate; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -84,60 +78,42 @@ public class BuildInfo implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ProductUri", _productUri)
-            .add("ManufacturerName", _manufacturerName)
-            .add("ProductName", _productName)
-            .add("SoftwareVersion", _softwareVersion)
-            .add("BuildNumber", _buildNumber)
-            .add("BuildDate", _buildDate)
+            .add("ProductUri", productUri)
+            .add("ManufacturerName", manufacturerName)
+            .add("ProductName", productName)
+            .add("SoftwareVersion", softwareVersion)
+            .add("BuildNumber", buildNumber)
+            .add("BuildDate", buildDate)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<BuildInfo> {
-        @Override
-        public BuildInfo decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _productUri = reader.readString();
-            String _manufacturerName = reader.readString();
-            String _productName = reader.readString();
-            String _softwareVersion = reader.readString();
-            String _buildNumber = reader.readString();
-            DateTime _buildDate = reader.readDateTime();
+    public static class Codec extends BuiltinDataTypeCodec<BuildInfo> {
 
-            return new BuildInfo(_productUri, _manufacturerName, _productName, _softwareVersion, _buildNumber, _buildDate);
+        @Override
+        public Class<BuildInfo> getType() {
+            return BuildInfo.class;
         }
 
         @Override
-        public void encode(SerializationContext context, BuildInfo value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._productUri);
-            writer.writeString(value._manufacturerName);
-            writer.writeString(value._productName);
-            writer.writeString(value._softwareVersion);
-            writer.writeString(value._buildNumber);
-            writer.writeDateTime(value._buildDate);
-        }
-    }
+        public BuildInfo decode(UaDecoder decoder) throws UaSerializationException {
+            String productUri = decoder.readString("ProductUri");
+            String manufacturerName = decoder.readString("ManufacturerName");
+            String productName = decoder.readString("ProductName");
+            String softwareVersion = decoder.readString("SoftwareVersion");
+            String buildNumber = decoder.readString("BuildNumber");
+            DateTime buildDate = decoder.readDateTime("BuildDate");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<BuildInfo> {
-        @Override
-        public BuildInfo decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _productUri = reader.readString("ProductUri");
-            String _manufacturerName = reader.readString("ManufacturerName");
-            String _productName = reader.readString("ProductName");
-            String _softwareVersion = reader.readString("SoftwareVersion");
-            String _buildNumber = reader.readString("BuildNumber");
-            DateTime _buildDate = reader.readDateTime("BuildDate");
-
-            return new BuildInfo(_productUri, _manufacturerName, _productName, _softwareVersion, _buildNumber, _buildDate);
+            return new BuildInfo(productUri, manufacturerName, productName, softwareVersion, buildNumber, buildDate);
         }
 
         @Override
-        public void encode(SerializationContext context, BuildInfo encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("ProductUri", encodable._productUri);
-            writer.writeString("ManufacturerName", encodable._manufacturerName);
-            writer.writeString("ProductName", encodable._productName);
-            writer.writeString("SoftwareVersion", encodable._softwareVersion);
-            writer.writeString("BuildNumber", encodable._buildNumber);
-            writer.writeDateTime("BuildDate", encodable._buildDate);
+        public void encode(BuildInfo value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("ProductUri", value.productUri);
+            encoder.writeString("ManufacturerName", value.manufacturerName);
+            encoder.writeString("ProductName", value.productName);
+            encoder.writeString("SoftwareVersion", value.softwareVersion);
+            encoder.writeString("BuildNumber", value.buildNumber);
+            encoder.writeDateTime("BuildDate", value.buildDate);
         }
     }
 

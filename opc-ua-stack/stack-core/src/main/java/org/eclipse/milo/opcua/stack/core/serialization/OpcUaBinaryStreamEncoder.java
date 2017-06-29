@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,13 +11,14 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.codec;
+package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 
@@ -25,8 +26,11 @@ import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
-import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -50,7 +54,9 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcBinaryStreamWriter {
+public class OpcUaBinaryStreamEncoder implements UaEncoder {
+
+    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
 
     private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
     private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
@@ -63,26 +69,26 @@ public class OpcBinaryStreamWriter {
     private final int maxArrayLength;
     private final int maxStringLength;
 
-    public OpcBinaryStreamWriter() {
+    public OpcUaBinaryStreamEncoder() {
         this(ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH, ChannelConfig.DEFAULT_MAX_STRING_LENGTH);
     }
 
-    public OpcBinaryStreamWriter(ByteBuf buffer) {
+    public OpcUaBinaryStreamEncoder(ByteBuf buffer) {
         this(buffer, ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH, ChannelConfig.DEFAULT_MAX_STRING_LENGTH);
     }
 
-    public OpcBinaryStreamWriter(int maxArrayLength, int maxStringLength) {
+    public OpcUaBinaryStreamEncoder(int maxArrayLength, int maxStringLength) {
         this.maxArrayLength = maxArrayLength;
         this.maxStringLength = maxStringLength;
     }
 
-    public OpcBinaryStreamWriter(ByteBuf buffer, int maxArrayLength, int maxStringLength) {
+    public OpcUaBinaryStreamEncoder(ByteBuf buffer, int maxArrayLength, int maxStringLength) {
         this.buffer = buffer;
         this.maxArrayLength = maxArrayLength;
         this.maxStringLength = maxStringLength;
     }
 
-    public OpcBinaryStreamWriter setBuffer(ByteBuf buffer) {
+    public OpcUaBinaryStreamEncoder setBuffer(ByteBuf buffer) {
         this.buffer = buffer;
         return this;
     }
@@ -116,8 +122,12 @@ public class OpcBinaryStreamWriter {
         }
     }
 
-    public void writeBoolean(boolean value) throws UaSerializationException {
-        buffer.writeBoolean(value);
+    public void writeBoolean(Boolean value) throws UaSerializationException {
+        if (value == null) {
+            buffer.writeBoolean(false);
+        } else {
+            buffer.writeBoolean(value);
+        }
     }
 
     public void writeSByte(Byte value) throws UaSerializationException {
@@ -628,7 +638,7 @@ public class OpcBinaryStreamWriter {
     private void writeBuiltinType(int typeId, Object value) throws UaSerializationException {
         switch (typeId) {
             case 1:
-                writeBoolean((Boolean) value);
+                writeBoolean(null, (Boolean) value);
                 break;
             case 2:
                 writeSByte((Byte) value);
@@ -728,6 +738,229 @@ public class OpcBinaryStreamWriter {
 
         writeInt32(length);
         buffer.writeBytes(bytes);
+    }
+
+    @Override
+    public void writeBoolean(String field, Boolean value) throws UaSerializationException {
+        writeBoolean(value);
+    }
+
+    @Override
+    public void writeSByte(String field, Byte value) throws UaSerializationException {
+        writeSByte(value);
+    }
+
+    @Override
+    public void writeInt16(String field, Short value) throws UaSerializationException {
+        writeInt16(value);
+    }
+
+    @Override
+    public void writeInt32(String field, Integer value) throws UaSerializationException {
+        writeInt32(value);
+    }
+
+    @Override
+    public void writeInt64(String field, Long value) throws UaSerializationException {
+        writeInt64(value);
+    }
+
+    @Override
+    public void writeByte(String field, UByte value) throws UaSerializationException {
+        writeByte(value);
+    }
+
+    @Override
+    public void writeUInt16(String field, UShort value) throws UaSerializationException {
+        writeUInt16(value);
+    }
+
+    @Override
+    public void writeUInt32(String field, UInteger value) throws UaSerializationException {
+        writeUInt32(value);
+    }
+
+    @Override
+    public void writeUInt64(String field, ULong value) throws UaSerializationException {
+        writeUInt64(value);
+    }
+
+    @Override
+    public void writeFloat(String field, Float value) throws UaSerializationException {
+        writeFloat(value);
+    }
+
+    @Override
+    public void writeDouble(String field, Double value) throws UaSerializationException {
+        writeDouble(value);
+    }
+
+    @Override
+    public void writeString(String field, String value) throws UaSerializationException {
+        writeString(value);
+    }
+
+    @Override
+    public void writeDateTime(String field, DateTime value) throws UaSerializationException {
+        writeDateTime(value);
+    }
+
+    @Override
+    public void writeGuid(String field, UUID value) throws UaSerializationException {
+        writeGuid(value);
+    }
+
+    @Override
+    public void writeByteString(String field, ByteString value) throws UaSerializationException {
+        writeByteString(value);
+    }
+
+    @Override
+    public void writeXmlElement(String field, XmlElement value) throws UaSerializationException {
+        writeXmlElement(value);
+    }
+
+    @Override
+    public void writeNodeId(String field, NodeId value) throws UaSerializationException {
+        writeNodeId(value);
+    }
+
+    @Override
+    public void writeExpandedNodeId(String field, ExpandedNodeId value) throws UaSerializationException {
+        writeExpandedNodeId(value);
+    }
+
+    @Override
+    public void writeStatusCode(String field, StatusCode value) throws UaSerializationException {
+        writeStatusCode(value);
+    }
+
+    @Override
+    public void writeQualifiedName(String field, QualifiedName value) throws UaSerializationException {
+        writeQualifiedName(value);
+    }
+
+    @Override
+    public void writeLocalizedText(String field, LocalizedText value) throws UaSerializationException {
+        writeLocalizedText(value);
+    }
+
+    @Override
+    public void writeExtensionObject(String field, ExtensionObject value) throws UaSerializationException {
+        writeExtensionObject(value);
+    }
+
+    @Override
+    public void writeDataValue(String field, DataValue value) throws UaSerializationException {
+        writeDataValue(value);
+    }
+
+    @Override
+    public void writeVariant(String field, Variant value) throws UaSerializationException {
+        writeVariant(value);
+    }
+
+    @Override
+    public void writeDiagnosticInfo(String field, DiagnosticInfo value) throws UaSerializationException {
+        writeDiagnosticInfo(value);
+    }
+
+    @Override
+    public <T> void writeArray(
+        String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException {
+
+        if (values == null) {
+            buffer.writeInt(-1);
+        } else {
+            if (values.length > maxArrayLength) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingLimitsExceeded,
+                    "max array length exceeded");
+            }
+
+            writeInt32(values.length);
+
+            for (T t : values) {
+                encoder.accept(field, t);
+            }
+        }
+    }
+
+    @Override
+    public <T extends UaStructure> void writeBuiltinStruct(
+        String field, T value, Class<T> clazz) throws UaSerializationException {
+
+        try {
+            @SuppressWarnings("unchecked")
+            BuiltinDataTypeCodec<UaStructure> codec =
+                (BuiltinDataTypeCodec<UaStructure>) BuiltinDataTypeDictionary.getBuiltinCodec(clazz);
+
+            if (codec == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "no codec registered:" + clazz
+                );
+            }
+
+            codec.encode(SERIALIZATION_CONTEXT, value, this);
+        } catch (ClassCastException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public <T extends UaStructure> void writeBuiltinStructArray(
+        String field, T[] values, Class<T> clazz) throws UaSerializationException {
+
+        writeArray(values, v -> writeBuiltinStruct(field, v, clazz));
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, NodeId encodingId) throws UaSerializationException {
+
+        try {
+            @SuppressWarnings("unchecked")
+            OpcUaBinaryDataTypeCodec<Object> codec =
+                (OpcUaBinaryDataTypeCodec<Object>) OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
+
+            if (codec == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "no codec registered: " + encodingId
+                );
+            }
+
+            codec.encode(SERIALIZATION_CONTEXT, value, this);
+        } catch (ClassCastException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public void writeStructArray(
+        String field, Object[] values, NodeId encodingId) throws UaSerializationException {
+
+        writeArray(values, o -> writeStruct(field, o, encodingId));
+    }
+
+    @Override
+    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
+        NodeId encodingId = message.getBinaryEncodingId();
+
+        @SuppressWarnings("unchecked")
+        OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec =
+            (OpcUaBinaryDataTypeCodec<UaMessage>) OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
+
+        if (binaryCodec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + encodingId
+            );
+        }
+
+        writeNodeId(encodingId);
+
+        binaryCodec.encode(SERIALIZATION_CONTEXT, message, this);
     }
 
 }

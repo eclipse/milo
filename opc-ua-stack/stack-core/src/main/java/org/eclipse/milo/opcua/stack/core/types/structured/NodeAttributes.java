@@ -16,57 +16,51 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("NodeAttributes")
 public class NodeAttributes implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.NodeAttributes;
     public static final NodeId BinaryEncodingId = Identifiers.NodeAttributes_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.NodeAttributes_Encoding_DefaultXml;
 
-    protected final UInteger _specifiedAttributes;
-    protected final LocalizedText _displayName;
-    protected final LocalizedText _description;
-    protected final UInteger _writeMask;
-    protected final UInteger _userWriteMask;
+    protected final UInteger specifiedAttributes;
+    protected final LocalizedText displayName;
+    protected final LocalizedText description;
+    protected final UInteger writeMask;
+    protected final UInteger userWriteMask;
 
     public NodeAttributes() {
-        this._specifiedAttributes = null;
-        this._displayName = null;
-        this._description = null;
-        this._writeMask = null;
-        this._userWriteMask = null;
+        this.specifiedAttributes = null;
+        this.displayName = null;
+        this.description = null;
+        this.writeMask = null;
+        this.userWriteMask = null;
     }
 
-    public NodeAttributes(UInteger _specifiedAttributes, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask) {
-        this._specifiedAttributes = _specifiedAttributes;
-        this._displayName = _displayName;
-        this._description = _description;
-        this._writeMask = _writeMask;
-        this._userWriteMask = _userWriteMask;
+    public NodeAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask) {
+        this.specifiedAttributes = specifiedAttributes;
+        this.displayName = displayName;
+        this.description = description;
+        this.writeMask = writeMask;
+        this.userWriteMask = userWriteMask;
     }
 
-    public UInteger getSpecifiedAttributes() { return _specifiedAttributes; }
+    public UInteger getSpecifiedAttributes() { return specifiedAttributes; }
 
-    public LocalizedText getDisplayName() { return _displayName; }
+    public LocalizedText getDisplayName() { return displayName; }
 
-    public LocalizedText getDescription() { return _description; }
+    public LocalizedText getDescription() { return description; }
 
-    public UInteger getWriteMask() { return _writeMask; }
+    public UInteger getWriteMask() { return writeMask; }
 
-    public UInteger getUserWriteMask() { return _userWriteMask; }
+    public UInteger getUserWriteMask() { return userWriteMask; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -80,55 +74,39 @@ public class NodeAttributes implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", _specifiedAttributes)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
+            .add("SpecifiedAttributes", specifiedAttributes)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<NodeAttributes> {
-        @Override
-        public NodeAttributes decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedAttributes = reader.readUInt32();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
-            UInteger _writeMask = reader.readUInt32();
-            UInteger _userWriteMask = reader.readUInt32();
+    public static class Codec extends BuiltinDataTypeCodec<NodeAttributes> {
 
-            return new NodeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask);
+        @Override
+        public Class<NodeAttributes> getType() {
+            return NodeAttributes.class;
         }
 
         @Override
-        public void encode(SerializationContext context, NodeAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._specifiedAttributes);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-            writer.writeUInt32(value._writeMask);
-            writer.writeUInt32(value._userWriteMask);
-        }
-    }
+        public NodeAttributes decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<NodeAttributes> {
-        @Override
-        public NodeAttributes decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedAttributes = reader.readUInt32("SpecifiedAttributes");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-            UInteger _writeMask = reader.readUInt32("WriteMask");
-            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
-
-            return new NodeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask);
+            return new NodeAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask);
         }
 
         @Override
-        public void encode(SerializationContext context, NodeAttributes encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("SpecifiedAttributes", encodable._specifiedAttributes);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
-            writer.writeUInt32("WriteMask", encodable._writeMask);
-            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
+        public void encode(NodeAttributes value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
         }
     }
 

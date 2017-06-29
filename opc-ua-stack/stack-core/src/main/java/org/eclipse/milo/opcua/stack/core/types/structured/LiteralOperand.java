@@ -16,37 +16,31 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-@UaDataType("LiteralOperand")
 public class LiteralOperand extends FilterOperand {
 
     public static final NodeId TypeId = Identifiers.LiteralOperand;
     public static final NodeId BinaryEncodingId = Identifiers.LiteralOperand_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.LiteralOperand_Encoding_DefaultXml;
 
-    protected final Variant _value;
+    protected final Variant value;
 
     public LiteralOperand() {
         super();
-        this._value = null;
+        this.value = null;
     }
 
-    public LiteralOperand(Variant _value) {
+    public LiteralOperand(Variant value) {
         super();
-        this._value = _value;
+        this.value = value;
     }
 
-    public Variant getValue() { return _value; }
+    public Variant getValue() { return value; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -60,35 +54,27 @@ public class LiteralOperand extends FilterOperand {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Value", _value)
+            .add("Value", value)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<LiteralOperand> {
-        @Override
-        public LiteralOperand decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            Variant _value = reader.readVariant();
+    public static class Codec extends BuiltinDataTypeCodec<LiteralOperand> {
 
-            return new LiteralOperand(_value);
+        @Override
+        public Class<LiteralOperand> getType() {
+            return LiteralOperand.class;
         }
 
         @Override
-        public void encode(SerializationContext context, LiteralOperand value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeVariant(value._value);
-        }
-    }
+        public LiteralOperand decode(UaDecoder decoder) throws UaSerializationException {
+            Variant value = decoder.readVariant("Value");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<LiteralOperand> {
-        @Override
-        public LiteralOperand decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            Variant _value = reader.readVariant("Value");
-
-            return new LiteralOperand(_value);
+            return new LiteralOperand(value);
         }
 
         @Override
-        public void encode(SerializationContext context, LiteralOperand encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeVariant("Value", encodable._value);
+        public void encode(LiteralOperand value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeVariant("Value", value.value);
         }
     }
 

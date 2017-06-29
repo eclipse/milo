@@ -16,46 +16,40 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 
-@UaDataType("MonitoredItemCreateRequest")
 public class MonitoredItemCreateRequest implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.MonitoredItemCreateRequest;
     public static final NodeId BinaryEncodingId = Identifiers.MonitoredItemCreateRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.MonitoredItemCreateRequest_Encoding_DefaultXml;
 
-    protected final ReadValueId _itemToMonitor;
-    protected final MonitoringMode _monitoringMode;
-    protected final MonitoringParameters _requestedParameters;
+    protected final ReadValueId itemToMonitor;
+    protected final MonitoringMode monitoringMode;
+    protected final MonitoringParameters requestedParameters;
 
     public MonitoredItemCreateRequest() {
-        this._itemToMonitor = null;
-        this._monitoringMode = null;
-        this._requestedParameters = null;
+        this.itemToMonitor = null;
+        this.monitoringMode = null;
+        this.requestedParameters = null;
     }
 
-    public MonitoredItemCreateRequest(ReadValueId _itemToMonitor, MonitoringMode _monitoringMode, MonitoringParameters _requestedParameters) {
-        this._itemToMonitor = _itemToMonitor;
-        this._monitoringMode = _monitoringMode;
-        this._requestedParameters = _requestedParameters;
+    public MonitoredItemCreateRequest(ReadValueId itemToMonitor, MonitoringMode monitoringMode, MonitoringParameters requestedParameters) {
+        this.itemToMonitor = itemToMonitor;
+        this.monitoringMode = monitoringMode;
+        this.requestedParameters = requestedParameters;
     }
 
-    public ReadValueId getItemToMonitor() { return _itemToMonitor; }
+    public ReadValueId getItemToMonitor() { return itemToMonitor; }
 
-    public MonitoringMode getMonitoringMode() { return _monitoringMode; }
+    public MonitoringMode getMonitoringMode() { return monitoringMode; }
 
-    public MonitoringParameters getRequestedParameters() { return _requestedParameters; }
+    public MonitoringParameters getRequestedParameters() { return requestedParameters; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,45 +63,33 @@ public class MonitoredItemCreateRequest implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ItemToMonitor", _itemToMonitor)
-            .add("MonitoringMode", _monitoringMode)
-            .add("RequestedParameters", _requestedParameters)
+            .add("ItemToMonitor", itemToMonitor)
+            .add("MonitoringMode", monitoringMode)
+            .add("RequestedParameters", requestedParameters)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoredItemCreateRequest> {
-        @Override
-        public MonitoredItemCreateRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ReadValueId _itemToMonitor = (ReadValueId) context.decode(ReadValueId.BinaryEncodingId, reader);
-            MonitoringMode _monitoringMode = MonitoringMode.from(reader.readInt32());
-            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<MonitoredItemCreateRequest> {
 
-            return new MonitoredItemCreateRequest(_itemToMonitor, _monitoringMode, _requestedParameters);
+        @Override
+        public Class<MonitoredItemCreateRequest> getType() {
+            return MonitoredItemCreateRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemCreateRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ReadValueId.BinaryEncodingId, value._itemToMonitor, writer);
-            writer.writeInt32(value._monitoringMode != null ? value._monitoringMode.getValue() : 0);
-            context.encode(MonitoringParameters.BinaryEncodingId, value._requestedParameters, writer);
-        }
-    }
+        public MonitoredItemCreateRequest decode(UaDecoder decoder) throws UaSerializationException {
+            ReadValueId itemToMonitor = (ReadValueId) decoder.readBuiltinStruct("ItemToMonitor", ReadValueId.class);
+            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readInt32("MonitoringMode"));
+            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readBuiltinStruct("RequestedParameters", MonitoringParameters.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoredItemCreateRequest> {
-        @Override
-        public MonitoredItemCreateRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ReadValueId _itemToMonitor = (ReadValueId) context.decode(ReadValueId.XmlEncodingId, reader);
-            MonitoringMode _monitoringMode = MonitoringMode.from(reader.readInt32("MonitoringMode"));
-            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.XmlEncodingId, reader);
-
-            return new MonitoredItemCreateRequest(_itemToMonitor, _monitoringMode, _requestedParameters);
+            return new MonitoredItemCreateRequest(itemToMonitor, monitoringMode, requestedParameters);
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemCreateRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ReadValueId.XmlEncodingId, encodable._itemToMonitor, writer);
-            writer.writeInt32("MonitoringMode", encodable._monitoringMode != null ? encodable._monitoringMode.getValue() : 0);
-            context.encode(MonitoringParameters.XmlEncodingId, encodable._requestedParameters, writer);
+        public void encode(MonitoredItemCreateRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ItemToMonitor", value.itemToMonitor, ReadValueId.class);
+            encoder.writeInt32("MonitoringMode", value.monitoringMode != null ? value.monitoringMode.getValue() : 0);
+            encoder.writeBuiltinStruct("RequestedParameters", value.requestedParameters, MonitoringParameters.class);
         }
     }
 

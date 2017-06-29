@@ -16,10 +16,10 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 
 public final class ExtensionObject {
 
@@ -134,10 +134,10 @@ public final class ExtensionObject {
 
     public static ExtensionObject encodeAsByteString(Object object,
                                                      NodeId encodingTypeId,
-                                                     DataTypeEncoding context,
+                                                     DataTypeEncoding encoding,
                                                      DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        ByteString encoded = context.encodeToByteString(object, encodingTypeId, dataTypeManager);
+        ByteString encoded = encoding.encodeToByteString(object, encodingTypeId, dataTypeManager);
 
         return new ExtensionObject(encoded, encodingTypeId);
     }
@@ -164,10 +164,10 @@ public final class ExtensionObject {
 
     public static ExtensionObject encodeAsXmlElement(Object object,
                                                      NodeId encodingTypeId,
-                                                     DataTypeEncoding context,
+                                                     DataTypeEncoding encoding,
                                                      DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        XmlElement encoded = context.encodeToXmlElement(object, encodingTypeId, dataTypeManager);
+        XmlElement encoded = encoding.encodeToXmlElement(object, encodingTypeId, dataTypeManager);
 
         return new ExtensionObject(encoded, encodingTypeId);
     }

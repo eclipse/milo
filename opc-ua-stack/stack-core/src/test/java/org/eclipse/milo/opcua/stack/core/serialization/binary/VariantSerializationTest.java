@@ -18,7 +18,7 @@ import java.nio.ByteOrder;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -106,7 +106,7 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         buffer.writeByte(BuiltinDataType.Int16.getTypeId() | (1 << 7));
         buffer.writeInt(-1);
 
-        OpcBinaryStreamReader reader = new OpcBinaryStreamReader(buffer);
+        OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(buffer);
 
         Variant v = reader.readVariant();
 

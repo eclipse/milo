@@ -16,42 +16,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("IssuedIdentityToken")
 public class IssuedIdentityToken extends UserIdentityToken {
 
     public static final NodeId TypeId = Identifiers.IssuedIdentityToken;
     public static final NodeId BinaryEncodingId = Identifiers.IssuedIdentityToken_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.IssuedIdentityToken_Encoding_DefaultXml;
 
-    protected final ByteString _tokenData;
-    protected final String _encryptionAlgorithm;
+    protected final ByteString tokenData;
+    protected final String encryptionAlgorithm;
 
     public IssuedIdentityToken() {
         super(null);
-        this._tokenData = null;
-        this._encryptionAlgorithm = null;
+        this.tokenData = null;
+        this.encryptionAlgorithm = null;
     }
 
-    public IssuedIdentityToken(String _policyId, ByteString _tokenData, String _encryptionAlgorithm) {
-        super(_policyId);
-        this._tokenData = _tokenData;
-        this._encryptionAlgorithm = _encryptionAlgorithm;
+    public IssuedIdentityToken(String policyId, ByteString tokenData, String encryptionAlgorithm) {
+        super(policyId);
+        this.tokenData = tokenData;
+        this.encryptionAlgorithm = encryptionAlgorithm;
     }
 
-    public ByteString getTokenData() { return _tokenData; }
+    public ByteString getTokenData() { return tokenData; }
 
-    public String getEncryptionAlgorithm() { return _encryptionAlgorithm; }
+    public String getEncryptionAlgorithm() { return encryptionAlgorithm; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -65,45 +59,33 @@ public class IssuedIdentityToken extends UserIdentityToken {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("PolicyId", _policyId)
-            .add("TokenData", _tokenData)
-            .add("EncryptionAlgorithm", _encryptionAlgorithm)
+            .add("PolicyId", policyId)
+            .add("TokenData", tokenData)
+            .add("EncryptionAlgorithm", encryptionAlgorithm)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<IssuedIdentityToken> {
-        @Override
-        public IssuedIdentityToken decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString();
-            ByteString _tokenData = reader.readByteString();
-            String _encryptionAlgorithm = reader.readString();
+    public static class Codec extends BuiltinDataTypeCodec<IssuedIdentityToken> {
 
-            return new IssuedIdentityToken(_policyId, _tokenData, _encryptionAlgorithm);
+        @Override
+        public Class<IssuedIdentityToken> getType() {
+            return IssuedIdentityToken.class;
         }
 
         @Override
-        public void encode(SerializationContext context, IssuedIdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._policyId);
-            writer.writeByteString(value._tokenData);
-            writer.writeString(value._encryptionAlgorithm);
-        }
-    }
+        public IssuedIdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+            String policyId = decoder.readString("PolicyId");
+            ByteString tokenData = decoder.readByteString("TokenData");
+            String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<IssuedIdentityToken> {
-        @Override
-        public IssuedIdentityToken decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString("PolicyId");
-            ByteString _tokenData = reader.readByteString("TokenData");
-            String _encryptionAlgorithm = reader.readString("EncryptionAlgorithm");
-
-            return new IssuedIdentityToken(_policyId, _tokenData, _encryptionAlgorithm);
+            return new IssuedIdentityToken(policyId, tokenData, encryptionAlgorithm);
         }
 
         @Override
-        public void encode(SerializationContext context, IssuedIdentityToken encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("PolicyId", encodable._policyId);
-            writer.writeByteString("TokenData", encodable._tokenData);
-            writer.writeString("EncryptionAlgorithm", encodable._encryptionAlgorithm);
+        public void encode(IssuedIdentityToken value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("PolicyId", value.policyId);
+            encoder.writeByteString("TokenData", value.tokenData);
+            encoder.writeString("EncryptionAlgorithm", value.encryptionAlgorithm);
         }
     }
 
