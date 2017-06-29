@@ -18,41 +18,35 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("UnregisterNodesRequest")
 public class UnregisterNodesRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.UnregisterNodesRequest;
     public static final NodeId BinaryEncodingId = Identifiers.UnregisterNodesRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.UnregisterNodesRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final NodeId[] _nodesToUnregister;
+    protected final RequestHeader requestHeader;
+    protected final NodeId[] nodesToUnregister;
 
     public UnregisterNodesRequest() {
-        this._requestHeader = null;
-        this._nodesToUnregister = null;
+        this.requestHeader = null;
+        this.nodesToUnregister = null;
     }
 
-    public UnregisterNodesRequest(RequestHeader _requestHeader, NodeId[] _nodesToUnregister) {
-        this._requestHeader = _requestHeader;
-        this._nodesToUnregister = _nodesToUnregister;
+    public UnregisterNodesRequest(RequestHeader requestHeader, NodeId[] nodesToUnregister) {
+        this.requestHeader = requestHeader;
+        this.nodesToUnregister = nodesToUnregister;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public NodeId[] getNodesToUnregister() { return _nodesToUnregister; }
+    public NodeId[] getNodesToUnregister() { return nodesToUnregister; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,40 +60,30 @@ public class UnregisterNodesRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("NodesToUnregister", _nodesToUnregister)
+            .add("RequestHeader", requestHeader)
+            .add("NodesToUnregister", nodesToUnregister)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UnregisterNodesRequest> {
-        @Override
-        public UnregisterNodesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            NodeId[] _nodesToUnregister = reader.readArray(reader::readNodeId, NodeId.class);
+    public static class Codec extends BuiltinDataTypeCodec<UnregisterNodesRequest> {
 
-            return new UnregisterNodesRequest(_requestHeader, _nodesToUnregister);
+        @Override
+        public Class<UnregisterNodesRequest> getType() {
+            return UnregisterNodesRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, UnregisterNodesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(value._nodesToUnregister, writer::writeNodeId);
-        }
-    }
+        public UnregisterNodesRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            NodeId[] nodesToUnregister = decoder.readArray("NodesToUnregister", decoder::readNodeId, NodeId.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<UnregisterNodesRequest> {
-        @Override
-        public UnregisterNodesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            NodeId[] _nodesToUnregister = reader.readArray("NodesToUnregister", reader::readNodeId, NodeId.class);
-
-            return new UnregisterNodesRequest(_requestHeader, _nodesToUnregister);
+            return new UnregisterNodesRequest(requestHeader, nodesToUnregister);
         }
 
         @Override
-        public void encode(SerializationContext context, UnregisterNodesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray("NodesToUnregister", encodable._nodesToUnregister, writer::writeNodeId);
+        public void encode(UnregisterNodesRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeArray("NodesToUnregister", value.nodesToUnregister, encoder::writeNodeId);
         }
     }
 

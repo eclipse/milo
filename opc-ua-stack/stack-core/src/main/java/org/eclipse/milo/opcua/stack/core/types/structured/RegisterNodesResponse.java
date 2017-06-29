@@ -18,41 +18,35 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RegisterNodesResponse")
 public class RegisterNodesResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterNodesResponse;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterNodesResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterNodesResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final NodeId[] _registeredNodeIds;
+    protected final ResponseHeader responseHeader;
+    protected final NodeId[] registeredNodeIds;
 
     public RegisterNodesResponse() {
-        this._responseHeader = null;
-        this._registeredNodeIds = null;
+        this.responseHeader = null;
+        this.registeredNodeIds = null;
     }
 
-    public RegisterNodesResponse(ResponseHeader _responseHeader, NodeId[] _registeredNodeIds) {
-        this._responseHeader = _responseHeader;
-        this._registeredNodeIds = _registeredNodeIds;
+    public RegisterNodesResponse(ResponseHeader responseHeader, NodeId[] registeredNodeIds) {
+        this.responseHeader = responseHeader;
+        this.registeredNodeIds = registeredNodeIds;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public NodeId[] getRegisteredNodeIds() { return _registeredNodeIds; }
+    public NodeId[] getRegisteredNodeIds() { return registeredNodeIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,40 +60,30 @@ public class RegisterNodesResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("RegisteredNodeIds", _registeredNodeIds)
+            .add("ResponseHeader", responseHeader)
+            .add("RegisteredNodeIds", registeredNodeIds)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RegisterNodesResponse> {
-        @Override
-        public RegisterNodesResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            NodeId[] _registeredNodeIds = reader.readArray(reader::readNodeId, NodeId.class);
+    public static class Codec extends BuiltinDataTypeCodec<RegisterNodesResponse> {
 
-            return new RegisterNodesResponse(_responseHeader, _registeredNodeIds);
+        @Override
+        public Class<RegisterNodesResponse> getType() {
+            return RegisterNodesResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterNodesResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeArray(value._registeredNodeIds, writer::writeNodeId);
-        }
-    }
+        public RegisterNodesResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            NodeId[] registeredNodeIds = decoder.readArray("RegisteredNodeIds", decoder::readNodeId, NodeId.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<RegisterNodesResponse> {
-        @Override
-        public RegisterNodesResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            NodeId[] _registeredNodeIds = reader.readArray("RegisteredNodeIds", reader::readNodeId, NodeId.class);
-
-            return new RegisterNodesResponse(_responseHeader, _registeredNodeIds);
+            return new RegisterNodesResponse(responseHeader, registeredNodeIds);
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterNodesResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeArray("RegisteredNodeIds", encodable._registeredNodeIds, writer::writeNodeId);
+        public void encode(RegisterNodesResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeArray("RegisteredNodeIds", value.registeredNodeIds, encoder::writeNodeId);
         }
     }
 

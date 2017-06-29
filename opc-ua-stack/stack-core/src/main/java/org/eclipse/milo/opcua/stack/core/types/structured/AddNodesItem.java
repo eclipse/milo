@@ -16,69 +16,63 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("AddNodesItem")
 public class AddNodesItem implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.AddNodesItem;
     public static final NodeId BinaryEncodingId = Identifiers.AddNodesItem_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AddNodesItem_Encoding_DefaultXml;
 
-    protected final ExpandedNodeId _parentNodeId;
-    protected final NodeId _referenceTypeId;
-    protected final ExpandedNodeId _requestedNewNodeId;
-    protected final QualifiedName _browseName;
-    protected final NodeClass _nodeClass;
-    protected final ExtensionObject _nodeAttributes;
-    protected final ExpandedNodeId _typeDefinition;
+    protected final ExpandedNodeId parentNodeId;
+    protected final NodeId referenceTypeId;
+    protected final ExpandedNodeId requestedNewNodeId;
+    protected final QualifiedName browseName;
+    protected final NodeClass nodeClass;
+    protected final ExtensionObject nodeAttributes;
+    protected final ExpandedNodeId typeDefinition;
 
     public AddNodesItem() {
-        this._parentNodeId = null;
-        this._referenceTypeId = null;
-        this._requestedNewNodeId = null;
-        this._browseName = null;
-        this._nodeClass = null;
-        this._nodeAttributes = null;
-        this._typeDefinition = null;
+        this.parentNodeId = null;
+        this.referenceTypeId = null;
+        this.requestedNewNodeId = null;
+        this.browseName = null;
+        this.nodeClass = null;
+        this.nodeAttributes = null;
+        this.typeDefinition = null;
     }
 
-    public AddNodesItem(ExpandedNodeId _parentNodeId, NodeId _referenceTypeId, ExpandedNodeId _requestedNewNodeId, QualifiedName _browseName, NodeClass _nodeClass, ExtensionObject _nodeAttributes, ExpandedNodeId _typeDefinition) {
-        this._parentNodeId = _parentNodeId;
-        this._referenceTypeId = _referenceTypeId;
-        this._requestedNewNodeId = _requestedNewNodeId;
-        this._browseName = _browseName;
-        this._nodeClass = _nodeClass;
-        this._nodeAttributes = _nodeAttributes;
-        this._typeDefinition = _typeDefinition;
+    public AddNodesItem(ExpandedNodeId parentNodeId, NodeId referenceTypeId, ExpandedNodeId requestedNewNodeId, QualifiedName browseName, NodeClass nodeClass, ExtensionObject nodeAttributes, ExpandedNodeId typeDefinition) {
+        this.parentNodeId = parentNodeId;
+        this.referenceTypeId = referenceTypeId;
+        this.requestedNewNodeId = requestedNewNodeId;
+        this.browseName = browseName;
+        this.nodeClass = nodeClass;
+        this.nodeAttributes = nodeAttributes;
+        this.typeDefinition = typeDefinition;
     }
 
-    public ExpandedNodeId getParentNodeId() { return _parentNodeId; }
+    public ExpandedNodeId getParentNodeId() { return parentNodeId; }
 
-    public NodeId getReferenceTypeId() { return _referenceTypeId; }
+    public NodeId getReferenceTypeId() { return referenceTypeId; }
 
-    public ExpandedNodeId getRequestedNewNodeId() { return _requestedNewNodeId; }
+    public ExpandedNodeId getRequestedNewNodeId() { return requestedNewNodeId; }
 
-    public QualifiedName getBrowseName() { return _browseName; }
+    public QualifiedName getBrowseName() { return browseName; }
 
-    public NodeClass getNodeClass() { return _nodeClass; }
+    public NodeClass getNodeClass() { return nodeClass; }
 
-    public ExtensionObject getNodeAttributes() { return _nodeAttributes; }
+    public ExtensionObject getNodeAttributes() { return nodeAttributes; }
 
-    public ExpandedNodeId getTypeDefinition() { return _typeDefinition; }
+    public ExpandedNodeId getTypeDefinition() { return typeDefinition; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -92,65 +86,45 @@ public class AddNodesItem implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ParentNodeId", _parentNodeId)
-            .add("ReferenceTypeId", _referenceTypeId)
-            .add("RequestedNewNodeId", _requestedNewNodeId)
-            .add("BrowseName", _browseName)
-            .add("NodeClass", _nodeClass)
-            .add("NodeAttributes", _nodeAttributes)
-            .add("TypeDefinition", _typeDefinition)
+            .add("ParentNodeId", parentNodeId)
+            .add("ReferenceTypeId", referenceTypeId)
+            .add("RequestedNewNodeId", requestedNewNodeId)
+            .add("BrowseName", browseName)
+            .add("NodeClass", nodeClass)
+            .add("NodeAttributes", nodeAttributes)
+            .add("TypeDefinition", typeDefinition)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AddNodesItem> {
-        @Override
-        public AddNodesItem decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ExpandedNodeId _parentNodeId = reader.readExpandedNodeId();
-            NodeId _referenceTypeId = reader.readNodeId();
-            ExpandedNodeId _requestedNewNodeId = reader.readExpandedNodeId();
-            QualifiedName _browseName = reader.readQualifiedName();
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
-            ExtensionObject _nodeAttributes = reader.readExtensionObject();
-            ExpandedNodeId _typeDefinition = reader.readExpandedNodeId();
+    public static class Codec extends BuiltinDataTypeCodec<AddNodesItem> {
 
-            return new AddNodesItem(_parentNodeId, _referenceTypeId, _requestedNewNodeId, _browseName, _nodeClass, _nodeAttributes, _typeDefinition);
+        @Override
+        public Class<AddNodesItem> getType() {
+            return AddNodesItem.class;
         }
 
         @Override
-        public void encode(SerializationContext context, AddNodesItem value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId(value._parentNodeId);
-            writer.writeNodeId(value._referenceTypeId);
-            writer.writeExpandedNodeId(value._requestedNewNodeId);
-            writer.writeQualifiedName(value._browseName);
-            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
-            writer.writeExtensionObject(value._nodeAttributes);
-            writer.writeExpandedNodeId(value._typeDefinition);
-        }
-    }
+        public AddNodesItem decode(UaDecoder decoder) throws UaSerializationException {
+            ExpandedNodeId parentNodeId = decoder.readExpandedNodeId("ParentNodeId");
+            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
+            ExpandedNodeId requestedNewNodeId = decoder.readExpandedNodeId("RequestedNewNodeId");
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            ExtensionObject nodeAttributes = decoder.readExtensionObject("NodeAttributes");
+            ExpandedNodeId typeDefinition = decoder.readExpandedNodeId("TypeDefinition");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<AddNodesItem> {
-        @Override
-        public AddNodesItem decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ExpandedNodeId _parentNodeId = reader.readExpandedNodeId("ParentNodeId");
-            NodeId _referenceTypeId = reader.readNodeId("ReferenceTypeId");
-            ExpandedNodeId _requestedNewNodeId = reader.readExpandedNodeId("RequestedNewNodeId");
-            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
-            ExtensionObject _nodeAttributes = reader.readExtensionObject("NodeAttributes");
-            ExpandedNodeId _typeDefinition = reader.readExpandedNodeId("TypeDefinition");
-
-            return new AddNodesItem(_parentNodeId, _referenceTypeId, _requestedNewNodeId, _browseName, _nodeClass, _nodeAttributes, _typeDefinition);
+            return new AddNodesItem(parentNodeId, referenceTypeId, requestedNewNodeId, browseName, nodeClass, nodeAttributes, typeDefinition);
         }
 
         @Override
-        public void encode(SerializationContext context, AddNodesItem encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId("ParentNodeId", encodable._parentNodeId);
-            writer.writeNodeId("ReferenceTypeId", encodable._referenceTypeId);
-            writer.writeExpandedNodeId("RequestedNewNodeId", encodable._requestedNewNodeId);
-            writer.writeQualifiedName("BrowseName", encodable._browseName);
-            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeExtensionObject("NodeAttributes", encodable._nodeAttributes);
-            writer.writeExpandedNodeId("TypeDefinition", encodable._typeDefinition);
+        public void encode(AddNodesItem value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeExpandedNodeId("ParentNodeId", value.parentNodeId);
+            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
+            encoder.writeExpandedNodeId("RequestedNewNodeId", value.requestedNewNodeId);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeExtensionObject("NodeAttributes", value.nodeAttributes);
+            encoder.writeExpandedNodeId("TypeDefinition", value.typeDefinition);
         }
     }
 

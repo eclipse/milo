@@ -16,48 +16,42 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ReferenceTypeAttributes")
 public class ReferenceTypeAttributes extends NodeAttributes {
 
     public static final NodeId TypeId = Identifiers.ReferenceTypeAttributes;
     public static final NodeId BinaryEncodingId = Identifiers.ReferenceTypeAttributes_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReferenceTypeAttributes_Encoding_DefaultXml;
 
-    protected final Boolean _isAbstract;
-    protected final Boolean _symmetric;
-    protected final LocalizedText _inverseName;
+    protected final Boolean isAbstract;
+    protected final Boolean symmetric;
+    protected final LocalizedText inverseName;
 
     public ReferenceTypeAttributes() {
         super(null, null, null, null, null);
-        this._isAbstract = null;
-        this._symmetric = null;
-        this._inverseName = null;
+        this.isAbstract = null;
+        this.symmetric = null;
+        this.inverseName = null;
     }
 
-    public ReferenceTypeAttributes(UInteger _specifiedAttributes, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, Boolean _isAbstract, Boolean _symmetric, LocalizedText _inverseName) {
-        super(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask);
-        this._isAbstract = _isAbstract;
-        this._symmetric = _symmetric;
-        this._inverseName = _inverseName;
+    public ReferenceTypeAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, Boolean isAbstract, Boolean symmetric, LocalizedText inverseName) {
+        super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
+        this.isAbstract = isAbstract;
+        this.symmetric = symmetric;
+        this.inverseName = inverseName;
     }
 
-    public Boolean getIsAbstract() { return _isAbstract; }
+    public Boolean getIsAbstract() { return isAbstract; }
 
-    public Boolean getSymmetric() { return _symmetric; }
+    public Boolean getSymmetric() { return symmetric; }
 
-    public LocalizedText getInverseName() { return _inverseName; }
+    public LocalizedText getInverseName() { return inverseName; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -71,70 +65,48 @@ public class ReferenceTypeAttributes extends NodeAttributes {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", _specifiedAttributes)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("IsAbstract", _isAbstract)
-            .add("Symmetric", _symmetric)
-            .add("InverseName", _inverseName)
+            .add("SpecifiedAttributes", specifiedAttributes)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("IsAbstract", isAbstract)
+            .add("Symmetric", symmetric)
+            .add("InverseName", inverseName)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReferenceTypeAttributes> {
-        @Override
-        public ReferenceTypeAttributes decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedAttributes = reader.readUInt32();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
-            UInteger _writeMask = reader.readUInt32();
-            UInteger _userWriteMask = reader.readUInt32();
-            Boolean _isAbstract = reader.readBoolean();
-            Boolean _symmetric = reader.readBoolean();
-            LocalizedText _inverseName = reader.readLocalizedText();
+    public static class Codec extends BuiltinDataTypeCodec<ReferenceTypeAttributes> {
 
-            return new ReferenceTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract, _symmetric, _inverseName);
+        @Override
+        public Class<ReferenceTypeAttributes> getType() {
+            return ReferenceTypeAttributes.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReferenceTypeAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._specifiedAttributes);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-            writer.writeUInt32(value._writeMask);
-            writer.writeUInt32(value._userWriteMask);
-            writer.writeBoolean(value._isAbstract);
-            writer.writeBoolean(value._symmetric);
-            writer.writeLocalizedText(value._inverseName);
-        }
-    }
+        public ReferenceTypeAttributes decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            Boolean isAbstract = decoder.readBoolean("IsAbstract");
+            Boolean symmetric = decoder.readBoolean("Symmetric");
+            LocalizedText inverseName = decoder.readLocalizedText("InverseName");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReferenceTypeAttributes> {
-        @Override
-        public ReferenceTypeAttributes decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedAttributes = reader.readUInt32("SpecifiedAttributes");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-            UInteger _writeMask = reader.readUInt32("WriteMask");
-            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
-            Boolean _isAbstract = reader.readBoolean("IsAbstract");
-            Boolean _symmetric = reader.readBoolean("Symmetric");
-            LocalizedText _inverseName = reader.readLocalizedText("InverseName");
-
-            return new ReferenceTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract, _symmetric, _inverseName);
+            return new ReferenceTypeAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, isAbstract, symmetric, inverseName);
         }
 
         @Override
-        public void encode(SerializationContext context, ReferenceTypeAttributes encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("SpecifiedAttributes", encodable._specifiedAttributes);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
-            writer.writeUInt32("WriteMask", encodable._writeMask);
-            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
-            writer.writeBoolean("IsAbstract", encodable._isAbstract);
-            writer.writeBoolean("Symmetric", encodable._symmetric);
-            writer.writeLocalizedText("InverseName", encodable._inverseName);
+        public void encode(ReferenceTypeAttributes value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBoolean("IsAbstract", value.isAbstract);
+            encoder.writeBoolean("Symmetric", value.symmetric);
+            encoder.writeLocalizedText("InverseName", value.inverseName);
         }
     }
 

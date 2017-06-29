@@ -16,37 +16,31 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("X509IdentityToken")
 public class X509IdentityToken extends UserIdentityToken {
 
     public static final NodeId TypeId = Identifiers.X509IdentityToken;
     public static final NodeId BinaryEncodingId = Identifiers.X509IdentityToken_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.X509IdentityToken_Encoding_DefaultXml;
 
-    protected final ByteString _certificateData;
+    protected final ByteString certificateData;
 
     public X509IdentityToken() {
         super(null);
-        this._certificateData = null;
+        this.certificateData = null;
     }
 
-    public X509IdentityToken(String _policyId, ByteString _certificateData) {
-        super(_policyId);
-        this._certificateData = _certificateData;
+    public X509IdentityToken(String policyId, ByteString certificateData) {
+        super(policyId);
+        this.certificateData = certificateData;
     }
 
-    public ByteString getCertificateData() { return _certificateData; }
+    public ByteString getCertificateData() { return certificateData; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -60,40 +54,30 @@ public class X509IdentityToken extends UserIdentityToken {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("PolicyId", _policyId)
-            .add("CertificateData", _certificateData)
+            .add("PolicyId", policyId)
+            .add("CertificateData", certificateData)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<X509IdentityToken> {
-        @Override
-        public X509IdentityToken decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString();
-            ByteString _certificateData = reader.readByteString();
+    public static class Codec extends BuiltinDataTypeCodec<X509IdentityToken> {
 
-            return new X509IdentityToken(_policyId, _certificateData);
+        @Override
+        public Class<X509IdentityToken> getType() {
+            return X509IdentityToken.class;
         }
 
         @Override
-        public void encode(SerializationContext context, X509IdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._policyId);
-            writer.writeByteString(value._certificateData);
-        }
-    }
+        public X509IdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+            String policyId = decoder.readString("PolicyId");
+            ByteString certificateData = decoder.readByteString("CertificateData");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<X509IdentityToken> {
-        @Override
-        public X509IdentityToken decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString("PolicyId");
-            ByteString _certificateData = reader.readByteString("CertificateData");
-
-            return new X509IdentityToken(_policyId, _certificateData);
+            return new X509IdentityToken(policyId, certificateData);
         }
 
         @Override
-        public void encode(SerializationContext context, X509IdentityToken encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("PolicyId", encodable._policyId);
-            writer.writeByteString("CertificateData", encodable._certificateData);
+        public void encode(X509IdentityToken value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("PolicyId", value.policyId);
+            encoder.writeByteString("CertificateData", value.certificateData);
         }
     }
 

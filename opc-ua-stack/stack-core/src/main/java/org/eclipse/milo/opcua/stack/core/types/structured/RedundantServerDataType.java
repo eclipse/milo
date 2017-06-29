@@ -16,47 +16,41 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 
-@UaDataType("RedundantServerDataType")
 public class RedundantServerDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.RedundantServerDataType;
     public static final NodeId BinaryEncodingId = Identifiers.RedundantServerDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RedundantServerDataType_Encoding_DefaultXml;
 
-    protected final String _serverId;
-    protected final UByte _serviceLevel;
-    protected final ServerState _serverState;
+    protected final String serverId;
+    protected final UByte serviceLevel;
+    protected final ServerState serverState;
 
     public RedundantServerDataType() {
-        this._serverId = null;
-        this._serviceLevel = null;
-        this._serverState = null;
+        this.serverId = null;
+        this.serviceLevel = null;
+        this.serverState = null;
     }
 
-    public RedundantServerDataType(String _serverId, UByte _serviceLevel, ServerState _serverState) {
-        this._serverId = _serverId;
-        this._serviceLevel = _serviceLevel;
-        this._serverState = _serverState;
+    public RedundantServerDataType(String serverId, UByte serviceLevel, ServerState serverState) {
+        this.serverId = serverId;
+        this.serviceLevel = serviceLevel;
+        this.serverState = serverState;
     }
 
-    public String getServerId() { return _serverId; }
+    public String getServerId() { return serverId; }
 
-    public UByte getServiceLevel() { return _serviceLevel; }
+    public UByte getServiceLevel() { return serviceLevel; }
 
-    public ServerState getServerState() { return _serverState; }
+    public ServerState getServerState() { return serverState; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -70,45 +64,33 @@ public class RedundantServerDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ServerId", _serverId)
-            .add("ServiceLevel", _serviceLevel)
-            .add("ServerState", _serverState)
+            .add("ServerId", serverId)
+            .add("ServiceLevel", serviceLevel)
+            .add("ServerState", serverState)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RedundantServerDataType> {
-        @Override
-        public RedundantServerDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _serverId = reader.readString();
-            UByte _serviceLevel = reader.readByte();
-            ServerState _serverState = ServerState.from(reader.readInt32());
+    public static class Codec extends BuiltinDataTypeCodec<RedundantServerDataType> {
 
-            return new RedundantServerDataType(_serverId, _serviceLevel, _serverState);
+        @Override
+        public Class<RedundantServerDataType> getType() {
+            return RedundantServerDataType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, RedundantServerDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._serverId);
-            writer.writeByte(value._serviceLevel);
-            writer.writeInt32(value._serverState != null ? value._serverState.getValue() : 0);
-        }
-    }
+        public RedundantServerDataType decode(UaDecoder decoder) throws UaSerializationException {
+            String serverId = decoder.readString("ServerId");
+            UByte serviceLevel = decoder.readByte("ServiceLevel");
+            ServerState serverState = ServerState.from(decoder.readInt32("ServerState"));
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<RedundantServerDataType> {
-        @Override
-        public RedundantServerDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _serverId = reader.readString("ServerId");
-            UByte _serviceLevel = reader.readByte("ServiceLevel");
-            ServerState _serverState = ServerState.from(reader.readInt32("ServerState"));
-
-            return new RedundantServerDataType(_serverId, _serviceLevel, _serverState);
+            return new RedundantServerDataType(serverId, serviceLevel, serverState);
         }
 
         @Override
-        public void encode(SerializationContext context, RedundantServerDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("ServerId", encodable._serverId);
-            writer.writeByte("ServiceLevel", encodable._serviceLevel);
-            writer.writeInt32("ServerState", encodable._serverState != null ? encodable._serverState.getValue() : 0);
+        public void encode(RedundantServerDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("ServerId", value.serverId);
+            encoder.writeByte("ServiceLevel", value.serviceLevel);
+            encoder.writeInt32("ServerState", value.serverState != null ? value.serverState.getValue() : 0);
         }
     }
 

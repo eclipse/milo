@@ -16,46 +16,40 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReferenceNode")
 public class ReferenceNode implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ReferenceNode;
     public static final NodeId BinaryEncodingId = Identifiers.ReferenceNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReferenceNode_Encoding_DefaultXml;
 
-    protected final NodeId _referenceTypeId;
-    protected final Boolean _isInverse;
-    protected final ExpandedNodeId _targetId;
+    protected final NodeId referenceTypeId;
+    protected final Boolean isInverse;
+    protected final ExpandedNodeId targetId;
 
     public ReferenceNode() {
-        this._referenceTypeId = null;
-        this._isInverse = null;
-        this._targetId = null;
+        this.referenceTypeId = null;
+        this.isInverse = null;
+        this.targetId = null;
     }
 
-    public ReferenceNode(NodeId _referenceTypeId, Boolean _isInverse, ExpandedNodeId _targetId) {
-        this._referenceTypeId = _referenceTypeId;
-        this._isInverse = _isInverse;
-        this._targetId = _targetId;
+    public ReferenceNode(NodeId referenceTypeId, Boolean isInverse, ExpandedNodeId targetId) {
+        this.referenceTypeId = referenceTypeId;
+        this.isInverse = isInverse;
+        this.targetId = targetId;
     }
 
-    public NodeId getReferenceTypeId() { return _referenceTypeId; }
+    public NodeId getReferenceTypeId() { return referenceTypeId; }
 
-    public Boolean getIsInverse() { return _isInverse; }
+    public Boolean getIsInverse() { return isInverse; }
 
-    public ExpandedNodeId getTargetId() { return _targetId; }
+    public ExpandedNodeId getTargetId() { return targetId; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,45 +63,33 @@ public class ReferenceNode implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ReferenceTypeId", _referenceTypeId)
-            .add("IsInverse", _isInverse)
-            .add("TargetId", _targetId)
+            .add("ReferenceTypeId", referenceTypeId)
+            .add("IsInverse", isInverse)
+            .add("TargetId", targetId)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReferenceNode> {
-        @Override
-        public ReferenceNode decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _referenceTypeId = reader.readNodeId();
-            Boolean _isInverse = reader.readBoolean();
-            ExpandedNodeId _targetId = reader.readExpandedNodeId();
+    public static class Codec extends BuiltinDataTypeCodec<ReferenceNode> {
 
-            return new ReferenceNode(_referenceTypeId, _isInverse, _targetId);
+        @Override
+        public Class<ReferenceNode> getType() {
+            return ReferenceNode.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReferenceNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._referenceTypeId);
-            writer.writeBoolean(value._isInverse);
-            writer.writeExpandedNodeId(value._targetId);
-        }
-    }
+        public ReferenceNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
+            Boolean isInverse = decoder.readBoolean("IsInverse");
+            ExpandedNodeId targetId = decoder.readExpandedNodeId("TargetId");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReferenceNode> {
-        @Override
-        public ReferenceNode decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _referenceTypeId = reader.readNodeId("ReferenceTypeId");
-            Boolean _isInverse = reader.readBoolean("IsInverse");
-            ExpandedNodeId _targetId = reader.readExpandedNodeId("TargetId");
-
-            return new ReferenceNode(_referenceTypeId, _isInverse, _targetId);
+            return new ReferenceNode(referenceTypeId, isInverse, targetId);
         }
 
         @Override
-        public void encode(SerializationContext context, ReferenceNode encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("ReferenceTypeId", encodable._referenceTypeId);
-            writer.writeBoolean("IsInverse", encodable._isInverse);
-            writer.writeExpandedNodeId("TargetId", encodable._targetId);
+        public void encode(ReferenceNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
+            encoder.writeBoolean("IsInverse", value.isInverse);
+            encoder.writeExpandedNodeId("TargetId", value.targetId);
         }
     }
 
