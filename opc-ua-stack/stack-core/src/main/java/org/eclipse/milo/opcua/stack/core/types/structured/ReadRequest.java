@@ -18,52 +18,46 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
-@UaDataType("ReadRequest")
 public class ReadRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.ReadRequest;
     public static final NodeId BinaryEncodingId = Identifiers.ReadRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final Double _maxAge;
-    protected final TimestampsToReturn _timestampsToReturn;
-    protected final ReadValueId[] _nodesToRead;
+    protected final RequestHeader requestHeader;
+    protected final Double maxAge;
+    protected final TimestampsToReturn timestampsToReturn;
+    protected final ReadValueId[] nodesToRead;
 
     public ReadRequest() {
-        this._requestHeader = null;
-        this._maxAge = null;
-        this._timestampsToReturn = null;
-        this._nodesToRead = null;
+        this.requestHeader = null;
+        this.maxAge = null;
+        this.timestampsToReturn = null;
+        this.nodesToRead = null;
     }
 
-    public ReadRequest(RequestHeader _requestHeader, Double _maxAge, TimestampsToReturn _timestampsToReturn, ReadValueId[] _nodesToRead) {
-        this._requestHeader = _requestHeader;
-        this._maxAge = _maxAge;
-        this._timestampsToReturn = _timestampsToReturn;
-        this._nodesToRead = _nodesToRead;
+    public ReadRequest(RequestHeader requestHeader, Double maxAge, TimestampsToReturn timestampsToReturn, ReadValueId[] nodesToRead) {
+        this.requestHeader = requestHeader;
+        this.maxAge = maxAge;
+        this.timestampsToReturn = timestampsToReturn;
+        this.nodesToRead = nodesToRead;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public Double getMaxAge() { return _maxAge; }
+    public Double getMaxAge() { return maxAge; }
 
-    public TimestampsToReturn getTimestampsToReturn() { return _timestampsToReturn; }
+    public TimestampsToReturn getTimestampsToReturn() { return timestampsToReturn; }
 
     @Nullable
-    public ReadValueId[] getNodesToRead() { return _nodesToRead; }
+    public ReadValueId[] getNodesToRead() { return nodesToRead; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -77,67 +71,43 @@ public class ReadRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("MaxAge", _maxAge)
-            .add("TimestampsToReturn", _timestampsToReturn)
-            .add("NodesToRead", _nodesToRead)
+            .add("RequestHeader", requestHeader)
+            .add("MaxAge", maxAge)
+            .add("TimestampsToReturn", timestampsToReturn)
+            .add("NodesToRead", nodesToRead)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReadRequest> {
-        @Override
-        public ReadRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            Double _maxAge = reader.readDouble();
-            TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32());
-            ReadValueId[] _nodesToRead =
-                reader.readArray(
-                    () -> (ReadValueId) context.decode(
-                        ReadValueId.BinaryEncodingId, reader),
-                    ReadValueId.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<ReadRequest> {
 
-            return new ReadRequest(_requestHeader, _maxAge, _timestampsToReturn, _nodesToRead);
+        @Override
+        public Class<ReadRequest> getType() {
+            return ReadRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReadRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeDouble(value._maxAge);
-            writer.writeInt32(value._timestampsToReturn != null ? value._timestampsToReturn.getValue() : 0);
-            writer.writeArray(
-                value._nodesToRead,
-                e -> context.encode(ReadValueId.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReadRequest> {
-        @Override
-        public ReadRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            Double _maxAge = reader.readDouble("MaxAge");
-            TimestampsToReturn _timestampsToReturn = TimestampsToReturn.from(reader.readInt32("TimestampsToReturn"));
-            ReadValueId[] _nodesToRead =
-                reader.readArray(
+        public ReadRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            Double maxAge = decoder.readDouble("MaxAge");
+            TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readInt32("TimestampsToReturn"));
+            ReadValueId[] nodesToRead =
+                decoder.readBuiltinStructArray(
                     "NodesToRead",
-                    f -> (ReadValueId) context.decode(
-                        ReadValueId.XmlEncodingId, reader),
                     ReadValueId.class
                 );
 
-            return new ReadRequest(_requestHeader, _maxAge, _timestampsToReturn, _nodesToRead);
+            return new ReadRequest(requestHeader, maxAge, timestampsToReturn, nodesToRead);
         }
 
         @Override
-        public void encode(SerializationContext context, ReadRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeDouble("MaxAge", encodable._maxAge);
-            writer.writeInt32("TimestampsToReturn", encodable._timestampsToReturn != null ? encodable._timestampsToReturn.getValue() : 0);
-            writer.writeArray(
+        public void encode(ReadRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeDouble("MaxAge", value.maxAge);
+            encoder.writeInt32("TimestampsToReturn", value.timestampsToReturn != null ? value.timestampsToReturn.getValue() : 0);
+            encoder.writeBuiltinStructArray(
                 "NodesToRead",
-                encodable._nodesToRead,
-                (f, e) -> context.encode(ReadValueId.XmlEncodingId, e, writer)
+                value.nodesToRead,
+                ReadValueId.class
             );
         }
     }

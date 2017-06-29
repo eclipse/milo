@@ -16,41 +16,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("CancelResponse")
 public class CancelResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.CancelResponse;
     public static final NodeId BinaryEncodingId = Identifiers.CancelResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CancelResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final UInteger _cancelCount;
+    protected final ResponseHeader responseHeader;
+    protected final UInteger cancelCount;
 
     public CancelResponse() {
-        this._responseHeader = null;
-        this._cancelCount = null;
+        this.responseHeader = null;
+        this.cancelCount = null;
     }
 
-    public CancelResponse(ResponseHeader _responseHeader, UInteger _cancelCount) {
-        this._responseHeader = _responseHeader;
-        this._cancelCount = _cancelCount;
+    public CancelResponse(ResponseHeader responseHeader, UInteger cancelCount) {
+        this.responseHeader = responseHeader;
+        this.cancelCount = cancelCount;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
-    public UInteger getCancelCount() { return _cancelCount; }
+    public UInteger getCancelCount() { return cancelCount; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,40 +58,30 @@ public class CancelResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("CancelCount", _cancelCount)
+            .add("ResponseHeader", responseHeader)
+            .add("CancelCount", cancelCount)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CancelResponse> {
-        @Override
-        public CancelResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            UInteger _cancelCount = reader.readUInt32();
+    public static class Codec extends BuiltinDataTypeCodec<CancelResponse> {
 
-            return new CancelResponse(_responseHeader, _cancelCount);
+        @Override
+        public Class<CancelResponse> getType() {
+            return CancelResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, CancelResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeUInt32(value._cancelCount);
-        }
-    }
+        public CancelResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            UInteger cancelCount = decoder.readUInt32("CancelCount");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<CancelResponse> {
-        @Override
-        public CancelResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            UInteger _cancelCount = reader.readUInt32("CancelCount");
-
-            return new CancelResponse(_responseHeader, _cancelCount);
+            return new CancelResponse(responseHeader, cancelCount);
         }
 
         @Override
-        public void encode(SerializationContext context, CancelResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeUInt32("CancelCount", encodable._cancelCount);
+        public void encode(CancelResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeUInt32("CancelCount", value.cancelCount);
         }
     }
 

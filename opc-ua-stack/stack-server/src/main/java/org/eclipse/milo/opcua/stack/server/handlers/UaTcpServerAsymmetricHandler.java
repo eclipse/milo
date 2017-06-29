@@ -44,7 +44,6 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
@@ -252,7 +251,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                 chunkBuffers = new ArrayList<>(maxChunkCount);
                 headerRef.set(null);
 
-                serializationQueue.decode((context, reader, chunkDecoder) -> {
+                serializationQueue.decode((reader, chunkDecoder) -> {
                     ByteBuf messageBuffer = null;
 
                     try {
@@ -260,9 +259,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
                         reader.setBuffer(messageBuffer);
 
-                        NodeId encodingId = reader.readNodeId();
-                        OpenSecureChannelRequest request =
-                            (OpenSecureChannelRequest) context.decode(encodingId, reader);
+                        OpenSecureChannelRequest request = (OpenSecureChannelRequest) reader.readMessage(null);
 
                         logger.debug("Received OpenSecureChannelRequest ({}, id={}).",
                             request.getRequestType(), secureChannelId);
@@ -385,15 +382,13 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         long requestId,
         OpenSecureChannelResponse response) {
 
-        serializationQueue.encode((context, writer, chunkEncoder) -> {
+        serializationQueue.encode((writer, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.buffer();
 
             try {
                 writer.setBuffer(messageBuffer);
 
-                NodeId encodingId = response.getBinaryEncodingId();
-                writer.writeNodeId(encodingId);
-                context.encode(encodingId, response, writer);
+                writer.writeMessage(null, response);
 
                 List<ByteBuf> chunks = chunkEncoder.encodeAsymmetric(
                     secureChannel,

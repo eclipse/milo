@@ -18,43 +18,37 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
 
-@UaDataType("ContentFilterElement")
 public class ContentFilterElement implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ContentFilterElement;
     public static final NodeId BinaryEncodingId = Identifiers.ContentFilterElement_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ContentFilterElement_Encoding_DefaultXml;
 
-    protected final FilterOperator _filterOperator;
-    protected final ExtensionObject[] _filterOperands;
+    protected final FilterOperator filterOperator;
+    protected final ExtensionObject[] filterOperands;
 
     public ContentFilterElement() {
-        this._filterOperator = null;
-        this._filterOperands = null;
+        this.filterOperator = null;
+        this.filterOperands = null;
     }
 
-    public ContentFilterElement(FilterOperator _filterOperator, ExtensionObject[] _filterOperands) {
-        this._filterOperator = _filterOperator;
-        this._filterOperands = _filterOperands;
+    public ContentFilterElement(FilterOperator filterOperator, ExtensionObject[] filterOperands) {
+        this.filterOperator = filterOperator;
+        this.filterOperands = filterOperands;
     }
 
-    public FilterOperator getFilterOperator() { return _filterOperator; }
+    public FilterOperator getFilterOperator() { return filterOperator; }
 
     @Nullable
-    public ExtensionObject[] getFilterOperands() { return _filterOperands; }
+    public ExtensionObject[] getFilterOperands() { return filterOperands; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,40 +62,30 @@ public class ContentFilterElement implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("FilterOperator", _filterOperator)
-            .add("FilterOperands", _filterOperands)
+            .add("FilterOperator", filterOperator)
+            .add("FilterOperands", filterOperands)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ContentFilterElement> {
-        @Override
-        public ContentFilterElement decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            FilterOperator _filterOperator = FilterOperator.from(reader.readInt32());
-            ExtensionObject[] _filterOperands = reader.readArray(reader::readExtensionObject, ExtensionObject.class);
+    public static class Codec extends BuiltinDataTypeCodec<ContentFilterElement> {
 
-            return new ContentFilterElement(_filterOperator, _filterOperands);
+        @Override
+        public Class<ContentFilterElement> getType() {
+            return ContentFilterElement.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ContentFilterElement value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeInt32(value._filterOperator != null ? value._filterOperator.getValue() : 0);
-            writer.writeArray(value._filterOperands, writer::writeExtensionObject);
-        }
-    }
+        public ContentFilterElement decode(UaDecoder decoder) throws UaSerializationException {
+            FilterOperator filterOperator = FilterOperator.from(decoder.readInt32("FilterOperator"));
+            ExtensionObject[] filterOperands = decoder.readArray("FilterOperands", decoder::readExtensionObject, ExtensionObject.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ContentFilterElement> {
-        @Override
-        public ContentFilterElement decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            FilterOperator _filterOperator = FilterOperator.from(reader.readInt32("FilterOperator"));
-            ExtensionObject[] _filterOperands = reader.readArray("FilterOperands", reader::readExtensionObject, ExtensionObject.class);
-
-            return new ContentFilterElement(_filterOperator, _filterOperands);
+            return new ContentFilterElement(filterOperator, filterOperands);
         }
 
         @Override
-        public void encode(SerializationContext context, ContentFilterElement encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeInt32("FilterOperator", encodable._filterOperator != null ? encodable._filterOperator.getValue() : 0);
-            writer.writeArray("FilterOperands", encodable._filterOperands, writer::writeExtensionObject);
+        public void encode(ContentFilterElement value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeInt32("FilterOperator", value.filterOperator != null ? value.filterOperator.getValue() : 0);
+            encoder.writeArray("FilterOperands", value.filterOperands, encoder::writeExtensionObject);
         }
     }
 

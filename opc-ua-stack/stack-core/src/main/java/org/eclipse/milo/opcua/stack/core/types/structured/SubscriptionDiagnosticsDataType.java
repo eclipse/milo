@@ -16,187 +16,181 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("SubscriptionDiagnosticsDataType")
 public class SubscriptionDiagnosticsDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SubscriptionDiagnosticsDataType;
     public static final NodeId BinaryEncodingId = Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SubscriptionDiagnosticsDataType_Encoding_DefaultXml;
 
-    protected final NodeId _sessionId;
-    protected final UInteger _subscriptionId;
-    protected final UByte _priority;
-    protected final Double _publishingInterval;
-    protected final UInteger _maxKeepAliveCount;
-    protected final UInteger _maxLifetimeCount;
-    protected final UInteger _maxNotificationsPerPublish;
-    protected final Boolean _publishingEnabled;
-    protected final UInteger _modifyCount;
-    protected final UInteger _enableCount;
-    protected final UInteger _disableCount;
-    protected final UInteger _republishRequestCount;
-    protected final UInteger _republishMessageRequestCount;
-    protected final UInteger _republishMessageCount;
-    protected final UInteger _transferRequestCount;
-    protected final UInteger _transferredToAltClientCount;
-    protected final UInteger _transferredToSameClientCount;
-    protected final UInteger _publishRequestCount;
-    protected final UInteger _dataChangeNotificationsCount;
-    protected final UInteger _eventNotificationsCount;
-    protected final UInteger _notificationsCount;
-    protected final UInteger _latePublishRequestCount;
-    protected final UInteger _currentKeepAliveCount;
-    protected final UInteger _currentLifetimeCount;
-    protected final UInteger _unacknowledgedMessageCount;
-    protected final UInteger _discardedMessageCount;
-    protected final UInteger _monitoredItemCount;
-    protected final UInteger _disabledMonitoredItemCount;
-    protected final UInteger _monitoringQueueOverflowCount;
-    protected final UInteger _nextSequenceNumber;
-    protected final UInteger _eventQueueOverFlowCount;
+    protected final NodeId sessionId;
+    protected final UInteger subscriptionId;
+    protected final UByte priority;
+    protected final Double publishingInterval;
+    protected final UInteger maxKeepAliveCount;
+    protected final UInteger maxLifetimeCount;
+    protected final UInteger maxNotificationsPerPublish;
+    protected final Boolean publishingEnabled;
+    protected final UInteger modifyCount;
+    protected final UInteger enableCount;
+    protected final UInteger disableCount;
+    protected final UInteger republishRequestCount;
+    protected final UInteger republishMessageRequestCount;
+    protected final UInteger republishMessageCount;
+    protected final UInteger transferRequestCount;
+    protected final UInteger transferredToAltClientCount;
+    protected final UInteger transferredToSameClientCount;
+    protected final UInteger publishRequestCount;
+    protected final UInteger dataChangeNotificationsCount;
+    protected final UInteger eventNotificationsCount;
+    protected final UInteger notificationsCount;
+    protected final UInteger latePublishRequestCount;
+    protected final UInteger currentKeepAliveCount;
+    protected final UInteger currentLifetimeCount;
+    protected final UInteger unacknowledgedMessageCount;
+    protected final UInteger discardedMessageCount;
+    protected final UInteger monitoredItemCount;
+    protected final UInteger disabledMonitoredItemCount;
+    protected final UInteger monitoringQueueOverflowCount;
+    protected final UInteger nextSequenceNumber;
+    protected final UInteger eventQueueOverFlowCount;
 
     public SubscriptionDiagnosticsDataType() {
-        this._sessionId = null;
-        this._subscriptionId = null;
-        this._priority = null;
-        this._publishingInterval = null;
-        this._maxKeepAliveCount = null;
-        this._maxLifetimeCount = null;
-        this._maxNotificationsPerPublish = null;
-        this._publishingEnabled = null;
-        this._modifyCount = null;
-        this._enableCount = null;
-        this._disableCount = null;
-        this._republishRequestCount = null;
-        this._republishMessageRequestCount = null;
-        this._republishMessageCount = null;
-        this._transferRequestCount = null;
-        this._transferredToAltClientCount = null;
-        this._transferredToSameClientCount = null;
-        this._publishRequestCount = null;
-        this._dataChangeNotificationsCount = null;
-        this._eventNotificationsCount = null;
-        this._notificationsCount = null;
-        this._latePublishRequestCount = null;
-        this._currentKeepAliveCount = null;
-        this._currentLifetimeCount = null;
-        this._unacknowledgedMessageCount = null;
-        this._discardedMessageCount = null;
-        this._monitoredItemCount = null;
-        this._disabledMonitoredItemCount = null;
-        this._monitoringQueueOverflowCount = null;
-        this._nextSequenceNumber = null;
-        this._eventQueueOverFlowCount = null;
+        this.sessionId = null;
+        this.subscriptionId = null;
+        this.priority = null;
+        this.publishingInterval = null;
+        this.maxKeepAliveCount = null;
+        this.maxLifetimeCount = null;
+        this.maxNotificationsPerPublish = null;
+        this.publishingEnabled = null;
+        this.modifyCount = null;
+        this.enableCount = null;
+        this.disableCount = null;
+        this.republishRequestCount = null;
+        this.republishMessageRequestCount = null;
+        this.republishMessageCount = null;
+        this.transferRequestCount = null;
+        this.transferredToAltClientCount = null;
+        this.transferredToSameClientCount = null;
+        this.publishRequestCount = null;
+        this.dataChangeNotificationsCount = null;
+        this.eventNotificationsCount = null;
+        this.notificationsCount = null;
+        this.latePublishRequestCount = null;
+        this.currentKeepAliveCount = null;
+        this.currentLifetimeCount = null;
+        this.unacknowledgedMessageCount = null;
+        this.discardedMessageCount = null;
+        this.monitoredItemCount = null;
+        this.disabledMonitoredItemCount = null;
+        this.monitoringQueueOverflowCount = null;
+        this.nextSequenceNumber = null;
+        this.eventQueueOverFlowCount = null;
     }
 
-    public SubscriptionDiagnosticsDataType(NodeId _sessionId, UInteger _subscriptionId, UByte _priority, Double _publishingInterval, UInteger _maxKeepAliveCount, UInteger _maxLifetimeCount, UInteger _maxNotificationsPerPublish, Boolean _publishingEnabled, UInteger _modifyCount, UInteger _enableCount, UInteger _disableCount, UInteger _republishRequestCount, UInteger _republishMessageRequestCount, UInteger _republishMessageCount, UInteger _transferRequestCount, UInteger _transferredToAltClientCount, UInteger _transferredToSameClientCount, UInteger _publishRequestCount, UInteger _dataChangeNotificationsCount, UInteger _eventNotificationsCount, UInteger _notificationsCount, UInteger _latePublishRequestCount, UInteger _currentKeepAliveCount, UInteger _currentLifetimeCount, UInteger _unacknowledgedMessageCount, UInteger _discardedMessageCount, UInteger _monitoredItemCount, UInteger _disabledMonitoredItemCount, UInteger _monitoringQueueOverflowCount, UInteger _nextSequenceNumber, UInteger _eventQueueOverFlowCount) {
-        this._sessionId = _sessionId;
-        this._subscriptionId = _subscriptionId;
-        this._priority = _priority;
-        this._publishingInterval = _publishingInterval;
-        this._maxKeepAliveCount = _maxKeepAliveCount;
-        this._maxLifetimeCount = _maxLifetimeCount;
-        this._maxNotificationsPerPublish = _maxNotificationsPerPublish;
-        this._publishingEnabled = _publishingEnabled;
-        this._modifyCount = _modifyCount;
-        this._enableCount = _enableCount;
-        this._disableCount = _disableCount;
-        this._republishRequestCount = _republishRequestCount;
-        this._republishMessageRequestCount = _republishMessageRequestCount;
-        this._republishMessageCount = _republishMessageCount;
-        this._transferRequestCount = _transferRequestCount;
-        this._transferredToAltClientCount = _transferredToAltClientCount;
-        this._transferredToSameClientCount = _transferredToSameClientCount;
-        this._publishRequestCount = _publishRequestCount;
-        this._dataChangeNotificationsCount = _dataChangeNotificationsCount;
-        this._eventNotificationsCount = _eventNotificationsCount;
-        this._notificationsCount = _notificationsCount;
-        this._latePublishRequestCount = _latePublishRequestCount;
-        this._currentKeepAliveCount = _currentKeepAliveCount;
-        this._currentLifetimeCount = _currentLifetimeCount;
-        this._unacknowledgedMessageCount = _unacknowledgedMessageCount;
-        this._discardedMessageCount = _discardedMessageCount;
-        this._monitoredItemCount = _monitoredItemCount;
-        this._disabledMonitoredItemCount = _disabledMonitoredItemCount;
-        this._monitoringQueueOverflowCount = _monitoringQueueOverflowCount;
-        this._nextSequenceNumber = _nextSequenceNumber;
-        this._eventQueueOverFlowCount = _eventQueueOverFlowCount;
+    public SubscriptionDiagnosticsDataType(NodeId sessionId, UInteger subscriptionId, UByte priority, Double publishingInterval, UInteger maxKeepAliveCount, UInteger maxLifetimeCount, UInteger maxNotificationsPerPublish, Boolean publishingEnabled, UInteger modifyCount, UInteger enableCount, UInteger disableCount, UInteger republishRequestCount, UInteger republishMessageRequestCount, UInteger republishMessageCount, UInteger transferRequestCount, UInteger transferredToAltClientCount, UInteger transferredToSameClientCount, UInteger publishRequestCount, UInteger dataChangeNotificationsCount, UInteger eventNotificationsCount, UInteger notificationsCount, UInteger latePublishRequestCount, UInteger currentKeepAliveCount, UInteger currentLifetimeCount, UInteger unacknowledgedMessageCount, UInteger discardedMessageCount, UInteger monitoredItemCount, UInteger disabledMonitoredItemCount, UInteger monitoringQueueOverflowCount, UInteger nextSequenceNumber, UInteger eventQueueOverFlowCount) {
+        this.sessionId = sessionId;
+        this.subscriptionId = subscriptionId;
+        this.priority = priority;
+        this.publishingInterval = publishingInterval;
+        this.maxKeepAliveCount = maxKeepAliveCount;
+        this.maxLifetimeCount = maxLifetimeCount;
+        this.maxNotificationsPerPublish = maxNotificationsPerPublish;
+        this.publishingEnabled = publishingEnabled;
+        this.modifyCount = modifyCount;
+        this.enableCount = enableCount;
+        this.disableCount = disableCount;
+        this.republishRequestCount = republishRequestCount;
+        this.republishMessageRequestCount = republishMessageRequestCount;
+        this.republishMessageCount = republishMessageCount;
+        this.transferRequestCount = transferRequestCount;
+        this.transferredToAltClientCount = transferredToAltClientCount;
+        this.transferredToSameClientCount = transferredToSameClientCount;
+        this.publishRequestCount = publishRequestCount;
+        this.dataChangeNotificationsCount = dataChangeNotificationsCount;
+        this.eventNotificationsCount = eventNotificationsCount;
+        this.notificationsCount = notificationsCount;
+        this.latePublishRequestCount = latePublishRequestCount;
+        this.currentKeepAliveCount = currentKeepAliveCount;
+        this.currentLifetimeCount = currentLifetimeCount;
+        this.unacknowledgedMessageCount = unacknowledgedMessageCount;
+        this.discardedMessageCount = discardedMessageCount;
+        this.monitoredItemCount = monitoredItemCount;
+        this.disabledMonitoredItemCount = disabledMonitoredItemCount;
+        this.monitoringQueueOverflowCount = monitoringQueueOverflowCount;
+        this.nextSequenceNumber = nextSequenceNumber;
+        this.eventQueueOverFlowCount = eventQueueOverFlowCount;
     }
 
-    public NodeId getSessionId() { return _sessionId; }
+    public NodeId getSessionId() { return sessionId; }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
-    public UByte getPriority() { return _priority; }
+    public UByte getPriority() { return priority; }
 
-    public Double getPublishingInterval() { return _publishingInterval; }
+    public Double getPublishingInterval() { return publishingInterval; }
 
-    public UInteger getMaxKeepAliveCount() { return _maxKeepAliveCount; }
+    public UInteger getMaxKeepAliveCount() { return maxKeepAliveCount; }
 
-    public UInteger getMaxLifetimeCount() { return _maxLifetimeCount; }
+    public UInteger getMaxLifetimeCount() { return maxLifetimeCount; }
 
-    public UInteger getMaxNotificationsPerPublish() { return _maxNotificationsPerPublish; }
+    public UInteger getMaxNotificationsPerPublish() { return maxNotificationsPerPublish; }
 
-    public Boolean getPublishingEnabled() { return _publishingEnabled; }
+    public Boolean getPublishingEnabled() { return publishingEnabled; }
 
-    public UInteger getModifyCount() { return _modifyCount; }
+    public UInteger getModifyCount() { return modifyCount; }
 
-    public UInteger getEnableCount() { return _enableCount; }
+    public UInteger getEnableCount() { return enableCount; }
 
-    public UInteger getDisableCount() { return _disableCount; }
+    public UInteger getDisableCount() { return disableCount; }
 
-    public UInteger getRepublishRequestCount() { return _republishRequestCount; }
+    public UInteger getRepublishRequestCount() { return republishRequestCount; }
 
-    public UInteger getRepublishMessageRequestCount() { return _republishMessageRequestCount; }
+    public UInteger getRepublishMessageRequestCount() { return republishMessageRequestCount; }
 
-    public UInteger getRepublishMessageCount() { return _republishMessageCount; }
+    public UInteger getRepublishMessageCount() { return republishMessageCount; }
 
-    public UInteger getTransferRequestCount() { return _transferRequestCount; }
+    public UInteger getTransferRequestCount() { return transferRequestCount; }
 
-    public UInteger getTransferredToAltClientCount() { return _transferredToAltClientCount; }
+    public UInteger getTransferredToAltClientCount() { return transferredToAltClientCount; }
 
-    public UInteger getTransferredToSameClientCount() { return _transferredToSameClientCount; }
+    public UInteger getTransferredToSameClientCount() { return transferredToSameClientCount; }
 
-    public UInteger getPublishRequestCount() { return _publishRequestCount; }
+    public UInteger getPublishRequestCount() { return publishRequestCount; }
 
-    public UInteger getDataChangeNotificationsCount() { return _dataChangeNotificationsCount; }
+    public UInteger getDataChangeNotificationsCount() { return dataChangeNotificationsCount; }
 
-    public UInteger getEventNotificationsCount() { return _eventNotificationsCount; }
+    public UInteger getEventNotificationsCount() { return eventNotificationsCount; }
 
-    public UInteger getNotificationsCount() { return _notificationsCount; }
+    public UInteger getNotificationsCount() { return notificationsCount; }
 
-    public UInteger getLatePublishRequestCount() { return _latePublishRequestCount; }
+    public UInteger getLatePublishRequestCount() { return latePublishRequestCount; }
 
-    public UInteger getCurrentKeepAliveCount() { return _currentKeepAliveCount; }
+    public UInteger getCurrentKeepAliveCount() { return currentKeepAliveCount; }
 
-    public UInteger getCurrentLifetimeCount() { return _currentLifetimeCount; }
+    public UInteger getCurrentLifetimeCount() { return currentLifetimeCount; }
 
-    public UInteger getUnacknowledgedMessageCount() { return _unacknowledgedMessageCount; }
+    public UInteger getUnacknowledgedMessageCount() { return unacknowledgedMessageCount; }
 
-    public UInteger getDiscardedMessageCount() { return _discardedMessageCount; }
+    public UInteger getDiscardedMessageCount() { return discardedMessageCount; }
 
-    public UInteger getMonitoredItemCount() { return _monitoredItemCount; }
+    public UInteger getMonitoredItemCount() { return monitoredItemCount; }
 
-    public UInteger getDisabledMonitoredItemCount() { return _disabledMonitoredItemCount; }
+    public UInteger getDisabledMonitoredItemCount() { return disabledMonitoredItemCount; }
 
-    public UInteger getMonitoringQueueOverflowCount() { return _monitoringQueueOverflowCount; }
+    public UInteger getMonitoringQueueOverflowCount() { return monitoringQueueOverflowCount; }
 
-    public UInteger getNextSequenceNumber() { return _nextSequenceNumber; }
+    public UInteger getNextSequenceNumber() { return nextSequenceNumber; }
 
-    public UInteger getEventQueueOverFlowCount() { return _eventQueueOverFlowCount; }
+    public UInteger getEventQueueOverFlowCount() { return eventQueueOverFlowCount; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -210,185 +204,117 @@ public class SubscriptionDiagnosticsDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SessionId", _sessionId)
-            .add("SubscriptionId", _subscriptionId)
-            .add("Priority", _priority)
-            .add("PublishingInterval", _publishingInterval)
-            .add("MaxKeepAliveCount", _maxKeepAliveCount)
-            .add("MaxLifetimeCount", _maxLifetimeCount)
-            .add("MaxNotificationsPerPublish", _maxNotificationsPerPublish)
-            .add("PublishingEnabled", _publishingEnabled)
-            .add("ModifyCount", _modifyCount)
-            .add("EnableCount", _enableCount)
-            .add("DisableCount", _disableCount)
-            .add("RepublishRequestCount", _republishRequestCount)
-            .add("RepublishMessageRequestCount", _republishMessageRequestCount)
-            .add("RepublishMessageCount", _republishMessageCount)
-            .add("TransferRequestCount", _transferRequestCount)
-            .add("TransferredToAltClientCount", _transferredToAltClientCount)
-            .add("TransferredToSameClientCount", _transferredToSameClientCount)
-            .add("PublishRequestCount", _publishRequestCount)
-            .add("DataChangeNotificationsCount", _dataChangeNotificationsCount)
-            .add("EventNotificationsCount", _eventNotificationsCount)
-            .add("NotificationsCount", _notificationsCount)
-            .add("LatePublishRequestCount", _latePublishRequestCount)
-            .add("CurrentKeepAliveCount", _currentKeepAliveCount)
-            .add("CurrentLifetimeCount", _currentLifetimeCount)
-            .add("UnacknowledgedMessageCount", _unacknowledgedMessageCount)
-            .add("DiscardedMessageCount", _discardedMessageCount)
-            .add("MonitoredItemCount", _monitoredItemCount)
-            .add("DisabledMonitoredItemCount", _disabledMonitoredItemCount)
-            .add("MonitoringQueueOverflowCount", _monitoringQueueOverflowCount)
-            .add("NextSequenceNumber", _nextSequenceNumber)
-            .add("EventQueueOverFlowCount", _eventQueueOverFlowCount)
+            .add("SessionId", sessionId)
+            .add("SubscriptionId", subscriptionId)
+            .add("Priority", priority)
+            .add("PublishingInterval", publishingInterval)
+            .add("MaxKeepAliveCount", maxKeepAliveCount)
+            .add("MaxLifetimeCount", maxLifetimeCount)
+            .add("MaxNotificationsPerPublish", maxNotificationsPerPublish)
+            .add("PublishingEnabled", publishingEnabled)
+            .add("ModifyCount", modifyCount)
+            .add("EnableCount", enableCount)
+            .add("DisableCount", disableCount)
+            .add("RepublishRequestCount", republishRequestCount)
+            .add("RepublishMessageRequestCount", republishMessageRequestCount)
+            .add("RepublishMessageCount", republishMessageCount)
+            .add("TransferRequestCount", transferRequestCount)
+            .add("TransferredToAltClientCount", transferredToAltClientCount)
+            .add("TransferredToSameClientCount", transferredToSameClientCount)
+            .add("PublishRequestCount", publishRequestCount)
+            .add("DataChangeNotificationsCount", dataChangeNotificationsCount)
+            .add("EventNotificationsCount", eventNotificationsCount)
+            .add("NotificationsCount", notificationsCount)
+            .add("LatePublishRequestCount", latePublishRequestCount)
+            .add("CurrentKeepAliveCount", currentKeepAliveCount)
+            .add("CurrentLifetimeCount", currentLifetimeCount)
+            .add("UnacknowledgedMessageCount", unacknowledgedMessageCount)
+            .add("DiscardedMessageCount", discardedMessageCount)
+            .add("MonitoredItemCount", monitoredItemCount)
+            .add("DisabledMonitoredItemCount", disabledMonitoredItemCount)
+            .add("MonitoringQueueOverflowCount", monitoringQueueOverflowCount)
+            .add("NextSequenceNumber", nextSequenceNumber)
+            .add("EventQueueOverFlowCount", eventQueueOverFlowCount)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SubscriptionDiagnosticsDataType> {
-        @Override
-        public SubscriptionDiagnosticsDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _sessionId = reader.readNodeId();
-            UInteger _subscriptionId = reader.readUInt32();
-            UByte _priority = reader.readByte();
-            Double _publishingInterval = reader.readDouble();
-            UInteger _maxKeepAliveCount = reader.readUInt32();
-            UInteger _maxLifetimeCount = reader.readUInt32();
-            UInteger _maxNotificationsPerPublish = reader.readUInt32();
-            Boolean _publishingEnabled = reader.readBoolean();
-            UInteger _modifyCount = reader.readUInt32();
-            UInteger _enableCount = reader.readUInt32();
-            UInteger _disableCount = reader.readUInt32();
-            UInteger _republishRequestCount = reader.readUInt32();
-            UInteger _republishMessageRequestCount = reader.readUInt32();
-            UInteger _republishMessageCount = reader.readUInt32();
-            UInteger _transferRequestCount = reader.readUInt32();
-            UInteger _transferredToAltClientCount = reader.readUInt32();
-            UInteger _transferredToSameClientCount = reader.readUInt32();
-            UInteger _publishRequestCount = reader.readUInt32();
-            UInteger _dataChangeNotificationsCount = reader.readUInt32();
-            UInteger _eventNotificationsCount = reader.readUInt32();
-            UInteger _notificationsCount = reader.readUInt32();
-            UInteger _latePublishRequestCount = reader.readUInt32();
-            UInteger _currentKeepAliveCount = reader.readUInt32();
-            UInteger _currentLifetimeCount = reader.readUInt32();
-            UInteger _unacknowledgedMessageCount = reader.readUInt32();
-            UInteger _discardedMessageCount = reader.readUInt32();
-            UInteger _monitoredItemCount = reader.readUInt32();
-            UInteger _disabledMonitoredItemCount = reader.readUInt32();
-            UInteger _monitoringQueueOverflowCount = reader.readUInt32();
-            UInteger _nextSequenceNumber = reader.readUInt32();
-            UInteger _eventQueueOverFlowCount = reader.readUInt32();
+    public static class Codec extends BuiltinDataTypeCodec<SubscriptionDiagnosticsDataType> {
 
-            return new SubscriptionDiagnosticsDataType(_sessionId, _subscriptionId, _priority, _publishingInterval, _maxKeepAliveCount, _maxLifetimeCount, _maxNotificationsPerPublish, _publishingEnabled, _modifyCount, _enableCount, _disableCount, _republishRequestCount, _republishMessageRequestCount, _republishMessageCount, _transferRequestCount, _transferredToAltClientCount, _transferredToSameClientCount, _publishRequestCount, _dataChangeNotificationsCount, _eventNotificationsCount, _notificationsCount, _latePublishRequestCount, _currentKeepAliveCount, _currentLifetimeCount, _unacknowledgedMessageCount, _discardedMessageCount, _monitoredItemCount, _disabledMonitoredItemCount, _monitoringQueueOverflowCount, _nextSequenceNumber, _eventQueueOverFlowCount);
+        @Override
+        public Class<SubscriptionDiagnosticsDataType> getType() {
+            return SubscriptionDiagnosticsDataType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, SubscriptionDiagnosticsDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._sessionId);
-            writer.writeUInt32(value._subscriptionId);
-            writer.writeByte(value._priority);
-            writer.writeDouble(value._publishingInterval);
-            writer.writeUInt32(value._maxKeepAliveCount);
-            writer.writeUInt32(value._maxLifetimeCount);
-            writer.writeUInt32(value._maxNotificationsPerPublish);
-            writer.writeBoolean(value._publishingEnabled);
-            writer.writeUInt32(value._modifyCount);
-            writer.writeUInt32(value._enableCount);
-            writer.writeUInt32(value._disableCount);
-            writer.writeUInt32(value._republishRequestCount);
-            writer.writeUInt32(value._republishMessageRequestCount);
-            writer.writeUInt32(value._republishMessageCount);
-            writer.writeUInt32(value._transferRequestCount);
-            writer.writeUInt32(value._transferredToAltClientCount);
-            writer.writeUInt32(value._transferredToSameClientCount);
-            writer.writeUInt32(value._publishRequestCount);
-            writer.writeUInt32(value._dataChangeNotificationsCount);
-            writer.writeUInt32(value._eventNotificationsCount);
-            writer.writeUInt32(value._notificationsCount);
-            writer.writeUInt32(value._latePublishRequestCount);
-            writer.writeUInt32(value._currentKeepAliveCount);
-            writer.writeUInt32(value._currentLifetimeCount);
-            writer.writeUInt32(value._unacknowledgedMessageCount);
-            writer.writeUInt32(value._discardedMessageCount);
-            writer.writeUInt32(value._monitoredItemCount);
-            writer.writeUInt32(value._disabledMonitoredItemCount);
-            writer.writeUInt32(value._monitoringQueueOverflowCount);
-            writer.writeUInt32(value._nextSequenceNumber);
-            writer.writeUInt32(value._eventQueueOverFlowCount);
-        }
-    }
+        public SubscriptionDiagnosticsDataType decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId sessionId = decoder.readNodeId("SessionId");
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            UByte priority = decoder.readByte("Priority");
+            Double publishingInterval = decoder.readDouble("PublishingInterval");
+            UInteger maxKeepAliveCount = decoder.readUInt32("MaxKeepAliveCount");
+            UInteger maxLifetimeCount = decoder.readUInt32("MaxLifetimeCount");
+            UInteger maxNotificationsPerPublish = decoder.readUInt32("MaxNotificationsPerPublish");
+            Boolean publishingEnabled = decoder.readBoolean("PublishingEnabled");
+            UInteger modifyCount = decoder.readUInt32("ModifyCount");
+            UInteger enableCount = decoder.readUInt32("EnableCount");
+            UInteger disableCount = decoder.readUInt32("DisableCount");
+            UInteger republishRequestCount = decoder.readUInt32("RepublishRequestCount");
+            UInteger republishMessageRequestCount = decoder.readUInt32("RepublishMessageRequestCount");
+            UInteger republishMessageCount = decoder.readUInt32("RepublishMessageCount");
+            UInteger transferRequestCount = decoder.readUInt32("TransferRequestCount");
+            UInteger transferredToAltClientCount = decoder.readUInt32("TransferredToAltClientCount");
+            UInteger transferredToSameClientCount = decoder.readUInt32("TransferredToSameClientCount");
+            UInteger publishRequestCount = decoder.readUInt32("PublishRequestCount");
+            UInteger dataChangeNotificationsCount = decoder.readUInt32("DataChangeNotificationsCount");
+            UInteger eventNotificationsCount = decoder.readUInt32("EventNotificationsCount");
+            UInteger notificationsCount = decoder.readUInt32("NotificationsCount");
+            UInteger latePublishRequestCount = decoder.readUInt32("LatePublishRequestCount");
+            UInteger currentKeepAliveCount = decoder.readUInt32("CurrentKeepAliveCount");
+            UInteger currentLifetimeCount = decoder.readUInt32("CurrentLifetimeCount");
+            UInteger unacknowledgedMessageCount = decoder.readUInt32("UnacknowledgedMessageCount");
+            UInteger discardedMessageCount = decoder.readUInt32("DiscardedMessageCount");
+            UInteger monitoredItemCount = decoder.readUInt32("MonitoredItemCount");
+            UInteger disabledMonitoredItemCount = decoder.readUInt32("DisabledMonitoredItemCount");
+            UInteger monitoringQueueOverflowCount = decoder.readUInt32("MonitoringQueueOverflowCount");
+            UInteger nextSequenceNumber = decoder.readUInt32("NextSequenceNumber");
+            UInteger eventQueueOverFlowCount = decoder.readUInt32("EventQueueOverFlowCount");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<SubscriptionDiagnosticsDataType> {
-        @Override
-        public SubscriptionDiagnosticsDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _sessionId = reader.readNodeId("SessionId");
-            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
-            UByte _priority = reader.readByte("Priority");
-            Double _publishingInterval = reader.readDouble("PublishingInterval");
-            UInteger _maxKeepAliveCount = reader.readUInt32("MaxKeepAliveCount");
-            UInteger _maxLifetimeCount = reader.readUInt32("MaxLifetimeCount");
-            UInteger _maxNotificationsPerPublish = reader.readUInt32("MaxNotificationsPerPublish");
-            Boolean _publishingEnabled = reader.readBoolean("PublishingEnabled");
-            UInteger _modifyCount = reader.readUInt32("ModifyCount");
-            UInteger _enableCount = reader.readUInt32("EnableCount");
-            UInteger _disableCount = reader.readUInt32("DisableCount");
-            UInteger _republishRequestCount = reader.readUInt32("RepublishRequestCount");
-            UInteger _republishMessageRequestCount = reader.readUInt32("RepublishMessageRequestCount");
-            UInteger _republishMessageCount = reader.readUInt32("RepublishMessageCount");
-            UInteger _transferRequestCount = reader.readUInt32("TransferRequestCount");
-            UInteger _transferredToAltClientCount = reader.readUInt32("TransferredToAltClientCount");
-            UInteger _transferredToSameClientCount = reader.readUInt32("TransferredToSameClientCount");
-            UInteger _publishRequestCount = reader.readUInt32("PublishRequestCount");
-            UInteger _dataChangeNotificationsCount = reader.readUInt32("DataChangeNotificationsCount");
-            UInteger _eventNotificationsCount = reader.readUInt32("EventNotificationsCount");
-            UInteger _notificationsCount = reader.readUInt32("NotificationsCount");
-            UInteger _latePublishRequestCount = reader.readUInt32("LatePublishRequestCount");
-            UInteger _currentKeepAliveCount = reader.readUInt32("CurrentKeepAliveCount");
-            UInteger _currentLifetimeCount = reader.readUInt32("CurrentLifetimeCount");
-            UInteger _unacknowledgedMessageCount = reader.readUInt32("UnacknowledgedMessageCount");
-            UInteger _discardedMessageCount = reader.readUInt32("DiscardedMessageCount");
-            UInteger _monitoredItemCount = reader.readUInt32("MonitoredItemCount");
-            UInteger _disabledMonitoredItemCount = reader.readUInt32("DisabledMonitoredItemCount");
-            UInteger _monitoringQueueOverflowCount = reader.readUInt32("MonitoringQueueOverflowCount");
-            UInteger _nextSequenceNumber = reader.readUInt32("NextSequenceNumber");
-            UInteger _eventQueueOverFlowCount = reader.readUInt32("EventQueueOverFlowCount");
-
-            return new SubscriptionDiagnosticsDataType(_sessionId, _subscriptionId, _priority, _publishingInterval, _maxKeepAliveCount, _maxLifetimeCount, _maxNotificationsPerPublish, _publishingEnabled, _modifyCount, _enableCount, _disableCount, _republishRequestCount, _republishMessageRequestCount, _republishMessageCount, _transferRequestCount, _transferredToAltClientCount, _transferredToSameClientCount, _publishRequestCount, _dataChangeNotificationsCount, _eventNotificationsCount, _notificationsCount, _latePublishRequestCount, _currentKeepAliveCount, _currentLifetimeCount, _unacknowledgedMessageCount, _discardedMessageCount, _monitoredItemCount, _disabledMonitoredItemCount, _monitoringQueueOverflowCount, _nextSequenceNumber, _eventQueueOverFlowCount);
+            return new SubscriptionDiagnosticsDataType(sessionId, subscriptionId, priority, publishingInterval, maxKeepAliveCount, maxLifetimeCount, maxNotificationsPerPublish, publishingEnabled, modifyCount, enableCount, disableCount, republishRequestCount, republishMessageRequestCount, republishMessageCount, transferRequestCount, transferredToAltClientCount, transferredToSameClientCount, publishRequestCount, dataChangeNotificationsCount, eventNotificationsCount, notificationsCount, latePublishRequestCount, currentKeepAliveCount, currentLifetimeCount, unacknowledgedMessageCount, discardedMessageCount, monitoredItemCount, disabledMonitoredItemCount, monitoringQueueOverflowCount, nextSequenceNumber, eventQueueOverFlowCount);
         }
 
         @Override
-        public void encode(SerializationContext context, SubscriptionDiagnosticsDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("SessionId", encodable._sessionId);
-            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
-            writer.writeByte("Priority", encodable._priority);
-            writer.writeDouble("PublishingInterval", encodable._publishingInterval);
-            writer.writeUInt32("MaxKeepAliveCount", encodable._maxKeepAliveCount);
-            writer.writeUInt32("MaxLifetimeCount", encodable._maxLifetimeCount);
-            writer.writeUInt32("MaxNotificationsPerPublish", encodable._maxNotificationsPerPublish);
-            writer.writeBoolean("PublishingEnabled", encodable._publishingEnabled);
-            writer.writeUInt32("ModifyCount", encodable._modifyCount);
-            writer.writeUInt32("EnableCount", encodable._enableCount);
-            writer.writeUInt32("DisableCount", encodable._disableCount);
-            writer.writeUInt32("RepublishRequestCount", encodable._republishRequestCount);
-            writer.writeUInt32("RepublishMessageRequestCount", encodable._republishMessageRequestCount);
-            writer.writeUInt32("RepublishMessageCount", encodable._republishMessageCount);
-            writer.writeUInt32("TransferRequestCount", encodable._transferRequestCount);
-            writer.writeUInt32("TransferredToAltClientCount", encodable._transferredToAltClientCount);
-            writer.writeUInt32("TransferredToSameClientCount", encodable._transferredToSameClientCount);
-            writer.writeUInt32("PublishRequestCount", encodable._publishRequestCount);
-            writer.writeUInt32("DataChangeNotificationsCount", encodable._dataChangeNotificationsCount);
-            writer.writeUInt32("EventNotificationsCount", encodable._eventNotificationsCount);
-            writer.writeUInt32("NotificationsCount", encodable._notificationsCount);
-            writer.writeUInt32("LatePublishRequestCount", encodable._latePublishRequestCount);
-            writer.writeUInt32("CurrentKeepAliveCount", encodable._currentKeepAliveCount);
-            writer.writeUInt32("CurrentLifetimeCount", encodable._currentLifetimeCount);
-            writer.writeUInt32("UnacknowledgedMessageCount", encodable._unacknowledgedMessageCount);
-            writer.writeUInt32("DiscardedMessageCount", encodable._discardedMessageCount);
-            writer.writeUInt32("MonitoredItemCount", encodable._monitoredItemCount);
-            writer.writeUInt32("DisabledMonitoredItemCount", encodable._disabledMonitoredItemCount);
-            writer.writeUInt32("MonitoringQueueOverflowCount", encodable._monitoringQueueOverflowCount);
-            writer.writeUInt32("NextSequenceNumber", encodable._nextSequenceNumber);
-            writer.writeUInt32("EventQueueOverFlowCount", encodable._eventQueueOverFlowCount);
+        public void encode(SubscriptionDiagnosticsDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("SessionId", value.sessionId);
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeByte("Priority", value.priority);
+            encoder.writeDouble("PublishingInterval", value.publishingInterval);
+            encoder.writeUInt32("MaxKeepAliveCount", value.maxKeepAliveCount);
+            encoder.writeUInt32("MaxLifetimeCount", value.maxLifetimeCount);
+            encoder.writeUInt32("MaxNotificationsPerPublish", value.maxNotificationsPerPublish);
+            encoder.writeBoolean("PublishingEnabled", value.publishingEnabled);
+            encoder.writeUInt32("ModifyCount", value.modifyCount);
+            encoder.writeUInt32("EnableCount", value.enableCount);
+            encoder.writeUInt32("DisableCount", value.disableCount);
+            encoder.writeUInt32("RepublishRequestCount", value.republishRequestCount);
+            encoder.writeUInt32("RepublishMessageRequestCount", value.republishMessageRequestCount);
+            encoder.writeUInt32("RepublishMessageCount", value.republishMessageCount);
+            encoder.writeUInt32("TransferRequestCount", value.transferRequestCount);
+            encoder.writeUInt32("TransferredToAltClientCount", value.transferredToAltClientCount);
+            encoder.writeUInt32("TransferredToSameClientCount", value.transferredToSameClientCount);
+            encoder.writeUInt32("PublishRequestCount", value.publishRequestCount);
+            encoder.writeUInt32("DataChangeNotificationsCount", value.dataChangeNotificationsCount);
+            encoder.writeUInt32("EventNotificationsCount", value.eventNotificationsCount);
+            encoder.writeUInt32("NotificationsCount", value.notificationsCount);
+            encoder.writeUInt32("LatePublishRequestCount", value.latePublishRequestCount);
+            encoder.writeUInt32("CurrentKeepAliveCount", value.currentKeepAliveCount);
+            encoder.writeUInt32("CurrentLifetimeCount", value.currentLifetimeCount);
+            encoder.writeUInt32("UnacknowledgedMessageCount", value.unacknowledgedMessageCount);
+            encoder.writeUInt32("DiscardedMessageCount", value.discardedMessageCount);
+            encoder.writeUInt32("MonitoredItemCount", value.monitoredItemCount);
+            encoder.writeUInt32("DisabledMonitoredItemCount", value.disabledMonitoredItemCount);
+            encoder.writeUInt32("MonitoringQueueOverflowCount", value.monitoringQueueOverflowCount);
+            encoder.writeUInt32("NextSequenceNumber", value.nextSequenceNumber);
+            encoder.writeUInt32("EventQueueOverFlowCount", value.eventQueueOverFlowCount);
         }
     }
 

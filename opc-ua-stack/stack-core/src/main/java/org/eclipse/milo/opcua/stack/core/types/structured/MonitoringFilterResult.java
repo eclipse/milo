@@ -16,18 +16,12 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("MonitoringFilterResult")
 public class MonitoringFilterResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.MonitoringFilterResult;
@@ -53,27 +47,21 @@ public class MonitoringFilterResult implements UaStructure {
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoringFilterResult> {
+    public static class Codec extends BuiltinDataTypeCodec<MonitoringFilterResult> {
+
         @Override
-        public MonitoringFilterResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
+        public Class<MonitoringFilterResult> getType() {
+            return MonitoringFilterResult.class;
+        }
+
+        @Override
+        public MonitoringFilterResult decode(UaDecoder decoder) throws UaSerializationException {
 
             return new MonitoringFilterResult();
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoringFilterResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoringFilterResult> {
-        @Override
-        public MonitoringFilterResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-
-            return new MonitoringFilterResult();
-        }
-
-        @Override
-        public void encode(SerializationContext context, MonitoringFilterResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
+        public void encode(MonitoringFilterResult value, UaEncoder encoder) throws UaSerializationException {
         }
     }
 

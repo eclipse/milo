@@ -18,52 +18,46 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("BrowseRequest")
 public class BrowseRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.BrowseRequest;
     public static final NodeId BinaryEncodingId = Identifiers.BrowseRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BrowseRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final ViewDescription _view;
-    protected final UInteger _requestedMaxReferencesPerNode;
-    protected final BrowseDescription[] _nodesToBrowse;
+    protected final RequestHeader requestHeader;
+    protected final ViewDescription view;
+    protected final UInteger requestedMaxReferencesPerNode;
+    protected final BrowseDescription[] nodesToBrowse;
 
     public BrowseRequest() {
-        this._requestHeader = null;
-        this._view = null;
-        this._requestedMaxReferencesPerNode = null;
-        this._nodesToBrowse = null;
+        this.requestHeader = null;
+        this.view = null;
+        this.requestedMaxReferencesPerNode = null;
+        this.nodesToBrowse = null;
     }
 
-    public BrowseRequest(RequestHeader _requestHeader, ViewDescription _view, UInteger _requestedMaxReferencesPerNode, BrowseDescription[] _nodesToBrowse) {
-        this._requestHeader = _requestHeader;
-        this._view = _view;
-        this._requestedMaxReferencesPerNode = _requestedMaxReferencesPerNode;
-        this._nodesToBrowse = _nodesToBrowse;
+    public BrowseRequest(RequestHeader requestHeader, ViewDescription view, UInteger requestedMaxReferencesPerNode, BrowseDescription[] nodesToBrowse) {
+        this.requestHeader = requestHeader;
+        this.view = view;
+        this.requestedMaxReferencesPerNode = requestedMaxReferencesPerNode;
+        this.nodesToBrowse = nodesToBrowse;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public ViewDescription getView() { return _view; }
+    public ViewDescription getView() { return view; }
 
-    public UInteger getRequestedMaxReferencesPerNode() { return _requestedMaxReferencesPerNode; }
+    public UInteger getRequestedMaxReferencesPerNode() { return requestedMaxReferencesPerNode; }
 
     @Nullable
-    public BrowseDescription[] getNodesToBrowse() { return _nodesToBrowse; }
+    public BrowseDescription[] getNodesToBrowse() { return nodesToBrowse; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -77,67 +71,43 @@ public class BrowseRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("View", _view)
-            .add("RequestedMaxReferencesPerNode", _requestedMaxReferencesPerNode)
-            .add("NodesToBrowse", _nodesToBrowse)
+            .add("RequestHeader", requestHeader)
+            .add("View", view)
+            .add("RequestedMaxReferencesPerNode", requestedMaxReferencesPerNode)
+            .add("NodesToBrowse", nodesToBrowse)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<BrowseRequest> {
-        @Override
-        public BrowseRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            ViewDescription _view = (ViewDescription) context.decode(ViewDescription.BinaryEncodingId, reader);
-            UInteger _requestedMaxReferencesPerNode = reader.readUInt32();
-            BrowseDescription[] _nodesToBrowse =
-                reader.readArray(
-                    () -> (BrowseDescription) context.decode(
-                        BrowseDescription.BinaryEncodingId, reader),
-                    BrowseDescription.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<BrowseRequest> {
 
-            return new BrowseRequest(_requestHeader, _view, _requestedMaxReferencesPerNode, _nodesToBrowse);
+        @Override
+        public Class<BrowseRequest> getType() {
+            return BrowseRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            context.encode(ViewDescription.BinaryEncodingId, value._view, writer);
-            writer.writeUInt32(value._requestedMaxReferencesPerNode);
-            writer.writeArray(
-                value._nodesToBrowse,
-                e -> context.encode(BrowseDescription.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<BrowseRequest> {
-        @Override
-        public BrowseRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            ViewDescription _view = (ViewDescription) context.decode(ViewDescription.XmlEncodingId, reader);
-            UInteger _requestedMaxReferencesPerNode = reader.readUInt32("RequestedMaxReferencesPerNode");
-            BrowseDescription[] _nodesToBrowse =
-                reader.readArray(
+        public BrowseRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            ViewDescription view = (ViewDescription) decoder.readBuiltinStruct("View", ViewDescription.class);
+            UInteger requestedMaxReferencesPerNode = decoder.readUInt32("RequestedMaxReferencesPerNode");
+            BrowseDescription[] nodesToBrowse =
+                decoder.readBuiltinStructArray(
                     "NodesToBrowse",
-                    f -> (BrowseDescription) context.decode(
-                        BrowseDescription.XmlEncodingId, reader),
                     BrowseDescription.class
                 );
 
-            return new BrowseRequest(_requestHeader, _view, _requestedMaxReferencesPerNode, _nodesToBrowse);
+            return new BrowseRequest(requestHeader, view, requestedMaxReferencesPerNode, nodesToBrowse);
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            context.encode(ViewDescription.XmlEncodingId, encodable._view, writer);
-            writer.writeUInt32("RequestedMaxReferencesPerNode", encodable._requestedMaxReferencesPerNode);
-            writer.writeArray(
+        public void encode(BrowseRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStruct("View", value.view, ViewDescription.class);
+            encoder.writeUInt32("RequestedMaxReferencesPerNode", value.requestedMaxReferencesPerNode);
+            encoder.writeBuiltinStructArray(
                 "NodesToBrowse",
-                encodable._nodesToBrowse,
-                (f, e) -> context.encode(BrowseDescription.XmlEncodingId, e, writer)
+                value.nodesToBrowse,
+                BrowseDescription.class
             );
         }
     }

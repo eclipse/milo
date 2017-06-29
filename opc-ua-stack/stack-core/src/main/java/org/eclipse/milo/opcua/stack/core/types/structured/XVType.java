@@ -16,40 +16,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("XVType")
 public class XVType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.XVType;
     public static final NodeId BinaryEncodingId = Identifiers.XVType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.XVType_Encoding_DefaultXml;
 
-    protected final Double _x;
-    protected final Float _value;
+    protected final Double x;
+    protected final Float value;
 
     public XVType() {
-        this._x = null;
-        this._value = null;
+        this.x = null;
+        this.value = null;
     }
 
-    public XVType(Double _x, Float _value) {
-        this._x = _x;
-        this._value = _value;
+    public XVType(Double x, Float value) {
+        this.x = x;
+        this.value = value;
     }
 
-    public Double getX() { return _x; }
+    public Double getX() { return x; }
 
-    public Float getValue() { return _value; }
+    public Float getValue() { return value; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class XVType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("X", _x)
-            .add("Value", _value)
+            .add("X", x)
+            .add("Value", value)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<XVType> {
-        @Override
-        public XVType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            Double _x = reader.readDouble();
-            Float _value = reader.readFloat();
+    public static class Codec extends BuiltinDataTypeCodec<XVType> {
 
-            return new XVType(_x, _value);
+        @Override
+        public Class<XVType> getType() {
+            return XVType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, XVType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeDouble(value._x);
-            writer.writeFloat(value._value);
-        }
-    }
+        public XVType decode(UaDecoder decoder) throws UaSerializationException {
+            Double x = decoder.readDouble("X");
+            Float value = decoder.readFloat("Value");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<XVType> {
-        @Override
-        public XVType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            Double _x = reader.readDouble("X");
-            Float _value = reader.readFloat("Value");
-
-            return new XVType(_x, _value);
+            return new XVType(x, value);
         }
 
         @Override
-        public void encode(SerializationContext context, XVType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeDouble("X", encodable._x);
-            writer.writeFloat("Value", encodable._value);
+        public void encode(XVType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeDouble("X", value.x);
+            encoder.writeFloat("Value", value.value);
         }
     }
 

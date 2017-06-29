@@ -18,44 +18,38 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
-@UaDataType("UpdateStructureDataDetails")
 public class UpdateStructureDataDetails extends HistoryUpdateDetails {
 
     public static final NodeId TypeId = Identifiers.UpdateStructureDataDetails;
     public static final NodeId BinaryEncodingId = Identifiers.UpdateStructureDataDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.UpdateStructureDataDetails_Encoding_DefaultXml;
 
-    protected final PerformUpdateType _performInsertReplace;
-    protected final DataValue[] _updateValues;
+    protected final PerformUpdateType performInsertReplace;
+    protected final DataValue[] updateValues;
 
     public UpdateStructureDataDetails() {
         super(null);
-        this._performInsertReplace = null;
-        this._updateValues = null;
+        this.performInsertReplace = null;
+        this.updateValues = null;
     }
 
-    public UpdateStructureDataDetails(NodeId _nodeId, PerformUpdateType _performInsertReplace, DataValue[] _updateValues) {
-        super(_nodeId);
-        this._performInsertReplace = _performInsertReplace;
-        this._updateValues = _updateValues;
+    public UpdateStructureDataDetails(NodeId nodeId, PerformUpdateType performInsertReplace, DataValue[] updateValues) {
+        super(nodeId);
+        this.performInsertReplace = performInsertReplace;
+        this.updateValues = updateValues;
     }
 
-    public PerformUpdateType getPerformInsertReplace() { return _performInsertReplace; }
+    public PerformUpdateType getPerformInsertReplace() { return performInsertReplace; }
 
     @Nullable
-    public DataValue[] getUpdateValues() { return _updateValues; }
+    public DataValue[] getUpdateValues() { return updateValues; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,45 +63,33 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("PerformInsertReplace", _performInsertReplace)
-            .add("UpdateValues", _updateValues)
+            .add("NodeId", nodeId)
+            .add("PerformInsertReplace", performInsertReplace)
+            .add("UpdateValues", updateValues)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UpdateStructureDataDetails> {
-        @Override
-        public UpdateStructureDataDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32());
-            DataValue[] _updateValues = reader.readArray(reader::readDataValue, DataValue.class);
+    public static class Codec extends BuiltinDataTypeCodec<UpdateStructureDataDetails> {
 
-            return new UpdateStructureDataDetails(_nodeId, _performInsertReplace, _updateValues);
+        @Override
+        public Class<UpdateStructureDataDetails> getType() {
+            return UpdateStructureDataDetails.class;
         }
 
         @Override
-        public void encode(SerializationContext context, UpdateStructureDataDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeInt32(value._performInsertReplace != null ? value._performInsertReplace.getValue() : 0);
-            writer.writeArray(value._updateValues, writer::writeDataValue);
-        }
-    }
+        public UpdateStructureDataDetails decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.readInt32("PerformInsertReplace"));
+            DataValue[] updateValues = decoder.readArray("UpdateValues", decoder::readDataValue, DataValue.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<UpdateStructureDataDetails> {
-        @Override
-        public UpdateStructureDataDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32("PerformInsertReplace"));
-            DataValue[] _updateValues = reader.readArray("UpdateValues", reader::readDataValue, DataValue.class);
-
-            return new UpdateStructureDataDetails(_nodeId, _performInsertReplace, _updateValues);
+            return new UpdateStructureDataDetails(nodeId, performInsertReplace, updateValues);
         }
 
         @Override
-        public void encode(SerializationContext context, UpdateStructureDataDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeInt32("PerformInsertReplace", encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
-            writer.writeArray("UpdateValues", encodable._updateValues, writer::writeDataValue);
+        public void encode(UpdateStructureDataDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("PerformInsertReplace", value.performInsertReplace != null ? value.performInsertReplace.getValue() : 0);
+            encoder.writeArray("UpdateValues", value.updateValues, encoder::writeDataValue);
         }
     }
 

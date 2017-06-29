@@ -16,46 +16,40 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("EnumValueType")
 public class EnumValueType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.EnumValueType;
     public static final NodeId BinaryEncodingId = Identifiers.EnumValueType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EnumValueType_Encoding_DefaultXml;
 
-    protected final Long _value;
-    protected final LocalizedText _displayName;
-    protected final LocalizedText _description;
+    protected final Long value;
+    protected final LocalizedText displayName;
+    protected final LocalizedText description;
 
     public EnumValueType() {
-        this._value = null;
-        this._displayName = null;
-        this._description = null;
+        this.value = null;
+        this.displayName = null;
+        this.description = null;
     }
 
-    public EnumValueType(Long _value, LocalizedText _displayName, LocalizedText _description) {
-        this._value = _value;
-        this._displayName = _displayName;
-        this._description = _description;
+    public EnumValueType(Long value, LocalizedText displayName, LocalizedText description) {
+        this.value = value;
+        this.displayName = displayName;
+        this.description = description;
     }
 
-    public Long getValue() { return _value; }
+    public Long getValue() { return value; }
 
-    public LocalizedText getDisplayName() { return _displayName; }
+    public LocalizedText getDisplayName() { return displayName; }
 
-    public LocalizedText getDescription() { return _description; }
+    public LocalizedText getDescription() { return description; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,45 +63,33 @@ public class EnumValueType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Value", _value)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
+            .add("Value", value)
+            .add("DisplayName", displayName)
+            .add("Description", description)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EnumValueType> {
-        @Override
-        public EnumValueType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            Long _value = reader.readInt64();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
+    public static class Codec extends BuiltinDataTypeCodec<EnumValueType> {
 
-            return new EnumValueType(_value, _displayName, _description);
+        @Override
+        public Class<EnumValueType> getType() {
+            return EnumValueType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, EnumValueType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeInt64(value._value);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-        }
-    }
+        public EnumValueType decode(UaDecoder decoder) throws UaSerializationException {
+            Long value = decoder.readInt64("Value");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<EnumValueType> {
-        @Override
-        public EnumValueType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            Long _value = reader.readInt64("Value");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-
-            return new EnumValueType(_value, _displayName, _description);
+            return new EnumValueType(value, displayName, description);
         }
 
         @Override
-        public void encode(SerializationContext context, EnumValueType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeInt64("Value", encodable._value);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
+        public void encode(EnumValueType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeInt64("Value", value.value);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
         }
     }
 

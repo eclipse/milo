@@ -18,36 +18,30 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("HistoryEvent")
 public class HistoryEvent implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.HistoryEvent;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryEvent_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryEvent_Encoding_DefaultXml;
 
-    protected final HistoryEventFieldList[] _events;
+    protected final HistoryEventFieldList[] events;
 
     public HistoryEvent() {
-        this._events = null;
+        this.events = null;
     }
 
-    public HistoryEvent(HistoryEventFieldList[] _events) {
-        this._events = _events;
+    public HistoryEvent(HistoryEventFieldList[] events) {
+        this.events = events;
     }
 
     @Nullable
-    public HistoryEventFieldList[] getEvents() { return _events; }
+    public HistoryEventFieldList[] getEvents() { return events; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,52 +55,34 @@ public class HistoryEvent implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Events", _events)
+            .add("Events", events)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryEvent> {
-        @Override
-        public HistoryEvent decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            HistoryEventFieldList[] _events =
-                reader.readArray(
-                    () -> (HistoryEventFieldList) context.decode(
-                        HistoryEventFieldList.BinaryEncodingId, reader),
-                    HistoryEventFieldList.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<HistoryEvent> {
 
-            return new HistoryEvent(_events);
+        @Override
+        public Class<HistoryEvent> getType() {
+            return HistoryEvent.class;
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryEvent value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(
-                value._events,
-                e -> context.encode(HistoryEventFieldList.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryEvent> {
-        @Override
-        public HistoryEvent decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            HistoryEventFieldList[] _events =
-                reader.readArray(
+        public HistoryEvent decode(UaDecoder decoder) throws UaSerializationException {
+            HistoryEventFieldList[] events =
+                decoder.readBuiltinStructArray(
                     "Events",
-                    f -> (HistoryEventFieldList) context.decode(
-                        HistoryEventFieldList.XmlEncodingId, reader),
                     HistoryEventFieldList.class
                 );
 
-            return new HistoryEvent(_events);
+            return new HistoryEvent(events);
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryEvent encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(
+        public void encode(HistoryEvent value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStructArray(
                 "Events",
-                encodable._events,
-                (f, e) -> context.encode(HistoryEventFieldList.XmlEncodingId, e, writer)
+                value.events,
+                HistoryEventFieldList.class
             );
         }
     }

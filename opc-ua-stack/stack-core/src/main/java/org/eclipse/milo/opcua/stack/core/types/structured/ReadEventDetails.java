@@ -16,53 +16,47 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ReadEventDetails")
 public class ReadEventDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadEventDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadEventDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadEventDetails_Encoding_DefaultXml;
 
-    protected final UInteger _numValuesPerNode;
-    protected final DateTime _startTime;
-    protected final DateTime _endTime;
-    protected final EventFilter _filter;
+    protected final UInteger numValuesPerNode;
+    protected final DateTime startTime;
+    protected final DateTime endTime;
+    protected final EventFilter filter;
 
     public ReadEventDetails() {
         super();
-        this._numValuesPerNode = null;
-        this._startTime = null;
-        this._endTime = null;
-        this._filter = null;
+        this.numValuesPerNode = null;
+        this.startTime = null;
+        this.endTime = null;
+        this.filter = null;
     }
 
-    public ReadEventDetails(UInteger _numValuesPerNode, DateTime _startTime, DateTime _endTime, EventFilter _filter) {
+    public ReadEventDetails(UInteger numValuesPerNode, DateTime startTime, DateTime endTime, EventFilter filter) {
         super();
-        this._numValuesPerNode = _numValuesPerNode;
-        this._startTime = _startTime;
-        this._endTime = _endTime;
-        this._filter = _filter;
+        this.numValuesPerNode = numValuesPerNode;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.filter = filter;
     }
 
-    public UInteger getNumValuesPerNode() { return _numValuesPerNode; }
+    public UInteger getNumValuesPerNode() { return numValuesPerNode; }
 
-    public DateTime getStartTime() { return _startTime; }
+    public DateTime getStartTime() { return startTime; }
 
-    public DateTime getEndTime() { return _endTime; }
+    public DateTime getEndTime() { return endTime; }
 
-    public EventFilter getFilter() { return _filter; }
+    public EventFilter getFilter() { return filter; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -76,50 +70,36 @@ public class ReadEventDetails extends HistoryReadDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NumValuesPerNode", _numValuesPerNode)
-            .add("StartTime", _startTime)
-            .add("EndTime", _endTime)
-            .add("Filter", _filter)
+            .add("NumValuesPerNode", numValuesPerNode)
+            .add("StartTime", startTime)
+            .add("EndTime", endTime)
+            .add("Filter", filter)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReadEventDetails> {
-        @Override
-        public ReadEventDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _numValuesPerNode = reader.readUInt32();
-            DateTime _startTime = reader.readDateTime();
-            DateTime _endTime = reader.readDateTime();
-            EventFilter _filter = (EventFilter) context.decode(EventFilter.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<ReadEventDetails> {
 
-            return new ReadEventDetails(_numValuesPerNode, _startTime, _endTime, _filter);
+        @Override
+        public Class<ReadEventDetails> getType() {
+            return ReadEventDetails.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReadEventDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._numValuesPerNode);
-            writer.writeDateTime(value._startTime);
-            writer.writeDateTime(value._endTime);
-            context.encode(EventFilter.BinaryEncodingId, value._filter, writer);
-        }
-    }
+        public ReadEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
+            DateTime startTime = decoder.readDateTime("StartTime");
+            DateTime endTime = decoder.readDateTime("EndTime");
+            EventFilter filter = (EventFilter) decoder.readBuiltinStruct("Filter", EventFilter.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReadEventDetails> {
-        @Override
-        public ReadEventDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _numValuesPerNode = reader.readUInt32("NumValuesPerNode");
-            DateTime _startTime = reader.readDateTime("StartTime");
-            DateTime _endTime = reader.readDateTime("EndTime");
-            EventFilter _filter = (EventFilter) context.decode(EventFilter.XmlEncodingId, reader);
-
-            return new ReadEventDetails(_numValuesPerNode, _startTime, _endTime, _filter);
+            return new ReadEventDetails(numValuesPerNode, startTime, endTime, filter);
         }
 
         @Override
-        public void encode(SerializationContext context, ReadEventDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("NumValuesPerNode", encodable._numValuesPerNode);
-            writer.writeDateTime("StartTime", encodable._startTime);
-            writer.writeDateTime("EndTime", encodable._endTime);
-            context.encode(EventFilter.XmlEncodingId, encodable._filter, writer);
+        public void encode(ReadEventDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("NumValuesPerNode", value.numValuesPerNode);
+            encoder.writeDateTime("StartTime", value.startTime);
+            encoder.writeDateTime("EndTime", value.endTime);
+            encoder.writeBuiltinStruct("Filter", value.filter, EventFilter.class);
         }
     }
 

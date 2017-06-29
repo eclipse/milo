@@ -11,11 +11,16 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.codec;
+package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 
 public interface DataTypeCodec<T, R, W> {
+
+    /**
+     * @return the {@link Class} of the DataType this codec encodes.
+     */
+    Class<T> getType();
 
     /**
      * Decode a {@link T} using the provided reader {@link R}.

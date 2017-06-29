@@ -18,61 +18,55 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("TrustListDataType")
 public class TrustListDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.TrustListDataType;
     public static final NodeId BinaryEncodingId = Identifiers.TrustListDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.TrustListDataType_Encoding_DefaultXml;
 
-    protected final UInteger _specifiedLists;
-    protected final ByteString[] _trustedCertificates;
-    protected final ByteString[] _trustedCrls;
-    protected final ByteString[] _issuerCertificates;
-    protected final ByteString[] _issuerCrls;
+    protected final UInteger specifiedLists;
+    protected final ByteString[] trustedCertificates;
+    protected final ByteString[] trustedCrls;
+    protected final ByteString[] issuerCertificates;
+    protected final ByteString[] issuerCrls;
 
     public TrustListDataType() {
-        this._specifiedLists = null;
-        this._trustedCertificates = null;
-        this._trustedCrls = null;
-        this._issuerCertificates = null;
-        this._issuerCrls = null;
+        this.specifiedLists = null;
+        this.trustedCertificates = null;
+        this.trustedCrls = null;
+        this.issuerCertificates = null;
+        this.issuerCrls = null;
     }
 
-    public TrustListDataType(UInteger _specifiedLists, ByteString[] _trustedCertificates, ByteString[] _trustedCrls, ByteString[] _issuerCertificates, ByteString[] _issuerCrls) {
-        this._specifiedLists = _specifiedLists;
-        this._trustedCertificates = _trustedCertificates;
-        this._trustedCrls = _trustedCrls;
-        this._issuerCertificates = _issuerCertificates;
-        this._issuerCrls = _issuerCrls;
+    public TrustListDataType(UInteger specifiedLists, ByteString[] trustedCertificates, ByteString[] trustedCrls, ByteString[] issuerCertificates, ByteString[] issuerCrls) {
+        this.specifiedLists = specifiedLists;
+        this.trustedCertificates = trustedCertificates;
+        this.trustedCrls = trustedCrls;
+        this.issuerCertificates = issuerCertificates;
+        this.issuerCrls = issuerCrls;
     }
 
-    public UInteger getSpecifiedLists() { return _specifiedLists; }
+    public UInteger getSpecifiedLists() { return specifiedLists; }
 
     @Nullable
-    public ByteString[] getTrustedCertificates() { return _trustedCertificates; }
+    public ByteString[] getTrustedCertificates() { return trustedCertificates; }
 
     @Nullable
-    public ByteString[] getTrustedCrls() { return _trustedCrls; }
+    public ByteString[] getTrustedCrls() { return trustedCrls; }
 
     @Nullable
-    public ByteString[] getIssuerCertificates() { return _issuerCertificates; }
+    public ByteString[] getIssuerCertificates() { return issuerCertificates; }
 
     @Nullable
-    public ByteString[] getIssuerCrls() { return _issuerCrls; }
+    public ByteString[] getIssuerCrls() { return issuerCrls; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -86,55 +80,39 @@ public class TrustListDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SpecifiedLists", _specifiedLists)
-            .add("TrustedCertificates", _trustedCertificates)
-            .add("TrustedCrls", _trustedCrls)
-            .add("IssuerCertificates", _issuerCertificates)
-            .add("IssuerCrls", _issuerCrls)
+            .add("SpecifiedLists", specifiedLists)
+            .add("TrustedCertificates", trustedCertificates)
+            .add("TrustedCrls", trustedCrls)
+            .add("IssuerCertificates", issuerCertificates)
+            .add("IssuerCrls", issuerCrls)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<TrustListDataType> {
-        @Override
-        public TrustListDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedLists = reader.readUInt32();
-            ByteString[] _trustedCertificates = reader.readArray(reader::readByteString, ByteString.class);
-            ByteString[] _trustedCrls = reader.readArray(reader::readByteString, ByteString.class);
-            ByteString[] _issuerCertificates = reader.readArray(reader::readByteString, ByteString.class);
-            ByteString[] _issuerCrls = reader.readArray(reader::readByteString, ByteString.class);
+    public static class Codec extends BuiltinDataTypeCodec<TrustListDataType> {
 
-            return new TrustListDataType(_specifiedLists, _trustedCertificates, _trustedCrls, _issuerCertificates, _issuerCrls);
+        @Override
+        public Class<TrustListDataType> getType() {
+            return TrustListDataType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, TrustListDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._specifiedLists);
-            writer.writeArray(value._trustedCertificates, writer::writeByteString);
-            writer.writeArray(value._trustedCrls, writer::writeByteString);
-            writer.writeArray(value._issuerCertificates, writer::writeByteString);
-            writer.writeArray(value._issuerCrls, writer::writeByteString);
-        }
-    }
+        public TrustListDataType decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger specifiedLists = decoder.readUInt32("SpecifiedLists");
+            ByteString[] trustedCertificates = decoder.readArray("TrustedCertificates", decoder::readByteString, ByteString.class);
+            ByteString[] trustedCrls = decoder.readArray("TrustedCrls", decoder::readByteString, ByteString.class);
+            ByteString[] issuerCertificates = decoder.readArray("IssuerCertificates", decoder::readByteString, ByteString.class);
+            ByteString[] issuerCrls = decoder.readArray("IssuerCrls", decoder::readByteString, ByteString.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<TrustListDataType> {
-        @Override
-        public TrustListDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedLists = reader.readUInt32("SpecifiedLists");
-            ByteString[] _trustedCertificates = reader.readArray("TrustedCertificates", reader::readByteString, ByteString.class);
-            ByteString[] _trustedCrls = reader.readArray("TrustedCrls", reader::readByteString, ByteString.class);
-            ByteString[] _issuerCertificates = reader.readArray("IssuerCertificates", reader::readByteString, ByteString.class);
-            ByteString[] _issuerCrls = reader.readArray("IssuerCrls", reader::readByteString, ByteString.class);
-
-            return new TrustListDataType(_specifiedLists, _trustedCertificates, _trustedCrls, _issuerCertificates, _issuerCrls);
+            return new TrustListDataType(specifiedLists, trustedCertificates, trustedCrls, issuerCertificates, issuerCrls);
         }
 
         @Override
-        public void encode(SerializationContext context, TrustListDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("SpecifiedLists", encodable._specifiedLists);
-            writer.writeArray("TrustedCertificates", encodable._trustedCertificates, writer::writeByteString);
-            writer.writeArray("TrustedCrls", encodable._trustedCrls, writer::writeByteString);
-            writer.writeArray("IssuerCertificates", encodable._issuerCertificates, writer::writeByteString);
-            writer.writeArray("IssuerCrls", encodable._issuerCrls, writer::writeByteString);
+        public void encode(TrustListDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SpecifiedLists", value.specifiedLists);
+            encoder.writeArray("TrustedCertificates", value.trustedCertificates, encoder::writeByteString);
+            encoder.writeArray("TrustedCrls", value.trustedCrls, encoder::writeByteString);
+            encoder.writeArray("IssuerCertificates", value.issuerCertificates, encoder::writeByteString);
+            encoder.writeArray("IssuerCrls", value.issuerCrls, encoder::writeByteString);
         }
     }
 

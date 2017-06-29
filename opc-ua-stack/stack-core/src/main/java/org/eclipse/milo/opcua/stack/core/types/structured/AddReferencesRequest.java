@@ -18,41 +18,35 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("AddReferencesRequest")
 public class AddReferencesRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.AddReferencesRequest;
     public static final NodeId BinaryEncodingId = Identifiers.AddReferencesRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AddReferencesRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final AddReferencesItem[] _referencesToAdd;
+    protected final RequestHeader requestHeader;
+    protected final AddReferencesItem[] referencesToAdd;
 
     public AddReferencesRequest() {
-        this._requestHeader = null;
-        this._referencesToAdd = null;
+        this.requestHeader = null;
+        this.referencesToAdd = null;
     }
 
-    public AddReferencesRequest(RequestHeader _requestHeader, AddReferencesItem[] _referencesToAdd) {
-        this._requestHeader = _requestHeader;
-        this._referencesToAdd = _referencesToAdd;
+    public AddReferencesRequest(RequestHeader requestHeader, AddReferencesItem[] referencesToAdd) {
+        this.requestHeader = requestHeader;
+        this.referencesToAdd = referencesToAdd;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public AddReferencesItem[] getReferencesToAdd() { return _referencesToAdd; }
+    public AddReferencesItem[] getReferencesToAdd() { return referencesToAdd; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,57 +60,37 @@ public class AddReferencesRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("ReferencesToAdd", _referencesToAdd)
+            .add("RequestHeader", requestHeader)
+            .add("ReferencesToAdd", referencesToAdd)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AddReferencesRequest> {
-        @Override
-        public AddReferencesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            AddReferencesItem[] _referencesToAdd =
-                reader.readArray(
-                    () -> (AddReferencesItem) context.decode(
-                        AddReferencesItem.BinaryEncodingId, reader),
-                    AddReferencesItem.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<AddReferencesRequest> {
 
-            return new AddReferencesRequest(_requestHeader, _referencesToAdd);
+        @Override
+        public Class<AddReferencesRequest> getType() {
+            return AddReferencesRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, AddReferencesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(
-                value._referencesToAdd,
-                e -> context.encode(AddReferencesItem.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<AddReferencesRequest> {
-        @Override
-        public AddReferencesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            AddReferencesItem[] _referencesToAdd =
-                reader.readArray(
+        public AddReferencesRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            AddReferencesItem[] referencesToAdd =
+                decoder.readBuiltinStructArray(
                     "ReferencesToAdd",
-                    f -> (AddReferencesItem) context.decode(
-                        AddReferencesItem.XmlEncodingId, reader),
                     AddReferencesItem.class
                 );
 
-            return new AddReferencesRequest(_requestHeader, _referencesToAdd);
+            return new AddReferencesRequest(requestHeader, referencesToAdd);
         }
 
         @Override
-        public void encode(SerializationContext context, AddReferencesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(
+        public void encode(AddReferencesRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStructArray(
                 "ReferencesToAdd",
-                encodable._referencesToAdd,
-                (f, e) -> context.encode(AddReferencesItem.XmlEncodingId, e, writer)
+                value.referencesToAdd,
+                AddReferencesItem.class
             );
         }
     }
