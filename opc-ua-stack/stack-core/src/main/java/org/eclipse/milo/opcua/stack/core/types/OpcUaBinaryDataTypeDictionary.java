@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,31 +11,32 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.codec;
+package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class OpcBinaryDataTypeDictionary implements DataTypeDictionary<OpcBinaryDataTypeCodec<?>> {
+public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> {
 
     private final String namespaceUri;
 
-    private final Map<String, OpcBinaryDataTypeCodec<?>> codecsByDescription;
-    private final Map<NodeId, OpcBinaryDataTypeCodec<?>> codecsByEncodingId;
+    private final Map<String, OpcUaBinaryDataTypeCodec<?>> codecsByDescription;
+    private final Map<NodeId, OpcUaBinaryDataTypeCodec<?>> codecsByEncodingId;
 
-    public OpcBinaryDataTypeDictionary(String namespaceUri) {
+    public OpcUaBinaryDataTypeDictionary(String namespaceUri) {
         this.namespaceUri = namespaceUri;
 
         codecsByDescription = Maps.newConcurrentMap();
         codecsByEncodingId = Maps.newConcurrentMap();
     }
 
-    public OpcBinaryDataTypeDictionary(
+    public OpcUaBinaryDataTypeDictionary(
         String namespaceUri,
-        Map<String, OpcBinaryDataTypeCodec<?>> byDescription,
-        Map<NodeId, OpcBinaryDataTypeCodec<?>> byEncodingId) {
+        Map<String, OpcUaBinaryDataTypeCodec<?>> byDescription,
+        Map<NodeId, OpcUaBinaryDataTypeCodec<?>> byEncodingId) {
 
         this.namespaceUri = namespaceUri;
 
@@ -52,29 +53,29 @@ public class OpcBinaryDataTypeDictionary implements DataTypeDictionary<OpcBinary
     }
 
     @Override
-    public OpcBinaryDataTypeCodec<?> getCodec(String description) {
+    public OpcUaBinaryDataTypeCodec<?> getCodec(String description) {
         return codecsByDescription.get(description);
     }
 
     @Override
-    public OpcBinaryDataTypeCodec<?> getCodec(NodeId encodingId) {
+    public OpcUaBinaryDataTypeCodec<?> getCodec(NodeId encodingId) {
         return codecsByEncodingId.get(encodingId);
     }
 
     @Override
-    public void registerCodec(OpcBinaryDataTypeCodec<?> codec, String description, NodeId encodingId) {
+    public void registerCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId encodingId) {
         codecsByDescription.put(description, codec);
         codecsByEncodingId.put(encodingId, codec);
     }
 
     @Override
-    public Map<String, OpcBinaryDataTypeCodec<?>> getCodecsByDescription() {
+    public Map<String, OpcUaBinaryDataTypeCodec<?>> getCodecsByDescription() {
         return codecsByDescription;
     }
 
     @Override
-    public Map<NodeId, OpcBinaryDataTypeCodec<?>> getCodecsByEncodingId() {
+    public Map<NodeId, OpcUaBinaryDataTypeCodec<?>> getCodecsByEncodingId() {
         return codecsByEncodingId;
     }
-    
+
 }

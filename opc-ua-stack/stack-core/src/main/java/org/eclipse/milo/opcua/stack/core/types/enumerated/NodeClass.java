@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,11 +58,11 @@ public enum NodeClass implements UaEnumeration {
     }
 
     public static void encode(NodeClass nodeClass, UaEncoder encoder) {
-        encoder.encodeInt32(null, nodeClass.getValue());
+        encoder.writeInt32(null, nodeClass.getValue());
     }
 
     public static NodeClass decode(UaDecoder decoder) {
-        int value = decoder.decodeInt32(null);
+        int value = decoder.readInt32(null);
 
         return VALUES.getOrDefault(value, null);
     }

@@ -16,42 +16,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("StatusResult")
 public class StatusResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.StatusResult;
     public static final NodeId BinaryEncodingId = Identifiers.StatusResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.StatusResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final DiagnosticInfo _diagnosticInfo;
+    protected final StatusCode statusCode;
+    protected final DiagnosticInfo diagnosticInfo;
 
     public StatusResult() {
-        this._statusCode = null;
-        this._diagnosticInfo = null;
+        this.statusCode = null;
+        this.diagnosticInfo = null;
     }
 
-    public StatusResult(StatusCode _statusCode, DiagnosticInfo _diagnosticInfo) {
-        this._statusCode = _statusCode;
-        this._diagnosticInfo = _diagnosticInfo;
+    public StatusResult(StatusCode statusCode, DiagnosticInfo diagnosticInfo) {
+        this.statusCode = statusCode;
+        this.diagnosticInfo = diagnosticInfo;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
-    public DiagnosticInfo getDiagnosticInfo() { return _diagnosticInfo; }
+    public DiagnosticInfo getDiagnosticInfo() { return diagnosticInfo; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -65,40 +59,30 @@ public class StatusResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("DiagnosticInfo", _diagnosticInfo)
+            .add("StatusCode", statusCode)
+            .add("DiagnosticInfo", diagnosticInfo)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<StatusResult> {
-        @Override
-        public StatusResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode();
-            DiagnosticInfo _diagnosticInfo = reader.readDiagnosticInfo();
+    public static class Codec extends BuiltinDataTypeCodec<StatusResult> {
 
-            return new StatusResult(_statusCode, _diagnosticInfo);
+        @Override
+        public Class<StatusResult> getType() {
+            return StatusResult.class;
         }
 
         @Override
-        public void encode(SerializationContext context, StatusResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(value._statusCode);
-            writer.writeDiagnosticInfo(value._diagnosticInfo);
-        }
-    }
+        public StatusResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            DiagnosticInfo diagnosticInfo = decoder.readDiagnosticInfo("DiagnosticInfo");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<StatusResult> {
-        @Override
-        public StatusResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode("StatusCode");
-            DiagnosticInfo _diagnosticInfo = reader.readDiagnosticInfo("DiagnosticInfo");
-
-            return new StatusResult(_statusCode, _diagnosticInfo);
+            return new StatusResult(statusCode, diagnosticInfo);
         }
 
         @Override
-        public void encode(SerializationContext context, StatusResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode("StatusCode", encodable._statusCode);
-            writer.writeDiagnosticInfo("DiagnosticInfo", encodable._diagnosticInfo);
+        public void encode(StatusResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeDiagnosticInfo("DiagnosticInfo", value.diagnosticInfo);
         }
     }
 

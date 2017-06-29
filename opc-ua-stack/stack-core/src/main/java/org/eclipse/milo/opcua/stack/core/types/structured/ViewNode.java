@@ -16,14 +16,9 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -31,31 +26,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("ViewNode")
 public class ViewNode extends InstanceNode {
 
     public static final NodeId TypeId = Identifiers.ViewNode;
     public static final NodeId BinaryEncodingId = Identifiers.ViewNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ViewNode_Encoding_DefaultXml;
 
-    protected final Boolean _containsNoLoops;
-    protected final UByte _eventNotifier;
+    protected final Boolean containsNoLoops;
+    protected final UByte eventNotifier;
 
     public ViewNode() {
         super(null, null, null, null, null, null, null, null);
-        this._containsNoLoops = null;
-        this._eventNotifier = null;
+        this.containsNoLoops = null;
+        this.eventNotifier = null;
     }
 
-    public ViewNode(NodeId _nodeId, NodeClass _nodeClass, QualifiedName _browseName, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, ReferenceNode[] _references, Boolean _containsNoLoops, UByte _eventNotifier) {
-        super(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
-        this._containsNoLoops = _containsNoLoops;
-        this._eventNotifier = _eventNotifier;
+    public ViewNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Boolean containsNoLoops, UByte eventNotifier) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+        this.containsNoLoops = containsNoLoops;
+        this.eventNotifier = eventNotifier;
     }
 
-    public Boolean getContainsNoLoops() { return _containsNoLoops; }
+    public Boolean getContainsNoLoops() { return containsNoLoops; }
 
-    public UByte getEventNotifier() { return _eventNotifier; }
+    public UByte getEventNotifier() { return eventNotifier; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,98 +63,62 @@ public class ViewNode extends InstanceNode {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("NodeClass", _nodeClass)
-            .add("BrowseName", _browseName)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("References", _references)
-            .add("ContainsNoLoops", _containsNoLoops)
-            .add("EventNotifier", _eventNotifier)
+            .add("NodeId", nodeId)
+            .add("NodeClass", nodeClass)
+            .add("BrowseName", browseName)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("References", references)
+            .add("ContainsNoLoops", containsNoLoops)
+            .add("EventNotifier", eventNotifier)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ViewNode> {
-        @Override
-        public ViewNode decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
-            QualifiedName _browseName = reader.readQualifiedName();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
-            UInteger _writeMask = reader.readUInt32();
-            UInteger _userWriteMask = reader.readUInt32();
-            ReferenceNode[] _references =
-                reader.readArray(
-                    () -> (ReferenceNode) context.decode(
-                        ReferenceNode.BinaryEncodingId, reader),
-                    ReferenceNode.class
-                );
-            Boolean _containsNoLoops = reader.readBoolean();
-            UByte _eventNotifier = reader.readByte();
+    public static class Codec extends BuiltinDataTypeCodec<ViewNode> {
 
-            return new ViewNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _containsNoLoops, _eventNotifier);
+        @Override
+        public Class<ViewNode> getType() {
+            return ViewNode.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ViewNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
-            writer.writeQualifiedName(value._browseName);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-            writer.writeUInt32(value._writeMask);
-            writer.writeUInt32(value._userWriteMask);
-            writer.writeArray(
-                value._references,
-                e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
-            );
-            writer.writeBoolean(value._containsNoLoops);
-            writer.writeByte(value._eventNotifier);
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ViewNode> {
-        @Override
-        public ViewNode decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
-            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-            UInteger _writeMask = reader.readUInt32("WriteMask");
-            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
-            ReferenceNode[] _references =
-                reader.readArray(
+        public ViewNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            ReferenceNode[] references =
+                decoder.readBuiltinStructArray(
                     "References",
-                    f -> (ReferenceNode) context.decode(
-                        ReferenceNode.XmlEncodingId, reader),
                     ReferenceNode.class
                 );
-            Boolean _containsNoLoops = reader.readBoolean("ContainsNoLoops");
-            UByte _eventNotifier = reader.readByte("EventNotifier");
+            Boolean containsNoLoops = decoder.readBoolean("ContainsNoLoops");
+            UByte eventNotifier = decoder.readByte("EventNotifier");
 
-            return new ViewNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _containsNoLoops, _eventNotifier);
+            return new ViewNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, containsNoLoops, eventNotifier);
         }
 
         @Override
-        public void encode(SerializationContext context, ViewNode encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeQualifiedName("BrowseName", encodable._browseName);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
-            writer.writeUInt32("WriteMask", encodable._writeMask);
-            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
-            writer.writeArray(
+        public void encode(ViewNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBuiltinStructArray(
                 "References",
-                encodable._references,
-                (f, e) -> context.encode(ReferenceNode.XmlEncodingId, e, writer)
+                value.references,
+                ReferenceNode.class
             );
-            writer.writeBoolean("ContainsNoLoops", encodable._containsNoLoops);
-            writer.writeByte("EventNotifier", encodable._eventNotifier);
+            encoder.writeBoolean("ContainsNoLoops", value.containsNoLoops);
+            encoder.writeByte("EventNotifier", value.eventNotifier);
         }
     }
 

@@ -16,7 +16,7 @@ package org.eclipse.milo.opcua.stack.core.serialization.codec;
 import java.io.StringWriter;
 import javax.xml.stream.XMLStreamException;
 
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.xml.OpcXmlStreamWriter;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;

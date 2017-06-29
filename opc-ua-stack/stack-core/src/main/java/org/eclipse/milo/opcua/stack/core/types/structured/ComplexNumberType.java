@@ -16,40 +16,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ComplexNumberType")
 public class ComplexNumberType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ComplexNumberType;
     public static final NodeId BinaryEncodingId = Identifiers.ComplexNumberType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ComplexNumberType_Encoding_DefaultXml;
 
-    protected final Float _real;
-    protected final Float _imaginary;
+    protected final Float real;
+    protected final Float imaginary;
 
     public ComplexNumberType() {
-        this._real = null;
-        this._imaginary = null;
+        this.real = null;
+        this.imaginary = null;
     }
 
-    public ComplexNumberType(Float _real, Float _imaginary) {
-        this._real = _real;
-        this._imaginary = _imaginary;
+    public ComplexNumberType(Float real, Float imaginary) {
+        this.real = real;
+        this.imaginary = imaginary;
     }
 
-    public Float getReal() { return _real; }
+    public Float getReal() { return real; }
 
-    public Float getImaginary() { return _imaginary; }
+    public Float getImaginary() { return imaginary; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class ComplexNumberType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Real", _real)
-            .add("Imaginary", _imaginary)
+            .add("Real", real)
+            .add("Imaginary", imaginary)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ComplexNumberType> {
-        @Override
-        public ComplexNumberType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            Float _real = reader.readFloat();
-            Float _imaginary = reader.readFloat();
+    public static class Codec extends BuiltinDataTypeCodec<ComplexNumberType> {
 
-            return new ComplexNumberType(_real, _imaginary);
+        @Override
+        public Class<ComplexNumberType> getType() {
+            return ComplexNumberType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ComplexNumberType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeFloat(value._real);
-            writer.writeFloat(value._imaginary);
-        }
-    }
+        public ComplexNumberType decode(UaDecoder decoder) throws UaSerializationException {
+            Float real = decoder.readFloat("Real");
+            Float imaginary = decoder.readFloat("Imaginary");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ComplexNumberType> {
-        @Override
-        public ComplexNumberType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            Float _real = reader.readFloat("Real");
-            Float _imaginary = reader.readFloat("Imaginary");
-
-            return new ComplexNumberType(_real, _imaginary);
+            return new ComplexNumberType(real, imaginary);
         }
 
         @Override
-        public void encode(SerializationContext context, ComplexNumberType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeFloat("Real", encodable._real);
-            writer.writeFloat("Imaginary", encodable._imaginary);
+        public void encode(ComplexNumberType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeFloat("Real", value.real);
+            encoder.writeFloat("Imaginary", value.imaginary);
         }
     }
 

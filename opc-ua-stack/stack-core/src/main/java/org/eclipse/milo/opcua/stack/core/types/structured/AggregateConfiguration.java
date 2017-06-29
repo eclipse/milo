@@ -16,56 +16,50 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
-@UaDataType("AggregateConfiguration")
 public class AggregateConfiguration implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.AggregateConfiguration;
     public static final NodeId BinaryEncodingId = Identifiers.AggregateConfiguration_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AggregateConfiguration_Encoding_DefaultXml;
 
-    protected final Boolean _useServerCapabilitiesDefaults;
-    protected final Boolean _treatUncertainAsBad;
-    protected final UByte _percentDataBad;
-    protected final UByte _percentDataGood;
-    protected final Boolean _useSlopedExtrapolation;
+    protected final Boolean useServerCapabilitiesDefaults;
+    protected final Boolean treatUncertainAsBad;
+    protected final UByte percentDataBad;
+    protected final UByte percentDataGood;
+    protected final Boolean useSlopedExtrapolation;
 
     public AggregateConfiguration() {
-        this._useServerCapabilitiesDefaults = null;
-        this._treatUncertainAsBad = null;
-        this._percentDataBad = null;
-        this._percentDataGood = null;
-        this._useSlopedExtrapolation = null;
+        this.useServerCapabilitiesDefaults = null;
+        this.treatUncertainAsBad = null;
+        this.percentDataBad = null;
+        this.percentDataGood = null;
+        this.useSlopedExtrapolation = null;
     }
 
-    public AggregateConfiguration(Boolean _useServerCapabilitiesDefaults, Boolean _treatUncertainAsBad, UByte _percentDataBad, UByte _percentDataGood, Boolean _useSlopedExtrapolation) {
-        this._useServerCapabilitiesDefaults = _useServerCapabilitiesDefaults;
-        this._treatUncertainAsBad = _treatUncertainAsBad;
-        this._percentDataBad = _percentDataBad;
-        this._percentDataGood = _percentDataGood;
-        this._useSlopedExtrapolation = _useSlopedExtrapolation;
+    public AggregateConfiguration(Boolean useServerCapabilitiesDefaults, Boolean treatUncertainAsBad, UByte percentDataBad, UByte percentDataGood, Boolean useSlopedExtrapolation) {
+        this.useServerCapabilitiesDefaults = useServerCapabilitiesDefaults;
+        this.treatUncertainAsBad = treatUncertainAsBad;
+        this.percentDataBad = percentDataBad;
+        this.percentDataGood = percentDataGood;
+        this.useSlopedExtrapolation = useSlopedExtrapolation;
     }
 
-    public Boolean getUseServerCapabilitiesDefaults() { return _useServerCapabilitiesDefaults; }
+    public Boolean getUseServerCapabilitiesDefaults() { return useServerCapabilitiesDefaults; }
 
-    public Boolean getTreatUncertainAsBad() { return _treatUncertainAsBad; }
+    public Boolean getTreatUncertainAsBad() { return treatUncertainAsBad; }
 
-    public UByte getPercentDataBad() { return _percentDataBad; }
+    public UByte getPercentDataBad() { return percentDataBad; }
 
-    public UByte getPercentDataGood() { return _percentDataGood; }
+    public UByte getPercentDataGood() { return percentDataGood; }
 
-    public Boolean getUseSlopedExtrapolation() { return _useSlopedExtrapolation; }
+    public Boolean getUseSlopedExtrapolation() { return useSlopedExtrapolation; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -79,55 +73,39 @@ public class AggregateConfiguration implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("UseServerCapabilitiesDefaults", _useServerCapabilitiesDefaults)
-            .add("TreatUncertainAsBad", _treatUncertainAsBad)
-            .add("PercentDataBad", _percentDataBad)
-            .add("PercentDataGood", _percentDataGood)
-            .add("UseSlopedExtrapolation", _useSlopedExtrapolation)
+            .add("UseServerCapabilitiesDefaults", useServerCapabilitiesDefaults)
+            .add("TreatUncertainAsBad", treatUncertainAsBad)
+            .add("PercentDataBad", percentDataBad)
+            .add("PercentDataGood", percentDataGood)
+            .add("UseSlopedExtrapolation", useSlopedExtrapolation)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AggregateConfiguration> {
-        @Override
-        public AggregateConfiguration decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            Boolean _useServerCapabilitiesDefaults = reader.readBoolean();
-            Boolean _treatUncertainAsBad = reader.readBoolean();
-            UByte _percentDataBad = reader.readByte();
-            UByte _percentDataGood = reader.readByte();
-            Boolean _useSlopedExtrapolation = reader.readBoolean();
+    public static class Codec extends BuiltinDataTypeCodec<AggregateConfiguration> {
 
-            return new AggregateConfiguration(_useServerCapabilitiesDefaults, _treatUncertainAsBad, _percentDataBad, _percentDataGood, _useSlopedExtrapolation);
+        @Override
+        public Class<AggregateConfiguration> getType() {
+            return AggregateConfiguration.class;
         }
 
         @Override
-        public void encode(SerializationContext context, AggregateConfiguration value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeBoolean(value._useServerCapabilitiesDefaults);
-            writer.writeBoolean(value._treatUncertainAsBad);
-            writer.writeByte(value._percentDataBad);
-            writer.writeByte(value._percentDataGood);
-            writer.writeBoolean(value._useSlopedExtrapolation);
-        }
-    }
+        public AggregateConfiguration decode(UaDecoder decoder) throws UaSerializationException {
+            Boolean useServerCapabilitiesDefaults = decoder.readBoolean("UseServerCapabilitiesDefaults");
+            Boolean treatUncertainAsBad = decoder.readBoolean("TreatUncertainAsBad");
+            UByte percentDataBad = decoder.readByte("PercentDataBad");
+            UByte percentDataGood = decoder.readByte("PercentDataGood");
+            Boolean useSlopedExtrapolation = decoder.readBoolean("UseSlopedExtrapolation");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<AggregateConfiguration> {
-        @Override
-        public AggregateConfiguration decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            Boolean _useServerCapabilitiesDefaults = reader.readBoolean("UseServerCapabilitiesDefaults");
-            Boolean _treatUncertainAsBad = reader.readBoolean("TreatUncertainAsBad");
-            UByte _percentDataBad = reader.readByte("PercentDataBad");
-            UByte _percentDataGood = reader.readByte("PercentDataGood");
-            Boolean _useSlopedExtrapolation = reader.readBoolean("UseSlopedExtrapolation");
-
-            return new AggregateConfiguration(_useServerCapabilitiesDefaults, _treatUncertainAsBad, _percentDataBad, _percentDataGood, _useSlopedExtrapolation);
+            return new AggregateConfiguration(useServerCapabilitiesDefaults, treatUncertainAsBad, percentDataBad, percentDataGood, useSlopedExtrapolation);
         }
 
         @Override
-        public void encode(SerializationContext context, AggregateConfiguration encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeBoolean("UseServerCapabilitiesDefaults", encodable._useServerCapabilitiesDefaults);
-            writer.writeBoolean("TreatUncertainAsBad", encodable._treatUncertainAsBad);
-            writer.writeByte("PercentDataBad", encodable._percentDataBad);
-            writer.writeByte("PercentDataGood", encodable._percentDataGood);
-            writer.writeBoolean("UseSlopedExtrapolation", encodable._useSlopedExtrapolation);
+        public void encode(AggregateConfiguration value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBoolean("UseServerCapabilitiesDefaults", value.useServerCapabilitiesDefaults);
+            encoder.writeBoolean("TreatUncertainAsBad", value.treatUncertainAsBad);
+            encoder.writeByte("PercentDataBad", value.percentDataBad);
+            encoder.writeByte("PercentDataGood", value.percentDataGood);
+            encoder.writeBoolean("UseSlopedExtrapolation", value.useSlopedExtrapolation);
         }
     }
 

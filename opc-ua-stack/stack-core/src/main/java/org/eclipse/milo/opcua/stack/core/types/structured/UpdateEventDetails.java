@@ -18,48 +18,42 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
-@UaDataType("UpdateEventDetails")
 public class UpdateEventDetails extends HistoryUpdateDetails {
 
     public static final NodeId TypeId = Identifiers.UpdateEventDetails;
     public static final NodeId BinaryEncodingId = Identifiers.UpdateEventDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.UpdateEventDetails_Encoding_DefaultXml;
 
-    protected final PerformUpdateType _performInsertReplace;
-    protected final EventFilter _filter;
-    protected final HistoryEventFieldList[] _eventData;
+    protected final PerformUpdateType performInsertReplace;
+    protected final EventFilter filter;
+    protected final HistoryEventFieldList[] eventData;
 
     public UpdateEventDetails() {
         super(null);
-        this._performInsertReplace = null;
-        this._filter = null;
-        this._eventData = null;
+        this.performInsertReplace = null;
+        this.filter = null;
+        this.eventData = null;
     }
 
-    public UpdateEventDetails(NodeId _nodeId, PerformUpdateType _performInsertReplace, EventFilter _filter, HistoryEventFieldList[] _eventData) {
-        super(_nodeId);
-        this._performInsertReplace = _performInsertReplace;
-        this._filter = _filter;
-        this._eventData = _eventData;
+    public UpdateEventDetails(NodeId nodeId, PerformUpdateType performInsertReplace, EventFilter filter, HistoryEventFieldList[] eventData) {
+        super(nodeId);
+        this.performInsertReplace = performInsertReplace;
+        this.filter = filter;
+        this.eventData = eventData;
     }
 
-    public PerformUpdateType getPerformInsertReplace() { return _performInsertReplace; }
+    public PerformUpdateType getPerformInsertReplace() { return performInsertReplace; }
 
-    public EventFilter getFilter() { return _filter; }
+    public EventFilter getFilter() { return filter; }
 
     @Nullable
-    public HistoryEventFieldList[] getEventData() { return _eventData; }
+    public HistoryEventFieldList[] getEventData() { return eventData; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -73,67 +67,43 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("PerformInsertReplace", _performInsertReplace)
-            .add("Filter", _filter)
-            .add("EventData", _eventData)
+            .add("NodeId", nodeId)
+            .add("PerformInsertReplace", performInsertReplace)
+            .add("Filter", filter)
+            .add("EventData", eventData)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UpdateEventDetails> {
-        @Override
-        public UpdateEventDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32());
-            EventFilter _filter = (EventFilter) context.decode(EventFilter.BinaryEncodingId, reader);
-            HistoryEventFieldList[] _eventData =
-                reader.readArray(
-                    () -> (HistoryEventFieldList) context.decode(
-                        HistoryEventFieldList.BinaryEncodingId, reader),
-                    HistoryEventFieldList.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<UpdateEventDetails> {
 
-            return new UpdateEventDetails(_nodeId, _performInsertReplace, _filter, _eventData);
+        @Override
+        public Class<UpdateEventDetails> getType() {
+            return UpdateEventDetails.class;
         }
 
         @Override
-        public void encode(SerializationContext context, UpdateEventDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeInt32(value._performInsertReplace != null ? value._performInsertReplace.getValue() : 0);
-            context.encode(EventFilter.BinaryEncodingId, value._filter, writer);
-            writer.writeArray(
-                value._eventData,
-                e -> context.encode(HistoryEventFieldList.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<UpdateEventDetails> {
-        @Override
-        public UpdateEventDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            PerformUpdateType _performInsertReplace = PerformUpdateType.from(reader.readInt32("PerformInsertReplace"));
-            EventFilter _filter = (EventFilter) context.decode(EventFilter.XmlEncodingId, reader);
-            HistoryEventFieldList[] _eventData =
-                reader.readArray(
+        public UpdateEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.readInt32("PerformInsertReplace"));
+            EventFilter filter = (EventFilter) decoder.readBuiltinStruct("Filter", EventFilter.class);
+            HistoryEventFieldList[] eventData =
+                decoder.readBuiltinStructArray(
                     "EventData",
-                    f -> (HistoryEventFieldList) context.decode(
-                        HistoryEventFieldList.XmlEncodingId, reader),
                     HistoryEventFieldList.class
                 );
 
-            return new UpdateEventDetails(_nodeId, _performInsertReplace, _filter, _eventData);
+            return new UpdateEventDetails(nodeId, performInsertReplace, filter, eventData);
         }
 
         @Override
-        public void encode(SerializationContext context, UpdateEventDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeInt32("PerformInsertReplace", encodable._performInsertReplace != null ? encodable._performInsertReplace.getValue() : 0);
-            context.encode(EventFilter.XmlEncodingId, encodable._filter, writer);
-            writer.writeArray(
+        public void encode(UpdateEventDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("PerformInsertReplace", value.performInsertReplace != null ? value.performInsertReplace.getValue() : 0);
+            encoder.writeBuiltinStruct("Filter", value.filter, EventFilter.class);
+            encoder.writeBuiltinStructArray(
                 "EventData",
-                encodable._eventData,
-                (f, e) -> context.encode(HistoryEventFieldList.XmlEncodingId, e, writer)
+                value.eventData,
+                HistoryEventFieldList.class
             );
         }
     }

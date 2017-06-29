@@ -16,41 +16,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("AddNodesResult")
 public class AddNodesResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.AddNodesResult;
     public static final NodeId BinaryEncodingId = Identifiers.AddNodesResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AddNodesResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final NodeId _addedNodeId;
+    protected final StatusCode statusCode;
+    protected final NodeId addedNodeId;
 
     public AddNodesResult() {
-        this._statusCode = null;
-        this._addedNodeId = null;
+        this.statusCode = null;
+        this.addedNodeId = null;
     }
 
-    public AddNodesResult(StatusCode _statusCode, NodeId _addedNodeId) {
-        this._statusCode = _statusCode;
-        this._addedNodeId = _addedNodeId;
+    public AddNodesResult(StatusCode statusCode, NodeId addedNodeId) {
+        this.statusCode = statusCode;
+        this.addedNodeId = addedNodeId;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
-    public NodeId getAddedNodeId() { return _addedNodeId; }
+    public NodeId getAddedNodeId() { return addedNodeId; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,40 +58,30 @@ public class AddNodesResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("AddedNodeId", _addedNodeId)
+            .add("StatusCode", statusCode)
+            .add("AddedNodeId", addedNodeId)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<AddNodesResult> {
-        @Override
-        public AddNodesResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode();
-            NodeId _addedNodeId = reader.readNodeId();
+    public static class Codec extends BuiltinDataTypeCodec<AddNodesResult> {
 
-            return new AddNodesResult(_statusCode, _addedNodeId);
+        @Override
+        public Class<AddNodesResult> getType() {
+            return AddNodesResult.class;
         }
 
         @Override
-        public void encode(SerializationContext context, AddNodesResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(value._statusCode);
-            writer.writeNodeId(value._addedNodeId);
-        }
-    }
+        public AddNodesResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            NodeId addedNodeId = decoder.readNodeId("AddedNodeId");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<AddNodesResult> {
-        @Override
-        public AddNodesResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode("StatusCode");
-            NodeId _addedNodeId = reader.readNodeId("AddedNodeId");
-
-            return new AddNodesResult(_statusCode, _addedNodeId);
+            return new AddNodesResult(statusCode, addedNodeId);
         }
 
         @Override
-        public void encode(SerializationContext context, AddNodesResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode("StatusCode", encodable._statusCode);
-            writer.writeNodeId("AddedNodeId", encodable._addedNodeId);
+        public void encode(AddNodesResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeNodeId("AddedNodeId", value.addedNodeId);
         }
     }
 

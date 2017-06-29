@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,26 +11,27 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.codec;
+package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
 import java.nio.ByteOrder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 
-public class OpcBinaryStreamWriterTest {
+public class OpcUaBinaryStreamEncoderTest {
 
     ByteBuf buffer;
-    OpcBinaryStreamWriter writer;
+    OpcUaBinaryStreamEncoder writer;
 
     @BeforeTest
     public void initializeTest() {
         buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
-        writer = new OpcBinaryStreamWriter(buffer);
+        writer = new OpcUaBinaryStreamEncoder(buffer);
     }
 
     @Test

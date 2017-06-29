@@ -18,71 +18,65 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("PublishResponse")
 public class PublishResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.PublishResponse;
     public static final NodeId BinaryEncodingId = Identifiers.PublishResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.PublishResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final UInteger _subscriptionId;
-    protected final UInteger[] _availableSequenceNumbers;
-    protected final Boolean _moreNotifications;
-    protected final NotificationMessage _notificationMessage;
-    protected final StatusCode[] _results;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final UInteger subscriptionId;
+    protected final UInteger[] availableSequenceNumbers;
+    protected final Boolean moreNotifications;
+    protected final NotificationMessage notificationMessage;
+    protected final StatusCode[] results;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public PublishResponse() {
-        this._responseHeader = null;
-        this._subscriptionId = null;
-        this._availableSequenceNumbers = null;
-        this._moreNotifications = null;
-        this._notificationMessage = null;
-        this._results = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.subscriptionId = null;
+        this.availableSequenceNumbers = null;
+        this.moreNotifications = null;
+        this.notificationMessage = null;
+        this.results = null;
+        this.diagnosticInfos = null;
     }
 
-    public PublishResponse(ResponseHeader _responseHeader, UInteger _subscriptionId, UInteger[] _availableSequenceNumbers, Boolean _moreNotifications, NotificationMessage _notificationMessage, StatusCode[] _results, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._subscriptionId = _subscriptionId;
-        this._availableSequenceNumbers = _availableSequenceNumbers;
-        this._moreNotifications = _moreNotifications;
-        this._notificationMessage = _notificationMessage;
-        this._results = _results;
-        this._diagnosticInfos = _diagnosticInfos;
+    public PublishResponse(ResponseHeader responseHeader, UInteger subscriptionId, UInteger[] availableSequenceNumbers, Boolean moreNotifications, NotificationMessage notificationMessage, StatusCode[] results, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.subscriptionId = subscriptionId;
+        this.availableSequenceNumbers = availableSequenceNumbers;
+        this.moreNotifications = moreNotifications;
+        this.notificationMessage = notificationMessage;
+        this.results = results;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
-
-    @Nullable
-    public UInteger[] getAvailableSequenceNumbers() { return _availableSequenceNumbers; }
-
-    public Boolean getMoreNotifications() { return _moreNotifications; }
-
-    public NotificationMessage getNotificationMessage() { return _notificationMessage; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
     @Nullable
-    public StatusCode[] getResults() { return _results; }
+    public UInteger[] getAvailableSequenceNumbers() { return availableSequenceNumbers; }
+
+    public Boolean getMoreNotifications() { return moreNotifications; }
+
+    public NotificationMessage getNotificationMessage() { return notificationMessage; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public StatusCode[] getResults() { return results; }
+
+    @Nullable
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -96,65 +90,45 @@ public class PublishResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("SubscriptionId", _subscriptionId)
-            .add("AvailableSequenceNumbers", _availableSequenceNumbers)
-            .add("MoreNotifications", _moreNotifications)
-            .add("NotificationMessage", _notificationMessage)
-            .add("Results", _results)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("SubscriptionId", subscriptionId)
+            .add("AvailableSequenceNumbers", availableSequenceNumbers)
+            .add("MoreNotifications", moreNotifications)
+            .add("NotificationMessage", notificationMessage)
+            .add("Results", results)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<PublishResponse> {
-        @Override
-        public PublishResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            UInteger _subscriptionId = reader.readUInt32();
-            UInteger[] _availableSequenceNumbers = reader.readArray(reader::readUInt32, UInteger.class);
-            Boolean _moreNotifications = reader.readBoolean();
-            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(NotificationMessage.BinaryEncodingId, reader);
-            StatusCode[] _results = reader.readArray(reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+    public static class Codec extends BuiltinDataTypeCodec<PublishResponse> {
 
-            return new PublishResponse(_responseHeader, _subscriptionId, _availableSequenceNumbers, _moreNotifications, _notificationMessage, _results, _diagnosticInfos);
+        @Override
+        public Class<PublishResponse> getType() {
+            return PublishResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, PublishResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeUInt32(value._subscriptionId);
-            writer.writeArray(value._availableSequenceNumbers, writer::writeUInt32);
-            writer.writeBoolean(value._moreNotifications);
-            context.encode(NotificationMessage.BinaryEncodingId, value._notificationMessage, writer);
-            writer.writeArray(value._results, writer::writeStatusCode);
-            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
-        }
-    }
+        public PublishResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            UInteger[] availableSequenceNumbers = decoder.readArray("AvailableSequenceNumbers", decoder::readUInt32, UInteger.class);
+            Boolean moreNotifications = decoder.readBoolean("MoreNotifications");
+            NotificationMessage notificationMessage = (NotificationMessage) decoder.readBuiltinStruct("NotificationMessage", NotificationMessage.class);
+            StatusCode[] results = decoder.readArray("Results", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<PublishResponse> {
-        @Override
-        public PublishResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
-            UInteger[] _availableSequenceNumbers = reader.readArray("AvailableSequenceNumbers", reader::readUInt32, UInteger.class);
-            Boolean _moreNotifications = reader.readBoolean("MoreNotifications");
-            NotificationMessage _notificationMessage = (NotificationMessage) context.decode(NotificationMessage.XmlEncodingId, reader);
-            StatusCode[] _results = reader.readArray("Results", reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-
-            return new PublishResponse(_responseHeader, _subscriptionId, _availableSequenceNumbers, _moreNotifications, _notificationMessage, _results, _diagnosticInfos);
+            return new PublishResponse(responseHeader, subscriptionId, availableSequenceNumbers, moreNotifications, notificationMessage, results, diagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, PublishResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
-            writer.writeArray("AvailableSequenceNumbers", encodable._availableSequenceNumbers, writer::writeUInt32);
-            writer.writeBoolean("MoreNotifications", encodable._moreNotifications);
-            context.encode(NotificationMessage.XmlEncodingId, encodable._notificationMessage, writer);
-            writer.writeArray("Results", encodable._results, writer::writeStatusCode);
-            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(PublishResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeArray("AvailableSequenceNumbers", value.availableSequenceNumbers, encoder::writeUInt32);
+            encoder.writeBoolean("MoreNotifications", value.moreNotifications);
+            encoder.writeBuiltinStruct("NotificationMessage", value.notificationMessage, NotificationMessage.class);
+            encoder.writeArray("Results", value.results, encoder::writeStatusCode);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
         }
     }
 

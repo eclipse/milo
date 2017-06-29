@@ -18,41 +18,35 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("PublishRequest")
 public class PublishRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.PublishRequest;
     public static final NodeId BinaryEncodingId = Identifiers.PublishRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.PublishRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final SubscriptionAcknowledgement[] _subscriptionAcknowledgements;
+    protected final RequestHeader requestHeader;
+    protected final SubscriptionAcknowledgement[] subscriptionAcknowledgements;
 
     public PublishRequest() {
-        this._requestHeader = null;
-        this._subscriptionAcknowledgements = null;
+        this.requestHeader = null;
+        this.subscriptionAcknowledgements = null;
     }
 
-    public PublishRequest(RequestHeader _requestHeader, SubscriptionAcknowledgement[] _subscriptionAcknowledgements) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionAcknowledgements = _subscriptionAcknowledgements;
+    public PublishRequest(RequestHeader requestHeader, SubscriptionAcknowledgement[] subscriptionAcknowledgements) {
+        this.requestHeader = requestHeader;
+        this.subscriptionAcknowledgements = subscriptionAcknowledgements;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public SubscriptionAcknowledgement[] getSubscriptionAcknowledgements() { return _subscriptionAcknowledgements; }
+    public SubscriptionAcknowledgement[] getSubscriptionAcknowledgements() { return subscriptionAcknowledgements; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,57 +60,37 @@ public class PublishRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionAcknowledgements", _subscriptionAcknowledgements)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionAcknowledgements", subscriptionAcknowledgements)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<PublishRequest> {
-        @Override
-        public PublishRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            SubscriptionAcknowledgement[] _subscriptionAcknowledgements =
-                reader.readArray(
-                    () -> (SubscriptionAcknowledgement) context.decode(
-                        SubscriptionAcknowledgement.BinaryEncodingId, reader),
-                    SubscriptionAcknowledgement.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<PublishRequest> {
 
-            return new PublishRequest(_requestHeader, _subscriptionAcknowledgements);
+        @Override
+        public Class<PublishRequest> getType() {
+            return PublishRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, PublishRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(
-                value._subscriptionAcknowledgements,
-                e -> context.encode(SubscriptionAcknowledgement.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<PublishRequest> {
-        @Override
-        public PublishRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            SubscriptionAcknowledgement[] _subscriptionAcknowledgements =
-                reader.readArray(
+        public PublishRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            SubscriptionAcknowledgement[] subscriptionAcknowledgements =
+                decoder.readBuiltinStructArray(
                     "SubscriptionAcknowledgements",
-                    f -> (SubscriptionAcknowledgement) context.decode(
-                        SubscriptionAcknowledgement.XmlEncodingId, reader),
                     SubscriptionAcknowledgement.class
                 );
 
-            return new PublishRequest(_requestHeader, _subscriptionAcknowledgements);
+            return new PublishRequest(requestHeader, subscriptionAcknowledgements);
         }
 
         @Override
-        public void encode(SerializationContext context, PublishRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(
+        public void encode(PublishRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStructArray(
                 "SubscriptionAcknowledgements",
-                encodable._subscriptionAcknowledgements,
-                (f, e) -> context.encode(SubscriptionAcknowledgement.XmlEncodingId, e, writer)
+                value.subscriptionAcknowledgements,
+                SubscriptionAcknowledgement.class
             );
         }
     }

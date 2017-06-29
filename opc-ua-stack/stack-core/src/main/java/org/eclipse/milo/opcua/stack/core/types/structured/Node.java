@@ -18,75 +18,69 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("Node")
 public class Node implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.Node;
     public static final NodeId BinaryEncodingId = Identifiers.Node_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.Node_Encoding_DefaultXml;
 
-    protected final NodeId _nodeId;
-    protected final NodeClass _nodeClass;
-    protected final QualifiedName _browseName;
-    protected final LocalizedText _displayName;
-    protected final LocalizedText _description;
-    protected final UInteger _writeMask;
-    protected final UInteger _userWriteMask;
-    protected final ReferenceNode[] _references;
+    protected final NodeId nodeId;
+    protected final NodeClass nodeClass;
+    protected final QualifiedName browseName;
+    protected final LocalizedText displayName;
+    protected final LocalizedText description;
+    protected final UInteger writeMask;
+    protected final UInteger userWriteMask;
+    protected final ReferenceNode[] references;
 
     public Node() {
-        this._nodeId = null;
-        this._nodeClass = null;
-        this._browseName = null;
-        this._displayName = null;
-        this._description = null;
-        this._writeMask = null;
-        this._userWriteMask = null;
-        this._references = null;
+        this.nodeId = null;
+        this.nodeClass = null;
+        this.browseName = null;
+        this.displayName = null;
+        this.description = null;
+        this.writeMask = null;
+        this.userWriteMask = null;
+        this.references = null;
     }
 
-    public Node(NodeId _nodeId, NodeClass _nodeClass, QualifiedName _browseName, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, ReferenceNode[] _references) {
-        this._nodeId = _nodeId;
-        this._nodeClass = _nodeClass;
-        this._browseName = _browseName;
-        this._displayName = _displayName;
-        this._description = _description;
-        this._writeMask = _writeMask;
-        this._userWriteMask = _userWriteMask;
-        this._references = _references;
+    public Node(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references) {
+        this.nodeId = nodeId;
+        this.nodeClass = nodeClass;
+        this.browseName = browseName;
+        this.displayName = displayName;
+        this.description = description;
+        this.writeMask = writeMask;
+        this.userWriteMask = userWriteMask;
+        this.references = references;
     }
 
-    public NodeId getNodeId() { return _nodeId; }
+    public NodeId getNodeId() { return nodeId; }
 
-    public NodeClass getNodeClass() { return _nodeClass; }
+    public NodeClass getNodeClass() { return nodeClass; }
 
-    public QualifiedName getBrowseName() { return _browseName; }
+    public QualifiedName getBrowseName() { return browseName; }
 
-    public LocalizedText getDisplayName() { return _displayName; }
+    public LocalizedText getDisplayName() { return displayName; }
 
-    public LocalizedText getDescription() { return _description; }
+    public LocalizedText getDescription() { return description; }
 
-    public UInteger getWriteMask() { return _writeMask; }
+    public UInteger getWriteMask() { return writeMask; }
 
-    public UInteger getUserWriteMask() { return _userWriteMask; }
+    public UInteger getUserWriteMask() { return userWriteMask; }
 
     @Nullable
-    public ReferenceNode[] getReferences() { return _references; }
+    public ReferenceNode[] getReferences() { return references; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -100,87 +94,55 @@ public class Node implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("NodeClass", _nodeClass)
-            .add("BrowseName", _browseName)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("References", _references)
+            .add("NodeId", nodeId)
+            .add("NodeClass", nodeClass)
+            .add("BrowseName", browseName)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("References", references)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<Node> {
-        @Override
-        public Node decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
-            QualifiedName _browseName = reader.readQualifiedName();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
-            UInteger _writeMask = reader.readUInt32();
-            UInteger _userWriteMask = reader.readUInt32();
-            ReferenceNode[] _references =
-                reader.readArray(
-                    () -> (ReferenceNode) context.decode(
-                        ReferenceNode.BinaryEncodingId, reader),
-                    ReferenceNode.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<Node> {
 
-            return new Node(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
+        @Override
+        public Class<Node> getType() {
+            return Node.class;
         }
 
         @Override
-        public void encode(SerializationContext context, Node value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
-            writer.writeQualifiedName(value._browseName);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-            writer.writeUInt32(value._writeMask);
-            writer.writeUInt32(value._userWriteMask);
-            writer.writeArray(
-                value._references,
-                e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<Node> {
-        @Override
-        public Node decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
-            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-            UInteger _writeMask = reader.readUInt32("WriteMask");
-            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
-            ReferenceNode[] _references =
-                reader.readArray(
+        public Node decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            ReferenceNode[] references =
+                decoder.readBuiltinStructArray(
                     "References",
-                    f -> (ReferenceNode) context.decode(
-                        ReferenceNode.XmlEncodingId, reader),
                     ReferenceNode.class
                 );
 
-            return new Node(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
+            return new Node(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
         }
 
         @Override
-        public void encode(SerializationContext context, Node encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeQualifiedName("BrowseName", encodable._browseName);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
-            writer.writeUInt32("WriteMask", encodable._writeMask);
-            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
-            writer.writeArray(
+        public void encode(Node value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBuiltinStructArray(
                 "References",
-                encodable._references,
-                (f, e) -> context.encode(ReferenceNode.XmlEncodingId, e, writer)
+                value.references,
+                ReferenceNode.class
             );
         }
     }

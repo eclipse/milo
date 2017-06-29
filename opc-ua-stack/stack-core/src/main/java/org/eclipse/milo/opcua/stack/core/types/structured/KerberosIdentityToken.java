@@ -16,37 +16,31 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("KerberosIdentityToken")
 public class KerberosIdentityToken extends UserIdentityToken {
 
     public static final NodeId TypeId = Identifiers.KerberosIdentityToken;
     public static final NodeId BinaryEncodingId = Identifiers.KerberosIdentityToken_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.KerberosIdentityToken_Encoding_DefaultXml;
 
-    protected final ByteString _ticketData;
+    protected final ByteString ticketData;
 
     public KerberosIdentityToken() {
         super(null);
-        this._ticketData = null;
+        this.ticketData = null;
     }
 
-    public KerberosIdentityToken(String _policyId, ByteString _ticketData) {
-        super(_policyId);
-        this._ticketData = _ticketData;
+    public KerberosIdentityToken(String policyId, ByteString ticketData) {
+        super(policyId);
+        this.ticketData = ticketData;
     }
 
-    public ByteString getTicketData() { return _ticketData; }
+    public ByteString getTicketData() { return ticketData; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -60,40 +54,30 @@ public class KerberosIdentityToken extends UserIdentityToken {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("PolicyId", _policyId)
-            .add("TicketData", _ticketData)
+            .add("PolicyId", policyId)
+            .add("TicketData", ticketData)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<KerberosIdentityToken> {
-        @Override
-        public KerberosIdentityToken decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString();
-            ByteString _ticketData = reader.readByteString();
+    public static class Codec extends BuiltinDataTypeCodec<KerberosIdentityToken> {
 
-            return new KerberosIdentityToken(_policyId, _ticketData);
+        @Override
+        public Class<KerberosIdentityToken> getType() {
+            return KerberosIdentityToken.class;
         }
 
         @Override
-        public void encode(SerializationContext context, KerberosIdentityToken value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._policyId);
-            writer.writeByteString(value._ticketData);
-        }
-    }
+        public KerberosIdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+            String policyId = decoder.readString("PolicyId");
+            ByteString ticketData = decoder.readByteString("TicketData");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<KerberosIdentityToken> {
-        @Override
-        public KerberosIdentityToken decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _policyId = reader.readString("PolicyId");
-            ByteString _ticketData = reader.readByteString("TicketData");
-
-            return new KerberosIdentityToken(_policyId, _ticketData);
+            return new KerberosIdentityToken(policyId, ticketData);
         }
 
         @Override
-        public void encode(SerializationContext context, KerberosIdentityToken encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("PolicyId", encodable._policyId);
-            writer.writeByteString("TicketData", encodable._ticketData);
+        public void encode(KerberosIdentityToken value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("PolicyId", value.policyId);
+            encoder.writeByteString("TicketData", value.ticketData);
         }
     }
 

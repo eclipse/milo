@@ -18,52 +18,46 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ServerOnNetwork")
 public class ServerOnNetwork implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ServerOnNetwork;
     public static final NodeId BinaryEncodingId = Identifiers.ServerOnNetwork_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ServerOnNetwork_Encoding_DefaultXml;
 
-    protected final UInteger _recordId;
-    protected final String _serverName;
-    protected final String _discoveryUrl;
-    protected final String[] _serverCapabilities;
+    protected final UInteger recordId;
+    protected final String serverName;
+    protected final String discoveryUrl;
+    protected final String[] serverCapabilities;
 
     public ServerOnNetwork() {
-        this._recordId = null;
-        this._serverName = null;
-        this._discoveryUrl = null;
-        this._serverCapabilities = null;
+        this.recordId = null;
+        this.serverName = null;
+        this.discoveryUrl = null;
+        this.serverCapabilities = null;
     }
 
-    public ServerOnNetwork(UInteger _recordId, String _serverName, String _discoveryUrl, String[] _serverCapabilities) {
-        this._recordId = _recordId;
-        this._serverName = _serverName;
-        this._discoveryUrl = _discoveryUrl;
-        this._serverCapabilities = _serverCapabilities;
+    public ServerOnNetwork(UInteger recordId, String serverName, String discoveryUrl, String[] serverCapabilities) {
+        this.recordId = recordId;
+        this.serverName = serverName;
+        this.discoveryUrl = discoveryUrl;
+        this.serverCapabilities = serverCapabilities;
     }
 
-    public UInteger getRecordId() { return _recordId; }
+    public UInteger getRecordId() { return recordId; }
 
-    public String getServerName() { return _serverName; }
+    public String getServerName() { return serverName; }
 
-    public String getDiscoveryUrl() { return _discoveryUrl; }
+    public String getDiscoveryUrl() { return discoveryUrl; }
 
     @Nullable
-    public String[] getServerCapabilities() { return _serverCapabilities; }
+    public String[] getServerCapabilities() { return serverCapabilities; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -77,50 +71,36 @@ public class ServerOnNetwork implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RecordId", _recordId)
-            .add("ServerName", _serverName)
-            .add("DiscoveryUrl", _discoveryUrl)
-            .add("ServerCapabilities", _serverCapabilities)
+            .add("RecordId", recordId)
+            .add("ServerName", serverName)
+            .add("DiscoveryUrl", discoveryUrl)
+            .add("ServerCapabilities", serverCapabilities)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ServerOnNetwork> {
-        @Override
-        public ServerOnNetwork decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _recordId = reader.readUInt32();
-            String _serverName = reader.readString();
-            String _discoveryUrl = reader.readString();
-            String[] _serverCapabilities = reader.readArray(reader::readString, String.class);
+    public static class Codec extends BuiltinDataTypeCodec<ServerOnNetwork> {
 
-            return new ServerOnNetwork(_recordId, _serverName, _discoveryUrl, _serverCapabilities);
+        @Override
+        public Class<ServerOnNetwork> getType() {
+            return ServerOnNetwork.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ServerOnNetwork value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._recordId);
-            writer.writeString(value._serverName);
-            writer.writeString(value._discoveryUrl);
-            writer.writeArray(value._serverCapabilities, writer::writeString);
-        }
-    }
+        public ServerOnNetwork decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger recordId = decoder.readUInt32("RecordId");
+            String serverName = decoder.readString("ServerName");
+            String discoveryUrl = decoder.readString("DiscoveryUrl");
+            String[] serverCapabilities = decoder.readArray("ServerCapabilities", decoder::readString, String.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ServerOnNetwork> {
-        @Override
-        public ServerOnNetwork decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _recordId = reader.readUInt32("RecordId");
-            String _serverName = reader.readString("ServerName");
-            String _discoveryUrl = reader.readString("DiscoveryUrl");
-            String[] _serverCapabilities = reader.readArray("ServerCapabilities", reader::readString, String.class);
-
-            return new ServerOnNetwork(_recordId, _serverName, _discoveryUrl, _serverCapabilities);
+            return new ServerOnNetwork(recordId, serverName, discoveryUrl, serverCapabilities);
         }
 
         @Override
-        public void encode(SerializationContext context, ServerOnNetwork encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("RecordId", encodable._recordId);
-            writer.writeString("ServerName", encodable._serverName);
-            writer.writeString("DiscoveryUrl", encodable._discoveryUrl);
-            writer.writeArray("ServerCapabilities", encodable._serverCapabilities, writer::writeString);
+        public void encode(ServerOnNetwork value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("RecordId", value.recordId);
+            encoder.writeString("ServerName", value.serverName);
+            encoder.writeString("DiscoveryUrl", value.discoveryUrl);
+            encoder.writeArray("ServerCapabilities", value.serverCapabilities, encoder::writeString);
         }
     }
 

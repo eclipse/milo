@@ -18,53 +18,47 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 
-@UaDataType("SetMonitoringModeRequest")
 public class SetMonitoringModeRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.SetMonitoringModeRequest;
     public static final NodeId BinaryEncodingId = Identifiers.SetMonitoringModeRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SetMonitoringModeRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger _subscriptionId;
-    protected final MonitoringMode _monitoringMode;
-    protected final UInteger[] _monitoredItemIds;
+    protected final RequestHeader requestHeader;
+    protected final UInteger subscriptionId;
+    protected final MonitoringMode monitoringMode;
+    protected final UInteger[] monitoredItemIds;
 
     public SetMonitoringModeRequest() {
-        this._requestHeader = null;
-        this._subscriptionId = null;
-        this._monitoringMode = null;
-        this._monitoredItemIds = null;
+        this.requestHeader = null;
+        this.subscriptionId = null;
+        this.monitoringMode = null;
+        this.monitoredItemIds = null;
     }
 
-    public SetMonitoringModeRequest(RequestHeader _requestHeader, UInteger _subscriptionId, MonitoringMode _monitoringMode, UInteger[] _monitoredItemIds) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionId = _subscriptionId;
-        this._monitoringMode = _monitoringMode;
-        this._monitoredItemIds = _monitoredItemIds;
+    public SetMonitoringModeRequest(RequestHeader requestHeader, UInteger subscriptionId, MonitoringMode monitoringMode, UInteger[] monitoredItemIds) {
+        this.requestHeader = requestHeader;
+        this.subscriptionId = subscriptionId;
+        this.monitoringMode = monitoringMode;
+        this.monitoredItemIds = monitoredItemIds;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
-    public MonitoringMode getMonitoringMode() { return _monitoringMode; }
+    public MonitoringMode getMonitoringMode() { return monitoringMode; }
 
     @Nullable
-    public UInteger[] getMonitoredItemIds() { return _monitoredItemIds; }
+    public UInteger[] getMonitoredItemIds() { return monitoredItemIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -78,50 +72,36 @@ public class SetMonitoringModeRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionId", _subscriptionId)
-            .add("MonitoringMode", _monitoringMode)
-            .add("MonitoredItemIds", _monitoredItemIds)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionId", subscriptionId)
+            .add("MonitoringMode", monitoringMode)
+            .add("MonitoredItemIds", monitoredItemIds)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SetMonitoringModeRequest> {
-        @Override
-        public SetMonitoringModeRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            UInteger _subscriptionId = reader.readUInt32();
-            MonitoringMode _monitoringMode = MonitoringMode.from(reader.readInt32());
-            UInteger[] _monitoredItemIds = reader.readArray(reader::readUInt32, UInteger.class);
+    public static class Codec extends BuiltinDataTypeCodec<SetMonitoringModeRequest> {
 
-            return new SetMonitoringModeRequest(_requestHeader, _subscriptionId, _monitoringMode, _monitoredItemIds);
+        @Override
+        public Class<SetMonitoringModeRequest> getType() {
+            return SetMonitoringModeRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, SetMonitoringModeRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeUInt32(value._subscriptionId);
-            writer.writeInt32(value._monitoringMode != null ? value._monitoringMode.getValue() : 0);
-            writer.writeArray(value._monitoredItemIds, writer::writeUInt32);
-        }
-    }
+        public SetMonitoringModeRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            MonitoringMode monitoringMode = MonitoringMode.from(decoder.readInt32("MonitoringMode"));
+            UInteger[] monitoredItemIds = decoder.readArray("MonitoredItemIds", decoder::readUInt32, UInteger.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<SetMonitoringModeRequest> {
-        @Override
-        public SetMonitoringModeRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
-            MonitoringMode _monitoringMode = MonitoringMode.from(reader.readInt32("MonitoringMode"));
-            UInteger[] _monitoredItemIds = reader.readArray("MonitoredItemIds", reader::readUInt32, UInteger.class);
-
-            return new SetMonitoringModeRequest(_requestHeader, _subscriptionId, _monitoringMode, _monitoredItemIds);
+            return new SetMonitoringModeRequest(requestHeader, subscriptionId, monitoringMode, monitoredItemIds);
         }
 
         @Override
-        public void encode(SerializationContext context, SetMonitoringModeRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
-            writer.writeInt32("MonitoringMode", encodable._monitoringMode != null ? encodable._monitoringMode.getValue() : 0);
-            writer.writeArray("MonitoredItemIds", encodable._monitoredItemIds, writer::writeUInt32);
+        public void encode(SetMonitoringModeRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeInt32("MonitoringMode", value.monitoringMode != null ? value.monitoringMode.getValue() : 0);
+            encoder.writeArray("MonitoredItemIds", value.monitoredItemIds, encoder::writeUInt32);
         }
     }
 

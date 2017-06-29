@@ -16,40 +16,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("CloseSessionRequest")
 public class CloseSessionRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.CloseSessionRequest;
     public static final NodeId BinaryEncodingId = Identifiers.CloseSessionRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CloseSessionRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final Boolean _deleteSubscriptions;
+    protected final RequestHeader requestHeader;
+    protected final Boolean deleteSubscriptions;
 
     public CloseSessionRequest() {
-        this._requestHeader = null;
-        this._deleteSubscriptions = null;
+        this.requestHeader = null;
+        this.deleteSubscriptions = null;
     }
 
-    public CloseSessionRequest(RequestHeader _requestHeader, Boolean _deleteSubscriptions) {
-        this._requestHeader = _requestHeader;
-        this._deleteSubscriptions = _deleteSubscriptions;
+    public CloseSessionRequest(RequestHeader requestHeader, Boolean deleteSubscriptions) {
+        this.requestHeader = requestHeader;
+        this.deleteSubscriptions = deleteSubscriptions;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public Boolean getDeleteSubscriptions() { return _deleteSubscriptions; }
+    public Boolean getDeleteSubscriptions() { return deleteSubscriptions; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class CloseSessionRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("DeleteSubscriptions", _deleteSubscriptions)
+            .add("RequestHeader", requestHeader)
+            .add("DeleteSubscriptions", deleteSubscriptions)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CloseSessionRequest> {
-        @Override
-        public CloseSessionRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            Boolean _deleteSubscriptions = reader.readBoolean();
+    public static class Codec extends BuiltinDataTypeCodec<CloseSessionRequest> {
 
-            return new CloseSessionRequest(_requestHeader, _deleteSubscriptions);
+        @Override
+        public Class<CloseSessionRequest> getType() {
+            return CloseSessionRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, CloseSessionRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeBoolean(value._deleteSubscriptions);
-        }
-    }
+        public CloseSessionRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            Boolean deleteSubscriptions = decoder.readBoolean("DeleteSubscriptions");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<CloseSessionRequest> {
-        @Override
-        public CloseSessionRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            Boolean _deleteSubscriptions = reader.readBoolean("DeleteSubscriptions");
-
-            return new CloseSessionRequest(_requestHeader, _deleteSubscriptions);
+            return new CloseSessionRequest(requestHeader, deleteSubscriptions);
         }
 
         @Override
-        public void encode(SerializationContext context, CloseSessionRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeBoolean("DeleteSubscriptions", encodable._deleteSubscriptions);
+        public void encode(CloseSessionRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBoolean("DeleteSubscriptions", value.deleteSubscriptions);
         }
     }
 

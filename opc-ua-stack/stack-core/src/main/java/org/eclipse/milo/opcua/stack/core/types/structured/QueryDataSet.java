@@ -18,48 +18,42 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-@UaDataType("QueryDataSet")
 public class QueryDataSet implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.QueryDataSet;
     public static final NodeId BinaryEncodingId = Identifiers.QueryDataSet_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.QueryDataSet_Encoding_DefaultXml;
 
-    protected final ExpandedNodeId _nodeId;
-    protected final ExpandedNodeId _typeDefinitionNode;
-    protected final Variant[] _values;
+    protected final ExpandedNodeId nodeId;
+    protected final ExpandedNodeId typeDefinitionNode;
+    protected final Variant[] values;
 
     public QueryDataSet() {
-        this._nodeId = null;
-        this._typeDefinitionNode = null;
-        this._values = null;
+        this.nodeId = null;
+        this.typeDefinitionNode = null;
+        this.values = null;
     }
 
-    public QueryDataSet(ExpandedNodeId _nodeId, ExpandedNodeId _typeDefinitionNode, Variant[] _values) {
-        this._nodeId = _nodeId;
-        this._typeDefinitionNode = _typeDefinitionNode;
-        this._values = _values;
+    public QueryDataSet(ExpandedNodeId nodeId, ExpandedNodeId typeDefinitionNode, Variant[] values) {
+        this.nodeId = nodeId;
+        this.typeDefinitionNode = typeDefinitionNode;
+        this.values = values;
     }
 
-    public ExpandedNodeId getNodeId() { return _nodeId; }
+    public ExpandedNodeId getNodeId() { return nodeId; }
 
-    public ExpandedNodeId getTypeDefinitionNode() { return _typeDefinitionNode; }
+    public ExpandedNodeId getTypeDefinitionNode() { return typeDefinitionNode; }
 
     @Nullable
-    public Variant[] getValues() { return _values; }
+    public Variant[] getValues() { return values; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -73,45 +67,33 @@ public class QueryDataSet implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("TypeDefinitionNode", _typeDefinitionNode)
-            .add("Values", _values)
+            .add("NodeId", nodeId)
+            .add("TypeDefinitionNode", typeDefinitionNode)
+            .add("Values", values)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<QueryDataSet> {
-        @Override
-        public QueryDataSet decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ExpandedNodeId _nodeId = reader.readExpandedNodeId();
-            ExpandedNodeId _typeDefinitionNode = reader.readExpandedNodeId();
-            Variant[] _values = reader.readArray(reader::readVariant, Variant.class);
+    public static class Codec extends BuiltinDataTypeCodec<QueryDataSet> {
 
-            return new QueryDataSet(_nodeId, _typeDefinitionNode, _values);
+        @Override
+        public Class<QueryDataSet> getType() {
+            return QueryDataSet.class;
         }
 
         @Override
-        public void encode(SerializationContext context, QueryDataSet value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId(value._nodeId);
-            writer.writeExpandedNodeId(value._typeDefinitionNode);
-            writer.writeArray(value._values, writer::writeVariant);
-        }
-    }
+        public QueryDataSet decode(UaDecoder decoder) throws UaSerializationException {
+            ExpandedNodeId nodeId = decoder.readExpandedNodeId("NodeId");
+            ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
+            Variant[] values = decoder.readArray("Values", decoder::readVariant, Variant.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<QueryDataSet> {
-        @Override
-        public QueryDataSet decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ExpandedNodeId _nodeId = reader.readExpandedNodeId("NodeId");
-            ExpandedNodeId _typeDefinitionNode = reader.readExpandedNodeId("TypeDefinitionNode");
-            Variant[] _values = reader.readArray("Values", reader::readVariant, Variant.class);
-
-            return new QueryDataSet(_nodeId, _typeDefinitionNode, _values);
+            return new QueryDataSet(nodeId, typeDefinitionNode, values);
         }
 
         @Override
-        public void encode(SerializationContext context, QueryDataSet encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId("NodeId", encodable._nodeId);
-            writer.writeExpandedNodeId("TypeDefinitionNode", encodable._typeDefinitionNode);
-            writer.writeArray("Values", encodable._values, writer::writeVariant);
+        public void encode(QueryDataSet value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeExpandedNodeId("NodeId", value.nodeId);
+            encoder.writeExpandedNodeId("TypeDefinitionNode", value.typeDefinitionNode);
+            encoder.writeArray("Values", value.values, encoder::writeVariant);
         }
     }
 

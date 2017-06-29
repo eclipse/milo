@@ -18,49 +18,43 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReadResponse")
 public class ReadResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.ReadResponse;
     public static final NodeId BinaryEncodingId = Identifiers.ReadResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final DataValue[] _results;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final DataValue[] results;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public ReadResponse() {
-        this._responseHeader = null;
-        this._results = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.results = null;
+        this.diagnosticInfos = null;
     }
 
-    public ReadResponse(ResponseHeader _responseHeader, DataValue[] _results, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._results = _results;
-        this._diagnosticInfos = _diagnosticInfos;
+    public ReadResponse(ResponseHeader responseHeader, DataValue[] results, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.results = results;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public DataValue[] getResults() { return _results; }
+    public DataValue[] getResults() { return results; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -74,45 +68,33 @@ public class ReadResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("Results", _results)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("Results", results)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ReadResponse> {
-        @Override
-        public ReadResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            DataValue[] _results = reader.readArray(reader::readDataValue, DataValue.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+    public static class Codec extends BuiltinDataTypeCodec<ReadResponse> {
 
-            return new ReadResponse(_responseHeader, _results, _diagnosticInfos);
+        @Override
+        public Class<ReadResponse> getType() {
+            return ReadResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ReadResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeArray(value._results, writer::writeDataValue);
-            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
-        }
-    }
+        public ReadResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            DataValue[] results = decoder.readArray("Results", decoder::readDataValue, DataValue.class);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ReadResponse> {
-        @Override
-        public ReadResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            DataValue[] _results = reader.readArray("Results", reader::readDataValue, DataValue.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-
-            return new ReadResponse(_responseHeader, _results, _diagnosticInfos);
+            return new ReadResponse(responseHeader, results, diagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, ReadResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeArray("Results", encodable._results, writer::writeDataValue);
-            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(ReadResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeArray("Results", value.results, encoder::writeDataValue);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
         }
     }
 

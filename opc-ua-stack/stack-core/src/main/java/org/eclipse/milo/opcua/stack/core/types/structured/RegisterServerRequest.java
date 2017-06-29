@@ -16,40 +16,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RegisterServerRequest")
 public class RegisterServerRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterServerRequest;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterServerRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterServerRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final RegisteredServer _server;
+    protected final RequestHeader requestHeader;
+    protected final RegisteredServer server;
 
     public RegisterServerRequest() {
-        this._requestHeader = null;
-        this._server = null;
+        this.requestHeader = null;
+        this.server = null;
     }
 
-    public RegisterServerRequest(RequestHeader _requestHeader, RegisteredServer _server) {
-        this._requestHeader = _requestHeader;
-        this._server = _server;
+    public RegisterServerRequest(RequestHeader requestHeader, RegisteredServer server) {
+        this.requestHeader = requestHeader;
+        this.server = server;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public RegisteredServer getServer() { return _server; }
+    public RegisteredServer getServer() { return server; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class RegisterServerRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("Server", _server)
+            .add("RequestHeader", requestHeader)
+            .add("Server", server)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<RegisterServerRequest> {
-        @Override
-        public RegisterServerRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            RegisteredServer _server = (RegisteredServer) context.decode(RegisteredServer.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<RegisterServerRequest> {
 
-            return new RegisterServerRequest(_requestHeader, _server);
+        @Override
+        public Class<RegisterServerRequest> getType() {
+            return RegisterServerRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServerRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            context.encode(RegisteredServer.BinaryEncodingId, value._server, writer);
-        }
-    }
+        public RegisterServerRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            RegisteredServer server = (RegisteredServer) decoder.readBuiltinStruct("Server", RegisteredServer.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<RegisterServerRequest> {
-        @Override
-        public RegisterServerRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            RegisteredServer _server = (RegisteredServer) context.decode(RegisteredServer.XmlEncodingId, reader);
-
-            return new RegisterServerRequest(_requestHeader, _server);
+            return new RegisterServerRequest(requestHeader, server);
         }
 
         @Override
-        public void encode(SerializationContext context, RegisterServerRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            context.encode(RegisteredServer.XmlEncodingId, encodable._server, writer);
+        public void encode(RegisterServerRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStruct("Server", value.server, RegisteredServer.class);
         }
     }
 

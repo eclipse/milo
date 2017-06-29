@@ -10,6 +10,7 @@
  * and the Eclipse Distribution License is available at
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
+
 package org.eclipse.milo.opcua.stack.core.types.builtin.unsigned;
 
 import java.math.BigInteger;

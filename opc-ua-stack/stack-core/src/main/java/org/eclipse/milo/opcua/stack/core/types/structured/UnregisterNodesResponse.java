@@ -16,35 +16,29 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("UnregisterNodesResponse")
 public class UnregisterNodesResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.UnregisterNodesResponse;
     public static final NodeId BinaryEncodingId = Identifiers.UnregisterNodesResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.UnregisterNodesResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
+    protected final ResponseHeader responseHeader;
 
     public UnregisterNodesResponse() {
-        this._responseHeader = null;
+        this.responseHeader = null;
     }
 
-    public UnregisterNodesResponse(ResponseHeader _responseHeader) {
-        this._responseHeader = _responseHeader;
+    public UnregisterNodesResponse(ResponseHeader responseHeader) {
+        this.responseHeader = responseHeader;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,35 +52,27 @@ public class UnregisterNodesResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
+            .add("ResponseHeader", responseHeader)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<UnregisterNodesResponse> {
-        @Override
-        public UnregisterNodesResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<UnregisterNodesResponse> {
 
-            return new UnregisterNodesResponse(_responseHeader);
+        @Override
+        public Class<UnregisterNodesResponse> getType() {
+            return UnregisterNodesResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, UnregisterNodesResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-        }
-    }
+        public UnregisterNodesResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<UnregisterNodesResponse> {
-        @Override
-        public UnregisterNodesResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-
-            return new UnregisterNodesResponse(_responseHeader);
+            return new UnregisterNodesResponse(responseHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, UnregisterNodesResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
+        public void encode(UnregisterNodesResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
         }
     }
 

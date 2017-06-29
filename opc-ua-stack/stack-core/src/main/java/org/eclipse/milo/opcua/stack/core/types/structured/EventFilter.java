@@ -18,42 +18,36 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("EventFilter")
 public class EventFilter extends MonitoringFilter {
 
     public static final NodeId TypeId = Identifiers.EventFilter;
     public static final NodeId BinaryEncodingId = Identifiers.EventFilter_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EventFilter_Encoding_DefaultXml;
 
-    protected final SimpleAttributeOperand[] _selectClauses;
-    protected final ContentFilter _whereClause;
+    protected final SimpleAttributeOperand[] selectClauses;
+    protected final ContentFilter whereClause;
 
     public EventFilter() {
         super();
-        this._selectClauses = null;
-        this._whereClause = null;
+        this.selectClauses = null;
+        this.whereClause = null;
     }
 
-    public EventFilter(SimpleAttributeOperand[] _selectClauses, ContentFilter _whereClause) {
+    public EventFilter(SimpleAttributeOperand[] selectClauses, ContentFilter whereClause) {
         super();
-        this._selectClauses = _selectClauses;
-        this._whereClause = _whereClause;
+        this.selectClauses = selectClauses;
+        this.whereClause = whereClause;
     }
 
     @Nullable
-    public SimpleAttributeOperand[] getSelectClauses() { return _selectClauses; }
+    public SimpleAttributeOperand[] getSelectClauses() { return selectClauses; }
 
-    public ContentFilter getWhereClause() { return _whereClause; }
+    public ContentFilter getWhereClause() { return whereClause; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,58 +61,38 @@ public class EventFilter extends MonitoringFilter {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SelectClauses", _selectClauses)
-            .add("WhereClause", _whereClause)
+            .add("SelectClauses", selectClauses)
+            .add("WhereClause", whereClause)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EventFilter> {
-        @Override
-        public EventFilter decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            SimpleAttributeOperand[] _selectClauses =
-                reader.readArray(
-                    () -> (SimpleAttributeOperand) context.decode(
-                        SimpleAttributeOperand.BinaryEncodingId, reader),
-                    SimpleAttributeOperand.class
-                );
-            ContentFilter _whereClause = (ContentFilter) context.decode(ContentFilter.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<EventFilter> {
 
-            return new EventFilter(_selectClauses, _whereClause);
+        @Override
+        public Class<EventFilter> getType() {
+            return EventFilter.class;
         }
 
         @Override
-        public void encode(SerializationContext context, EventFilter value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(
-                value._selectClauses,
-                e -> context.encode(SimpleAttributeOperand.BinaryEncodingId, e, writer)
-            );
-            context.encode(ContentFilter.BinaryEncodingId, value._whereClause, writer);
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<EventFilter> {
-        @Override
-        public EventFilter decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            SimpleAttributeOperand[] _selectClauses =
-                reader.readArray(
+        public EventFilter decode(UaDecoder decoder) throws UaSerializationException {
+            SimpleAttributeOperand[] selectClauses =
+                decoder.readBuiltinStructArray(
                     "SelectClauses",
-                    f -> (SimpleAttributeOperand) context.decode(
-                        SimpleAttributeOperand.XmlEncodingId, reader),
                     SimpleAttributeOperand.class
                 );
-            ContentFilter _whereClause = (ContentFilter) context.decode(ContentFilter.XmlEncodingId, reader);
+            ContentFilter whereClause = (ContentFilter) decoder.readBuiltinStruct("WhereClause", ContentFilter.class);
 
-            return new EventFilter(_selectClauses, _whereClause);
+            return new EventFilter(selectClauses, whereClause);
         }
 
         @Override
-        public void encode(SerializationContext context, EventFilter encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(
+        public void encode(EventFilter value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStructArray(
                 "SelectClauses",
-                encodable._selectClauses,
-                (f, e) -> context.encode(SimpleAttributeOperand.XmlEncodingId, e, writer)
+                value.selectClauses,
+                SimpleAttributeOperand.class
             );
-            context.encode(ContentFilter.XmlEncodingId, encodable._whereClause, writer);
+            encoder.writeBuiltinStruct("WhereClause", value.whereClause, ContentFilter.class);
         }
     }
 

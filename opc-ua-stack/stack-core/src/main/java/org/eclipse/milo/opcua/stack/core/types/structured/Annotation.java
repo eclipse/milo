@@ -16,46 +16,40 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("Annotation")
 public class Annotation implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.Annotation;
     public static final NodeId BinaryEncodingId = Identifiers.Annotation_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.Annotation_Encoding_DefaultXml;
 
-    protected final String _message;
-    protected final String _userName;
-    protected final DateTime _annotationTime;
+    protected final String message;
+    protected final String userName;
+    protected final DateTime annotationTime;
 
     public Annotation() {
-        this._message = null;
-        this._userName = null;
-        this._annotationTime = null;
+        this.message = null;
+        this.userName = null;
+        this.annotationTime = null;
     }
 
-    public Annotation(String _message, String _userName, DateTime _annotationTime) {
-        this._message = _message;
-        this._userName = _userName;
-        this._annotationTime = _annotationTime;
+    public Annotation(String message, String userName, DateTime annotationTime) {
+        this.message = message;
+        this.userName = userName;
+        this.annotationTime = annotationTime;
     }
 
-    public String getMessage() { return _message; }
+    public String getMessage() { return message; }
 
-    public String getUserName() { return _userName; }
+    public String getUserName() { return userName; }
 
-    public DateTime getAnnotationTime() { return _annotationTime; }
+    public DateTime getAnnotationTime() { return annotationTime; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,45 +63,33 @@ public class Annotation implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Message", _message)
-            .add("UserName", _userName)
-            .add("AnnotationTime", _annotationTime)
+            .add("Message", message)
+            .add("UserName", userName)
+            .add("AnnotationTime", annotationTime)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<Annotation> {
-        @Override
-        public Annotation decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _message = reader.readString();
-            String _userName = reader.readString();
-            DateTime _annotationTime = reader.readDateTime();
+    public static class Codec extends BuiltinDataTypeCodec<Annotation> {
 
-            return new Annotation(_message, _userName, _annotationTime);
+        @Override
+        public Class<Annotation> getType() {
+            return Annotation.class;
         }
 
         @Override
-        public void encode(SerializationContext context, Annotation value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._message);
-            writer.writeString(value._userName);
-            writer.writeDateTime(value._annotationTime);
-        }
-    }
+        public Annotation decode(UaDecoder decoder) throws UaSerializationException {
+            String message = decoder.readString("Message");
+            String userName = decoder.readString("UserName");
+            DateTime annotationTime = decoder.readDateTime("AnnotationTime");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<Annotation> {
-        @Override
-        public Annotation decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _message = reader.readString("Message");
-            String _userName = reader.readString("UserName");
-            DateTime _annotationTime = reader.readDateTime("AnnotationTime");
-
-            return new Annotation(_message, _userName, _annotationTime);
+            return new Annotation(message, userName, annotationTime);
         }
 
         @Override
-        public void encode(SerializationContext context, Annotation encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("Message", encodable._message);
-            writer.writeString("UserName", encodable._userName);
-            writer.writeDateTime("AnnotationTime", encodable._annotationTime);
+        public void encode(Annotation value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("Message", value.message);
+            encoder.writeString("UserName", value.userName);
+            encoder.writeDateTime("AnnotationTime", value.annotationTime);
         }
     }
 

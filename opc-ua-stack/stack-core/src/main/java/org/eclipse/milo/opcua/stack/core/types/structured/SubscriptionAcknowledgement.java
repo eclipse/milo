@@ -16,41 +16,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("SubscriptionAcknowledgement")
 public class SubscriptionAcknowledgement implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SubscriptionAcknowledgement;
     public static final NodeId BinaryEncodingId = Identifiers.SubscriptionAcknowledgement_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SubscriptionAcknowledgement_Encoding_DefaultXml;
 
-    protected final UInteger _subscriptionId;
-    protected final UInteger _sequenceNumber;
+    protected final UInteger subscriptionId;
+    protected final UInteger sequenceNumber;
 
     public SubscriptionAcknowledgement() {
-        this._subscriptionId = null;
-        this._sequenceNumber = null;
+        this.subscriptionId = null;
+        this.sequenceNumber = null;
     }
 
-    public SubscriptionAcknowledgement(UInteger _subscriptionId, UInteger _sequenceNumber) {
-        this._subscriptionId = _subscriptionId;
-        this._sequenceNumber = _sequenceNumber;
+    public SubscriptionAcknowledgement(UInteger subscriptionId, UInteger sequenceNumber) {
+        this.subscriptionId = subscriptionId;
+        this.sequenceNumber = sequenceNumber;
     }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
-    public UInteger getSequenceNumber() { return _sequenceNumber; }
+    public UInteger getSequenceNumber() { return sequenceNumber; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,40 +58,30 @@ public class SubscriptionAcknowledgement implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SubscriptionId", _subscriptionId)
-            .add("SequenceNumber", _sequenceNumber)
+            .add("SubscriptionId", subscriptionId)
+            .add("SequenceNumber", sequenceNumber)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SubscriptionAcknowledgement> {
-        @Override
-        public SubscriptionAcknowledgement decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _subscriptionId = reader.readUInt32();
-            UInteger _sequenceNumber = reader.readUInt32();
+    public static class Codec extends BuiltinDataTypeCodec<SubscriptionAcknowledgement> {
 
-            return new SubscriptionAcknowledgement(_subscriptionId, _sequenceNumber);
+        @Override
+        public Class<SubscriptionAcknowledgement> getType() {
+            return SubscriptionAcknowledgement.class;
         }
 
         @Override
-        public void encode(SerializationContext context, SubscriptionAcknowledgement value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._subscriptionId);
-            writer.writeUInt32(value._sequenceNumber);
-        }
-    }
+        public SubscriptionAcknowledgement decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<SubscriptionAcknowledgement> {
-        @Override
-        public SubscriptionAcknowledgement decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _subscriptionId = reader.readUInt32("SubscriptionId");
-            UInteger _sequenceNumber = reader.readUInt32("SequenceNumber");
-
-            return new SubscriptionAcknowledgement(_subscriptionId, _sequenceNumber);
+            return new SubscriptionAcknowledgement(subscriptionId, sequenceNumber);
         }
 
         @Override
-        public void encode(SerializationContext context, SubscriptionAcknowledgement encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("SubscriptionId", encodable._subscriptionId);
-            writer.writeUInt32("SequenceNumber", encodable._sequenceNumber);
+        public void encode(SubscriptionAcknowledgement value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeUInt32("SequenceNumber", value.sequenceNumber);
         }
     }
 

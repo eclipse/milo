@@ -18,47 +18,41 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("FindServersOnNetworkResponse")
 public class FindServersOnNetworkResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.FindServersOnNetworkResponse;
     public static final NodeId BinaryEncodingId = Identifiers.FindServersOnNetworkResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.FindServersOnNetworkResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final DateTime _lastCounterResetTime;
-    protected final ServerOnNetwork[] _servers;
+    protected final ResponseHeader responseHeader;
+    protected final DateTime lastCounterResetTime;
+    protected final ServerOnNetwork[] servers;
 
     public FindServersOnNetworkResponse() {
-        this._responseHeader = null;
-        this._lastCounterResetTime = null;
-        this._servers = null;
+        this.responseHeader = null;
+        this.lastCounterResetTime = null;
+        this.servers = null;
     }
 
-    public FindServersOnNetworkResponse(ResponseHeader _responseHeader, DateTime _lastCounterResetTime, ServerOnNetwork[] _servers) {
-        this._responseHeader = _responseHeader;
-        this._lastCounterResetTime = _lastCounterResetTime;
-        this._servers = _servers;
+    public FindServersOnNetworkResponse(ResponseHeader responseHeader, DateTime lastCounterResetTime, ServerOnNetwork[] servers) {
+        this.responseHeader = responseHeader;
+        this.lastCounterResetTime = lastCounterResetTime;
+        this.servers = servers;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
-    public DateTime getLastCounterResetTime() { return _lastCounterResetTime; }
+    public DateTime getLastCounterResetTime() { return lastCounterResetTime; }
 
     @Nullable
-    public ServerOnNetwork[] getServers() { return _servers; }
+    public ServerOnNetwork[] getServers() { return servers; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -72,62 +66,40 @@ public class FindServersOnNetworkResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("LastCounterResetTime", _lastCounterResetTime)
-            .add("Servers", _servers)
+            .add("ResponseHeader", responseHeader)
+            .add("LastCounterResetTime", lastCounterResetTime)
+            .add("Servers", servers)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<FindServersOnNetworkResponse> {
-        @Override
-        public FindServersOnNetworkResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            DateTime _lastCounterResetTime = reader.readDateTime();
-            ServerOnNetwork[] _servers =
-                reader.readArray(
-                    () -> (ServerOnNetwork) context.decode(
-                        ServerOnNetwork.BinaryEncodingId, reader),
-                    ServerOnNetwork.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<FindServersOnNetworkResponse> {
 
-            return new FindServersOnNetworkResponse(_responseHeader, _lastCounterResetTime, _servers);
+        @Override
+        public Class<FindServersOnNetworkResponse> getType() {
+            return FindServersOnNetworkResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, FindServersOnNetworkResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeDateTime(value._lastCounterResetTime);
-            writer.writeArray(
-                value._servers,
-                e -> context.encode(ServerOnNetwork.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<FindServersOnNetworkResponse> {
-        @Override
-        public FindServersOnNetworkResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            DateTime _lastCounterResetTime = reader.readDateTime("LastCounterResetTime");
-            ServerOnNetwork[] _servers =
-                reader.readArray(
+        public FindServersOnNetworkResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            DateTime lastCounterResetTime = decoder.readDateTime("LastCounterResetTime");
+            ServerOnNetwork[] servers =
+                decoder.readBuiltinStructArray(
                     "Servers",
-                    f -> (ServerOnNetwork) context.decode(
-                        ServerOnNetwork.XmlEncodingId, reader),
                     ServerOnNetwork.class
                 );
 
-            return new FindServersOnNetworkResponse(_responseHeader, _lastCounterResetTime, _servers);
+            return new FindServersOnNetworkResponse(responseHeader, lastCounterResetTime, servers);
         }
 
         @Override
-        public void encode(SerializationContext context, FindServersOnNetworkResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeDateTime("LastCounterResetTime", encodable._lastCounterResetTime);
-            writer.writeArray(
+        public void encode(FindServersOnNetworkResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeDateTime("LastCounterResetTime", value.lastCounterResetTime);
+            encoder.writeBuiltinStructArray(
                 "Servers",
-                encodable._servers,
-                (f, e) -> context.encode(ServerOnNetwork.XmlEncodingId, e, writer)
+                value.servers,
+                ServerOnNetwork.class
             );
         }
     }

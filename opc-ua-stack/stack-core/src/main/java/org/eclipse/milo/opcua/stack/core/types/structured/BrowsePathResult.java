@@ -18,42 +18,36 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("BrowsePathResult")
 public class BrowsePathResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.BrowsePathResult;
     public static final NodeId BinaryEncodingId = Identifiers.BrowsePathResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BrowsePathResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final BrowsePathTarget[] _targets;
+    protected final StatusCode statusCode;
+    protected final BrowsePathTarget[] targets;
 
     public BrowsePathResult() {
-        this._statusCode = null;
-        this._targets = null;
+        this.statusCode = null;
+        this.targets = null;
     }
 
-    public BrowsePathResult(StatusCode _statusCode, BrowsePathTarget[] _targets) {
-        this._statusCode = _statusCode;
-        this._targets = _targets;
+    public BrowsePathResult(StatusCode statusCode, BrowsePathTarget[] targets) {
+        this.statusCode = statusCode;
+        this.targets = targets;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
     @Nullable
-    public BrowsePathTarget[] getTargets() { return _targets; }
+    public BrowsePathTarget[] getTargets() { return targets; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,57 +61,37 @@ public class BrowsePathResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("Targets", _targets)
+            .add("StatusCode", statusCode)
+            .add("Targets", targets)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<BrowsePathResult> {
-        @Override
-        public BrowsePathResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode();
-            BrowsePathTarget[] _targets =
-                reader.readArray(
-                    () -> (BrowsePathTarget) context.decode(
-                        BrowsePathTarget.BinaryEncodingId, reader),
-                    BrowsePathTarget.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<BrowsePathResult> {
 
-            return new BrowsePathResult(_statusCode, _targets);
+        @Override
+        public Class<BrowsePathResult> getType() {
+            return BrowsePathResult.class;
         }
 
         @Override
-        public void encode(SerializationContext context, BrowsePathResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(value._statusCode);
-            writer.writeArray(
-                value._targets,
-                e -> context.encode(BrowsePathTarget.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<BrowsePathResult> {
-        @Override
-        public BrowsePathResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode("StatusCode");
-            BrowsePathTarget[] _targets =
-                reader.readArray(
+        public BrowsePathResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            BrowsePathTarget[] targets =
+                decoder.readBuiltinStructArray(
                     "Targets",
-                    f -> (BrowsePathTarget) context.decode(
-                        BrowsePathTarget.XmlEncodingId, reader),
                     BrowsePathTarget.class
                 );
 
-            return new BrowsePathResult(_statusCode, _targets);
+            return new BrowsePathResult(statusCode, targets);
         }
 
         @Override
-        public void encode(SerializationContext context, BrowsePathResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode("StatusCode", encodable._statusCode);
-            writer.writeArray(
+        public void encode(BrowsePathResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeBuiltinStructArray(
                 "Targets",
-                encodable._targets,
-                (f, e) -> context.encode(BrowsePathTarget.XmlEncodingId, e, writer)
+                value.targets,
+                BrowsePathTarget.class
             );
         }
     }

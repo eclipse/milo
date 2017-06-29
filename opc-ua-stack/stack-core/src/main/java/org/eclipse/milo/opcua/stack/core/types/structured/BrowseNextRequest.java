@@ -18,47 +18,41 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("BrowseNextRequest")
 public class BrowseNextRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.BrowseNextRequest;
     public static final NodeId BinaryEncodingId = Identifiers.BrowseNextRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BrowseNextRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final Boolean _releaseContinuationPoints;
-    protected final ByteString[] _continuationPoints;
+    protected final RequestHeader requestHeader;
+    protected final Boolean releaseContinuationPoints;
+    protected final ByteString[] continuationPoints;
 
     public BrowseNextRequest() {
-        this._requestHeader = null;
-        this._releaseContinuationPoints = null;
-        this._continuationPoints = null;
+        this.requestHeader = null;
+        this.releaseContinuationPoints = null;
+        this.continuationPoints = null;
     }
 
-    public BrowseNextRequest(RequestHeader _requestHeader, Boolean _releaseContinuationPoints, ByteString[] _continuationPoints) {
-        this._requestHeader = _requestHeader;
-        this._releaseContinuationPoints = _releaseContinuationPoints;
-        this._continuationPoints = _continuationPoints;
+    public BrowseNextRequest(RequestHeader requestHeader, Boolean releaseContinuationPoints, ByteString[] continuationPoints) {
+        this.requestHeader = requestHeader;
+        this.releaseContinuationPoints = releaseContinuationPoints;
+        this.continuationPoints = continuationPoints;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public Boolean getReleaseContinuationPoints() { return _releaseContinuationPoints; }
+    public Boolean getReleaseContinuationPoints() { return releaseContinuationPoints; }
 
     @Nullable
-    public ByteString[] getContinuationPoints() { return _continuationPoints; }
+    public ByteString[] getContinuationPoints() { return continuationPoints; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -72,45 +66,33 @@ public class BrowseNextRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("ReleaseContinuationPoints", _releaseContinuationPoints)
-            .add("ContinuationPoints", _continuationPoints)
+            .add("RequestHeader", requestHeader)
+            .add("ReleaseContinuationPoints", releaseContinuationPoints)
+            .add("ContinuationPoints", continuationPoints)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<BrowseNextRequest> {
-        @Override
-        public BrowseNextRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            Boolean _releaseContinuationPoints = reader.readBoolean();
-            ByteString[] _continuationPoints = reader.readArray(reader::readByteString, ByteString.class);
+    public static class Codec extends BuiltinDataTypeCodec<BrowseNextRequest> {
 
-            return new BrowseNextRequest(_requestHeader, _releaseContinuationPoints, _continuationPoints);
+        @Override
+        public Class<BrowseNextRequest> getType() {
+            return BrowseNextRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseNextRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeBoolean(value._releaseContinuationPoints);
-            writer.writeArray(value._continuationPoints, writer::writeByteString);
-        }
-    }
+        public BrowseNextRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            Boolean releaseContinuationPoints = decoder.readBoolean("ReleaseContinuationPoints");
+            ByteString[] continuationPoints = decoder.readArray("ContinuationPoints", decoder::readByteString, ByteString.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<BrowseNextRequest> {
-        @Override
-        public BrowseNextRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            Boolean _releaseContinuationPoints = reader.readBoolean("ReleaseContinuationPoints");
-            ByteString[] _continuationPoints = reader.readArray("ContinuationPoints", reader::readByteString, ByteString.class);
-
-            return new BrowseNextRequest(_requestHeader, _releaseContinuationPoints, _continuationPoints);
+            return new BrowseNextRequest(requestHeader, releaseContinuationPoints, continuationPoints);
         }
 
         @Override
-        public void encode(SerializationContext context, BrowseNextRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeBoolean("ReleaseContinuationPoints", encodable._releaseContinuationPoints);
-            writer.writeArray("ContinuationPoints", encodable._continuationPoints, writer::writeByteString);
+        public void encode(BrowseNextRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBoolean("ReleaseContinuationPoints", value.releaseContinuationPoints);
+            encoder.writeArray("ContinuationPoints", value.continuationPoints, encoder::writeByteString);
         }
     }
 

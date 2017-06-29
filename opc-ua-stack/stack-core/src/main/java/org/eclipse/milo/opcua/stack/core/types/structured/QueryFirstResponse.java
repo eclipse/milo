@@ -18,65 +18,59 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("QueryFirstResponse")
 public class QueryFirstResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.QueryFirstResponse;
     public static final NodeId BinaryEncodingId = Identifiers.QueryFirstResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.QueryFirstResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final QueryDataSet[] _queryDataSets;
-    protected final ByteString _continuationPoint;
-    protected final ParsingResult[] _parsingResults;
-    protected final DiagnosticInfo[] _diagnosticInfos;
-    protected final ContentFilterResult _filterResult;
+    protected final ResponseHeader responseHeader;
+    protected final QueryDataSet[] queryDataSets;
+    protected final ByteString continuationPoint;
+    protected final ParsingResult[] parsingResults;
+    protected final DiagnosticInfo[] diagnosticInfos;
+    protected final ContentFilterResult filterResult;
 
     public QueryFirstResponse() {
-        this._responseHeader = null;
-        this._queryDataSets = null;
-        this._continuationPoint = null;
-        this._parsingResults = null;
-        this._diagnosticInfos = null;
-        this._filterResult = null;
+        this.responseHeader = null;
+        this.queryDataSets = null;
+        this.continuationPoint = null;
+        this.parsingResults = null;
+        this.diagnosticInfos = null;
+        this.filterResult = null;
     }
 
-    public QueryFirstResponse(ResponseHeader _responseHeader, QueryDataSet[] _queryDataSets, ByteString _continuationPoint, ParsingResult[] _parsingResults, DiagnosticInfo[] _diagnosticInfos, ContentFilterResult _filterResult) {
-        this._responseHeader = _responseHeader;
-        this._queryDataSets = _queryDataSets;
-        this._continuationPoint = _continuationPoint;
-        this._parsingResults = _parsingResults;
-        this._diagnosticInfos = _diagnosticInfos;
-        this._filterResult = _filterResult;
+    public QueryFirstResponse(ResponseHeader responseHeader, QueryDataSet[] queryDataSets, ByteString continuationPoint, ParsingResult[] parsingResults, DiagnosticInfo[] diagnosticInfos, ContentFilterResult filterResult) {
+        this.responseHeader = responseHeader;
+        this.queryDataSets = queryDataSets;
+        this.continuationPoint = continuationPoint;
+        this.parsingResults = parsingResults;
+        this.diagnosticInfos = diagnosticInfos;
+        this.filterResult = filterResult;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public QueryDataSet[] getQueryDataSets() { return _queryDataSets; }
+    public QueryDataSet[] getQueryDataSets() { return queryDataSets; }
 
-    public ByteString getContinuationPoint() { return _continuationPoint; }
-
-    @Nullable
-    public ParsingResult[] getParsingResults() { return _parsingResults; }
+    public ByteString getContinuationPoint() { return continuationPoint; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public ParsingResult[] getParsingResults() { return parsingResults; }
 
-    public ContentFilterResult getFilterResult() { return _filterResult; }
+    @Nullable
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
+
+    public ContentFilterResult getFilterResult() { return filterResult; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -90,96 +84,58 @@ public class QueryFirstResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("QueryDataSets", _queryDataSets)
-            .add("ContinuationPoint", _continuationPoint)
-            .add("ParsingResults", _parsingResults)
-            .add("DiagnosticInfos", _diagnosticInfos)
-            .add("FilterResult", _filterResult)
+            .add("ResponseHeader", responseHeader)
+            .add("QueryDataSets", queryDataSets)
+            .add("ContinuationPoint", continuationPoint)
+            .add("ParsingResults", parsingResults)
+            .add("DiagnosticInfos", diagnosticInfos)
+            .add("FilterResult", filterResult)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<QueryFirstResponse> {
-        @Override
-        public QueryFirstResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            QueryDataSet[] _queryDataSets =
-                reader.readArray(
-                    () -> (QueryDataSet) context.decode(
-                        QueryDataSet.BinaryEncodingId, reader),
-                    QueryDataSet.class
-                );
-            ByteString _continuationPoint = reader.readByteString();
-            ParsingResult[] _parsingResults =
-                reader.readArray(
-                    () -> (ParsingResult) context.decode(
-                        ParsingResult.BinaryEncodingId, reader),
-                    ParsingResult.class
-                );
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
-            ContentFilterResult _filterResult = (ContentFilterResult) context.decode(ContentFilterResult.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<QueryFirstResponse> {
 
-            return new QueryFirstResponse(_responseHeader, _queryDataSets, _continuationPoint, _parsingResults, _diagnosticInfos, _filterResult);
+        @Override
+        public Class<QueryFirstResponse> getType() {
+            return QueryFirstResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, QueryFirstResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeArray(
-                value._queryDataSets,
-                e -> context.encode(QueryDataSet.BinaryEncodingId, e, writer)
-            );
-            writer.writeByteString(value._continuationPoint);
-            writer.writeArray(
-                value._parsingResults,
-                e -> context.encode(ParsingResult.BinaryEncodingId, e, writer)
-            );
-            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
-            context.encode(ContentFilterResult.BinaryEncodingId, value._filterResult, writer);
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<QueryFirstResponse> {
-        @Override
-        public QueryFirstResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            QueryDataSet[] _queryDataSets =
-                reader.readArray(
+        public QueryFirstResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            QueryDataSet[] queryDataSets =
+                decoder.readBuiltinStructArray(
                     "QueryDataSets",
-                    f -> (QueryDataSet) context.decode(
-                        QueryDataSet.XmlEncodingId, reader),
                     QueryDataSet.class
                 );
-            ByteString _continuationPoint = reader.readByteString("ContinuationPoint");
-            ParsingResult[] _parsingResults =
-                reader.readArray(
+            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
+            ParsingResult[] parsingResults =
+                decoder.readBuiltinStructArray(
                     "ParsingResults",
-                    f -> (ParsingResult) context.decode(
-                        ParsingResult.XmlEncodingId, reader),
                     ParsingResult.class
                 );
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-            ContentFilterResult _filterResult = (ContentFilterResult) context.decode(ContentFilterResult.XmlEncodingId, reader);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
+            ContentFilterResult filterResult = (ContentFilterResult) decoder.readBuiltinStruct("FilterResult", ContentFilterResult.class);
 
-            return new QueryFirstResponse(_responseHeader, _queryDataSets, _continuationPoint, _parsingResults, _diagnosticInfos, _filterResult);
+            return new QueryFirstResponse(responseHeader, queryDataSets, continuationPoint, parsingResults, diagnosticInfos, filterResult);
         }
 
         @Override
-        public void encode(SerializationContext context, QueryFirstResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeArray(
+        public void encode(QueryFirstResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStructArray(
                 "QueryDataSets",
-                encodable._queryDataSets,
-                (f, e) -> context.encode(QueryDataSet.XmlEncodingId, e, writer)
+                value.queryDataSets,
+                QueryDataSet.class
             );
-            writer.writeByteString("ContinuationPoint", encodable._continuationPoint);
-            writer.writeArray(
+            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
+            encoder.writeBuiltinStructArray(
                 "ParsingResults",
-                encodable._parsingResults,
-                (f, e) -> context.encode(ParsingResult.XmlEncodingId, e, writer)
+                value.parsingResults,
+                ParsingResult.class
             );
-            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
-            context.encode(ContentFilterResult.XmlEncodingId, encodable._filterResult, writer);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+            encoder.writeBuiltinStruct("FilterResult", value.filterResult, ContentFilterResult.class);
         }
     }
 

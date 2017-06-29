@@ -18,52 +18,46 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("FindServersOnNetworkRequest")
 public class FindServersOnNetworkRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.FindServersOnNetworkRequest;
     public static final NodeId BinaryEncodingId = Identifiers.FindServersOnNetworkRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.FindServersOnNetworkRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger _startingRecordId;
-    protected final UInteger _maxRecordsToReturn;
-    protected final String[] _serverCapabilityFilter;
+    protected final RequestHeader requestHeader;
+    protected final UInteger startingRecordId;
+    protected final UInteger maxRecordsToReturn;
+    protected final String[] serverCapabilityFilter;
 
     public FindServersOnNetworkRequest() {
-        this._requestHeader = null;
-        this._startingRecordId = null;
-        this._maxRecordsToReturn = null;
-        this._serverCapabilityFilter = null;
+        this.requestHeader = null;
+        this.startingRecordId = null;
+        this.maxRecordsToReturn = null;
+        this.serverCapabilityFilter = null;
     }
 
-    public FindServersOnNetworkRequest(RequestHeader _requestHeader, UInteger _startingRecordId, UInteger _maxRecordsToReturn, String[] _serverCapabilityFilter) {
-        this._requestHeader = _requestHeader;
-        this._startingRecordId = _startingRecordId;
-        this._maxRecordsToReturn = _maxRecordsToReturn;
-        this._serverCapabilityFilter = _serverCapabilityFilter;
+    public FindServersOnNetworkRequest(RequestHeader requestHeader, UInteger startingRecordId, UInteger maxRecordsToReturn, String[] serverCapabilityFilter) {
+        this.requestHeader = requestHeader;
+        this.startingRecordId = startingRecordId;
+        this.maxRecordsToReturn = maxRecordsToReturn;
+        this.serverCapabilityFilter = serverCapabilityFilter;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public UInteger getStartingRecordId() { return _startingRecordId; }
+    public UInteger getStartingRecordId() { return startingRecordId; }
 
-    public UInteger getMaxRecordsToReturn() { return _maxRecordsToReturn; }
+    public UInteger getMaxRecordsToReturn() { return maxRecordsToReturn; }
 
     @Nullable
-    public String[] getServerCapabilityFilter() { return _serverCapabilityFilter; }
+    public String[] getServerCapabilityFilter() { return serverCapabilityFilter; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -77,50 +71,36 @@ public class FindServersOnNetworkRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("StartingRecordId", _startingRecordId)
-            .add("MaxRecordsToReturn", _maxRecordsToReturn)
-            .add("ServerCapabilityFilter", _serverCapabilityFilter)
+            .add("RequestHeader", requestHeader)
+            .add("StartingRecordId", startingRecordId)
+            .add("MaxRecordsToReturn", maxRecordsToReturn)
+            .add("ServerCapabilityFilter", serverCapabilityFilter)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<FindServersOnNetworkRequest> {
-        @Override
-        public FindServersOnNetworkRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            UInteger _startingRecordId = reader.readUInt32();
-            UInteger _maxRecordsToReturn = reader.readUInt32();
-            String[] _serverCapabilityFilter = reader.readArray(reader::readString, String.class);
+    public static class Codec extends BuiltinDataTypeCodec<FindServersOnNetworkRequest> {
 
-            return new FindServersOnNetworkRequest(_requestHeader, _startingRecordId, _maxRecordsToReturn, _serverCapabilityFilter);
+        @Override
+        public Class<FindServersOnNetworkRequest> getType() {
+            return FindServersOnNetworkRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, FindServersOnNetworkRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeUInt32(value._startingRecordId);
-            writer.writeUInt32(value._maxRecordsToReturn);
-            writer.writeArray(value._serverCapabilityFilter, writer::writeString);
-        }
-    }
+        public FindServersOnNetworkRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger startingRecordId = decoder.readUInt32("StartingRecordId");
+            UInteger maxRecordsToReturn = decoder.readUInt32("MaxRecordsToReturn");
+            String[] serverCapabilityFilter = decoder.readArray("ServerCapabilityFilter", decoder::readString, String.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<FindServersOnNetworkRequest> {
-        @Override
-        public FindServersOnNetworkRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            UInteger _startingRecordId = reader.readUInt32("StartingRecordId");
-            UInteger _maxRecordsToReturn = reader.readUInt32("MaxRecordsToReturn");
-            String[] _serverCapabilityFilter = reader.readArray("ServerCapabilityFilter", reader::readString, String.class);
-
-            return new FindServersOnNetworkRequest(_requestHeader, _startingRecordId, _maxRecordsToReturn, _serverCapabilityFilter);
+            return new FindServersOnNetworkRequest(requestHeader, startingRecordId, maxRecordsToReturn, serverCapabilityFilter);
         }
 
         @Override
-        public void encode(SerializationContext context, FindServersOnNetworkRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeUInt32("StartingRecordId", encodable._startingRecordId);
-            writer.writeUInt32("MaxRecordsToReturn", encodable._maxRecordsToReturn);
-            writer.writeArray("ServerCapabilityFilter", encodable._serverCapabilityFilter, writer::writeString);
+        public void encode(FindServersOnNetworkRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeUInt32("StartingRecordId", value.startingRecordId);
+            encoder.writeUInt32("MaxRecordsToReturn", value.maxRecordsToReturn);
+            encoder.writeArray("ServerCapabilityFilter", value.serverCapabilityFilter, encoder::writeString);
         }
     }
 

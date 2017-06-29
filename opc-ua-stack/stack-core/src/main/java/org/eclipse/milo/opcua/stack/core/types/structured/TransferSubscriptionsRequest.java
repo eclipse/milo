@@ -18,47 +18,41 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("TransferSubscriptionsRequest")
 public class TransferSubscriptionsRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.TransferSubscriptionsRequest;
     public static final NodeId BinaryEncodingId = Identifiers.TransferSubscriptionsRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.TransferSubscriptionsRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger[] _subscriptionIds;
-    protected final Boolean _sendInitialValues;
+    protected final RequestHeader requestHeader;
+    protected final UInteger[] subscriptionIds;
+    protected final Boolean sendInitialValues;
 
     public TransferSubscriptionsRequest() {
-        this._requestHeader = null;
-        this._subscriptionIds = null;
-        this._sendInitialValues = null;
+        this.requestHeader = null;
+        this.subscriptionIds = null;
+        this.sendInitialValues = null;
     }
 
-    public TransferSubscriptionsRequest(RequestHeader _requestHeader, UInteger[] _subscriptionIds, Boolean _sendInitialValues) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionIds = _subscriptionIds;
-        this._sendInitialValues = _sendInitialValues;
+    public TransferSubscriptionsRequest(RequestHeader requestHeader, UInteger[] subscriptionIds, Boolean sendInitialValues) {
+        this.requestHeader = requestHeader;
+        this.subscriptionIds = subscriptionIds;
+        this.sendInitialValues = sendInitialValues;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public UInteger[] getSubscriptionIds() { return _subscriptionIds; }
+    public UInteger[] getSubscriptionIds() { return subscriptionIds; }
 
-    public Boolean getSendInitialValues() { return _sendInitialValues; }
+    public Boolean getSendInitialValues() { return sendInitialValues; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -72,45 +66,33 @@ public class TransferSubscriptionsRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionIds", _subscriptionIds)
-            .add("SendInitialValues", _sendInitialValues)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionIds", subscriptionIds)
+            .add("SendInitialValues", sendInitialValues)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<TransferSubscriptionsRequest> {
-        @Override
-        public TransferSubscriptionsRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            UInteger[] _subscriptionIds = reader.readArray(reader::readUInt32, UInteger.class);
-            Boolean _sendInitialValues = reader.readBoolean();
+    public static class Codec extends BuiltinDataTypeCodec<TransferSubscriptionsRequest> {
 
-            return new TransferSubscriptionsRequest(_requestHeader, _subscriptionIds, _sendInitialValues);
+        @Override
+        public Class<TransferSubscriptionsRequest> getType() {
+            return TransferSubscriptionsRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, TransferSubscriptionsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(value._subscriptionIds, writer::writeUInt32);
-            writer.writeBoolean(value._sendInitialValues);
-        }
-    }
+        public TransferSubscriptionsRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger[] subscriptionIds = decoder.readArray("SubscriptionIds", decoder::readUInt32, UInteger.class);
+            Boolean sendInitialValues = decoder.readBoolean("SendInitialValues");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<TransferSubscriptionsRequest> {
-        @Override
-        public TransferSubscriptionsRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            UInteger[] _subscriptionIds = reader.readArray("SubscriptionIds", reader::readUInt32, UInteger.class);
-            Boolean _sendInitialValues = reader.readBoolean("SendInitialValues");
-
-            return new TransferSubscriptionsRequest(_requestHeader, _subscriptionIds, _sendInitialValues);
+            return new TransferSubscriptionsRequest(requestHeader, subscriptionIds, sendInitialValues);
         }
 
         @Override
-        public void encode(SerializationContext context, TransferSubscriptionsRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray("SubscriptionIds", encodable._subscriptionIds, writer::writeUInt32);
-            writer.writeBoolean("SendInitialValues", encodable._sendInitialValues);
+        public void encode(TransferSubscriptionsRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeArray("SubscriptionIds", value.subscriptionIds, encoder::writeUInt32);
+            encoder.writeBoolean("SendInitialValues", value.sendInitialValues);
         }
     }
 

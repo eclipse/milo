@@ -35,7 +35,6 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
@@ -88,15 +87,13 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
 
     @Override
     protected void encode(ChannelHandlerContext ctx, ServiceResponse message, ByteBuf out) throws Exception {
-        serializationQueue.encode((context, writer, chunkEncoder) -> {
+        serializationQueue.encode((writer, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.buffer();
 
             try {
                 writer.setBuffer(messageBuffer);
 
-                NodeId encodingId = message.getResponse().getBinaryEncodingId();
-                writer.writeNodeId(encodingId);
-                context.encode(encodingId, message.getResponse(), writer);
+                writer.writeMessage(null, message.getResponse());
 
                 final List<ByteBuf> chunks = chunkEncoder.encodeSymmetric(
                     secureChannel,
@@ -173,7 +170,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
                 final List<ByteBuf> buffersToDecode = chunkBuffers;
                 chunkBuffers = new ArrayList<>(maxChunkCount);
 
-                serializationQueue.decode((context, reader, chunkDecoder) -> {
+                serializationQueue.decode((reader, chunkDecoder) -> {
                     try {
                         validateChunkHeaders(buffersToDecode);
 
@@ -181,8 +178,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
 
                         reader.setBuffer(messageBuffer);
 
-                        NodeId encodingId = reader.readNodeId();
-                        UaRequestMessage request = (UaRequestMessage) context.decode(encodingId, reader);
+                        UaRequestMessage request = (UaRequestMessage) reader.readMessage(null);
 
                         ServiceRequest<UaRequestMessage, UaResponseMessage> serviceRequest = new ServiceRequest<>(
                             request,

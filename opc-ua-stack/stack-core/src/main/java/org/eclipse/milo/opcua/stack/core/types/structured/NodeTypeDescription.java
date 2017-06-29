@@ -18,47 +18,41 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("NodeTypeDescription")
 public class NodeTypeDescription implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.NodeTypeDescription;
     public static final NodeId BinaryEncodingId = Identifiers.NodeTypeDescription_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.NodeTypeDescription_Encoding_DefaultXml;
 
-    protected final ExpandedNodeId _typeDefinitionNode;
-    protected final Boolean _includeSubTypes;
-    protected final QueryDataDescription[] _dataToReturn;
+    protected final ExpandedNodeId typeDefinitionNode;
+    protected final Boolean includeSubTypes;
+    protected final QueryDataDescription[] dataToReturn;
 
     public NodeTypeDescription() {
-        this._typeDefinitionNode = null;
-        this._includeSubTypes = null;
-        this._dataToReturn = null;
+        this.typeDefinitionNode = null;
+        this.includeSubTypes = null;
+        this.dataToReturn = null;
     }
 
-    public NodeTypeDescription(ExpandedNodeId _typeDefinitionNode, Boolean _includeSubTypes, QueryDataDescription[] _dataToReturn) {
-        this._typeDefinitionNode = _typeDefinitionNode;
-        this._includeSubTypes = _includeSubTypes;
-        this._dataToReturn = _dataToReturn;
+    public NodeTypeDescription(ExpandedNodeId typeDefinitionNode, Boolean includeSubTypes, QueryDataDescription[] dataToReturn) {
+        this.typeDefinitionNode = typeDefinitionNode;
+        this.includeSubTypes = includeSubTypes;
+        this.dataToReturn = dataToReturn;
     }
 
-    public ExpandedNodeId getTypeDefinitionNode() { return _typeDefinitionNode; }
+    public ExpandedNodeId getTypeDefinitionNode() { return typeDefinitionNode; }
 
-    public Boolean getIncludeSubTypes() { return _includeSubTypes; }
+    public Boolean getIncludeSubTypes() { return includeSubTypes; }
 
     @Nullable
-    public QueryDataDescription[] getDataToReturn() { return _dataToReturn; }
+    public QueryDataDescription[] getDataToReturn() { return dataToReturn; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -72,62 +66,40 @@ public class NodeTypeDescription implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("TypeDefinitionNode", _typeDefinitionNode)
-            .add("IncludeSubTypes", _includeSubTypes)
-            .add("DataToReturn", _dataToReturn)
+            .add("TypeDefinitionNode", typeDefinitionNode)
+            .add("IncludeSubTypes", includeSubTypes)
+            .add("DataToReturn", dataToReturn)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<NodeTypeDescription> {
-        @Override
-        public NodeTypeDescription decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ExpandedNodeId _typeDefinitionNode = reader.readExpandedNodeId();
-            Boolean _includeSubTypes = reader.readBoolean();
-            QueryDataDescription[] _dataToReturn =
-                reader.readArray(
-                    () -> (QueryDataDescription) context.decode(
-                        QueryDataDescription.BinaryEncodingId, reader),
-                    QueryDataDescription.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<NodeTypeDescription> {
 
-            return new NodeTypeDescription(_typeDefinitionNode, _includeSubTypes, _dataToReturn);
+        @Override
+        public Class<NodeTypeDescription> getType() {
+            return NodeTypeDescription.class;
         }
 
         @Override
-        public void encode(SerializationContext context, NodeTypeDescription value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId(value._typeDefinitionNode);
-            writer.writeBoolean(value._includeSubTypes);
-            writer.writeArray(
-                value._dataToReturn,
-                e -> context.encode(QueryDataDescription.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<NodeTypeDescription> {
-        @Override
-        public NodeTypeDescription decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ExpandedNodeId _typeDefinitionNode = reader.readExpandedNodeId("TypeDefinitionNode");
-            Boolean _includeSubTypes = reader.readBoolean("IncludeSubTypes");
-            QueryDataDescription[] _dataToReturn =
-                reader.readArray(
+        public NodeTypeDescription decode(UaDecoder decoder) throws UaSerializationException {
+            ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
+            Boolean includeSubTypes = decoder.readBoolean("IncludeSubTypes");
+            QueryDataDescription[] dataToReturn =
+                decoder.readBuiltinStructArray(
                     "DataToReturn",
-                    f -> (QueryDataDescription) context.decode(
-                        QueryDataDescription.XmlEncodingId, reader),
                     QueryDataDescription.class
                 );
 
-            return new NodeTypeDescription(_typeDefinitionNode, _includeSubTypes, _dataToReturn);
+            return new NodeTypeDescription(typeDefinitionNode, includeSubTypes, dataToReturn);
         }
 
         @Override
-        public void encode(SerializationContext context, NodeTypeDescription encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeExpandedNodeId("TypeDefinitionNode", encodable._typeDefinitionNode);
-            writer.writeBoolean("IncludeSubTypes", encodable._includeSubTypes);
-            writer.writeArray(
+        public void encode(NodeTypeDescription value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeExpandedNodeId("TypeDefinitionNode", value.typeDefinitionNode);
+            encoder.writeBoolean("IncludeSubTypes", value.includeSubTypes);
+            encoder.writeBuiltinStructArray(
                 "DataToReturn",
-                encodable._dataToReturn,
-                (f, e) -> context.encode(QueryDataDescription.XmlEncodingId, e, writer)
+                value.dataToReturn,
+                QueryDataDescription.class
             );
         }
     }

@@ -16,41 +16,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("MonitoredItemModifyRequest")
 public class MonitoredItemModifyRequest implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.MonitoredItemModifyRequest;
     public static final NodeId BinaryEncodingId = Identifiers.MonitoredItemModifyRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.MonitoredItemModifyRequest_Encoding_DefaultXml;
 
-    protected final UInteger _monitoredItemId;
-    protected final MonitoringParameters _requestedParameters;
+    protected final UInteger monitoredItemId;
+    protected final MonitoringParameters requestedParameters;
 
     public MonitoredItemModifyRequest() {
-        this._monitoredItemId = null;
-        this._requestedParameters = null;
+        this.monitoredItemId = null;
+        this.requestedParameters = null;
     }
 
-    public MonitoredItemModifyRequest(UInteger _monitoredItemId, MonitoringParameters _requestedParameters) {
-        this._monitoredItemId = _monitoredItemId;
-        this._requestedParameters = _requestedParameters;
+    public MonitoredItemModifyRequest(UInteger monitoredItemId, MonitoringParameters requestedParameters) {
+        this.monitoredItemId = monitoredItemId;
+        this.requestedParameters = requestedParameters;
     }
 
-    public UInteger getMonitoredItemId() { return _monitoredItemId; }
+    public UInteger getMonitoredItemId() { return monitoredItemId; }
 
-    public MonitoringParameters getRequestedParameters() { return _requestedParameters; }
+    public MonitoringParameters getRequestedParameters() { return requestedParameters; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,40 +58,30 @@ public class MonitoredItemModifyRequest implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("MonitoredItemId", _monitoredItemId)
-            .add("RequestedParameters", _requestedParameters)
+            .add("MonitoredItemId", monitoredItemId)
+            .add("RequestedParameters", requestedParameters)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MonitoredItemModifyRequest> {
-        @Override
-        public MonitoredItemModifyRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _monitoredItemId = reader.readUInt32();
-            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<MonitoredItemModifyRequest> {
 
-            return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
+        @Override
+        public Class<MonitoredItemModifyRequest> getType() {
+            return MonitoredItemModifyRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemModifyRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._monitoredItemId);
-            context.encode(MonitoringParameters.BinaryEncodingId, value._requestedParameters, writer);
-        }
-    }
+        public MonitoredItemModifyRequest decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger monitoredItemId = decoder.readUInt32("MonitoredItemId");
+            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readBuiltinStruct("RequestedParameters", MonitoringParameters.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<MonitoredItemModifyRequest> {
-        @Override
-        public MonitoredItemModifyRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _monitoredItemId = reader.readUInt32("MonitoredItemId");
-            MonitoringParameters _requestedParameters = (MonitoringParameters) context.decode(MonitoringParameters.XmlEncodingId, reader);
-
-            return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
+            return new MonitoredItemModifyRequest(monitoredItemId, requestedParameters);
         }
 
         @Override
-        public void encode(SerializationContext context, MonitoredItemModifyRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("MonitoredItemId", encodable._monitoredItemId);
-            context.encode(MonitoringParameters.XmlEncodingId, encodable._requestedParameters, writer);
+        public void encode(MonitoredItemModifyRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("MonitoredItemId", value.monitoredItemId);
+            encoder.writeBuiltinStruct("RequestedParameters", value.requestedParameters, MonitoringParameters.class);
         }
     }
 

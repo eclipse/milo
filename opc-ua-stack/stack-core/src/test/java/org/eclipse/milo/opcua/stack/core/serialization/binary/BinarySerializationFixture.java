@@ -17,22 +17,22 @@ import java.nio.ByteOrder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.testng.annotations.BeforeMethod;
 
 public abstract class BinarySerializationFixture {
 
     ByteBuf buffer;
-    OpcBinaryStreamWriter writer;
-    OpcBinaryStreamReader reader;
+    OpcUaBinaryStreamEncoder writer;
+    OpcUaBinaryStreamDecoder reader;
 
     @BeforeMethod
     public void setUp() {
         buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
 
-        writer = new OpcBinaryStreamWriter(buffer);
-        reader = new OpcBinaryStreamReader(buffer);
+        writer = new OpcUaBinaryStreamEncoder(buffer);
+        reader = new OpcUaBinaryStreamDecoder(buffer);
     }
 
 }

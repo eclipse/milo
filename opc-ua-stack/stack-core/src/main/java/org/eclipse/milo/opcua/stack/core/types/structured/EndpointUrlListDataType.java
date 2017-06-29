@@ -18,36 +18,30 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("EndpointUrlListDataType")
 public class EndpointUrlListDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.EndpointUrlListDataType;
     public static final NodeId BinaryEncodingId = Identifiers.EndpointUrlListDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EndpointUrlListDataType_Encoding_DefaultXml;
 
-    protected final String[] _endpointUrlList;
+    protected final String[] endpointUrlList;
 
     public EndpointUrlListDataType() {
-        this._endpointUrlList = null;
+        this.endpointUrlList = null;
     }
 
-    public EndpointUrlListDataType(String[] _endpointUrlList) {
-        this._endpointUrlList = _endpointUrlList;
+    public EndpointUrlListDataType(String[] endpointUrlList) {
+        this.endpointUrlList = endpointUrlList;
     }
 
     @Nullable
-    public String[] getEndpointUrlList() { return _endpointUrlList; }
+    public String[] getEndpointUrlList() { return endpointUrlList; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,35 +55,27 @@ public class EndpointUrlListDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("EndpointUrlList", _endpointUrlList)
+            .add("EndpointUrlList", endpointUrlList)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<EndpointUrlListDataType> {
-        @Override
-        public EndpointUrlListDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String[] _endpointUrlList = reader.readArray(reader::readString, String.class);
+    public static class Codec extends BuiltinDataTypeCodec<EndpointUrlListDataType> {
 
-            return new EndpointUrlListDataType(_endpointUrlList);
+        @Override
+        public Class<EndpointUrlListDataType> getType() {
+            return EndpointUrlListDataType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, EndpointUrlListDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeArray(value._endpointUrlList, writer::writeString);
-        }
-    }
+        public EndpointUrlListDataType decode(UaDecoder decoder) throws UaSerializationException {
+            String[] endpointUrlList = decoder.readArray("EndpointUrlList", decoder::readString, String.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<EndpointUrlListDataType> {
-        @Override
-        public EndpointUrlListDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String[] _endpointUrlList = reader.readArray("EndpointUrlList", reader::readString, String.class);
-
-            return new EndpointUrlListDataType(_endpointUrlList);
+            return new EndpointUrlListDataType(endpointUrlList);
         }
 
         @Override
-        public void encode(SerializationContext context, EndpointUrlListDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeArray("EndpointUrlList", encodable._endpointUrlList, writer::writeString);
+        public void encode(EndpointUrlListDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeArray("EndpointUrlList", value.endpointUrlList, encoder::writeString);
         }
     }
 

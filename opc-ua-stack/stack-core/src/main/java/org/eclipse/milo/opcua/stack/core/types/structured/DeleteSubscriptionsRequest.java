@@ -18,42 +18,36 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("DeleteSubscriptionsRequest")
 public class DeleteSubscriptionsRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.DeleteSubscriptionsRequest;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteSubscriptionsRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteSubscriptionsRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger[] _subscriptionIds;
+    protected final RequestHeader requestHeader;
+    protected final UInteger[] subscriptionIds;
 
     public DeleteSubscriptionsRequest() {
-        this._requestHeader = null;
-        this._subscriptionIds = null;
+        this.requestHeader = null;
+        this.subscriptionIds = null;
     }
 
-    public DeleteSubscriptionsRequest(RequestHeader _requestHeader, UInteger[] _subscriptionIds) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionIds = _subscriptionIds;
+    public DeleteSubscriptionsRequest(RequestHeader requestHeader, UInteger[] subscriptionIds) {
+        this.requestHeader = requestHeader;
+        this.subscriptionIds = subscriptionIds;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public UInteger[] getSubscriptionIds() { return _subscriptionIds; }
+    public UInteger[] getSubscriptionIds() { return subscriptionIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,40 +61,30 @@ public class DeleteSubscriptionsRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionIds", _subscriptionIds)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionIds", subscriptionIds)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DeleteSubscriptionsRequest> {
-        @Override
-        public DeleteSubscriptionsRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            UInteger[] _subscriptionIds = reader.readArray(reader::readUInt32, UInteger.class);
+    public static class Codec extends BuiltinDataTypeCodec<DeleteSubscriptionsRequest> {
 
-            return new DeleteSubscriptionsRequest(_requestHeader, _subscriptionIds);
+        @Override
+        public Class<DeleteSubscriptionsRequest> getType() {
+            return DeleteSubscriptionsRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteSubscriptionsRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(value._subscriptionIds, writer::writeUInt32);
-        }
-    }
+        public DeleteSubscriptionsRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger[] subscriptionIds = decoder.readArray("SubscriptionIds", decoder::readUInt32, UInteger.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<DeleteSubscriptionsRequest> {
-        @Override
-        public DeleteSubscriptionsRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            UInteger[] _subscriptionIds = reader.readArray("SubscriptionIds", reader::readUInt32, UInteger.class);
-
-            return new DeleteSubscriptionsRequest(_requestHeader, _subscriptionIds);
+            return new DeleteSubscriptionsRequest(requestHeader, subscriptionIds);
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteSubscriptionsRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray("SubscriptionIds", encodable._subscriptionIds, writer::writeUInt32);
+        public void encode(DeleteSubscriptionsRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeArray("SubscriptionIds", value.subscriptionIds, encoder::writeUInt32);
         }
     }
 

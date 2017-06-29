@@ -16,40 +16,34 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("SemanticChangeStructureDataType")
 public class SemanticChangeStructureDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SemanticChangeStructureDataType;
     public static final NodeId BinaryEncodingId = Identifiers.SemanticChangeStructureDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SemanticChangeStructureDataType_Encoding_DefaultXml;
 
-    protected final NodeId _affected;
-    protected final NodeId _affectedType;
+    protected final NodeId affected;
+    protected final NodeId affectedType;
 
     public SemanticChangeStructureDataType() {
-        this._affected = null;
-        this._affectedType = null;
+        this.affected = null;
+        this.affectedType = null;
     }
 
-    public SemanticChangeStructureDataType(NodeId _affected, NodeId _affectedType) {
-        this._affected = _affected;
-        this._affectedType = _affectedType;
+    public SemanticChangeStructureDataType(NodeId affected, NodeId affectedType) {
+        this.affected = affected;
+        this.affectedType = affectedType;
     }
 
-    public NodeId getAffected() { return _affected; }
+    public NodeId getAffected() { return affected; }
 
-    public NodeId getAffectedType() { return _affectedType; }
+    public NodeId getAffectedType() { return affectedType; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class SemanticChangeStructureDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Affected", _affected)
-            .add("AffectedType", _affectedType)
+            .add("Affected", affected)
+            .add("AffectedType", affectedType)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SemanticChangeStructureDataType> {
-        @Override
-        public SemanticChangeStructureDataType decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _affected = reader.readNodeId();
-            NodeId _affectedType = reader.readNodeId();
+    public static class Codec extends BuiltinDataTypeCodec<SemanticChangeStructureDataType> {
 
-            return new SemanticChangeStructureDataType(_affected, _affectedType);
+        @Override
+        public Class<SemanticChangeStructureDataType> getType() {
+            return SemanticChangeStructureDataType.class;
         }
 
         @Override
-        public void encode(SerializationContext context, SemanticChangeStructureDataType value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._affected);
-            writer.writeNodeId(value._affectedType);
-        }
-    }
+        public SemanticChangeStructureDataType decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId affected = decoder.readNodeId("Affected");
+            NodeId affectedType = decoder.readNodeId("AffectedType");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<SemanticChangeStructureDataType> {
-        @Override
-        public SemanticChangeStructureDataType decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _affected = reader.readNodeId("Affected");
-            NodeId _affectedType = reader.readNodeId("AffectedType");
-
-            return new SemanticChangeStructureDataType(_affected, _affectedType);
+            return new SemanticChangeStructureDataType(affected, affectedType);
         }
 
         @Override
-        public void encode(SerializationContext context, SemanticChangeStructureDataType encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("Affected", encodable._affected);
-            writer.writeNodeId("AffectedType", encodable._affectedType);
+        public void encode(SemanticChangeStructureDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("Affected", value.affected);
+            encoder.writeNodeId("AffectedType", value.affectedType);
         }
     }
 

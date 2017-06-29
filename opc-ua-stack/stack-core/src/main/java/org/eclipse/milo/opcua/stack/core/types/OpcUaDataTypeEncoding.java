@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,25 +11,23 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization;
+package org.eclipse.milo.opcua.stack.core.types;
 
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.ByteOrder;
-import javax.xml.stream.XMLStreamException;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
@@ -46,8 +44,8 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
         try {
             @SuppressWarnings("unchecked")
-            OpcBinaryDataTypeCodec<Object> codec =
-                (OpcBinaryDataTypeCodec<Object>) dataTypeManager.getBinaryCodec(encodingTypeId);
+            OpcUaBinaryDataTypeCodec<Object> codec =
+                (OpcUaBinaryDataTypeCodec<Object>) dataTypeManager.getBinaryCodec(encodingTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -57,7 +55,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
             ByteBuf buffer = allocator.buffer().order(ByteOrder.LITTLE_ENDIAN);
 
-            OpcBinaryStreamWriter writer = new OpcBinaryStreamWriter(buffer);
+            OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(buffer);
 
             codec.encode(() -> dataTypeManager, object, writer);
 
@@ -79,8 +77,8 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
         try {
             @SuppressWarnings("unchecked")
-            OpcXmlDataTypeCodec<Object> codec =
-                (OpcXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodec(encodingTypeId);
+            OpcUaXmlDataTypeCodec<Object> codec =
+                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodec(encodingTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -88,14 +86,12 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
                     "no codec registered for encodingTypeId=" + encodingTypeId);
             }
 
-            StringWriter stringWriter = new StringWriter();
-
-            OpcXmlStreamWriter writer = new OpcXmlStreamWriter(stringWriter);
+            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder();
 
             codec.encode(() -> dataTypeManager, object, writer);
 
-            return new XmlElement(stringWriter.toString());
-        } catch (ClassCastException | XMLStreamException e) {
+            return new XmlElement(writer.getDocumentXml());
+        } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
     }
@@ -108,8 +104,8 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
         try {
             @SuppressWarnings("unchecked")
-            OpcBinaryDataTypeCodec<Object> codec =
-                (OpcBinaryDataTypeCodec<Object>) dataTypeManager.getBinaryCodec(encodingTypeId);
+            OpcUaBinaryDataTypeCodec<Object> codec =
+                (OpcUaBinaryDataTypeCodec<Object>) dataTypeManager.getBinaryCodec(encodingTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -124,7 +120,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
                 .wrappedBuffer(bs)
                 .order(ByteOrder.LITTLE_ENDIAN);
 
-            OpcBinaryStreamReader reader = new OpcBinaryStreamReader(buffer);
+            OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(buffer);
 
             return codec.decode(() -> dataTypeManager, reader);
         } catch (ClassCastException e) {
@@ -140,8 +136,8 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
         try {
             @SuppressWarnings("unchecked")
-            OpcXmlDataTypeCodec<Object> codec =
-                (OpcXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodec(encodingTypeId);
+            OpcUaXmlDataTypeCodec<Object> codec =
+                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodec(encodingTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -149,10 +145,11 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
                     "no codec registered for encodingTypeId=" + encodingTypeId);
             }
 
-            OpcXmlStreamReader reader = new OpcXmlStreamReader(new StringReader(encoded.getFragment()));
+            OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder();
+            reader.setInput(new ByteArrayInputStream(encoded.getFragment().getBytes()));
 
-            return codec.decode(() -> dataTypeManager, reader);
-        } catch (ClassCastException | XMLStreamException e) {
+            return reader.readStruct(null, encodingTypeId);
+        } catch (IOException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }
     }

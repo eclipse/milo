@@ -18,38 +18,32 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("DeleteEventDetails")
 public class DeleteEventDetails extends HistoryUpdateDetails {
 
     public static final NodeId TypeId = Identifiers.DeleteEventDetails;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteEventDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteEventDetails_Encoding_DefaultXml;
 
-    protected final ByteString[] _eventIds;
+    protected final ByteString[] eventIds;
 
     public DeleteEventDetails() {
         super(null);
-        this._eventIds = null;
+        this.eventIds = null;
     }
 
-    public DeleteEventDetails(NodeId _nodeId, ByteString[] _eventIds) {
-        super(_nodeId);
-        this._eventIds = _eventIds;
+    public DeleteEventDetails(NodeId nodeId, ByteString[] eventIds) {
+        super(nodeId);
+        this.eventIds = eventIds;
     }
 
     @Nullable
-    public ByteString[] getEventIds() { return _eventIds; }
+    public ByteString[] getEventIds() { return eventIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,40 +57,30 @@ public class DeleteEventDetails extends HistoryUpdateDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("EventIds", _eventIds)
+            .add("NodeId", nodeId)
+            .add("EventIds", eventIds)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DeleteEventDetails> {
-        @Override
-        public DeleteEventDetails decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            ByteString[] _eventIds = reader.readArray(reader::readByteString, ByteString.class);
+    public static class Codec extends BuiltinDataTypeCodec<DeleteEventDetails> {
 
-            return new DeleteEventDetails(_nodeId, _eventIds);
+        @Override
+        public Class<DeleteEventDetails> getType() {
+            return DeleteEventDetails.class;
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteEventDetails value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeArray(value._eventIds, writer::writeByteString);
-        }
-    }
+        public DeleteEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            ByteString[] eventIds = decoder.readArray("EventIds", decoder::readByteString, ByteString.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<DeleteEventDetails> {
-        @Override
-        public DeleteEventDetails decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            ByteString[] _eventIds = reader.readArray("EventIds", reader::readByteString, ByteString.class);
-
-            return new DeleteEventDetails(_nodeId, _eventIds);
+            return new DeleteEventDetails(nodeId, eventIds);
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteEventDetails encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeArray("EventIds", encodable._eventIds, writer::writeByteString);
+        public void encode(DeleteEventDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeArray("EventIds", value.eventIds, encoder::writeByteString);
         }
     }
 

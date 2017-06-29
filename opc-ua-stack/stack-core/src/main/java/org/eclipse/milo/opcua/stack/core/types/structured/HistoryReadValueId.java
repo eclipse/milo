@@ -16,52 +16,46 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
-@UaDataType("HistoryReadValueId")
 public class HistoryReadValueId implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.HistoryReadValueId;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryReadValueId_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryReadValueId_Encoding_DefaultXml;
 
-    protected final NodeId _nodeId;
-    protected final String _indexRange;
-    protected final QualifiedName _dataEncoding;
-    protected final ByteString _continuationPoint;
+    protected final NodeId nodeId;
+    protected final String indexRange;
+    protected final QualifiedName dataEncoding;
+    protected final ByteString continuationPoint;
 
     public HistoryReadValueId() {
-        this._nodeId = null;
-        this._indexRange = null;
-        this._dataEncoding = null;
-        this._continuationPoint = null;
+        this.nodeId = null;
+        this.indexRange = null;
+        this.dataEncoding = null;
+        this.continuationPoint = null;
     }
 
-    public HistoryReadValueId(NodeId _nodeId, String _indexRange, QualifiedName _dataEncoding, ByteString _continuationPoint) {
-        this._nodeId = _nodeId;
-        this._indexRange = _indexRange;
-        this._dataEncoding = _dataEncoding;
-        this._continuationPoint = _continuationPoint;
+    public HistoryReadValueId(NodeId nodeId, String indexRange, QualifiedName dataEncoding, ByteString continuationPoint) {
+        this.nodeId = nodeId;
+        this.indexRange = indexRange;
+        this.dataEncoding = dataEncoding;
+        this.continuationPoint = continuationPoint;
     }
 
-    public NodeId getNodeId() { return _nodeId; }
+    public NodeId getNodeId() { return nodeId; }
 
-    public String getIndexRange() { return _indexRange; }
+    public String getIndexRange() { return indexRange; }
 
-    public QualifiedName getDataEncoding() { return _dataEncoding; }
+    public QualifiedName getDataEncoding() { return dataEncoding; }
 
-    public ByteString getContinuationPoint() { return _continuationPoint; }
+    public ByteString getContinuationPoint() { return continuationPoint; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -75,50 +69,36 @@ public class HistoryReadValueId implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("IndexRange", _indexRange)
-            .add("DataEncoding", _dataEncoding)
-            .add("ContinuationPoint", _continuationPoint)
+            .add("NodeId", nodeId)
+            .add("IndexRange", indexRange)
+            .add("DataEncoding", dataEncoding)
+            .add("ContinuationPoint", continuationPoint)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryReadValueId> {
-        @Override
-        public HistoryReadValueId decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            String _indexRange = reader.readString();
-            QualifiedName _dataEncoding = reader.readQualifiedName();
-            ByteString _continuationPoint = reader.readByteString();
+    public static class Codec extends BuiltinDataTypeCodec<HistoryReadValueId> {
 
-            return new HistoryReadValueId(_nodeId, _indexRange, _dataEncoding, _continuationPoint);
+        @Override
+        public Class<HistoryReadValueId> getType() {
+            return HistoryReadValueId.class;
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryReadValueId value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeString(value._indexRange);
-            writer.writeQualifiedName(value._dataEncoding);
-            writer.writeByteString(value._continuationPoint);
-        }
-    }
+        public HistoryReadValueId decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            String indexRange = decoder.readString("IndexRange");
+            QualifiedName dataEncoding = decoder.readQualifiedName("DataEncoding");
+            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryReadValueId> {
-        @Override
-        public HistoryReadValueId decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            String _indexRange = reader.readString("IndexRange");
-            QualifiedName _dataEncoding = reader.readQualifiedName("DataEncoding");
-            ByteString _continuationPoint = reader.readByteString("ContinuationPoint");
-
-            return new HistoryReadValueId(_nodeId, _indexRange, _dataEncoding, _continuationPoint);
+            return new HistoryReadValueId(nodeId, indexRange, dataEncoding, continuationPoint);
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryReadValueId encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeString("IndexRange", encodable._indexRange);
-            writer.writeQualifiedName("DataEncoding", encodable._dataEncoding);
-            writer.writeByteString("ContinuationPoint", encodable._continuationPoint);
+        public void encode(HistoryReadValueId value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeString("IndexRange", value.indexRange);
+            encoder.writeQualifiedName("DataEncoding", value.dataEncoding);
+            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
         }
     }
 

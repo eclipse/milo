@@ -18,55 +18,49 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("ActivateSessionResponse")
 public class ActivateSessionResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.ActivateSessionResponse;
     public static final NodeId BinaryEncodingId = Identifiers.ActivateSessionResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ActivateSessionResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final ByteString _serverNonce;
-    protected final StatusCode[] _results;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final ByteString serverNonce;
+    protected final StatusCode[] results;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public ActivateSessionResponse() {
-        this._responseHeader = null;
-        this._serverNonce = null;
-        this._results = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.serverNonce = null;
+        this.results = null;
+        this.diagnosticInfos = null;
     }
 
-    public ActivateSessionResponse(ResponseHeader _responseHeader, ByteString _serverNonce, StatusCode[] _results, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._serverNonce = _serverNonce;
-        this._results = _results;
-        this._diagnosticInfos = _diagnosticInfos;
+    public ActivateSessionResponse(ResponseHeader responseHeader, ByteString serverNonce, StatusCode[] results, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.serverNonce = serverNonce;
+        this.results = results;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
-    public ByteString getServerNonce() { return _serverNonce; }
-
-    @Nullable
-    public StatusCode[] getResults() { return _results; }
+    public ByteString getServerNonce() { return serverNonce; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public StatusCode[] getResults() { return results; }
+
+    @Nullable
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -80,50 +74,36 @@ public class ActivateSessionResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("ServerNonce", _serverNonce)
-            .add("Results", _results)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("ServerNonce", serverNonce)
+            .add("Results", results)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<ActivateSessionResponse> {
-        @Override
-        public ActivateSessionResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            ByteString _serverNonce = reader.readByteString();
-            StatusCode[] _results = reader.readArray(reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+    public static class Codec extends BuiltinDataTypeCodec<ActivateSessionResponse> {
 
-            return new ActivateSessionResponse(_responseHeader, _serverNonce, _results, _diagnosticInfos);
+        @Override
+        public Class<ActivateSessionResponse> getType() {
+            return ActivateSessionResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, ActivateSessionResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeByteString(value._serverNonce);
-            writer.writeArray(value._results, writer::writeStatusCode);
-            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
-        }
-    }
+        public ActivateSessionResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            ByteString serverNonce = decoder.readByteString("ServerNonce");
+            StatusCode[] results = decoder.readArray("Results", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<ActivateSessionResponse> {
-        @Override
-        public ActivateSessionResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            ByteString _serverNonce = reader.readByteString("ServerNonce");
-            StatusCode[] _results = reader.readArray("Results", reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-
-            return new ActivateSessionResponse(_responseHeader, _serverNonce, _results, _diagnosticInfos);
+            return new ActivateSessionResponse(responseHeader, serverNonce, results, diagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, ActivateSessionResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeByteString("ServerNonce", encodable._serverNonce);
-            writer.writeArray("Results", encodable._results, writer::writeStatusCode);
-            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(ActivateSessionResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeByteString("ServerNonce", value.serverNonce);
+            encoder.writeArray("Results", value.results, encoder::writeStatusCode);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
         }
     }
 

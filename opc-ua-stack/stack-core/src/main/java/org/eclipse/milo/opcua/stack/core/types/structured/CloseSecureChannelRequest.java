@@ -16,35 +16,29 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("CloseSecureChannelRequest")
 public class CloseSecureChannelRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.CloseSecureChannelRequest;
     public static final NodeId BinaryEncodingId = Identifiers.CloseSecureChannelRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CloseSecureChannelRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
+    protected final RequestHeader requestHeader;
 
     public CloseSecureChannelRequest() {
-        this._requestHeader = null;
+        this.requestHeader = null;
     }
 
-    public CloseSecureChannelRequest(RequestHeader _requestHeader) {
-        this._requestHeader = _requestHeader;
+    public CloseSecureChannelRequest(RequestHeader requestHeader) {
+        this.requestHeader = requestHeader;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,35 +52,27 @@ public class CloseSecureChannelRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
+            .add("RequestHeader", requestHeader)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<CloseSecureChannelRequest> {
-        @Override
-        public CloseSecureChannelRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
+    public static class Codec extends BuiltinDataTypeCodec<CloseSecureChannelRequest> {
 
-            return new CloseSecureChannelRequest(_requestHeader);
+        @Override
+        public Class<CloseSecureChannelRequest> getType() {
+            return CloseSecureChannelRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, CloseSecureChannelRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-        }
-    }
+        public CloseSecureChannelRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<CloseSecureChannelRequest> {
-        @Override
-        public CloseSecureChannelRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-
-            return new CloseSecureChannelRequest(_requestHeader);
+            return new CloseSecureChannelRequest(requestHeader);
         }
 
         @Override
-        public void encode(SerializationContext context, CloseSecureChannelRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
+        public void encode(CloseSecureChannelRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
         }
     }
 

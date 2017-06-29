@@ -18,49 +18,43 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("HistoryUpdateResult")
 public class HistoryUpdateResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.HistoryUpdateResult;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryUpdateResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryUpdateResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final StatusCode[] _operationResults;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final StatusCode statusCode;
+    protected final StatusCode[] operationResults;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public HistoryUpdateResult() {
-        this._statusCode = null;
-        this._operationResults = null;
-        this._diagnosticInfos = null;
+        this.statusCode = null;
+        this.operationResults = null;
+        this.diagnosticInfos = null;
     }
 
-    public HistoryUpdateResult(StatusCode _statusCode, StatusCode[] _operationResults, DiagnosticInfo[] _diagnosticInfos) {
-        this._statusCode = _statusCode;
-        this._operationResults = _operationResults;
-        this._diagnosticInfos = _diagnosticInfos;
+    public HistoryUpdateResult(StatusCode statusCode, StatusCode[] operationResults, DiagnosticInfo[] diagnosticInfos) {
+        this.statusCode = statusCode;
+        this.operationResults = operationResults;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
     @Nullable
-    public StatusCode[] getOperationResults() { return _operationResults; }
+    public StatusCode[] getOperationResults() { return operationResults; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -74,45 +68,33 @@ public class HistoryUpdateResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("OperationResults", _operationResults)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("StatusCode", statusCode)
+            .add("OperationResults", operationResults)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<HistoryUpdateResult> {
-        @Override
-        public HistoryUpdateResult decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode();
-            StatusCode[] _operationResults = reader.readArray(reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+    public static class Codec extends BuiltinDataTypeCodec<HistoryUpdateResult> {
 
-            return new HistoryUpdateResult(_statusCode, _operationResults, _diagnosticInfos);
+        @Override
+        public Class<HistoryUpdateResult> getType() {
+            return HistoryUpdateResult.class;
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryUpdateResult value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode(value._statusCode);
-            writer.writeArray(value._operationResults, writer::writeStatusCode);
-            writer.writeArray(value._diagnosticInfos, writer::writeDiagnosticInfo);
-        }
-    }
+        public HistoryUpdateResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            StatusCode[] operationResults = decoder.readArray("OperationResults", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<HistoryUpdateResult> {
-        @Override
-        public HistoryUpdateResult decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            StatusCode _statusCode = reader.readStatusCode("StatusCode");
-            StatusCode[] _operationResults = reader.readArray("OperationResults", reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _diagnosticInfos = reader.readArray("DiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-
-            return new HistoryUpdateResult(_statusCode, _operationResults, _diagnosticInfos);
+            return new HistoryUpdateResult(statusCode, operationResults, diagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, HistoryUpdateResult encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeStatusCode("StatusCode", encodable._statusCode);
-            writer.writeArray("OperationResults", encodable._operationResults, writer::writeStatusCode);
-            writer.writeArray("DiagnosticInfos", encodable._diagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(HistoryUpdateResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeArray("OperationResults", value.operationResults, encoder::writeStatusCode);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
         }
     }
 

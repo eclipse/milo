@@ -16,41 +16,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("SignatureData")
 public class SignatureData implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SignatureData;
     public static final NodeId BinaryEncodingId = Identifiers.SignatureData_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SignatureData_Encoding_DefaultXml;
 
-    protected final String _algorithm;
-    protected final ByteString _signature;
+    protected final String algorithm;
+    protected final ByteString signature;
 
     public SignatureData() {
-        this._algorithm = null;
-        this._signature = null;
+        this.algorithm = null;
+        this.signature = null;
     }
 
-    public SignatureData(String _algorithm, ByteString _signature) {
-        this._algorithm = _algorithm;
-        this._signature = _signature;
+    public SignatureData(String algorithm, ByteString signature) {
+        this.algorithm = algorithm;
+        this.signature = signature;
     }
 
-    public String getAlgorithm() { return _algorithm; }
+    public String getAlgorithm() { return algorithm; }
 
-    public ByteString getSignature() { return _signature; }
+    public ByteString getSignature() { return signature; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,40 +58,30 @@ public class SignatureData implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Algorithm", _algorithm)
-            .add("Signature", _signature)
+            .add("Algorithm", algorithm)
+            .add("Signature", signature)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SignatureData> {
-        @Override
-        public SignatureData decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            String _algorithm = reader.readString();
-            ByteString _signature = reader.readByteString();
+    public static class Codec extends BuiltinDataTypeCodec<SignatureData> {
 
-            return new SignatureData(_algorithm, _signature);
+        @Override
+        public Class<SignatureData> getType() {
+            return SignatureData.class;
         }
 
         @Override
-        public void encode(SerializationContext context, SignatureData value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeString(value._algorithm);
-            writer.writeByteString(value._signature);
-        }
-    }
+        public SignatureData decode(UaDecoder decoder) throws UaSerializationException {
+            String algorithm = decoder.readString("Algorithm");
+            ByteString signature = decoder.readByteString("Signature");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<SignatureData> {
-        @Override
-        public SignatureData decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            String _algorithm = reader.readString("Algorithm");
-            ByteString _signature = reader.readByteString("Signature");
-
-            return new SignatureData(_algorithm, _signature);
+            return new SignatureData(algorithm, signature);
         }
 
         @Override
-        public void encode(SerializationContext context, SignatureData encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeString("Algorithm", encodable._algorithm);
-            writer.writeByteString("Signature", encodable._signature);
+        public void encode(SignatureData value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("Algorithm", value.algorithm);
+            encoder.writeByteString("Signature", value.signature);
         }
     }
 

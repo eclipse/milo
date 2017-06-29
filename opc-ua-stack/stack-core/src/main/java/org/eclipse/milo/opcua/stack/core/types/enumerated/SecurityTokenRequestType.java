@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -51,11 +51,11 @@ public enum SecurityTokenRequestType implements UaEnumeration {
     }
 
     public static void encode(SecurityTokenRequestType securityTokenRequestType, UaEncoder encoder) {
-        encoder.encodeInt32(null, securityTokenRequestType.getValue());
+        encoder.writeInt32(null, securityTokenRequestType.getValue());
     }
 
     public static SecurityTokenRequestType decode(UaDecoder decoder) {
-        int value = decoder.decodeInt32(null);
+        int value = decoder.readInt32(null);
 
         return VALUES.getOrDefault(value, null);
     }

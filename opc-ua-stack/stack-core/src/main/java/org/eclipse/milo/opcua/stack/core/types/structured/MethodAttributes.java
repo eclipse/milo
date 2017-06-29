@@ -16,43 +16,37 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("MethodAttributes")
 public class MethodAttributes extends NodeAttributes {
 
     public static final NodeId TypeId = Identifiers.MethodAttributes;
     public static final NodeId BinaryEncodingId = Identifiers.MethodAttributes_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.MethodAttributes_Encoding_DefaultXml;
 
-    protected final Boolean _executable;
-    protected final Boolean _userExecutable;
+    protected final Boolean executable;
+    protected final Boolean userExecutable;
 
     public MethodAttributes() {
         super(null, null, null, null, null);
-        this._executable = null;
-        this._userExecutable = null;
+        this.executable = null;
+        this.userExecutable = null;
     }
 
-    public MethodAttributes(UInteger _specifiedAttributes, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, Boolean _executable, Boolean _userExecutable) {
-        super(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask);
-        this._executable = _executable;
-        this._userExecutable = _userExecutable;
+    public MethodAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, Boolean executable, Boolean userExecutable) {
+        super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
+        this.executable = executable;
+        this.userExecutable = userExecutable;
     }
 
-    public Boolean getExecutable() { return _executable; }
+    public Boolean getExecutable() { return executable; }
 
-    public Boolean getUserExecutable() { return _userExecutable; }
+    public Boolean getUserExecutable() { return userExecutable; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,65 +60,45 @@ public class MethodAttributes extends NodeAttributes {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", _specifiedAttributes)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("Executable", _executable)
-            .add("UserExecutable", _userExecutable)
+            .add("SpecifiedAttributes", specifiedAttributes)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("Executable", executable)
+            .add("UserExecutable", userExecutable)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<MethodAttributes> {
-        @Override
-        public MethodAttributes decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedAttributes = reader.readUInt32();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
-            UInteger _writeMask = reader.readUInt32();
-            UInteger _userWriteMask = reader.readUInt32();
-            Boolean _executable = reader.readBoolean();
-            Boolean _userExecutable = reader.readBoolean();
+    public static class Codec extends BuiltinDataTypeCodec<MethodAttributes> {
 
-            return new MethodAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _executable, _userExecutable);
+        @Override
+        public Class<MethodAttributes> getType() {
+            return MethodAttributes.class;
         }
 
         @Override
-        public void encode(SerializationContext context, MethodAttributes value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32(value._specifiedAttributes);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-            writer.writeUInt32(value._writeMask);
-            writer.writeUInt32(value._userWriteMask);
-            writer.writeBoolean(value._executable);
-            writer.writeBoolean(value._userExecutable);
-        }
-    }
+        public MethodAttributes decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            Boolean executable = decoder.readBoolean("Executable");
+            Boolean userExecutable = decoder.readBoolean("UserExecutable");
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<MethodAttributes> {
-        @Override
-        public MethodAttributes decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            UInteger _specifiedAttributes = reader.readUInt32("SpecifiedAttributes");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-            UInteger _writeMask = reader.readUInt32("WriteMask");
-            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
-            Boolean _executable = reader.readBoolean("Executable");
-            Boolean _userExecutable = reader.readBoolean("UserExecutable");
-
-            return new MethodAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _executable, _userExecutable);
+            return new MethodAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, executable, userExecutable);
         }
 
         @Override
-        public void encode(SerializationContext context, MethodAttributes encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeUInt32("SpecifiedAttributes", encodable._specifiedAttributes);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
-            writer.writeUInt32("WriteMask", encodable._writeMask);
-            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
-            writer.writeBoolean("Executable", encodable._executable);
-            writer.writeBoolean("UserExecutable", encodable._userExecutable);
+        public void encode(MethodAttributes value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBoolean("Executable", value.executable);
+            encoder.writeBoolean("UserExecutable", value.userExecutable);
         }
     }
 

@@ -18,61 +18,55 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("SetTriggeringResponse")
 public class SetTriggeringResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.SetTriggeringResponse;
     public static final NodeId BinaryEncodingId = Identifiers.SetTriggeringResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SetTriggeringResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final StatusCode[] _addResults;
-    protected final DiagnosticInfo[] _addDiagnosticInfos;
-    protected final StatusCode[] _removeResults;
-    protected final DiagnosticInfo[] _removeDiagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final StatusCode[] addResults;
+    protected final DiagnosticInfo[] addDiagnosticInfos;
+    protected final StatusCode[] removeResults;
+    protected final DiagnosticInfo[] removeDiagnosticInfos;
 
     public SetTriggeringResponse() {
-        this._responseHeader = null;
-        this._addResults = null;
-        this._addDiagnosticInfos = null;
-        this._removeResults = null;
-        this._removeDiagnosticInfos = null;
+        this.responseHeader = null;
+        this.addResults = null;
+        this.addDiagnosticInfos = null;
+        this.removeResults = null;
+        this.removeDiagnosticInfos = null;
     }
 
-    public SetTriggeringResponse(ResponseHeader _responseHeader, StatusCode[] _addResults, DiagnosticInfo[] _addDiagnosticInfos, StatusCode[] _removeResults, DiagnosticInfo[] _removeDiagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._addResults = _addResults;
-        this._addDiagnosticInfos = _addDiagnosticInfos;
-        this._removeResults = _removeResults;
-        this._removeDiagnosticInfos = _removeDiagnosticInfos;
+    public SetTriggeringResponse(ResponseHeader responseHeader, StatusCode[] addResults, DiagnosticInfo[] addDiagnosticInfos, StatusCode[] removeResults, DiagnosticInfo[] removeDiagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.addResults = addResults;
+        this.addDiagnosticInfos = addDiagnosticInfos;
+        this.removeResults = removeResults;
+        this.removeDiagnosticInfos = removeDiagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public StatusCode[] getAddResults() { return _addResults; }
+    public StatusCode[] getAddResults() { return addResults; }
 
     @Nullable
-    public DiagnosticInfo[] getAddDiagnosticInfos() { return _addDiagnosticInfos; }
+    public DiagnosticInfo[] getAddDiagnosticInfos() { return addDiagnosticInfos; }
 
     @Nullable
-    public StatusCode[] getRemoveResults() { return _removeResults; }
+    public StatusCode[] getRemoveResults() { return removeResults; }
 
     @Nullable
-    public DiagnosticInfo[] getRemoveDiagnosticInfos() { return _removeDiagnosticInfos; }
+    public DiagnosticInfo[] getRemoveDiagnosticInfos() { return removeDiagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -86,55 +80,39 @@ public class SetTriggeringResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("AddResults", _addResults)
-            .add("AddDiagnosticInfos", _addDiagnosticInfos)
-            .add("RemoveResults", _removeResults)
-            .add("RemoveDiagnosticInfos", _removeDiagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("AddResults", addResults)
+            .add("AddDiagnosticInfos", addDiagnosticInfos)
+            .add("RemoveResults", removeResults)
+            .add("RemoveDiagnosticInfos", removeDiagnosticInfos)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<SetTriggeringResponse> {
-        @Override
-        public SetTriggeringResponse decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.BinaryEncodingId, reader);
-            StatusCode[] _addResults = reader.readArray(reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _addDiagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
-            StatusCode[] _removeResults = reader.readArray(reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _removeDiagnosticInfos = reader.readArray(reader::readDiagnosticInfo, DiagnosticInfo.class);
+    public static class Codec extends BuiltinDataTypeCodec<SetTriggeringResponse> {
 
-            return new SetTriggeringResponse(_responseHeader, _addResults, _addDiagnosticInfos, _removeResults, _removeDiagnosticInfos);
+        @Override
+        public Class<SetTriggeringResponse> getType() {
+            return SetTriggeringResponse.class;
         }
 
         @Override
-        public void encode(SerializationContext context, SetTriggeringResponse value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.BinaryEncodingId, value._responseHeader, writer);
-            writer.writeArray(value._addResults, writer::writeStatusCode);
-            writer.writeArray(value._addDiagnosticInfos, writer::writeDiagnosticInfo);
-            writer.writeArray(value._removeResults, writer::writeStatusCode);
-            writer.writeArray(value._removeDiagnosticInfos, writer::writeDiagnosticInfo);
-        }
-    }
+        public SetTriggeringResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            StatusCode[] addResults = decoder.readArray("AddResults", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] addDiagnosticInfos = decoder.readArray("AddDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
+            StatusCode[] removeResults = decoder.readArray("RemoveResults", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] removeDiagnosticInfos = decoder.readArray("RemoveDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    public static class XmlCodec implements OpcXmlDataTypeCodec<SetTriggeringResponse> {
-        @Override
-        public SetTriggeringResponse decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            ResponseHeader _responseHeader = (ResponseHeader) context.decode(ResponseHeader.XmlEncodingId, reader);
-            StatusCode[] _addResults = reader.readArray("AddResults", reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _addDiagnosticInfos = reader.readArray("AddDiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-            StatusCode[] _removeResults = reader.readArray("RemoveResults", reader::readStatusCode, StatusCode.class);
-            DiagnosticInfo[] _removeDiagnosticInfos = reader.readArray("RemoveDiagnosticInfos", reader::readDiagnosticInfo, DiagnosticInfo.class);
-
-            return new SetTriggeringResponse(_responseHeader, _addResults, _addDiagnosticInfos, _removeResults, _removeDiagnosticInfos);
+            return new SetTriggeringResponse(responseHeader, addResults, addDiagnosticInfos, removeResults, removeDiagnosticInfos);
         }
 
         @Override
-        public void encode(SerializationContext context, SetTriggeringResponse encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(ResponseHeader.XmlEncodingId, encodable._responseHeader, writer);
-            writer.writeArray("AddResults", encodable._addResults, writer::writeStatusCode);
-            writer.writeArray("AddDiagnosticInfos", encodable._addDiagnosticInfos, writer::writeDiagnosticInfo);
-            writer.writeArray("RemoveResults", encodable._removeResults, writer::writeStatusCode);
-            writer.writeArray("RemoveDiagnosticInfos", encodable._removeDiagnosticInfos, writer::writeDiagnosticInfo);
+        public void encode(SetTriggeringResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeArray("AddResults", value.addResults, encoder::writeStatusCode);
+            encoder.writeArray("AddDiagnosticInfos", value.addDiagnosticInfos, encoder::writeDiagnosticInfo);
+            encoder.writeArray("RemoveResults", value.removeResults, encoder::writeStatusCode);
+            encoder.writeArray("RemoveDiagnosticInfos", value.removeDiagnosticInfos, encoder::writeDiagnosticInfo);
         }
     }
 

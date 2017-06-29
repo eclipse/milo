@@ -18,14 +18,9 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -33,47 +28,46 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("VariableTypeNode")
 public class VariableTypeNode extends TypeNode {
 
     public static final NodeId TypeId = Identifiers.VariableTypeNode;
     public static final NodeId BinaryEncodingId = Identifiers.VariableTypeNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.VariableTypeNode_Encoding_DefaultXml;
 
-    protected final Variant _value;
-    protected final NodeId _dataType;
-    protected final Integer _valueRank;
-    protected final UInteger[] _arrayDimensions;
-    protected final Boolean _isAbstract;
+    protected final Variant value;
+    protected final NodeId dataType;
+    protected final Integer valueRank;
+    protected final UInteger[] arrayDimensions;
+    protected final Boolean isAbstract;
 
     public VariableTypeNode() {
         super(null, null, null, null, null, null, null, null);
-        this._value = null;
-        this._dataType = null;
-        this._valueRank = null;
-        this._arrayDimensions = null;
-        this._isAbstract = null;
+        this.value = null;
+        this.dataType = null;
+        this.valueRank = null;
+        this.arrayDimensions = null;
+        this.isAbstract = null;
     }
 
-    public VariableTypeNode(NodeId _nodeId, NodeClass _nodeClass, QualifiedName _browseName, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, ReferenceNode[] _references, Variant _value, NodeId _dataType, Integer _valueRank, UInteger[] _arrayDimensions, Boolean _isAbstract) {
-        super(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
-        this._value = _value;
-        this._dataType = _dataType;
-        this._valueRank = _valueRank;
-        this._arrayDimensions = _arrayDimensions;
-        this._isAbstract = _isAbstract;
+    public VariableTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Variant value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, Boolean isAbstract) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+        this.isAbstract = isAbstract;
     }
 
-    public Variant getValue() { return _value; }
+    public Variant getValue() { return value; }
 
-    public NodeId getDataType() { return _dataType; }
+    public NodeId getDataType() { return dataType; }
 
-    public Integer getValueRank() { return _valueRank; }
+    public Integer getValueRank() { return valueRank; }
 
     @Nullable
-    public UInteger[] getArrayDimensions() { return _arrayDimensions; }
+    public UInteger[] getArrayDimensions() { return arrayDimensions; }
 
-    public Boolean getIsAbstract() { return _isAbstract; }
+    public Boolean getIsAbstract() { return isAbstract; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -87,113 +81,71 @@ public class VariableTypeNode extends TypeNode {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("NodeClass", _nodeClass)
-            .add("BrowseName", _browseName)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("References", _references)
-            .add("Value", _value)
-            .add("DataType", _dataType)
-            .add("ValueRank", _valueRank)
-            .add("ArrayDimensions", _arrayDimensions)
-            .add("IsAbstract", _isAbstract)
+            .add("NodeId", nodeId)
+            .add("NodeClass", nodeClass)
+            .add("BrowseName", browseName)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("References", references)
+            .add("Value", value)
+            .add("DataType", dataType)
+            .add("ValueRank", valueRank)
+            .add("ArrayDimensions", arrayDimensions)
+            .add("IsAbstract", isAbstract)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<VariableTypeNode> {
-        @Override
-        public VariableTypeNode decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId();
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32());
-            QualifiedName _browseName = reader.readQualifiedName();
-            LocalizedText _displayName = reader.readLocalizedText();
-            LocalizedText _description = reader.readLocalizedText();
-            UInteger _writeMask = reader.readUInt32();
-            UInteger _userWriteMask = reader.readUInt32();
-            ReferenceNode[] _references =
-                reader.readArray(
-                    () -> (ReferenceNode) context.decode(
-                        ReferenceNode.BinaryEncodingId, reader),
-                    ReferenceNode.class
-                );
-            Variant _value = reader.readVariant();
-            NodeId _dataType = reader.readNodeId();
-            Integer _valueRank = reader.readInt32();
-            UInteger[] _arrayDimensions = reader.readArray(reader::readUInt32, UInteger.class);
-            Boolean _isAbstract = reader.readBoolean();
+    public static class Codec extends BuiltinDataTypeCodec<VariableTypeNode> {
 
-            return new VariableTypeNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _value, _dataType, _valueRank, _arrayDimensions, _isAbstract);
+        @Override
+        public Class<VariableTypeNode> getType() {
+            return VariableTypeNode.class;
         }
 
         @Override
-        public void encode(SerializationContext context, VariableTypeNode value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId(value._nodeId);
-            writer.writeInt32(value._nodeClass != null ? value._nodeClass.getValue() : 0);
-            writer.writeQualifiedName(value._browseName);
-            writer.writeLocalizedText(value._displayName);
-            writer.writeLocalizedText(value._description);
-            writer.writeUInt32(value._writeMask);
-            writer.writeUInt32(value._userWriteMask);
-            writer.writeArray(
-                value._references,
-                e -> context.encode(ReferenceNode.BinaryEncodingId, e, writer)
-            );
-            writer.writeVariant(value._value);
-            writer.writeNodeId(value._dataType);
-            writer.writeInt32(value._valueRank);
-            writer.writeArray(value._arrayDimensions, writer::writeUInt32);
-            writer.writeBoolean(value._isAbstract);
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<VariableTypeNode> {
-        @Override
-        public VariableTypeNode decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            NodeId _nodeId = reader.readNodeId("NodeId");
-            NodeClass _nodeClass = NodeClass.from(reader.readInt32("NodeClass"));
-            QualifiedName _browseName = reader.readQualifiedName("BrowseName");
-            LocalizedText _displayName = reader.readLocalizedText("DisplayName");
-            LocalizedText _description = reader.readLocalizedText("Description");
-            UInteger _writeMask = reader.readUInt32("WriteMask");
-            UInteger _userWriteMask = reader.readUInt32("UserWriteMask");
-            ReferenceNode[] _references =
-                reader.readArray(
+        public VariableTypeNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            ReferenceNode[] references =
+                decoder.readBuiltinStructArray(
                     "References",
-                    f -> (ReferenceNode) context.decode(
-                        ReferenceNode.XmlEncodingId, reader),
                     ReferenceNode.class
                 );
-            Variant _value = reader.readVariant("Value");
-            NodeId _dataType = reader.readNodeId("DataType");
-            Integer _valueRank = reader.readInt32("ValueRank");
-            UInteger[] _arrayDimensions = reader.readArray("ArrayDimensions", reader::readUInt32, UInteger.class);
-            Boolean _isAbstract = reader.readBoolean("IsAbstract");
+            Variant value = decoder.readVariant("Value");
+            NodeId dataType = decoder.readNodeId("DataType");
+            Integer valueRank = decoder.readInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.readArray("ArrayDimensions", decoder::readUInt32, UInteger.class);
+            Boolean isAbstract = decoder.readBoolean("IsAbstract");
 
-            return new VariableTypeNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _value, _dataType, _valueRank, _arrayDimensions, _isAbstract);
+            return new VariableTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, value, dataType, valueRank, arrayDimensions, isAbstract);
         }
 
         @Override
-        public void encode(SerializationContext context, VariableTypeNode encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            writer.writeNodeId("NodeId", encodable._nodeId);
-            writer.writeInt32("NodeClass", encodable._nodeClass != null ? encodable._nodeClass.getValue() : 0);
-            writer.writeQualifiedName("BrowseName", encodable._browseName);
-            writer.writeLocalizedText("DisplayName", encodable._displayName);
-            writer.writeLocalizedText("Description", encodable._description);
-            writer.writeUInt32("WriteMask", encodable._writeMask);
-            writer.writeUInt32("UserWriteMask", encodable._userWriteMask);
-            writer.writeArray(
+        public void encode(VariableTypeNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBuiltinStructArray(
                 "References",
-                encodable._references,
-                (f, e) -> context.encode(ReferenceNode.XmlEncodingId, e, writer)
+                value.references,
+                ReferenceNode.class
             );
-            writer.writeVariant("Value", encodable._value);
-            writer.writeNodeId("DataType", encodable._dataType);
-            writer.writeInt32("ValueRank", encodable._valueRank);
-            writer.writeArray("ArrayDimensions", encodable._arrayDimensions, writer::writeUInt32);
-            writer.writeBoolean("IsAbstract", encodable._isAbstract);
+            encoder.writeVariant("Value", value.value);
+            encoder.writeNodeId("DataType", value.dataType);
+            encoder.writeInt32("ValueRank", value.valueRank);
+            encoder.writeArray("ArrayDimensions", value.arrayDimensions, encoder::writeUInt32);
+            encoder.writeBoolean("IsAbstract", value.isAbstract);
         }
     }
 

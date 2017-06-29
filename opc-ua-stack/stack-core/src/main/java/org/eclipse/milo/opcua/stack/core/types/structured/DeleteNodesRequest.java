@@ -18,41 +18,35 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcBinaryStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamReader;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.OpcXmlStreamWriter;
-import org.eclipse.milo.opcua.stack.core.serialization.codec.SerializationContext;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("DeleteNodesRequest")
 public class DeleteNodesRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.DeleteNodesRequest;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteNodesRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteNodesRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final DeleteNodesItem[] _nodesToDelete;
+    protected final RequestHeader requestHeader;
+    protected final DeleteNodesItem[] nodesToDelete;
 
     public DeleteNodesRequest() {
-        this._requestHeader = null;
-        this._nodesToDelete = null;
+        this.requestHeader = null;
+        this.nodesToDelete = null;
     }
 
-    public DeleteNodesRequest(RequestHeader _requestHeader, DeleteNodesItem[] _nodesToDelete) {
-        this._requestHeader = _requestHeader;
-        this._nodesToDelete = _nodesToDelete;
+    public DeleteNodesRequest(RequestHeader requestHeader, DeleteNodesItem[] nodesToDelete) {
+        this.requestHeader = requestHeader;
+        this.nodesToDelete = nodesToDelete;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public DeleteNodesItem[] getNodesToDelete() { return _nodesToDelete; }
+    public DeleteNodesItem[] getNodesToDelete() { return nodesToDelete; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,57 +60,37 @@ public class DeleteNodesRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("NodesToDelete", _nodesToDelete)
+            .add("RequestHeader", requestHeader)
+            .add("NodesToDelete", nodesToDelete)
             .toString();
     }
 
-    public static class BinaryCodec implements OpcBinaryDataTypeCodec<DeleteNodesRequest> {
-        @Override
-        public DeleteNodesRequest decode(SerializationContext context, OpcBinaryStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.BinaryEncodingId, reader);
-            DeleteNodesItem[] _nodesToDelete =
-                reader.readArray(
-                    () -> (DeleteNodesItem) context.decode(
-                        DeleteNodesItem.BinaryEncodingId, reader),
-                    DeleteNodesItem.class
-                );
+    public static class Codec extends BuiltinDataTypeCodec<DeleteNodesRequest> {
 
-            return new DeleteNodesRequest(_requestHeader, _nodesToDelete);
+        @Override
+        public Class<DeleteNodesRequest> getType() {
+            return DeleteNodesRequest.class;
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteNodesRequest value, OpcBinaryStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.BinaryEncodingId, value._requestHeader, writer);
-            writer.writeArray(
-                value._nodesToDelete,
-                e -> context.encode(DeleteNodesItem.BinaryEncodingId, e, writer)
-            );
-        }
-    }
-
-    public static class XmlCodec implements OpcXmlDataTypeCodec<DeleteNodesRequest> {
-        @Override
-        public DeleteNodesRequest decode(SerializationContext context, OpcXmlStreamReader reader) throws UaSerializationException {
-            RequestHeader _requestHeader = (RequestHeader) context.decode(RequestHeader.XmlEncodingId, reader);
-            DeleteNodesItem[] _nodesToDelete =
-                reader.readArray(
+        public DeleteNodesRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            DeleteNodesItem[] nodesToDelete =
+                decoder.readBuiltinStructArray(
                     "NodesToDelete",
-                    f -> (DeleteNodesItem) context.decode(
-                        DeleteNodesItem.XmlEncodingId, reader),
                     DeleteNodesItem.class
                 );
 
-            return new DeleteNodesRequest(_requestHeader, _nodesToDelete);
+            return new DeleteNodesRequest(requestHeader, nodesToDelete);
         }
 
         @Override
-        public void encode(SerializationContext context, DeleteNodesRequest encodable, OpcXmlStreamWriter writer) throws UaSerializationException {
-            context.encode(RequestHeader.XmlEncodingId, encodable._requestHeader, writer);
-            writer.writeArray(
+        public void encode(DeleteNodesRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStructArray(
                 "NodesToDelete",
-                encodable._nodesToDelete,
-                (f, e) -> context.encode(DeleteNodesItem.XmlEncodingId, e, writer)
+                value.nodesToDelete,
+                DeleteNodesItem.class
             );
         }
     }
