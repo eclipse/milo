@@ -60,7 +60,7 @@ public enum SecurityAlgorithm {
      * <p>
      * Requires Bouncy Castle installed as a Security Provider.
      */
-    RsaSha256Pss("http://www.w3.org/2007/05/xmldsig-more#rsa-pss", "SHA256withRSA/PSS"),
+    RsaSha256Pss("http://opcfoundation.org/UA/security/rsa-sha2-256-pss", "SHA256withRSA/PSS"),
 
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
@@ -70,7 +70,7 @@ public enum SecurityAlgorithm {
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
      */
-    RsaOaepSha1("http://www.w3.org/2009/xmlenc11#mgf1sha1", "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
+    RsaOaepSha1("http://www.w3.org/2001/04/xmlenc#rsa-oaep", "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
 
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
@@ -82,7 +82,7 @@ public enum SecurityAlgorithm {
      * <p>
      * This is important because the BC version uses SHA256 in the padding while the SunJCE version uses Sha1.
      */
-    RsaOaepSha256("http://www.w3.org/2009/xmlenc11#mgf1sha256", "RSA/ECB/OAEPWithSHA256AndMGF1Padding"),
+    RsaOaepSha256("http://opcfoundation.org/UA/security/rsa-oaep-sha2-256", "RSA/ECB/OAEPWithSHA256AndMGF1Padding"),
 
     /**
      * Asymmetric Key Wrap

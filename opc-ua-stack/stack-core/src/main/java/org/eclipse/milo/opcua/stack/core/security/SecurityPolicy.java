@@ -71,7 +71,7 @@ public enum SecurityPolicy {
     ),
 
     Aes128_Sha256_RsaOaep(
-        "http://opcfoundation.org/UA/SecurityPolicy#Aes128-Sha256-RsaOaep",
+        "http://opcfoundation.org/UA/SecurityPolicy#Aes128_Sha256_RsaOaep",
         SecurityAlgorithm.HmacSha256,
         SecurityAlgorithm.Aes128,
         SecurityAlgorithm.RsaSha256,
@@ -82,7 +82,7 @@ public enum SecurityPolicy {
     ),
 
     Aes256_Sha256_RsaPss(
-        "http://opcfoundation.org/UA/SecurityPolicy#Aes256-Sha256-RsaPss",
+        "http://opcfoundation.org/UA/SecurityPolicy#Aes256_Sha256_RsaPss",
         SecurityAlgorithm.HmacSha256,
         SecurityAlgorithm.Aes256,
         SecurityAlgorithm.RsaSha256Pss,
