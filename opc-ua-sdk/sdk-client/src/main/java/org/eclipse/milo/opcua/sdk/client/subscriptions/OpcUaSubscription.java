@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -123,7 +123,9 @@ public class OpcUaSubscription implements UaSubscription {
                     request.getRequestedParameters().getFilter()
                 );
 
-                item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
+                if (request.getRequestedParameters().getSamplingInterval() != null) {
+                    item.setRequestedSamplingInterval(request.getRequestedParameters().getSamplingInterval());
+                }
                 item.setRequestedQueueSize(request.getRequestedParameters().getQueueSize());
 
                 if (item.getStatusCode().isGood()) {
