@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCo
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
+import org.xml.sax.SAXException;
 
 public class OpcUaDataTypeEncoding implements DataTypeEncoding {
 
@@ -149,7 +150,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
             reader.setInput(new ByteArrayInputStream(encoded.getFragment().getBytes()));
 
             return reader.readStruct(null, encodingTypeId);
-        } catch (IOException e) {
+        } catch (IOException | SAXException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }
     }
