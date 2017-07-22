@@ -47,7 +47,7 @@ public class NonceUtil {
             long delta = System.nanoTime() - start;
 
             LoggerFactory.getLogger(NonceUtil.class).info(
-                "SecureRandom from getInstanceStrong() finished seeding in %sms.",
+                "SecureRandom from getInstanceStrong() finished seeding in {}ms.",
                 TimeUnit.NANOSECONDS.convert(delta, TimeUnit.MILLISECONDS));
         }, "SecureRandomGetInstanceStrong").start();
     }
