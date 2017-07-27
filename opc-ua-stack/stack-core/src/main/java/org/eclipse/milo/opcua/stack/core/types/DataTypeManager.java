@@ -41,15 +41,6 @@ public interface DataTypeManager {
     DataTypeDictionary getTypeDictionary(String namespaceUri);
 
     /**
-     * Get the {@link DataTypeCodec} identified by {@code encodingId}. ().
-     *
-     * @param encodingId the {@link NodeId} of the DataTypeEncoding Node for the DataType.
-     * @return a {@link DataTypeCodec}, or {@code null} if none was found.
-     */
-    @Nullable
-    DataTypeCodec getCodec(NodeId encodingId);
-
-    /**
      * Get the {@link OpcUaBinaryDataTypeCodec} identified by {@code encodingId}.
      *
      * @param encodingId the {@link NodeId} of the DataTypeEncoding node for the DataType of the requested codec.
