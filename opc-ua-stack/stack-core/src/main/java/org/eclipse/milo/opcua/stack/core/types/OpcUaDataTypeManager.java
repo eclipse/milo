@@ -58,12 +58,6 @@ public class OpcUaDataTypeManager implements DataTypeManager {
 
     @Nullable
     @Override
-    public DataTypeCodec getCodec(NodeId encodingId) {
-        return codecs.get(encodingId);
-    }
-
-    @Nullable
-    @Override
     public OpcUaBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId) {
         DataTypeCodec codec = codecs.get(encodingId);
 
