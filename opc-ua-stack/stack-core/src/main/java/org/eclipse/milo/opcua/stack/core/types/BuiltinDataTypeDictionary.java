@@ -61,6 +61,12 @@ public class BuiltinDataTypeDictionary {
 
         private static final OpcUaXmlDataTypeDictionary XML_INSTANCE = getXmlInstance();
 
+        private static synchronized void initialize() {
+            if (INITIALIZED.compareAndSet(false, true)) {
+                BuiltinDataTypeDictionaryInitializer.initialize();
+            }
+        }
+
         private static synchronized OpcUaBinaryDataTypeDictionary getBinaryInstance() {
             if (INITIALIZED.compareAndSet(false, true)) {
                 BuiltinDataTypeDictionaryInitializer.initialize();
@@ -111,6 +117,10 @@ public class BuiltinDataTypeDictionary {
         = Maps.newConcurrentMap();
     private static final ConcurrentMap<String, OpcUaXmlDataTypeCodec<?>> XML_CODECS_BY_DESC
         = Maps.newConcurrentMap();
+
+    static {
+        InstanceHolder.initialize();
+    }
 
     static synchronized <T extends UaStructure> void register(
         String typeName,
