@@ -560,7 +560,10 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
             for (int i = 0; i < childNodes.getLength(); i++) {
                 currentNode = childNodes.item(i);
-                values.add(readBuiltinType(type, type));
+
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    values.add(readBuiltinType(type, type));
+                }
             }
 
             Object array = Array.newInstance(builtinTypeClass(type), values.size());
@@ -574,15 +577,21 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
             Node child = node.getFirstChild();
             for (int i = 0; i < child.getChildNodes().getLength(); i++) {
                 currentNode = child.getChildNodes().item(i);
-                dimensions.add(readInt32("Int32"));
+
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    dimensions.add(readInt32("Int32"));
+                }
             }
 
             List<Object> elements = new ArrayList<>();
             child = child.getNextSibling();
             for (int i = 0; i < child.getChildNodes().getLength(); i++) {
                 currentNode = child.getChildNodes().item(i);
-                String type = currentNode.getLocalName();
-                elements.add(readBuiltinType(type, type));
+
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    String type = currentNode.getLocalName();
+                    elements.add(readBuiltinType(type, type));
+                }
             }
 
             Class<?> clazz = elements.get(0).getClass();
@@ -802,7 +811,10 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
         for (int i = 0; i < children.getLength(); i++) {
             currentNode = children.item(i);
-            values.add(decoder.apply(currentNode.getLocalName()));
+
+            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                values.add(decoder.apply(currentNode.getLocalName()));
+            }
         }
 
         try {
@@ -888,7 +900,10 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
         for (int i = 0; i < children.getLength(); i++) {
             currentNode = children.item(i);
-            values.add(readStruct(currentNode.getLocalName(), encodingId));
+
+            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                values.add(readStruct(currentNode.getLocalName(), encodingId));
+            }
         }
 
         try {
