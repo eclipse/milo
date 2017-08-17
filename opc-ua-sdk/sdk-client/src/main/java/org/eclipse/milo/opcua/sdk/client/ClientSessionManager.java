@@ -142,6 +142,8 @@ class ClientSessionManager {
             Creating creatingState = new Creating();
 
             if (state.compareAndSet(currentState, creatingState)) {
+                logger.debug("getSession() while Inactive", new Exception());
+
                 CompletableFuture<OpcUaSession> sessionFuture = creatingState.sessionFuture;
 
                 createSession(creatingState);
@@ -163,7 +165,7 @@ class ClientSessionManager {
         } else if (currentState instanceof Closing) {
             CompletableFuture<OpcUaSession> future = new CompletableFuture<>();
 
-            ((Closing) currentState).closeFuture.whenCompleteAsync((oldSession, ex) ->
+            ((Closing) currentState).closeFuture.whenComplete((oldSession, ex) ->
                 getSession().whenComplete((session, ex2) -> {
                     if (session != null) future.complete(session);
                     else future.completeExceptionally(ex2);
@@ -414,18 +416,18 @@ class ClientSessionManager {
         stackClient.getChannelFuture().thenCompose(activate).whenCompleteAsync((asr, ex) -> {
             CompletableFuture<OpcUaSession> sessionFuture = activatingState.sessionFuture;
 
+            OpcUaSession session = new OpcUaSession(
+                csr.getAuthenticationToken(),
+                csr.getSessionId(),
+                client.getConfig().getSessionName().get(),
+                csr.getRevisedSessionTimeout(),
+                csr.getMaxRequestMessageSize(),
+                csr.getServerCertificate(),
+                csr.getServerSoftwareCertificates()
+            );
+
             if (asr != null) {
                 logger.debug("Session activated: {}", csr.getSessionId());
-
-                OpcUaSession session = new OpcUaSession(
-                    csr.getAuthenticationToken(),
-                    csr.getSessionId(),
-                    client.getConfig().getSessionName().get(),
-                    csr.getRevisedSessionTimeout(),
-                    csr.getMaxRequestMessageSize(),
-                    csr.getServerCertificate(),
-                    csr.getServerSoftwareCertificates()
-                );
 
                 session.setServerNonce(asr.getServerNonce());
 
@@ -450,8 +452,17 @@ class ClientSessionManager {
             } else {
                 logger.debug("ActivateSession failed: {}", ex.getMessage(), ex);
 
-                state.compareAndSet(activatingState, new Inactive());
-                sessionFuture.completeExceptionally(ex);
+                Closing closingState = new Closing();
+
+                if (state.compareAndSet(activatingState, closingState)) {
+                    closeSession(closingState, completedFuture(session));
+
+                    closingState.closeFuture.whenComplete(
+                        (s, closeEx) -> sessionFuture.completeExceptionally(ex));
+                } else {
+                    state.compareAndSet(activatingState, new Inactive());
+                    sessionFuture.completeExceptionally(ex);
+                }
             }
         });
     }
