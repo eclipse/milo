@@ -63,6 +63,8 @@ class ClientChannelManager {
             Connecting nextState = new Connecting();
 
             if (state.compareAndSet(currentState, nextState)) {
+                logger.debug("getChannel() while Idle", new Exception());
+
                 CompletableFuture<ClientSecureChannel> connected = nextState.connected;
 
                 connect(true, null, connected);
@@ -306,12 +308,7 @@ class ClientChannelManager {
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
             State currentState = state.get();
 
-            if (currentState instanceof Disconnecting) {
-                Idle nextState = new Idle();
-
-                state.compareAndSet(currentState, nextState);
-                ((Disconnecting) currentState).disconnectFuture.complete(Unit.VALUE);
-            } else {
+            if (currentState instanceof Connected) {
                 Reconnecting nextState = new Reconnecting();
 
                 if (state.compareAndSet(currentState, nextState)) {
