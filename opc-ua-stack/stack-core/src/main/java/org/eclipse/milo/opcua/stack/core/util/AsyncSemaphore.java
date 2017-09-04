@@ -27,15 +27,23 @@ public class AsyncSemaphore {
         availablePermits = new AtomicInteger(initialPermits);
     }
 
-    public synchronized CompletableFuture<SemaphorePermit> acquire() {
+    public CompletableFuture<SemaphorePermit> acquire() {
         CompletableFuture<SemaphorePermit> f = new CompletableFuture<>();
 
-        if (availablePermits.get() > 0) {
-            availablePermits.decrementAndGet();
+        boolean permitAvailable = false;
 
+        synchronized (this) {
+            if (availablePermits.get() > 0) {
+                availablePermits.decrementAndGet();
+
+                permitAvailable = true;
+            } else {
+                waitQueue.addLast(f);
+            }
+        }
+
+        if (permitAvailable) {
             f.complete(new PermitImpl());
-        } else {
-            waitQueue.addLast(f);
         }
 
         return f;
