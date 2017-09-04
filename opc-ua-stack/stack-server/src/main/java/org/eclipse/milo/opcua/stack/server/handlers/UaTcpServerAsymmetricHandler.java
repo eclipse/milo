@@ -167,7 +167,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                         "unknown secure channel id: " + secureChannelId);
                 }
 
-                if (!secureChannel.getRemoteCertificateBytes().equals(securityHeader.getSenderCertificate())) {
+                if (!secureChannel.getRemoteCertificateChainBytes().equals(securityHeader.getSenderCertificate())) {
                     throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                         "certificate requesting renewal did not match existing certificate.");
                 }

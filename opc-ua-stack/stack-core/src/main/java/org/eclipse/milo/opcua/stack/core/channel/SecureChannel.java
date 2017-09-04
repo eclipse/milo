@@ -109,6 +109,26 @@ public interface SecureChannel {
         }
     }
 
+    default ByteString getRemoteCertificateChainBytes() throws UaException {
+        List<X509Certificate> remoteCertificateChain = getRemoteCertificateChain();
+
+        if (remoteCertificateChain != null) {
+            byte[] encoded = remoteCertificateChain.stream()
+                .map(c -> {
+                    try {
+                        return c.getEncoded();
+                    } catch (CertificateEncodingException e) {
+                        return new byte[0];
+                    }
+                })
+                .reduce(new byte[0], Bytes::concat);
+
+            return ByteString.of(encoded);
+        } else {
+            return ByteString.NULL_VALUE;
+        }
+    }
+
     default ByteString getRemoteCertificateThumbprint() throws UaException {
         try {
             return getRemoteCertificate() != null ?
