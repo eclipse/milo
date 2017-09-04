@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,96 +25,72 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:LimitAlarmType")
 public class LimitAlarmNode extends AlarmConditionNode implements LimitAlarmType {
+    public LimitAlarmNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public LimitAlarmNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public LimitAlarmNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public Double getHighHighLimit() {
-        Optional<Double> property = getProperty(LimitAlarmType.HIGH_HIGH_LIMIT);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getHighHighLimitNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.HIGH_HIGH_LIMIT.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.HIGH_HIGH_LIMIT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Double getHighHighLimit() {
+        Optional<Double> propertyValue = getProperty(LimitAlarmType.HIGH_HIGH_LIMIT);
+        return propertyValue.orElse(null);
+    }
+
     public void setHighHighLimit(Double value) {
         setProperty(LimitAlarmType.HIGH_HIGH_LIMIT, value);
     }
 
-    @Override
-    public Double getHighLimit() {
-        Optional<Double> property = getProperty(LimitAlarmType.HIGH_LIMIT);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getHighLimitNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.HIGH_LIMIT.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.HIGH_LIMIT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Double getHighLimit() {
+        Optional<Double> propertyValue = getProperty(LimitAlarmType.HIGH_LIMIT);
+        return propertyValue.orElse(null);
+    }
+
     public void setHighLimit(Double value) {
         setProperty(LimitAlarmType.HIGH_LIMIT, value);
     }
 
-    @Override
-    public Double getLowLimit() {
-        Optional<Double> property = getProperty(LimitAlarmType.LOW_LIMIT);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getLowLimitNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.LOW_LIMIT.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.LOW_LIMIT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Double getLowLimit() {
+        Optional<Double> propertyValue = getProperty(LimitAlarmType.LOW_LIMIT);
+        return propertyValue.orElse(null);
+    }
+
     public void setLowLimit(Double value) {
         setProperty(LimitAlarmType.LOW_LIMIT, value);
     }
 
-    @Override
-    public Double getLowLowLimit() {
-        Optional<Double> property = getProperty(LimitAlarmType.LOW_LOW_LIMIT);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getLowLowLimitNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.LOW_LOW_LIMIT.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(LimitAlarmType.LOW_LOW_LIMIT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Double getLowLowLimit() {
+        Optional<Double> propertyValue = getProperty(LimitAlarmType.LOW_LOW_LIMIT);
+        return propertyValue.orElse(null);
+    }
+
     public void setLowLowLimit(Double value) {
         setProperty(LimitAlarmType.LOW_LOW_LIMIT, value);
     }
-
 }

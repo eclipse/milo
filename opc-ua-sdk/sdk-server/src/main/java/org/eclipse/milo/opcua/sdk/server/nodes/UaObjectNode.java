@@ -84,6 +84,18 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         LocalizedText displayName,
         LocalizedText description,
         UInteger writeMask,
+        UInteger userWriteMask) {
+
+        super(nodeMap, nodeId, NodeClass.Object, browseName, displayName, description, writeMask, userWriteMask);
+    }
+
+    public UaObjectNode(
+        ServerNodeMap nodeMap,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
         UInteger userWriteMask,
         UByte eventNotifier) {
 

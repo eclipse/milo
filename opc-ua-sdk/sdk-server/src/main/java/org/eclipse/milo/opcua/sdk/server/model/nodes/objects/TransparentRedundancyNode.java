@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,58 +26,44 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.RedundantServerDataType;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:TransparentRedundancyType")
 public class TransparentRedundancyNode extends ServerRedundancyNode implements TransparentRedundancyType {
+    public TransparentRedundancyNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public TransparentRedundancyNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public TransparentRedundancyNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public String getCurrentServerId() {
-        Optional<String> property = getProperty(TransparentRedundancyType.CURRENT_SERVER_ID);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getCurrentServerIdNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(TransparentRedundancyType.CURRENT_SERVER_ID.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(TransparentRedundancyType.CURRENT_SERVER_ID);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String getCurrentServerId() {
+        Optional<String> propertyValue = getProperty(TransparentRedundancyType.CURRENT_SERVER_ID);
+        return propertyValue.orElse(null);
+    }
+
     public void setCurrentServerId(String value) {
         setProperty(TransparentRedundancyType.CURRENT_SERVER_ID, value);
     }
 
-    @Override
-    public RedundantServerDataType[] getRedundantServerArray() {
-        Optional<RedundantServerDataType[]> property = getProperty(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getRedundantServerArrayNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public RedundantServerDataType[] getRedundantServerArray() {
+        Optional<RedundantServerDataType[]> propertyValue = getProperty(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY);
+        return propertyValue.orElse(null);
+    }
+
     public void setRedundantServerArray(RedundantServerDataType[] value) {
         setProperty(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY, value);
     }
-
 }

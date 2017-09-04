@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,39 +25,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:NonTransparentRedundancyType")
 public class NonTransparentRedundancyNode extends ServerRedundancyNode implements NonTransparentRedundancyType {
+    public NonTransparentRedundancyNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public NonTransparentRedundancyNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public NonTransparentRedundancyNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public String[] getServerUriArray() {
-        Optional<String[]> property = getProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getServerUriArrayNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(NonTransparentRedundancyType.SERVER_URI_ARRAY.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(NonTransparentRedundancyType.SERVER_URI_ARRAY);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String[] getServerUriArray() {
+        Optional<String[]> propertyValue = getProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY);
+        return propertyValue.orElse(null);
+    }
+
     public void setServerUriArray(String[] value) {
         setProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY, value);
     }
-
 }

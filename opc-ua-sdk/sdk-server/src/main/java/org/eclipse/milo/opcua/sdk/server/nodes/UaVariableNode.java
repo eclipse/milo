@@ -103,6 +103,18 @@ public class UaVariableNode extends UaNode implements VariableNode {
         LocalizedText displayName,
         LocalizedText description,
         UInteger writeMask,
+        UInteger userWriteMask) {
+
+        super(nodeMap, nodeId, NodeClass.Variable, browseName, displayName, description, writeMask, userWriteMask);
+    }
+
+    public UaVariableNode(
+        ServerNodeMap nodeMap,
+        NodeId nodeId,
+        QualifiedName browseName,
+        LocalizedText displayName,
+        LocalizedText description,
+        UInteger writeMask,
         UInteger userWriteMask,
         DataValue value,
         NodeId dataType,

@@ -1,115 +1,106 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.TwoStateVariableType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public interface DialogConditionType extends ConditionType {
-
-    Property<LocalizedText> PROMPT = new BasicProperty<>(
-        QualifiedName.parse("0:Prompt"),
+    QualifiedProperty<LocalizedText> PROMPT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Prompt",
         NodeId.parse("ns=0;i=21"),
-        -1,
+        ValueRanks.Scalar,
         LocalizedText.class
     );
 
-    Property<LocalizedText[]> RESPONSE_OPTION_SET = new BasicProperty<>(
-        QualifiedName.parse("0:ResponseOptionSet"),
+    QualifiedProperty<LocalizedText[]> RESPONSE_OPTION_SET = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ResponseOptionSet",
         NodeId.parse("ns=0;i=21"),
-        1,
+        ValueRanks.OneDimension,
         LocalizedText[].class
     );
 
-    Property<Integer> DEFAULT_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:DefaultResponse"),
+    QualifiedProperty<Integer> DEFAULT_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DefaultResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<Integer> OK_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:OkResponse"),
+    QualifiedProperty<Integer> OK_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OkResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<Integer> CANCEL_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:CancelResponse"),
+    QualifiedProperty<Integer> CANCEL_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "CancelResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<Integer> LAST_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:LastResponse"),
+    QualifiedProperty<Integer> LAST_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
-
-    LocalizedText getPrompt();
 
     PropertyType getPromptNode();
 
-    void setPrompt(LocalizedText value);
+    LocalizedText getPrompt();
 
-    LocalizedText[] getResponseOptionSet();
+    void setPrompt(LocalizedText value);
 
     PropertyType getResponseOptionSetNode();
 
-    void setResponseOptionSet(LocalizedText[] value);
+    LocalizedText[] getResponseOptionSet();
 
-    Integer getDefaultResponse();
+    void setResponseOptionSet(LocalizedText[] value);
 
     PropertyType getDefaultResponseNode();
 
-    void setDefaultResponse(Integer value);
+    Integer getDefaultResponse();
 
-    Integer getOkResponse();
+    void setDefaultResponse(Integer value);
 
     PropertyType getOkResponseNode();
 
-    void setOkResponse(Integer value);
+    Integer getOkResponse();
 
-    Integer getCancelResponse();
+    void setOkResponse(Integer value);
 
     PropertyType getCancelResponseNode();
 
-    void setCancelResponse(Integer value);
+    Integer getCancelResponse();
 
-    Integer getLastResponse();
+    void setCancelResponse(Integer value);
 
     PropertyType getLastResponseNode();
 
-    void setLastResponse(Integer value);
+    Integer getLastResponse();
 
-    LocalizedText getEnabledState();
+    void setLastResponse(Integer value);
 
     TwoStateVariableType getEnabledStateNode();
 
+    LocalizedText getEnabledState();
+
     void setEnabledState(LocalizedText value);
 
-    LocalizedText getDialogState();
-
     TwoStateVariableType getDialogStateNode();
+
+    LocalizedText getDialogState();
 
     void setDialogState(LocalizedText value);
 }

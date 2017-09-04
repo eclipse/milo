@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,103 +26,77 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:ServerConfigurationType")
 public class ServerConfigurationNode extends BaseObjectNode implements ServerConfigurationType {
+    public ServerConfigurationNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                   LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                   UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public ServerConfigurationNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public ServerConfigurationNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                   LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                   UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public String[] getServerCapabilities() {
-        Optional<String[]> property = getProperty(ServerConfigurationType.SERVER_CAPABILITIES);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getServerCapabilitiesNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.SERVER_CAPABILITIES.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.SERVER_CAPABILITIES);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String[] getServerCapabilities() {
+        Optional<String[]> propertyValue = getProperty(ServerConfigurationType.SERVER_CAPABILITIES);
+        return propertyValue.orElse(null);
+    }
+
     public void setServerCapabilities(String[] value) {
         setProperty(ServerConfigurationType.SERVER_CAPABILITIES, value);
     }
 
-    @Override
-    public String[] getSupportedPrivateKeyFormats() {
-        Optional<String[]> property = getProperty(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getSupportedPrivateKeyFormatsNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String[] getSupportedPrivateKeyFormats() {
+        Optional<String[]> propertyValue = getProperty(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS);
+        return propertyValue.orElse(null);
+    }
+
     public void setSupportedPrivateKeyFormats(String[] value) {
         setProperty(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS, value);
     }
 
-    @Override
-    public UInteger getMaxTrustListSize() {
-        Optional<UInteger> property = getProperty(ServerConfigurationType.MAX_TRUST_LIST_SIZE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getMaxTrustListSizeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.MAX_TRUST_LIST_SIZE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.MAX_TRUST_LIST_SIZE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public UInteger getMaxTrustListSize() {
+        Optional<UInteger> propertyValue = getProperty(ServerConfigurationType.MAX_TRUST_LIST_SIZE);
+        return propertyValue.orElse(null);
+    }
+
     public void setMaxTrustListSize(UInteger value) {
         setProperty(ServerConfigurationType.MAX_TRUST_LIST_SIZE, value);
     }
 
-    @Override
-    public Boolean getMulticastDnsEnabled() {
-        Optional<Boolean> property = getProperty(ServerConfigurationType.MULTICAST_DNS_ENABLED);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getMulticastDnsEnabledNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.MULTICAST_DNS_ENABLED.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerConfigurationType.MULTICAST_DNS_ENABLED);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Boolean getMulticastDnsEnabled() {
+        Optional<Boolean> propertyValue = getProperty(ServerConfigurationType.MULTICAST_DNS_ENABLED);
+        return propertyValue.orElse(null);
+    }
+
     public void setMulticastDnsEnabled(Boolean value) {
         setProperty(ServerConfigurationType.MULTICAST_DNS_ENABLED, value);
     }
 
-    @Override
     public CertificateGroupFolderNode getCertificateGroupsNode() {
         Optional<ObjectNode> component = getObjectComponent("CertificateGroups");
-
         return component.map(node -> (CertificateGroupFolderNode) node).orElse(null);
     }
-
 }

@@ -1,94 +1,81 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.AxisScaleEnumeration;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 
-
 public interface ArrayItemType extends DataItemType {
-
-    Property<Range> INSTRUMENT_RANGE = new BasicProperty<>(
-        QualifiedName.parse("0:InstrumentRange"),
+    QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InstrumentRange",
         NodeId.parse("ns=0;i=884"),
-        -1,
+        ValueRanks.Scalar,
         Range.class
     );
 
-    Property<Range> E_U_RANGE = new BasicProperty<>(
-        QualifiedName.parse("0:EURange"),
+    QualifiedProperty<Range> E_U_RANGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EURange",
         NodeId.parse("ns=0;i=884"),
-        -1,
+        ValueRanks.Scalar,
         Range.class
     );
 
-    Property<EUInformation> ENGINEERING_UNITS = new BasicProperty<>(
-        QualifiedName.parse("0:EngineeringUnits"),
+    QualifiedProperty<EUInformation> ENGINEERING_UNITS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EngineeringUnits",
         NodeId.parse("ns=0;i=887"),
-        -1,
+        ValueRanks.Scalar,
         EUInformation.class
     );
 
-    Property<LocalizedText> TITLE = new BasicProperty<>(
-        QualifiedName.parse("0:Title"),
+    QualifiedProperty<LocalizedText> TITLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Title",
         NodeId.parse("ns=0;i=21"),
-        -1,
+        ValueRanks.Scalar,
         LocalizedText.class
     );
 
-    Property<AxisScaleEnumeration> AXIS_SCALE_TYPE = new BasicProperty<>(
-        QualifiedName.parse("0:AxisScaleType"),
+    QualifiedProperty<AxisScaleEnumeration> AXIS_SCALE_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "AxisScaleType",
         NodeId.parse("ns=0;i=12077"),
-        -1,
+        ValueRanks.Scalar,
         AxisScaleEnumeration.class
     );
 
+    PropertyType getInstrumentRangeNode();
 
     Range getInstrumentRange();
 
-    PropertyType getInstrumentRangeNode();
-
     void setInstrumentRange(Range value);
-
-    Range getEURange();
 
     PropertyType getEURangeNode();
 
-    void setEURange(Range value);
+    Range getEURange();
 
-    EUInformation getEngineeringUnits();
+    void setEURange(Range value);
 
     PropertyType getEngineeringUnitsNode();
 
-    void setEngineeringUnits(EUInformation value);
+    EUInformation getEngineeringUnits();
 
-    LocalizedText getTitle();
+    void setEngineeringUnits(EUInformation value);
 
     PropertyType getTitleNode();
 
-    void setTitle(LocalizedText value);
+    LocalizedText getTitle();
 
-    AxisScaleEnumeration getAxisScaleType();
+    void setTitle(LocalizedText value);
 
     PropertyType getAxisScaleTypeNode();
 
-    void setAxisScaleType(AxisScaleEnumeration value);
+    AxisScaleEnumeration getAxisScaleType();
 
+    void setAxisScaleType(AxisScaleEnumeration value);
 }

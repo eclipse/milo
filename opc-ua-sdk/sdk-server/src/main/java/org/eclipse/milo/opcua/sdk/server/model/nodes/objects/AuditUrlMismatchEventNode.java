@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,39 +25,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AuditUrlMismatchEventType")
 public class AuditUrlMismatchEventNode extends AuditCreateSessionEventNode implements AuditUrlMismatchEventType {
+    public AuditUrlMismatchEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AuditUrlMismatchEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AuditUrlMismatchEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public String getEndpointUrl() {
-        Optional<String> property = getProperty(AuditUrlMismatchEventType.ENDPOINT_URL);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getEndpointUrlNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditUrlMismatchEventType.ENDPOINT_URL.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditUrlMismatchEventType.ENDPOINT_URL);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String getEndpointUrl() {
+        Optional<String> propertyValue = getProperty(AuditUrlMismatchEventType.ENDPOINT_URL);
+        return propertyValue.orElse(null);
+    }
+
     public void setEndpointUrl(String value) {
         setProperty(AuditUrlMismatchEventType.ENDPOINT_URL, value);
     }
-
 }

@@ -27,8 +27,4 @@ public interface Property<T> {
 
     Class<T> getJavaType();
 
-    default UInteger[] getArrayDimensions() {
-        return null;
-    }
-
 }

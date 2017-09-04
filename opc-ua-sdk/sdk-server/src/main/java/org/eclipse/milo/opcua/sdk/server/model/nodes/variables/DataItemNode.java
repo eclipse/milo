@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.DataItemType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -26,75 +25,46 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:DataItemType")
 public class DataItemNode extends BaseDataVariableNode implements DataItemType {
-
-    public DataItemNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        VariableTypeNode variableTypeNode) {
-
-        super(nodeMap, nodeId, variableTypeNode);
+    public DataItemNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                        UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
     }
 
-    public DataItemNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        DataValue value,
-        NodeId dataType,
-        Integer valueRank,
-        UInteger[] arrayDimensions,
-        UByte accessLevel,
-        UByte userAccessLevel,
-        Double minimumSamplingInterval,
-        boolean historizing) {
-
-        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask,
-            value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+    public DataItemNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                        UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
+                        UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                        double minimumSamplingInterval, boolean historizing) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 
-
-    @Override
-    public String getDefinition() {
-        Optional<String> property = getProperty(DataItemType.DEFINITION);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getDefinitionNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(DataItemType.DEFINITION.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(DataItemType.DEFINITION);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String getDefinition() {
+        Optional<String> propertyValue = getProperty(DataItemType.DEFINITION);
+        return propertyValue.orElse(null);
+    }
+
     public void setDefinition(String value) {
         setProperty(DataItemType.DEFINITION, value);
     }
 
-    @Override
-    public Double getValuePrecision() {
-        Optional<Double> property = getProperty(DataItemType.VALUE_PRECISION);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getValuePrecisionNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(DataItemType.VALUE_PRECISION.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(DataItemType.VALUE_PRECISION);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Double getValuePrecision() {
+        Optional<Double> propertyValue = getProperty(DataItemType.VALUE_PRECISION);
+        return propertyValue.orElse(null);
+    }
+
     public void setValuePrecision(Double value) {
         setProperty(DataItemType.VALUE_PRECISION, value);
     }
-
 }

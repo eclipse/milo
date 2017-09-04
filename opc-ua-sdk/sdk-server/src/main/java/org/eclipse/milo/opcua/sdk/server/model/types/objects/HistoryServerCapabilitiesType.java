@@ -1,209 +1,207 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface HistoryServerCapabilitiesType extends BaseObjectType {
-
-    Property<Boolean> ACCESS_HISTORY_DATA_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:AccessHistoryDataCapability"),
+    QualifiedProperty<Boolean> ACCESS_HISTORY_DATA_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "AccessHistoryDataCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> ACCESS_HISTORY_EVENTS_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:AccessHistoryEventsCapability"),
+    QualifiedProperty<Boolean> ACCESS_HISTORY_EVENTS_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "AccessHistoryEventsCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<UInteger> MAX_RETURN_DATA_VALUES = new BasicProperty<>(
-        QualifiedName.parse("0:MaxReturnDataValues"),
+    QualifiedProperty<UInteger> MAX_RETURN_DATA_VALUES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxReturnDataValues",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-    Property<UInteger> MAX_RETURN_EVENT_VALUES = new BasicProperty<>(
-        QualifiedName.parse("0:MaxReturnEventValues"),
+    QualifiedProperty<UInteger> MAX_RETURN_EVENT_VALUES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxReturnEventValues",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-    Property<Boolean> INSERT_DATA_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:InsertDataCapability"),
+    QualifiedProperty<Boolean> INSERT_DATA_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InsertDataCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> REPLACE_DATA_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:ReplaceDataCapability"),
+    QualifiedProperty<Boolean> REPLACE_DATA_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ReplaceDataCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> UPDATE_DATA_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:UpdateDataCapability"),
+    QualifiedProperty<Boolean> UPDATE_DATA_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UpdateDataCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> DELETE_RAW_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:DeleteRawCapability"),
+    QualifiedProperty<Boolean> DELETE_RAW_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DeleteRawCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> DELETE_AT_TIME_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:DeleteAtTimeCapability"),
+    QualifiedProperty<Boolean> DELETE_AT_TIME_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DeleteAtTimeCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> INSERT_EVENT_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:InsertEventCapability"),
+    QualifiedProperty<Boolean> INSERT_EVENT_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InsertEventCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> REPLACE_EVENT_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:ReplaceEventCapability"),
+    QualifiedProperty<Boolean> REPLACE_EVENT_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ReplaceEventCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> UPDATE_EVENT_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:UpdateEventCapability"),
+    QualifiedProperty<Boolean> UPDATE_EVENT_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UpdateEventCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> DELETE_EVENT_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:DeleteEventCapability"),
+    QualifiedProperty<Boolean> DELETE_EVENT_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DeleteEventCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> INSERT_ANNOTATION_CAPABILITY = new BasicProperty<>(
-        QualifiedName.parse("0:InsertAnnotationCapability"),
+    QualifiedProperty<Boolean> INSERT_ANNOTATION_CAPABILITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InsertAnnotationCapability",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
-
-    Boolean getAccessHistoryDataCapability();
 
     PropertyType getAccessHistoryDataCapabilityNode();
 
-    void setAccessHistoryDataCapability(Boolean value);
+    Boolean getAccessHistoryDataCapability();
 
-    Boolean getAccessHistoryEventsCapability();
+    void setAccessHistoryDataCapability(Boolean value);
 
     PropertyType getAccessHistoryEventsCapabilityNode();
 
-    void setAccessHistoryEventsCapability(Boolean value);
+    Boolean getAccessHistoryEventsCapability();
 
-    UInteger getMaxReturnDataValues();
+    void setAccessHistoryEventsCapability(Boolean value);
 
     PropertyType getMaxReturnDataValuesNode();
 
-    void setMaxReturnDataValues(UInteger value);
+    UInteger getMaxReturnDataValues();
 
-    UInteger getMaxReturnEventValues();
+    void setMaxReturnDataValues(UInteger value);
 
     PropertyType getMaxReturnEventValuesNode();
 
-    void setMaxReturnEventValues(UInteger value);
+    UInteger getMaxReturnEventValues();
 
-    Boolean getInsertDataCapability();
+    void setMaxReturnEventValues(UInteger value);
 
     PropertyType getInsertDataCapabilityNode();
 
-    void setInsertDataCapability(Boolean value);
+    Boolean getInsertDataCapability();
 
-    Boolean getReplaceDataCapability();
+    void setInsertDataCapability(Boolean value);
 
     PropertyType getReplaceDataCapabilityNode();
 
-    void setReplaceDataCapability(Boolean value);
+    Boolean getReplaceDataCapability();
 
-    Boolean getUpdateDataCapability();
+    void setReplaceDataCapability(Boolean value);
 
     PropertyType getUpdateDataCapabilityNode();
 
-    void setUpdateDataCapability(Boolean value);
+    Boolean getUpdateDataCapability();
 
-    Boolean getDeleteRawCapability();
+    void setUpdateDataCapability(Boolean value);
 
     PropertyType getDeleteRawCapabilityNode();
 
-    void setDeleteRawCapability(Boolean value);
+    Boolean getDeleteRawCapability();
 
-    Boolean getDeleteAtTimeCapability();
+    void setDeleteRawCapability(Boolean value);
 
     PropertyType getDeleteAtTimeCapabilityNode();
 
-    void setDeleteAtTimeCapability(Boolean value);
+    Boolean getDeleteAtTimeCapability();
 
-    Boolean getInsertEventCapability();
+    void setDeleteAtTimeCapability(Boolean value);
 
     PropertyType getInsertEventCapabilityNode();
 
-    void setInsertEventCapability(Boolean value);
+    Boolean getInsertEventCapability();
 
-    Boolean getReplaceEventCapability();
+    void setInsertEventCapability(Boolean value);
 
     PropertyType getReplaceEventCapabilityNode();
 
-    void setReplaceEventCapability(Boolean value);
+    Boolean getReplaceEventCapability();
 
-    Boolean getUpdateEventCapability();
+    void setReplaceEventCapability(Boolean value);
 
     PropertyType getUpdateEventCapabilityNode();
 
-    void setUpdateEventCapability(Boolean value);
+    Boolean getUpdateEventCapability();
 
-    Boolean getDeleteEventCapability();
+    void setUpdateEventCapability(Boolean value);
 
     PropertyType getDeleteEventCapabilityNode();
 
+    Boolean getDeleteEventCapability();
+
     void setDeleteEventCapability(Boolean value);
 
-    Boolean getInsertAnnotationCapability();
-
     PropertyType getInsertAnnotationCapabilityNode();
+
+    Boolean getInsertAnnotationCapability();
 
     void setInsertAnnotationCapability(Boolean value);
 
     FolderType getAggregateFunctionsNode();
-
 }

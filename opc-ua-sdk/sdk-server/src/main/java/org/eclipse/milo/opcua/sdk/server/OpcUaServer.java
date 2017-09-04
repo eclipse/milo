@@ -38,6 +38,8 @@ import org.eclipse.milo.opcua.sdk.core.ServerTable;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
@@ -91,6 +93,9 @@ public class OpcUaServer {
     private final SessionManager sessionManager = new SessionManager(this);
     private final ServerTable serverTable = new ServerTable();
 
+    private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
+    private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
     private final UaStackServer stackServer;
     private final EventBus eventBus;
 
@@ -112,6 +117,9 @@ public class OpcUaServer {
         stackServer.addServiceSet((SessionServiceSet) sessionManager);
         stackServer.addServiceSet((SubscriptionServiceSet) sessionManager);
         stackServer.addServiceSet((ViewServiceSet) sessionManager);
+
+        ObjectTypeManagerInitializer.initialize(objectTypeManager);
+        VariableTypeManagerInitializer.initialize(variableTypeManager);
 
         namespaceManager.addNamespace(uaNamespace = new OpcUaNamespace(this));
 
@@ -206,6 +214,14 @@ public class OpcUaServer {
 
     public ServerTable getServerTable() {
         return serverTable;
+    }
+
+    public ObjectTypeManager getObjectTypeManager() {
+        return objectTypeManager;
+    }
+
+    public VariableTypeManager getVariableTypeManager() {
+        return variableTypeManager;
     }
 
     public EventBus getEventBus() {

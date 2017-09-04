@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,39 +26,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:SystemStatusChangeEventType")
 public class SystemStatusChangeEventNode extends SystemEventNode implements SystemStatusChangeEventType {
+    public SystemStatusChangeEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public SystemStatusChangeEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public SystemStatusChangeEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public ServerState getSystemState() {
-        Optional<ServerState> property = getProperty(SystemStatusChangeEventType.SYSTEM_STATE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getSystemStateNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(SystemStatusChangeEventType.SYSTEM_STATE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(SystemStatusChangeEventType.SYSTEM_STATE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public ServerState getSystemState() {
+        Optional<ServerState> propertyValue = getProperty(SystemStatusChangeEventType.SYSTEM_STATE);
+        return propertyValue.orElse(null);
+    }
+
     public void setSystemState(ServerState value) {
         setProperty(SystemStatusChangeEventType.SYSTEM_STATE, value);
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.model.nodes.variables;
 
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.BaseVariableType;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -24,37 +23,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:BaseVariableType")
 public class BaseVariableNode extends UaVariableNode implements BaseVariableType {
-
-    public BaseVariableNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        VariableTypeNode variableTypeNode) {
-
-        super(nodeMap, nodeId, variableTypeNode);
+    public BaseVariableNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                            LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                            UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
     }
 
-    public BaseVariableNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        DataValue value,
-        NodeId dataType,
-        Integer valueRank,
-        UInteger[] arrayDimensions,
-        UByte accessLevel,
-        UByte userAccessLevel,
-        Double minimumSamplingInterval,
-        boolean historizing) {
-
-        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask,
-            value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+    public BaseVariableNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                            LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                            UInteger userWriteMask, DataValue value, NodeId dataType, Integer valueRank,
+                            UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                            double minimumSamplingInterval, boolean historizing) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
-
-
 }
