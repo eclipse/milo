@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,58 +26,44 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:ProgressEventType")
 public class ProgressEventNode extends BaseEventNode implements ProgressEventType {
+    public ProgressEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                             UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public ProgressEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public ProgressEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                             UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public Object getContext() {
-        Optional<Object> property = getProperty(ProgressEventType.CONTEXT);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getContextNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ProgressEventType.CONTEXT.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ProgressEventType.CONTEXT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Object getContext() {
+        Optional<Object> propertyValue = getProperty(ProgressEventType.CONTEXT);
+        return propertyValue.orElse(null);
+    }
+
     public void setContext(Object value) {
         setProperty(ProgressEventType.CONTEXT, value);
     }
 
-    @Override
-    public UShort getProgress() {
-        Optional<UShort> property = getProperty(ProgressEventType.PROGRESS);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getProgressNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ProgressEventType.PROGRESS.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ProgressEventType.PROGRESS);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public UShort getProgress() {
+        Optional<UShort> propertyValue = getProperty(ProgressEventType.PROGRESS);
+        return propertyValue.orElse(null);
+    }
+
     public void setProgress(UShort value) {
         setProperty(ProgressEventType.PROGRESS, value);
     }
-
 }

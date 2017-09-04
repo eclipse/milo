@@ -1,77 +1,61 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 
-
 public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
-
+    BaseDataVariableType getSessionIdNode();
 
     NodeId getSessionId();
 
-    BaseDataVariableType getSessionIdNode();
-
     void setSessionId(NodeId value);
-
-    String getClientUserIdOfSession();
 
     BaseDataVariableType getClientUserIdOfSessionNode();
 
-    void setClientUserIdOfSession(String value);
+    String getClientUserIdOfSession();
 
-    String[] getClientUserIdHistory();
+    void setClientUserIdOfSession(String value);
 
     BaseDataVariableType getClientUserIdHistoryNode();
 
-    void setClientUserIdHistory(String[] value);
+    String[] getClientUserIdHistory();
 
-    String getAuthenticationMechanism();
+    void setClientUserIdHistory(String[] value);
 
     BaseDataVariableType getAuthenticationMechanismNode();
 
-    void setAuthenticationMechanism(String value);
+    String getAuthenticationMechanism();
 
-    String getEncoding();
+    void setAuthenticationMechanism(String value);
 
     BaseDataVariableType getEncodingNode();
 
-    void setEncoding(String value);
+    String getEncoding();
 
-    String getTransportProtocol();
+    void setEncoding(String value);
 
     BaseDataVariableType getTransportProtocolNode();
 
-    void setTransportProtocol(String value);
+    String getTransportProtocol();
 
-    MessageSecurityMode getSecurityMode();
+    void setTransportProtocol(String value);
 
     BaseDataVariableType getSecurityModeNode();
 
-    void setSecurityMode(MessageSecurityMode value);
+    MessageSecurityMode getSecurityMode();
 
-    String getSecurityPolicyUri();
+    void setSecurityMode(MessageSecurityMode value);
 
     BaseDataVariableType getSecurityPolicyUriNode();
 
+    String getSecurityPolicyUri();
+
     void setSecurityPolicyUri(String value);
 
-    ByteString getClientCertificate();
-
     BaseDataVariableType getClientCertificateNode();
+
+    ByteString getClientCertificate();
 
     void setClientCertificate(ByteString value);
 }
