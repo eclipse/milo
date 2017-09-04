@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,39 +25,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:TransitionType")
 public class TransitionNode extends BaseObjectNode implements TransitionType {
+    public TransitionNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public TransitionNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public TransitionNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public UInteger getTransitionNumber() {
-        Optional<UInteger> property = getProperty(TransitionType.TRANSITION_NUMBER);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getTransitionNumberNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(TransitionType.TRANSITION_NUMBER.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(TransitionType.TRANSITION_NUMBER);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public UInteger getTransitionNumber() {
+        Optional<UInteger> propertyValue = getProperty(TransitionType.TRANSITION_NUMBER);
+        return propertyValue.orElse(null);
+    }
+
     public void setTransitionNumber(UInteger value) {
         setProperty(TransitionType.TRANSITION_NUMBER, value);
     }
-
 }

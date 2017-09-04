@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,96 +26,72 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AuditCreateSessionEventType")
 public class AuditCreateSessionEventNode extends AuditSessionEventNode implements AuditCreateSessionEventType {
+    public AuditCreateSessionEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AuditCreateSessionEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AuditCreateSessionEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public String getSecureChannelId() {
-        Optional<String> property = getProperty(AuditCreateSessionEventType.SECURE_CHANNEL_ID);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getSecureChannelIdNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.SECURE_CHANNEL_ID.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.SECURE_CHANNEL_ID);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String getSecureChannelId() {
+        Optional<String> propertyValue = getProperty(AuditCreateSessionEventType.SECURE_CHANNEL_ID);
+        return propertyValue.orElse(null);
+    }
+
     public void setSecureChannelId(String value) {
         setProperty(AuditCreateSessionEventType.SECURE_CHANNEL_ID, value);
     }
 
-    @Override
-    public ByteString getClientCertificate() {
-        Optional<ByteString> property = getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getClientCertificateNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public ByteString getClientCertificate() {
+        Optional<ByteString> propertyValue = getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE);
+        return propertyValue.orElse(null);
+    }
+
     public void setClientCertificate(ByteString value) {
         setProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE, value);
     }
 
-    @Override
-    public String getClientCertificateThumbprint() {
-        Optional<String> property = getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getClientCertificateThumbprintNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String getClientCertificateThumbprint() {
+        Optional<String> propertyValue = getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT);
+        return propertyValue.orElse(null);
+    }
+
     public void setClientCertificateThumbprint(String value) {
         setProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT, value);
     }
 
-    @Override
-    public Double getRevisedSessionTimeout() {
-        Optional<Double> property = getProperty(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getRevisedSessionTimeoutNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Double getRevisedSessionTimeout() {
+        Optional<Double> propertyValue = getProperty(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT);
+        return propertyValue.orElse(null);
+    }
+
     public void setRevisedSessionTimeout(Double value) {
         setProperty(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT, value);
     }
-
 }

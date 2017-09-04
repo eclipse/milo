@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,58 +27,44 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AuditHistoryEventDeleteEventType")
 public class AuditHistoryEventDeleteEventNode extends AuditHistoryDeleteEventNode implements AuditHistoryEventDeleteEventType {
+    public AuditHistoryEventDeleteEventNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                            QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                            UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AuditHistoryEventDeleteEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AuditHistoryEventDeleteEventNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                            QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                            UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public ByteString[] getEventIds() {
-        Optional<ByteString[]> property = getProperty(AuditHistoryEventDeleteEventType.EVENT_IDS);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getEventIdsNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryEventDeleteEventType.EVENT_IDS.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryEventDeleteEventType.EVENT_IDS);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public ByteString[] getEventIds() {
+        Optional<ByteString[]> propertyValue = getProperty(AuditHistoryEventDeleteEventType.EVENT_IDS);
+        return propertyValue.orElse(null);
+    }
+
     public void setEventIds(ByteString[] value) {
         setProperty(AuditHistoryEventDeleteEventType.EVENT_IDS, value);
     }
 
-    @Override
-    public HistoryEventFieldList getOldValues() {
-        Optional<HistoryEventFieldList> property = getProperty(AuditHistoryEventDeleteEventType.OLD_VALUES);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getOldValuesNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryEventDeleteEventType.OLD_VALUES.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryEventDeleteEventType.OLD_VALUES);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public HistoryEventFieldList getOldValues() {
+        Optional<HistoryEventFieldList> propertyValue = getProperty(AuditHistoryEventDeleteEventType.OLD_VALUES);
+        return propertyValue.orElse(null);
+    }
+
     public void setOldValues(HistoryEventFieldList value) {
         setProperty(AuditHistoryEventDeleteEventType.OLD_VALUES, value);
     }
-
 }

@@ -1,93 +1,77 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public interface ServerDiagnosticsSummaryType extends BaseDataVariableType {
-
+    BaseDataVariableType getServerViewCountNode();
 
     UInteger getServerViewCount();
 
-    BaseDataVariableType getServerViewCountNode();
-
     void setServerViewCount(UInteger value);
-
-    UInteger getCurrentSessionCount();
 
     BaseDataVariableType getCurrentSessionCountNode();
 
-    void setCurrentSessionCount(UInteger value);
+    UInteger getCurrentSessionCount();
 
-    UInteger getCumulatedSessionCount();
+    void setCurrentSessionCount(UInteger value);
 
     BaseDataVariableType getCumulatedSessionCountNode();
 
-    void setCumulatedSessionCount(UInteger value);
+    UInteger getCumulatedSessionCount();
 
-    UInteger getSecurityRejectedSessionCount();
+    void setCumulatedSessionCount(UInteger value);
 
     BaseDataVariableType getSecurityRejectedSessionCountNode();
 
-    void setSecurityRejectedSessionCount(UInteger value);
+    UInteger getSecurityRejectedSessionCount();
 
-    UInteger getRejectedSessionCount();
+    void setSecurityRejectedSessionCount(UInteger value);
 
     BaseDataVariableType getRejectedSessionCountNode();
 
-    void setRejectedSessionCount(UInteger value);
+    UInteger getRejectedSessionCount();
 
-    UInteger getSessionTimeoutCount();
+    void setRejectedSessionCount(UInteger value);
 
     BaseDataVariableType getSessionTimeoutCountNode();
 
-    void setSessionTimeoutCount(UInteger value);
+    UInteger getSessionTimeoutCount();
 
-    UInteger getSessionAbortCount();
+    void setSessionTimeoutCount(UInteger value);
 
     BaseDataVariableType getSessionAbortCountNode();
 
-    void setSessionAbortCount(UInteger value);
+    UInteger getSessionAbortCount();
 
-    UInteger getPublishingIntervalCount();
+    void setSessionAbortCount(UInteger value);
 
     BaseDataVariableType getPublishingIntervalCountNode();
 
-    void setPublishingIntervalCount(UInteger value);
+    UInteger getPublishingIntervalCount();
 
-    UInteger getCurrentSubscriptionCount();
+    void setPublishingIntervalCount(UInteger value);
 
     BaseDataVariableType getCurrentSubscriptionCountNode();
 
-    void setCurrentSubscriptionCount(UInteger value);
+    UInteger getCurrentSubscriptionCount();
 
-    UInteger getCumulatedSubscriptionCount();
+    void setCurrentSubscriptionCount(UInteger value);
 
     BaseDataVariableType getCumulatedSubscriptionCountNode();
 
-    void setCumulatedSubscriptionCount(UInteger value);
+    UInteger getCumulatedSubscriptionCount();
 
-    UInteger getSecurityRejectedRequestsCount();
+    void setCumulatedSubscriptionCount(UInteger value);
 
     BaseDataVariableType getSecurityRejectedRequestsCountNode();
 
+    UInteger getSecurityRejectedRequestsCount();
+
     void setSecurityRejectedRequestsCount(UInteger value);
 
-    UInteger getRejectedRequestsCount();
-
     BaseDataVariableType getRejectedRequestsCountNode();
+
+    UInteger getRejectedRequestsCount();
 
     void setRejectedRequestsCount(UInteger value);
 }
