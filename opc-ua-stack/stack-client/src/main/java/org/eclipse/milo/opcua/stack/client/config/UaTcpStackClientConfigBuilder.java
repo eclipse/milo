@@ -71,7 +71,6 @@ public class UaTcpStackClientConfigBuilder {
 
     public UaTcpStackClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
         this.certificateChain = certificateChain;
-        this.certificate = certificateChain != null ? certificateChain[0] : null;
         return this;
     }
 
@@ -224,7 +223,15 @@ public class UaTcpStackClientConfigBuilder {
 
         @Override
         public Optional<X509Certificate[]> getCertificateChain() {
-            return Optional.ofNullable(certificateChain);
+            if (certificateChain != null) {
+                return Optional.of(certificateChain);
+            } else {
+                if (certificate != null) {
+                    return Optional.of(new X509Certificate[]{certificate});
+                } else {
+                    return Optional.empty();
+                }
+            }
         }
 
         @Override
