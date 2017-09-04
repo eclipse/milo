@@ -525,7 +525,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     }
 
     private void deliverNotificationMessage(OpcUaSubscription subscription, NotificationMessage notificationMessage) {
-        deliveryQueue.submit(() -> subscription.getNotificationSemaphore().acquire().thenAccept(permit -> {
+        subscription.getNotificationSemaphore().acquire().thenAccept(permit -> deliveryQueue.submit(() -> {
             try {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
                 List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
