@@ -29,6 +29,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -267,6 +268,10 @@ public abstract class UaNode implements ServerNode {
         return getProperty(property.getBrowseName());
     }
 
+    public <T> Optional<T> getProperty(QualifiedProperty<T> property) {
+        return getProperty(property.getBrowseName());
+    }
+
     public <T> Optional<T> getProperty(String browseName) {
         return getProperty(new QualifiedName(getNodeId().getNamespaceIndex(), browseName));
     }
@@ -299,7 +304,6 @@ public abstract class UaNode implements ServerNode {
 
             propertyNode.setDataType(property.getDataType());
             propertyNode.setValueRank(property.getValueRank());
-            propertyNode.setArrayDimensions(property.getArrayDimensions());
 
             addProperty(propertyNode);
 
@@ -307,6 +311,41 @@ public abstract class UaNode implements ServerNode {
         });
 
         node.setValue(new DataValue(new Variant(value)));
+    }
+
+    public <T> void setProperty(QualifiedProperty<T> property, T value) {
+        VariableNode node = getPropertyNode(property.getBrowseName()).orElseGet(() -> {
+            String browseName = property.getBrowseName();
+
+            NodeId propertyNodeId = new NodeId(
+                getNodeId().getNamespaceIndex(),
+                String.format("%s.%s", getNodeId().getIdentifier().toString(), browseName)
+            );
+
+            UaPropertyNode propertyNode = new UaPropertyNode(
+                getNodeMap(),
+                propertyNodeId,
+                new QualifiedName(getNodeId().getNamespaceIndex(), browseName),
+                LocalizedText.english(browseName)
+            );
+
+            propertyNode.setDataType(property.getDataType());
+            propertyNode.setValueRank(property.getValueRank());
+
+            addProperty(propertyNode);
+
+            return propertyNode;
+        });
+
+        node.setValue(new DataValue(new Variant(value)));
+    }
+
+    public Optional<VariableNode> getPropertyNode(Property<?> property) {
+        return getPropertyNode(property.getBrowseName());
+    }
+
+    public Optional<VariableNode> getPropertyNode(QualifiedProperty<?> property) {
+        return getPropertyNode(property.getBrowseName());
     }
 
     public Optional<VariableNode> getPropertyNode(String browseName) {

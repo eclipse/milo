@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -32,80 +32,58 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:SessionDiagnosticsObjectType")
 public class SessionDiagnosticsObjectNode extends BaseObjectNode implements SessionDiagnosticsObjectType {
+    public SessionDiagnosticsObjectNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public SessionDiagnosticsObjectNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public SessionDiagnosticsObjectNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public SessionDiagnosticsDataType getSessionDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SessionDiagnostics");
-
-        return component.map(node -> (SessionDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
-    }
-
-    @Override
     public SessionDiagnosticsVariableNode getSessionDiagnosticsNode() {
         Optional<VariableNode> component = getVariableComponent("SessionDiagnostics");
-
         return component.map(node -> (SessionDiagnosticsVariableNode) node).orElse(null);
     }
 
-    @Override
+    public SessionDiagnosticsDataType getSessionDiagnostics() {
+        Optional<VariableNode> component = getVariableComponent("SessionDiagnostics");
+        return component.map(node -> (SessionDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
+    }
+
     public void setSessionDiagnostics(SessionDiagnosticsDataType value) {
-        getVariableComponent("SessionDiagnostics")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("SessionDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
-    @Override
-    public SessionSecurityDiagnosticsDataType getSessionSecurityDiagnostics() {
-        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnostics");
-
-        return component.map(node -> (SessionSecurityDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
-    }
-
-    @Override
     public SessionSecurityDiagnosticsNode getSessionSecurityDiagnosticsNode() {
         Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnostics");
-
         return component.map(node -> (SessionSecurityDiagnosticsNode) node).orElse(null);
     }
 
-    @Override
+    public SessionSecurityDiagnosticsDataType getSessionSecurityDiagnostics() {
+        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnostics");
+        return component.map(node -> (SessionSecurityDiagnosticsDataType) node.getValue().getValue().getValue()).orElse(null);
+    }
+
     public void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value) {
-        getVariableComponent("SessionSecurityDiagnostics")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("SessionSecurityDiagnostics").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
-    @Override
-    public SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
-
-        return component.map(node -> (SubscriptionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
-    }
-
-    @Override
     public SubscriptionDiagnosticsArrayNode getSubscriptionDiagnosticsArrayNode() {
         Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
-
         return component.map(node -> (SubscriptionDiagnosticsArrayNode) node).orElse(null);
     }
 
-    @Override
-    public void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) {
-        getVariableComponent("SubscriptionDiagnosticsArray")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    public SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray() {
+        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
+        return component.map(node -> (SubscriptionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
+    public void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) {
+        getVariableComponent("SubscriptionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    }
 }

@@ -32,7 +32,9 @@ import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -58,6 +60,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
@@ -127,6 +130,8 @@ public class ExampleNamespace implements Namespace {
 
     private final SubscriptionModel subscriptionModel;
 
+    private final NodeFactory nodeFactory;
+
     private final OpcUaServer server;
     private final UShort namespaceIndex;
 
@@ -135,6 +140,12 @@ public class ExampleNamespace implements Namespace {
         this.namespaceIndex = namespaceIndex;
 
         subscriptionModel = new SubscriptionModel(server, this);
+
+        nodeFactory = new NodeFactory(
+            server.getNodeMap(),
+            server.getObjectTypeManager(),
+            server.getVariableTypeManager()
+        );
 
         try {
             // Create a "HelloWorld" folder and add it to the node manager
@@ -183,6 +194,7 @@ public class ExampleNamespace implements Namespace {
         addAdminReadableNodes(rootNode);
         addAdminWritableNodes(rootNode);
         addDynamicNodes(rootNode);
+        addDataAccessNodes(rootNode);
     }
 
     private void addArrayNodes(UaFolderNode rootNode) {
@@ -441,6 +453,36 @@ public class ExampleNamespace implements Namespace {
             server.getNodeMap().addNode(node);
             dynamicFolder.addOrganizes(node);
         }
+    }
+
+    private void addDataAccessNodes(UaFolderNode rootNode) {
+        // DataAccess folder
+        UaFolderNode dataAccessFolder = new UaFolderNode(
+            server.getNodeMap(),
+            new NodeId(namespaceIndex, "HelloWorld/DataAccess"),
+            new QualifiedName(namespaceIndex, "DataAccess"),
+            LocalizedText.english("DataAccess")
+        );
+
+        server.getNodeMap().addNode(dataAccessFolder);
+        rootNode.addOrganizes(dataAccessFolder);
+
+        // AnalogItemType node
+        AnalogItemNode node = nodeFactory.createVariable(
+            new NodeId(namespaceIndex, "HelloWorld/DataAccess/AnalogValue"),
+            new QualifiedName(namespaceIndex, "AnalogValue"),
+            LocalizedText.english("AnalogValue"),
+            Identifiers.AnalogItemType,
+            AnalogItemNode.class
+        );
+
+        node.setDataType(Identifiers.Double);
+        node.setValue(new DataValue(new Variant(3.14d)));
+
+        node.setEURange(new Range(0.0, 100.0));
+
+        server.getNodeMap().addNode(node);
+        dataAccessFolder.addOrganizes(node);
     }
 
     private void addMethodNode(UaFolderNode folderNode) {

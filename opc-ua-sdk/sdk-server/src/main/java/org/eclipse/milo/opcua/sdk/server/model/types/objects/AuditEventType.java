@@ -1,89 +1,79 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public interface AuditEventType extends BaseEventType {
-
-    Property<DateTime> ACTION_TIME_STAMP = new BasicProperty<>(
-        QualifiedName.parse("0:ActionTimeStamp"),
+    QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ActionTimeStamp",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<Boolean> STATUS = new BasicProperty<>(
-        QualifiedName.parse("0:Status"),
+    QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Status",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<String> SERVER_ID = new BasicProperty<>(
-        QualifiedName.parse("0:ServerId"),
+    QualifiedProperty<String> SERVER_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ServerId",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<String> CLIENT_AUDIT_ENTRY_ID = new BasicProperty<>(
-        QualifiedName.parse("0:ClientAuditEntryId"),
+    QualifiedProperty<String> CLIENT_AUDIT_ENTRY_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ClientAuditEntryId",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<String> CLIENT_USER_ID = new BasicProperty<>(
-        QualifiedName.parse("0:ClientUserId"),
+    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ClientUserId",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
-
-    DateTime getActionTimeStamp();
 
     PropertyType getActionTimeStampNode();
 
-    void setActionTimeStamp(DateTime value);
+    DateTime getActionTimeStamp();
 
-    Boolean getStatus();
+    void setActionTimeStamp(DateTime value);
 
     PropertyType getStatusNode();
 
-    void setStatus(Boolean value);
+    Boolean getStatus();
 
-    String getServerId();
+    void setStatus(Boolean value);
 
     PropertyType getServerIdNode();
 
-    void setServerId(String value);
+    String getServerId();
 
-    String getClientAuditEntryId();
+    void setServerId(String value);
 
     PropertyType getClientAuditEntryIdNode();
 
+    String getClientAuditEntryId();
+
     void setClientAuditEntryId(String value);
 
-    String getClientUserId();
-
     PropertyType getClientUserIdNode();
+
+    String getClientUserId();
 
     void setClientUserId(String value);
 }

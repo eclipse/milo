@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,39 +26,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:TrustListType")
 public class TrustListNode extends FileNode implements TrustListType {
+    public TrustListNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                         UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public TrustListNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public TrustListNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                         UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public DateTime getLastUpdateTime() {
-        Optional<DateTime> property = getProperty(TrustListType.LAST_UPDATE_TIME);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getLastUpdateTimeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(TrustListType.LAST_UPDATE_TIME.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(TrustListType.LAST_UPDATE_TIME);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public DateTime getLastUpdateTime() {
+        Optional<DateTime> propertyValue = getProperty(TrustListType.LAST_UPDATE_TIME);
+        return propertyValue.orElse(null);
+    }
+
     public void setLastUpdateTime(DateTime value) {
         setProperty(TrustListType.LAST_UPDATE_TIME, value);
     }
-
 }
