@@ -71,7 +71,7 @@ public class UaTcpStackClientConfigBuilder {
 
     public UaTcpStackClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
         this.certificateChain = certificateChain;
-        this.certificate = certificateChain[0];
+        this.certificate = certificateChain != null ? certificateChain[0] : null;
         return this;
     }
 

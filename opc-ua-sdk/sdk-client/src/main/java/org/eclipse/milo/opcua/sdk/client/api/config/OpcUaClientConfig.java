@@ -76,6 +76,7 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
         config.getEndpoint().ifPresent(builder::setEndpoint);
         config.getKeyPair().ifPresent(builder::setKeyPair);
         config.getCertificate().ifPresent(builder::setCertificate);
+        config.getCertificateChain().ifPresent(builder::setCertificateChain);
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
