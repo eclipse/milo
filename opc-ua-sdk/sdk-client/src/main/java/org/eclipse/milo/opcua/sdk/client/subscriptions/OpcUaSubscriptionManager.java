@@ -221,7 +221,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             subscription.setRequestedPublishingInterval(requestedPublishingInterval);
             subscription.setRequestedLifetimeCount(requestedLifetimeCount);
             subscription.setRequestedMaxKeepAliveCount(requestedMaxKeepAliveCount);
-            
+
             subscription.setRevisedPublishingInterval(response.getRevisedPublishingInterval());
             subscription.setRevisedLifetimeCount(response.getRevisedLifetimeCount());
             subscription.setRevisedMaxKeepAliveCount(response.getRevisedMaxKeepAliveCount());
@@ -525,7 +525,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     }
 
     private void deliverNotificationMessage(OpcUaSubscription subscription, NotificationMessage notificationMessage) {
-        subscription.getNotificationSemaphore().acquire().thenAccept(permit -> deliveryQueue.submit(() -> {
+        deliveryQueue.submit(() -> subscription.getNotificationSemaphore().acquire().thenAccept(permit -> {
             try {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
                 List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
@@ -646,6 +646,14 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     public void clearSubscriptions() {
         subscriptions.clear();
+    }
+
+    public void pauseDelivery() {
+        deliveryQueue.pause();
+    }
+
+    public void resumeDelivery() {
+        deliveryQueue.resume();
     }
 
 }
