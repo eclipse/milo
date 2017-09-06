@@ -195,4 +195,7 @@ public class UsernameProvider implements IdentityProvider {
             '}';
     }
 
+    public static UsernameProvider of(String username, String password) {
+        return new UsernameProvider(username, password); 
+    }
 }
