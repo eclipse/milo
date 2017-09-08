@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -106,7 +106,7 @@ public final class QualifiedName {
     }
 
     public static QualifiedName parse(String s) {
-        String[] ss = s.split(":");
+        String[] ss = s.split(":", 2);
 
         int namespaceIndex = 0;
         String name = s;
