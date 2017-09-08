@@ -73,4 +73,8 @@ public class CompositeProvider implements IdentityProvider {
             '}';
     }
 
+    public static CompositeProvider of(IdentityProvider... providers) {
+        return new CompositeProvider(providers);
+    }
+
 }
