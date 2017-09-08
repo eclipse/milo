@@ -31,6 +31,8 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
  */
 public class AnonymousProvider implements IdentityProvider {
 
+    public static final IdentityProvider INSTANCE = new AnonymousProvider(); 
+
     @Override
     public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(
         EndpointDescription endpoint,
