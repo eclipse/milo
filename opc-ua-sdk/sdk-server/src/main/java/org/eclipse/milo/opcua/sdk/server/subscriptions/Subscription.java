@@ -63,7 +63,7 @@ public class Subscription {
     private static final double MIN_LIFETIME = 10 * 1000.0;
     private static final double MAX_LIFETIME = 60 * 60 * 1000.0;
 
-    private static final double MIN_PUBLISHING_INTERVAL = 100.0;
+    private static final double MIN_PUBLISHING_INTERVAL = 1.0;
     private static final double MAX_PUBLISHING_INTERVAL = 60 * 1000.0;
 
     private static final int MAX_NOTIFICATIONS = 0xFFFF;
