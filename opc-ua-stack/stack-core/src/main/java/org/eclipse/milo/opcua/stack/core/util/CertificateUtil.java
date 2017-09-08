@@ -57,6 +57,28 @@ public class CertificateUtil {
      * @throws UaException if decoding the certificate fails.
      */
     public static X509Certificate decodeCertificate(InputStream inputStream) throws UaException {
+        return decodeCertificates(inputStream).get(0);
+    }
+
+    /**
+     * Decode either a sequence of DER-encoded X.509 certificates or a PKCS#7 certificate chain.
+     *
+     * @param certificateBytes the byte[] to decode from.
+     * @return a {@link List} of certificates deocded from {@code certificateBytes}.
+     * @throws UaException if decoding fails.
+     */
+    public static List<X509Certificate> decodeCertificates(byte[] certificateBytes) throws UaException {
+        return decodeCertificates(new ByteArrayInputStream(certificateBytes));
+    }
+
+    /**
+     * Decode either a sequence of DER-encoded X.509 certificates or a PKCS#7 certificate chain.
+     *
+     * @param inputStream the {@link InputStream} to decode from.
+     * @return a {@link List} of certificates decoded from {@code inputStream}.
+     * @throws UaException if decoding fails.
+     */
+    public static List<X509Certificate> decodeCertificates(InputStream inputStream) throws UaException {
         Preconditions.checkNotNull(inputStream, "inputStream cannot be null");
 
         CertificateFactory factory;
@@ -68,33 +90,8 @@ public class CertificateUtil {
         }
 
         try {
-            return (X509Certificate) factory.generateCertificate(inputStream);
-        } catch (CertificateException | ClassCastException e) {
-            throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
-        }
-    }
-
-    /**
-     * Decode either a sequence of DER-encoded X.509 certificates or a PKCS#7 certificate chain.
-     *
-     * @param certificateBytes the byte[] to decode from.
-     * @return a {@link List} of certificates deocded from {@code certificateBytes}.
-     * @throws UaException if decoding fails.
-     */
-    public static List<X509Certificate> decodeCertificates(byte[] certificateBytes) throws UaException {
-        Preconditions.checkNotNull(certificateBytes, "certificateBytes cannot be null");
-
-        CertificateFactory factory;
-
-        try {
-            factory = CertificateFactory.getInstance("X.509");
-        } catch (CertificateException e) {
-            throw new UaException(StatusCodes.Bad_InternalError, e);
-        }
-
-        try {
             Collection<? extends Certificate> certificates =
-                factory.generateCertificates(new ByteArrayInputStream(certificateBytes));
+                factory.generateCertificates(inputStream);
 
             return certificates.stream()
                 .map(X509Certificate.class::cast)

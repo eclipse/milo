@@ -35,6 +35,7 @@ public class UaTcpStackClientConfigBuilder {
     private EndpointDescription endpoint;
     private KeyPair keyPair;
     private X509Certificate certificate;
+    private X509Certificate[] certificateChain;
 
     private LocalizedText applicationName = LocalizedText.english("client application name not configured");
     private String applicationUri = "client application uri not configured";
@@ -65,6 +66,11 @@ public class UaTcpStackClientConfigBuilder {
 
     public UaTcpStackClientConfigBuilder setCertificate(X509Certificate certificate) {
         this.certificate = certificate;
+        return this;
+    }
+
+    public UaTcpStackClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
+        this.certificateChain = certificateChain;
         return this;
     }
 
@@ -131,6 +137,7 @@ public class UaTcpStackClientConfigBuilder {
             endpoint,
             keyPair,
             certificate,
+            certificateChain,
             applicationName,
             applicationUri,
             productUri,
@@ -148,6 +155,7 @@ public class UaTcpStackClientConfigBuilder {
         private final EndpointDescription endpoint;
         private final KeyPair keyPair;
         private final X509Certificate certificate;
+        private final X509Certificate[] certificateChain;
 
         private final LocalizedText applicationName;
         private final String applicationUri;
@@ -166,6 +174,7 @@ public class UaTcpStackClientConfigBuilder {
             @Nullable EndpointDescription endpoint,
             @Nullable KeyPair keyPair,
             @Nullable X509Certificate certificate,
+            @Nullable X509Certificate[] certificateChain,
             LocalizedText applicationName,
             String applicationUri,
             String productUri,
@@ -180,6 +189,7 @@ public class UaTcpStackClientConfigBuilder {
             this.endpoint = endpoint;
             this.keyPair = keyPair;
             this.certificate = certificate;
+            this.certificateChain = certificateChain;
             this.applicationName = applicationName;
             this.applicationUri = applicationUri;
             this.productUri = productUri;
@@ -209,6 +219,19 @@ public class UaTcpStackClientConfigBuilder {
         @Override
         public Optional<X509Certificate> getCertificate() {
             return Optional.ofNullable(certificate);
+        }
+
+        @Override
+        public Optional<X509Certificate[]> getCertificateChain() {
+            if (certificateChain != null) {
+                return Optional.of(certificateChain);
+            } else {
+                if (certificate != null) {
+                    return Optional.of(new X509Certificate[]{certificate});
+                } else {
+                    return Optional.empty();
+                }
+            }
         }
 
         @Override

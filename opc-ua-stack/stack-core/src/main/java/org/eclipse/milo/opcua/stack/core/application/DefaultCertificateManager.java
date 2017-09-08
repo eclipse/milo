@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -30,31 +31,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Collections.emptyList;
 
 public class DefaultCertificateManager implements CertificateManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<ByteString, KeyPair> privateKeys = Maps.newConcurrentMap();
-    private final Map<ByteString, X509Certificate> certificates = Maps.newConcurrentMap();
+    private final Map<ByteString, X509Certificate[]> certificates = Maps.newConcurrentMap();
 
-    public DefaultCertificateManager() {
-        this(emptyList(), emptyList());
-    }
+    public DefaultCertificateManager() {}
 
     public DefaultCertificateManager(KeyPair privateKey, X509Certificate certificate) {
         checkNotNull(privateKey, "privateKey must be non-null");
         checkNotNull(certificate, "certificate must be non-null");
 
-        try {
-            ByteString thumbprint = ByteString.of(DigestUtil.sha1(certificate.getEncoded()));
+        add(privateKey, certificate);
+    }
 
-            this.privateKeys.put(thumbprint, privateKey);
-            this.certificates.put(thumbprint, certificate);
-        } catch (CertificateEncodingException e) {
-            logger.error("Error getting certificate thumbprint.", e);
-        }
+    public DefaultCertificateManager(KeyPair privateKey, X509Certificate[] certificateChain) {
+        checkNotNull(privateKey, "privateKey must be non-null");
+        checkNotNull(certificateChain, "certificateChain must be non-null");
+
+        add(privateKey, certificateChain);
     }
 
     public DefaultCertificateManager(List<KeyPair> privateKeys,
@@ -67,17 +65,38 @@ public class DefaultCertificateManager implements CertificateManager {
             KeyPair privateKey = privateKeys.get(i);
             X509Certificate certificate = certificates.get(i);
 
-            checkNotNull(privateKey, "privateKey must be non-null");
-            checkNotNull(certificate, "certificate must be non-null");
+            add(privateKey, certificate);
+        }
+    }
 
-            try {
-                ByteString thumbprint = ByteString.of(DigestUtil.sha1(certificate.getEncoded()));
+    /**
+     * Add a {@link KeyPair} and associated {@link X509Certificate} to this certificate manager.
+     *
+     * @param privateKey  the {@link KeyPair} containing with the public and private key.
+     * @param certificate the {@link X509Certificate} the key pair is associated with.
+     */
+    public void add(KeyPair privateKey, X509Certificate certificate) {
+        add(privateKey, new X509Certificate[]{certificate});
+    }
 
-                this.privateKeys.put(thumbprint, privateKey);
-                this.certificates.put(thumbprint, certificate);
-            } catch (CertificateEncodingException e) {
-                logger.error("Error getting certificate thumbprint.", e);
-            }
+    /**
+     * Add a {@link KeyPair} and associated {@link X509Certificate} chain to this certificate manager.
+     *
+     * @param privateKey       the {@link KeyPair} containing the public and private key.
+     * @param certificateChain the {@link X509Certificate} chain the key pair is associated with.
+     */
+    public void add(KeyPair privateKey, X509Certificate[] certificateChain) {
+        checkNotNull(privateKey, "privateKey must be non-null");
+        checkNotNull(certificateChain, "certificateChain must be non-null");
+
+        try {
+            X509Certificate certificate = certificateChain[0];
+            ByteString thumbprint = ByteString.of(DigestUtil.sha1(certificate.getEncoded()));
+
+            this.privateKeys.put(thumbprint, privateKey);
+            this.certificates.put(thumbprint, certificateChain);
+        } catch (CertificateEncodingException e) {
+            logger.error("Error getting certificate thumbprint.", e);
         }
     }
 
@@ -88,6 +107,17 @@ public class DefaultCertificateManager implements CertificateManager {
 
     @Override
     public Optional<X509Certificate> getCertificate(ByteString thumbprint) {
+        X509Certificate[] chain = certificates.get(thumbprint);
+
+        if (chain != null && chain.length > 0) {
+            return Optional.of(chain[0]);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
         return Optional.ofNullable(certificates.get(thumbprint));
     }
 
@@ -98,7 +128,8 @@ public class DefaultCertificateManager implements CertificateManager {
 
     @Override
     public Set<X509Certificate> getCertificates() {
-        return Sets.newHashSet(certificates.values());
+        return certificates.values().stream()
+            .map(a -> a[0]).collect(Collectors.toSet());
     }
 
 }

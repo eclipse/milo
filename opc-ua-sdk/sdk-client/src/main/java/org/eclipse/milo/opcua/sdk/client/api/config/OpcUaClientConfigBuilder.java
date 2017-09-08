@@ -97,6 +97,12 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     }
 
     @Override
+    public OpcUaClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
+        super.setCertificateChain(certificateChain);
+        return this;
+    }
+
+    @Override
     public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
         super.setApplicationName(applicationName);
         return this;
@@ -246,6 +252,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public Optional<X509Certificate> getCertificate() {
             return stackClientConfig.getCertificate();
+        }
+
+        @Override
+        public Optional<X509Certificate[]> getCertificateChain() {
+            return stackClientConfig.getCertificateChain();
         }
 
         @Override

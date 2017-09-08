@@ -21,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 
+import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
@@ -34,6 +35,8 @@ public interface SecureChannel {
     KeyPair getKeyPair();
 
     X509Certificate getLocalCertificate();
+
+    List<X509Certificate> getLocalCertificateChain();
 
     X509Certificate getRemoteCertificate();
 
@@ -65,6 +68,26 @@ public interface SecureChannel {
         }
     }
 
+    default ByteString getLocalCertificateChainBytes() throws UaException {
+        List<X509Certificate> localCertificateChain = getLocalCertificateChain();
+
+        if (localCertificateChain != null) {
+            byte[] encoded = localCertificateChain.stream()
+                .map(c -> {
+                    try {
+                        return c.getEncoded();
+                    } catch (CertificateEncodingException e) {
+                        return new byte[0];
+                    }
+                })
+                .reduce(new byte[0], Bytes::concat);
+
+            return ByteString.of(encoded);
+        } else {
+            return ByteString.NULL_VALUE;
+        }
+    }
+
     default ByteString getLocalCertificateThumbprint() throws UaException {
         try {
             return getLocalCertificate() != null ?
@@ -83,6 +106,26 @@ public interface SecureChannel {
                 ByteString.NULL_VALUE;
         } catch (CertificateEncodingException e) {
             throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
+        }
+    }
+
+    default ByteString getRemoteCertificateChainBytes() throws UaException {
+        List<X509Certificate> remoteCertificateChain = getRemoteCertificateChain();
+
+        if (remoteCertificateChain != null) {
+            byte[] encoded = remoteCertificateChain.stream()
+                .map(c -> {
+                    try {
+                        return c.getEncoded();
+                    } catch (CertificateEncodingException e) {
+                        return new byte[0];
+                    }
+                })
+                .reduce(new byte[0], Bytes::concat);
+
+            return ByteString.of(encoded);
+        } else {
+            return ByteString.NULL_VALUE;
         }
     }
 

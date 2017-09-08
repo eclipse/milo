@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.client.config;
 
+import java.security.cert.X509Certificate;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.SecurityFixture;
@@ -32,6 +33,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setEndpointUrl("test")
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
+            .setCertificateChain(new X509Certificate[]{clientCertificate})
             .setApplicationName(LocalizedText.english("testName"))
             .setApplicationUri("testApplicationUri")
             .setProductUri("testProductUri")
@@ -48,6 +50,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getEndpointUrl(), original.getEndpointUrl());
         assertEquals(copy.getKeyPair(), original.getKeyPair());
         assertEquals(copy.getCertificate(), original.getCertificate());
+        assertEquals(copy.getCertificateChain(), original.getCertificateChain());
         assertEquals(copy.getApplicationName(), original.getApplicationName());
         assertEquals(copy.getApplicationUri(), original.getApplicationUri());
         assertEquals(copy.getProductUri(), original.getProductUri());
@@ -82,6 +85,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             builder -> builder.setEndpointUrl("foo")
                 .setKeyPair(null)
                 .setCertificate(null)
+                .setCertificateChain(null)
                 .setApplicationName(LocalizedText.english("fooName"))
                 .setApplicationUri("fooApplicationUri")
                 .setProductUri("fooProductUri")
@@ -92,6 +96,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getEndpointUrl(), Optional.of("foo"));
         assertEquals(copy.getKeyPair(), Optional.empty());
         assertEquals(copy.getCertificate(), Optional.empty());
+        assertEquals(copy.getCertificateChain(), Optional.empty());
         assertEquals(copy.getApplicationName(), LocalizedText.english("fooName"));
         assertEquals(copy.getApplicationUri(), "fooApplicationUri");
         assertEquals(copy.getProductUri(), "fooProductUri");
