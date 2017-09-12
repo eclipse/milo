@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -40,14 +40,14 @@ public interface UaClient extends AttributeServices,
      *
      * @return a {@link CompletableFuture} holding this client instance.
      */
-    CompletableFuture<UaClient> connect();
+    CompletableFuture<? extends UaClient> connect();
 
     /**
      * Disconnect from the configured endpoint.
      *
      * @return a {@link CompletableFuture} holding this client instance.
      */
-    CompletableFuture<UaClient> disconnect();
+    CompletableFuture<? extends UaClient> disconnect();
 
     /**
      * @return a {@link CompletableFuture} holding the {@link UaSession}.
