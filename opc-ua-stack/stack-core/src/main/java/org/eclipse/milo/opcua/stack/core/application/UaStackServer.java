@@ -52,6 +52,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
@@ -63,6 +64,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
@@ -147,7 +149,9 @@ public interface UaStackServer {
     default void addServiceSet(DiscoveryServiceSet serviceSet) {
         addRequestHandler(GetEndpointsRequest.class, serviceSet::onGetEndpoints);
         addRequestHandler(FindServersRequest.class, serviceSet::onFindServers);
+        addRequestHandler(FindServersOnNetworkRequest.class, serviceSet::onFindServersOnNetwork);
         addRequestHandler(RegisterServerRequest.class, serviceSet::onRegisterServer);
+        addRequestHandler(RegisterServer2Request.class, serviceSet::onRegisterServer2);
     }
 
     default void addServiceSet(QueryServiceSet serviceSet) {

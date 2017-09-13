@@ -33,12 +33,14 @@ import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.services.DiscoveryServices;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
@@ -85,6 +87,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRespon
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersOnNetworkResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
@@ -103,6 +111,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Request;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServer2Response;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisterServerResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
@@ -126,6 +138,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
+import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,7 +155,8 @@ public class SessionManager implements
     QueryServiceSet,
     SessionServiceSet,
     SubscriptionServiceSet,
-    ViewServiceSet {
+    ViewServiceSet,
+    DiscoveryServiceSet {
 
     private static final int MAX_SESSION_TIMEOUT_MS = 120000;
 
@@ -161,8 +175,21 @@ public class SessionManager implements
 
     private final OpcUaServer server;
 
+    private DiscoveryServices discoveryServices;
+
     public SessionManager(OpcUaServer server) {
         this.server = server;
+        if (server.getConfig().isDiscoveryServerEnabled()) {
+            this.discoveryServices = new DiscoveryServices(server, true,
+                server.getConfig().getRegisterTimeoutSeconds());
+        } else {
+            this.discoveryServices = null;
+        }
+    }
+
+
+    public DiscoveryServices getDiscoveryServices() {
+        return discoveryServices;
     }
 
     public List<Session> getActiveSessions() {
@@ -329,7 +356,9 @@ public class SessionManager implements
     private void validateApplicationUri(String applicationUri, X509Certificate certificate) throws UaException {
         try {
             Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
-            if (subjectAltNames == null) subjectAltNames = Collections.emptyList();
+            if (subjectAltNames == null) {
+                subjectAltNames = Collections.emptyList();
+            }
 
             for (List<?> idAndValue : subjectAltNames) {
                 if (idAndValue != null && idAndValue.size() == 2) {
@@ -832,6 +861,66 @@ public class SessionManager implements
         Session session = session(service);
 
         session.getQueryServices().onQueryNext(service);
+    }
+    //endregion
+
+    //region Discovery Services
+    @Override
+    public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest)
+        throws UaException {
+        // no session/authentication required
+
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
+        discoveryServices.onFindServers(serviceRequest);
+    }
+
+    @Override
+    public void onFindServersOnNetwork(ServiceRequest<FindServersOnNetworkRequest,
+        FindServersOnNetworkResponse> serviceRequest) throws UaException {
+        // no session/authentication required
+
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
+        discoveryServices.onFindServersOnNetwork(serviceRequest);
+    }
+
+    @Override
+    public void onGetEndpoints(
+        ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) throws UaException {
+        // no session/authentication required
+
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
+        discoveryServices.onGetEndpoints(serviceRequest);
+    }
+
+    @Override
+    public void onRegisterServer(
+        ServiceRequest<RegisterServerRequest, RegisterServerResponse> serviceRequest) throws UaException {
+
+        session(serviceRequest);
+
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
+        discoveryServices.onRegisterServer(serviceRequest);
+    }
+
+    @Override
+    public void onRegisterServer2(
+        ServiceRequest<RegisterServer2Request, RegisterServer2Response> serviceRequest) throws UaException {
+
+        session(serviceRequest);
+
+        if (!server.getConfig().isDiscoveryServerEnabled()) {
+            throw new UaException(StatusCodes.Bad_NotSupported);
+        }
+
+        discoveryServices.onRegisterServer2(serviceRequest);
     }
     //endregion
 

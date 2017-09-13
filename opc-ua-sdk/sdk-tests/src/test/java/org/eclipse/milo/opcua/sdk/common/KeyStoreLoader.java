@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.client;
+package org.eclipse.milo.opcua.sdk.common;
 
 import java.security.Key;
 import java.security.KeyPair;
@@ -33,7 +33,7 @@ public class KeyStoreLoader {
 
     public KeyStoreLoader load() throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        keyStore.load(getClass().getClassLoader().getResourceAsStream("example-certs.pfx"), PASSWORD);
+        keyStore.load(getClass().getClassLoader().getResourceAsStream("example-certs-client.pfx"), PASSWORD);
 
         Key clientPrivateKey = keyStore.getKey(CLIENT_ALIAS, PASSWORD);
         if (clientPrivateKey instanceof PrivateKey) {
@@ -42,6 +42,7 @@ public class KeyStoreLoader {
             clientKeyPair = new KeyPair(clientPublicKey, (PrivateKey) clientPrivateKey);
         }
 
+        keyStore.load(getClass().getClassLoader().getResourceAsStream("example-certs-server.pfx"), PASSWORD);
         Key serverPrivateKey = keyStore.getKey(SERVER_ALIAS, PASSWORD);
         if (serverPrivateKey instanceof PrivateKey) {
             serverCertificate = (X509Certificate) keyStore.getCertificate(SERVER_ALIAS);

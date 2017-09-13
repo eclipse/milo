@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron, Stefan Profanter
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Consumer;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -50,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.UaStackServer;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
@@ -65,6 +67,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.RegisteredServer;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServerOnNetwork;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
@@ -90,7 +94,7 @@ public class OpcUaServer {
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
     private final NamespaceManager namespaceManager = new NamespaceManager();
-    private final SessionManager sessionManager = new SessionManager(this);
+    private final SessionManager sessionManager;
     private final ServerTable serverTable = new ServerTable();
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
@@ -104,10 +108,14 @@ public class OpcUaServer {
 
     private final OpcUaServerConfig config;
 
+
     public OpcUaServer(OpcUaServerConfig config) {
         this.config = config;
 
         stackServer = new UaTcpStackServer(config);
+
+        sessionManager = new SessionManager(this);
+
 
         stackServer.addServiceSet((AttributeServiceSet) sessionManager);
         stackServer.addServiceSet((AttributeHistoryServiceSet) sessionManager);
@@ -117,6 +125,9 @@ public class OpcUaServer {
         stackServer.addServiceSet((SessionServiceSet) sessionManager);
         stackServer.addServiceSet((SubscriptionServiceSet) sessionManager);
         stackServer.addServiceSet((ViewServiceSet) sessionManager);
+        if (config.isDiscoveryServerEnabled()) {
+            stackServer.addServiceSet((DiscoveryServiceSet) sessionManager);
+        }
 
         ObjectTypeManagerInitializer.initialize(objectTypeManager);
         VariableTypeManagerInitializer.initialize(variableTypeManager);
@@ -175,10 +186,28 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
-        return stackServer.startup().thenApply(ignored -> OpcUaServer.this);
+        return stackServer.startup().whenComplete((o, throwable) -> {
+            // TODO set capabilities correct
+            if (config.isMulticastEnabled()) {
+                sessionManager.getDiscoveryServices().addMulticastRecord(
+                    config.getApplicationName().getText(),
+                    config.getBindPort(),
+                    config.getServerName(),
+                    new String[0]
+                );
+            }
+        }).thenApply(ignored -> OpcUaServer.this);
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        if (config.isMulticastEnabled()) {
+            sessionManager.getDiscoveryServices().removeMulticastRecord(
+                config.getApplicationName().getText(),
+                config.getBindPort(),
+                config.getServerName()
+            );
+        }
+
         return stackServer.shutdown().thenApply(ignored -> OpcUaServer.this);
     }
 
@@ -331,6 +360,14 @@ public class OpcUaServer {
     }
 
     private static class OpcUaServerNodeMap extends AbstractServerNodeMap {
+    }
+
+    public void setRegisterServerConsumer(Consumer<RegisteredServer> registerServerConsumer) {
+        this.sessionManager.getDiscoveryServices().setRegisterServerConsumer(registerServerConsumer);
+    }
+
+    public void setMulticastServerConsumer(Consumer<ServerOnNetwork> consumer) {
+        this.sessionManager.getDiscoveryServices().setMulticastServerConsumer(consumer);
     }
 
 }

@@ -43,6 +43,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jmdns</groupId>
+            <artifactId>jmdns</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
@@ -54,6 +60,6 @@
             <version>${slf4j.version}</version>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+	</dependencies>
 
 </project>
