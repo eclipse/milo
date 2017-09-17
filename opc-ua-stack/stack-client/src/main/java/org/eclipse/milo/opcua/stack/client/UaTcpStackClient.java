@@ -13,11 +13,13 @@
 
 package org.eclipse.milo.opcua.stack.client;
 
+import java.net.ConnectException;
 import java.net.URI;
 import java.nio.channels.ClosedChannelException;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -35,6 +38,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ConnectTimeoutException;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.HashedWheelTimer;
@@ -45,15 +49,18 @@ import org.eclipse.milo.opcua.stack.client.handlers.UaTcpClientAcknowledgeHandle
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.application.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
@@ -63,6 +70,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -357,9 +365,86 @@ public class UaTcpStackClient implements UaStackClient {
 
     public static CompletableFuture<ClientSecureChannel> bootstrap(
         UaTcpStackClient client,
-        Optional<ClientSecureChannel> existingChannel) {
+        @Nullable ClientSecureChannel existingChannel) {
 
         CompletableFuture<ClientSecureChannel> handshake = new CompletableFuture<>();
+
+        ChannelInitializer<SocketChannel> initializer = new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel channel) throws Exception {
+                UaTcpStackClientConfig config = client.getConfig();
+
+                ClientSecureChannel secureChannel;
+
+                if (existingChannel != null) {
+                    secureChannel = existingChannel;
+                } else {
+                    EndpointDescription endpoint = config.getEndpoint().orElseGet(() -> {
+                        String endpointUrl = config.getEndpointUrl().orElseThrow(() ->
+                            new UaRuntimeException(
+                                StatusCodes.Bad_ConfigurationError,
+                                "no endpoint or endpoint URL configured")
+                        );
+                        return new EndpointDescription(
+                            endpointUrl,
+                            null, null,
+                            MessageSecurityMode.None,
+                            SecurityPolicy.None.getSecurityPolicyUri(),
+                            null, null, null
+                        );
+                    });
+
+                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+
+                    if (securityPolicy == SecurityPolicy.None) {
+                        secureChannel = new ClientSecureChannel(
+                            securityPolicy,
+                            endpoint.getSecurityMode()
+                        );
+                    } else {
+                        KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                            new UaException(
+                                StatusCodes.Bad_ConfigurationError,
+                                "no KeyPair configured")
+                        );
+
+                        X509Certificate certificate = config.getCertificate().orElseThrow(() ->
+                            new UaException(
+                                StatusCodes.Bad_ConfigurationError,
+                                "no certificate configured")
+                        );
+
+                        List<X509Certificate> certificateChain = Arrays.asList(
+                            config.getCertificateChain().orElseThrow(() ->
+                                new UaException(
+                                    StatusCodes.Bad_ConfigurationError,
+                                    "no certificate chain configured"))
+                        );
+
+                        X509Certificate remoteCertificate = CertificateUtil
+                            .decodeCertificate(endpoint.getServerCertificate().bytes());
+
+                        List<X509Certificate> remoteCertificateChain = CertificateUtil
+                            .decodeCertificates(endpoint.getServerCertificate().bytes());
+
+                        secureChannel = new ClientSecureChannel(
+                            keyPair,
+                            certificate,
+                            certificateChain,
+                            remoteCertificate,
+                            remoteCertificateChain,
+                            securityPolicy,
+                            endpoint.getSecurityMode()
+                        );
+                    }
+                }
+
+                UaTcpClientAcknowledgeHandler acknowledgeHandler =
+                    new UaTcpClientAcknowledgeHandler(client, secureChannel, handshake);
+
+                channel.pipeline().addLast(acknowledgeHandler);
+            }
+        };
 
         Bootstrap bootstrap = new Bootstrap();
 
@@ -368,22 +453,24 @@ public class UaTcpStackClient implements UaStackClient {
             .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
             .option(ChannelOption.TCP_NODELAY, true)
-            .handler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel channel) throws Exception {
-                    UaTcpClientAcknowledgeHandler acknowledgeHandler =
-                        new UaTcpClientAcknowledgeHandler(client, existingChannel, handshake);
-
-                    channel.pipeline().addLast(acknowledgeHandler);
-                }
-            });
+            .handler(initializer);
 
         try {
             URI uri = new URI(client.getEndpointUrl()).parseServerAuthority();
 
             bootstrap.connect(uri.getHost(), uri.getPort()).addListener((ChannelFuture f) -> {
                 if (!f.isSuccess()) {
-                    handshake.completeExceptionally(f.cause());
+                    Throwable cause = f.cause();
+
+                    if (cause instanceof ConnectTimeoutException) {
+                        handshake.completeExceptionally(
+                            new UaException(StatusCodes.Bad_Timeout, f.cause()));
+                    } else if (cause instanceof ConnectException) {
+                        handshake.completeExceptionally(
+                            new UaException(StatusCodes.Bad_ConnectionRejected, f.cause()));
+                    } else {
+                        handshake.completeExceptionally(cause);
+                    }
                 }
             });
         } catch (Throwable e) {

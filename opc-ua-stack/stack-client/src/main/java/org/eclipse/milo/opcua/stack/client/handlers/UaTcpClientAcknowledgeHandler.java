@@ -14,11 +14,7 @@
 package org.eclipse.milo.opcua.stack.client.handlers;
 
 import java.nio.ByteOrder;
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +26,6 @@ import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.AttributeKey;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
@@ -44,12 +39,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.HelloMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
-import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-import org.jooq.lambda.tuple.Tuple1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,69 +54,18 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
 
     private volatile Timeout helloTimeout;
 
-    private final ClientSecureChannel secureChannel;
 
     private final UaTcpStackClient client;
+    private final ClientSecureChannel secureChannel;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
     public UaTcpClientAcknowledgeHandler(UaTcpStackClient client,
-                                         Optional<ClientSecureChannel> existingChannel,
+                                         ClientSecureChannel secureChannel,
                                          CompletableFuture<ClientSecureChannel> handshakeFuture) {
 
         this.client = client;
+        this.secureChannel = secureChannel;
         this.handshakeFuture = handshakeFuture;
-
-        UaTcpStackClientConfig config = client.getConfig();
-
-        if (existingChannel.isPresent()) {
-            secureChannel = existingChannel.get();
-        } else {
-            secureChannel = config.getEndpoint()
-                .flatMap(e -> {
-                    SecurityPolicy securityPolicy = SecurityPolicy
-                        .fromUriSafe(e.getSecurityPolicyUri())
-                        .orElse(SecurityPolicy.None);
-
-                    if (securityPolicy == SecurityPolicy.None) {
-                        return Optional.empty();
-                    } else {
-                        return Optional.of(new Tuple1<>(e));
-                    }
-                })
-                .flatMap(t1 -> config.getKeyPair().map(t1::concat))
-                .flatMap(t2 -> config.getCertificateChain().map(t2::concat))
-                .flatMap(t3 -> {
-                    EndpointDescription endpoint = t3.v1();
-                    KeyPair keyPair = t3.v2();
-                    List<X509Certificate> localCertificateChain = Arrays.asList(t3.v3());
-                    X509Certificate localCertificate = localCertificateChain.get(0);
-
-                    try {
-                        X509Certificate remoteCertificate = CertificateUtil
-                            .decodeCertificate(endpoint.getServerCertificate().bytes());
-
-                        List<X509Certificate> remoteCertificateChain = CertificateUtil
-                            .decodeCertificates(endpoint.getServerCertificate().bytes());
-
-                        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
-
-                        ClientSecureChannel secureChannel = new ClientSecureChannel(
-                            keyPair,
-                            localCertificate,
-                            localCertificateChain,
-                            remoteCertificate,
-                            remoteCertificateChain,
-                            securityPolicy,
-                            endpoint.getSecurityMode()
-                        );
-
-                        return Optional.of(secureChannel);
-                    } catch (Throwable t) {
-                        return Optional.empty();
-                    }
-                })
-                .orElse(new ClientSecureChannel(SecurityPolicy.None, MessageSecurityMode.None));
-        }
     }
 
     @Override

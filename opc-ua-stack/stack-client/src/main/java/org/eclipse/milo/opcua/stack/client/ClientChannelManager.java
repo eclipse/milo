@@ -13,12 +13,12 @@
 
 package org.eclipse.milo.opcua.stack.client;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nullable;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -65,7 +65,7 @@ class ClientChannelManager {
             if (state.compareAndSet(currentState, nextState)) {
                 CompletableFuture<ClientSecureChannel> connected = nextState.connected;
 
-                connect(true, connected);
+                connect(true, null, connected);
 
                 return connected.whenCompleteAsync((sc, ex) -> {
                     if (sc != null) {
@@ -190,10 +190,14 @@ class ClientChannelManager {
         }
     }
 
-    private void connect(boolean initialAttempt, CompletableFuture<ClientSecureChannel> future) {
+    private void connect(
+        boolean initialAttempt,
+        @Nullable ClientSecureChannel previousChannel,
+        CompletableFuture<ClientSecureChannel> future) {
+
         try {
             CompletableFuture<ClientSecureChannel> bootstrap =
-                UaTcpStackClient.bootstrap(client, Optional.empty());
+                UaTcpStackClient.bootstrap(client, previousChannel);
 
             bootstrap.whenCompleteAsync((sc, ex) -> {
                 if (sc != null) {
@@ -218,7 +222,7 @@ class ClientChannelManager {
                         // Try again if bootstrapping failed because we couldn't re-open the previous channel.
                         logger.debug("Previous channel unusable, retrying...");
 
-                        connect(false, future);
+                        connect(false, null, future);
                     } else {
                         future.completeExceptionally(ex);
                     }
@@ -229,7 +233,7 @@ class ClientChannelManager {
         }
     }
 
-    private void reconnect(Reconnecting reconnectState, long delaySeconds) {
+    private void reconnect(Reconnecting reconnectState, long delaySeconds, ClientSecureChannel previousChannel) {
         logger.debug("Scheduling reconnect for +{} seconds...", delaySeconds);
 
         try {
@@ -238,7 +242,7 @@ class ClientChannelManager {
 
                 CompletableFuture<ClientSecureChannel> reconnected = reconnectState.reconnected;
 
-                connect(true, reconnected);
+                connect(true, previousChannel, reconnected);
 
                 reconnected.whenCompleteAsync((sc, ex) -> {
                     if (sc != null) {
@@ -252,7 +256,7 @@ class ClientChannelManager {
 
                         Reconnecting nextState = new Reconnecting();
                         if (state.compareAndSet(reconnectState, nextState)) {
-                            reconnect(nextState, nextDelay(delaySeconds));
+                            reconnect(nextState, nextDelay(delaySeconds), previousChannel);
                         }
                     }
                 });
@@ -311,14 +315,10 @@ class ClientChannelManager {
                 Reconnecting nextState = new Reconnecting();
 
                 if (state.compareAndSet(currentState, nextState)) {
-                    if (currentState instanceof Connected &&
-                        !client.getConfig().isSecureChannelReauthenticationEnabled()) {
+                    ClientSecureChannel channel =
+                        ((Connected) currentState).connected.get();
 
-                        ((Connected) currentState).connected
-                            .thenAccept(sc -> sc.setChannelId(0));
-                    }
-
-                    reconnect(nextState, 0);
+                    reconnect(nextState, 0L, channel);
                 }
             }
 
