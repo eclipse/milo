@@ -480,18 +480,22 @@ public class OpcUaClientIT {
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
+        KeyStoreLoader loader = new KeyStoreLoader().load();
+
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         keyStore.load(getClass().getClassLoader().getResourceAsStream("test-identity.pfx"), "password".toCharArray());
 
-        X509Certificate certificate = (X509Certificate) keyStore.getCertificate("identity");
-        PrivateKey privateKey = (PrivateKey) keyStore.getKey("identity", "password".toCharArray());
+        X509Certificate identityCertificate = (X509Certificate) keyStore.getCertificate("identity");
+        PrivateKey identityPrivateKey = (PrivateKey) keyStore.getKey("identity", "password".toCharArray());
 
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("digitalpetri opc-ua client"))
-            .setApplicationUri("urn:digitalpetri:opcua:client")
+            .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
+            .setApplicationUri("urn:eclipse:milo:examples:client")
             .setEndpoint(endpoint)
+            .setKeyPair(loader.getClientKeyPair())
+            .setCertificate(loader.getClientCertificate())
             .setRequestTimeout(uint(60000))
-            .setIdentityProvider(new X509IdentityProvider(certificate, privateKey))
+            .setIdentityProvider(new X509IdentityProvider(identityCertificate, identityPrivateKey))
             .build();
 
         OpcUaClient client = new OpcUaClient(clientConfig);
