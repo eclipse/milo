@@ -68,10 +68,14 @@ public class CertificateValidationUtil {
 
             params.setRevocationEnabled(false);
 
-            CertStore intermediateCertStore =
-                CertStore.getInstance("Collection", new CollectionCertStoreParameters(chain));
+            if (chain.size() > 1) {
+                CertStore intermediateCertStore = CertStore.getInstance(
+                    "Collection",
+                    new CollectionCertStoreParameters(chain.subList(1, chain.size()))
+                );
 
-            params.addCertStore(intermediateCertStore);
+                params.addCertStore(intermediateCertStore);
+            }
 
             CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
 
