@@ -269,11 +269,11 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
         return new NodeId(0, TypeUtil.getBuiltinTypeId(clazz));
     }
 
-    public static interface Out<T> {
+    public interface Out<T> {
         void set(T value);
     }
 
-    public static interface InvocationContext {
+    public interface InvocationContext {
         UaObjectNode getObjectNode();
 
         void setFailure(UaException failure);
