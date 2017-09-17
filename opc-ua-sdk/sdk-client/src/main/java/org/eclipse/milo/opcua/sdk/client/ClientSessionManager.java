@@ -533,13 +533,17 @@ class ClientSessionManager {
                     .map(UaException::getStatusCode)
                     .orElse(StatusCode.BAD);
 
-                if (statusCode.getValue() == StatusCodes.Bad_SessionClosed ||
-                    statusCode.getValue() == StatusCodes.Bad_SessionIdInvalid ||
-                    statusCode.getValue() == StatusCodes.Bad_SessionNotActivated ||
-                    statusCode.getValue() == StatusCodes.Bad_SecurityChecksFailed) {
+                if (statusCode.getValue() == StatusCodes.Bad_Timeout ||
+                    statusCode.getValue() == StatusCodes.Bad_ConnectionRejected) {
 
-                    // A session-related error means the session is no longer valid.
-                    // Create a new session re-using the current future.
+                    Reactivating reactivatingAgain = new Reactivating();
+
+                    if (state.compareAndSet(reactivatingState, reactivatingAgain)) {
+                        reactivateSession(reactivatingAgain, previousSession);
+                    }
+
+                    sessionFuture.completeExceptionally(ex);
+                } else {
                     Creating creating = new Creating(sessionFuture);
 
                     if (state.compareAndSet(reactivatingState, creating)) {
@@ -549,16 +553,6 @@ class ClientSessionManager {
                         // The only way this sessionFuture can be completed is exceptionally.
                         sessionFuture.completeExceptionally(ex);
                     }
-                } else {
-                    // A non-session-related error, such as not being connected yet.
-                    // Fail the current future and try again.
-                    Reactivating reactivatingAgain = new Reactivating();
-
-                    if (state.compareAndSet(reactivatingState, reactivatingAgain)) {
-                        reactivateSession(reactivatingAgain, previousSession);
-                    }
-
-                    sessionFuture.completeExceptionally(ex);
                 }
             }
         });
