@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.model.methods;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
+import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler.InvocationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -38,13 +39,17 @@ public class ResendData {
         @UaInputArgument(name = "subscriptionId")
             UInteger subscriptionId) throws UaException {
 
+
         Subscription subscription = server.getSubscriptions().get(subscriptionId);
 
         if (subscription == null) {
             context.setFailure(new UaException(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid)));
         } else {
-            // TODO
-            // subscription.resendData();
+
+            subscription.getMonitoredItems().values().stream()
+                .filter(item -> item instanceof MonitoredDataItem)
+                .map(item -> (MonitoredDataItem) item)
+                .forEach(MonitoredDataItem::clearLastValue);
         }
     }
 
