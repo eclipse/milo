@@ -142,7 +142,7 @@ public class OpcUaServer {
 
                     Set<X509Certificate> certificates = config.getCertificateManager().getCertificates();
 
-                    if (certificates.isEmpty() && securityPolicy == SecurityPolicy.None) {
+                    if (certificates.isEmpty() || securityPolicy == SecurityPolicy.None) {
                         logger.info("Binding endpoint {} to {} [{}/{}]",
                             endpointUrl, bindAddress, securityPolicy, messageSecurity);
 
