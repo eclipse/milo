@@ -434,7 +434,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                             (ServiceFault) responseMessage :
                             new ServiceFault(responseMessage.getResponseHeader());
 
-                        throw new UaServiceFaultException(serviceFault);
+                        handshakeFuture.completeExceptionally(new UaServiceFaultException(serviceFault));
+                        ctx.close();
                     }
                 } catch (MessageAbortedException e) {
                     logger.error(
