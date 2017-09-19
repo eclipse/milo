@@ -60,7 +60,7 @@ public enum SecurityAlgorithm {
      * <p>
      * Requires Bouncy Castle installed as a Security Provider.
      */
-    RsaSha256Pss("http://opcfoundation.org/UA/security/rsa-sha2-256-pss", "SHA256withRSA/PSS"),
+    RsaSha256Pss("http://opcfoundation.org/UA/security/rsa-pss-sha2-256", "SHA256withRSA/PSS"),
 
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
