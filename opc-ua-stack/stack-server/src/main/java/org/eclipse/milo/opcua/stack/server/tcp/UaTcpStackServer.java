@@ -456,7 +456,20 @@ public class UaTcpStackServer implements UaStackServer {
                 new ArrayList<>();
 
             List<EndpointDescription> allEndpoints = endpoints.stream()
-                .map(UaTcpStackServer.this::mapEndpoint)
+                .map(endpoint -> {
+                    List<UserTokenPolicy> userTokenPolicies = config.getUserTokenPolicies();
+
+                    return new EndpointDescription(
+                        endpoint.getEndpointUri().toString(),
+                        getFilteredApplicationDescription(request.getEndpointUrl()),
+                        certificateByteString(endpoint.getCertificate()),
+                        endpoint.getMessageSecurity(),
+                        endpoint.getSecurityPolicy().getSecurityPolicyUri(),
+                        userTokenPolicies.toArray(new UserTokenPolicy[userTokenPolicies.size()]),
+                        Stack.UA_TCP_BINARY_TRANSPORT_URI,
+                        ubyte(endpoint.getSecurityLevel())
+                    );
+                })
                 .filter(ed -> filterProfileUris(ed, profileUris))
                 .collect(toList());
 
@@ -499,7 +512,7 @@ public class UaTcpStackServer implements UaStackServer {
                 new ArrayList<>();
 
             List<ApplicationDescription> applicationDescriptions =
-                newArrayList(getApplicationDescription(request.getEndpointUrl()));
+                newArrayList(getFilteredApplicationDescription(request.getEndpointUrl()));
 
             applicationDescriptions = applicationDescriptions.stream()
                 .filter(ad -> filterServerUris(ad, serverUris))
@@ -513,7 +526,7 @@ public class UaTcpStackServer implements UaStackServer {
             serviceRequest.setResponse(response);
         }
 
-        private ApplicationDescription getApplicationDescription(String endpointUrl) {
+        private ApplicationDescription getFilteredApplicationDescription(String endpointUrl) {
             List<String> allDiscoveryUrls = newArrayList(discoveryUrls);
 
             List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
