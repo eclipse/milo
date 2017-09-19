@@ -26,14 +26,22 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
     String getNamespaceUri();
 
     /**
-     * Register a {@link DataTypeCodec} with this dictionary.
+     * Register a {@link DataTypeCodec} that serializes an enumeration with this dictionary.
+     *
+     * @param codec       the codec to register.
+     * @param description the value of the DataTypeDescription Node that identifies {@code codec} in the dictionary.
+     */
+    void registerEnumCodec(T codec, String description);
+
+    /**
+     * Register a {@link DataTypeCodec} that serializes a structure with this dictionary.
      *
      * @param codec       the codec to register.
      * @param description the value of the DataTypeDescription Node that identifies {@code codec} in the dictionary.
      * @param encodingId  the {@link NodeId} of the appropriate DataTypeEncoding Node for the DataType serialized
      *                    by {@code codec}.
      */
-    void registerCodec(T codec, String description, NodeId encodingId);
+    void registerStructCodec(T codec, String description, NodeId encodingId);
 
     /**
      * Get a {@link DataTypeCodec} registered with this dictionary.
