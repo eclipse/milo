@@ -55,13 +55,15 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
         // verify the algorithm matches the one specified by the tokenPolicy or else the channel itself
         if (tokenPolicy.getSecurityPolicyUri() != null) {
             SecurityPolicy securityPolicy = SecurityPolicy.fromUri(tokenPolicy.getSecurityPolicyUri());
-            if (!tokenSignature.getAlgorithm().equals(securityPolicy.getAsymmetricSignatureAlgorithm().getUri())) {
+
+            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(tokenSignature.getAlgorithm())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "algorithm in token signature did not match algorithm specified by token policy");
             }
         } else {
             SecurityPolicy securityPolicy = channel.getSecurityPolicy();
-            if (!tokenSignature.getAlgorithm().equals(securityPolicy.getAsymmetricSignatureAlgorithm().getUri())) {
+
+            if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(tokenSignature.getAlgorithm())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "algorithm in token signature did not match algorithm specified by secure channel");
             }
