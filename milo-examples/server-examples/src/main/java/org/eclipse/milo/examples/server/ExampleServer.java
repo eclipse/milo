@@ -20,7 +20,9 @@ import java.util.concurrent.CompletableFuture;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
+import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
+import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_X509;
 
 public class ExampleServer {
 
@@ -80,6 +83,8 @@ public class ExampleServer {
             }
         );
 
+        X509IdentityValidator x509IdentityValidator = new X509IdentityValidator(c -> true);
+
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
@@ -94,7 +99,7 @@ public class ExampleServer {
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
-            .setIdentityValidator(identityValidator)
+            .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")
             .setServerName("example")
             .setSecurityPolicies(
@@ -106,7 +111,8 @@ public class ExampleServer {
             .setUserTokenPolicies(
                 ImmutableList.of(
                     USER_TOKEN_POLICY_ANONYMOUS,
-                    USER_TOKEN_POLICY_USERNAME))
+                    USER_TOKEN_POLICY_USERNAME,
+                    USER_TOKEN_POLICY_X509))
             .build();
 
         server = new OpcUaServer(serverConfig);
