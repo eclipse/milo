@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.stack.client;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nullable;
@@ -46,6 +47,7 @@ class ClientChannelManager {
     private final ScheduledExecutorService scheduledExecutor = Stack.sharedScheduledExecutor();
 
     private final AtomicReference<State> state = new AtomicReference<>(new Idle());
+    private final AtomicReference<ScheduledFuture<?>> reconnectFuture = new AtomicReference<>();
 
     private final UaTcpStackClient client;
 
@@ -69,15 +71,18 @@ class ClientChannelManager {
 
                 connect(true, null, connected);
 
-                return connected.whenCompleteAsync((sc, ex) -> {
-                    if (sc != null) {
-                        if (state.compareAndSet(nextState, new Connected(connected))) {
-                            sc.getChannel().pipeline().addLast(new InactivityHandler());
+                return connected.whenCompleteAsync(
+                    (chan, ex) -> {
+                        if (chan != null) {
+                            if (state.compareAndSet(nextState, new Connected(connected))) {
+                                chan.getChannel().pipeline().addLast(new InactivityHandler());
+                            }
+                        } else {
+                            state.compareAndSet(nextState, new Idle());
                         }
-                    } else {
-                        state.compareAndSet(nextState, new Idle());
-                    }
-                });
+                    },
+                    client.getExecutorService()
+                );
             } else {
                 return getChannel();
             }
@@ -93,10 +98,13 @@ class ClientChannelManager {
             CompletableFuture<Unit> disconnectFuture = ((Disconnecting) currentState).disconnectFuture;
 
             disconnectFuture.whenCompleteAsync(
-                (u, ex) -> getChannel().whenCompleteAsync((sc, ex2) -> {
-                    if (sc != null) future.complete(sc);
-                    else future.completeExceptionally(ex2);
-                }),
+                (unit, ex) -> getChannel().whenCompleteAsync(
+                    (chan, ex2) -> {
+                        if (chan != null) future.complete(chan);
+                        else future.completeExceptionally(ex2);
+                    },
+                    client.getExecutorService()
+                ),
                 client.getExecutorService()
             );
 
@@ -120,20 +128,22 @@ class ClientChannelManager {
             Disconnecting disconnecting = new Disconnecting();
 
             if (state.compareAndSet(currentState, disconnecting)) {
-                ((Connected) currentState).connected.whenCompleteAsync((sc, ex) -> {
-                    if (sc != null) {
-                        disconnect(sc, disconnecting.disconnectFuture);
-                    } else {
-                        disconnecting.disconnectFuture.complete(null);
-                    }
+                ((Connected) currentState).connected.whenCompleteAsync(
+                    (chan, ex) -> {
+                        if (chan != null) {
+                            disconnect(chan, disconnecting.disconnectFuture);
+                        } else {
+                            disconnecting.disconnectFuture.complete(null);
+                        }
 
-                    disconnecting.disconnectFuture.whenComplete(
-                        (u, ex2) -> {
+                        disconnecting.disconnectFuture.whenComplete((unit, ex2) -> {
                             if (state.compareAndSet(disconnecting, new Idle())) {
                                 logger.debug("disconnect complete, state set to Idle");
                             }
                         });
-                });
+                    },
+                    client.getExecutorService()
+                );
 
                 return disconnecting.disconnectFuture;
             } else {
@@ -143,20 +153,22 @@ class ClientChannelManager {
             Disconnecting disconnecting = new Disconnecting();
 
             if (state.compareAndSet(currentState, disconnecting)) {
-                ((Connecting) currentState).connected.whenCompleteAsync((sc, ex) -> {
-                    if (sc != null) {
-                        disconnect(sc, disconnecting.disconnectFuture);
-                    } else {
-                        disconnecting.disconnectFuture.complete(Unit.VALUE);
-                    }
+                ((Connecting) currentState).connected.whenCompleteAsync(
+                    (chan, ex) -> {
+                        if (chan != null) {
+                            disconnect(chan, disconnecting.disconnectFuture);
+                        } else {
+                            disconnecting.disconnectFuture.complete(Unit.VALUE);
+                        }
 
-                    disconnecting.disconnectFuture.whenComplete(
-                        (u, ex2) -> {
+                        disconnecting.disconnectFuture.whenComplete((unit, ex2) -> {
                             if (state.compareAndSet(disconnecting, new Idle())) {
                                 logger.debug("disconnect complete, state set to Idle");
                             }
                         });
-                });
+                    },
+                    client.getExecutorService()
+                );
 
                 return disconnecting.disconnectFuture;
             } else {
@@ -166,20 +178,33 @@ class ClientChannelManager {
             Disconnecting disconnecting = new Disconnecting();
 
             if (state.compareAndSet(currentState, disconnecting)) {
-                ((Reconnecting) currentState).reconnected.whenCompleteAsync((sc, ex) -> {
-                    if (sc != null) {
-                        disconnect(sc, disconnecting.disconnectFuture);
-                    } else {
-                        disconnecting.disconnectFuture.complete(Unit.VALUE);
-                    }
+                Reconnecting reconnecting = (Reconnecting) currentState;
 
-                    disconnecting.disconnectFuture.whenComplete(
-                        (u, ex2) -> {
-                            if (state.compareAndSet(disconnecting, new Idle())) {
-                                logger.debug("disconnect complete, state set to Idle");
+                ScheduledFuture<?> future = reconnectFuture.get();
+
+                if (future != null && future.cancel(false)) {
+                    reconnecting.reconnected.completeExceptionally(
+                        new UaException(StatusCodes.Bad_ConnectionClosed));
+
+                    disconnecting.disconnectFuture.complete(Unit.VALUE);
+                } else {
+                    reconnecting.reconnected.whenCompleteAsync(
+                        (chan, ex) -> {
+                            if (chan != null) {
+                                disconnect(chan, disconnecting.disconnectFuture);
+                            } else {
+                                disconnecting.disconnectFuture.complete(Unit.VALUE);
                             }
-                        });
-                });
+
+                            disconnecting.disconnectFuture.whenComplete((unit, ex2) -> {
+                                if (state.compareAndSet(disconnecting, new Idle())) {
+                                    logger.debug("disconnect complete, state set to Idle");
+                                }
+                            });
+                        },
+                        client.getExecutorService()
+                    );
+                }
 
                 return disconnecting.disconnectFuture;
             } else {
@@ -201,35 +226,38 @@ class ClientChannelManager {
             CompletableFuture<ClientSecureChannel> bootstrap =
                 UaTcpStackClient.bootstrap(client, previousChannel);
 
-            bootstrap.whenCompleteAsync((sc, ex) -> {
-                if (sc != null) {
-                    logger.debug(
-                        "Channel bootstrap succeeded: localAddress={}, remoteAddress={}",
-                        sc.getChannel().localAddress(), sc.getChannel().remoteAddress());
+            bootstrap.whenCompleteAsync(
+                (chan, ex) -> {
+                    if (chan != null) {
+                        logger.debug(
+                            "Channel bootstrap succeeded: localAddress={}, remoteAddress={}",
+                            chan.getChannel().localAddress(), chan.getChannel().remoteAddress());
 
-                    future.complete(sc);
-                } else {
-                    logger.debug("Channel bootstrap failed: {}", ex.getMessage(), ex);
-
-                    StatusCode statusCode = UaException.extract(ex)
-                        .map(UaException::getStatusCode)
-                        .orElse(StatusCode.BAD);
-
-                    boolean secureChannelError =
-                        statusCode.getValue() == StatusCodes.Bad_SecureChannelIdInvalid ||
-                            statusCode.getValue() == StatusCodes.Bad_SecurityChecksFailed ||
-                            statusCode.getValue() == StatusCodes.Bad_TcpSecureChannelUnknown;
-
-                    if (initialAttempt && secureChannelError) {
-                        // Try again if bootstrapping failed because we couldn't re-open the previous channel.
-                        logger.debug("Previous channel unusable, retrying...");
-
-                        connect(false, null, future);
+                        future.complete(chan);
                     } else {
-                        future.completeExceptionally(ex);
+                        logger.debug("Channel bootstrap failed: {}", ex.getMessage(), ex);
+
+                        StatusCode statusCode = UaException.extract(ex)
+                            .map(UaException::getStatusCode)
+                            .orElse(StatusCode.BAD);
+
+                        boolean secureChannelError =
+                            statusCode.getValue() == StatusCodes.Bad_SecureChannelIdInvalid ||
+                                statusCode.getValue() == StatusCodes.Bad_SecurityChecksFailed ||
+                                statusCode.getValue() == StatusCodes.Bad_TcpSecureChannelUnknown;
+
+                        if (initialAttempt && secureChannelError) {
+                            // Try again if bootstrapping failed because we couldn't re-open the previous channel.
+                            logger.debug("Previous channel unusable, retrying...");
+
+                            connect(false, null, future);
+                        } else {
+                            future.completeExceptionally(ex);
+                        }
                     }
-                }
-            });
+                },
+                client.getExecutorService()
+            );
         } catch (Throwable t) {
             future.completeExceptionally(t);
         }
@@ -239,30 +267,37 @@ class ClientChannelManager {
         logger.debug("Scheduling reconnect for +{} seconds...", delaySeconds);
 
         try {
-            scheduledExecutor.schedule(() -> {
+            ScheduledFuture<?> future = scheduledExecutor.schedule(() -> {
                 logger.debug("{} seconds elapsed; reconnecting...", delaySeconds);
 
                 CompletableFuture<ClientSecureChannel> reconnected = reconnectState.reconnected;
 
                 connect(true, previousChannel, reconnected);
 
-                reconnected.whenCompleteAsync((sc, ex) -> {
-                    if (sc != null) {
-                        logger.debug("Reconnect succeeded, channelId={}", sc.getChannelId());
+                reconnected.whenCompleteAsync(
+                    (chan, ex) -> {
+                        reconnectFuture.set(null);
 
-                        if (state.compareAndSet(reconnectState, new Connected(reconnected))) {
-                            sc.getChannel().pipeline().addLast(new InactivityHandler());
-                        }
-                    } else {
-                        logger.debug("Reconnect failed: {}", ex.getMessage(), ex);
+                        if (chan != null) {
+                            logger.debug("Reconnect succeeded, channelId={}", chan.getChannelId());
 
-                        Reconnecting nextState = new Reconnecting();
-                        if (state.compareAndSet(reconnectState, nextState)) {
-                            reconnect(nextState, nextDelay(delaySeconds), previousChannel);
+                            if (state.compareAndSet(reconnectState, new Connected(reconnected))) {
+                                chan.getChannel().pipeline().addLast(new InactivityHandler());
+                            }
+                        } else {
+                            logger.debug("Reconnect failed: {}", ex.getMessage(), ex);
+
+                            Reconnecting nextState = new Reconnecting();
+                            if (state.compareAndSet(reconnectState, nextState)) {
+                                reconnect(nextState, nextDelay(delaySeconds), previousChannel);
+                            }
                         }
-                    }
-                });
+                    },
+                    client.getExecutorService()
+                );
             }, delaySeconds, TimeUnit.SECONDS);
+
+            reconnectFuture.set(future);
         } catch (RejectedExecutionException e) {
             // This can happen if Stack shared resources have been released.
             logger.debug("Reconnect task execution was rejected: {}", e.getMessage(), e);
