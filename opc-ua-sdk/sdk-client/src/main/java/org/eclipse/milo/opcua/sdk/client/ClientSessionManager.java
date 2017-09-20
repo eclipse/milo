@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.nio.ByteBuffer;
 import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +59,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -69,6 +71,7 @@ import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
 class ClientSessionManager {
 
@@ -355,12 +358,40 @@ class ClientSessionManager {
             CompletableFuture<OpcUaSession> sessionFuture = creatingState.sessionFuture;
 
             if (csr != null) {
-                logger.debug("Session created: {}", csr.getSessionId());
+                logger.debug("CreateSession succeeded: {}", csr.getSessionId());
 
-                Activating activatingState = new Activating(sessionFuture);
+                try {
+                    EndpointDescription endpoint = stackClient.getEndpoint().orElseThrow(
+                        () -> new UaException(StatusCodes.Bad_InternalError,
+                            "cannot create session with no endpoint configured")
+                    );
 
-                if (state.compareAndSet(creatingState, activatingState)) {
-                    activateSession(activatingState, csr);
+                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+
+                    if (securityPolicy != SecurityPolicy.None) {
+                        X509Certificate certificateFromResponse = CertificateUtil
+                            .decodeCertificate(csr.getServerCertificate().bytesOrEmpty());
+
+                        X509Certificate certificateFromEndpoint = CertificateUtil
+                            .decodeCertificate(endpoint.getServerCertificate().bytesOrEmpty());
+
+                        if (!certificateFromResponse.equals(certificateFromEndpoint)) {
+                            throw new UaException(
+                                StatusCodes.Bad_SecurityChecksFailed,
+                                "Certificate from CreateSessionResponse did not " +
+                                    "match certificate from EndpointDescription!"
+                            );
+                        }
+                    }
+
+                    Activating activatingState = new Activating(sessionFuture);
+
+                    if (state.compareAndSet(creatingState, activatingState)) {
+                        activateSession(activatingState, csr);
+                    }
+                } catch (UaException e) {
+                    state.compareAndSet(creatingState, new Inactive());
+                    sessionFuture.completeExceptionally(ex);
                 }
             } else {
                 logger.debug("CreateSession failed: {}", ex.getMessage(), ex);
@@ -371,100 +402,114 @@ class ClientSessionManager {
         });
     }
 
-    private void activateSession(Activating activatingState, CreateSessionResponse csr) {
-        UaTcpStackClient stackClient = client.getStackClient();
-
-        Function<ClientSecureChannel, CompletableFuture<ActivateSessionResponse>> activate = secureChannel -> {
-            try {
-                Channel channel = secureChannel.getChannel();
-
-                if (channel.pipeline().get(InactivityHandler.class) == null) {
-                    channel.pipeline().addLast(new InactivityHandler());
-                }
-
-                EndpointDescription endpoint = stackClient.getEndpoint()
-                    .orElseThrow(() -> new Exception("cannot create session with no endpoint configured"));
-
-                Tuple2<UserIdentityToken, SignatureData> tuple =
-                    client.getConfig().getIdentityProvider()
-                        .getIdentityToken(endpoint, csr.getServerNonce());
-
-                UserIdentityToken userIdentityToken = tuple.v1();
-                SignatureData userTokenSignature = tuple.v2();
-
-                ActivateSessionRequest request = new ActivateSessionRequest(
-                    client.newRequestHeader(csr.getAuthenticationToken()),
-                    buildClientSignature(secureChannel, csr),
-                    new SignedSoftwareCertificate[0],
-                    new String[0],
-                    ExtensionObject.encode(userIdentityToken),
-                    userTokenSignature
-                );
-
-                logger.debug(
-                    "Sending ActivateSessionRequest, secureChannelId={}, channel={}...",
-                    secureChannel.getChannelId(), secureChannel.getChannel());
-
-                return stackClient.sendRequest(request);
-            } catch (Exception e) {
-                CompletableFuture<ActivateSessionResponse> f = new CompletableFuture<>();
-                f.completeExceptionally(e);
-                return f;
-            }
-        };
-
-        stackClient.getChannelFuture().thenCompose(activate).whenCompleteAsync((asr, ex) -> {
-            CompletableFuture<OpcUaSession> sessionFuture = activatingState.sessionFuture;
-
-            OpcUaSession session = new OpcUaSession(
-                csr.getAuthenticationToken(),
-                csr.getSessionId(),
-                client.getConfig().getSessionName().get(),
-                csr.getRevisedSessionTimeout(),
-                csr.getMaxRequestMessageSize(),
-                csr.getServerCertificate(),
-                csr.getServerSoftwareCertificates()
-            );
-
-            if (asr != null) {
-                logger.debug("Session activated: {}", csr.getSessionId());
-
-                session.setServerNonce(asr.getServerNonce());
-
-                OpcUaSubscriptionManager subscriptionManager = client.getSubscriptionManager();
-                int subscriptionCount = subscriptionManager.getSubscriptions().size();
-                boolean transferNeeded = subscriptionCount > 0;
-
-                logger.debug(
-                    "subscriptionCount={}, transferNeeded={}",
-                    subscriptionCount, transferNeeded);
-
-                if (transferNeeded) {
-                    Transferring transferringState = new Transferring(sessionFuture);
-
-                    if (state.compareAndSet(activatingState, transferringState)) {
-                        transferSubscriptions(transferringState, session);
-                    }
-                } else {
-                    state.compareAndSet(activatingState, new Active(session, sessionFuture));
-                    sessionFuture.complete(session);
-                }
-            } else {
+    private void activateSession(Activating activating, CreateSessionResponse csr) {
+        client.getStackClient().getChannelFuture()
+            .thenCompose(channel -> sendActivateRequest(csr, channel))
+            .thenAccept(asr -> receiveActivateResponse(activating, csr, asr))
+            .exceptionally(ex -> {
                 logger.debug("ActivateSession failed: {}", ex.getMessage(), ex);
 
-                Closing closingState = new Closing();
+                state.compareAndSet(activating, new Inactive());
+                activating.sessionFuture.completeExceptionally(ex);
 
-                if (state.compareAndSet(activatingState, closingState)) {
-                    closeSession(closingState, completedFuture(session));
+                return null;
+            });
+    }
 
-                    closingState.closeFuture.whenComplete(
-                        (s, closeEx) -> sessionFuture.completeExceptionally(ex));
-                } else {
-                    state.compareAndSet(activatingState, new Inactive());
-                    sessionFuture.completeExceptionally(ex);
+    private CompletableFuture<ActivateSessionResponse> sendActivateRequest(
+        CreateSessionResponse csr,
+        ClientSecureChannel secureChannel) {
+
+        try {
+            SecurityPolicy securityPolicy = secureChannel.getSecurityPolicy();
+
+            if (securityPolicy != SecurityPolicy.None) {
+                X509Certificate certificateFromResponse = CertificateUtil
+                    .decodeCertificate(csr.getServerCertificate().bytesOrEmpty());
+
+                if (!certificateFromResponse.equals(secureChannel.getRemoteCertificate())) {
+                    throw new UaException(
+                        StatusCodes.Bad_SecurityChecksFailed,
+                        "Certificate from EndpointDescription did not " +
+                            "match certificate from CreateSessionResponse!"
+                    );
                 }
             }
-        });
+
+            Channel channel = secureChannel.getChannel();
+
+            if (channel.pipeline().get(InactivityHandler.class) == null) {
+                channel.pipeline().addLast(new InactivityHandler());
+            }
+
+            EndpointDescription endpoint = client.getStackClient().getEndpoint().orElseThrow(
+                () -> new UaException(StatusCodes.Bad_InternalError,
+                    "cannot create session with no endpoint configured")
+            );
+
+            Tuple2<UserIdentityToken, SignatureData> tuple =
+                client.getConfig().getIdentityProvider()
+                    .getIdentityToken(endpoint, csr.getServerNonce());
+
+            UserIdentityToken userIdentityToken = tuple.v1();
+            SignatureData userTokenSignature = tuple.v2();
+
+            ActivateSessionRequest request = new ActivateSessionRequest(
+                client.newRequestHeader(csr.getAuthenticationToken()),
+                buildClientSignature(secureChannel, csr),
+                new SignedSoftwareCertificate[0],
+                new String[0],
+                ExtensionObject.encode(userIdentityToken),
+                userTokenSignature
+            );
+
+            logger.debug(
+                "Sending ActivateSessionRequest, secureChannelId={}, channel={}...",
+                secureChannel.getChannelId(), secureChannel.getChannel());
+
+            return client.getStackClient().sendRequest(request);
+        } catch (Exception e) {
+            return failedFuture(e);
+        }
+    }
+
+    private void receiveActivateResponse(
+        Activating activating,
+        CreateSessionResponse csr,
+        ActivateSessionResponse asr) {
+
+        logger.debug("Session activated: {}", csr.getSessionId());
+
+        OpcUaSession session = new OpcUaSession(
+            csr.getAuthenticationToken(),
+            csr.getSessionId(),
+            client.getConfig().getSessionName().get(),
+            csr.getRevisedSessionTimeout(),
+            csr.getMaxRequestMessageSize(),
+            csr.getServerCertificate(),
+            csr.getServerSoftwareCertificates()
+        );
+
+        session.setServerNonce(asr.getServerNonce());
+
+        OpcUaSubscriptionManager subscriptionManager = client.getSubscriptionManager();
+        int subscriptionCount = subscriptionManager.getSubscriptions().size();
+        boolean transferNeeded = subscriptionCount > 0;
+
+        logger.debug("subscriptionCount={}, transferNeeded={}", subscriptionCount, transferNeeded);
+
+        CompletableFuture<OpcUaSession> sessionFuture = activating.sessionFuture;
+
+        if (transferNeeded) {
+            Transferring transferringState = new Transferring(sessionFuture);
+
+            if (state.compareAndSet(activating, transferringState)) {
+                transferSubscriptions(transferringState, session);
+            }
+        } else {
+            state.compareAndSet(activating, new Active(session, sessionFuture));
+            sessionFuture.complete(session);
+        }
     }
 
     private void reactivateSession(Reactivating reactivatingState, OpcUaSession previousSession) {
@@ -490,8 +535,7 @@ class ClientSessionManager {
 
                 SignatureData clientSignature = buildClientSignature(
                     secureChannel,
-                    previousSession.getServerCertificate(),
-                    previousSession.getServerNonce()
+                    previousSession.getServerNonce(), previousSession.getServerCertificate()
                 );
 
                 ActivateSessionRequest request = new ActivateSessionRequest(
@@ -509,9 +553,7 @@ class ClientSessionManager {
 
                 return stackClient.sendRequest(request);
             } catch (Exception e) {
-                CompletableFuture<ActivateSessionResponse> f = new CompletableFuture<>();
-                f.completeExceptionally(e);
-                return f;
+                return failedFuture(e);
             }
         };
 
@@ -666,18 +708,31 @@ class ClientSessionManager {
         });
     }
 
-    private SignatureData buildClientSignature(ClientSecureChannel secureChannel, CreateSessionResponse response) {
-        ByteString serverCert = response.getServerCertificate() != null ?
-            response.getServerCertificate() : ByteString.NULL_VALUE;
+    private SignatureData buildClientSignature(
+        ClientSecureChannel secureChannel,
+        CreateSessionResponse response) throws Exception {
+
         ByteString serverNonce = response.getServerNonce() != null ?
             response.getServerNonce() : ByteString.NULL_VALUE;
 
-        return buildClientSignature(secureChannel, serverCert, serverNonce);
+        ByteString serverCert = ByteString.NULL_VALUE;
+
+        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
+            ByteString serverCertificateBytes = response.getServerCertificate();
+
+            X509Certificate certificate = CertificateUtil
+                .decodeCertificate(serverCertificateBytes.bytesOrEmpty());
+
+            serverCert = ByteString.of(certificate.getEncoded());
+        }
+
+        return buildClientSignature(secureChannel, serverNonce, serverCert);
     }
 
-    private SignatureData buildClientSignature(ClientSecureChannel secureChannel,
-                                               ByteString serverCertificate,
-                                               ByteString serverNonce) {
+    private SignatureData buildClientSignature(
+        ClientSecureChannel secureChannel,
+        ByteString serverNonce,
+        ByteString serverCertificate) {
 
         byte[] serverNonceBytes = Optional.ofNullable(serverNonce.bytes()).orElse(new byte[0]);
         byte[] serverCertificateBytes = Optional.ofNullable(serverCertificate.bytes()).orElse(new byte[0]);
