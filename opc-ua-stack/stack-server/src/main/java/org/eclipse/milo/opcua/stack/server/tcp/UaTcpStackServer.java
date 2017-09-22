@@ -498,7 +498,7 @@ public class UaTcpStackServer implements UaStackServer {
 
                 return requestedHost.equalsIgnoreCase(endpointHost);
             } catch (Throwable e) {
-                logger.warn("Unable to create URI.", e);
+                logger.debug("Unable to create URI.", e);
                 return false;
             }
         }
@@ -539,7 +539,7 @@ public class UaTcpStackServer implements UaStackServer {
 
                         return requestedHost.equalsIgnoreCase(discoveryHost);
                     } catch (Throwable e) {
-                        logger.warn("Unable to create URI.", e);
+                        logger.debug("Unable to create URI.", e);
                         return false;
                     }
                 })
@@ -560,7 +560,7 @@ public class UaTcpStackServer implements UaStackServer {
 
                             return requestedHostAddress.equals(discoveryHostAddress);
                         } catch (Throwable e) {
-                            logger.warn("Unable to create URI.", e);
+                            logger.debug("Unable to create URI.", e);
                             return false;
                         }
                     })
