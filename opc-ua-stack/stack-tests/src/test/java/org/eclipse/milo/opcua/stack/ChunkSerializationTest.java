@@ -13,15 +13,18 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
+import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
@@ -37,36 +40,50 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.fail;
 
 public class ChunkSerializationTest extends SecureChannelFixture {
 
     static {
-        CryptoRestrictions.remove();
+        boolean removed = CryptoRestrictions.remove();
+        assert removed;
     }
 
-    Logger logger = LoggerFactory.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
-    ChannelParameters smallParameters = new ChannelParameters(
-        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
+    private ChannelParameters smallParameters = new ChannelParameters(
+        32 * 8196,
         8196,
         8196,
-        ChannelConfig.DEFAULT_MAX_CHUNK_COUNT,
-        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
+        64,
+        32 * 8196,
         8196,
         8196,
-        ChannelConfig.DEFAULT_MAX_CHUNK_COUNT
+        64
     );
 
-    ChannelParameters defaultParameters = new ChannelParameters(
+    private ChannelParameters defaultParameters = new ChannelParameters(
         ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
         ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
         ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_COUNT,
+        0,
         ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
         ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
         ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_COUNT
+        0
     );
+
+    private ChannelParameters unlimitedChunkCountParameters = new ChannelParameters(
+        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        0,
+        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        0
+    );
+
 
     @DataProvider
     public Object[][] getAsymmetricSecurityParameters() {
@@ -97,7 +114,13 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         logger.info("Asymmetric chunk serialization, securityPolicy={}, messageSecurityMode={}, messageSize={}",
             securityPolicy, messageSecurity, messageSize);
 
-        for (ChannelParameters parameters : new ChannelParameters[]{smallParameters, defaultParameters}) {
+        ChannelParameters[] channelParameters = {
+            smallParameters,
+            defaultParameters,
+            unlimitedChunkCountParameters
+        };
+
+        for (ChannelParameters parameters : channelParameters) {
             ChunkEncoder encoder = new ChunkEncoder(parameters);
             ChunkDecoder decoder = new ChunkDecoder(parameters);
 
@@ -119,102 +142,148 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
 
-            List<ByteBuf> chunkBuffers = encoder.encodeAsymmetric(
+            List<ByteBuf> chunkBuffers = new ArrayList<>();
+
+            encoder.encodeAsymmetric(
                 clientChannel,
-                MessageType.OpenSecureChannel,
+                requestId.getAndIncrement(),
                 messageBuffer,
-                requestId.getAndIncrement()
+                MessageType.OpenSecureChannel,
+                new ChunkEncoder.Callback() {
+                    @Override
+                    public void onEncodingError(UaException ex) {
+                        fail("onEncodingError", ex);
+                    }
+
+                    @Override
+                    public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                        chunkBuffers.addAll(messageChunks);
+                    }
+                }
             );
 
-            ByteBuf decodedBuffer = decoder.decodeAsymmetric(
-                serverChannel,
-                chunkBuffers
-            );
+            decoder.decodeAsymmetric(serverChannel, chunkBuffers, new ChunkDecoder.Callback() {
+                @Override
+                public void onDecodingError(UaException ex) {
+                    fail("onDecodingError", ex);
+                }
 
-            ReferenceCountUtil.releaseLater(messageBuffer);
-            ReferenceCountUtil.releaseLater(decodedBuffer);
+                @Override
+                public void onMessageAborted(MessageAbortedException ex) {
+                    fail("onMessageAborted", ex);
+                }
 
-            messageBuffer.readerIndex(0);
-            assertEquals(decodedBuffer, messageBuffer);
+                @Override
+                public void onMessageDecoded(ByteBuf message, long requestId) {
+                    ReferenceCountUtil.releaseLater(messageBuffer);
+                    ReferenceCountUtil.releaseLater(message);
+
+                    messageBuffer.readerIndex(0);
+                    assertEquals(message, messageBuffer);
+                }
+            });
         }
     }
 
     @DataProvider
     public Object[][] getSymmetricSecurityParameters() {
         return new Object[][]{
-            {SecurityPolicy.None, MessageSecurityMode.None, 128},
-            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign, 128},
-            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.SignAndEncrypt, 128},
-            {SecurityPolicy.Basic256, MessageSecurityMode.Sign, 128},
-            {SecurityPolicy.Basic256, MessageSecurityMode.SignAndEncrypt, 128},
-            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.Sign, 128},
-            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.SignAndEncrypt, 128},
-
-            {SecurityPolicy.None, MessageSecurityMode.None, ChannelConfig.DEFAULT_MAX_CHUNK_SIZE},
-            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign, ChannelConfig.DEFAULT_MAX_CHUNK_SIZE},
-            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.SignAndEncrypt, ChannelConfig.DEFAULT_MAX_CHUNK_SIZE},
-            {SecurityPolicy.Basic256, MessageSecurityMode.Sign, ChannelConfig.DEFAULT_MAX_CHUNK_SIZE},
-            {SecurityPolicy.Basic256, MessageSecurityMode.SignAndEncrypt, ChannelConfig.DEFAULT_MAX_CHUNK_SIZE},
-            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.Sign, ChannelConfig.DEFAULT_MAX_CHUNK_SIZE},
-            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.SignAndEncrypt, ChannelConfig.DEFAULT_MAX_CHUNK_SIZE},
-
-            {SecurityPolicy.None, MessageSecurityMode.None, ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE},
-            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign, ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE},
-            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.SignAndEncrypt, ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE},
-            {SecurityPolicy.Basic256, MessageSecurityMode.Sign, ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE},
-            {SecurityPolicy.Basic256, MessageSecurityMode.SignAndEncrypt, ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE},
-            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.Sign, ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE},
-            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.SignAndEncrypt, ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE},
+            {SecurityPolicy.None, MessageSecurityMode.None},
+            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign},
+            {SecurityPolicy.Basic128Rsa15, MessageSecurityMode.SignAndEncrypt},
+            {SecurityPolicy.Basic256, MessageSecurityMode.Sign},
+            {SecurityPolicy.Basic256, MessageSecurityMode.SignAndEncrypt},
+            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.Sign},
+            {SecurityPolicy.Basic256Sha256, MessageSecurityMode.SignAndEncrypt}
         };
     }
 
     @Test(dataProvider = "getSymmetricSecurityParameters")
     public void testSymmetricMessage(SecurityPolicy securityPolicy,
-                                     MessageSecurityMode messageSecurity,
-                                     int messageSize) throws Exception {
+                                     MessageSecurityMode messageSecurity) throws Exception {
 
-        logger.info("Symmetric chunk serialization, securityPolicy={}, messageSecurityMode={}, messageSize={}",
-            securityPolicy, messageSecurity, messageSize);
+        logger.info(
+            "Symmetric chunk serialization, " +
+                "securityPolicy={}, messageSecurityMode={}",
+            securityPolicy, messageSecurity);
 
-        for (ChannelParameters parameters : new ChannelParameters[]{smallParameters, defaultParameters}) {
-            ChunkEncoder encoder = new ChunkEncoder(parameters);
-            ChunkDecoder decoder = new ChunkDecoder(parameters);
 
-            SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
-            ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
-            ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
+        ChannelParameters[] channelParameters = {
+            smallParameters,
+            defaultParameters,
+            unlimitedChunkCountParameters
+        };
 
-            clientChannel
-                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-                .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
+        for (ChannelParameters parameters : channelParameters) {
+            int[] messageSizes = new int[]{
+                128,
+                parameters.getRemoteMaxMessageSize()
+            };
 
-            LongSequence requestId = clientChannel
-                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+            for (int messageSize : messageSizes) {
+                ChunkEncoder encoder = new ChunkEncoder(parameters);
+                ChunkDecoder decoder = new ChunkDecoder(parameters);
 
-            byte[] messageBytes = new byte[messageSize];
-            for (int i = 0; i < messageBytes.length; i++) {
-                messageBytes[i] = (byte) i;
+                SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
+                ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
+                ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
+
+                clientChannel
+                    .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
+                    .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
+
+                LongSequence requestId = clientChannel
+                    .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+
+                byte[] messageBytes = new byte[messageSize];
+                for (int i = 0; i < messageBytes.length; i++) {
+                    messageBytes[i] = (byte) i;
+                }
+
+                ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
+
+                List<ByteBuf> chunkBuffers = new ArrayList<>();
+
+                encoder.encodeSymmetric(
+                    clientChannel,
+                    requestId.getAndIncrement(),
+                    messageBuffer,
+                    MessageType.SecureMessage,
+                    new ChunkEncoder.Callback() {
+                        @Override
+                        public void onEncodingError(UaException ex) {
+                            fail("onEncodingError", ex);
+                        }
+
+                        @Override
+                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                            chunkBuffers.addAll(messageChunks);
+                        }
+                    }
+                );
+
+                decoder.decodeSymmetric(serverChannel, chunkBuffers, new ChunkDecoder.Callback() {
+                        @Override
+                        public void onDecodingError(UaException ex) {
+                            fail("onDecodingError", ex);
+                        }
+
+                        @Override
+                        public void onMessageAborted(MessageAbortedException ex) {
+                            fail("onMessageAborted", ex);
+                        }
+
+                        @Override
+                        public void onMessageDecoded(ByteBuf message, long requestId) {
+                            ReferenceCountUtil.releaseLater(messageBuffer);
+                            ReferenceCountUtil.releaseLater(message);
+
+                            messageBuffer.readerIndex(0);
+                            assertEquals(message, messageBuffer);
+                        }
+                    }
+                );
             }
-
-            ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
-
-            List<ByteBuf> chunkBuffers = encoder.encodeSymmetric(
-                clientChannel,
-                MessageType.SecureMessage,
-                messageBuffer,
-                requestId.getAndIncrement()
-            );
-
-            ByteBuf decodedBuffer = decoder.decodeSymmetric(
-                serverChannel,
-                chunkBuffers
-            );
-
-            ReferenceCountUtil.releaseLater(messageBuffer);
-            ReferenceCountUtil.releaseLater(decodedBuffer);
-
-            messageBuffer.readerIndex(0);
-            assertEquals(decodedBuffer, messageBuffer);
         }
     }
 

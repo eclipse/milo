@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,8 +27,8 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
@@ -42,15 +42,10 @@ import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChunkDecoder {
+public final class ChunkDecoder {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Delegate asymmetricDelegate = new AsymmetricDelegate();
-    private final Delegate symmetricDelegate = new SymmetricDelegate();
-
-    private volatile long lastSequenceNumber = -1L;
-    private volatile long lastRequestId;
+    private final AsymmetricDecoder asymmetricDecoder = new AsymmetricDecoder();
+    private final SymmetricDecoder symmetricDecoder = new SymmetricDecoder();
 
     private final ChannelParameters parameters;
 
@@ -58,155 +53,206 @@ public class ChunkDecoder {
         this.parameters = parameters;
     }
 
-    public ByteBuf decodeAsymmetric(SecureChannel channel, List<ByteBuf> chunkBuffers) throws UaException {
-        return decode(asymmetricDelegate, channel, chunkBuffers);
+    public void decodeAsymmetric(
+        SecureChannel channel,
+        List<ByteBuf> chunkBuffers,
+        ChunkDecoder.Callback callback) {
+
+        decode(asymmetricDecoder, channel, chunkBuffers, callback);
     }
 
-    public ByteBuf decodeSymmetric(SecureChannel channel, List<ByteBuf> chunkBuffers) throws UaException {
-        return decode(symmetricDelegate, channel, chunkBuffers);
+    public void decodeSymmetric(
+        SecureChannel channel,
+        List<ByteBuf> chunkBuffers,
+        ChunkDecoder.Callback callback) {
+
+        decode(symmetricDecoder, channel, chunkBuffers, callback);
     }
 
-    private ByteBuf decode(Delegate delegate, SecureChannel channel, List<ByteBuf> chunkBuffers) throws UaException {
-        CompositeByteBuf composite = BufferUtil.compositeBuffer();
-
-        int signatureSize = delegate.getSignatureSize(channel);
-        int cipherTextBlockSize = delegate.getCipherTextBlockSize(channel);
-
-        boolean encrypted = delegate.isEncryptionEnabled(channel);
-        boolean signed = delegate.isSigningEnabled(channel);
-
-        for (ByteBuf chunkBuffer : chunkBuffers) {
-            final char chunkType = (char) chunkBuffer.getByte(3);
-
-            chunkBuffer.skipBytes(SecureMessageHeader.SECURE_MESSAGE_HEADER_SIZE);
-
-            delegate.readSecurityHeader(channel, chunkBuffer);
-
-            if (encrypted) {
-                decryptChunk(delegate, channel, chunkBuffer);
-            }
-
-            int encryptedStart = chunkBuffer.readerIndex();
-            chunkBuffer.readerIndex(0);
-
-            if (signed) {
-                delegate.verifyChunk(channel, chunkBuffer);
-            }
-
-            final int paddingSize = encrypted ? getPaddingSize(cipherTextBlockSize, signatureSize, chunkBuffer) : 0;
-            final int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingSize;
-
-            chunkBuffer.readerIndex(encryptedStart);
-
-            SequenceHeader sequenceHeader = SequenceHeader.decode(chunkBuffer);
-            long sequenceNumber = sequenceHeader.getSequenceNumber();
-            lastRequestId = sequenceHeader.getRequestId();
-
-            if (lastSequenceNumber == -1) {
-                lastSequenceNumber = sequenceNumber;
-            } else {
-                if (lastSequenceNumber + 1 != sequenceNumber) {
-                    String message = String.format("expected sequence number %s but received %s",
-                        lastSequenceNumber + 1, sequenceNumber);
-
-                    logger.error(message);
-                    logger.error(ByteBufUtil.hexDump(chunkBuffer, 0, chunkBuffer.writerIndex()));
-
-                    throw new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
-                }
-
-                lastSequenceNumber = sequenceNumber;
-            }
-
-            ByteBuf bodyBuffer = chunkBuffer.readSlice(bodyEnd - chunkBuffer.readerIndex());
-
-            if (chunkType == 'A') {
-                ErrorMessage errorMessage = ErrorMessage.decode(bodyBuffer);
-
-                throw new MessageAbortedException(errorMessage.getError(), errorMessage.getReason());
-            }
-
-            composite.addComponent(bodyBuffer);
-            composite.writerIndex(composite.writerIndex() + bodyBuffer.readableBytes());
-        }
-
-        return composite.order(ByteOrder.LITTLE_ENDIAN);
-    }
-
-    /**
-     * @return the most recently decoded request id.
-     */
-    public long getLastRequestId() {
-        return lastRequestId;
-    }
-
-    private void decryptChunk(Delegate delegate, SecureChannel channel, ByteBuf chunkBuffer) throws UaException {
-        int cipherTextBlockSize = delegate.getCipherTextBlockSize(channel);
-        int blockCount = chunkBuffer.readableBytes() / cipherTextBlockSize;
-
-        int plainTextBufferSize = cipherTextBlockSize * blockCount;
-
-        ByteBuf plainTextBuffer = BufferUtil.buffer(plainTextBufferSize);
-
-        ByteBuffer plainTextNioBuffer = plainTextBuffer
-            .writerIndex(plainTextBufferSize)
-            .nioBuffer();
-
-        ByteBuffer chunkNioBuffer = chunkBuffer.nioBuffer();
+    private static void decode(
+        AbstractDecoder decoder,
+        SecureChannel channel,
+        List<ByteBuf> chunkBuffers,
+        Callback callback) {
 
         try {
-            Cipher cipher = delegate.getCipher(channel);
+            decoder.decode(channel, chunkBuffers, callback);
+        } catch (MessageAbortedException e) {
+            callback.onMessageAborted(e);
 
-            assert (chunkBuffer.readableBytes() % cipherTextBlockSize == 0);
+            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+        } catch (UaException e) {
+            callback.onDecodingError(e);
 
-            if (delegate instanceof AsymmetricDelegate) {
-                for (int blockNumber = 0; blockNumber < blockCount; blockNumber++) {
-                    chunkNioBuffer.limit(chunkNioBuffer.position() + cipherTextBlockSize);
+            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+        }
+    }
 
-                    cipher.doFinal(chunkNioBuffer, plainTextNioBuffer);
+    public interface Callback {
+
+        void onDecodingError(UaException ex);
+
+        void onMessageAborted(MessageAbortedException ex);
+
+        void onMessageDecoded(ByteBuf message, long requestId);
+
+    }
+
+    private abstract class AbstractDecoder {
+
+        protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private volatile long lastSequenceNumber = -1L;
+
+        void decode(
+            SecureChannel channel,
+            List<ByteBuf> chunkBuffers,
+            Callback callback) throws UaException {
+
+            CompositeByteBuf composite = BufferUtil.compositeBuffer();
+
+            int signatureSize = getSignatureSize(channel);
+            int cipherTextBlockSize = getCipherTextBlockSize(channel);
+
+            boolean encrypted = isEncryptionEnabled(channel);
+            boolean signed = isSigningEnabled(channel);
+
+            long requestId = -1L;
+
+            for (ByteBuf chunkBuffer : chunkBuffers) {
+                final char chunkType = (char) chunkBuffer.getByte(3);
+
+                chunkBuffer.skipBytes(SecureMessageHeader.SECURE_MESSAGE_HEADER_SIZE);
+
+                readSecurityHeader(channel, chunkBuffer);
+
+                if (encrypted) {
+                    decryptChunk(channel, chunkBuffer);
                 }
-            } else {
-                cipher.doFinal(chunkNioBuffer, plainTextNioBuffer);
+
+                int encryptedStart = chunkBuffer.readerIndex();
+                chunkBuffer.readerIndex(0);
+
+                if (signed) {
+                    verifyChunk(channel, chunkBuffer);
+                }
+
+                final int paddingSize = encrypted ? getPaddingSize(cipherTextBlockSize, signatureSize, chunkBuffer) : 0;
+                final int bodyEnd = chunkBuffer.readableBytes() - signatureSize - paddingSize;
+
+                chunkBuffer.readerIndex(encryptedStart);
+
+                SequenceHeader sequenceHeader = SequenceHeader.decode(chunkBuffer);
+                long sequenceNumber = sequenceHeader.getSequenceNumber();
+                requestId = sequenceHeader.getRequestId();
+
+                if (lastSequenceNumber == -1) {
+                    lastSequenceNumber = sequenceNumber;
+                } else {
+                    if (lastSequenceNumber + 1 != sequenceNumber) {
+                        String message = String.format(
+                            "expected sequence number %s but received %s",
+                            lastSequenceNumber + 1, sequenceNumber);
+
+                        throw new UaException(StatusCodes.Bad_SequenceNumberInvalid, message);
+                    }
+
+                    lastSequenceNumber = sequenceNumber;
+                }
+
+                ByteBuf bodyBuffer = chunkBuffer.readSlice(bodyEnd - chunkBuffer.readerIndex());
+
+                if (chunkType == 'A') {
+                    ErrorMessage errorMessage = ErrorMessage.decode(bodyBuffer);
+
+                    throw new MessageAbortedException(errorMessage.getError(), errorMessage.getReason(), requestId);
+                }
+
+                composite.addComponent(bodyBuffer);
+                composite.writerIndex(composite.writerIndex() + bodyBuffer.readableBytes());
             }
-        } catch (GeneralSecurityException e) {
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+
+            ByteBuf message = composite.order(ByteOrder.LITTLE_ENDIAN);
+
+            if (message.readableBytes() > parameters.getLocalMaxMessageSize()) {
+                String errorMessage = String.format(
+                    "message size exceeds configured limit: %s > %s",
+                    message.readableBytes(), parameters.getLocalMaxMessageSize());
+
+                throw new UaException(StatusCodes.Bad_TcpMessageTooLarge, errorMessage);
+            }
+
+            callback.onMessageDecoded(message, requestId);
         }
 
-        /* Write plainTextBuffer back into the chunk buffer we decrypted from. */
-        plainTextNioBuffer.flip(); // limit = pos, pos = 0
+        private void decryptChunk(SecureChannel channel, ByteBuf chunkBuffer) throws UaException {
+            int cipherTextBlockSize = getCipherTextBlockSize(channel);
+            int blockCount = chunkBuffer.readableBytes() / cipherTextBlockSize;
 
-        chunkBuffer.writerIndex(chunkBuffer.readerIndex());
-        chunkBuffer.writeBytes(plainTextNioBuffer);
+            int plainTextBufferSize = cipherTextBlockSize * blockCount;
 
-        plainTextBuffer.release();
+            ByteBuf plainTextBuffer = BufferUtil.buffer(plainTextBufferSize);
+
+            ByteBuffer plainTextNioBuffer = plainTextBuffer
+                .writerIndex(plainTextBufferSize)
+                .nioBuffer();
+
+            ByteBuffer chunkNioBuffer = chunkBuffer.nioBuffer();
+
+            try {
+                Cipher cipher = getCipher(channel);
+
+                assert (chunkBuffer.readableBytes() % cipherTextBlockSize == 0);
+
+                if (isAsymmetric()) {
+                    for (int blockNumber = 0; blockNumber < blockCount; blockNumber++) {
+                        chunkNioBuffer.limit(chunkNioBuffer.position() + cipherTextBlockSize);
+
+                        cipher.doFinal(chunkNioBuffer, plainTextNioBuffer);
+                    }
+                } else {
+                    cipher.doFinal(chunkNioBuffer, plainTextNioBuffer);
+                }
+            } catch (GeneralSecurityException e) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+            }
+
+            /* Write plainTextBuffer back into the chunk buffer we decrypted from. */
+            plainTextNioBuffer.flip(); // limit = pos, pos = 0
+
+            chunkBuffer.writerIndex(chunkBuffer.readerIndex());
+            chunkBuffer.writeBytes(plainTextNioBuffer);
+
+            plainTextBuffer.release();
+        }
+
+        private int getPaddingSize(int cipherTextBlockSize, int signatureSize, ByteBuf buffer) {
+            int lastPaddingByteOffset = buffer.readableBytes() - signatureSize - 1;
+
+            return cipherTextBlockSize <= 256 ?
+                buffer.getUnsignedByte(lastPaddingByteOffset) + 1 :
+                buffer.getUnsignedShort(lastPaddingByteOffset - 1) + 2;
+        }
+
+        protected abstract void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) throws UaException;
+
+        protected abstract Cipher getCipher(SecureChannel channel) throws UaException;
+
+        protected abstract int getCipherTextBlockSize(SecureChannel channel);
+
+        protected abstract int getSignatureSize(SecureChannel channel);
+
+        protected abstract void verifyChunk(SecureChannel channel, ByteBuf chunkBuffer) throws UaException;
+
+        protected abstract boolean isAsymmetric();
+
+        protected abstract boolean isEncryptionEnabled(SecureChannel channel);
+
+        protected abstract boolean isSigningEnabled(SecureChannel channel);
+
     }
 
-    private int getPaddingSize(int cipherTextBlockSize, int signatureSize, ByteBuf buffer) {
-        int lastPaddingByteOffset = buffer.readableBytes() - signatureSize - 1;
-
-        return cipherTextBlockSize <= 256 ?
-            buffer.getUnsignedByte(lastPaddingByteOffset) + 1 :
-            buffer.getUnsignedShort(lastPaddingByteOffset - 1) + 2;
-    }
-
-    private static interface Delegate {
-        void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) throws UaException;
-
-        Cipher getCipher(SecureChannel channel) throws UaException;
-
-        int getCipherTextBlockSize(SecureChannel channel);
-
-        int getSignatureSize(SecureChannel channel);
-
-        void verifyChunk(SecureChannel channel, ByteBuf chunkBuffer) throws UaException;
-
-        boolean isEncryptionEnabled(SecureChannel channel);
-
-        boolean isSigningEnabled(SecureChannel channel);
-
-    }
-
-    private static class AsymmetricDelegate implements Delegate {
+    private final class AsymmetricDecoder extends AbstractDecoder {
 
         @Override
         public void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) {
@@ -222,7 +268,7 @@ public class ChunkDecoder {
                 cipher.init(Cipher.DECRYPT_MODE, channel.getKeyPair().getPrivate());
                 return cipher;
             } catch (GeneralSecurityException e) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+                throw new UaException(StatusCodes.Bad_InternalError, e);
             }
         }
 
@@ -257,11 +303,18 @@ public class ChunkDecoder {
                 if (!signature.verify(signatureBytes)) {
                     throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "could not verify signature");
                 }
-            } catch (NoSuchAlgorithmException | SignatureException e) {
+            } catch (NoSuchAlgorithmException e) {
                 throw new UaException(StatusCodes.Bad_InternalError, e);
+            } catch (SignatureException e) {
+                throw new UaException(StatusCodes.Bad_ApplicationSignatureInvalid, e);
             } catch (InvalidKeyException e) {
                 throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
             }
+        }
+
+        @Override
+        protected boolean isAsymmetric() {
+            return true;
         }
 
         @Override
@@ -276,9 +329,7 @@ public class ChunkDecoder {
 
     }
 
-    private static class SymmetricDelegate implements Delegate {
-
-        private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final class SymmetricDecoder extends AbstractDecoder {
 
         private volatile ChannelSecurity.SecuritySecrets securitySecrets;
 
@@ -337,7 +388,7 @@ public class ChunkDecoder {
 
                 return cipher;
             } catch (GeneralSecurityException e) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+                throw new UaException(StatusCodes.Bad_InternalError, e);
             }
         }
 
@@ -369,6 +420,11 @@ public class ChunkDecoder {
             if (!Arrays.equals(signature, signatureBytes)) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "could not verify signature");
             }
+        }
+
+        @Override
+        protected boolean isAsymmetric() {
+            return false;
         }
 
         @Override

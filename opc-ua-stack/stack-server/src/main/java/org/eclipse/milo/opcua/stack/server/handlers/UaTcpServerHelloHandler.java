@@ -149,6 +149,8 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
 
         ByteBuf messageBuffer = TcpMessageEncoder.encode(acknowledge);
 
+        // Using ctx.executor() is necessary to ensure this handler is removed
+        // before the message can be written and another response arrives.
         ctx.executor().execute(() -> ctx.writeAndFlush(messageBuffer));
 
         logger.debug("[remote={}] Sent Acknowledge message.", ctx.channel().remoteAddress());
