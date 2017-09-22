@@ -35,6 +35,9 @@ import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 
+import static org.eclipse.milo.opcua.stack.core.channel.headers.SecureMessageHeader.SECURE_MESSAGE_HEADER_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.headers.SequenceHeader.SEQUENCE_HEADER_SIZE;
+
 public class ChunkEncoder {
 
     private final Delegate asymmetricDelegate = new AsymmetricDelegate();
@@ -86,27 +89,35 @@ public class ChunkEncoder {
         int signatureSize = delegate.getSignatureSize(channel);
 
         int maxChunkSize = parameters.getLocalSendBufferSize();
-        int headerSizes = SecureMessageHeader.SECURE_MESSAGE_HEADER_SIZE + securityHeaderSize;
         int paddingOverhead = encrypted ? (cipherTextBlockSize > 256 ? 2 : 1) : 0;
 
-        int maxBlockCount = (maxChunkSize - headerSizes - signatureSize - paddingOverhead) / cipherTextBlockSize;
-        int maxBodySize = (plainTextBlockSize * maxBlockCount - SequenceHeader.SEQUENCE_HEADER_SIZE);
+        int maxCipherTextSize = maxChunkSize - SECURE_MESSAGE_HEADER_SIZE - securityHeaderSize;
+        int maxCipherTextBlocks = maxCipherTextSize / cipherTextBlockSize;
+        int maxPlainTextSize = maxCipherTextBlocks * plainTextBlockSize;
+        int maxBodySize = maxPlainTextSize - SEQUENCE_HEADER_SIZE - paddingOverhead - signatureSize;
+
+        assert (maxPlainTextSize + securityHeaderSize + SECURE_MESSAGE_HEADER_SIZE <= maxChunkSize);
 
         while (messageBuffer.readableBytes() > 0) {
             int bodySize = Math.min(messageBuffer.readableBytes(), maxBodySize);
 
-            int paddingSize = encrypted ?
-                plainTextBlockSize -
-                    (SequenceHeader.SEQUENCE_HEADER_SIZE + bodySize + signatureSize + paddingOverhead) %
-                        plainTextBlockSize : 0;
+            int paddingSize;
+            if (encrypted) {
+                int plainTextSize = SEQUENCE_HEADER_SIZE + bodySize + paddingOverhead + signatureSize;
+                int remaining = plainTextSize % plainTextBlockSize;
+                paddingSize = remaining > 0 ? plainTextBlockSize - remaining : 0;
+            } else {
+                paddingSize = 0;
+            }
 
-            int plainTextContentSize = SequenceHeader.SEQUENCE_HEADER_SIZE +
-                bodySize + signatureSize + paddingSize + paddingOverhead;
+            int plainTextContentSize = SEQUENCE_HEADER_SIZE + bodySize + signatureSize + paddingSize + paddingOverhead;
 
             assert (plainTextContentSize % plainTextBlockSize == 0);
 
             int chunkSize = SecureMessageHeader.SECURE_MESSAGE_HEADER_SIZE + securityHeaderSize +
                 (plainTextContentSize / plainTextBlockSize) * cipherTextBlockSize;
+
+            assert (chunkSize <= maxChunkSize);
 
             ByteBuf chunkBuffer = BufferUtil.buffer(chunkSize);
 
@@ -149,7 +160,7 @@ public class ChunkEncoder {
 
             /* Encryption */
             if (encrypted) {
-                chunkBuffer.readerIndex(SecureMessageHeader.SECURE_MESSAGE_HEADER_SIZE + securityHeaderSize);
+                chunkBuffer.readerIndex(SECURE_MESSAGE_HEADER_SIZE + securityHeaderSize);
 
                 assert (chunkBuffer.readableBytes() % plainTextBlockSize == 0);
 

@@ -46,7 +46,18 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    ChannelParameters parameters = new ChannelParameters(
+    ChannelParameters smallParameters = new ChannelParameters(
+        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
+        8196,
+        8196,
+        ChannelConfig.DEFAULT_MAX_CHUNK_COUNT,
+        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
+        8196,
+        8196,
+        ChannelConfig.DEFAULT_MAX_CHUNK_COUNT
+    );
+
+    ChannelParameters defaultParameters = new ChannelParameters(
         ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
         ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
         ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
@@ -86,44 +97,46 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         logger.info("Asymmetric chunk serialization, securityPolicy={}, messageSecurityMode={}, messageSize={}",
             securityPolicy, messageSecurity, messageSize);
 
-        ChunkEncoder encoder = new ChunkEncoder(parameters);
-        ChunkDecoder decoder = new ChunkDecoder(parameters);
+        for (ChannelParameters parameters : new ChannelParameters[]{smallParameters, defaultParameters}) {
+            ChunkEncoder encoder = new ChunkEncoder(parameters);
+            ChunkDecoder decoder = new ChunkDecoder(parameters);
 
-        SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
-        ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
-        ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
+            SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
+            ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
+            ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
 
-        clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-            .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
+            clientChannel
+                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
+                .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
 
-        LongSequence requestId = clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+            LongSequence requestId = clientChannel
+                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
 
-        byte[] messageBytes = new byte[messageSize];
-        for (int i = 0; i < messageBytes.length; i++) {
-            messageBytes[i] = (byte) i;
+            byte[] messageBytes = new byte[messageSize];
+            for (int i = 0; i < messageBytes.length; i++) {
+                messageBytes[i] = (byte) i;
+            }
+
+            ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
+
+            List<ByteBuf> chunkBuffers = encoder.encodeAsymmetric(
+                clientChannel,
+                MessageType.OpenSecureChannel,
+                messageBuffer,
+                requestId.getAndIncrement()
+            );
+
+            ByteBuf decodedBuffer = decoder.decodeAsymmetric(
+                serverChannel,
+                chunkBuffers
+            );
+
+            ReferenceCountUtil.releaseLater(messageBuffer);
+            ReferenceCountUtil.releaseLater(decodedBuffer);
+
+            messageBuffer.readerIndex(0);
+            assertEquals(decodedBuffer, messageBuffer);
         }
-
-        ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
-
-        List<ByteBuf> chunkBuffers = encoder.encodeAsymmetric(
-            clientChannel,
-            MessageType.OpenSecureChannel,
-            messageBuffer,
-            requestId.getAndIncrement()
-        );
-
-        ByteBuf decodedBuffer = decoder.decodeAsymmetric(
-            serverChannel,
-            chunkBuffers
-        );
-
-        ReferenceCountUtil.releaseLater(messageBuffer);
-        ReferenceCountUtil.releaseLater(decodedBuffer);
-
-        messageBuffer.readerIndex(0);
-        assertEquals(decodedBuffer, messageBuffer);
     }
 
     @DataProvider
@@ -163,44 +176,46 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         logger.info("Symmetric chunk serialization, securityPolicy={}, messageSecurityMode={}, messageSize={}",
             securityPolicy, messageSecurity, messageSize);
 
-        ChunkEncoder encoder = new ChunkEncoder(parameters);
-        ChunkDecoder decoder = new ChunkDecoder(parameters);
+        for (ChannelParameters parameters : new ChannelParameters[]{smallParameters, defaultParameters}) {
+            ChunkEncoder encoder = new ChunkEncoder(parameters);
+            ChunkDecoder decoder = new ChunkDecoder(parameters);
 
-        SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
-        ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
-        ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
+            SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
+            ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
+            ServerSecureChannel serverChannel = (ServerSecureChannel) channels[1];
 
-        clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-            .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
+            clientChannel
+                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
+                .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
 
-        LongSequence requestId = clientChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+            LongSequence requestId = clientChannel
+                .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
 
-        byte[] messageBytes = new byte[messageSize];
-        for (int i = 0; i < messageBytes.length; i++) {
-            messageBytes[i] = (byte) i;
+            byte[] messageBytes = new byte[messageSize];
+            for (int i = 0; i < messageBytes.length; i++) {
+                messageBytes[i] = (byte) i;
+            }
+
+            ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
+
+            List<ByteBuf> chunkBuffers = encoder.encodeSymmetric(
+                clientChannel,
+                MessageType.SecureMessage,
+                messageBuffer,
+                requestId.getAndIncrement()
+            );
+
+            ByteBuf decodedBuffer = decoder.decodeSymmetric(
+                serverChannel,
+                chunkBuffers
+            );
+
+            ReferenceCountUtil.releaseLater(messageBuffer);
+            ReferenceCountUtil.releaseLater(decodedBuffer);
+
+            messageBuffer.readerIndex(0);
+            assertEquals(decodedBuffer, messageBuffer);
         }
-
-        ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
-
-        List<ByteBuf> chunkBuffers = encoder.encodeSymmetric(
-            clientChannel,
-            MessageType.SecureMessage,
-            messageBuffer,
-            requestId.getAndIncrement()
-        );
-
-        ByteBuf decodedBuffer = decoder.decodeSymmetric(
-            serverChannel,
-            chunkBuffers
-        );
-
-        ReferenceCountUtil.releaseLater(messageBuffer);
-        ReferenceCountUtil.releaseLater(decodedBuffer);
-
-        messageBuffer.readerIndex(0);
-        assertEquals(decodedBuffer, messageBuffer);
     }
 
 }
