@@ -25,7 +25,7 @@ public class ChannelConfig {
     /**
      * The default maximum size of a single chunk.
      */
-    public static final int DEFAULT_MAX_CHUNK_SIZE = 65536;
+    public static final int DEFAULT_MAX_CHUNK_SIZE = 65535;
 
     /**
      * The default maximum number of chunks that a message can break down into.
@@ -38,8 +38,8 @@ public class ChannelConfig {
      */
     public static final int DEFAULT_MAX_MESSAGE_SIZE = DEFAULT_MAX_CHUNK_COUNT * DEFAULT_MAX_CHUNK_SIZE;
 
-    public static final int DEFAULT_MAX_ARRAY_LENGTH = 65536;
-    public static final int DEFAULT_MAX_STRING_LENGTH = 65536;
+    public static final int DEFAULT_MAX_ARRAY_LENGTH = 65535;
+    public static final int DEFAULT_MAX_STRING_LENGTH = 65535;
 
     private final int maxChunkSize;
     private final int maxChunkCount;
@@ -74,8 +74,9 @@ public class ChannelConfig {
                          int maxMessageSize,
                          int maxArrayLength,
                          int maxStringLength) {
-        Preconditions.checkArgument(maxChunkSize >= 8192,
-            "maxChunkSize must be greater than or equal to 8192");
+
+        Preconditions.checkArgument(maxChunkSize >= 8196,
+            "maxChunkSize must be greater than or equal to 8196");
 
         this.maxChunkSize = maxChunkSize;
         this.maxChunkCount = maxChunkCount;
