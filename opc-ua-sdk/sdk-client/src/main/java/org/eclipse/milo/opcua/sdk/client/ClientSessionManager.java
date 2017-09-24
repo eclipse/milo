@@ -390,8 +390,10 @@ class ClientSessionManager {
                         activateSession(activatingState, csr);
                     }
                 } catch (UaException e) {
+                    logger.debug("CreateSession failed: {}", ex.getMessage(), e);
+
                     state.compareAndSet(creatingState, new Inactive());
-                    sessionFuture.completeExceptionally(ex);
+                    sessionFuture.completeExceptionally(e);
                 }
             } else {
                 logger.debug("CreateSession failed: {}", ex.getMessage(), ex);
