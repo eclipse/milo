@@ -15,6 +15,7 @@ package org.eclipse.milo.examples.server;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
@@ -23,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -85,11 +87,19 @@ public class ExampleServer {
 
         X509IdentityValidator x509IdentityValidator = new X509IdentityValidator(c -> true);
 
+        List<String> bindAddresses = newArrayList();
+        bindAddresses.add("0.0.0.0");
+
+        List<String> endpointAddresses = newArrayList();
+        endpointAddresses.add(HostnameUtil.getHostname());
+        endpointAddresses.addAll(HostnameUtil.getHostnames("0.0.0.0"));
+
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
-            .setBindAddresses(newArrayList("0.0.0.0"))
             .setBindPort(12686)
+            .setBindAddresses(bindAddresses)
+            .setEndpointAddresses(endpointAddresses)
             .setBuildInfo(
                 new BuildInfo(
                     "urn:eclipse:milo:example-server",
