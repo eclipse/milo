@@ -126,7 +126,7 @@ public class OpcUaClientIT {
 
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
-            .setApplicationUri("urn:eclipse:milo:test:client")
+            .setApplicationUri("urn:eclipse:milo:examples:client")
             .setCertificate(loader.getClientCertificate())
             .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
@@ -501,7 +501,7 @@ public class OpcUaClientIT {
 
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
-            .setApplicationUri("urn:eclipse:milo:test:client")
+            .setApplicationUri("urn:eclipse:milo:examples:client")
             .setCertificate(loader.getClientCertificate())
             .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
@@ -542,11 +542,9 @@ public class OpcUaClientIT {
         X509Certificate identityCertificate = (X509Certificate) keyStore.getCertificate("identity");
         PrivateKey identityPrivateKey = (PrivateKey) keyStore.getKey("identity", "password".toCharArray());
 
-        KeyStoreLoader loader = new KeyStoreLoader().load();
-
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
-            .setApplicationUri("urn:eclipse:milo:test:client")
+            .setApplicationUri("urn:eclipse:milo:examples:client")
             .setEndpoint(endpoint)
             .setKeyPair(loader.getClientKeyPair())
             .setCertificate(loader.getClientCertificate())
