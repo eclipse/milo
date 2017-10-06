@@ -13,8 +13,8 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,29 +27,24 @@ public class NonceUtil {
 
     private static volatile boolean SECURE_RANDOM_ENABLED = true;
 
-    private static final AtomicReference<SecureRandom> SECURE_RANDOM = new AtomicReference<>(new SecureRandom());
+    private static final AtomicReference<SecureRandom> SECURE_RANDOM = new AtomicReference<>();
 
     static {
         // The first call to a SecureRandom causes it to seed, which is potentially blocking, so don't make the
-        // SecureRandom instance available until after its seeded and generated output already.
+        // SecureRandom instance available until after a seed has been generated.
         new Thread(() -> {
             long start = System.nanoTime();
 
-            SecureRandom sr;
-            try {
-                sr = SecureRandom.getInstanceStrong();
-            } catch (NoSuchAlgorithmException e) {
-                sr = new SecureRandom();
-            }
+            SecureRandom sr = new SecureRandom();
             sr.nextBytes(new byte[32]);
             SECURE_RANDOM.set(sr);
 
             long delta = System.nanoTime() - start;
 
             LoggerFactory.getLogger(NonceUtil.class).info(
-                "SecureRandom from getInstanceStrong() finished seeding in {}ms.",
-                TimeUnit.NANOSECONDS.convert(delta, TimeUnit.MILLISECONDS));
-        }, "SecureRandomGetInstanceStrong").start();
+                "SecureRandom seeded in {}ms.",
+                TimeUnit.MILLISECONDS.convert(delta, TimeUnit.NANOSECONDS));
+        }, "NonceUtilSecureRandom").start();
     }
 
     /**
@@ -82,11 +77,17 @@ public class NonceUtil {
 
         byte[] bs = new byte[length];
 
+        Random random = null;
+
         if (SECURE_RANDOM_ENABLED) {
-            SECURE_RANDOM.get().nextBytes(bs);
-        } else {
-            ThreadLocalRandom.current().nextBytes(bs);
+            random = SECURE_RANDOM.get();
         }
+
+        if (random == null) {
+            random = ThreadLocalRandom.current();
+        }
+
+        random.nextBytes(bs);
 
         return new ByteString(bs);
     }
