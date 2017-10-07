@@ -138,6 +138,10 @@ public class SubscriptionManager {
         return server;
     }
 
+    public Subscription getSubscription(UInteger subscriptionId) {
+        return subscriptions.get(subscriptionId);
+    }
+
     public void createSubscription(ServiceRequest<CreateSubscriptionRequest, CreateSubscriptionResponse> service) {
         CreateSubscriptionRequest request = service.getRequest();
 
