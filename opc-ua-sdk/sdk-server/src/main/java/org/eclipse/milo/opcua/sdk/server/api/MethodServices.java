@@ -51,7 +51,7 @@ public interface MethodServices {
             CompletableFuture<CallMethodResult> resultFuture = new CompletableFuture<>();
 
             try {
-                handler.invoke(request, resultFuture);
+                handler.invoke(context, request, resultFuture);
             } catch (Throwable t) {
                 LoggerFactory.getLogger(getClass())
                     .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
