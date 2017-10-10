@@ -15,8 +15,12 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.X509Certificate;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -53,6 +57,38 @@ public class SignatureUtil {
             return signature.sign();
         } catch (GeneralSecurityException e) {
             throw new UaException(StatusCodes.Bad_InternalError, e);
+        }
+    }
+
+    /**
+     * Verify that {@code signatureBytes} is a valid signature produced by the private key of {@code certificate}
+     * having signed {@code dataBytes} using {@code algorithm}.
+     *
+     * @param algorithm      the {@link SecurityAlgorithm} used to create the signature.
+     * @param certificate    the {@link X509Certificate} used to verify the signature.
+     * @param dataBytes      the bytes the {@code signatureBytes} was produced from.
+     * @param signatureBytes the signature created by signing {@code dataBytes}.
+     * @throws UaException if verification fails for any reason.
+     */
+    public static void verify(
+        SecurityAlgorithm algorithm,
+        X509Certificate certificate,
+        byte[] dataBytes,
+        byte[] signatureBytes) throws UaException {
+
+        try {
+            Signature signature = Signature.getInstance(algorithm.getTransformation());
+            signature.initVerify(certificate);
+
+            signature.update(dataBytes);
+
+            if (!signature.verify(signatureBytes)) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "could not verify signature");
+            }
+        } catch (NoSuchAlgorithmException | SignatureException e) {
+            throw new UaException(StatusCodes.Bad_InternalError, e);
+        } catch (InvalidKeyException e) {
+            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
         }
     }
 
