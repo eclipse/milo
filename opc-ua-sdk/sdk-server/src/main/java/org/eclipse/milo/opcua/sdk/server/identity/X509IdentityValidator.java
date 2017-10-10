@@ -13,14 +13,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.identity;
 
-import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
-import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 import java.util.function.Predicate;
 
+import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -32,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 
 public class X509IdentityValidator extends AbstractIdentityValidator {
 
@@ -70,7 +67,7 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
         SecurityAlgorithm algorithm = SecurityAlgorithm.fromUri(tokenSignature.getAlgorithm());
 
         if (algorithm != SecurityAlgorithm.None) {
-            validateSignature(
+            verifySignature(
                 channel,
                 session,
                 tokenSignature,
@@ -86,35 +83,25 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
         }
     }
 
-    private void validateSignature(
+    private void verifySignature(
         SecureChannel channel,
         Session session,
         SignatureData tokenSignature,
         X509Certificate identityCertificate,
         SecurityAlgorithm algorithm) throws UaException {
 
-        try {
-            Signature signature = Signature.getInstance(algorithm.getTransformation());
-            signature.initVerify(identityCertificate);
+        ByteString serverCertificateBs = channel.getLocalCertificateBytes();
+        ByteString lastNonceBs = session.getLastNonce();
 
-            ByteString serverCertificateBs = channel.getLocalCertificateBytes();
-            ByteString lastNonceBs = session.getLastNonce();
+        byte[] dataBytes = Bytes.concat(serverCertificateBs.bytesOrEmpty(), lastNonceBs.bytesOrEmpty());
+        byte[] signatureBytes = tokenSignature.getSignature().bytesOrEmpty();
 
-            ByteBuffer toVerify = ByteBuffer.allocate(serverCertificateBs.length() + lastNonceBs.length());
-            toVerify.put(serverCertificateBs.bytesOrEmpty());
-            toVerify.put(lastNonceBs.bytesOrEmpty());
-            toVerify.flip();
-
-            signature.update(toVerify);
-
-            if (!signature.verify(tokenSignature.getSignature().bytes())) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "could not verify signature");
-            }
-        } catch (NoSuchAlgorithmException | SignatureException e) {
-            throw new UaException(StatusCodes.Bad_InternalError, e);
-        } catch (InvalidKeyException e) {
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
-        }
+        SignatureUtil.verify(
+            algorithm,
+            identityCertificate,
+            dataBytes,
+            signatureBytes
+        );
     }
 
 }
