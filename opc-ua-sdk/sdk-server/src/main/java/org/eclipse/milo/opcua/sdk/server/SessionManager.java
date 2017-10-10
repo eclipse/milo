@@ -378,6 +378,9 @@ public class SessionManager implements
             if (session == null) {
                 throw new UaException(StatusCodes.Bad_SessionIdInvalid);
             } else {
+
+                verifyClientSignature(request, secureChannel, session);
+
                 if (session.getSecureChannelId() == secureChannelId) {
                     /*
                      * Identity change
@@ -461,6 +464,8 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
             }
 
+            verifyClientSignature(request, secureChannel, session);
+
             Object tokenObject = request.getUserIdentityToken().decode();
             Object identityObject = validateIdentityToken(
                 secureChannel,
@@ -490,6 +495,30 @@ public class SessionManager implements
             );
 
             serviceRequest.setResponse(response);
+        }
+    }
+
+    private void verifyClientSignature(
+        ActivateSessionRequest request,
+        ServerSecureChannel secureChannel,
+        Session session) throws UaException {
+
+        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
+            SignatureData clientSignature = request.getClientSignature();
+
+            byte[] dataBytes = Bytes.concat(
+                secureChannel.getLocalCertificateBytes().bytesOrEmpty(),
+                session.getLastNonce().bytesOrEmpty()
+            );
+
+            byte[] signatureBytes = clientSignature.getSignature().bytesOrEmpty();
+
+            SignatureUtil.verify(
+                SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
+                secureChannel.getRemoteCertificate(),
+                dataBytes,
+                signatureBytes
+            );
         }
     }
 
