@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import com.codepoetics.protonpack.StreamUtils;
 import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Bytes;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -382,6 +383,22 @@ class ClientSessionManager {
                                     "match certificate from EndpointDescription!"
                             );
                         }
+
+                        SignatureData serverSignature = csr.getServerSignature();
+
+                        byte[] dataBytes = Bytes.concat(
+                            clientCertificate.bytesOrEmpty(),
+                            clientNonce.bytesOrEmpty()
+                        );
+
+                        byte[] signatureBytes = serverSignature.getSignature().bytesOrEmpty();
+
+                        SignatureUtil.verify(
+                            SecurityAlgorithm.fromUri(serverSignature.getAlgorithm()),
+                            certificateFromResponse,
+                            dataBytes,
+                            signatureBytes
+                        );
                     }
 
                     Activating activatingState = new Activating(sessionFuture);
@@ -390,7 +407,7 @@ class ClientSessionManager {
                         activateSession(activatingState, csr);
                     }
                 } catch (UaException e) {
-                    logger.debug("CreateSession failed: {}", ex.getMessage(), e);
+                    logger.debug("CreateSession failed: {}", e.getMessage(), e);
 
                     state.compareAndSet(creatingState, new Inactive());
                     sessionFuture.completeExceptionally(e);
@@ -537,7 +554,8 @@ class ClientSessionManager {
 
                 SignatureData clientSignature = buildClientSignature(
                     secureChannel,
-                    previousSession.getServerNonce(), previousSession.getServerCertificate()
+                    previousSession.getServerNonce(),
+                    previousSession.getServerCertificate() // TODO make sure this is is the leaf, not the chain
                 );
 
                 ActivateSessionRequest request = new ActivateSessionRequest(
