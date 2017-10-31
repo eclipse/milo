@@ -69,10 +69,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
-import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 class ClientSessionManager {
 
@@ -136,17 +136,17 @@ class ClientSessionManager {
         listeners.remove(listener);
     }
 
-    CompletableFuture<OpcUaSession> getSession() {
+    CompletableFuture<OpcUaSession> openSession() {
         State currentState = state.get();
 
-        logger.trace("getSession(), currentState={}",
+        logger.debug("openSession(), currentState={}",
             currentState.getClass().getSimpleName());
 
         if (currentState instanceof Inactive) {
             Creating creatingState = new Creating();
 
             if (state.compareAndSet(currentState, creatingState)) {
-                logger.debug("getSession() while Inactive", new Exception());
+                logger.debug("openSession() while Inactive", new Exception());
 
                 CompletableFuture<OpcUaSession> sessionFuture = creatingState.sessionFuture;
 
@@ -154,7 +154,7 @@ class ClientSessionManager {
 
                 return sessionFuture;
             } else {
-                return getSession();
+                return openSession();
             }
         } else if (currentState instanceof Creating) {
             return ((Creating) currentState).sessionFuture;
@@ -170,7 +170,7 @@ class ClientSessionManager {
             CompletableFuture<OpcUaSession> future = new CompletableFuture<>();
 
             ((Closing) currentState).closeFuture.whenComplete((oldSession, ex) ->
-                getSession().whenComplete((session, ex2) -> {
+                openSession().whenComplete((session, ex2) -> {
                     if (session != null) future.complete(session);
                     else future.completeExceptionally(ex2);
                 })
@@ -185,7 +185,7 @@ class ClientSessionManager {
     CompletableFuture<Unit> closeSession() {
         State currentState = state.get();
 
-        logger.trace("closeSession(), currentState={}",
+        logger.debug("closeSession(), currentState={}",
             currentState.getClass().getSimpleName());
 
         if (currentState instanceof Inactive) {
@@ -194,66 +194,87 @@ class ClientSessionManager {
             return ((Closing) currentState).closeFuture
                 .thenApply(s -> Unit.VALUE)
                 .exceptionally(ex -> Unit.VALUE);
-        } else if (currentState instanceof Creating) {
-            Closing closingState = new Closing();
-
-            if (state.compareAndSet(currentState, closingState)) {
-                closeSession(closingState, ((Creating) currentState).sessionFuture);
-
-                return closingState.closeFuture
-                    .thenApply(s -> Unit.VALUE)
-                    .exceptionally(ex -> Unit.VALUE);
-            } else {
-                return closeSession();
-            }
-        } else if (currentState instanceof Activating) {
-            Closing closingState = new Closing();
-
-            if (state.compareAndSet(currentState, closingState)) {
-                closeSession(closingState, ((Activating) currentState).sessionFuture);
-
-                return closingState.closeFuture
-                    .thenApply(s -> Unit.VALUE)
-                    .exceptionally(ex -> Unit.VALUE);
-            } else {
-                return closeSession();
-            }
-        } else if (currentState instanceof Reactivating) {
-            Closing closingState = new Closing();
-
-            if (state.compareAndSet(currentState, closingState)) {
-                closeSession(closingState, ((Reactivating) currentState).sessionFuture);
-
-                return closingState.closeFuture
-                    .thenApply(s -> Unit.VALUE)
-                    .exceptionally(ex -> Unit.VALUE);
-            } else {
-                return closeSession();
-            }
-        } else if (currentState instanceof Transferring) {
-            Closing closingState = new Closing();
-
-            if (state.compareAndSet(currentState, closingState)) {
-                closeSession(closingState, ((Transferring) currentState).sessionFuture);
-
-                return closingState.closeFuture
-                    .thenApply(s -> Unit.VALUE)
-                    .exceptionally(ex -> Unit.VALUE);
-            } else {
-                return closeSession();
-            }
         } else if (currentState instanceof Active) {
-            Closing closingState = new Closing();
+            Active active = (Active) currentState;
 
-            if (state.compareAndSet(currentState, closingState)) {
-                closeSession(closingState, ((Active) currentState).sessionFuture);
+            Closing closing = new Closing();
 
-                return closingState.closeFuture
+            if (state.compareAndSet(currentState, closing)) {
+                closeSession(closing, active.session);
+
+                return closing.closeFuture
                     .thenApply(s -> Unit.VALUE)
                     .exceptionally(ex -> Unit.VALUE);
             } else {
                 return closeSession();
             }
+        } else if (currentState instanceof Creating) {
+            // TODO don't compareAndSet state until after sessionFuture completes
+            Creating creating = (Creating) currentState;
+
+            return creating.sessionFuture
+                .thenCompose(s -> closeSession())
+                .exceptionally(ex -> Unit.VALUE);
+        } else if (currentState instanceof Activating) {
+            Activating activating = (Activating) currentState;
+
+            return activating.sessionFuture
+                .thenCompose(s -> closeSession())
+                .exceptionally(ex -> Unit.VALUE);
+        } else if (currentState instanceof Transferring) {
+            Transferring transferring = (Transferring) currentState;
+
+            return transferring.sessionFuture
+                .thenCompose(s -> closeSession())
+                .exceptionally(ex -> Unit.VALUE);
+        } else if (currentState instanceof Reactivating) {
+            Reactivating reactivating = (Reactivating) currentState;
+
+            Closing closing = new Closing();
+
+            if (state.compareAndSet(reactivating, closing)) {
+                return reactivating.sessionFuture
+                    .thenCompose(session -> {
+                        closeSession(closing, session);
+
+                        return closing.closeFuture
+                            .thenApply(s -> Unit.VALUE)
+                            .exceptionally(ex -> Unit.VALUE);
+                    })
+                    .exceptionally(ex -> Unit.VALUE);
+            } else {
+                return closeSession();
+            }
+        } else {
+            throw new IllegalStateException("unexpected state: " + currentState.getClass());
+        }
+    }
+
+    CompletableFuture<OpcUaSession> getSession() {
+        State currentState = state.get();
+
+        logger.trace("getSession(), currentState={}",
+            currentState.getClass().getSimpleName());
+
+        if (currentState instanceof Inactive) {
+            return failedUaFuture(StatusCodes.Bad_SessionClosed);
+        } else if (currentState instanceof Creating) {
+            return ((Creating) currentState).sessionFuture;
+        } else if (currentState instanceof Activating) {
+            return ((Activating) currentState).sessionFuture;
+        } else if (currentState instanceof Transferring) {
+            return ((Transferring) currentState).sessionFuture;
+        } else if (currentState instanceof Active) {
+            return ((Active) currentState).sessionFuture;
+        } else if (currentState instanceof Reactivating) {
+            return ((Reactivating) currentState).sessionFuture;
+        } else if (currentState instanceof Closing) {
+            CompletableFuture<OpcUaSession> closeFuture = ((Closing) currentState).closeFuture;
+
+            return closeFuture
+                .thenApply(s -> Unit.VALUE)
+                .exceptionally(ex -> Unit.VALUE)
+                .thenCompose(u -> getSession());
         } else {
             throw new IllegalStateException("unexpected state: " + currentState.getClass());
         }
@@ -292,6 +313,35 @@ class ClientSessionManager {
                 state.compareAndSet(closingState, new Inactive());
                 closingState.closeFuture.completeExceptionally(ex);
             }
+        });
+    }
+
+    private void closeSession(Closing closing, OpcUaSession session) {
+        UaTcpStackClient stackClient = client.getStackClient();
+
+        RequestHeader requestHeader = new RequestHeader(
+            session.getAuthenticationToken(),
+            DateTime.now(),
+            client.nextRequestHandle(),
+            uint(0),
+            null,
+            uint(5000),
+            null
+        );
+
+        CloseSessionRequest request = new CloseSessionRequest(requestHeader, true);
+
+        logger.debug("Sending CloseSessionRequest...");
+
+        stackClient.<CloseSessionResponse>sendRequest(request).whenCompleteAsync((csr, ex2) -> {
+            if (ex2 != null) {
+                logger.debug("CloseSession failed: {}", ex2.getMessage(), ex2);
+            } else {
+                logger.debug("Session closed: {}", session.getSessionId());
+            }
+
+            state.compareAndSet(closing, new Inactive());
+            closing.closeFuture.complete(session);
         });
     }
 
@@ -405,6 +455,8 @@ class ClientSessionManager {
 
                     if (state.compareAndSet(creatingState, activatingState)) {
                         activateSession(activatingState, csr);
+                    } else {
+                        // TODO state changed; e.g. to Closing. What now?
                     }
                 } catch (UaException e) {
                     logger.debug("CreateSession failed: {}", e.getMessage(), e);
@@ -424,14 +476,15 @@ class ClientSessionManager {
     private void activateSession(Activating activating, CreateSessionResponse csr) {
         client.getStackClient().getChannelFuture()
             .thenCompose(channel -> sendActivateRequest(csr, channel))
-            .thenAccept(asr -> receiveActivateResponse(activating, csr, asr))
-            .exceptionally(ex -> {
-                logger.debug("ActivateSession failed: {}", ex.getMessage(), ex);
+            .whenComplete((asr, ex) -> {
+                if (asr != null) {
+                    receiveActivateResponse(activating, csr, asr);
+                } else {
+                    logger.debug("ActivateSession failed: {}", ex.getMessage(), ex);
 
-                state.compareAndSet(activating, new Inactive());
-                activating.sessionFuture.completeExceptionally(ex);
-
-                return null;
+                    state.compareAndSet(activating, new Inactive());
+                    activating.sessionFuture.completeExceptionally(ex);
+                }
             });
     }
 
@@ -440,21 +493,6 @@ class ClientSessionManager {
         ClientSecureChannel secureChannel) {
 
         try {
-            SecurityPolicy securityPolicy = secureChannel.getSecurityPolicy();
-
-            if (securityPolicy != SecurityPolicy.None) {
-                X509Certificate certificateFromResponse = CertificateUtil
-                    .decodeCertificate(csr.getServerCertificate().bytesOrEmpty());
-
-                if (!certificateFromResponse.equals(secureChannel.getRemoteCertificate())) {
-                    throw new UaException(
-                        StatusCodes.Bad_SecurityChecksFailed,
-                        "Certificate from EndpointDescription did not " +
-                            "match certificate from CreateSessionResponse!"
-                    );
-                }
-            }
-
             Channel channel = secureChannel.getChannel();
 
             if (channel.pipeline().get(InactivityHandler.class) == null) {
@@ -531,7 +569,7 @@ class ClientSessionManager {
         }
     }
 
-    private void reactivateSession(Reactivating reactivatingState, OpcUaSession previousSession) {
+    private void reactivateSession(Reactivating reactivating, OpcUaSession previousSession) {
         UaTcpStackClient stackClient = client.getStackClient();
 
         Function<ClientSecureChannel, CompletionStage<ActivateSessionResponse>> activate = secureChannel -> {
@@ -579,7 +617,7 @@ class ClientSessionManager {
 
 
         stackClient.getChannelFuture().thenCompose(activate).whenCompleteAsync((asr, ex) -> {
-            CompletableFuture<OpcUaSession> sessionFuture = reactivatingState.sessionFuture;
+            CompletableFuture<OpcUaSession> sessionFuture = reactivating.sessionFuture;
 
             if (asr != null) {
                 logger.debug("Session reactivated: {}", previousSession.getSessionId());
@@ -596,7 +634,7 @@ class ClientSessionManager {
 
                 newSession.setServerNonce(asr.getServerNonce());
 
-                state.compareAndSet(reactivatingState, new Active(newSession, sessionFuture));
+                state.compareAndSet(reactivating, new Active(newSession, sessionFuture));
 
                 sessionFuture.complete(newSession);
             } else {
@@ -611,7 +649,7 @@ class ClientSessionManager {
 
                     Reactivating reactivatingAgain = new Reactivating();
 
-                    if (state.compareAndSet(reactivatingState, reactivatingAgain)) {
+                    if (state.compareAndSet(reactivating, reactivatingAgain)) {
                         reactivateSession(reactivatingAgain, previousSession);
                     }
 
@@ -619,7 +657,7 @@ class ClientSessionManager {
                 } else {
                     Creating creating = new Creating(sessionFuture);
 
-                    if (state.compareAndSet(reactivatingState, creating)) {
+                    if (state.compareAndSet(reactivating, creating)) {
                         createSession(creating);
                     } else {
                         // We're no longer re-activating for whatever reason (asked to close?).
@@ -718,7 +756,7 @@ class ClientSessionManager {
                     Closing closing = new Closing();
 
                     if (state.compareAndSet(transferringState, closing)) {
-                        closeSession(closing, completedFuture(session));
+                        closeSession(closing, session);
 
                         closing.closeFuture.whenComplete((v, ex2) ->
                             sessionFuture.completeExceptionally(ex));

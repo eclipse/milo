@@ -112,4 +112,23 @@ public class FutureUtils {
         return failedFuture(new UaException(statusCode, cause));
     }
 
+    public static <T> CompletionBuilder<T> complete(CompletableFuture<T> future) {
+        return new CompletionBuilder<>(future);
+    }
+
+    public static final class CompletionBuilder<T> {
+        private final CompletableFuture<T> toComplete;
+
+        private CompletionBuilder(CompletableFuture<T> toComplete) {
+            this.toComplete = toComplete;
+        }
+
+        public void with(CompletableFuture<T> future) {
+            future.whenComplete((v, ex) -> {
+                if (ex != null) toComplete.completeExceptionally(ex);
+                else toComplete.complete(v);
+            });
+        }
+    }
+
 }

@@ -255,6 +255,14 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         }
     }
 
+    public void statusChanged(UInteger subscriptionId, StatusCode statusCode) {
+        OpcUaSubscription subscription = subscriptions.remove(subscriptionId);
+
+        if (subscription != null) {
+            subscriptionListeners.forEach(l -> l.onStatusChanged(subscription, statusCode));
+        }
+    }
+
     @Override
     public ImmutableList<UaSubscription> getSubscriptions() {
         return ImmutableList.copyOf(subscriptions.values());
@@ -285,13 +293,19 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         long maxPendingPublishes = getMaxPendingPublishes();
 
-        long timeoutHint = (long) (maxPendingPublishes * minKeepAlive * 1.25);
+        double timeoutHint = maxPendingPublishes * minKeepAlive * 1.25;
+
+        if (Double.isInfinite(timeoutHint)) {
+            timeoutHint = UInteger.MAX_VALUE;
+        } else if (timeoutHint > UInteger.MAX_VALUE) {
+            timeoutHint = UInteger.MAX_VALUE;
+        }
 
         logger.debug(
             "getTimeoutHint() minKeepAlive={} maxPendingPublishes={} timeoutHint={}",
             minKeepAlive, maxPendingPublishes, timeoutHint);
 
-        return uint(timeoutHint);
+        return uint((long) timeoutHint);
     }
 
     private void maybeSendPublishRequests() {
