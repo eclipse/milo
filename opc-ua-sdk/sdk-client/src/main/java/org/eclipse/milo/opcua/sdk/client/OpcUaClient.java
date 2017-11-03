@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron and others
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -207,13 +207,13 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<UaClient> connect() {
+    public CompletableFuture<OpcUaClient> connect() {
         return stackClient.connect().thenCompose(
             c -> getSession().thenApply(s -> OpcUaClient.this));
     }
 
     @Override
-    public CompletableFuture<UaClient> disconnect() {
+    public CompletableFuture<OpcUaClient> disconnect() {
         // Subscriptions must be cleared first, effectively stopping new
         // PublishRequests from being sent, otherwise continued PublishRequests
         // will initiate reconnection and re-activation.
@@ -222,7 +222,7 @@ public class OpcUaClient implements UaClient {
         return sessionManager
             .closeSession()
             .thenCompose(v -> stackClient.disconnect())
-            .thenApply(c -> (UaClient) OpcUaClient.this)
+            .thenApply(c -> OpcUaClient.this)
             .exceptionally(ex -> OpcUaClient.this);
     }
 
