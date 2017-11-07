@@ -1,19 +1,20 @@
 # How to contribute to Eclipse Milo
 
-First of all, thanks for considering to contribute to Eclipse Milo. We really appreciate the time and effort you want to
-spend helping to improve things around here. And help we can use :-)
+First of all, thank you for considering a contribution to Eclipse Milo. We really appreciate the time and effort you want to
+spend improving the project, and we can use the help :-)
 
 Here is a (non-exclusive, non-prioritized) list of things you might be able to help us with:
 
+* documentation (Getting Started guide, Examples, etc...)
 * bug reports
 * bug fixes
-* improvements regarding code quality e.g. improving readability, performance, modularity etc.
-* documentation (Getting Started guide, Examples, …)
+* code quality improvements
 * features (both ideas and code are welcome)
 
-In order to get you started as fast as possible we need to go through some organizational issues first, though.
-
 ## Legal Requirements
+
+Before you can get started an annoying but necessary bureaucratic requirement must be satisfied.
+
 
 Milo is an [Eclipse IoT](https://iot.eclipse.org) project and as such is governed by the Eclipse Development process.
 This process helps us in creating great open source software within a safe legal framework.
@@ -46,6 +47,7 @@ You can find all the details in the [Contributing via Git](http://wiki.eclipse.o
 * When you create new files make sure you include a proper license header at the top of the file (see License Header section below).
 * Make sure you include test cases for non-trivial features
 * Make sure the test suite passes after your changes
+* Make sure checkstyle passes after your changes
 * Commit your changes into that branch
 * Use descriptive and meaningful commit messages
 * If you have a lot of commits squash them into a single commit
