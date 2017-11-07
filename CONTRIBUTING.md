@@ -19,7 +19,7 @@ Before you can get started an annoying but necessary bureaucratic requirement mu
 Milo is an [Eclipse IoT](https://iot.eclipse.org) project and as such is governed by the Eclipse Development process.
 This process helps us in creating great open source software within a safe legal framework.
 
-For you as a contributor, the following preliminary steps are required in order for us to be able to accept your contribution:
+As a contributor the following preliminary steps are required in order for us to be able to accept your contribution:
 
 * Sign the [Eclipse Contributor Agreement](https://www.eclipse.org/legal/ECA.php).
 In order to do so:
