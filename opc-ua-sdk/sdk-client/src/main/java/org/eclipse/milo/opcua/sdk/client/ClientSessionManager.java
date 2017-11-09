@@ -555,7 +555,7 @@ class ClientSessionManager {
                 SignatureData clientSignature = buildClientSignature(
                     secureChannel,
                     previousSession.getServerNonce(),
-                    previousSession.getServerCertificate() // TODO make sure this is is the leaf, not the chain
+                    secureChannel.getRemoteCertificateBytes()
                 );
 
                 ActivateSessionRequest request = new ActivateSessionRequest(
