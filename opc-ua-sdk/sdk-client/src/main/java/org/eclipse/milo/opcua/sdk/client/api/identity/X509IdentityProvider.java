@@ -77,10 +77,11 @@ public class X509IdentityProvider implements IdentityProvider {
             ByteString.of(certificate.getEncoded())
         );
 
-        ByteString serverCertificate = endpoint.getServerCertificate();
-
-        byte[] serverCertificateBytes = serverCertificate.bytes();
-        if (serverCertificateBytes == null) serverCertificateBytes = new byte[0];
+        byte[] serverCertificateBytes = new byte[0];
+        if (!endpoint.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri())) {
+            ByteString serverCertificate = endpoint.getServerCertificate();
+            serverCertificateBytes = serverCertificate.bytesOrEmpty();
+        }
 
         byte[] serverNonceBytes = serverNonce.bytes();
         if (serverNonceBytes == null) serverNonceBytes = new byte[0];

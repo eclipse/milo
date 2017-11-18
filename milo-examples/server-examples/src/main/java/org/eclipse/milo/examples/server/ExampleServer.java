@@ -14,15 +14,20 @@
 package org.eclipse.milo.examples.server;
 
 import java.io.File;
+import java.security.Security;
+import java.security.cert.X509Certificate;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -39,6 +44,13 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 
 public class ExampleServer {
 
+    static {
+        CryptoRestrictions.remove();
+
+        // Required for SecurityPolicy.Aes256_Sha256_RsaPss
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     public static void main(String[] args) throws Exception {
         ExampleServer server = new ExampleServer();
 
@@ -54,8 +66,6 @@ public class ExampleServer {
     private final OpcUaServer server;
 
     public ExampleServer() throws Exception {
-        CryptoRestrictions.remove();
-
         KeyStoreLoader loader = new KeyStoreLoader().load();
 
         DefaultCertificateManager certificateManager = new DefaultCertificateManager(
@@ -68,7 +78,16 @@ public class ExampleServer {
         LoggerFactory.getLogger(getClass())
             .info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
-        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
+        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir) {
+            @Override
+            public synchronized void verifyTrustChain(
+                X509Certificate certificate,
+                List<X509Certificate> chain) throws UaException {
+
+                // Do nothing; implicitly trust all incoming certificates as long as they are valid.
+                // IMPORTANT: This is only for the example; normally you would let the validator work as implemented.
+            }
+        };
 
         UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
             true,
@@ -107,7 +126,9 @@ public class ExampleServer {
                     SecurityPolicy.None,
                     SecurityPolicy.Basic128Rsa15,
                     SecurityPolicy.Basic256,
-                    SecurityPolicy.Basic256Sha256))
+                    SecurityPolicy.Basic256Sha256,
+                    SecurityPolicy.Aes128_Sha256_RsaOaep,
+                    SecurityPolicy.Aes256_Sha256_RsaPss))
             .setUserTokenPolicies(
                 ImmutableList.of(
                     USER_TOKEN_POLICY_ANONYMOUS,

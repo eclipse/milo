@@ -44,7 +44,6 @@ import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
-import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -184,11 +183,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     }
 
     private void sendOpenSecureChannelRequest(ChannelHandlerContext ctx, SecurityTokenRequestType requestType) {
-        SecurityAlgorithm algorithm = secureChannel.getSecurityPolicy().getSymmetricEncryptionAlgorithm();
-        int nonceLength = NonceUtil.getNonceLength(algorithm);
-
         ByteString clientNonce = secureChannel.isSymmetricSigningEnabled() ?
-            NonceUtil.generateNonce(nonceLength) :
+            NonceUtil.generateNonce(secureChannel.getSecurityPolicy()) :
             ByteString.NULL_VALUE;
 
         secureChannel.setLocalNonce(clientNonce);
