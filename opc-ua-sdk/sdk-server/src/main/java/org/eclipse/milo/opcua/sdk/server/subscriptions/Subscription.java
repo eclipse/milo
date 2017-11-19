@@ -576,6 +576,8 @@ public class Subscription {
         logger.trace("[id={}] onPublishingTimer(), state={}, keep-alive={}, lifetime={}",
             subscriptionId, state, keepAliveCounter, lifetimeCounter);
 
+        long startNanos = System.nanoTime();
+
         if (state == State.Normal) {
             timerHandler.whenNormal();
         } else if (state == State.KeepAlive) {
@@ -587,9 +589,22 @@ public class Subscription {
         } else {
             throw new RuntimeException("unhandled subscription state: " + state);
         }
+
+        long elapsedNanos = System.nanoTime() - startNanos;
+        long elapsedMillis = TimeUnit.MILLISECONDS.convert(elapsedNanos, TimeUnit.NANOSECONDS);
+
+        long adjustedInterval = DoubleMath.roundToLong(publishingInterval - elapsedMillis, RoundingMode.UP);
+
+        startPublishingTimer(adjustedInterval);
     }
 
     synchronized void startPublishingTimer() {
+        long interval = DoubleMath.roundToLong(publishingInterval, RoundingMode.UP);
+
+        startPublishingTimer(interval);
+    }
+
+    private synchronized void startPublishingTimer(long interval) {
         if (state.get() == State.Closed) return;
 
         // lifetimeCounter is always accessed while synchronized on 'this'.
@@ -600,8 +615,6 @@ public class Subscription {
 
             setState(State.Closing);
         } else {
-            long interval = DoubleMath.roundToLong(publishingInterval, RoundingMode.UP);
-
             subscriptionManager.getServer().getScheduledExecutorService().schedule(
                 this::onPublishingTimer,
                 interval,
@@ -698,7 +711,6 @@ public class Subscription {
                     resetLifetimeCounter();
                     returnNotifications(service.get());
                     messageSent = true;
-                    startPublishingTimer();
                 } else {
                     whenNormal();
                 }
@@ -712,21 +724,18 @@ public class Subscription {
                     resetLifetimeCounter();
                     returnKeepAlive(service.get());
                     messageSent = true;
-                    startPublishingTimer();
                 } else {
                     whenNormal();
                 }
             } else if (!publishRequestQueued && (!messageSent || (publishingEnabled && notificationsAvailable))) {
                 /* Subscription State Table Row 8 */
                 setState(State.Late);
-                startPublishingTimer();
 
                 publishQueue().addSubscription(Subscription.this);
             } else if (messageSent && (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
                 /* Subscription State Table Row 9 */
                 setState(State.KeepAlive);
                 resetKeepAliveCounter();
-                startPublishingTimer();
             } else {
                 throw new IllegalStateException("unhandled subscription state");
             }
@@ -734,7 +743,8 @@ public class Subscription {
 
         private void whenLate() {
             /* Subscription State Table Row 12 */
-            startPublishingTimer();
+
+            // NO-OP; publishing timer will be started after this method returns.
         }
 
         private void whenKeepAlive() {
@@ -752,7 +762,6 @@ public class Subscription {
                     resetLifetimeCounter();
                     returnNotifications(service.get());
                     messageSent = true;
-                    startPublishingTimer();
                 } else {
                     whenKeepAlive();
                 }
@@ -767,7 +776,6 @@ public class Subscription {
                     returnKeepAlive(service.get());
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
-                    startPublishingTimer();
                 } else {
                     whenKeepAlive();
                 }
@@ -776,14 +784,12 @@ public class Subscription {
                 /* Subscription State Table Row 16 */
 
                 keepAliveCounter--;
-                startPublishingTimer();
             } else if (!publishRequestQueued &&
                 (keepAliveCounter == 1 ||
                     (keepAliveCounter > 1 && publishingEnabled && notificationsAvailable))) {
                 /* Subscription State Table Row 17 */
 
                 setState(State.Late);
-                startPublishingTimer();
 
                 publishQueue().addSubscription(Subscription.this);
             }
