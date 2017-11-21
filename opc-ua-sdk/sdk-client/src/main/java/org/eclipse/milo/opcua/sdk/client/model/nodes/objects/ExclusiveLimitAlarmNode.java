@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ExclusiveLimitAlarm
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class ExclusiveLimitAlarmNode extends LimitAlarmNode implements ExclusiveLimitAlarmType {
@@ -30,7 +29,7 @@ public class ExclusiveLimitAlarmNode extends LimitAlarmNode implements Exclusive
     }
 
     public CompletableFuture<TwoStateVariableNode> getActiveStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:ActiveState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ActiveState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getActiveState() {
@@ -42,6 +41,6 @@ public class ExclusiveLimitAlarmNode extends LimitAlarmNode implements Exclusive
     }
 
     public CompletableFuture<ExclusiveLimitStateMachineNode> getLimitStateNode() {
-        return getObjectComponent(QualifiedName.parse("0:LimitState")).thenApply(ExclusiveLimitStateMachineNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "LimitState").thenApply(ExclusiveLimitStateMachineNode.class::cast);
     }
 }

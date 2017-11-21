@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.ServerConfigurationType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -77,6 +76,6 @@ public class ServerConfigurationNode extends BaseObjectNode implements ServerCon
     }
 
     public CompletableFuture<CertificateGroupFolderNode> getCertificateGroupsNode() {
-        return getObjectComponent(QualifiedName.parse("0:CertificateGroups")).thenApply(CertificateGroupFolderNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "CertificateGroups").thenApply(CertificateGroupFolderNode.class::cast);
     }
 }

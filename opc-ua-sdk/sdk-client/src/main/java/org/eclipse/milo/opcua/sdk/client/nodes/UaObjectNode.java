@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -84,6 +85,16 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         });
     }
 
+    public CompletableFuture<? extends ObjectNode> getObjectComponent(String namespaceUri, String name) {
+        UShort namespaceIndex = client.getNamespaceTable().getIndex(namespaceUri);
+
+        if (namespaceIndex != null) {
+            return getObjectComponent(new QualifiedName(namespaceIndex, name));
+        } else {
+            return failedUaFuture(StatusCodes.Bad_NotFound);
+        }
+    }
+
     public CompletableFuture<? extends ObjectNode> getObjectComponent(QualifiedName browseName) {
         UInteger nodeClassMask = uint(NodeClass.Object.getValue());
         UInteger resultMask = uint(BrowseResultMask.All.getValue());
@@ -115,6 +126,16 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
             return node.orElse(failedUaFuture(StatusCodes.Bad_NotFound));
         });
+    }
+
+    public CompletableFuture<? extends VariableNode> getVariableComponent(String namespaceUri, String name) {
+        UShort namespaceIndex = client.getNamespaceTable().getIndex(namespaceUri);
+
+        if (namespaceIndex != null) {
+            return getVariableComponent(new QualifiedName(namespaceIndex, name));
+        } else {
+            return failedUaFuture(StatusCodes.Bad_NotFound);
+        }
     }
 
     public CompletableFuture<? extends VariableNode> getVariableComponent(QualifiedName browseName) {

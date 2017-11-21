@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.TransitionEventType
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class TransitionEventNode extends BaseEventNode implements TransitionEventType {
@@ -31,7 +30,7 @@ public class TransitionEventNode extends BaseEventNode implements TransitionEven
     }
 
     public CompletableFuture<TransitionVariableNode> getTransitionNode() {
-        return getVariableComponent(QualifiedName.parse("0:Transition")).thenApply(TransitionVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "Transition").thenApply(TransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getTransition() {
@@ -43,7 +42,7 @@ public class TransitionEventNode extends BaseEventNode implements TransitionEven
     }
 
     public CompletableFuture<StateVariableNode> getFromStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:FromState")).thenApply(StateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "FromState").thenApply(StateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getFromState() {
@@ -55,7 +54,7 @@ public class TransitionEventNode extends BaseEventNode implements TransitionEven
     }
 
     public CompletableFuture<StateVariableNode> getToStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:ToState")).thenApply(StateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ToState").thenApply(StateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getToState() {

@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SessionSecurityDiagnosticsArrayType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 
@@ -29,7 +28,7 @@ public class SessionSecurityDiagnosticsArrayNode extends BaseDataVariableNode im
     }
 
     public CompletableFuture<SessionSecurityDiagnosticsNode> getSessionSecurityDiagnosticsNode() {
-        return getVariableComponent(QualifiedName.parse("0:SessionSecurityDiagnostics")).thenApply(SessionSecurityDiagnosticsNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics").thenApply(SessionSecurityDiagnosticsNode.class::cast);
     }
 
     public CompletableFuture<SessionSecurityDiagnosticsDataType> getSessionSecurityDiagnostics() {

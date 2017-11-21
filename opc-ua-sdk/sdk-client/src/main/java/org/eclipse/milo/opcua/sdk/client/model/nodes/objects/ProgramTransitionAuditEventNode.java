@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ProgramTransitionAu
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class ProgramTransitionAuditEventNode extends AuditUpdateStateEventNode implements ProgramTransitionAuditEventType {
@@ -30,7 +29,7 @@ public class ProgramTransitionAuditEventNode extends AuditUpdateStateEventNode i
     }
 
     public CompletableFuture<FiniteTransitionVariableNode> getTransitionNode() {
-        return getVariableComponent(QualifiedName.parse("0:Transition")).thenApply(FiniteTransitionVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "Transition").thenApply(FiniteTransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getTransition() {

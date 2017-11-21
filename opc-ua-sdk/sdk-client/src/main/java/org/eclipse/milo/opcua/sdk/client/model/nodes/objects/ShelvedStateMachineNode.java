@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.ShelvedStateMachineType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class ShelvedStateMachineNode extends FiniteStateMachineNode implements ShelvedStateMachineType {
@@ -40,38 +39,38 @@ public class ShelvedStateMachineNode extends FiniteStateMachineNode implements S
     }
 
     public CompletableFuture<StateNode> getUnshelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:Unshelved")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "Unshelved").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getTimedShelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:TimedShelved")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "TimedShelved").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getOneShotShelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:OneShotShelved")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelved").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getUnshelvedToTimedShelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:UnshelvedToTimedShelved")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "UnshelvedToTimedShelved").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getUnshelvedToOneShotShelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:UnshelvedToOneShotShelved")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "UnshelvedToOneShotShelved").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getTimedShelvedToUnshelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:TimedShelvedToUnshelved")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "TimedShelvedToUnshelved").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getTimedShelvedToOneShotShelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:TimedShelvedToOneShotShelved")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "TimedShelvedToOneShotShelved").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getOneShotShelvedToUnshelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:OneShotShelvedToUnshelved")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelvedToUnshelved").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getOneShotShelvedToTimedShelvedNode() {
-        return getObjectComponent(QualifiedName.parse("0:OneShotShelvedToTimedShelved")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelvedToTimedShelved").thenApply(TransitionNode.class::cast);
     }
 }

@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ConditionType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
@@ -105,7 +104,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public CompletableFuture<TwoStateVariableNode> getEnabledStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:EnabledState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "EnabledState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getEnabledState() {
@@ -117,7 +116,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public CompletableFuture<ConditionVariableNode> getQualityNode() {
-        return getVariableComponent(QualifiedName.parse("0:Quality")).thenApply(ConditionVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "Quality").thenApply(ConditionVariableNode.class::cast);
     }
 
     public CompletableFuture<StatusCode> getQuality() {
@@ -129,7 +128,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public CompletableFuture<ConditionVariableNode> getLastSeverityNode() {
-        return getVariableComponent(QualifiedName.parse("0:LastSeverity")).thenApply(ConditionVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "LastSeverity").thenApply(ConditionVariableNode.class::cast);
     }
 
     public CompletableFuture<UShort> getLastSeverity() {
@@ -141,7 +140,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public CompletableFuture<ConditionVariableNode> getCommentNode() {
-        return getVariableComponent(QualifiedName.parse("0:Comment")).thenApply(ConditionVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "Comment").thenApply(ConditionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getComment() {

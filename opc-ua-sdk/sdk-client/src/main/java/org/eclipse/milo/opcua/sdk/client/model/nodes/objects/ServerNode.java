@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ServerType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
@@ -93,7 +92,7 @@ public class ServerNode extends BaseObjectNode implements ServerType {
     }
 
     public CompletableFuture<ServerStatusNode> getServerStatusNode() {
-        return getVariableComponent(QualifiedName.parse("0:ServerStatus")).thenApply(ServerStatusNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ServerStatus").thenApply(ServerStatusNode.class::cast);
     }
 
     public CompletableFuture<ServerStatusDataType> getServerStatus() {
@@ -105,22 +104,22 @@ public class ServerNode extends BaseObjectNode implements ServerType {
     }
 
     public CompletableFuture<ServerCapabilitiesNode> getServerCapabilitiesNode() {
-        return getObjectComponent(QualifiedName.parse("0:ServerCapabilities")).thenApply(ServerCapabilitiesNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "ServerCapabilities").thenApply(ServerCapabilitiesNode.class::cast);
     }
 
     public CompletableFuture<ServerDiagnosticsNode> getServerDiagnosticsNode() {
-        return getObjectComponent(QualifiedName.parse("0:ServerDiagnostics")).thenApply(ServerDiagnosticsNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "ServerDiagnostics").thenApply(ServerDiagnosticsNode.class::cast);
     }
 
     public CompletableFuture<VendorServerInfoNode> getVendorServerInfoNode() {
-        return getObjectComponent(QualifiedName.parse("0:VendorServerInfo")).thenApply(VendorServerInfoNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "VendorServerInfo").thenApply(VendorServerInfoNode.class::cast);
     }
 
     public CompletableFuture<ServerRedundancyNode> getServerRedundancyNode() {
-        return getObjectComponent(QualifiedName.parse("0:ServerRedundancy")).thenApply(ServerRedundancyNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "ServerRedundancy").thenApply(ServerRedundancyNode.class::cast);
     }
 
     public CompletableFuture<NamespacesNode> getNamespacesNode() {
-        return getObjectComponent(QualifiedName.parse("0:Namespaces")).thenApply(NamespacesNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "Namespaces").thenApply(NamespacesNode.class::cast);
     }
 }

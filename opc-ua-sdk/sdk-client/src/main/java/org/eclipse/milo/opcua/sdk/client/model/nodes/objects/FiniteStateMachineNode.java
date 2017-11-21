@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.FiniteStateMachineT
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class FiniteStateMachineNode extends StateMachineNode implements FiniteStateMachineType {
@@ -31,7 +30,7 @@ public class FiniteStateMachineNode extends StateMachineNode implements FiniteSt
     }
 
     public CompletableFuture<FiniteStateVariableNode> getCurrentStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:CurrentState")).thenApply(FiniteStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentState").thenApply(FiniteStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getCurrentState() {
@@ -43,7 +42,7 @@ public class FiniteStateMachineNode extends StateMachineNode implements FiniteSt
     }
 
     public CompletableFuture<FiniteTransitionVariableNode> getLastTransitionNode() {
-        return getVariableComponent(QualifiedName.parse("0:LastTransition")).thenApply(FiniteTransitionVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "LastTransition").thenApply(FiniteTransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLastTransition() {

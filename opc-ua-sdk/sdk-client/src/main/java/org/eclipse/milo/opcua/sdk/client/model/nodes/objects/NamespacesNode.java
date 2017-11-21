@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.NamespacesType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class NamespacesNode extends BaseObjectNode implements NamespacesType {
     public NamespacesNode(OpcUaClient client, NodeId nodeId) {
@@ -26,6 +25,6 @@ public class NamespacesNode extends BaseObjectNode implements NamespacesType {
     }
 
     public CompletableFuture<AddressSpaceFileNode> getAddressSpaceFileNode() {
-        return getObjectComponent(QualifiedName.parse("0:AddressSpaceFile")).thenApply(AddressSpaceFileNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "AddressSpaceFile").thenApply(AddressSpaceFileNode.class::cast);
     }
 }

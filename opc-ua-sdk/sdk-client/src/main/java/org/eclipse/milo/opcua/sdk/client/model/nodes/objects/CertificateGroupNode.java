@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.CertificateGroupType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class CertificateGroupNode extends BaseObjectNode implements CertificateGroupType {
@@ -40,6 +39,6 @@ public class CertificateGroupNode extends BaseObjectNode implements CertificateG
     }
 
     public CompletableFuture<TrustListNode> getTrustListNode() {
-        return getObjectComponent(QualifiedName.parse("0:TrustList")).thenApply(TrustListNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "TrustList").thenApply(TrustListNode.class::cast);
     }
 }

@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SubscriptionDiagnosticsType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -30,7 +29,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getSessionIdNode() {
-        return getVariableComponent(QualifiedName.parse("0:SessionId")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SessionId").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<NodeId> getSessionId() {
@@ -42,7 +41,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getSubscriptionIdNode() {
-        return getVariableComponent(QualifiedName.parse("0:SubscriptionId")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionId").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSubscriptionId() {
@@ -54,7 +53,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getPriorityNode() {
-        return getVariableComponent(QualifiedName.parse("0:Priority")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "Priority").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UByte> getPriority() {
@@ -66,7 +65,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getPublishingIntervalNode() {
-        return getVariableComponent(QualifiedName.parse("0:PublishingInterval")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "PublishingInterval").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<Double> getPublishingInterval() {
@@ -78,7 +77,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getMaxKeepAliveCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:MaxKeepAliveCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "MaxKeepAliveCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getMaxKeepAliveCount() {
@@ -90,7 +89,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getMaxLifetimeCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:MaxLifetimeCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "MaxLifetimeCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getMaxLifetimeCount() {
@@ -102,7 +101,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getMaxNotificationsPerPublishNode() {
-        return getVariableComponent(QualifiedName.parse("0:MaxNotificationsPerPublish")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "MaxNotificationsPerPublish").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getMaxNotificationsPerPublish() {
@@ -114,7 +113,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getPublishingEnabledNode() {
-        return getVariableComponent(QualifiedName.parse("0:PublishingEnabled")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "PublishingEnabled").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<Boolean> getPublishingEnabled() {
@@ -126,7 +125,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getModifyCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:ModifyCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ModifyCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getModifyCount() {
@@ -138,7 +137,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getEnableCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:EnableCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "EnableCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getEnableCount() {
@@ -150,7 +149,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getDisableCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:DisableCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "DisableCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getDisableCount() {
@@ -162,7 +161,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getRepublishRequestCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:RepublishRequestCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "RepublishRequestCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getRepublishRequestCount() {
@@ -174,7 +173,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getRepublishMessageRequestCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:RepublishMessageRequestCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "RepublishMessageRequestCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getRepublishMessageRequestCount() {
@@ -186,7 +185,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getRepublishMessageCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:RepublishMessageCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "RepublishMessageCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getRepublishMessageCount() {
@@ -198,7 +197,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getTransferRequestCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:TransferRequestCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "TransferRequestCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getTransferRequestCount() {
@@ -210,7 +209,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getTransferredToAltClientCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:TransferredToAltClientCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "TransferredToAltClientCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getTransferredToAltClientCount() {
@@ -222,7 +221,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getTransferredToSameClientCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:TransferredToSameClientCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "TransferredToSameClientCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getTransferredToSameClientCount() {
@@ -234,7 +233,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getPublishRequestCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:PublishRequestCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "PublishRequestCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getPublishRequestCount() {
@@ -246,7 +245,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getDataChangeNotificationsCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:DataChangeNotificationsCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "DataChangeNotificationsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getDataChangeNotificationsCount() {
@@ -258,7 +257,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getEventNotificationsCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:EventNotificationsCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "EventNotificationsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getEventNotificationsCount() {
@@ -270,7 +269,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getNotificationsCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:NotificationsCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "NotificationsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getNotificationsCount() {
@@ -282,7 +281,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getLatePublishRequestCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:LatePublishRequestCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "LatePublishRequestCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getLatePublishRequestCount() {
@@ -294,7 +293,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getCurrentKeepAliveCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:CurrentKeepAliveCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentKeepAliveCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCurrentKeepAliveCount() {
@@ -306,7 +305,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getCurrentLifetimeCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:CurrentLifetimeCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentLifetimeCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCurrentLifetimeCount() {
@@ -318,7 +317,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getUnacknowledgedMessageCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:UnacknowledgedMessageCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "UnacknowledgedMessageCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getUnacknowledgedMessageCount() {
@@ -330,7 +329,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getDiscardedMessageCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:DiscardedMessageCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "DiscardedMessageCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getDiscardedMessageCount() {
@@ -342,7 +341,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getMonitoredItemCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:MonitoredItemCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "MonitoredItemCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getMonitoredItemCount() {
@@ -354,7 +353,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getDisabledMonitoredItemCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:DisabledMonitoredItemCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "DisabledMonitoredItemCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getDisabledMonitoredItemCount() {
@@ -366,7 +365,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getMonitoringQueueOverflowCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:MonitoringQueueOverflowCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "MonitoringQueueOverflowCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getMonitoringQueueOverflowCount() {
@@ -378,7 +377,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getNextSequenceNumberNode() {
-        return getVariableComponent(QualifiedName.parse("0:NextSequenceNumber")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "NextSequenceNumber").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getNextSequenceNumber() {
@@ -390,7 +389,7 @@ public class SubscriptionDiagnosticsNode extends BaseDataVariableNode implements
     }
 
     public CompletableFuture<BaseDataVariableNode> getEventQueueOverFlowCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:EventQueueOverFlowCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "EventQueueOverFlowCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getEventQueueOverFlowCount() {

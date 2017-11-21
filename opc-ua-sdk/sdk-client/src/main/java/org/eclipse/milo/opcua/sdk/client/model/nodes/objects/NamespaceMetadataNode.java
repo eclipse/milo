@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.NamespaceMetadataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
 
@@ -114,6 +113,6 @@ public class NamespaceMetadataNode extends BaseObjectNode implements NamespaceMe
     }
 
     public CompletableFuture<AddressSpaceFileNode> getNamespaceFileNode() {
-        return getObjectComponent(QualifiedName.parse("0:NamespaceFile")).thenApply(AddressSpaceFileNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "NamespaceFile").thenApply(AddressSpaceFileNode.class::cast);
     }
 }

@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SamplingIntervalDiagnosticsArrayType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
 
@@ -29,7 +28,7 @@ public class SamplingIntervalDiagnosticsArrayNode extends BaseDataVariableNode i
     }
 
     public CompletableFuture<SamplingIntervalDiagnosticsNode> getSamplingIntervalDiagnosticsNode() {
-        return getVariableComponent(QualifiedName.parse("0:SamplingIntervalDiagnostics")).thenApply(SamplingIntervalDiagnosticsNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnostics").thenApply(SamplingIntervalDiagnosticsNode.class::cast);
     }
 
     public CompletableFuture<SamplingIntervalDiagnosticsDataType> getSamplingIntervalDiagnostics() {

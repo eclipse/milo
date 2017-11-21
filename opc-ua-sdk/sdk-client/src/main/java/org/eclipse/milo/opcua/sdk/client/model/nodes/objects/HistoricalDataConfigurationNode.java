@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.HistoricalDataConfigurationType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
 
@@ -126,10 +125,10 @@ public class HistoricalDataConfigurationNode extends BaseObjectNode implements H
     }
 
     public CompletableFuture<AggregateConfigurationNode> getAggregateConfigurationNode() {
-        return getObjectComponent(QualifiedName.parse("0:AggregateConfiguration")).thenApply(AggregateConfigurationNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "AggregateConfiguration").thenApply(AggregateConfigurationNode.class::cast);
     }
 
     public CompletableFuture<FolderNode> getAggregateFunctionsNode() {
-        return getObjectComponent(QualifiedName.parse("0:AggregateFunctions")).thenApply(FolderNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "AggregateFunctions").thenApply(FolderNode.class::cast);
     }
 }

@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SamplingIntervalDiagnosticsType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -29,7 +28,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public CompletableFuture<BaseDataVariableNode> getSamplingIntervalNode() {
-        return getVariableComponent(QualifiedName.parse("0:SamplingInterval")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SamplingInterval").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<Double> getSamplingInterval() {
@@ -41,7 +40,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public CompletableFuture<BaseDataVariableNode> getSampledMonitoredItemsCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:SampledMonitoredItemsCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SampledMonitoredItemsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSampledMonitoredItemsCount() {
@@ -53,7 +52,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public CompletableFuture<BaseDataVariableNode> getMaxSampledMonitoredItemsCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:MaxSampledMonitoredItemsCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "MaxSampledMonitoredItemsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getMaxSampledMonitoredItemsCount() {
@@ -65,7 +64,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public CompletableFuture<BaseDataVariableNode> getDisabledMonitoredItemsSamplingCountNode() {
-        return getVariableComponent(QualifiedName.parse("0:DisabledMonitoredItemsSamplingCount")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "DisabledMonitoredItemsSamplingCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getDisabledMonitoredItemsSamplingCount() {

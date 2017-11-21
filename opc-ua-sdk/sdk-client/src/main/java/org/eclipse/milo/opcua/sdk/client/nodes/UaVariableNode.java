@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -48,6 +49,16 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
     public UaVariableNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
+    }
+
+    public CompletableFuture<? extends VariableNode> getVariableComponent(String namespaceUri, String name) {
+        UShort namespaceIndex = client.getNamespaceTable().getIndex(namespaceUri);
+
+        if (namespaceIndex != null) {
+            return getVariableComponent(new QualifiedName(namespaceIndex, name));
+        } else {
+            return failedUaFuture(StatusCodes.Bad_NotFound);
+        }
     }
 
     public CompletableFuture<? extends VariableNode> getVariableComponent(QualifiedName browseName) {

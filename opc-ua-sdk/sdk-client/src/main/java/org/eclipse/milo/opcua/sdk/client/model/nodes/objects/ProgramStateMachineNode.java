@@ -24,7 +24,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ProgramStateMachine
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
@@ -119,7 +118,7 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public CompletableFuture<FiniteStateVariableNode> getCurrentStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:CurrentState")).thenApply(FiniteStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentState").thenApply(FiniteStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getCurrentState() {
@@ -131,7 +130,7 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public CompletableFuture<FiniteTransitionVariableNode> getLastTransitionNode() {
-        return getVariableComponent(QualifiedName.parse("0:LastTransition")).thenApply(FiniteTransitionVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "LastTransition").thenApply(FiniteTransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLastTransition() {
@@ -143,7 +142,7 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public CompletableFuture<ProgramDiagnosticNode> getProgramDiagnosticsNode() {
-        return getVariableComponent(QualifiedName.parse("0:ProgramDiagnostics")).thenApply(ProgramDiagnosticNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics").thenApply(ProgramDiagnosticNode.class::cast);
     }
 
     public CompletableFuture<ProgramDiagnosticDataType> getProgramDiagnostics() {
@@ -155,58 +154,58 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public CompletableFuture<BaseObjectNode> getFinalResultDataNode() {
-        return getObjectComponent(QualifiedName.parse("0:FinalResultData")).thenApply(BaseObjectNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "FinalResultData").thenApply(BaseObjectNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getReadyNode() {
-        return getObjectComponent(QualifiedName.parse("0:Ready")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "Ready").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getRunningNode() {
-        return getObjectComponent(QualifiedName.parse("0:Running")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "Running").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getSuspendedNode() {
-        return getObjectComponent(QualifiedName.parse("0:Suspended")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "Suspended").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getHaltedNode() {
-        return getObjectComponent(QualifiedName.parse("0:Halted")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "Halted").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getHaltedToReadyNode() {
-        return getObjectComponent(QualifiedName.parse("0:HaltedToReady")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "HaltedToReady").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getReadyToRunningNode() {
-        return getObjectComponent(QualifiedName.parse("0:ReadyToRunning")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "ReadyToRunning").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getRunningToHaltedNode() {
-        return getObjectComponent(QualifiedName.parse("0:RunningToHalted")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "RunningToHalted").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getRunningToReadyNode() {
-        return getObjectComponent(QualifiedName.parse("0:RunningToReady")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "RunningToReady").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getRunningToSuspendedNode() {
-        return getObjectComponent(QualifiedName.parse("0:RunningToSuspended")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "RunningToSuspended").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getSuspendedToRunningNode() {
-        return getObjectComponent(QualifiedName.parse("0:SuspendedToRunning")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToRunning").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getSuspendedToHaltedNode() {
-        return getObjectComponent(QualifiedName.parse("0:SuspendedToHalted")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToHalted").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getSuspendedToReadyNode() {
-        return getObjectComponent(QualifiedName.parse("0:SuspendedToReady")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToReady").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getReadyToHaltedNode() {
-        return getObjectComponent(QualifiedName.parse("0:ReadyToHalted")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "ReadyToHalted").thenApply(TransitionNode.class::cast);
     }
 }

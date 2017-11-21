@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.SubscriptionDiagn
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.ServerDiagnosticsType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
@@ -47,7 +46,7 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public CompletableFuture<ServerDiagnosticsSummaryNode> getServerDiagnosticsSummaryNode() {
-        return getVariableComponent(QualifiedName.parse("0:ServerDiagnosticsSummary")).thenApply(ServerDiagnosticsSummaryNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ServerDiagnosticsSummary").thenApply(ServerDiagnosticsSummaryNode.class::cast);
     }
 
     public CompletableFuture<ServerDiagnosticsSummaryDataType> getServerDiagnosticsSummary() {
@@ -59,7 +58,7 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public CompletableFuture<SamplingIntervalDiagnosticsArrayNode> getSamplingIntervalDiagnosticsArrayNode() {
-        return getVariableComponent(QualifiedName.parse("0:SamplingIntervalDiagnosticsArray")).thenApply(SamplingIntervalDiagnosticsArrayNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnosticsArray").thenApply(SamplingIntervalDiagnosticsArrayNode.class::cast);
     }
 
     public CompletableFuture<SamplingIntervalDiagnosticsDataType[]> getSamplingIntervalDiagnosticsArray() {
@@ -71,7 +70,7 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public CompletableFuture<SubscriptionDiagnosticsArrayNode> getSubscriptionDiagnosticsArrayNode() {
-        return getVariableComponent(QualifiedName.parse("0:SubscriptionDiagnosticsArray")).thenApply(SubscriptionDiagnosticsArrayNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray").thenApply(SubscriptionDiagnosticsArrayNode.class::cast);
     }
 
     public CompletableFuture<SubscriptionDiagnosticsDataType[]> getSubscriptionDiagnosticsArray() {
@@ -83,6 +82,6 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public CompletableFuture<SessionsDiagnosticsSummaryNode> getSessionsDiagnosticsSummaryNode() {
-        return getObjectComponent(QualifiedName.parse("0:SessionsDiagnosticsSummary")).thenApply(SessionsDiagnosticsSummaryNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "SessionsDiagnosticsSummary").thenApply(SessionsDiagnosticsSummaryNode.class::cast);
     }
 }

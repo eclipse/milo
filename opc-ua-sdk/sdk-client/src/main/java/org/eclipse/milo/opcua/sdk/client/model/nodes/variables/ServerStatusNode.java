@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -33,7 +32,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public CompletableFuture<BaseDataVariableNode> getStartTimeNode() {
-        return getVariableComponent(QualifiedName.parse("0:StartTime")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "StartTime").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getStartTime() {
@@ -45,7 +44,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public CompletableFuture<BaseDataVariableNode> getCurrentTimeNode() {
-        return getVariableComponent(QualifiedName.parse("0:CurrentTime")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentTime").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getCurrentTime() {
@@ -57,7 +56,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public CompletableFuture<BaseDataVariableNode> getStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:State")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "State").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServerState> getState() {
@@ -69,7 +68,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public CompletableFuture<BuildInfoNode> getBuildInfoNode() {
-        return getVariableComponent(QualifiedName.parse("0:BuildInfo")).thenApply(BuildInfoNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "BuildInfo").thenApply(BuildInfoNode.class::cast);
     }
 
     public CompletableFuture<BuildInfo> getBuildInfo() {
@@ -81,7 +80,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public CompletableFuture<BaseDataVariableNode> getSecondsTillShutdownNode() {
-        return getVariableComponent(QualifiedName.parse("0:SecondsTillShutdown")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SecondsTillShutdown").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSecondsTillShutdown() {
@@ -93,7 +92,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public CompletableFuture<BaseDataVariableNode> getShutdownReasonNode() {
-        return getVariableComponent(QualifiedName.parse("0:ShutdownReason")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ShutdownReason").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getShutdownReason() {

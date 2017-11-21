@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.SubscriptionDiagnosticsArrayType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
@@ -29,7 +28,7 @@ public class SubscriptionDiagnosticsArrayNode extends BaseDataVariableNode imple
     }
 
     public CompletableFuture<SubscriptionDiagnosticsNode> getSubscriptionDiagnosticsNode() {
-        return getVariableComponent(QualifiedName.parse("0:SubscriptionDiagnostics")).thenApply(SubscriptionDiagnosticsNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnostics").thenApply(SubscriptionDiagnosticsNode.class::cast);
     }
 
     public CompletableFuture<SubscriptionDiagnosticsDataType> getSubscriptionDiagnostics() {

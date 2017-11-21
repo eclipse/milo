@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.SessionSecurityDi
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 
@@ -30,7 +29,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getSessionIdNode() {
-        return getVariableComponent(QualifiedName.parse("0:SessionId")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SessionId").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<NodeId> getSessionId() {
@@ -42,7 +41,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getClientUserIdOfSessionNode() {
-        return getVariableComponent(QualifiedName.parse("0:ClientUserIdOfSession")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdOfSession").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getClientUserIdOfSession() {
@@ -54,7 +53,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getClientUserIdHistoryNode() {
-        return getVariableComponent(QualifiedName.parse("0:ClientUserIdHistory")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdHistory").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String[]> getClientUserIdHistory() {
@@ -66,7 +65,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getAuthenticationMechanismNode() {
-        return getVariableComponent(QualifiedName.parse("0:AuthenticationMechanism")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "AuthenticationMechanism").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getAuthenticationMechanism() {
@@ -78,7 +77,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getEncodingNode() {
-        return getVariableComponent(QualifiedName.parse("0:Encoding")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "Encoding").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getEncoding() {
@@ -90,7 +89,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getTransportProtocolNode() {
-        return getVariableComponent(QualifiedName.parse("0:TransportProtocol")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "TransportProtocol").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getTransportProtocol() {
@@ -102,7 +101,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getSecurityModeNode() {
-        return getVariableComponent(QualifiedName.parse("0:SecurityMode")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SecurityMode").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<MessageSecurityMode> getSecurityMode() {
@@ -114,7 +113,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getSecurityPolicyUriNode() {
-        return getVariableComponent(QualifiedName.parse("0:SecurityPolicyUri")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SecurityPolicyUri").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getSecurityPolicyUri() {
@@ -126,7 +125,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public CompletableFuture<BaseDataVariableNode> getClientCertificateNode() {
-        return getVariableComponent(QualifiedName.parse("0:ClientCertificate")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ClientCertificate").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ByteString> getClientCertificate() {

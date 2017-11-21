@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.NonExclusiveLimitAl
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExclusiveLimitAlarmType {
@@ -30,7 +29,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public CompletableFuture<TwoStateVariableNode> getActiveStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:ActiveState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ActiveState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getActiveState() {
@@ -42,7 +41,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public CompletableFuture<TwoStateVariableNode> getHighHighStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:HighHighState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "HighHighState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getHighHighState() {
@@ -54,7 +53,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public CompletableFuture<TwoStateVariableNode> getHighStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:HighState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "HighState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getHighState() {
@@ -66,7 +65,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public CompletableFuture<TwoStateVariableNode> getLowStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:LowState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "LowState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLowState() {
@@ -78,7 +77,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public CompletableFuture<TwoStateVariableNode> getLowLowStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:LowLowState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "LowLowState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLowLowState() {

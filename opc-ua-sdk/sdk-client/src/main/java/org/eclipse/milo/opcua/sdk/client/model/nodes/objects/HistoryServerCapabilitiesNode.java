@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.HistoryServerCapabilitiesType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
@@ -197,6 +196,6 @@ public class HistoryServerCapabilitiesNode extends BaseObjectNode implements His
     }
 
     public CompletableFuture<FolderNode> getAggregateFunctionsNode() {
-        return getObjectComponent(QualifiedName.parse("0:AggregateFunctions")).thenApply(FolderNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "AggregateFunctions").thenApply(FolderNode.class::cast);
     }
 }

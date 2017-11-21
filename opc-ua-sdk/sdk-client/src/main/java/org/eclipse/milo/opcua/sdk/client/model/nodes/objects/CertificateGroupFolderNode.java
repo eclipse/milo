@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.CertificateGroupFolderType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class CertificateGroupFolderNode extends FolderNode implements CertificateGroupFolderType {
     public CertificateGroupFolderNode(OpcUaClient client, NodeId nodeId) {
@@ -26,14 +25,14 @@ public class CertificateGroupFolderNode extends FolderNode implements Certificat
     }
 
     public CompletableFuture<CertificateGroupNode> getDefaultApplicationGroupNode() {
-        return getObjectComponent(QualifiedName.parse("0:DefaultApplicationGroup")).thenApply(CertificateGroupNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "DefaultApplicationGroup").thenApply(CertificateGroupNode.class::cast);
     }
 
     public CompletableFuture<CertificateGroupNode> getDefaultHttpsGroupNode() {
-        return getObjectComponent(QualifiedName.parse("0:DefaultHttpsGroup")).thenApply(CertificateGroupNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "DefaultHttpsGroup").thenApply(CertificateGroupNode.class::cast);
     }
 
     public CompletableFuture<CertificateGroupNode> getDefaultUserTokenGroupNode() {
-        return getObjectComponent(QualifiedName.parse("0:DefaultUserTokenGroup")).thenApply(CertificateGroupNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "DefaultUserTokenGroup").thenApply(CertificateGroupNode.class::cast);
     }
 }

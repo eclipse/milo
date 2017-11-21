@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AlarmConditionType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class AlarmConditionNode extends AcknowledgeableConditionNode implements AlarmConditionType {
@@ -67,7 +66,7 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public CompletableFuture<TwoStateVariableNode> getEnabledStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:EnabledState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "EnabledState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getEnabledState() {
@@ -79,7 +78,7 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public CompletableFuture<TwoStateVariableNode> getActiveStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:ActiveState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ActiveState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getActiveState() {
@@ -91,7 +90,7 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public CompletableFuture<TwoStateVariableNode> getSuppressedStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:SuppressedState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SuppressedState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getSuppressedState() {
@@ -103,6 +102,6 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public CompletableFuture<ShelvedStateMachineNode> getShelvingStateNode() {
-        return getObjectComponent(QualifiedName.parse("0:ShelvingState")).thenApply(ShelvedStateMachineNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "ShelvingState").thenApply(ShelvedStateMachineNode.class::cast);
     }
 }

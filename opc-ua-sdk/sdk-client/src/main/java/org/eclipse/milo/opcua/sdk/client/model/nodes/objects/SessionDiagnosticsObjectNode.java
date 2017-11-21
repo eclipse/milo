@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.SubscriptionDiagn
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.SessionDiagnosticsObjectType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
@@ -34,7 +33,7 @@ public class SessionDiagnosticsObjectNode extends BaseObjectNode implements Sess
     }
 
     public CompletableFuture<SessionDiagnosticsVariableNode> getSessionDiagnosticsNode() {
-        return getVariableComponent(QualifiedName.parse("0:SessionDiagnostics")).thenApply(SessionDiagnosticsVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnostics").thenApply(SessionDiagnosticsVariableNode.class::cast);
     }
 
     public CompletableFuture<SessionDiagnosticsDataType> getSessionDiagnostics() {
@@ -46,7 +45,7 @@ public class SessionDiagnosticsObjectNode extends BaseObjectNode implements Sess
     }
 
     public CompletableFuture<SessionSecurityDiagnosticsNode> getSessionSecurityDiagnosticsNode() {
-        return getVariableComponent(QualifiedName.parse("0:SessionSecurityDiagnostics")).thenApply(SessionSecurityDiagnosticsNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics").thenApply(SessionSecurityDiagnosticsNode.class::cast);
     }
 
     public CompletableFuture<SessionSecurityDiagnosticsDataType> getSessionSecurityDiagnostics() {
@@ -58,7 +57,7 @@ public class SessionDiagnosticsObjectNode extends BaseObjectNode implements Sess
     }
 
     public CompletableFuture<SubscriptionDiagnosticsArrayNode> getSubscriptionDiagnosticsArrayNode() {
-        return getVariableComponent(QualifiedName.parse("0:SubscriptionDiagnosticsArray")).thenApply(SubscriptionDiagnosticsArrayNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray").thenApply(SubscriptionDiagnosticsArrayNode.class::cast);
     }
 
     public CompletableFuture<SubscriptionDiagnosticsDataType[]> getSubscriptionDiagnosticsArray() {

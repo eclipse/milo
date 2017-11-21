@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.ExclusiveLimitStateMachineType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class ExclusiveLimitStateMachineNode extends FiniteStateMachineNode implements ExclusiveLimitStateMachineType {
     public ExclusiveLimitStateMachineNode(OpcUaClient client, NodeId nodeId) {
@@ -26,34 +25,34 @@ public class ExclusiveLimitStateMachineNode extends FiniteStateMachineNode imple
     }
 
     public CompletableFuture<StateNode> getHighHighNode() {
-        return getObjectComponent(QualifiedName.parse("0:HighHigh")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "HighHigh").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getHighNode() {
-        return getObjectComponent(QualifiedName.parse("0:High")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "High").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getLowNode() {
-        return getObjectComponent(QualifiedName.parse("0:Low")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "Low").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<StateNode> getLowLowNode() {
-        return getObjectComponent(QualifiedName.parse("0:LowLow")).thenApply(StateNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "LowLow").thenApply(StateNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getLowLowToLowNode() {
-        return getObjectComponent(QualifiedName.parse("0:LowLowToLow")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "LowLowToLow").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getLowToLowLowNode() {
-        return getObjectComponent(QualifiedName.parse("0:LowToLowLow")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "LowToLowLow").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getHighHighToHighNode() {
-        return getObjectComponent(QualifiedName.parse("0:HighHighToHigh")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "HighHighToHigh").thenApply(TransitionNode.class::cast);
     }
 
     public CompletableFuture<TransitionNode> getHighToHighHighNode() {
-        return getObjectComponent(QualifiedName.parse("0:HighToHighHigh")).thenApply(TransitionNode.class::cast);
+        return getObjectComponent("http://opcfoundation.org/UA/", "HighToHighHigh").thenApply(TransitionNode.class::cast);
     }
 }

@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.DialogConditionType
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class DialogConditionNode extends ConditionNode implements DialogConditionType {
@@ -103,7 +102,7 @@ public class DialogConditionNode extends ConditionNode implements DialogConditio
     }
 
     public CompletableFuture<TwoStateVariableNode> getEnabledStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:EnabledState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "EnabledState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getEnabledState() {
@@ -115,7 +114,7 @@ public class DialogConditionNode extends ConditionNode implements DialogConditio
     }
 
     public CompletableFuture<TwoStateVariableNode> getDialogStateNode() {
-        return getVariableComponent(QualifiedName.parse("0:DialogState")).thenApply(TwoStateVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "DialogState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getDialogState() {

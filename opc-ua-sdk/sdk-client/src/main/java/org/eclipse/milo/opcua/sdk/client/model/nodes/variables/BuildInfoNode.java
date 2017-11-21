@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.BuildInfoType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType {
@@ -29,7 +28,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public CompletableFuture<BaseDataVariableNode> getProductUriNode() {
-        return getVariableComponent(QualifiedName.parse("0:ProductUri")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ProductUri").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getProductUri() {
@@ -41,7 +40,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public CompletableFuture<BaseDataVariableNode> getManufacturerNameNode() {
-        return getVariableComponent(QualifiedName.parse("0:ManufacturerName")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ManufacturerName").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getManufacturerName() {
@@ -53,7 +52,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public CompletableFuture<BaseDataVariableNode> getProductNameNode() {
-        return getVariableComponent(QualifiedName.parse("0:ProductName")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "ProductName").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getProductName() {
@@ -65,7 +64,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public CompletableFuture<BaseDataVariableNode> getSoftwareVersionNode() {
-        return getVariableComponent(QualifiedName.parse("0:SoftwareVersion")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "SoftwareVersion").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getSoftwareVersion() {
@@ -77,7 +76,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public CompletableFuture<BaseDataVariableNode> getBuildNumberNode() {
-        return getVariableComponent(QualifiedName.parse("0:BuildNumber")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "BuildNumber").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getBuildNumber() {
@@ -89,7 +88,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public CompletableFuture<BaseDataVariableNode> getBuildDateNode() {
-        return getVariableComponent(QualifiedName.parse("0:BuildDate")).thenApply(BaseDataVariableNode.class::cast);
+        return getVariableComponent("http://opcfoundation.org/UA/", "BuildDate").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getBuildDate() {
