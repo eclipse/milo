@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,49 +26,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 
-
 public class SessionsDiagnosticsSummaryNode extends BaseObjectNode implements SessionsDiagnosticsSummaryType {
-
     public SessionsDiagnosticsSummaryNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<SessionDiagnosticsArrayNode> sessionDiagnosticsArray() {
-        return getVariableComponent(QualifiedName.parse("0:SessionDiagnosticsArray"))
-            .thenApply(SessionDiagnosticsArrayNode.class::cast);
+    public CompletableFuture<SessionDiagnosticsArrayNode> getSessionDiagnosticsArrayNode() {
+        return getVariableComponent(QualifiedName.parse("0:SessionDiagnosticsArray")).thenApply(SessionDiagnosticsArrayNode.class::cast);
     }
 
     public CompletableFuture<SessionDiagnosticsDataType[]> getSessionDiagnosticsArray() {
-        return sessionDiagnosticsArray()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, SessionDiagnosticsDataType[].class));
+        return getSessionDiagnosticsArrayNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, SessionDiagnosticsDataType[].class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value) {
-        return sessionDiagnosticsArray()
-            .thenCompose(node -> node.setValue(value));
+        return getSessionDiagnosticsArrayNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<SessionSecurityDiagnosticsArrayNode> sessionSecurityDiagnosticsArray() {
-        return getVariableComponent(QualifiedName.parse("0:SessionSecurityDiagnosticsArray"))
-            .thenApply(SessionSecurityDiagnosticsArrayNode.class::cast);
+    public CompletableFuture<SessionSecurityDiagnosticsArrayNode> getSessionSecurityDiagnosticsArrayNode() {
+        return getVariableComponent(QualifiedName.parse("0:SessionSecurityDiagnosticsArray")).thenApply(SessionSecurityDiagnosticsArrayNode.class::cast);
     }
 
     public CompletableFuture<SessionSecurityDiagnosticsDataType[]> getSessionSecurityDiagnosticsArray() {
-        return sessionSecurityDiagnosticsArray()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, SessionSecurityDiagnosticsDataType[].class));
+        return getSessionSecurityDiagnosticsArrayNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, SessionSecurityDiagnosticsDataType[].class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value) {
-        return sessionSecurityDiagnosticsArray()
-            .thenCompose(node -> node.setValue(value));
+        return getSessionSecurityDiagnosticsArrayNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }

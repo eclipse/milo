@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,148 +15,152 @@ package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
 
-
 public interface ProgramDiagnosticType extends BaseDataVariableType {
-
-    Property<NodeId> CREATE_SESSION_ID = new BasicProperty<>(
-        QualifiedName.parse("0:CreateSessionId"),
+    QualifiedProperty<NodeId> CREATE_SESSION_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "CreateSessionId",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<String> CREATE_CLIENT_NAME = new BasicProperty<>(
-        QualifiedName.parse("0:CreateClientName"),
+    QualifiedProperty<String> CREATE_CLIENT_NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "CreateClientName",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<DateTime> INVOCATION_CREATION_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:InvocationCreationTime"),
+    QualifiedProperty<DateTime> INVOCATION_CREATION_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InvocationCreationTime",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<DateTime> LAST_TRANSITION_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:LastTransitionTime"),
+    QualifiedProperty<DateTime> LAST_TRANSITION_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastTransitionTime",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<String> LAST_METHOD_CALL = new BasicProperty<>(
-        QualifiedName.parse("0:LastMethodCall"),
+    QualifiedProperty<String> LAST_METHOD_CALL = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodCall",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<NodeId> LAST_METHOD_SESSION_ID = new BasicProperty<>(
-        QualifiedName.parse("0:LastMethodSessionId"),
+    QualifiedProperty<NodeId> LAST_METHOD_SESSION_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodSessionId",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<Argument[]> LAST_METHOD_INPUT_ARGUMENTS = new BasicProperty<>(
-        QualifiedName.parse("0:LastMethodInputArguments"),
+    QualifiedProperty<Argument[]> LAST_METHOD_INPUT_ARGUMENTS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodInputArguments",
         NodeId.parse("ns=0;i=296"),
-        1,
+        ValueRanks.OneDimension,
         Argument[].class
     );
 
-    Property<Argument[]> LAST_METHOD_OUTPUT_ARGUMENTS = new BasicProperty<>(
-        QualifiedName.parse("0:LastMethodOutputArguments"),
+    QualifiedProperty<Argument[]> LAST_METHOD_OUTPUT_ARGUMENTS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodOutputArguments",
         NodeId.parse("ns=0;i=296"),
-        1,
+        ValueRanks.OneDimension,
         Argument[].class
     );
 
-    Property<DateTime> LAST_METHOD_CALL_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:LastMethodCallTime"),
+    QualifiedProperty<DateTime> LAST_METHOD_CALL_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodCallTime",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<StatusResult> LAST_METHOD_RETURN_STATUS = new BasicProperty<>(
-        QualifiedName.parse("0:LastMethodReturnStatus"),
+    QualifiedProperty<StatusResult> LAST_METHOD_RETURN_STATUS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodReturnStatus",
         NodeId.parse("ns=0;i=299"),
-        -1,
+        ValueRanks.Scalar,
         StatusResult.class
     );
 
-
-    CompletableFuture<? extends PropertyType> createSessionId();
+    CompletableFuture<? extends PropertyType> getCreateSessionIdNode();
 
     CompletableFuture<NodeId> getCreateSessionId();
 
     CompletableFuture<StatusCode> setCreateSessionId(NodeId value);
 
-    CompletableFuture<? extends PropertyType> createClientName();
+    CompletableFuture<? extends PropertyType> getCreateClientNameNode();
 
     CompletableFuture<String> getCreateClientName();
 
     CompletableFuture<StatusCode> setCreateClientName(String value);
 
-    CompletableFuture<? extends PropertyType> invocationCreationTime();
+    CompletableFuture<? extends PropertyType> getInvocationCreationTimeNode();
 
     CompletableFuture<DateTime> getInvocationCreationTime();
 
     CompletableFuture<StatusCode> setInvocationCreationTime(DateTime value);
 
-    CompletableFuture<? extends PropertyType> lastTransitionTime();
+    CompletableFuture<? extends PropertyType> getLastTransitionTimeNode();
 
     CompletableFuture<DateTime> getLastTransitionTime();
 
     CompletableFuture<StatusCode> setLastTransitionTime(DateTime value);
 
-    CompletableFuture<? extends PropertyType> lastMethodCall();
+    CompletableFuture<? extends PropertyType> getLastMethodCallNode();
 
     CompletableFuture<String> getLastMethodCall();
 
     CompletableFuture<StatusCode> setLastMethodCall(String value);
 
-    CompletableFuture<? extends PropertyType> lastMethodSessionId();
+    CompletableFuture<? extends PropertyType> getLastMethodSessionIdNode();
 
     CompletableFuture<NodeId> getLastMethodSessionId();
 
     CompletableFuture<StatusCode> setLastMethodSessionId(NodeId value);
 
-    CompletableFuture<? extends PropertyType> lastMethodInputArguments();
+    CompletableFuture<? extends PropertyType> getLastMethodInputArgumentsNode();
 
     CompletableFuture<Argument[]> getLastMethodInputArguments();
 
     CompletableFuture<StatusCode> setLastMethodInputArguments(Argument[] value);
 
-    CompletableFuture<? extends PropertyType> lastMethodOutputArguments();
+    CompletableFuture<? extends PropertyType> getLastMethodOutputArgumentsNode();
 
     CompletableFuture<Argument[]> getLastMethodOutputArguments();
 
     CompletableFuture<StatusCode> setLastMethodOutputArguments(Argument[] value);
 
-    CompletableFuture<? extends PropertyType> lastMethodCallTime();
+    CompletableFuture<? extends PropertyType> getLastMethodCallTimeNode();
 
     CompletableFuture<DateTime> getLastMethodCallTime();
 
     CompletableFuture<StatusCode> setLastMethodCallTime(DateTime value);
 
-    CompletableFuture<? extends PropertyType> lastMethodReturnStatus();
+    CompletableFuture<? extends PropertyType> getLastMethodReturnStatusNode();
 
     CompletableFuture<StatusResult> getLastMethodReturnStatus();
 
     CompletableFuture<StatusCode> setLastMethodReturnStatus(StatusResult value);
-
-
 }

@@ -50,7 +50,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         super(client, nodeId);
     }
 
-    public CompletableFuture<? extends VariableNode> getComponent(QualifiedName browseName) {
+    public CompletableFuture<? extends VariableNode> getVariableComponent(QualifiedName browseName) {
         UInteger nodeClassMask = uint(NodeClass.Variable.getValue());
         UInteger resultMask = uint(BrowseResultMask.All.getValue());
 

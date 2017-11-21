@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,42 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditHistoryAtTimeDeleteEventNode extends AuditHistoryDeleteEventNode implements AuditHistoryAtTimeDeleteEventType {
-
     public AuditHistoryAtTimeDeleteEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> reqTimes() {
-        return getPropertyNode(AuditHistoryAtTimeDeleteEventType.REQ_TIMES.getBrowseName());
+    public CompletableFuture<PropertyNode> getReqTimesNode() {
+        return getPropertyNode(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
     }
 
-    @Override
     public CompletableFuture<DateTime[]> getReqTimes() {
         return getProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setReqTimes(DateTime[] value) {
         return setProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> oldValues() {
-        return getPropertyNode(AuditHistoryAtTimeDeleteEventType.OLD_VALUES.getBrowseName());
+    public CompletableFuture<PropertyNode> getOldValuesNode() {
+        return getPropertyNode(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
     }
 
-    @Override
     public CompletableFuture<DataValue[]> getOldValues() {
         return getProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOldValues(DataValue[] value) {
         return setProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES, value);
     }
-
-
 }

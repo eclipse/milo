@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,42 +21,32 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditUpdateMethodEv
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditUpdateMethodEventNode extends AuditEventNode implements AuditUpdateMethodEventType {
-
     public AuditUpdateMethodEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> methodId() {
-        return getPropertyNode(AuditUpdateMethodEventType.METHOD_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getMethodIdNode() {
+        return getPropertyNode(AuditUpdateMethodEventType.METHOD_ID);
     }
 
-    @Override
     public CompletableFuture<NodeId> getMethodId() {
         return getProperty(AuditUpdateMethodEventType.METHOD_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setMethodId(NodeId value) {
         return setProperty(AuditUpdateMethodEventType.METHOD_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> inputArguments() {
-        return getPropertyNode(AuditUpdateMethodEventType.INPUT_ARGUMENTS.getBrowseName());
+    public CompletableFuture<PropertyNode> getInputArgumentsNode() {
+        return getPropertyNode(AuditUpdateMethodEventType.INPUT_ARGUMENTS);
     }
 
-    @Override
     public CompletableFuture<Object[]> getInputArguments() {
         return getProperty(AuditUpdateMethodEventType.INPUT_ARGUMENTS);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setInputArguments(Object[] value) {
         return setProperty(AuditUpdateMethodEventType.INPUT_ARGUMENTS, value);
     }
-
-
 }

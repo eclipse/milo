@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditSessionEventTy
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditSessionEventNode extends AuditSecurityEventNode implements AuditSessionEventType {
-
     public AuditSessionEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> sessionId() {
-        return getPropertyNode(AuditSessionEventType.SESSION_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getSessionIdNode() {
+        return getPropertyNode(AuditSessionEventType.SESSION_ID);
     }
 
-    @Override
     public CompletableFuture<NodeId> getSessionId() {
         return getProperty(AuditSessionEventType.SESSION_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSessionId(NodeId value) {
         return setProperty(AuditSessionEventType.SESSION_ID, value);
     }
-
-
 }

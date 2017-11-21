@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,36 +24,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class ExclusiveLimitAlarmNode extends LimitAlarmNode implements ExclusiveLimitAlarmType {
-
     public ExclusiveLimitAlarmNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<TwoStateVariableNode> activeState() {
-        return getVariableComponent(QualifiedName.parse("0:ActiveState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getActiveStateNode() {
+        return getVariableComponent(QualifiedName.parse("0:ActiveState")).thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getActiveState() {
-        return activeState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getActiveStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setActiveState(LocalizedText value) {
-        return activeState()
-            .thenCompose(node -> node.setValue(value));
+        return getActiveStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<ExclusiveLimitStateMachineNode> limitState() {
-        return getObjectComponent(QualifiedName.parse("0:LimitState"))
-            .thenApply(ExclusiveLimitStateMachineNode.class::cast);
+    public CompletableFuture<ExclusiveLimitStateMachineNode> getLimitStateNode() {
+        return getObjectComponent(QualifiedName.parse("0:LimitState")).thenApply(ExclusiveLimitStateMachineNode.class::cast);
     }
-
 }

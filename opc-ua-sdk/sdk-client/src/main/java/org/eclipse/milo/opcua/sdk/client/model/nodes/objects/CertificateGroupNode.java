@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,33 +22,24 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class CertificateGroupNode extends BaseObjectNode implements CertificateGroupType {
-
     public CertificateGroupNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> certificateTypes() {
-        return getPropertyNode(CertificateGroupType.CERTIFICATE_TYPES.getBrowseName());
+    public CompletableFuture<PropertyNode> getCertificateTypesNode() {
+        return getPropertyNode(CertificateGroupType.CERTIFICATE_TYPES);
     }
 
-    @Override
     public CompletableFuture<NodeId[]> getCertificateTypes() {
         return getProperty(CertificateGroupType.CERTIFICATE_TYPES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCertificateTypes(NodeId[] value) {
         return setProperty(CertificateGroupType.CERTIFICATE_TYPES, value);
     }
 
-
-    @Override
-    public CompletableFuture<TrustListNode> trustList() {
-        return getObjectComponent(QualifiedName.parse("0:TrustList"))
-            .thenApply(TrustListNode.class::cast);
+    public CompletableFuture<TrustListNode> getTrustListNode() {
+        return getObjectComponent(QualifiedName.parse("0:TrustList")).thenApply(TrustListNode.class::cast);
     }
-
 }

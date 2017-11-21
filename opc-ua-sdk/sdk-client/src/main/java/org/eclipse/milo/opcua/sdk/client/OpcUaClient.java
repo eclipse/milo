@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -124,6 +125,9 @@ public class OpcUaClient implements UaClient {
     private final List<ServiceFaultListener> faultListeners = newCopyOnWriteArrayList();
     private final ExecutionQueue faultNotificationQueue;
 
+    // TODO read and update this every time we connect.
+    private final NamespaceTable namespaceTable = new NamespaceTable();
+
     private final AddressSpace addressSpace;
     private final NodeCache nodeCache = new DefaultNodeCache();
     private final TypeRegistry typeRegistry = new TypeRegistry();
@@ -171,6 +175,10 @@ public class OpcUaClient implements UaClient {
 
     TypeRegistry getTypeRegistry() {
         return typeRegistry;
+    }
+
+    public NamespaceTable getNamespaceTable() {
+        return namespaceTable;
     }
 
     /**

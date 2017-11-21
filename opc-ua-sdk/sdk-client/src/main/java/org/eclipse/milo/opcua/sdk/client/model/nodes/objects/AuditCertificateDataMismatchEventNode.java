@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,42 +21,32 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditCertificateDat
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditCertificateDataMismatchEventNode extends AuditCertificateEventNode implements AuditCertificateDataMismatchEventType {
-
     public AuditCertificateDataMismatchEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> invalidHostname() {
-        return getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME.getBrowseName());
+    public CompletableFuture<PropertyNode> getInvalidHostnameNode() {
+        return getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME);
     }
 
-    @Override
     public CompletableFuture<String> getInvalidHostname() {
         return getProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setInvalidHostname(String value) {
         return setProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> invalidUri() {
-        return getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_URI.getBrowseName());
+    public CompletableFuture<PropertyNode> getInvalidUriNode() {
+        return getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_URI);
     }
 
-    @Override
     public CompletableFuture<String> getInvalidUri() {
         return getProperty(AuditCertificateDataMismatchEventType.INVALID_URI);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setInvalidUri(String value) {
         return setProperty(AuditCertificateDataMismatchEventType.INVALID_URI, value);
     }
-
-
 }

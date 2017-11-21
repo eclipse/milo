@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,175 +27,128 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-
 public class ConditionNode extends BaseEventNode implements ConditionType {
-
     public ConditionNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> conditionClassId() {
-        return getPropertyNode(ConditionType.CONDITION_CLASS_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getConditionClassIdNode() {
+        return getPropertyNode(ConditionType.CONDITION_CLASS_ID);
     }
 
-    @Override
     public CompletableFuture<NodeId> getConditionClassId() {
         return getProperty(ConditionType.CONDITION_CLASS_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setConditionClassId(NodeId value) {
         return setProperty(ConditionType.CONDITION_CLASS_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> conditionClassName() {
-        return getPropertyNode(ConditionType.CONDITION_CLASS_NAME.getBrowseName());
+    public CompletableFuture<PropertyNode> getConditionClassNameNode() {
+        return getPropertyNode(ConditionType.CONDITION_CLASS_NAME);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getConditionClassName() {
         return getProperty(ConditionType.CONDITION_CLASS_NAME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setConditionClassName(LocalizedText value) {
         return setProperty(ConditionType.CONDITION_CLASS_NAME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> conditionName() {
-        return getPropertyNode(ConditionType.CONDITION_NAME.getBrowseName());
+    public CompletableFuture<PropertyNode> getConditionNameNode() {
+        return getPropertyNode(ConditionType.CONDITION_NAME);
     }
 
-    @Override
     public CompletableFuture<String> getConditionName() {
         return getProperty(ConditionType.CONDITION_NAME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setConditionName(String value) {
         return setProperty(ConditionType.CONDITION_NAME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> branchId() {
-        return getPropertyNode(ConditionType.BRANCH_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getBranchIdNode() {
+        return getPropertyNode(ConditionType.BRANCH_ID);
     }
 
-    @Override
     public CompletableFuture<NodeId> getBranchId() {
         return getProperty(ConditionType.BRANCH_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setBranchId(NodeId value) {
         return setProperty(ConditionType.BRANCH_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> retain() {
-        return getPropertyNode(ConditionType.RETAIN.getBrowseName());
+    public CompletableFuture<PropertyNode> getRetainNode() {
+        return getPropertyNode(ConditionType.RETAIN);
     }
 
-    @Override
     public CompletableFuture<Boolean> getRetain() {
         return getProperty(ConditionType.RETAIN);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRetain(Boolean value) {
         return setProperty(ConditionType.RETAIN, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> clientUserId() {
-        return getPropertyNode(ConditionType.CLIENT_USER_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getClientUserIdNode() {
+        return getPropertyNode(ConditionType.CLIENT_USER_ID);
     }
 
-    @Override
     public CompletableFuture<String> getClientUserId() {
         return getProperty(ConditionType.CLIENT_USER_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientUserId(String value) {
         return setProperty(ConditionType.CLIENT_USER_ID, value);
     }
 
-
-    @Override
-    public CompletableFuture<TwoStateVariableNode> enabledState() {
-        return getVariableComponent(QualifiedName.parse("0:EnabledState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getEnabledStateNode() {
+        return getVariableComponent(QualifiedName.parse("0:EnabledState")).thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getEnabledState() {
-        return enabledState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getEnabledStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEnabledState(LocalizedText value) {
-        return enabledState()
-            .thenCompose(node -> node.setValue(value));
+        return getEnabledStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<ConditionVariableNode> quality() {
-        return getVariableComponent(QualifiedName.parse("0:Quality"))
-            .thenApply(ConditionVariableNode.class::cast);
+    public CompletableFuture<ConditionVariableNode> getQualityNode() {
+        return getVariableComponent(QualifiedName.parse("0:Quality")).thenApply(ConditionVariableNode.class::cast);
     }
 
     public CompletableFuture<StatusCode> getQuality() {
-        return quality()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, StatusCode.class));
+        return getQualityNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, StatusCode.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setQuality(StatusCode value) {
-        return quality()
-            .thenCompose(node -> node.setValue(value));
+        return getQualityNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<ConditionVariableNode> lastSeverity() {
-        return getVariableComponent(QualifiedName.parse("0:LastSeverity"))
-            .thenApply(ConditionVariableNode.class::cast);
+    public CompletableFuture<ConditionVariableNode> getLastSeverityNode() {
+        return getVariableComponent(QualifiedName.parse("0:LastSeverity")).thenApply(ConditionVariableNode.class::cast);
     }
 
     public CompletableFuture<UShort> getLastSeverity() {
-        return lastSeverity()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UShort.class));
+        return getLastSeverityNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UShort.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setLastSeverity(UShort value) {
-        return lastSeverity()
-            .thenCompose(node -> node.setValue(value));
+        return getLastSeverityNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<ConditionVariableNode> comment() {
-        return getVariableComponent(QualifiedName.parse("0:Comment"))
-            .thenApply(ConditionVariableNode.class::cast);
+    public CompletableFuture<ConditionVariableNode> getCommentNode() {
+        return getVariableComponent(QualifiedName.parse("0:Comment")).thenApply(ConditionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getComment() {
-        return comment()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getCommentNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setComment(LocalizedText value) {
-        return comment()
-            .thenCompose(node -> node.setValue(value));
+        return getCommentNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }

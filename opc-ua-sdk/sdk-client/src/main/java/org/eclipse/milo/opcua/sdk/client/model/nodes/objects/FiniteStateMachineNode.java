@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,49 +25,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class FiniteStateMachineNode extends StateMachineNode implements FiniteStateMachineType {
-
     public FiniteStateMachineNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<FiniteStateVariableNode> currentState() {
-        return getVariableComponent(QualifiedName.parse("0:CurrentState"))
-            .thenApply(FiniteStateVariableNode.class::cast);
+    public CompletableFuture<FiniteStateVariableNode> getCurrentStateNode() {
+        return getVariableComponent(QualifiedName.parse("0:CurrentState")).thenApply(FiniteStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getCurrentState() {
-        return currentState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getCurrentStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentState(LocalizedText value) {
-        return currentState()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<FiniteTransitionVariableNode> lastTransition() {
-        return getVariableComponent(QualifiedName.parse("0:LastTransition"))
-            .thenApply(FiniteTransitionVariableNode.class::cast);
+    public CompletableFuture<FiniteTransitionVariableNode> getLastTransitionNode() {
+        return getVariableComponent(QualifiedName.parse("0:LastTransition")).thenApply(FiniteTransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLastTransition() {
-        return lastTransition()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getLastTransitionNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setLastTransition(LocalizedText value) {
-        return lastTransition()
-            .thenCompose(node -> node.setValue(value));
+        return getLastTransitionNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }

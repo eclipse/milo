@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,87 +29,60 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagno
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
-
 public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagnosticsType {
-
     public ServerDiagnosticsNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> enabledFlag() {
-        return getPropertyNode(ServerDiagnosticsType.ENABLED_FLAG.getBrowseName());
+    public CompletableFuture<PropertyNode> getEnabledFlagNode() {
+        return getPropertyNode(ServerDiagnosticsType.ENABLED_FLAG);
     }
 
-    @Override
     public CompletableFuture<Boolean> getEnabledFlag() {
         return getProperty(ServerDiagnosticsType.ENABLED_FLAG);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEnabledFlag(Boolean value) {
         return setProperty(ServerDiagnosticsType.ENABLED_FLAG, value);
     }
 
-
-    @Override
-    public CompletableFuture<ServerDiagnosticsSummaryNode> serverDiagnosticsSummary() {
-        return getVariableComponent(QualifiedName.parse("0:ServerDiagnosticsSummary"))
-            .thenApply(ServerDiagnosticsSummaryNode.class::cast);
+    public CompletableFuture<ServerDiagnosticsSummaryNode> getServerDiagnosticsSummaryNode() {
+        return getVariableComponent(QualifiedName.parse("0:ServerDiagnosticsSummary")).thenApply(ServerDiagnosticsSummaryNode.class::cast);
     }
 
     public CompletableFuture<ServerDiagnosticsSummaryDataType> getServerDiagnosticsSummary() {
-        return serverDiagnosticsSummary()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServerDiagnosticsSummaryDataType.class));
+        return getServerDiagnosticsSummaryNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServerDiagnosticsSummaryDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType value) {
-        return serverDiagnosticsSummary()
-            .thenCompose(node -> node.setValue(value));
+        return getServerDiagnosticsSummaryNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<SamplingIntervalDiagnosticsArrayNode> samplingIntervalDiagnosticsArray() {
-        return getVariableComponent(QualifiedName.parse("0:SamplingIntervalDiagnosticsArray"))
-            .thenApply(SamplingIntervalDiagnosticsArrayNode.class::cast);
+    public CompletableFuture<SamplingIntervalDiagnosticsArrayNode> getSamplingIntervalDiagnosticsArrayNode() {
+        return getVariableComponent(QualifiedName.parse("0:SamplingIntervalDiagnosticsArray")).thenApply(SamplingIntervalDiagnosticsArrayNode.class::cast);
     }
 
     public CompletableFuture<SamplingIntervalDiagnosticsDataType[]> getSamplingIntervalDiagnosticsArray() {
-        return samplingIntervalDiagnosticsArray()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, SamplingIntervalDiagnosticsDataType[].class));
+        return getSamplingIntervalDiagnosticsArrayNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, SamplingIntervalDiagnosticsDataType[].class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSamplingIntervalDiagnosticsArray(SamplingIntervalDiagnosticsDataType[] value) {
-        return samplingIntervalDiagnosticsArray()
-            .thenCompose(node -> node.setValue(value));
+        return getSamplingIntervalDiagnosticsArrayNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<SubscriptionDiagnosticsArrayNode> subscriptionDiagnosticsArray() {
-        return getVariableComponent(QualifiedName.parse("0:SubscriptionDiagnosticsArray"))
-            .thenApply(SubscriptionDiagnosticsArrayNode.class::cast);
+    public CompletableFuture<SubscriptionDiagnosticsArrayNode> getSubscriptionDiagnosticsArrayNode() {
+        return getVariableComponent(QualifiedName.parse("0:SubscriptionDiagnosticsArray")).thenApply(SubscriptionDiagnosticsArrayNode.class::cast);
     }
 
     public CompletableFuture<SubscriptionDiagnosticsDataType[]> getSubscriptionDiagnosticsArray() {
-        return subscriptionDiagnosticsArray()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, SubscriptionDiagnosticsDataType[].class));
+        return getSubscriptionDiagnosticsArrayNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, SubscriptionDiagnosticsDataType[].class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) {
-        return subscriptionDiagnosticsArray()
-            .thenCompose(node -> node.setValue(value));
+        return getSubscriptionDiagnosticsArrayNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<SessionsDiagnosticsSummaryNode> sessionsDiagnosticsSummary() {
-        return getObjectComponent(QualifiedName.parse("0:SessionsDiagnosticsSummary"))
-            .thenApply(SessionsDiagnosticsSummaryNode.class::cast);
+    public CompletableFuture<SessionsDiagnosticsSummaryNode> getSessionsDiagnosticsSummaryNode() {
+        return getObjectComponent(QualifiedName.parse("0:SessionsDiagnosticsSummary")).thenApply(SessionsDiagnosticsSummaryNode.class::cast);
     }
-
 }

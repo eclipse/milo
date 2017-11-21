@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,154 +19,156 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteStateVariab
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteTransitionVariableType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.ProgramDiagnosticType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
 
-
 public interface ProgramStateMachineType extends FiniteStateMachineType {
-
-    Property<Boolean> CREATABLE = new BasicProperty<>(
-        QualifiedName.parse("0:Creatable"),
+    QualifiedProperty<Boolean> CREATABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Creatable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> DELETABLE = new BasicProperty<>(
-        QualifiedName.parse("0:Deletable"),
+    QualifiedProperty<Boolean> DELETABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Deletable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> AUTO_DELETE = new BasicProperty<>(
-        QualifiedName.parse("0:AutoDelete"),
+    QualifiedProperty<Boolean> AUTO_DELETE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "AutoDelete",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Integer> RECYCLE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:RecycleCount"),
+    QualifiedProperty<Integer> RECYCLE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "RecycleCount",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<UInteger> INSTANCE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:InstanceCount"),
+    QualifiedProperty<UInteger> INSTANCE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InstanceCount",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-    Property<UInteger> MAX_INSTANCE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:MaxInstanceCount"),
+    QualifiedProperty<UInteger> MAX_INSTANCE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxInstanceCount",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-    Property<UInteger> MAX_RECYCLE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:MaxRecycleCount"),
+    QualifiedProperty<UInteger> MAX_RECYCLE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxRecycleCount",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-
-    CompletableFuture<? extends PropertyType> creatable();
+    CompletableFuture<? extends PropertyType> getCreatableNode();
 
     CompletableFuture<Boolean> getCreatable();
 
     CompletableFuture<StatusCode> setCreatable(Boolean value);
 
-    CompletableFuture<? extends PropertyType> deletable();
+    CompletableFuture<? extends PropertyType> getDeletableNode();
 
     CompletableFuture<Boolean> getDeletable();
 
     CompletableFuture<StatusCode> setDeletable(Boolean value);
 
-    CompletableFuture<? extends PropertyType> autoDelete();
+    CompletableFuture<? extends PropertyType> getAutoDeleteNode();
 
     CompletableFuture<Boolean> getAutoDelete();
 
     CompletableFuture<StatusCode> setAutoDelete(Boolean value);
 
-    CompletableFuture<? extends PropertyType> recycleCount();
+    CompletableFuture<? extends PropertyType> getRecycleCountNode();
 
     CompletableFuture<Integer> getRecycleCount();
 
     CompletableFuture<StatusCode> setRecycleCount(Integer value);
 
-    CompletableFuture<? extends PropertyType> instanceCount();
+    CompletableFuture<? extends PropertyType> getInstanceCountNode();
 
     CompletableFuture<UInteger> getInstanceCount();
 
     CompletableFuture<StatusCode> setInstanceCount(UInteger value);
 
-    CompletableFuture<? extends PropertyType> maxInstanceCount();
+    CompletableFuture<? extends PropertyType> getMaxInstanceCountNode();
 
     CompletableFuture<UInteger> getMaxInstanceCount();
 
     CompletableFuture<StatusCode> setMaxInstanceCount(UInteger value);
 
-    CompletableFuture<? extends PropertyType> maxRecycleCount();
+    CompletableFuture<? extends PropertyType> getMaxRecycleCountNode();
 
     CompletableFuture<UInteger> getMaxRecycleCount();
 
     CompletableFuture<StatusCode> setMaxRecycleCount(UInteger value);
 
-    CompletableFuture<? extends BaseObjectType> finalResultData();
-
-    CompletableFuture<? extends StateType> ready();
-
-    CompletableFuture<? extends StateType> running();
-
-    CompletableFuture<? extends StateType> suspended();
-
-    CompletableFuture<? extends StateType> halted();
-
-    CompletableFuture<? extends TransitionType> haltedToReady();
-
-    CompletableFuture<? extends TransitionType> readyToRunning();
-
-    CompletableFuture<? extends TransitionType> runningToHalted();
-
-    CompletableFuture<? extends TransitionType> runningToReady();
-
-    CompletableFuture<? extends TransitionType> runningToSuspended();
-
-    CompletableFuture<? extends TransitionType> suspendedToRunning();
-
-    CompletableFuture<? extends TransitionType> suspendedToHalted();
-
-    CompletableFuture<? extends TransitionType> suspendedToReady();
-
-    CompletableFuture<? extends TransitionType> readyToHalted();
-
-    CompletableFuture<? extends FiniteStateVariableType> currentState();
+    CompletableFuture<? extends FiniteStateVariableType> getCurrentStateNode();
 
     CompletableFuture<LocalizedText> getCurrentState();
 
     CompletableFuture<StatusCode> setCurrentState(LocalizedText value);
 
-    CompletableFuture<? extends FiniteTransitionVariableType> lastTransition();
+    CompletableFuture<? extends FiniteTransitionVariableType> getLastTransitionNode();
 
     CompletableFuture<LocalizedText> getLastTransition();
 
     CompletableFuture<StatusCode> setLastTransition(LocalizedText value);
 
-    CompletableFuture<? extends ProgramDiagnosticType> programDiagnostics();
+    CompletableFuture<? extends ProgramDiagnosticType> getProgramDiagnosticsNode();
 
     CompletableFuture<ProgramDiagnosticDataType> getProgramDiagnostics();
 
     CompletableFuture<StatusCode> setProgramDiagnostics(ProgramDiagnosticDataType value);
 
+    CompletableFuture<? extends BaseObjectType> getFinalResultDataNode();
+
+    CompletableFuture<? extends StateType> getReadyNode();
+
+    CompletableFuture<? extends StateType> getRunningNode();
+
+    CompletableFuture<? extends StateType> getSuspendedNode();
+
+    CompletableFuture<? extends StateType> getHaltedNode();
+
+    CompletableFuture<? extends TransitionType> getHaltedToReadyNode();
+
+    CompletableFuture<? extends TransitionType> getReadyToRunningNode();
+
+    CompletableFuture<? extends TransitionType> getRunningToHaltedNode();
+
+    CompletableFuture<? extends TransitionType> getRunningToReadyNode();
+
+    CompletableFuture<? extends TransitionType> getRunningToSuspendedNode();
+
+    CompletableFuture<? extends TransitionType> getSuspendedToRunningNode();
+
+    CompletableFuture<? extends TransitionType> getSuspendedToHaltedNode();
+
+    CompletableFuture<? extends TransitionType> getSuspendedToReadyNode();
+
+    CompletableFuture<? extends TransitionType> getReadyToHaltedNode();
 }

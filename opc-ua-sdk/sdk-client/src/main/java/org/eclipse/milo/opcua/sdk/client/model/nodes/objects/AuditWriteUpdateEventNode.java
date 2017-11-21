@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,72 +22,56 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public class AuditWriteUpdateEventNode extends AuditUpdateEventNode implements AuditWriteUpdateEventType {
-
     public AuditWriteUpdateEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> attributeId() {
-        return getPropertyNode(AuditWriteUpdateEventType.ATTRIBUTE_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getAttributeIdNode() {
+        return getPropertyNode(AuditWriteUpdateEventType.ATTRIBUTE_ID);
     }
 
-    @Override
     public CompletableFuture<UInteger> getAttributeId() {
         return getProperty(AuditWriteUpdateEventType.ATTRIBUTE_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setAttributeId(UInteger value) {
         return setProperty(AuditWriteUpdateEventType.ATTRIBUTE_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> indexRange() {
-        return getPropertyNode(AuditWriteUpdateEventType.INDEX_RANGE.getBrowseName());
+    public CompletableFuture<PropertyNode> getIndexRangeNode() {
+        return getPropertyNode(AuditWriteUpdateEventType.INDEX_RANGE);
     }
 
-    @Override
     public CompletableFuture<String> getIndexRange() {
         return getProperty(AuditWriteUpdateEventType.INDEX_RANGE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setIndexRange(String value) {
         return setProperty(AuditWriteUpdateEventType.INDEX_RANGE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> oldValue() {
-        return getPropertyNode(AuditWriteUpdateEventType.OLD_VALUE.getBrowseName());
+    public CompletableFuture<PropertyNode> getOldValueNode() {
+        return getPropertyNode(AuditWriteUpdateEventType.OLD_VALUE);
     }
 
-    @Override
-    public CompletableFuture<? extends Object> getOldValue() {
+    public CompletableFuture<?> getOldValue() {
         return getProperty(AuditWriteUpdateEventType.OLD_VALUE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOldValue(Object value) {
         return setProperty(AuditWriteUpdateEventType.OLD_VALUE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> newValue() {
-        return getPropertyNode(AuditWriteUpdateEventType.NEW_VALUE.getBrowseName());
+    public CompletableFuture<PropertyNode> getNewValueNode() {
+        return getPropertyNode(AuditWriteUpdateEventType.NEW_VALUE);
     }
 
-    @Override
-    public CompletableFuture<? extends Object> getNewValue() {
+    public CompletableFuture<?> getNewValue() {
         return getProperty(AuditWriteUpdateEventType.NEW_VALUE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setNewValue(Object value) {
         return setProperty(AuditWriteUpdateEventType.NEW_VALUE, value);
     }
-
-
 }

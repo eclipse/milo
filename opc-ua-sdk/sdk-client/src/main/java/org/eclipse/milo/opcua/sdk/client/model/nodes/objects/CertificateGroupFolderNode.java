@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,30 +20,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.CertificateGroupFol
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
-
 public class CertificateGroupFolderNode extends FolderNode implements CertificateGroupFolderType {
-
     public CertificateGroupFolderNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<CertificateGroupNode> defaultApplicationGroup() {
-        return getObjectComponent(QualifiedName.parse("0:DefaultApplicationGroup"))
-            .thenApply(CertificateGroupNode.class::cast);
+    public CompletableFuture<CertificateGroupNode> getDefaultApplicationGroupNode() {
+        return getObjectComponent(QualifiedName.parse("0:DefaultApplicationGroup")).thenApply(CertificateGroupNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<CertificateGroupNode> defaultHttpsGroup() {
-        return getObjectComponent(QualifiedName.parse("0:DefaultHttpsGroup"))
-            .thenApply(CertificateGroupNode.class::cast);
+    public CompletableFuture<CertificateGroupNode> getDefaultHttpsGroupNode() {
+        return getObjectComponent(QualifiedName.parse("0:DefaultHttpsGroup")).thenApply(CertificateGroupNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<CertificateGroupNode> defaultUserTokenGroup() {
-        return getObjectComponent(QualifiedName.parse("0:DefaultUserTokenGroup"))
-            .thenApply(CertificateGroupNode.class::cast);
+    public CompletableFuture<CertificateGroupNode> getDefaultUserTokenGroupNode() {
+        return getObjectComponent(QualifiedName.parse("0:DefaultUserTokenGroup")).thenApply(CertificateGroupNode.class::cast);
     }
-
 }

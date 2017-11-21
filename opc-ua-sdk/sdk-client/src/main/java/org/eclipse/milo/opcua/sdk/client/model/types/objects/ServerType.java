@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,98 +17,98 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.ServerStatusType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 
-
 public interface ServerType extends BaseObjectType {
-
-    Property<String[]> SERVER_ARRAY = new BasicProperty<>(
-        QualifiedName.parse("0:ServerArray"),
+    QualifiedProperty<String[]> SERVER_ARRAY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ServerArray",
         NodeId.parse("ns=0;i=12"),
-        1,
+        ValueRanks.OneDimension,
         String[].class
     );
 
-    Property<String[]> NAMESPACE_ARRAY = new BasicProperty<>(
-        QualifiedName.parse("0:NamespaceArray"),
+    QualifiedProperty<String[]> NAMESPACE_ARRAY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NamespaceArray",
         NodeId.parse("ns=0;i=12"),
-        1,
+        ValueRanks.OneDimension,
         String[].class
     );
 
-    Property<UByte> SERVICE_LEVEL = new BasicProperty<>(
-        QualifiedName.parse("0:ServiceLevel"),
+    QualifiedProperty<UByte> SERVICE_LEVEL = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ServiceLevel",
         NodeId.parse("ns=0;i=3"),
-        -1,
+        ValueRanks.Scalar,
         UByte.class
     );
 
-    Property<Boolean> AUDITING = new BasicProperty<>(
-        QualifiedName.parse("0:Auditing"),
+    QualifiedProperty<Boolean> AUDITING = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Auditing",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<DateTime> ESTIMATED_RETURN_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:EstimatedReturnTime"),
+    QualifiedProperty<DateTime> ESTIMATED_RETURN_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EstimatedReturnTime",
         NodeId.parse("ns=0;i=13"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-
-    CompletableFuture<? extends PropertyType> serverArray();
+    CompletableFuture<? extends PropertyType> getServerArrayNode();
 
     CompletableFuture<String[]> getServerArray();
 
     CompletableFuture<StatusCode> setServerArray(String[] value);
 
-    CompletableFuture<? extends PropertyType> namespaceArray();
+    CompletableFuture<? extends PropertyType> getNamespaceArrayNode();
 
     CompletableFuture<String[]> getNamespaceArray();
 
     CompletableFuture<StatusCode> setNamespaceArray(String[] value);
 
-    CompletableFuture<? extends PropertyType> serviceLevel();
+    CompletableFuture<? extends PropertyType> getServiceLevelNode();
 
     CompletableFuture<UByte> getServiceLevel();
 
     CompletableFuture<StatusCode> setServiceLevel(UByte value);
 
-    CompletableFuture<? extends PropertyType> auditing();
+    CompletableFuture<? extends PropertyType> getAuditingNode();
 
     CompletableFuture<Boolean> getAuditing();
 
     CompletableFuture<StatusCode> setAuditing(Boolean value);
 
-    CompletableFuture<? extends PropertyType> estimatedReturnTime();
+    CompletableFuture<? extends PropertyType> getEstimatedReturnTimeNode();
 
     CompletableFuture<DateTime> getEstimatedReturnTime();
 
     CompletableFuture<StatusCode> setEstimatedReturnTime(DateTime value);
 
-    CompletableFuture<? extends ServerCapabilitiesType> serverCapabilities();
-
-    CompletableFuture<? extends ServerDiagnosticsType> serverDiagnostics();
-
-    CompletableFuture<? extends VendorServerInfoType> vendorServerInfo();
-
-    CompletableFuture<? extends ServerRedundancyType> serverRedundancy();
-
-    CompletableFuture<? extends NamespacesType> namespaces();
-
-    CompletableFuture<? extends ServerStatusType> serverStatus();
+    CompletableFuture<? extends ServerStatusType> getServerStatusNode();
 
     CompletableFuture<ServerStatusDataType> getServerStatus();
 
     CompletableFuture<StatusCode> setServerStatus(ServerStatusDataType value);
 
+    CompletableFuture<? extends ServerCapabilitiesType> getServerCapabilitiesNode();
+
+    CompletableFuture<? extends ServerDiagnosticsType> getServerDiagnosticsNode();
+
+    CompletableFuture<? extends VendorServerInfoType> getVendorServerInfoNode();
+
+    CompletableFuture<? extends ServerRedundancyType> getServerRedundancyNode();
+
+    CompletableFuture<? extends NamespacesType> getNamespacesNode();
 }

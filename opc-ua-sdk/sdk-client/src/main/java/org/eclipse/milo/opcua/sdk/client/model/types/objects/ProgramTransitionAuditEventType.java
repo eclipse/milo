@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,14 +19,10 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteTransitionV
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface ProgramTransitionAuditEventType extends AuditUpdateStateEventType {
-
-
-    CompletableFuture<? extends FiniteTransitionVariableType> transition();
+    CompletableFuture<? extends FiniteTransitionVariableType> getTransitionNode();
 
     CompletableFuture<LocalizedText> getTransition();
 
     CompletableFuture<StatusCode> setTransition(LocalizedText value);
-
 }

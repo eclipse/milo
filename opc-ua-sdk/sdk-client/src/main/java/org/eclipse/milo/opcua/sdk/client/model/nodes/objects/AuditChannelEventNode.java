@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditChannelEventTy
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditChannelEventNode extends AuditSecurityEventNode implements AuditChannelEventType {
-
     public AuditChannelEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> secureChannelId() {
-        return getPropertyNode(AuditChannelEventType.SECURE_CHANNEL_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getSecureChannelIdNode() {
+        return getPropertyNode(AuditChannelEventType.SECURE_CHANNEL_ID);
     }
 
-    @Override
     public CompletableFuture<String> getSecureChannelId() {
         return getProperty(AuditChannelEventType.SECURE_CHANNEL_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecureChannelId(String value) {
         return setProperty(AuditChannelEventType.SECURE_CHANNEL_ID, value);
     }
-
-
 }

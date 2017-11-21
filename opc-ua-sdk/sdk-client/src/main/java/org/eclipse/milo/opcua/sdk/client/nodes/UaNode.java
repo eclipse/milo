@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -70,6 +71,12 @@ public abstract class UaNode implements Node {
         nodeCache = client.getNodeCache();
     }
 
+    protected CompletableFuture<PropertyNode> getPropertyNode(QualifiedProperty<?> property) {
+        return property.getQualifiedName(client.getNamespaceTable())
+            .map(this::getPropertyNode)
+            .orElse(failedUaFuture(StatusCodes.Bad_NotFound));
+    }
+
     protected CompletableFuture<PropertyNode> getPropertyNode(QualifiedName browseName) {
         UInteger nodeClassMask = uint(NodeClass.Variable.getValue());
         UInteger resultMask = uint(BrowseResultMask.BrowseName.getValue());
@@ -104,20 +111,31 @@ public abstract class UaNode implements Node {
         });
     }
 
+    protected <T> CompletableFuture<T> getProperty(QualifiedProperty<T> property) {
+        return getPropertyNode(property)
+            .thenCompose(VariableNode::getValue)
+            .thenApply(value -> property.getJavaType().cast(value));
+    }
+
     protected <T> CompletableFuture<T> getProperty(Property<T> property) {
         return getPropertyNode(property.getBrowseName())
             .thenCompose(VariableNode::getValue)
             .thenApply(value -> property.getJavaType().cast(value));
     }
 
-    protected CompletableFuture<DataValue> readProperty(Property<?> property) {
-        return getPropertyNode(property.getBrowseName())
-            .thenCompose(VariableNode::readValue);
+    protected <T> CompletableFuture<StatusCode> setProperty(QualifiedProperty<T> property, T value) {
+        return getPropertyNode(property)
+            .thenCompose(node -> node.setValue(value));
     }
 
     protected <T> CompletableFuture<StatusCode> setProperty(Property<T> property, T value) {
         return getPropertyNode(property.getBrowseName())
             .thenCompose(node -> node.setValue(value));
+    }
+
+    protected CompletableFuture<DataValue> readProperty(Property<?> property) {
+        return getPropertyNode(property.getBrowseName())
+            .thenCompose(VariableNode::readValue);
     }
 
     protected CompletableFuture<StatusCode> writeProperty(Property<?> property, DataValue value) {
@@ -354,6 +372,7 @@ public abstract class UaNode implements Node {
                 return null;
             }
         } else if (UaStructure.class.isAssignableFrom(clazz) && o instanceof ExtensionObject) {
+            // TODO decode() should get the DataTypeManager passed to it.
             Object decoded = ((ExtensionObject) o).decode();
             return clazz.cast(decoded);
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,29 +16,24 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public interface AuditProgramTransitionEventType extends AuditUpdateStateEventType {
-
-    Property<UInteger> TRANSITION_NUMBER = new BasicProperty<>(
-        QualifiedName.parse("0:TransitionNumber"),
+    QualifiedProperty<UInteger> TRANSITION_NUMBER = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "TransitionNumber",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-
-    CompletableFuture<? extends PropertyType> transitionNumber();
+    CompletableFuture<? extends PropertyType> getTransitionNumberNode();
 
     CompletableFuture<UInteger> getTransitionNumber();
 
     CompletableFuture<StatusCode> setTransitionNumber(UInteger value);
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,228 +23,152 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public class ServerDiagnosticsSummaryNode extends BaseDataVariableNode implements ServerDiagnosticsSummaryType {
-
     public ServerDiagnosticsSummaryNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<BaseDataVariableNode> serverViewCount() {
-        return getComponent(QualifiedName.parse("0:ServerViewCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getServerViewCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:ServerViewCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getServerViewCount() {
-        return serverViewCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getServerViewCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setServerViewCount(UInteger value) {
-        return serverViewCount()
-            .thenCompose(node -> node.setValue(value));
+        return getServerViewCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> currentSessionCount() {
-        return getComponent(QualifiedName.parse("0:CurrentSessionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCurrentSessionCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:CurrentSessionCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCurrentSessionCount() {
-        return currentSessionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getCurrentSessionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentSessionCount(UInteger value) {
-        return currentSessionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentSessionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> cumulatedSessionCount() {
-        return getComponent(QualifiedName.parse("0:CumulatedSessionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCumulatedSessionCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:CumulatedSessionCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCumulatedSessionCount() {
-        return cumulatedSessionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getCumulatedSessionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCumulatedSessionCount(UInteger value) {
-        return cumulatedSessionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCumulatedSessionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> securityRejectedSessionCount() {
-        return getComponent(QualifiedName.parse("0:SecurityRejectedSessionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSecurityRejectedSessionCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:SecurityRejectedSessionCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSecurityRejectedSessionCount() {
-        return securityRejectedSessionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getSecurityRejectedSessionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecurityRejectedSessionCount(UInteger value) {
-        return securityRejectedSessionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getSecurityRejectedSessionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> rejectedSessionCount() {
-        return getComponent(QualifiedName.parse("0:RejectedSessionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getRejectedSessionCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:RejectedSessionCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getRejectedSessionCount() {
-        return rejectedSessionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getRejectedSessionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRejectedSessionCount(UInteger value) {
-        return rejectedSessionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getRejectedSessionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> sessionTimeoutCount() {
-        return getComponent(QualifiedName.parse("0:SessionTimeoutCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSessionTimeoutCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:SessionTimeoutCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSessionTimeoutCount() {
-        return sessionTimeoutCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getSessionTimeoutCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSessionTimeoutCount(UInteger value) {
-        return sessionTimeoutCount()
-            .thenCompose(node -> node.setValue(value));
+        return getSessionTimeoutCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> sessionAbortCount() {
-        return getComponent(QualifiedName.parse("0:SessionAbortCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSessionAbortCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:SessionAbortCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSessionAbortCount() {
-        return sessionAbortCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getSessionAbortCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSessionAbortCount(UInteger value) {
-        return sessionAbortCount()
-            .thenCompose(node -> node.setValue(value));
+        return getSessionAbortCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> publishingIntervalCount() {
-        return getComponent(QualifiedName.parse("0:PublishingIntervalCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getPublishingIntervalCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:PublishingIntervalCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getPublishingIntervalCount() {
-        return publishingIntervalCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getPublishingIntervalCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setPublishingIntervalCount(UInteger value) {
-        return publishingIntervalCount()
-            .thenCompose(node -> node.setValue(value));
+        return getPublishingIntervalCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> currentSubscriptionCount() {
-        return getComponent(QualifiedName.parse("0:CurrentSubscriptionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCurrentSubscriptionCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:CurrentSubscriptionCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCurrentSubscriptionCount() {
-        return currentSubscriptionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getCurrentSubscriptionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentSubscriptionCount(UInteger value) {
-        return currentSubscriptionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentSubscriptionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> cumulatedSubscriptionCount() {
-        return getComponent(QualifiedName.parse("0:CumulatedSubscriptionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCumulatedSubscriptionCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:CumulatedSubscriptionCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCumulatedSubscriptionCount() {
-        return cumulatedSubscriptionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getCumulatedSubscriptionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCumulatedSubscriptionCount(UInteger value) {
-        return cumulatedSubscriptionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCumulatedSubscriptionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> securityRejectedRequestsCount() {
-        return getComponent(QualifiedName.parse("0:SecurityRejectedRequestsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSecurityRejectedRequestsCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:SecurityRejectedRequestsCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSecurityRejectedRequestsCount() {
-        return securityRejectedRequestsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getSecurityRejectedRequestsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecurityRejectedRequestsCount(UInteger value) {
-        return securityRejectedRequestsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getSecurityRejectedRequestsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> rejectedRequestsCount() {
-        return getComponent(QualifiedName.parse("0:RejectedRequestsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getRejectedRequestsCountNode() {
+        return getVariableComponent(QualifiedName.parse("0:RejectedRequestsCount")).thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getRejectedRequestsCount() {
-        return rejectedRequestsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getRejectedRequestsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRejectedRequestsCount(UInteger value) {
-        return rejectedRequestsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getRejectedRequestsCountNode().thenCompose(node -> node.setValue(value));
     }
-
 }

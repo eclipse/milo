@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,67 +25,44 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class TransitionEventNode extends BaseEventNode implements TransitionEventType {
-
     public TransitionEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<TransitionVariableNode> transition() {
-        return getVariableComponent(QualifiedName.parse("0:Transition"))
-            .thenApply(TransitionVariableNode.class::cast);
+    public CompletableFuture<TransitionVariableNode> getTransitionNode() {
+        return getVariableComponent(QualifiedName.parse("0:Transition")).thenApply(TransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getTransition() {
-        return transition()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getTransitionNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTransition(LocalizedText value) {
-        return transition()
-            .thenCompose(node -> node.setValue(value));
+        return getTransitionNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<StateVariableNode> fromState() {
-        return getVariableComponent(QualifiedName.parse("0:FromState"))
-            .thenApply(StateVariableNode.class::cast);
+    public CompletableFuture<StateVariableNode> getFromStateNode() {
+        return getVariableComponent(QualifiedName.parse("0:FromState")).thenApply(StateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getFromState() {
-        return fromState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getFromStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setFromState(LocalizedText value) {
-        return fromState()
-            .thenCompose(node -> node.setValue(value));
+        return getFromStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<StateVariableNode> toState() {
-        return getVariableComponent(QualifiedName.parse("0:ToState"))
-            .thenApply(StateVariableNode.class::cast);
+    public CompletableFuture<StateVariableNode> getToStateNode() {
+        return getVariableComponent(QualifiedName.parse("0:ToState")).thenApply(StateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getToState() {
-        return toState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getToStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setToState(LocalizedText value) {
-        return toState()
-            .thenCompose(node -> node.setValue(value));
+        return getToStateNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }

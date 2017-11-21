@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,78 +23,60 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public class ServerConfigurationNode extends BaseObjectNode implements ServerConfigurationType {
-
     public ServerConfigurationNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> serverCapabilities() {
-        return getPropertyNode(ServerConfigurationType.SERVER_CAPABILITIES.getBrowseName());
+    public CompletableFuture<PropertyNode> getServerCapabilitiesNode() {
+        return getPropertyNode(ServerConfigurationType.SERVER_CAPABILITIES);
     }
 
-    @Override
     public CompletableFuture<String[]> getServerCapabilities() {
         return getProperty(ServerConfigurationType.SERVER_CAPABILITIES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setServerCapabilities(String[] value) {
         return setProperty(ServerConfigurationType.SERVER_CAPABILITIES, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> supportedPrivateKeyFormats() {
-        return getPropertyNode(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS.getBrowseName());
+    public CompletableFuture<PropertyNode> getSupportedPrivateKeyFormatsNode() {
+        return getPropertyNode(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS);
     }
 
-    @Override
     public CompletableFuture<String[]> getSupportedPrivateKeyFormats() {
         return getProperty(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSupportedPrivateKeyFormats(String[] value) {
         return setProperty(ServerConfigurationType.SUPPORTED_PRIVATE_KEY_FORMATS, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> maxTrustListSize() {
-        return getPropertyNode(ServerConfigurationType.MAX_TRUST_LIST_SIZE.getBrowseName());
+    public CompletableFuture<PropertyNode> getMaxTrustListSizeNode() {
+        return getPropertyNode(ServerConfigurationType.MAX_TRUST_LIST_SIZE);
     }
 
-    @Override
     public CompletableFuture<UInteger> getMaxTrustListSize() {
         return getProperty(ServerConfigurationType.MAX_TRUST_LIST_SIZE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setMaxTrustListSize(UInteger value) {
         return setProperty(ServerConfigurationType.MAX_TRUST_LIST_SIZE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> multicastDnsEnabled() {
-        return getPropertyNode(ServerConfigurationType.MULTICAST_DNS_ENABLED.getBrowseName());
+    public CompletableFuture<PropertyNode> getMulticastDnsEnabledNode() {
+        return getPropertyNode(ServerConfigurationType.MULTICAST_DNS_ENABLED);
     }
 
-    @Override
     public CompletableFuture<Boolean> getMulticastDnsEnabled() {
         return getProperty(ServerConfigurationType.MULTICAST_DNS_ENABLED);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setMulticastDnsEnabled(Boolean value) {
         return setProperty(ServerConfigurationType.MULTICAST_DNS_ENABLED, value);
     }
 
-
-    @Override
-    public CompletableFuture<CertificateGroupFolderNode> certificateGroups() {
-        return getObjectComponent(QualifiedName.parse("0:CertificateGroups"))
-            .thenApply(CertificateGroupFolderNode.class::cast);
+    public CompletableFuture<CertificateGroupFolderNode> getCertificateGroupsNode() {
+        return getObjectComponent(QualifiedName.parse("0:CertificateGroups")).thenApply(CertificateGroupFolderNode.class::cast);
     }
-
 }

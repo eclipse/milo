@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,60 +20,40 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ExclusiveLimitState
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
-
 public class ExclusiveLimitStateMachineNode extends FiniteStateMachineNode implements ExclusiveLimitStateMachineType {
-
     public ExclusiveLimitStateMachineNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<StateNode> highHigh() {
-        return getObjectComponent(QualifiedName.parse("0:HighHigh"))
-            .thenApply(StateNode.class::cast);
+    public CompletableFuture<StateNode> getHighHighNode() {
+        return getObjectComponent(QualifiedName.parse("0:HighHigh")).thenApply(StateNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<StateNode> high() {
-        return getObjectComponent(QualifiedName.parse("0:High"))
-            .thenApply(StateNode.class::cast);
+    public CompletableFuture<StateNode> getHighNode() {
+        return getObjectComponent(QualifiedName.parse("0:High")).thenApply(StateNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<StateNode> low() {
-        return getObjectComponent(QualifiedName.parse("0:Low"))
-            .thenApply(StateNode.class::cast);
+    public CompletableFuture<StateNode> getLowNode() {
+        return getObjectComponent(QualifiedName.parse("0:Low")).thenApply(StateNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<StateNode> lowLow() {
-        return getObjectComponent(QualifiedName.parse("0:LowLow"))
-            .thenApply(StateNode.class::cast);
+    public CompletableFuture<StateNode> getLowLowNode() {
+        return getObjectComponent(QualifiedName.parse("0:LowLow")).thenApply(StateNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> lowLowToLow() {
-        return getObjectComponent(QualifiedName.parse("0:LowLowToLow"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getLowLowToLowNode() {
+        return getObjectComponent(QualifiedName.parse("0:LowLowToLow")).thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> lowToLowLow() {
-        return getObjectComponent(QualifiedName.parse("0:LowToLowLow"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getLowToLowLowNode() {
+        return getObjectComponent(QualifiedName.parse("0:LowToLowLow")).thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> highHighToHigh() {
-        return getObjectComponent(QualifiedName.parse("0:HighHighToHigh"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getHighHighToHighNode() {
+        return getObjectComponent(QualifiedName.parse("0:HighHighToHigh")).thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> highToHighHigh() {
-        return getObjectComponent(QualifiedName.parse("0:HighToHighHigh"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getHighToHighHighNode() {
+        return getObjectComponent(QualifiedName.parse("0:HighToHighHigh")).thenApply(TransitionNode.class::cast);
     }
-
 }

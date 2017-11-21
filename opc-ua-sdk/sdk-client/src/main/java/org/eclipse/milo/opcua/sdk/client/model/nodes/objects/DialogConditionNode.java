@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,139 +25,104 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class DialogConditionNode extends ConditionNode implements DialogConditionType {
-
     public DialogConditionNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> prompt() {
-        return getPropertyNode(DialogConditionType.PROMPT.getBrowseName());
+    public CompletableFuture<PropertyNode> getPromptNode() {
+        return getPropertyNode(DialogConditionType.PROMPT);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getPrompt() {
         return getProperty(DialogConditionType.PROMPT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setPrompt(LocalizedText value) {
         return setProperty(DialogConditionType.PROMPT, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> responseOptionSet() {
-        return getPropertyNode(DialogConditionType.RESPONSE_OPTION_SET.getBrowseName());
+    public CompletableFuture<PropertyNode> getResponseOptionSetNode() {
+        return getPropertyNode(DialogConditionType.RESPONSE_OPTION_SET);
     }
 
-    @Override
     public CompletableFuture<LocalizedText[]> getResponseOptionSet() {
         return getProperty(DialogConditionType.RESPONSE_OPTION_SET);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setResponseOptionSet(LocalizedText[] value) {
         return setProperty(DialogConditionType.RESPONSE_OPTION_SET, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> defaultResponse() {
-        return getPropertyNode(DialogConditionType.DEFAULT_RESPONSE.getBrowseName());
+    public CompletableFuture<PropertyNode> getDefaultResponseNode() {
+        return getPropertyNode(DialogConditionType.DEFAULT_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<Integer> getDefaultResponse() {
         return getProperty(DialogConditionType.DEFAULT_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDefaultResponse(Integer value) {
         return setProperty(DialogConditionType.DEFAULT_RESPONSE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> okResponse() {
-        return getPropertyNode(DialogConditionType.OK_RESPONSE.getBrowseName());
+    public CompletableFuture<PropertyNode> getOkResponseNode() {
+        return getPropertyNode(DialogConditionType.OK_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<Integer> getOkResponse() {
         return getProperty(DialogConditionType.OK_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOkResponse(Integer value) {
         return setProperty(DialogConditionType.OK_RESPONSE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> cancelResponse() {
-        return getPropertyNode(DialogConditionType.CANCEL_RESPONSE.getBrowseName());
+    public CompletableFuture<PropertyNode> getCancelResponseNode() {
+        return getPropertyNode(DialogConditionType.CANCEL_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<Integer> getCancelResponse() {
         return getProperty(DialogConditionType.CANCEL_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCancelResponse(Integer value) {
         return setProperty(DialogConditionType.CANCEL_RESPONSE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> lastResponse() {
-        return getPropertyNode(DialogConditionType.LAST_RESPONSE.getBrowseName());
+    public CompletableFuture<PropertyNode> getLastResponseNode() {
+        return getPropertyNode(DialogConditionType.LAST_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<Integer> getLastResponse() {
         return getProperty(DialogConditionType.LAST_RESPONSE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setLastResponse(Integer value) {
         return setProperty(DialogConditionType.LAST_RESPONSE, value);
     }
 
-
-    @Override
-    public CompletableFuture<TwoStateVariableNode> enabledState() {
-        return getVariableComponent(QualifiedName.parse("0:EnabledState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getEnabledStateNode() {
+        return getVariableComponent(QualifiedName.parse("0:EnabledState")).thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getEnabledState() {
-        return enabledState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getEnabledStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEnabledState(LocalizedText value) {
-        return enabledState()
-            .thenCompose(node -> node.setValue(value));
+        return getEnabledStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<TwoStateVariableNode> dialogState() {
-        return getVariableComponent(QualifiedName.parse("0:DialogState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getDialogStateNode() {
+        return getVariableComponent(QualifiedName.parse("0:DialogState")).thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getDialogState() {
-        return dialogState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getDialogStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDialogState(LocalizedText value) {
-        return dialogState()
-            .thenCompose(node -> node.setValue(value));
+        return getDialogStateNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }
