@@ -45,7 +45,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSessionIdNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionId");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionId");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -59,7 +59,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSessionNameNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionName");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionName");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -73,7 +73,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getClientDescriptionNode() {
-        Optional<VariableNode> component = getVariableComponent("ClientDescription");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientDescription");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -87,7 +87,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getServerUriNode() {
-        Optional<VariableNode> component = getVariableComponent("ServerUri");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ServerUri");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -101,7 +101,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getEndpointUrlNode() {
-        Optional<VariableNode> component = getVariableComponent("EndpointUrl");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EndpointUrl");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -115,7 +115,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getLocaleIdsNode() {
-        Optional<VariableNode> component = getVariableComponent("LocaleIds");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LocaleIds");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -129,7 +129,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getActualSessionTimeoutNode() {
-        Optional<VariableNode> component = getVariableComponent("ActualSessionTimeout");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActualSessionTimeout");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -143,7 +143,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getMaxResponseMessageSizeNode() {
-        Optional<VariableNode> component = getVariableComponent("MaxResponseMessageSize");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "MaxResponseMessageSize");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -157,7 +157,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getClientConnectionTimeNode() {
-        Optional<VariableNode> component = getVariableComponent("ClientConnectionTime");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientConnectionTime");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -171,7 +171,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getClientLastContactTimeNode() {
-        Optional<VariableNode> component = getVariableComponent("ClientLastContactTime");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientLastContactTime");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -185,7 +185,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getCurrentSubscriptionsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("CurrentSubscriptionsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentSubscriptionsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -199,7 +199,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getCurrentMonitoredItemsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("CurrentMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentMonitoredItemsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -213,7 +213,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getCurrentPublishRequestsInQueueNode() {
-        Optional<VariableNode> component = getVariableComponent("CurrentPublishRequestsInQueue");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentPublishRequestsInQueue");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -227,7 +227,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getTotalRequestCountNode() {
-        Optional<VariableNode> component = getVariableComponent("TotalRequestCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "TotalRequestCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -241,7 +241,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getUnauthorizedRequestCountNode() {
-        Optional<VariableNode> component = getVariableComponent("UnauthorizedRequestCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "UnauthorizedRequestCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -255,7 +255,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getReadCountNode() {
-        Optional<VariableNode> component = getVariableComponent("ReadCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ReadCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -269,7 +269,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getHistoryReadCountNode() {
-        Optional<VariableNode> component = getVariableComponent("HistoryReadCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "HistoryReadCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -283,7 +283,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getWriteCountNode() {
-        Optional<VariableNode> component = getVariableComponent("WriteCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "WriteCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -297,7 +297,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getHistoryUpdateCountNode() {
-        Optional<VariableNode> component = getVariableComponent("HistoryUpdateCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "HistoryUpdateCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -311,7 +311,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getCallCountNode() {
-        Optional<VariableNode> component = getVariableComponent("CallCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CallCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -325,7 +325,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getCreateMonitoredItemsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("CreateMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CreateMonitoredItemsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -339,7 +339,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getModifyMonitoredItemsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("ModifyMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ModifyMonitoredItemsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -353,7 +353,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSetMonitoringModeCountNode() {
-        Optional<VariableNode> component = getVariableComponent("SetMonitoringModeCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SetMonitoringModeCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -367,7 +367,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSetTriggeringCountNode() {
-        Optional<VariableNode> component = getVariableComponent("SetTriggeringCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SetTriggeringCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -381,7 +381,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getDeleteMonitoredItemsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("DeleteMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DeleteMonitoredItemsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -395,7 +395,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getCreateSubscriptionCountNode() {
-        Optional<VariableNode> component = getVariableComponent("CreateSubscriptionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CreateSubscriptionCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -409,7 +409,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getModifySubscriptionCountNode() {
-        Optional<VariableNode> component = getVariableComponent("ModifySubscriptionCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ModifySubscriptionCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -423,7 +423,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSetPublishingModeCountNode() {
-        Optional<VariableNode> component = getVariableComponent("SetPublishingModeCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SetPublishingModeCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -437,7 +437,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getPublishCountNode() {
-        Optional<VariableNode> component = getVariableComponent("PublishCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "PublishCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -451,7 +451,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getRepublishCountNode() {
-        Optional<VariableNode> component = getVariableComponent("RepublishCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "RepublishCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -465,7 +465,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getTransferSubscriptionsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("TransferSubscriptionsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "TransferSubscriptionsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -479,7 +479,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getDeleteSubscriptionsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("DeleteSubscriptionsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DeleteSubscriptionsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -493,7 +493,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getAddNodesCountNode() {
-        Optional<VariableNode> component = getVariableComponent("AddNodesCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "AddNodesCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -507,7 +507,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getAddReferencesCountNode() {
-        Optional<VariableNode> component = getVariableComponent("AddReferencesCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "AddReferencesCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -521,7 +521,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getDeleteNodesCountNode() {
-        Optional<VariableNode> component = getVariableComponent("DeleteNodesCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DeleteNodesCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -535,7 +535,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getDeleteReferencesCountNode() {
-        Optional<VariableNode> component = getVariableComponent("DeleteReferencesCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DeleteReferencesCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -549,7 +549,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getBrowseCountNode() {
-        Optional<VariableNode> component = getVariableComponent("BrowseCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BrowseCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -563,7 +563,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getBrowseNextCountNode() {
-        Optional<VariableNode> component = getVariableComponent("BrowseNextCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BrowseNextCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -577,7 +577,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getTranslateBrowsePathsToNodeIdsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("TranslateBrowsePathsToNodeIdsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "TranslateBrowsePathsToNodeIdsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -591,7 +591,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getQueryFirstCountNode() {
-        Optional<VariableNode> component = getVariableComponent("QueryFirstCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "QueryFirstCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -605,7 +605,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getQueryNextCountNode() {
-        Optional<VariableNode> component = getVariableComponent("QueryNextCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "QueryNextCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -619,7 +619,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getRegisterNodesCountNode() {
-        Optional<VariableNode> component = getVariableComponent("RegisterNodesCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "RegisterNodesCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -633,7 +633,7 @@ public class SessionDiagnosticsVariableNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getUnregisterNodesCountNode() {
-        Optional<VariableNode> component = getVariableComponent("UnregisterNodesCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "UnregisterNodesCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 

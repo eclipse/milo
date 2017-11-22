@@ -43,7 +43,7 @@ public class SessionSecurityDiagnosticsArrayNode extends BaseDataVariableNode im
     }
 
     public SessionSecurityDiagnosticsNode getSessionSecurityDiagnosticsNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics");
         return component.map(node -> (SessionSecurityDiagnosticsNode) node).orElse(null);
     }
 

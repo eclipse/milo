@@ -45,7 +45,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public BaseDataVariableNode getStartTimeNode() {
-        Optional<VariableNode> component = getVariableComponent("StartTime");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "StartTime");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -59,7 +59,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public BaseDataVariableNode getCurrentTimeNode() {
-        Optional<VariableNode> component = getVariableComponent("CurrentTime");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentTime");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -73,7 +73,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public BaseDataVariableNode getStateNode() {
-        Optional<VariableNode> component = getVariableComponent("State");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "State");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -87,7 +87,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public BuildInfoNode getBuildInfoNode() {
-        Optional<VariableNode> component = getVariableComponent("BuildInfo");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BuildInfo");
         return component.map(node -> (BuildInfoNode) node).orElse(null);
     }
 
@@ -101,7 +101,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public BaseDataVariableNode getSecondsTillShutdownNode() {
-        Optional<VariableNode> component = getVariableComponent("SecondsTillShutdown");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecondsTillShutdown");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -115,7 +115,7 @@ public class ServerStatusNode extends BaseDataVariableNode implements ServerStat
     }
 
     public BaseDataVariableNode getShutdownReasonNode() {
-        Optional<VariableNode> component = getVariableComponent("ShutdownReason");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ShutdownReason");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 

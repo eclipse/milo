@@ -85,7 +85,7 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public TwoStateVariableNode getEnabledStateNode() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -99,7 +99,7 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public TwoStateVariableNode getActiveStateNode() {
-        Optional<VariableNode> component = getVariableComponent("ActiveState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -113,7 +113,7 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public TwoStateVariableNode getSuppressedStateNode() {
-        Optional<VariableNode> component = getVariableComponent("SuppressedState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SuppressedState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -127,7 +127,7 @@ public class AlarmConditionNode extends AcknowledgeableConditionNode implements 
     }
 
     public ShelvedStateMachineNode getShelvingStateNode() {
-        Optional<ObjectNode> component = getObjectComponent("ShelvingState");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ShelvingState");
         return component.map(node -> (ShelvedStateMachineNode) node).orElse(null);
     }
 }

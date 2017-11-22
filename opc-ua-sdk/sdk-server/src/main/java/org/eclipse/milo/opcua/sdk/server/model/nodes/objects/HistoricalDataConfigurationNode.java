@@ -154,12 +154,12 @@ public class HistoricalDataConfigurationNode extends BaseObjectNode implements H
     }
 
     public AggregateConfigurationNode getAggregateConfigurationNode() {
-        Optional<ObjectNode> component = getObjectComponent("AggregateConfiguration");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "AggregateConfiguration");
         return component.map(node -> (AggregateConfigurationNode) node).orElse(null);
     }
 
     public FolderNode getAggregateFunctionsNode() {
-        Optional<ObjectNode> component = getObjectComponent("AggregateFunctions");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "AggregateFunctions");
         return component.map(node -> (FolderNode) node).orElse(null);
     }
 }

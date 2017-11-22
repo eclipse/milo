@@ -42,7 +42,7 @@ public class StateMachineNode extends BaseObjectNode implements StateMachineType
     }
 
     public StateVariableNode getCurrentStateNode() {
-        Optional<VariableNode> component = getVariableComponent("CurrentState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentState");
         return component.map(node -> (StateVariableNode) node).orElse(null);
     }
 
@@ -56,7 +56,7 @@ public class StateMachineNode extends BaseObjectNode implements StateMachineType
     }
 
     public TransitionVariableNode getLastTransitionNode() {
-        Optional<VariableNode> component = getVariableComponent("LastTransition");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LastTransition");
         return component.map(node -> (TransitionVariableNode) node).orElse(null);
     }
 

@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.UaStackServer;
@@ -330,7 +331,11 @@ public class OpcUaServer {
         return hostnames;
     }
 
-    private static class OpcUaServerNodeMap extends AbstractServerNodeMap {
+    private class OpcUaServerNodeMap extends AbstractServerNodeMap {
+        @Override
+        public NamespaceTable getNamespaceTable() {
+            return namespaceManager.getNamespaceTable();
+        }
     }
 
 }

@@ -46,7 +46,7 @@ public class SessionDiagnosticsObjectNode extends BaseObjectNode implements Sess
     }
 
     public SessionDiagnosticsVariableNode getSessionDiagnosticsNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnostics");
         return component.map(node -> (SessionDiagnosticsVariableNode) node).orElse(null);
     }
 
@@ -60,7 +60,7 @@ public class SessionDiagnosticsObjectNode extends BaseObjectNode implements Sess
     }
 
     public SessionSecurityDiagnosticsNode getSessionSecurityDiagnosticsNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnostics");
         return component.map(node -> (SessionSecurityDiagnosticsNode) node).orElse(null);
     }
 
@@ -74,7 +74,7 @@ public class SessionDiagnosticsObjectNode extends BaseObjectNode implements Sess
     }
 
     public SubscriptionDiagnosticsArrayNode getSubscriptionDiagnosticsArrayNode() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray");
         return component.map(node -> (SubscriptionDiagnosticsArrayNode) node).orElse(null);
     }
 

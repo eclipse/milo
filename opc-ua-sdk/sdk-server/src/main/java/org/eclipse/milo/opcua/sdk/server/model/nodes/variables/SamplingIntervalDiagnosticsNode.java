@@ -42,7 +42,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public BaseDataVariableNode getSamplingIntervalNode() {
-        Optional<VariableNode> component = getVariableComponent("SamplingInterval");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SamplingInterval");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -56,7 +56,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public BaseDataVariableNode getSampledMonitoredItemsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("SampledMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SampledMonitoredItemsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -70,7 +70,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public BaseDataVariableNode getMaxSampledMonitoredItemsCountNode() {
-        Optional<VariableNode> component = getVariableComponent("MaxSampledMonitoredItemsCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "MaxSampledMonitoredItemsCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -84,7 +84,7 @@ public class SamplingIntervalDiagnosticsNode extends BaseDataVariableNode implem
     }
 
     public BaseDataVariableNode getDisabledMonitoredItemsSamplingCountNode() {
-        Optional<VariableNode> component = getVariableComponent("DisabledMonitoredItemsSamplingCount");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DisabledMonitoredItemsSamplingCount");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 

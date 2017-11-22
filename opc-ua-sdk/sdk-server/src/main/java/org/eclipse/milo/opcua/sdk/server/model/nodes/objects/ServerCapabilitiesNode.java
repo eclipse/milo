@@ -182,17 +182,17 @@ public class ServerCapabilitiesNode extends BaseObjectNode implements ServerCapa
     }
 
     public OperationLimitsNode getOperationLimitsNode() {
-        Optional<ObjectNode> component = getObjectComponent("OperationLimits");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "OperationLimits");
         return component.map(node -> (OperationLimitsNode) node).orElse(null);
     }
 
     public FolderNode getModellingRulesNode() {
-        Optional<ObjectNode> component = getObjectComponent("ModellingRules");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ModellingRules");
         return component.map(node -> (FolderNode) node).orElse(null);
     }
 
     public FolderNode getAggregateFunctionsNode() {
-        Optional<ObjectNode> component = getObjectComponent("AggregateFunctions");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "AggregateFunctions");
         return component.map(node -> (FolderNode) node).orElse(null);
     }
 }

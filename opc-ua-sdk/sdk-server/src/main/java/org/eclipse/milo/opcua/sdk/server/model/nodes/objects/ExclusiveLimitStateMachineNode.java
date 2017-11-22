@@ -38,42 +38,42 @@ public class ExclusiveLimitStateMachineNode extends FiniteStateMachineNode imple
     }
 
     public StateNode getHighHighNode() {
-        Optional<ObjectNode> component = getObjectComponent("HighHigh");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighHigh");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getHighNode() {
-        Optional<ObjectNode> component = getObjectComponent("High");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "High");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getLowNode() {
-        Optional<ObjectNode> component = getObjectComponent("Low");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Low");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getLowLowNode() {
-        Optional<ObjectNode> component = getObjectComponent("LowLow");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowLow");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public TransitionNode getLowLowToLowNode() {
-        Optional<ObjectNode> component = getObjectComponent("LowLowToLow");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowLowToLow");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getLowToLowLowNode() {
-        Optional<ObjectNode> component = getObjectComponent("LowToLowLow");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowToLowLow");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getHighHighToHighNode() {
-        Optional<ObjectNode> component = getObjectComponent("HighHighToHigh");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighHighToHigh");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getHighToHighHighNode() {
-        Optional<ObjectNode> component = getObjectComponent("HighToHighHigh");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighToHighHigh");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 }

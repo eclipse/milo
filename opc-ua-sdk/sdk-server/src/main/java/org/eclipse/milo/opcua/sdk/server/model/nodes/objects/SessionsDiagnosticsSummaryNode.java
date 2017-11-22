@@ -44,7 +44,7 @@ public class SessionsDiagnosticsSummaryNode extends BaseObjectNode implements Se
     }
 
     public SessionDiagnosticsArrayNode getSessionDiagnosticsArrayNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnosticsArray");
         return component.map(node -> (SessionDiagnosticsArrayNode) node).orElse(null);
     }
 
@@ -58,7 +58,7 @@ public class SessionsDiagnosticsSummaryNode extends BaseObjectNode implements Se
     }
 
     public SessionSecurityDiagnosticsArrayNode getSessionSecurityDiagnosticsArrayNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnosticsArray");
         return component.map(node -> (SessionSecurityDiagnosticsArrayNode) node).orElse(null);
     }
 

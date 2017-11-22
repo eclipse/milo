@@ -54,47 +54,47 @@ public class ShelvedStateMachineNode extends FiniteStateMachineNode implements S
     }
 
     public StateNode getUnshelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("Unshelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Unshelved");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getTimedShelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("TimedShelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "TimedShelved");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getOneShotShelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("OneShotShelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelved");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public TransitionNode getUnshelvedToTimedShelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("UnshelvedToTimedShelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "UnshelvedToTimedShelved");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getUnshelvedToOneShotShelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("UnshelvedToOneShotShelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "UnshelvedToOneShotShelved");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getTimedShelvedToUnshelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("TimedShelvedToUnshelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "TimedShelvedToUnshelved");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getTimedShelvedToOneShotShelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("TimedShelvedToOneShotShelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "TimedShelvedToOneShotShelved");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getOneShotShelvedToUnshelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("OneShotShelvedToUnshelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelvedToUnshelved");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getOneShotShelvedToTimedShelvedNode() {
-        Optional<ObjectNode> component = getObjectComponent("OneShotShelvedToTimedShelved");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelvedToTimedShelved");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 }

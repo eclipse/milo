@@ -236,7 +236,7 @@ public class HistoryServerCapabilitiesNode extends BaseObjectNode implements His
     }
 
     public FolderNode getAggregateFunctionsNode() {
-        Optional<ObjectNode> component = getObjectComponent("AggregateFunctions");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "AggregateFunctions");
         return component.map(node -> (FolderNode) node).orElse(null);
     }
 }
