@@ -62,7 +62,11 @@ public class Recreating extends AbstractSessionState implements SessionState {
 
             sessionFuture.completeExceptionally(failure);
 
-            return new Recreating();
+            Recreating recreating = new Recreating();
+
+            createSessionAsync(fsm, recreating.getSessionFuture());
+
+            return recreating;
         } else if (event instanceof CloseSessionEvent) {
             // CloseSessionEvent preempted our receipt of an
             // CreateSessionFailureEvent or CreateSessionSuccessEvent.
@@ -72,7 +76,11 @@ public class Recreating extends AbstractSessionState implements SessionState {
             sessionFuture.completeExceptionally(
                 new UaException(StatusCodes.Bad_ConnectionClosed));
 
-            return new Recreating();
+            Recreating recreating = new Recreating();
+
+            createSessionAsync(fsm, recreating.getSessionFuture());
+
+            return recreating;
         } else {
             return this;
         }

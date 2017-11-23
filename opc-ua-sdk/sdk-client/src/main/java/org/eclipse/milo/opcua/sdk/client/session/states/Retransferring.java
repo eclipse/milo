@@ -61,7 +61,11 @@ public class Retransferring extends AbstractSessionState implements SessionState
 
             sessionFuture.completeExceptionally(failure);
 
-            return new Recreating();
+            Recreating recreating = new Recreating();
+
+            createSessionAsync(fsm, recreating.getSessionFuture());
+
+            return recreating;
         } else if (event instanceof CreateSessionEvent) {
             return this;
         } else if (event instanceof CloseSessionEvent) {
