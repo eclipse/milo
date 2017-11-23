@@ -226,7 +226,7 @@ public class OpcUaClient implements UaClient {
             .closeSession()
             .exceptionally(ex -> Unit.VALUE)
             .thenCompose(u -> stackClient.disconnect())
-            .thenApply(c -> (UaClient) OpcUaClient.this)
+            .thenApply(c -> OpcUaClient.this)
             .exceptionally(ex -> OpcUaClient.this);
     }
 
