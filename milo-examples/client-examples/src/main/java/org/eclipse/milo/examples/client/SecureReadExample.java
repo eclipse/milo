@@ -16,6 +16,7 @@ package org.eclipse.milo.examples.client;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
+import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -26,30 +27,32 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class SecureReadExample implements ClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    SecurityPolicy securityPolicy = SecurityPolicy.valueOf("Basic128Rsa15");
+    SecurityPolicy securityPolicy = SecurityPolicy.valueOf("Basic256Sha256");
     IdentityProvider identityProvider;
 
     public static void main(String[] args) throws Exception {
         SecureReadExample example = new SecureReadExample();
-
         new ClientExampleRunner(example).run();
     }
 
 
+    @Override
     public SecurityPolicy getSecurityPolicy() {
         return securityPolicy;
     }
 
+    @Override
     public IdentityProvider getIdentityProvider(){
         return identityProvider;
     }
@@ -63,8 +66,8 @@ public class SecureReadExample implements ClientExample {
 //            System.out.println("Couldn't get Console instance");
 //            System.exit(0);
 //        }
-//        char passwordArray[] = console.readPassword("Enter your secret password: ");
-        char passwordArray[] = "opcuakeystore".toCharArray();
+//        char[] passwordArray = console.readPassword("Enter your secret password: ");
+        char[] passwordArray = "opcuakeystore".toCharArray();
 
         /*Get key from keystore */
         File file = new File(System.getProperty("user.home") + File.separatorChar + "opcua.keystore");
@@ -75,9 +78,10 @@ public class SecureReadExample implements ClientExample {
         PrivateKey key = (PrivateKey)keystore.getKey("opcuakey", passwordArray);
 
         /* Get certificate of public key */
-        Certificate cert = keystore.getCertificate("opcuakey");
+        X509Certificate cert = (X509Certificate) keystore.getCertificate("opcuakey");
 
-        logger.info("Cert:"+cert.toString());
+
+        identityProvider = new X509IdentityProvider(cert, key);
 
         // synchronous connect
         client.connect().get();
