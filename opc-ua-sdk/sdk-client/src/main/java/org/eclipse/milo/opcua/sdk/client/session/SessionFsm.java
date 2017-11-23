@@ -18,16 +18,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.SessionActivityListener;
+import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
+import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
 import org.eclipse.milo.opcua.sdk.client.session.states.Active;
 import org.eclipse.milo.opcua.sdk.client.session.states.Inactive;
 import org.eclipse.milo.opcua.sdk.client.session.states.SessionState;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
@@ -64,6 +70,8 @@ public class SessionFsm {
         this.client = client;
 
         notificationQueue = new ExecutionQueue(client.getConfig().getExecutor());
+
+        client.addFaultListener(new FaultListener(fsm));
     }
 
     public CompletableFuture<OpcUaSession> openSession() {
@@ -182,6 +190,45 @@ public class SessionFsm {
                 }
             })
         );
+    }
+
+    private static class FaultListener implements ServiceFaultListener {
+
+        private static final Predicate<StatusCode> SESSION_ERROR = statusCode -> {
+            long status = statusCode.getValue();
+
+            return status == StatusCodes.Bad_SessionClosed ||
+                status == StatusCodes.Bad_SessionIdInvalid ||
+                status == StatusCodes.Bad_SessionNotActivated;
+        };
+
+        private static final Predicate<StatusCode> SECURE_CHANNEL_ERROR = statusCode -> {
+            long status = statusCode.getValue();
+
+            return status == StatusCodes.Bad_SecureChannelIdInvalid ||
+                status == StatusCodes.Bad_SecurityChecksFailed ||
+                status == StatusCodes.Bad_TcpSecureChannelUnknown;
+        };
+
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private final Fsm fsm;
+
+        FaultListener(Fsm fsm) {
+            this.fsm = fsm;
+        }
+
+        @Override
+        public void onServiceFault(ServiceFault serviceFault) {
+            StatusCode serviceResult = serviceFault.getResponseHeader().getServiceResult();
+
+            if (SESSION_ERROR.or(SECURE_CHANNEL_ERROR).test(serviceResult)) {
+                logger.debug("ServiceFault: {}", serviceResult);
+
+                fsm.fireEvent(new ServiceFaultEvent(serviceResult));
+            }
+        }
+
     }
 
 }

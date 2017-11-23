@@ -14,23 +14,20 @@
 package org.eclipse.milo.opcua.sdk.client.session.states;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Predicate;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 import org.eclipse.milo.opcua.sdk.client.session.events.ReactivateSuccessEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +56,6 @@ public class Active extends AbstractSessionState implements SessionState {
                 channel.pipeline().addLast(new InactivityHandler(fsm));
             }
         });
-
-        fsm.getClient().addFaultListener(new FaultListener(fsm));
 
         if (prev instanceof Transferring || prev instanceof Retransferring) {
             if (event instanceof TransferSuccessEvent) {
@@ -106,11 +101,38 @@ public class Active extends AbstractSessionState implements SessionState {
             reactivateSessionAsync(fsm, session, reactivating.getSessionFuture());
 
             return reactivating;
+        } else if (e instanceof ServiceFaultEvent) {
+            // Try to close the underlying channel and then regardless of the result start reactivating.
+
+            final Reactivating reactivating = new Reactivating();
+
+            final CompletableFuture<Unit> disconnected = new CompletableFuture<>();
+
+            fsm.getClient().getStackClient().getChannelFuture().whenComplete((c, ex) -> {
+                if (c != null) {
+                    Channel channel = c.getChannel();
+
+                    channel.pipeline().remove(InactivityHandler.class);
+
+                    channel.close().addListener(
+                        (ChannelFutureListener) future ->
+                            disconnected.complete(Unit.VALUE)
+                    );
+                } else {
+                    disconnected.complete(Unit.VALUE);
+                }
+            });
+
+            disconnected.whenComplete((u, ex) ->
+                reactivateSessionAsync(
+                    fsm, session, reactivating.getSessionFuture())
+            );
+
+            return reactivating;
         } else {
             return this;
         }
     }
-
 
     private static class InactivityHandler extends ChannelInboundHandlerAdapter {
 
@@ -131,48 +153,6 @@ public class Active extends AbstractSessionState implements SessionState {
             fsm.fireEvent(new ChannelInactiveEvent());
 
             super.channelInactive(ctx);
-        }
-
-    }
-
-    private static class FaultListener implements ServiceFaultListener {
-
-        private static final Predicate<StatusCode> sessionError = statusCode -> {
-            long status = statusCode.getValue();
-
-            return status == StatusCodes.Bad_SessionClosed ||
-                status == StatusCodes.Bad_SessionIdInvalid ||
-                status == StatusCodes.Bad_SessionNotActivated;
-        };
-
-        private static final Predicate<StatusCode> secureChannelError = statusCode -> {
-            long status = statusCode.getValue();
-
-            return status == StatusCodes.Bad_SecureChannelIdInvalid ||
-                status == StatusCodes.Bad_SecurityChecksFailed ||
-                status == StatusCodes.Bad_TcpSecureChannelUnknown;
-        };
-
-        private final Logger logger = LoggerFactory.getLogger(getClass());
-
-        private final Fsm fsm;
-
-        public FaultListener(Fsm fsm) {
-            this.fsm = fsm;
-        }
-
-        @Override
-        public void onServiceFault(ServiceFault serviceFault) {
-            StatusCode serviceResult = serviceFault.getResponseHeader().getServiceResult();
-
-            if (sessionError.or(secureChannelError).test(serviceResult)) {
-                logger.debug("ServiceFault: {}", serviceResult);
-
-                fsm.getClient().removeFaultListener(FaultListener.this);
-
-                // TODO this should probably be its own event type instead
-                fsm.getClient().getStackClient().getChannelFuture().thenAccept(c -> c.getChannel().close());
-            }
         }
 
     }
