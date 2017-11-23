@@ -49,7 +49,6 @@ public class Reactivating extends AbstractSessionState implements SessionState {
         if (prev instanceof Recreating && event instanceof CreateSessionSuccessEvent) {
             sessionFuture = ((CreateSessionSuccessEvent) event).getSessionFuture();
         }
-
     }
 
     @Override
@@ -69,8 +68,7 @@ public class Reactivating extends AbstractSessionState implements SessionState {
         if (event instanceof ReactivateSuccessEvent) {
             OpcUaSession session = ((ReactivateSuccessEvent) event).getSession();
 
-            fsm.getClient().getConfig().getExecutor()
-                .submit(() -> sessionFuture.complete(session));
+            sessionFuture.complete(session);
 
             return new Active();
         } else if (event instanceof ReactivateFailureEvent) {

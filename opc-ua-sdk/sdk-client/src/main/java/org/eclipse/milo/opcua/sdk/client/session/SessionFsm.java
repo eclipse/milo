@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class SessionFsm {
 
@@ -46,8 +47,8 @@ public class SessionFsm {
         }
 
         @Override
-        public SessionState fireEvent(Event event) {
-            return SessionFsm.this.fireEvent(event);
+        public void fireEvent(Event event) {
+            SessionFsm.this.fireEvent(event);
         }
     };
 
@@ -70,7 +71,8 @@ public class SessionFsm {
 
         fireEvent(new CreateSessionEvent(sessionFuture));
 
-        return sessionFuture;
+        return complete(new CompletableFuture<OpcUaSession>())
+            .withAsync(sessionFuture, client.getConfig().getExecutor());
     }
 
     public CompletableFuture<Unit> closeSession() {
@@ -78,13 +80,21 @@ public class SessionFsm {
 
         fireEvent(new CloseSessionEvent(closeFuture));
 
-        return closeFuture;
+        return complete(new CompletableFuture<Unit>())
+            .withAsync(closeFuture, client.getConfig().getExecutor());
     }
 
     public CompletableFuture<OpcUaSession> getSession() {
         readWriteLock.readLock().lock();
         try {
-            return state.get().getSessionFuture();
+            CompletableFuture<OpcUaSession> sessionFuture = state.get().getSessionFuture();
+
+            if (sessionFuture.isDone()) {
+                return sessionFuture;
+            } else {
+                return complete(new CompletableFuture<OpcUaSession>())
+                    .withAsync(sessionFuture, client.getConfig().getExecutor());
+            }
         } finally {
             readWriteLock.readLock().unlock();
         }
@@ -113,7 +123,8 @@ public class SessionFsm {
                 SessionState prevState = state.get();
 
                 SessionState nextState = state.updateAndGet(
-                    state -> state.execute(fsm, event));
+                    state -> state.execute(fsm, event)
+                );
 
                 logger.debug(
                     "S({}) x E({}) = S'({})",

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -112,23 +113,57 @@ public class FutureUtils {
         return failedFuture(new UaException(statusCode, cause));
     }
 
+    /**
+     * Complete {@code future} with the result of another {@link CompletableFuture} that is provided to the returned
+     * {@link CompletionBuilder}.
+     *
+     * @param future the future to complete.
+     * @return a {@link CompletionBuilder}.
+     */
     public static <T> CompletionBuilder<T> complete(CompletableFuture<T> future) {
         return new CompletionBuilder<>(future);
     }
 
     public static final class CompletionBuilder<T> {
+
         private final CompletableFuture<T> toComplete;
 
         private CompletionBuilder(CompletableFuture<T> toComplete) {
             this.toComplete = toComplete;
         }
 
-        public void with(CompletableFuture<T> future) {
+        /**
+         * Complete the contained to-be-completed {@link CompletableFuture} using the result of {@code future}.
+         *
+         * @param future the {@link CompletableFuture} to use as the result for the contained future.
+         * @return the original, to-be-completed future provided to this {@link CompletionBuilder}.
+         */
+        public CompletableFuture<T> with(CompletableFuture<T> future) {
             future.whenComplete((v, ex) -> {
                 if (ex != null) toComplete.completeExceptionally(ex);
                 else toComplete.complete(v);
             });
+
+            return toComplete;
         }
+
+        /**
+         * Complete the contained to-be-completed {@link CompletableFuture} using the result of {@code future}
+         * asynchronously using the provided {@link Executor}.
+         *
+         * @param future   the {@link CompletableFuture} to use as the result for the contained future.
+         * @param executor the {@link Executor} to use.
+         * @return the original, to-be-completed future provided to this {@link CompletionBuilder}.
+         */
+        public CompletableFuture<T> withAsync(CompletableFuture<T> future, Executor executor) {
+            future.whenCompleteAsync((v, ex) -> {
+                if (ex != null) toComplete.completeExceptionally(ex);
+                else toComplete.complete(v);
+            }, executor);
+
+            return toComplete;
+        }
+
     }
 
 }

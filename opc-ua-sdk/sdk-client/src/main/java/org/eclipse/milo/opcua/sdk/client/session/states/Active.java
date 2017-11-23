@@ -35,6 +35,8 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
+
 public class Active extends AbstractSessionState implements SessionState {
 
     private OpcUaSession session;
@@ -85,10 +87,7 @@ public class Active extends AbstractSessionState implements SessionState {
             // started the create session process.
             CreateSessionEvent e = (CreateSessionEvent) event;
 
-            sessionFuture.whenComplete((u, ex) -> {
-                if (u != null) e.getSessionFuture().complete(u);
-                else e.getSessionFuture().completeExceptionally(ex);
-            });
+            complete(e.getSessionFuture()).with(sessionFuture);
         }
     }
 

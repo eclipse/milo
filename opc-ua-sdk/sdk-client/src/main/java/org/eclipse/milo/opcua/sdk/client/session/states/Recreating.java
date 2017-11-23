@@ -59,7 +59,9 @@ public class Recreating extends AbstractSessionState implements SessionState {
             return new Reactivating();
         } else if (event instanceof CreateSessionFailureEvent) {
             Throwable failure = ((CreateSessionFailureEvent) event).getFailure();
+
             sessionFuture.completeExceptionally(failure);
+
             return new Recreating();
         } else if (event instanceof CloseSessionEvent) {
             // CloseSessionEvent preempted our receipt of an

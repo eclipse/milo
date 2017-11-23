@@ -15,12 +15,11 @@ package org.eclipse.milo.opcua.sdk.client.session;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
-import org.eclipse.milo.opcua.sdk.client.session.states.SessionState;
 
 public interface Fsm {
 
     OpcUaClient getClient();
 
-    SessionState fireEvent(Event event);
+    void fireEvent(Event event);
 
 }
