@@ -16,7 +16,7 @@ package org.eclipse.milo.opcua.sdk.client.session.states;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
-public class Reactivating extends AbstractState implements State {
+public class Reactivating extends AbstractSessionState implements SessionState {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Reactivating.class);
 
@@ -45,7 +45,7 @@ public class Reactivating extends AbstractState implements State {
     }
 
     @Override
-    public void onExternalTransition(SessionFsm fsm, State prev, Event event) {
+    public void onExternalTransition(Fsm fsm, SessionState prev, Event event) {
         if (prev instanceof Recreating && event instanceof CreateSessionSuccessEvent) {
             sessionFuture = ((CreateSessionSuccessEvent) event).getSessionFuture();
         }
@@ -53,7 +53,7 @@ public class Reactivating extends AbstractState implements State {
     }
 
     @Override
-    public void onInternalTransition(SessionFsm fsm, Event event) {
+    public void onInternalTransition(Fsm fsm, Event event) {
         if (event instanceof CreateSessionEvent) {
             // Another call to SessionFsm.create() results in an internal transition; we need to ensure
             // the sessionFuture in this event is completed with the result of the one that originally
@@ -65,7 +65,7 @@ public class Reactivating extends AbstractState implements State {
     }
 
     @Override
-    public State execute(SessionFsm fsm, Event event) {
+    public SessionState execute(Fsm fsm, Event event) {
         if (event instanceof ReactivateSuccessEvent) {
             OpcUaSession session = ((ReactivateSuccessEvent) event).getSession();
 

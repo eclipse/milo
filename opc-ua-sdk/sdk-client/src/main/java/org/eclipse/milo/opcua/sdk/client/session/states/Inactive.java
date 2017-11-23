@@ -16,14 +16,14 @@ package org.eclipse.milo.opcua.sdk.client.session.states;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-public class Inactive extends AbstractState implements State {
+public class Inactive extends AbstractSessionState implements SessionState {
 
     private final CompletableFuture<OpcUaSession> sessionFuture = failedUaFuture(StatusCodes.Bad_SessionClosed);
 
@@ -33,7 +33,7 @@ public class Inactive extends AbstractState implements State {
     }
 
     @Override
-    public State execute(SessionFsm fsm, Event event) {
+    public SessionState execute(Fsm fsm, Event event) {
         if (event instanceof CreateSessionEvent) {
             CompletableFuture<OpcUaSession> sessionFuture =
                 ((CreateSessionEvent) event).getSessionFuture();

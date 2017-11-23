@@ -11,6 +11,16 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.client.session.events;
+package org.eclipse.milo.opcua.sdk.client.session;
 
-public interface Event {}
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.sdk.client.session.events.Event;
+import org.eclipse.milo.opcua.sdk.client.session.states.SessionState;
+
+public interface Fsm {
+
+    OpcUaClient getClient();
+
+    SessionState fireEvent(Event event);
+
+}

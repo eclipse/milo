@@ -16,7 +16,7 @@ package org.eclipse.milo.opcua.sdk.client.session.states;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
-public class Transferring extends AbstractState implements State {
+public class Transferring extends AbstractSessionState implements SessionState {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Transferring.class);
 
@@ -42,12 +42,12 @@ public class Transferring extends AbstractState implements State {
     }
 
     @Override
-    public void onExternalTransition(SessionFsm fsm, State from, Event event) {
+    public void onExternalTransition(Fsm fsm, SessionState from, Event event) {
         sessionFuture = from.getSessionFuture();
     }
 
     @Override
-    public void onInternalTransition(SessionFsm fsm, Event event) {
+    public void onInternalTransition(Fsm fsm, Event event) {
         if (event instanceof CreateSessionEvent) {
             // Another call to SessionFsm.create() results in an internal transition; we need to ensure
             // the sessionFuture in this event is completed with the result of the one that originally
@@ -59,7 +59,7 @@ public class Transferring extends AbstractState implements State {
     }
 
     @Override
-    public State execute(SessionFsm fsm, Event event) {
+    public SessionState execute(Fsm fsm, Event event) {
         if (event instanceof TransferSuccessEvent) {
             OpcUaSession session = ((TransferSuccessEvent) event).getSession();
 

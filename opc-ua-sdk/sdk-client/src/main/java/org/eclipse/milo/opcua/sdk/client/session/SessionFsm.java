@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 import org.eclipse.milo.opcua.sdk.client.session.states.Active;
 import org.eclipse.milo.opcua.sdk.client.session.states.Inactive;
-import org.eclipse.milo.opcua.sdk.client.session.states.State;
+import org.eclipse.milo.opcua.sdk.client.session.states.SessionState;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
@@ -39,8 +39,20 @@ public class SessionFsm {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final Fsm fsm = new Fsm() {
+        @Override
+        public OpcUaClient getClient() {
+            return SessionFsm.this.client;
+        }
+
+        @Override
+        public SessionState fireEvent(Event event) {
+            return SessionFsm.this.fireEvent(event);
+        }
+    };
+
     private final List<SessionActivityListener> listeners = newCopyOnWriteArrayList();
-    private final AtomicReference<State> state = new AtomicReference<>(new Inactive());
+    private final AtomicReference<SessionState> state = new AtomicReference<>(new Inactive());
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
     private final ExecutionQueue notificationQueue;
@@ -86,15 +98,7 @@ public class SessionFsm {
         listeners.remove(listener);
     }
 
-    public OpcUaClient getClient() {
-        return client;
-    }
-
-    public State getState() {
-        return state.get();
-    }
-
-    public State fireEvent(Event event) {
+    private SessionState fireEvent(Event event) {
         if (readWriteLock.writeLock().isHeldByCurrentThread()) {
             try {
                 return client.getConfig().getExecutor()
@@ -106,31 +110,31 @@ public class SessionFsm {
             readWriteLock.writeLock().lock();
 
             try {
-                State currentState = state.get();
-                State nextState = currentState.execute(this, event);
-                state.set(nextState);
+                SessionState prevState = state.get();
 
-                logger.info(
+                SessionState nextState = state.updateAndGet(
+                    state -> state.execute(fsm, event));
+
+                logger.debug(
                     "S({}) x E({}) = S'({})",
-                    currentState.getClass().getSimpleName(),
+                    prevState.getClass().getSimpleName(),
                     event.getClass().getSimpleName(),
                     nextState.getClass().getSimpleName()
                 );
 
-                if (currentState.getClass() == nextState.getClass()) {
-                    nextState.onInternalTransition(this, event);
+                if (prevState.getClass() == nextState.getClass()) {
+                    nextState.onInternalTransition(fsm, event);
                 } else {
-                    nextState.onExternalTransition(this, currentState, event);
+                    nextState.onExternalTransition(fsm, prevState, event);
 
                     if (nextState instanceof Active) {
                         // transition from non-Active to Active
                         notifySessionActive(((Active) nextState).getSession());
-                    } else if (currentState instanceof Active) {
+                    } else if (prevState instanceof Active) {
                         // transition from Active to non-Active
-                        notifySessionInactive(((Active) currentState).getSession());
+                        notifySessionInactive(((Active) prevState).getSession());
                     }
                 }
-
 
                 return nextState;
             } finally {

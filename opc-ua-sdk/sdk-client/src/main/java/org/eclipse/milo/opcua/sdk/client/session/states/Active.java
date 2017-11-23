@@ -21,7 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
-import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
@@ -35,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Active extends AbstractState implements State {
+public class Active extends AbstractSessionState implements SessionState {
 
     private OpcUaSession session;
     private CompletableFuture<OpcUaSession> sessionFuture;
@@ -49,7 +49,7 @@ public class Active extends AbstractState implements State {
     }
 
     @Override
-    public void onExternalTransition(SessionFsm fsm, State prev, Event event) {
+    public void onExternalTransition(Fsm fsm, SessionState prev, Event event) {
         fsm.getClient().getStackClient().getChannelFuture().thenAccept(secureChannel -> {
             Channel channel = secureChannel.getChannel();
 
@@ -78,7 +78,7 @@ public class Active extends AbstractState implements State {
     }
 
     @Override
-    public void onInternalTransition(SessionFsm fsm, Event event) {
+    public void onInternalTransition(Fsm fsm, Event event) {
         if (event instanceof CreateSessionEvent) {
             // Another call to SessionFsm.create() results in an internal transition; we need to ensure
             // the sessionFuture in this event is completed with the result of the one that originally
@@ -93,7 +93,7 @@ public class Active extends AbstractState implements State {
     }
 
     @Override
-    public State execute(SessionFsm fsm, Event e) {
+    public SessionState execute(Fsm fsm, Event e) {
         if (e instanceof CloseSessionEvent) {
             CompletableFuture<Unit> closeFuture =
                 ((CloseSessionEvent) e).getCloseFuture();
@@ -117,9 +117,9 @@ public class Active extends AbstractState implements State {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
 
-        private final SessionFsm fsm;
+        private final Fsm fsm;
 
-        InactivityHandler(SessionFsm fsm) {
+        InactivityHandler(Fsm fsm) {
             this.fsm = fsm;
         }
 
@@ -158,9 +158,9 @@ public class Active extends AbstractState implements State {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
 
-        private final SessionFsm fsm;
+        private final Fsm fsm;
 
-        public FaultListener(SessionFsm fsm) {
+        public FaultListener(Fsm fsm) {
             this.fsm = fsm;
         }
 

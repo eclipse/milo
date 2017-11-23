@@ -16,7 +16,7 @@ package org.eclipse.milo.opcua.sdk.client.session.states;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
-public class Closing extends AbstractState implements State {
+public class Closing extends AbstractSessionState implements SessionState {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Closing.class);
 
@@ -56,7 +56,7 @@ public class Closing extends AbstractState implements State {
     }
 
     @Override
-    public void onExternalTransition(SessionFsm fsm, State prev, Event event) {
+    public void onExternalTransition(Fsm fsm, SessionState prev, Event event) {
         sessionFuture = prev.getSessionFuture();
 
         if (event instanceof CloseSessionEvent) {
@@ -67,7 +67,7 @@ public class Closing extends AbstractState implements State {
     }
 
     @Override
-    public void onInternalTransition(SessionFsm fsm, Event event) {
+    public void onInternalTransition(Fsm fsm, Event event) {
         if (event instanceof CreateSessionEvent) {
             CreateSessionEvent e = (CreateSessionEvent) event;
 
@@ -120,7 +120,7 @@ public class Closing extends AbstractState implements State {
     }
 
     @Override
-    public State execute(SessionFsm fsm, Event event) {
+    public SessionState execute(Fsm fsm, Event event) {
         if (event instanceof CloseSessionSuccessEvent) {
             closeFuture.complete(Unit.VALUE);
 

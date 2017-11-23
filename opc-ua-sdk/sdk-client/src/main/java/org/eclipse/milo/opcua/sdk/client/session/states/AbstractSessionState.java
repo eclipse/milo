@@ -31,7 +31,7 @@ import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
-import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionSuccessEvent;
@@ -80,16 +80,16 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
-public abstract class AbstractState implements State {
+abstract class AbstractSessionState implements SessionState {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(State.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionState.class);
 
     // <editor-fold desc="Create Session">
-    protected static void createSessionAsync(SessionFsm fsm, CompletableFuture<OpcUaSession> sessionFuture) {
+    static void createSessionAsync(Fsm fsm, CompletableFuture<OpcUaSession> sessionFuture) {
         fsm.getClient().getConfig().getExecutor().execute(() -> createSession(fsm, sessionFuture));
     }
 
-    private static void createSession(SessionFsm fsm, CompletableFuture<OpcUaSession> sessionFuture) {
+    private static void createSession(Fsm fsm, CompletableFuture<OpcUaSession> sessionFuture) {
         OpcUaClient client = fsm.getClient();
         UaTcpStackClient stackClient = client.getStackClient();
 
@@ -189,8 +189,9 @@ public abstract class AbstractState implements State {
     }
     // </editor-fold>
 
-    protected static void activateSessionAsync(
-        SessionFsm fsm,
+    // <editor-fold desc="Activate Session">
+    static void activateSessionAsync(
+        Fsm fsm,
         CreateSessionResponse csr,
         CompletableFuture<OpcUaSession> sessionFuture) {
 
@@ -198,7 +199,7 @@ public abstract class AbstractState implements State {
     }
 
     private static void activateSession(
-        SessionFsm fsm,
+        Fsm fsm,
         CreateSessionResponse csr,
         CompletableFuture<OpcUaSession> sessionFuture) {
 
@@ -265,34 +266,11 @@ public abstract class AbstractState implements State {
             }
         });
     }
+    // </editor-fold>
 
-    private static SignatureData buildClientSignature(
-        ClientSecureChannel secureChannel, ByteString serverNonce) throws Exception {
-
-        if (secureChannel.getSecurityPolicy() == SecurityPolicy.None) {
-            return new SignatureData();
-        } else {
-            SecurityAlgorithm signatureAlgorithm = secureChannel.getSecurityPolicy().getAsymmetricSignatureAlgorithm();
-            PrivateKey privateKey = secureChannel.getKeyPair().getPrivate();
-            ByteString serverCertificate = secureChannel.getRemoteCertificateBytes();
-
-            // Signature data is serverCert + serverNonce signed with our private key.
-            byte[] serverNonceBytes = serverNonce.bytesOrEmpty();
-            byte[] serverCertificateBytes = serverCertificate.bytesOrEmpty();
-            byte[] dataToSign = Bytes.concat(serverCertificateBytes, serverNonceBytes);
-
-            byte[] signature = SignatureUtil.sign(
-                signatureAlgorithm,
-                privateKey,
-                ByteBuffer.wrap(dataToSign)
-            );
-
-            return new SignatureData(signatureAlgorithm.getUri(), ByteString.of(signature));
-        }
-    }
-
-    protected static void closeSessionAsync(
-        SessionFsm fsm,
+    // <editor-fold desc="Close Session">
+    static void closeSessionAsync(
+        Fsm fsm,
         OpcUaSession session,
         CompletableFuture<Unit> closeFuture,
         CompletableFuture<OpcUaSession> sessionFuture) {
@@ -302,8 +280,8 @@ public abstract class AbstractState implements State {
         );
     }
 
-    protected static void closeSessionAsync(
-        SessionFsm fsm,
+    static void closeSessionAsync(
+        Fsm fsm,
         NodeId authToken,
         NodeId sessionId,
         CompletableFuture<Unit> closeFuture,
@@ -315,7 +293,7 @@ public abstract class AbstractState implements State {
     }
 
     private static void closeSession(
-        SessionFsm fsm,
+        Fsm fsm,
         NodeId authToken,
         NodeId sessionId,
         CompletableFuture<Unit> closeFuture,
@@ -348,9 +326,11 @@ public abstract class AbstractState implements State {
             fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, sessionFuture));
         }, stackClient.getConfig().getExecutor());
     }
+    // </editor-fold>
 
-    protected static void reactivateSessionAsync(
-        SessionFsm fsm,
+    // <editor-fold desc="Reactivate Session">
+    static void reactivateSessionAsync(
+        Fsm fsm,
         OpcUaSession session,
         CompletableFuture<OpcUaSession> sessionFuture) {
 
@@ -358,7 +338,7 @@ public abstract class AbstractState implements State {
     }
 
     private static void reactivateSession(
-        SessionFsm fsm,
+        Fsm fsm,
         OpcUaSession session,
         CompletableFuture<OpcUaSession> sessionFuture) {
 
@@ -417,9 +397,11 @@ public abstract class AbstractState implements State {
             }
         });
     }
+    // </editor-fold>
 
-    protected static void transferSubscriptionsAsync(
-        SessionFsm fsm,
+    // <editor-fold desc="Transfer Subscription">
+    static void transferSubscriptionsAsync(
+        Fsm fsm,
         OpcUaSession session,
         CompletableFuture<OpcUaSession> sessionFuture) {
 
@@ -428,7 +410,7 @@ public abstract class AbstractState implements State {
     }
 
     private static void transferSubscriptions(
-        SessionFsm fsm,
+        Fsm fsm,
         OpcUaSession session,
         CompletableFuture<OpcUaSession> sessionFuture) {
 
@@ -521,6 +503,32 @@ public abstract class AbstractState implements State {
                 }
             }
         });
+    }
+    // </editor-fold>
+
+    private static SignatureData buildClientSignature(
+        ClientSecureChannel secureChannel, ByteString serverNonce) throws Exception {
+
+        if (secureChannel.getSecurityPolicy() == SecurityPolicy.None) {
+            return new SignatureData();
+        } else {
+            SecurityAlgorithm signatureAlgorithm = secureChannel.getSecurityPolicy().getAsymmetricSignatureAlgorithm();
+            PrivateKey privateKey = secureChannel.getKeyPair().getPrivate();
+            ByteString serverCertificate = secureChannel.getRemoteCertificateBytes();
+
+            // Signature data is serverCert + serverNonce signed with our private key.
+            byte[] serverNonceBytes = serverNonce.bytesOrEmpty();
+            byte[] serverCertificateBytes = serverCertificate.bytesOrEmpty();
+            byte[] dataToSign = Bytes.concat(serverCertificateBytes, serverNonceBytes);
+
+            byte[] signature = SignatureUtil.sign(
+                signatureAlgorithm,
+                privateKey,
+                ByteBuffer.wrap(dataToSign)
+            );
+
+            return new SignatureData(signatureAlgorithm.getUri(), ByteString.of(signature));
+        }
     }
 
 }

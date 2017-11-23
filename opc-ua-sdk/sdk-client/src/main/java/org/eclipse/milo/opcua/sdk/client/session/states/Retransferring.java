@@ -16,7 +16,7 @@ package org.eclipse.milo.opcua.sdk.client.session.states;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
-import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
-public class Retransferring extends AbstractState implements State {
+public class Retransferring extends AbstractSessionState implements SessionState {
 
     private CompletableFuture<OpcUaSession> sessionFuture;
 
@@ -35,12 +35,12 @@ public class Retransferring extends AbstractState implements State {
     }
 
     @Override
-    public void onExternalTransition(SessionFsm fsm, State from, Event event) {
+    public void onExternalTransition(Fsm fsm, SessionState from, Event event) {
         sessionFuture = from.getSessionFuture();
     }
 
     @Override
-    public void onInternalTransition(SessionFsm fsm, Event event) {
+    public void onInternalTransition(Fsm fsm, Event event) {
         if (event instanceof CreateSessionEvent) {
             CreateSessionEvent e = (CreateSessionEvent) event;
 
@@ -49,7 +49,7 @@ public class Retransferring extends AbstractState implements State {
     }
 
     @Override
-    public State execute(SessionFsm fsm, Event event) {
+    public SessionState execute(Fsm fsm, Event event) {
         if (event instanceof TransferSuccessEvent) {
             OpcUaSession session = ((TransferSuccessEvent) event).getSession();
 
