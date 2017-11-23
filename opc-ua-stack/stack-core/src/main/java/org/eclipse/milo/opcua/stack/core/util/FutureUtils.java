@@ -114,7 +114,7 @@ public class FutureUtils {
     }
 
     /**
-     * Complete {@code future} with the result of another {@link CompletableFuture} that is provided to the returned
+     * Complete {@code future} with the result of the {@link CompletableFuture} that is provided to the returned
      * {@link CompletionBuilder}.
      *
      * @param future the future to complete.
@@ -124,9 +124,21 @@ public class FutureUtils {
         return new CompletionBuilder<>(future);
     }
 
-    public static final class CompletionBuilder<T> {
+    /**
+     * Complete {@code future} asynchronously with the result of the {@link CompletableFuture} that is provided to
+     * the returned {@link CompletionBuilder}.
+     *
+     * @param future   the future to complete.
+     * @param executor the {@link Executor} to use.
+     * @return a {@link CompletionBuilder}.
+     */
+    public static <T> CompletionBuilder<T> completeAsync(CompletableFuture<T> future, Executor executor) {
+        return new AsyncCompletionBuilder<>(future, executor);
+    }
 
-        private final CompletableFuture<T> toComplete;
+    public static class CompletionBuilder<T> {
+
+        final CompletableFuture<T> toComplete;
 
         private CompletionBuilder(CompletableFuture<T> toComplete) {
             this.toComplete = toComplete;
@@ -147,15 +159,20 @@ public class FutureUtils {
             return toComplete;
         }
 
-        /**
-         * Complete the contained to-be-completed {@link CompletableFuture} using the result of {@code future}
-         * asynchronously using the provided {@link Executor}.
-         *
-         * @param future   the {@link CompletableFuture} to use as the result for the contained future.
-         * @param executor the {@link Executor} to use.
-         * @return the original, to-be-completed future provided to this {@link CompletionBuilder}.
-         */
-        public CompletableFuture<T> withAsync(CompletableFuture<T> future, Executor executor) {
+    }
+
+    private static final class AsyncCompletionBuilder<T> extends CompletionBuilder<T> {
+
+        private final Executor executor;
+
+        AsyncCompletionBuilder(CompletableFuture<T> toComplete, Executor executor) {
+            super(toComplete);
+
+            this.executor = executor;
+        }
+
+        @Override
+        public CompletableFuture<T> with(CompletableFuture<T> future) {
             future.whenCompleteAsync((v, ex) -> {
                 if (ex != null) toComplete.completeExceptionally(ex);
                 else toComplete.complete(v);

@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.completeAsync;
 
 public class SessionFsm {
 
@@ -71,8 +71,10 @@ public class SessionFsm {
 
         fireEvent(new CreateSessionEvent(sessionFuture));
 
-        return complete(new CompletableFuture<OpcUaSession>())
-            .withAsync(sessionFuture, client.getConfig().getExecutor());
+        return completeAsync(
+            new CompletableFuture<OpcUaSession>(),
+            client.getConfig().getExecutor()
+        ).with(sessionFuture);
     }
 
     public CompletableFuture<Unit> closeSession() {
@@ -80,8 +82,10 @@ public class SessionFsm {
 
         fireEvent(new CloseSessionEvent(closeFuture));
 
-        return complete(new CompletableFuture<Unit>())
-            .withAsync(closeFuture, client.getConfig().getExecutor());
+        return completeAsync(
+            new CompletableFuture<Unit>(),
+            client.getConfig().getExecutor()
+        ).with(closeFuture);
     }
 
     public CompletableFuture<OpcUaSession> getSession() {
@@ -92,8 +96,10 @@ public class SessionFsm {
             if (sessionFuture.isDone()) {
                 return sessionFuture;
             } else {
-                return complete(new CompletableFuture<OpcUaSession>())
-                    .withAsync(sessionFuture, client.getConfig().getExecutor());
+                return completeAsync(
+                    new CompletableFuture<OpcUaSession>(),
+                    client.getConfig().getExecutor()
+                ).with(sessionFuture);
             }
         } finally {
             readWriteLock.readLock().unlock();
