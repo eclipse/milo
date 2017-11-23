@@ -124,11 +124,9 @@ public class Active extends AbstractSessionState implements SessionState {
 
         @Override
         public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-            logger.info(
+            logger.debug(
                 "[local={}, remote={}] channelInactive()",
-                ctx.channel().localAddress(),
-                ctx.channel().remoteAddress()
-            );
+                ctx.channel().localAddress(), ctx.channel().remoteAddress());
 
             fsm.fireEvent(new ChannelInactiveEvent());
 

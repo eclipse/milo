@@ -17,14 +17,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
-import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,11 +75,6 @@ public class Transferring extends AbstractSessionState implements SessionState {
             // CloseSessionEvent preempted our receipt of a TransferFailureEvent or TransferSuccessEvent.
             // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
-        } else if (event instanceof ChannelInactiveEvent) {
-            sessionFuture.completeExceptionally(
-                new UaException(StatusCodes.Bad_ConnectionClosed));
-
-            return new Inactive();
         } else {
             return this;
         }

@@ -77,11 +77,6 @@ public class Activating extends AbstractSessionState implements SessionState {
             // ActivateSessionFailureEvent or ActivateSessionSuccessEvent.
             // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
-        } else if (event instanceof ChannelInactiveEvent) {
-            sessionFuture.completeExceptionally(
-                new UaException(StatusCodes.Bad_ConnectionClosed));
-
-            return new Inactive();
         } else {
             return this;
         }

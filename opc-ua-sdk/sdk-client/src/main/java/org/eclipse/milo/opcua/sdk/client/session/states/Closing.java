@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionSuccessEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
@@ -126,13 +125,6 @@ public class Closing extends AbstractSessionState implements SessionState {
 
             sessionFuture.completeExceptionally(
                 new UaException(StatusCodes.Bad_SessionClosed));
-
-            return new Inactive();
-        } else if (event instanceof ChannelInactiveEvent) {
-            closeFuture.complete(Unit.VALUE);
-
-            sessionFuture.completeExceptionally(
-                new UaException(StatusCodes.Bad_ConnectionClosed));
 
             return new Inactive();
         } else {

@@ -17,14 +17,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
-import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
@@ -72,15 +69,6 @@ public class Recreating extends AbstractSessionState implements SessionState {
             // CreateSessionFailureEvent or CreateSessionSuccessEvent.
             // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
-        } else if (event instanceof ChannelInactiveEvent) {
-            sessionFuture.completeExceptionally(
-                new UaException(StatusCodes.Bad_ConnectionClosed));
-
-            Recreating recreating = new Recreating();
-
-            createSessionAsync(fsm, recreating.getSessionFuture());
-
-            return recreating;
         } else {
             return this;
         }

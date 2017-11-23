@@ -17,14 +17,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
-import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
@@ -73,11 +70,6 @@ public class Creating extends AbstractSessionState implements SessionState {
             return new Inactive();
         } else if (e instanceof CloseSessionEvent) {
             return new Closing();
-        } else if (e instanceof ChannelInactiveEvent) {
-            sessionFuture.completeExceptionally(
-                new UaException(StatusCodes.Bad_ConnectionClosed));
-
-            return new Inactive();
         } else {
             return this;
         }
