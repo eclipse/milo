@@ -65,10 +65,10 @@ public class SecureClientExampleRunner {
         loader.load();
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
-            .setApplicationUri("urn:eclipse:milo:examples:client")
+            .setApplicationName(LocalizedText.english("fraunhofer opc-ua client"))
+            .setApplicationUri("opcuakey")
             .setCertificate(clientExample.getClientCertificate())
-            .setKeyPair(loader.getClientKeyPair())
+            .setKeyPair(clientExample.getKeyPair())
             .setEndpoint(endpoint)
             .setIdentityProvider(clientExample.getIdentityProvider())
             .setRequestTimeout(uint(5000))

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -39,9 +40,10 @@ import java.util.concurrent.CompletableFuture;
 public class SecureClientExample implements ClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    SecurityPolicy securityPolicy = SecurityPolicy.valueOf("Basic256Sha256");
-    IdentityProvider identityProvider;
-    X509Certificate cert;
+    private SecurityPolicy securityPolicy = SecurityPolicy.valueOf("Basic256Sha256");
+    private IdentityProvider identityProvider;
+    private X509Certificate cert;
+    private KeyPair keyPair;
 
     public static void main(String[] args) throws Exception {
         SecureClientExample example = new SecureClientExample();
@@ -71,6 +73,8 @@ public class SecureClientExample implements ClientExample {
             /* Get certificate of public key */
             cert = (X509Certificate) keystore.getCertificate("opcuakey");
 
+            keyPair= new KeyPair(cert.getPublicKey(), key);
+
             identityProvider = new X509IdentityProvider(cert, key);
         } catch (FileNotFoundException f){
             logger.error("Keystore file not found.");
@@ -95,6 +99,10 @@ public class SecureClientExample implements ClientExample {
 
     X509Certificate getClientCertificate() {
         return cert;
+    }
+
+    KeyPair getKeyPair(){
+        return keyPair;
     }
 
     @Override
