@@ -113,18 +113,18 @@ public class DataTypeDictionaryReader {
     }
 
     private CompletableFuture<DataTypeDictionary<?>> readDataTypeDictionary(NodeId nodeId) {
-        return readDataTypeDictionaryBytes(nodeId)
+        return readDataTypeDictionaryBytes(nodeId, DEFAULT_FRAGMENT_SIZE)
             .thenCompose(this::createDataTypeDictionary)
             .exceptionally(ex -> null);
     }
 
-    private CompletableFuture<ByteString> readDataTypeDictionaryBytes(NodeId nodeId) {
+    CompletableFuture<ByteString> readDataTypeDictionaryBytes(NodeId nodeId, int fragmentSize) {
         CompositeByteBuf fragmentBuffer = Unpooled.compositeBuffer();
 
         CompletableFuture<ByteBuf> future = readFragments(
             nodeId,
             fragmentBuffer,
-            DEFAULT_FRAGMENT_SIZE,
+            fragmentSize,
             0
         );
 
@@ -138,7 +138,7 @@ public class DataTypeDictionaryReader {
     private CompletableFuture<ByteBuf> readFragments(
         NodeId nodeId, CompositeByteBuf fragmentBuffer, int fragmentSize, int index) {
 
-        Preconditions.checkArgument(fragmentSize > 0, "fragmentSize > 0");
+        Preconditions.checkArgument(fragmentSize > 0, "fragmentSize=" + fragmentSize);
 
         String indexRange = fragmentSize <= 1 ?
             String.valueOf(index) :
@@ -155,7 +155,7 @@ public class DataTypeDictionaryReader {
             ))
         ).thenApply(r -> l(r.getResults()).get(0));
 
-        return valueFuture.thenCompose(value -> {
+        return valueFuture.thenComposeAsync(value -> {
             StatusCode statusCode = value.getStatusCode();
 
             if (statusCode.isGood()) {
