@@ -69,6 +69,8 @@ public class Creating extends AbstractSessionState implements SessionState {
 
             return new Inactive();
         } else if (e instanceof CloseSessionEvent) {
+            // CloseSessionEvent preempted our receipt of a success/failure event.
+            // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
         } else {
             return this;

@@ -22,14 +22,10 @@ import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class Transferring extends AbstractSessionState implements SessionState {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Transferring.class);
 
     private CompletableFuture<OpcUaSession> sessionFuture;
 
@@ -72,7 +68,7 @@ public class Transferring extends AbstractSessionState implements SessionState {
 
             return closing;
         } else if (event instanceof CloseSessionEvent) {
-            // CloseSessionEvent preempted our receipt of a TransferFailureEvent or TransferSuccessEvent.
+            // CloseSessionEvent preempted our receipt of a success/failure event.
             // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
         } else {

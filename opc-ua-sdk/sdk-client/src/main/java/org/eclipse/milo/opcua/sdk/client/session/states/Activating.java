@@ -19,20 +19,13 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionSuccessEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class Activating extends AbstractSessionState implements SessionState {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Activating.class);
 
     private CompletableFuture<OpcUaSession> sessionFuture;
 
@@ -73,8 +66,7 @@ public class Activating extends AbstractSessionState implements SessionState {
 
             return new Inactive();
         } else if (event instanceof CloseSessionEvent) {
-            // CloseSessionEvent preempted our receipt of an
-            // ActivateSessionFailureEvent or ActivateSessionSuccessEvent.
+            // CloseSessionEvent preempted our receipt of a success/failure event.
             // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
         } else {

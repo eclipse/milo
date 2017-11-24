@@ -104,8 +104,6 @@ public class Active extends AbstractSessionState implements SessionState {
         } else if (e instanceof ServiceFaultEvent) {
             // Try to close the underlying channel and then regardless of the result start reactivating.
 
-            final Reactivating reactivating = new Reactivating();
-
             final CompletableFuture<Unit> disconnected = new CompletableFuture<>();
 
             fsm.getClient().getStackClient().getChannelFuture().whenComplete((c, ex) -> {
@@ -122,6 +120,8 @@ public class Active extends AbstractSessionState implements SessionState {
                     disconnected.complete(Unit.VALUE);
                 }
             });
+
+            Reactivating reactivating = new Reactivating();
 
             disconnected.whenComplete((u, ex) ->
                 reactivateSessionAsync(

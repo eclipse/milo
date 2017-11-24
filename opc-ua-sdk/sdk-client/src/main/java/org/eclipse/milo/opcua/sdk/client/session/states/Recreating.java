@@ -65,8 +65,7 @@ public class Recreating extends AbstractSessionState implements SessionState {
 
             return recreating;
         } else if (event instanceof CloseSessionEvent) {
-            // CloseSessionEvent preempted our receipt of an
-            // CreateSessionFailureEvent or CreateSessionSuccessEvent.
+            // CloseSessionEvent preempted our receipt of a success/failure event.
             // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
         } else {

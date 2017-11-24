@@ -66,10 +66,8 @@ public class Retransferring extends AbstractSessionState implements SessionState
             createSessionAsync(fsm, recreating.getSessionFuture());
 
             return recreating;
-        } else if (event instanceof CreateSessionEvent) {
-            return this;
         } else if (event instanceof CloseSessionEvent) {
-            // CloseSessionEvent preempted our receipt of a TransferFailureEvent or TransferSuccessEvent.
+            // CloseSessionEvent preempted our receipt of a success/failure event.
             // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
         } else {

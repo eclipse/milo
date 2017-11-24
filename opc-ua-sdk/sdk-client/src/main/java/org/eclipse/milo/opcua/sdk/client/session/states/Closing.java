@@ -33,14 +33,10 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class Closing extends AbstractSessionState implements SessionState {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Closing.class);
 
     private CompletableFuture<Unit> closeFuture = new CompletableFuture<>();
     private CompletableFuture<OpcUaSession> sessionFuture;

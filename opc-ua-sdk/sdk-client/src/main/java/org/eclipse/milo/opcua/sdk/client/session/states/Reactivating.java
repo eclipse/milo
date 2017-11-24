@@ -28,14 +28,10 @@ import org.eclipse.milo.opcua.sdk.client.session.events.ReactivateSuccessEvent;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class Reactivating extends AbstractSessionState implements SessionState {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Reactivating.class);
 
     private CompletableFuture<OpcUaSession> sessionFuture = new CompletableFuture<>();
 
@@ -112,6 +108,8 @@ public class Reactivating extends AbstractSessionState implements SessionState {
 
             return recreating;
         } else if (event instanceof CloseSessionEvent) {
+            // CloseSessionEvent preempted our receipt of a success/failure event.
+            // Closing state will receive one of those events and execute the appropriate action.
             return new Closing();
         } else {
             return this;
