@@ -37,7 +37,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
 
-import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
@@ -68,7 +67,7 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
     }
 
     @Override
-    protected JsonElement opcUaToMemberTypeScalar(String name, Object value) {
+    protected JsonElement opcUaToMemberTypeScalar(String name, Object value, String typeName) {
         if (value == null) {
             return JsonNull.INSTANCE;
         } else if (value instanceof Number) {
@@ -115,11 +114,11 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
     }
 
     @Override
-    protected JsonElement opcUaToMemberTypeArray(String name, List<Object> values) {
+    protected JsonElement opcUaToMemberTypeArray(String name, List<Object> values, String typeName) {
         JsonArray array = new JsonArray();
 
         for (Object value : values) {
-            array.add(opcUaToMemberTypeScalar(name, value));
+            array.add(opcUaToMemberTypeScalar(name, value, typeName));
         }
 
         return array;
@@ -242,10 +241,12 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
     }
 
     @Override
-    protected List<JsonElement> getMembers(JsonObject value) {
-        return value.entrySet().stream()
-            .map(Map.Entry::getValue)
-            .collect(toList());
+    protected Map<String, JsonElement> getMembers(JsonObject value) {
+        LinkedHashMap<String, JsonElement> members = new LinkedHashMap<>();
+
+        value.entrySet().forEach(e -> members.put(e.getKey(), e.getValue()));
+
+        return members;
     }
 
 }

@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.binaryschema;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +25,7 @@ import java.util.function.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
@@ -57,6 +57,7 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
 
     private static final ImmutableMap<String, Function<OpcUaBinaryStreamDecoder, Object>> READERS;
     private static final ImmutableMap<String, BiConsumer<OpcUaBinaryStreamEncoder, Object>> WRITERS;
+    private static final ImmutableMap<String, Class<?>> TYPE_CLASS_MAP;
 
     static {
         READERS = ImmutableMap.<String, Function<OpcUaBinaryStreamDecoder, Object>>builder()
@@ -136,6 +137,41 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
 //            .put("WideString", (w, v) -> w.writeUtf16NullTerminatedString((String) v))
 
             .build();
+
+        TYPE_CLASS_MAP = ImmutableMap.<String, Class<?>>builder()
+            .put("Boolean", BuiltinDataType.Boolean.getBackingClass())
+            .put("SByte", BuiltinDataType.SByte.getBackingClass())
+            .put("Int16", BuiltinDataType.Int16.getBackingClass())
+            .put("Int32", BuiltinDataType.Int32.getBackingClass())
+            .put("Int64", BuiltinDataType.Int64.getBackingClass())
+            .put("Byte", BuiltinDataType.Byte.getBackingClass())
+            .put("UInt16", BuiltinDataType.UInt16.getBackingClass())
+            .put("UInt32", BuiltinDataType.UInt32.getBackingClass())
+            .put("UInt64", BuiltinDataType.UInt64.getBackingClass())
+            .put("Float", BuiltinDataType.Float.getBackingClass())
+            .put("Double", BuiltinDataType.Double.getBackingClass())
+            .put("String", BuiltinDataType.String.getBackingClass())
+            .put("DateTime", BuiltinDataType.DateTime.getBackingClass())
+            .put("Guid", BuiltinDataType.Guid.getBackingClass())
+            .put("ByteString", BuiltinDataType.ByteString.getBackingClass())
+            .put("XmlElement", BuiltinDataType.XmlElement.getBackingClass())
+            .put("NodeId", BuiltinDataType.NodeId.getBackingClass())
+            .put("ExpandedNodeId", BuiltinDataType.ExpandedNodeId.getBackingClass())
+            .put("StatusCode", BuiltinDataType.StatusCode.getBackingClass())
+            .put("QualifiedName", BuiltinDataType.QualifiedName.getBackingClass())
+            .put("LocalizedText", BuiltinDataType.LocalizedText.getBackingClass())
+            .put("ExtensionObject", BuiltinDataType.ExtensionObject.getBackingClass())
+            .put("DataValue", BuiltinDataType.DataValue.getBackingClass())
+            .put("Variant", BuiltinDataType.Variant.getBackingClass())
+            .put("DiagnosticInfo", BuiltinDataType.DiagnosticInfo.getBackingClass())
+
+            .put("Bit", Integer.class)
+            .put("Char", Character.class)
+            .put("CharArray", String.class)
+            .put("WideChar", Character.class)
+            .put("WideCharArray", String.class)
+            .put("WideString", String.class)
+            .build();
     }
 
     private final StructuredType structuredType;
@@ -151,30 +187,28 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
 
         LinkedHashMap<String, MemberType> members = new LinkedHashMap<>();
 
-        PeekingIterator<FieldType> iterator = Iterators
+        PeekingIterator<FieldType> fieldIterator = Iterators
             .peekingIterator(structuredType.getField().iterator());
 
-        while (iterator.hasNext()) {
-            FieldType field = iterator.next();
+        while (fieldIterator.hasNext()) {
+            FieldType field = fieldIterator.next();
             String fieldName = field.getName();
-
-            if (!fieldIsPresent(field, members)) {
-                members.put(fieldName, opcUaToMemberTypeScalar(fieldName, null));
-                continue;
-            }
-
             String typeName = field.getTypeName().getLocalPart();
             String typeNamespace = field.getTypeName().getNamespaceURI();
+
+            if (!fieldIsPresent(field, members)) {
+                continue;
+            }
 
             if (fieldIsScalar(field)) {
                 if (Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace)) {
                     Object value = READERS.get(typeName).apply(decoder);
 
-                    members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value));
+                    members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value, typeName));
                 } else {
                     Object value = context.decode(typeNamespace, typeName, decoder);
 
-                    members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value));
+                    members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value, typeName));
                 }
             } else {
                 if (field.isIsLengthInBytes()) {
@@ -196,7 +230,7 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
                         bitAccumulation = bitAccumulation.shiftLeft(1).or(bitValue);
                     }
 
-                    members.put(fieldName, opcUaToMemberTypeScalar(fieldName, bitAccumulation));
+                    members.put(fieldName, opcUaToMemberTypeScalar(fieldName, bitAccumulation.intValue(), typeName));
                 } else {
                     List<Object> values = new ArrayList<>();
 
@@ -214,14 +248,8 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
                         }
                     }
 
-                    members.put(fieldName, opcUaToMemberTypeArray(fieldName, values));
+                    members.put(fieldName, opcUaToMemberTypeArray(fieldName, values, typeName));
                 }
-
-                // TODO don't include length field
-//                if (field.getLengthField() != null) {
-//                    // Don't include length fields as MemberTypes in the resulting StructureType
-//                    members.remove(field.getLengthField());
-//                }
             }
         }
 
@@ -234,27 +262,17 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
         StructureType structure,
         OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
 
-        LinkedHashMap<String, MemberType> members = new LinkedHashMap<>();
+        LinkedHashMap<String, MemberType> members = new LinkedHashMap<>(getMembers(structure));
 
-        Iterator<MemberType> memberIterator = getMembers(structure).iterator();
-        Iterator<FieldType> fieldIterator = structuredType.getField().iterator();
-
-
-        // TODO this may not work in the presence of optional fields...
-        // instead: move iteration of memberIterator inside the iteration of fieldIterator?
-
-        while (memberIterator.hasNext() && fieldIterator.hasNext()) {
-            MemberType member = memberIterator.next();
-            FieldType field = fieldIterator.next();
-
+        for (FieldType field : structuredType.getField()) {
             if (!fieldIsPresent(field, members)) {
                 continue;
             }
 
-            members.put(field.getName(), member);
-
             String typeName = field.getTypeName().getLocalPart();
             String typeNamespace = field.getTypeName().getNamespaceURI();
+
+            MemberType member = members.get(field.getName());
 
             if (fieldIsScalar(field)) {
                 Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
@@ -277,7 +295,9 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
                     (Namespaces.OPC_UA.equals(typeNamespace) ||
                         Namespaces.OPC_UA_BSD.equals(typeNamespace))) {
 
-                    BigInteger bi = (BigInteger) memberTypeToOpcUaScalar(member, typeName);
+                    // TODO why scalar? this is a bit array...
+                    Number number = (Number) memberTypeToOpcUaScalar(member, typeName);
+                    BigInteger bi = BigInteger.valueOf(number.longValue());
 
                     for (int i = 0; i < length; i++) {
                         encoder.writeBit(bi.shiftRight(i).and(BigInteger.ONE).intValue());
@@ -307,11 +327,27 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
 
     protected abstract StructureType createStructure(String name, LinkedHashMap<String, MemberType> members);
 
-    protected abstract List<MemberType> getMembers(StructureType value);
+    protected abstract Map<String, MemberType> getMembers(StructureType value);
 
-    protected abstract MemberType opcUaToMemberTypeScalar(String name, Object value);
+    /**
+     * Convert an OPC UA scalar value into a member of type {@link MemberType}.
+     *
+     * @param name     then name of the member.
+     * @param value    the value of the member.
+     * @param typeName the name of the OPC UA DataType.
+     * @return a member of type {@link MemberType}.
+     */
+    protected abstract MemberType opcUaToMemberTypeScalar(String name, Object value, String typeName);
 
-    protected abstract MemberType opcUaToMemberTypeArray(String name, List<Object> values);
+    /**
+     * Convert an OPC UA array value into a member of type {@link MemberType}.
+     *
+     * @param name     the name of the member.
+     * @param values   the values of the member array.
+     * @param typeName the name of the OPC UA DataType.
+     * @return member of type {@link MemberType}.
+     */
+    protected abstract MemberType opcUaToMemberTypeArray(String name, List<Object> values, String typeName);
 
     protected abstract Object memberTypeToOpcUaScalar(MemberType member, String typeName);
 
