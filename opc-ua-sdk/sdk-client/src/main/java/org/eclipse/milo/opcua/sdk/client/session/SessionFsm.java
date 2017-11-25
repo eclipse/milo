@@ -207,7 +207,8 @@ public class SessionFsm {
 
             return status == StatusCodes.Bad_SecureChannelIdInvalid ||
                 status == StatusCodes.Bad_SecurityChecksFailed ||
-                status == StatusCodes.Bad_TcpSecureChannelUnknown;
+                status == StatusCodes.Bad_TcpSecureChannelUnknown ||
+                status == StatusCodes.Bad_RequestTypeInvalid;
         };
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
