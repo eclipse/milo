@@ -239,6 +239,8 @@ public class ClientServerTest extends SecurityFixture {
 
         // Test some where we don't wait for disconnect to finish...
         for (int i = 0; i < 1000; i++) {
+            client.connect().get();
+
             RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
                 DateTime.now(),
@@ -255,6 +257,8 @@ public class ClientServerTest extends SecurityFixture {
 
         // and test some where we DO wait...
         for (int i = 0; i < 1000; i++) {
+            client.connect().get();
+
             RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
                 DateTime.now(),
@@ -279,6 +283,8 @@ public class ClientServerTest extends SecurityFixture {
             SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri()), endpoint.getSecurityMode(), input);
 
         UaTcpStackClient client = createClient(endpoint);
+
+        client.connect().get();
 
         RequestHeader header = new RequestHeader(
             NodeId.NULL_VALUE,
@@ -313,6 +319,8 @@ public class ClientServerTest extends SecurityFixture {
 
         UaTcpStackClient client = createClient(endpoint);
 
+        client.connect().get();
+
         RequestHeader header = new RequestHeader(
             NodeId.NULL_VALUE,
             DateTime.now(),
@@ -344,6 +352,8 @@ public class ClientServerTest extends SecurityFixture {
             SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri()), endpoint.getSecurityMode(), input);
 
         UaTcpStackClient client = createClient(endpoint);
+
+        client.connect().get();
 
         RequestHeader header = new RequestHeader(
             NodeId.NULL_VALUE,
