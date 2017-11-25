@@ -121,7 +121,7 @@ public class UaTcpStackClient implements UaStackClient {
     public CompletableFuture<UaStackClient> connect() {
         CompletableFuture<UaStackClient> future = new CompletableFuture<>();
 
-        channelManager.getChannel().whenComplete((ch, ex) -> {
+        channelManager.connect().whenComplete((ch, ex) -> {
             if (ch != null) future.complete(this);
             else future.completeExceptionally(ex);
         });
@@ -525,9 +525,11 @@ public class UaTcpStackClient implements UaStackClient {
             new RequestHeader(null, DateTime.now(), uint(1), uint(0), null, uint(5000), null),
             endpointUrl, null, new String[]{Stack.UA_TCP_BINARY_TRANSPORT_URI});
 
-        return client.<GetEndpointsResponse>sendRequest(request)
-            .whenComplete((r, ex) -> client.disconnect())
-            .thenApply(GetEndpointsResponse::getEndpoints);
+        return client.connect().thenCompose(c ->
+            c.<GetEndpointsResponse>sendRequest(request)
+                .whenComplete((r, ex) -> client.disconnect())
+                .thenApply(GetEndpointsResponse::getEndpoints)
+        );
     }
 
 }

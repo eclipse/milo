@@ -119,6 +119,7 @@ public class OpcUaClientIT {
             .build();
 
         client = new OpcUaClient(clientConfig);
+        client.connect().get();
     }
 
     private void startServer() throws Exception {
@@ -562,6 +563,8 @@ public class OpcUaClientIT {
         for (Thread thread : threads) {
             thread.join();
         }
+
+        client.connect().get();
     }
 
     @Test
@@ -582,6 +585,7 @@ public class OpcUaClientIT {
             .build();
 
         OpcUaClient client = new OpcUaClient(clientConfig);
+        client.connect().get();
 
         VariableNode currentTimeNode = client.getAddressSpace()
             .createVariableNode(Identifiers.Server_ServerStatus_CurrentTime);
