@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.examples.server;
+package org.eclipse.milo.examples.client;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,18 +35,18 @@ class KeyStoreLoader {
     private static final Pattern IP_ADDR_PATTERN = Pattern.compile(
         "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    private static final String SERVER_ALIAS = "server-ai";
+    private static final String CLIENT_ALIAS = "client-ai";
     private static final char[] PASSWORD = "password".toCharArray();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private X509Certificate serverCertificate;
-    private KeyPair serverKeyPair;
+    private X509Certificate clientCertificate;
+    private KeyPair clientKeyPair;
 
     KeyStoreLoader load(File baseDir) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
-        File serverKeyStore = baseDir.toPath().resolve("example-server.pfx").toFile();
+        File serverKeyStore = baseDir.toPath().resolve("example-client.pfx").toFile();
 
         logger.info("Loading KeyStore at {}", serverKeyStore);
 
@@ -56,13 +56,13 @@ class KeyStoreLoader {
             KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
             SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
-                .setCommonName("Eclipse Milo Example Server")
+                .setCommonName("Eclipse Milo Example Client")
                 .setOrganization("digitalpetri")
                 .setOrganizationalUnit("dev")
                 .setLocalityName("Folsom")
                 .setStateName("CA")
                 .setCountryCode("US")
-                .setApplicationUri("urn:eclipse:milo:examples:server")
+                .setApplicationUri("urn:eclipse:milo:examples:client")
                 .addDnsName("localhost")
                 .addIpAddress("127.0.0.1");
 
@@ -77,28 +77,28 @@ class KeyStoreLoader {
 
             X509Certificate certificate = builder.build();
 
-            keyStore.setKeyEntry(SERVER_ALIAS, keyPair.getPrivate(), PASSWORD, new X509Certificate[]{certificate});
+            keyStore.setKeyEntry(CLIENT_ALIAS, keyPair.getPrivate(), PASSWORD, new X509Certificate[]{certificate});
             keyStore.store(new FileOutputStream(serverKeyStore), PASSWORD);
         } else {
             keyStore.load(new FileInputStream(serverKeyStore), PASSWORD);
         }
 
-        Key serverPrivateKey = keyStore.getKey(SERVER_ALIAS, PASSWORD);
+        Key serverPrivateKey = keyStore.getKey(CLIENT_ALIAS, PASSWORD);
         if (serverPrivateKey instanceof PrivateKey) {
-            serverCertificate = (X509Certificate) keyStore.getCertificate(SERVER_ALIAS);
-            PublicKey serverPublicKey = serverCertificate.getPublicKey();
-            serverKeyPair = new KeyPair(serverPublicKey, (PrivateKey) serverPrivateKey);
+            clientCertificate = (X509Certificate) keyStore.getCertificate(CLIENT_ALIAS);
+            PublicKey serverPublicKey = clientCertificate.getPublicKey();
+            clientKeyPair = new KeyPair(serverPublicKey, (PrivateKey) serverPrivateKey);
         }
 
         return this;
     }
 
-    X509Certificate getServerCertificate() {
-        return serverCertificate;
+    X509Certificate getClientCertificate() {
+        return clientCertificate;
     }
 
-    KeyPair getServerKeyPair() {
-        return serverKeyPair;
+    KeyPair getClientKeyPair() {
+        return clientKeyPair;
     }
 
 }

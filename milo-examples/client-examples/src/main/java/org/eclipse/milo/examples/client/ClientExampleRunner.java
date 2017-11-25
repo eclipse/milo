@@ -13,12 +13,12 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.examples.client.util.KeyStoreLoader;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
@@ -38,8 +38,6 @@ public class ClientExampleRunner {
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
 
-    private final KeyStoreLoader loader = new KeyStoreLoader();
-
     private final ExampleServer exampleServer;
 
     private final ClientExample clientExample;
@@ -52,17 +50,23 @@ public class ClientExampleRunner {
     }
 
     private OpcUaClient createClient() throws Exception {
+        File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
+
+        LoggerFactory.getLogger(getClass())
+            .info("security temp dir: {}", securityTempDir.getAbsolutePath());
+
+        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
+
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/example").get();
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints("opc.tcp://localhost:12686/example").get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
-
-        loader.load();
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))

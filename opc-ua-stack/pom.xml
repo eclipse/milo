@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <bouncycastle.version>1.58</bouncycastle.version>
         <guava.version>19.0</guava.version>
         <javassist.version>3.20.0-GA</javassist.version>
         <jool.version>0.9.10</jool.version>
