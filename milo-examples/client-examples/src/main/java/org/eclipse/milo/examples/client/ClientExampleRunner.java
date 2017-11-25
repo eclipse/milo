@@ -116,7 +116,7 @@ public class ClientExampleRunner {
 
             try {
                 clientExample.run(client, future);
-                future.get(10, TimeUnit.SECONDS);
+                future.get(15, TimeUnit.SECONDS);
             } catch (Throwable t) {
                 logger.error("Error running client example: {}", t.getMessage(), t);
                 future.complete(client);

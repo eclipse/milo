@@ -131,7 +131,7 @@ public class ProsysEventSubscriptionExample implements ClientExample {
 
     @Override
     public String getEndpointUrl() {
-        return "opc.tcp://kevins-mbp.lan:53530/OPCUA/SimulationServer";
+        return "opc.tcp://localhost:53530/OPCUA/SimulationServer";
     }
 
 }
