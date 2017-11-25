@@ -129,7 +129,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public TwoStateVariableNode getEnabledStateNode() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -143,7 +143,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public ConditionVariableNode getQualityNode() {
-        Optional<VariableNode> component = getVariableComponent("Quality");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Quality");
         return component.map(node -> (ConditionVariableNode) node).orElse(null);
     }
 
@@ -157,7 +157,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public ConditionVariableNode getLastSeverityNode() {
-        Optional<VariableNode> component = getVariableComponent("LastSeverity");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LastSeverity");
         return component.map(node -> (ConditionVariableNode) node).orElse(null);
     }
 
@@ -171,7 +171,7 @@ public class ConditionNode extends BaseEventNode implements ConditionType {
     }
 
     public ConditionVariableNode getCommentNode() {
-        Optional<VariableNode> component = getVariableComponent("Comment");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Comment");
         return component.map(node -> (ConditionVariableNode) node).orElse(null);
     }
 

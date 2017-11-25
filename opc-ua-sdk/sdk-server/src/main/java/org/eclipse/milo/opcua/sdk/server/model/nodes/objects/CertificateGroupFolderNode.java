@@ -38,17 +38,17 @@ public class CertificateGroupFolderNode extends FolderNode implements Certificat
     }
 
     public CertificateGroupNode getDefaultApplicationGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("DefaultApplicationGroup");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultApplicationGroup");
         return component.map(node -> (CertificateGroupNode) node).orElse(null);
     }
 
     public CertificateGroupNode getDefaultHttpsGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("DefaultHttpsGroup");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultHttpsGroup");
         return component.map(node -> (CertificateGroupNode) node).orElse(null);
     }
 
     public CertificateGroupNode getDefaultUserTokenGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("DefaultUserTokenGroup");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultUserTokenGroup");
         return component.map(node -> (CertificateGroupNode) node).orElse(null);
     }
 }

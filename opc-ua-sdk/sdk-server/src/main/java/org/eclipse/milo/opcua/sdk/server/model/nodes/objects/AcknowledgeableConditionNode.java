@@ -41,7 +41,7 @@ public class AcknowledgeableConditionNode extends ConditionNode implements Ackno
     }
 
     public TwoStateVariableNode getEnabledStateNode() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -55,7 +55,7 @@ public class AcknowledgeableConditionNode extends ConditionNode implements Ackno
     }
 
     public TwoStateVariableNode getAckedStateNode() {
-        Optional<VariableNode> component = getVariableComponent("AckedState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "AckedState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -69,7 +69,7 @@ public class AcknowledgeableConditionNode extends ConditionNode implements Ackno
     }
 
     public TwoStateVariableNode getConfirmedStateNode() {
-        Optional<VariableNode> component = getVariableComponent("ConfirmedState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ConfirmedState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 

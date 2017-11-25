@@ -140,7 +140,7 @@ public class NamespaceMetadataNode extends BaseObjectNode implements NamespaceMe
     }
 
     public AddressSpaceFileNode getNamespaceFileNode() {
-        Optional<ObjectNode> component = getObjectComponent("NamespaceFile");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "NamespaceFile");
         return component.map(node -> (AddressSpaceFileNode) node).orElse(null);
     }
 }

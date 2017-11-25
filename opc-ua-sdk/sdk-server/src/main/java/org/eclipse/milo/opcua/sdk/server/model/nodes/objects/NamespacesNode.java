@@ -38,7 +38,7 @@ public class NamespacesNode extends BaseObjectNode implements NamespacesType {
     }
 
     public AddressSpaceFileNode getAddressSpaceFileNode() {
-        Optional<ObjectNode> component = getObjectComponent("AddressSpaceFile");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "AddressSpaceFile");
         return component.map(node -> (AddressSpaceFileNode) node).orElse(null);
     }
 }

@@ -43,7 +43,7 @@ public class SamplingIntervalDiagnosticsArrayNode extends BaseDataVariableNode i
     }
 
     public SamplingIntervalDiagnosticsNode getSamplingIntervalDiagnosticsNode() {
-        Optional<VariableNode> component = getVariableComponent("SamplingIntervalDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnostics");
         return component.map(node -> (SamplingIntervalDiagnosticsNode) node).orElse(null);
     }
 

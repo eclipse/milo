@@ -42,7 +42,7 @@ public class TransitionEventNode extends BaseEventNode implements TransitionEven
     }
 
     public TransitionVariableNode getTransitionNode() {
-        Optional<VariableNode> component = getVariableComponent("Transition");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Transition");
         return component.map(node -> (TransitionVariableNode) node).orElse(null);
     }
 
@@ -56,7 +56,7 @@ public class TransitionEventNode extends BaseEventNode implements TransitionEven
     }
 
     public StateVariableNode getFromStateNode() {
-        Optional<VariableNode> component = getVariableComponent("FromState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "FromState");
         return component.map(node -> (StateVariableNode) node).orElse(null);
     }
 
@@ -70,7 +70,7 @@ public class TransitionEventNode extends BaseEventNode implements TransitionEven
     }
 
     public StateVariableNode getToStateNode() {
-        Optional<VariableNode> component = getVariableComponent("ToState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ToState");
         return component.map(node -> (StateVariableNode) node).orElse(null);
     }
 

@@ -62,7 +62,7 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public ServerDiagnosticsSummaryNode getServerDiagnosticsSummaryNode() {
-        Optional<VariableNode> component = getVariableComponent("ServerDiagnosticsSummary");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ServerDiagnosticsSummary");
         return component.map(node -> (ServerDiagnosticsSummaryNode) node).orElse(null);
     }
 
@@ -76,7 +76,7 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public SamplingIntervalDiagnosticsArrayNode getSamplingIntervalDiagnosticsArrayNode() {
-        Optional<VariableNode> component = getVariableComponent("SamplingIntervalDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnosticsArray");
         return component.map(node -> (SamplingIntervalDiagnosticsArrayNode) node).orElse(null);
     }
 
@@ -90,7 +90,7 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public SubscriptionDiagnosticsArrayNode getSubscriptionDiagnosticsArrayNode() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray");
         return component.map(node -> (SubscriptionDiagnosticsArrayNode) node).orElse(null);
     }
 
@@ -104,7 +104,7 @@ public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagn
     }
 
     public SessionsDiagnosticsSummaryNode getSessionsDiagnosticsSummaryNode() {
-        Optional<ObjectNode> component = getObjectComponent("SessionsDiagnosticsSummary");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "SessionsDiagnosticsSummary");
         return component.map(node -> (SessionsDiagnosticsSummaryNode) node).orElse(null);
     }
 }

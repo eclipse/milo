@@ -44,7 +44,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSessionIdNode() {
-        Optional<VariableNode> component = getVariableComponent("SessionId");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionId");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -58,7 +58,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getClientUserIdOfSessionNode() {
-        Optional<VariableNode> component = getVariableComponent("ClientUserIdOfSession");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdOfSession");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -72,7 +72,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getClientUserIdHistoryNode() {
-        Optional<VariableNode> component = getVariableComponent("ClientUserIdHistory");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientUserIdHistory");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -86,7 +86,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getAuthenticationMechanismNode() {
-        Optional<VariableNode> component = getVariableComponent("AuthenticationMechanism");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "AuthenticationMechanism");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -100,7 +100,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getEncodingNode() {
-        Optional<VariableNode> component = getVariableComponent("Encoding");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Encoding");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -114,7 +114,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getTransportProtocolNode() {
-        Optional<VariableNode> component = getVariableComponent("TransportProtocol");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "TransportProtocol");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -128,7 +128,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSecurityModeNode() {
-        Optional<VariableNode> component = getVariableComponent("SecurityMode");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecurityMode");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -142,7 +142,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getSecurityPolicyUriNode() {
-        Optional<VariableNode> component = getVariableComponent("SecurityPolicyUri");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SecurityPolicyUri");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -156,7 +156,7 @@ public class SessionSecurityDiagnosticsNode extends BaseDataVariableNode impleme
     }
 
     public BaseDataVariableNode getClientCertificateNode() {
-        Optional<VariableNode> component = getVariableComponent("ClientCertificate");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ClientCertificate");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 

@@ -126,7 +126,7 @@ public class DialogConditionNode extends ConditionNode implements DialogConditio
     }
 
     public TwoStateVariableNode getEnabledStateNode() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -140,7 +140,7 @@ public class DialogConditionNode extends ConditionNode implements DialogConditio
     }
 
     public TwoStateVariableNode getDialogStateNode() {
-        Optional<VariableNode> component = getVariableComponent("DialogState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "DialogState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 

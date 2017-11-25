@@ -42,7 +42,7 @@ public class FiniteStateMachineNode extends StateMachineNode implements FiniteSt
     }
 
     public FiniteStateVariableNode getCurrentStateNode() {
-        Optional<VariableNode> component = getVariableComponent("CurrentState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentState");
         return component.map(node -> (FiniteStateVariableNode) node).orElse(null);
     }
 
@@ -56,7 +56,7 @@ public class FiniteStateMachineNode extends StateMachineNode implements FiniteSt
     }
 
     public FiniteTransitionVariableNode getLastTransitionNode() {
-        Optional<VariableNode> component = getVariableComponent("LastTransition");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LastTransition");
         return component.map(node -> (FiniteTransitionVariableNode) node).orElse(null);
     }
 

@@ -41,7 +41,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public TwoStateVariableNode getActiveStateNode() {
-        Optional<VariableNode> component = getVariableComponent("ActiveState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -55,7 +55,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public TwoStateVariableNode getHighHighStateNode() {
-        Optional<VariableNode> component = getVariableComponent("HighHighState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "HighHighState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -69,7 +69,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public TwoStateVariableNode getHighStateNode() {
-        Optional<VariableNode> component = getVariableComponent("HighState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "HighState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -83,7 +83,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public TwoStateVariableNode getLowStateNode() {
-        Optional<VariableNode> component = getVariableComponent("LowState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LowState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -97,7 +97,7 @@ public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExc
     }
 
     public TwoStateVariableNode getLowLowStateNode() {
-        Optional<VariableNode> component = getVariableComponent("LowLowState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LowLowState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 

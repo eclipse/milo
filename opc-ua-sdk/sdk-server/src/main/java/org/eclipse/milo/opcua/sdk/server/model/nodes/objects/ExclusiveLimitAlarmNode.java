@@ -42,7 +42,7 @@ public class ExclusiveLimitAlarmNode extends LimitAlarmNode implements Exclusive
     }
 
     public TwoStateVariableNode getActiveStateNode() {
-        Optional<VariableNode> component = getVariableComponent("ActiveState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
@@ -56,7 +56,7 @@ public class ExclusiveLimitAlarmNode extends LimitAlarmNode implements Exclusive
     }
 
     public ExclusiveLimitStateMachineNode getLimitStateNode() {
-        Optional<ObjectNode> component = getObjectComponent("LimitState");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LimitState");
         return component.map(node -> (ExclusiveLimitStateMachineNode) node).orElse(null);
     }
 }

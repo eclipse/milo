@@ -144,7 +144,7 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public FiniteStateVariableNode getCurrentStateNode() {
-        Optional<VariableNode> component = getVariableComponent("CurrentState");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "CurrentState");
         return component.map(node -> (FiniteStateVariableNode) node).orElse(null);
     }
 
@@ -158,7 +158,7 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public FiniteTransitionVariableNode getLastTransitionNode() {
-        Optional<VariableNode> component = getVariableComponent("LastTransition");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "LastTransition");
         return component.map(node -> (FiniteTransitionVariableNode) node).orElse(null);
     }
 
@@ -172,7 +172,7 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public ProgramDiagnosticNode getProgramDiagnosticsNode() {
-        Optional<VariableNode> component = getVariableComponent("ProgramDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProgramDiagnostics");
         return component.map(node -> (ProgramDiagnosticNode) node).orElse(null);
     }
 
@@ -186,72 +186,72 @@ public class ProgramStateMachineNode extends FiniteStateMachineNode implements P
     }
 
     public BaseObjectNode getFinalResultDataNode() {
-        Optional<ObjectNode> component = getObjectComponent("FinalResultData");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "FinalResultData");
         return component.map(node -> (BaseObjectNode) node).orElse(null);
     }
 
     public StateNode getReadyNode() {
-        Optional<ObjectNode> component = getObjectComponent("Ready");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Ready");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getRunningNode() {
-        Optional<ObjectNode> component = getObjectComponent("Running");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Running");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getSuspendedNode() {
-        Optional<ObjectNode> component = getObjectComponent("Suspended");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Suspended");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public StateNode getHaltedNode() {
-        Optional<ObjectNode> component = getObjectComponent("Halted");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Halted");
         return component.map(node -> (StateNode) node).orElse(null);
     }
 
     public TransitionNode getHaltedToReadyNode() {
-        Optional<ObjectNode> component = getObjectComponent("HaltedToReady");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HaltedToReady");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getReadyToRunningNode() {
-        Optional<ObjectNode> component = getObjectComponent("ReadyToRunning");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ReadyToRunning");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getRunningToHaltedNode() {
-        Optional<ObjectNode> component = getObjectComponent("RunningToHalted");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "RunningToHalted");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getRunningToReadyNode() {
-        Optional<ObjectNode> component = getObjectComponent("RunningToReady");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "RunningToReady");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getRunningToSuspendedNode() {
-        Optional<ObjectNode> component = getObjectComponent("RunningToSuspended");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "RunningToSuspended");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getSuspendedToRunningNode() {
-        Optional<ObjectNode> component = getObjectComponent("SuspendedToRunning");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToRunning");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getSuspendedToHaltedNode() {
-        Optional<ObjectNode> component = getObjectComponent("SuspendedToHalted");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToHalted");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getSuspendedToReadyNode() {
-        Optional<ObjectNode> component = getObjectComponent("SuspendedToReady");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "SuspendedToReady");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 
     public TransitionNode getReadyToHaltedNode() {
-        Optional<ObjectNode> component = getObjectComponent("ReadyToHalted");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ReadyToHalted");
         return component.map(node -> (TransitionNode) node).orElse(null);
     }
 }

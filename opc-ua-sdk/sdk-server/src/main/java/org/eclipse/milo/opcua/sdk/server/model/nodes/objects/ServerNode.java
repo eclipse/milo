@@ -115,7 +115,7 @@ public class ServerNode extends BaseObjectNode implements ServerType {
     }
 
     public ServerStatusNode getServerStatusNode() {
-        Optional<VariableNode> component = getVariableComponent("ServerStatus");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ServerStatus");
         return component.map(node -> (ServerStatusNode) node).orElse(null);
     }
 
@@ -129,27 +129,27 @@ public class ServerNode extends BaseObjectNode implements ServerType {
     }
 
     public ServerCapabilitiesNode getServerCapabilitiesNode() {
-        Optional<ObjectNode> component = getObjectComponent("ServerCapabilities");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ServerCapabilities");
         return component.map(node -> (ServerCapabilitiesNode) node).orElse(null);
     }
 
     public ServerDiagnosticsNode getServerDiagnosticsNode() {
-        Optional<ObjectNode> component = getObjectComponent("ServerDiagnostics");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ServerDiagnostics");
         return component.map(node -> (ServerDiagnosticsNode) node).orElse(null);
     }
 
     public VendorServerInfoNode getVendorServerInfoNode() {
-        Optional<ObjectNode> component = getObjectComponent("VendorServerInfo");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "VendorServerInfo");
         return component.map(node -> (VendorServerInfoNode) node).orElse(null);
     }
 
     public ServerRedundancyNode getServerRedundancyNode() {
-        Optional<ObjectNode> component = getObjectComponent("ServerRedundancy");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "ServerRedundancy");
         return component.map(node -> (ServerRedundancyNode) node).orElse(null);
     }
 
     public NamespacesNode getNamespacesNode() {
-        Optional<ObjectNode> component = getObjectComponent("Namespaces");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Namespaces");
         return component.map(node -> (NamespacesNode) node).orElse(null);
     }
 }

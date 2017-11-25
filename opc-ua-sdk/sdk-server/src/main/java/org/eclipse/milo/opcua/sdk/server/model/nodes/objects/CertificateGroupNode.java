@@ -54,7 +54,7 @@ public class CertificateGroupNode extends BaseObjectNode implements CertificateG
     }
 
     public TrustListNode getTrustListNode() {
-        Optional<ObjectNode> component = getObjectComponent("TrustList");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "TrustList");
         return component.map(node -> (TrustListNode) node).orElse(null);
     }
 }

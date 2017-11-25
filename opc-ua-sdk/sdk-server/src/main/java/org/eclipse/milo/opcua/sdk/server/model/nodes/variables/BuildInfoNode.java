@@ -43,7 +43,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public BaseDataVariableNode getProductUriNode() {
-        Optional<VariableNode> component = getVariableComponent("ProductUri");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProductUri");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -57,7 +57,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public BaseDataVariableNode getManufacturerNameNode() {
-        Optional<VariableNode> component = getVariableComponent("ManufacturerName");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ManufacturerName");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -71,7 +71,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public BaseDataVariableNode getProductNameNode() {
-        Optional<VariableNode> component = getVariableComponent("ProductName");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ProductName");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -85,7 +85,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public BaseDataVariableNode getSoftwareVersionNode() {
-        Optional<VariableNode> component = getVariableComponent("SoftwareVersion");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SoftwareVersion");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -99,7 +99,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public BaseDataVariableNode getBuildNumberNode() {
-        Optional<VariableNode> component = getVariableComponent("BuildNumber");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BuildNumber");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 
@@ -113,7 +113,7 @@ public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType
     }
 
     public BaseDataVariableNode getBuildDateNode() {
-        Optional<VariableNode> component = getVariableComponent("BuildDate");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "BuildDate");
         return component.map(node -> (BaseDataVariableNode) node).orElse(null);
     }
 

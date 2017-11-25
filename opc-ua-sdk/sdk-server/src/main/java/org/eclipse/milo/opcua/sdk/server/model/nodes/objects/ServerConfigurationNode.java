@@ -96,7 +96,7 @@ public class ServerConfigurationNode extends BaseObjectNode implements ServerCon
     }
 
     public CertificateGroupFolderNode getCertificateGroupsNode() {
-        Optional<ObjectNode> component = getObjectComponent("CertificateGroups");
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "CertificateGroups");
         return component.map(node -> (CertificateGroupFolderNode) node).orElse(null);
     }
 }

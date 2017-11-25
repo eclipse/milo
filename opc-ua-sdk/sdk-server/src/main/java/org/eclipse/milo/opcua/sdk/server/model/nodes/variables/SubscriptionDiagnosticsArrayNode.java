@@ -43,7 +43,7 @@ public class SubscriptionDiagnosticsArrayNode extends BaseDataVariableNode imple
     }
 
     public SubscriptionDiagnosticsNode getSubscriptionDiagnosticsNode() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnostics");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnostics");
         return component.map(node -> (SubscriptionDiagnosticsNode) node).orElse(null);
     }
 

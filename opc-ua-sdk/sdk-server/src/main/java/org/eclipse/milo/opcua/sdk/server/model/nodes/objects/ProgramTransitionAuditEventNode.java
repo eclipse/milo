@@ -41,7 +41,7 @@ public class ProgramTransitionAuditEventNode extends AuditUpdateStateEventNode i
     }
 
     public FiniteTransitionVariableNode getTransitionNode() {
-        Optional<VariableNode> component = getVariableComponent("Transition");
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "Transition");
         return component.map(node -> (FiniteTransitionVariableNode) node).orElse(null);
     }
 

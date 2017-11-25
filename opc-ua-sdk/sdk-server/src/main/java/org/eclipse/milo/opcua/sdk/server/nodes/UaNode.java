@@ -45,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -402,6 +403,16 @@ public abstract class UaNode implements ServerNode {
         ));
     }
 
+    protected Optional<ObjectNode> getObjectComponent(String namespaceUri, String name) {
+        UShort namespaceIndex = nodeMap.getNamespaceTable().getIndex(namespaceUri);
+
+        if (namespaceIndex != null) {
+            return getObjectComponent(new QualifiedName(namespaceIndex, name));
+        } else {
+            return Optional.empty();
+        }
+    }
+
     protected Optional<ObjectNode> getObjectComponent(String browseName) {
         return getObjectComponent(new QualifiedName(getNodeId().getNamespaceIndex(), browseName));
     }
@@ -414,6 +425,16 @@ public abstract class UaNode implements ServerNode {
             .findFirst().orElse(null);
 
         return Optional.ofNullable(node);
+    }
+
+    protected Optional<VariableNode> getVariableComponent(String namespaceUri, String name) {
+        UShort namespaceIndex = nodeMap.getNamespaceTable().getIndex(namespaceUri);
+
+        if (namespaceIndex != null) {
+            return getVariableComponent(new QualifiedName(namespaceIndex, name));
+        } else {
+            return Optional.empty();
+        }
     }
 
     protected Optional<VariableNode> getVariableComponent(String browseName) {
