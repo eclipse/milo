@@ -266,14 +266,16 @@ class ClientChannelManager {
                     } else {
                         logger.debug("Channel bootstrap failed: {}", ex.getMessage(), ex);
 
-                        StatusCode statusCode = UaException.extract(ex)
+                        long statusCode = UaException.extract(ex)
                             .map(UaException::getStatusCode)
-                            .orElse(StatusCode.BAD);
+                            .orElse(StatusCode.BAD)
+                            .getValue();
 
                         boolean secureChannelError =
-                            statusCode.getValue() == StatusCodes.Bad_SecureChannelIdInvalid ||
-                                statusCode.getValue() == StatusCodes.Bad_SecurityChecksFailed ||
-                                statusCode.getValue() == StatusCodes.Bad_TcpSecureChannelUnknown;
+                            statusCode == StatusCodes.Bad_SecureChannelIdInvalid ||
+                                statusCode == StatusCodes.Bad_SecurityChecksFailed ||
+                                statusCode == StatusCodes.Bad_TcpSecureChannelUnknown ||
+                                statusCode == StatusCodes.Bad_RequestTypeInvalid;
 
                         if (initialAttempt && secureChannelError) {
                             // Try again if bootstrapping failed because we couldn't re-open the previous channel.

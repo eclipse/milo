@@ -689,7 +689,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
             boolean secureChannelError =
                 errorCode == StatusCodes.Bad_SecurityChecksFailed ||
                     errorCode == StatusCodes.Bad_TcpSecureChannelUnknown ||
-                    errorCode == StatusCodes.Bad_SecureChannelIdInvalid;
+                    errorCode == StatusCodes.Bad_SecureChannelIdInvalid ||
+                    errorCode == StatusCodes.Bad_RequestTypeInvalid;
 
             if (secureChannelError) {
                 secureChannel.setChannelId(0);
