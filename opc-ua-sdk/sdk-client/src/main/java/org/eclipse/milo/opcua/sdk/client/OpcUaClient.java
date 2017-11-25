@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
+import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -109,6 +110,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,14 +137,14 @@ public class OpcUaClient implements UaClient {
     private final OpcUaSubscriptionManager subscriptionManager;
 
     private final UaTcpStackClient stackClient;
-    private final ClientSessionManager sessionManager;
+    private final SessionFsm sessionFsm;
 
     private final OpcUaClientConfig config;
 
     public OpcUaClient(OpcUaClientConfig config) {
         this.config = config;
 
-        sessionManager = new ClientSessionManager(this);
+        sessionFsm = new SessionFsm(this);
 
         stackClient = new UaTcpStackClient(config);
 
@@ -215,9 +217,10 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<OpcUaClient> connect() {
-        return stackClient.connect().thenCompose(
-            c -> getSession().thenApply(s -> OpcUaClient.this));
+    public CompletableFuture<UaClient> connect() {
+        return stackClient.connect()
+            .thenCompose(c -> sessionFsm.openSession())
+            .thenApply(s -> OpcUaClient.this);
     }
 
     @Override
@@ -227,9 +230,10 @@ public class OpcUaClient implements UaClient {
         // will initiate reconnection and re-activation.
         subscriptionManager.clearSubscriptions();
 
-        return sessionManager
+        return sessionFsm
             .closeSession()
-            .thenCompose(v -> stackClient.disconnect())
+            .exceptionally(ex -> Unit.VALUE)
+            .thenCompose(u -> stackClient.disconnect())
             .thenApply(c -> OpcUaClient.this)
             .exceptionally(ex -> OpcUaClient.this);
     }
@@ -611,7 +615,7 @@ public class OpcUaClient implements UaClient {
 
     @Override
     public final CompletableFuture<UaSession> getSession() {
-        return sessionManager.getSession().thenApply(s -> (UaSession) s);
+        return sessionFsm.getSession().thenApply(s -> (UaSession) s);
     }
 
     @Override
@@ -674,12 +678,12 @@ public class OpcUaClient implements UaClient {
     }
 
     public void addSessionActivityListener(SessionActivityListener listener) {
-        sessionManager.addListener(listener);
+        sessionFsm.addListener(listener);
         logger.debug("Added SessionActivityListener: {}", listener);
     }
 
     public void removeSessionActivityListener(SessionActivityListener listener) {
-        sessionManager.removeListener(listener);
+        sessionFsm.removeListener(listener);
         logger.debug("Removed SessionActivityListener: {}", listener);
     }
 
