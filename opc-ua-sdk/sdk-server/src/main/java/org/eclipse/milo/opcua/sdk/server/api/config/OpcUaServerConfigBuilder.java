@@ -13,17 +13,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
 
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
@@ -41,23 +37,26 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
-    private String hostname = getDefaultHostname();
-    private List<String> bindAddresses = newArrayList("0.0.0.0");
     private int bindPort = Stack.DEFAULT_PORT;
+    private List<String> bindAddresses = newArrayList("0.0.0.0");
+    private List<String> endpointAddresses = newArrayList(HostnameUtil.getHostname());
     private EnumSet<SecurityPolicy> securityPolicies = EnumSet.of(SecurityPolicy.None);
     private IdentityValidator identityValidator = AnonymousIdentityValidator.INSTANCE;
 
     private BuildInfo buildInfo = new BuildInfo(
-        "", "", "", "", "", DateTime.MIN_VALUE);
+        "",
+        "",
+        "",
+        "",
+        "",
+        DateTime.MIN_VALUE
+    );
 
-    private Function<String, Set<String>> hostnameResolver = OpcUaServer::getHostnames;
+    private OpcUaServerConfigLimits limits = new OpcUaServerConfigLimits() {};
 
-    private OpcUaServerConfigLimits limits =
-        new OpcUaServerConfigLimits() {
-        };
 
-    public OpcUaServerConfigBuilder setHostname(String hostname) {
-        this.hostname = hostname;
+    public OpcUaServerConfigBuilder setBindPort(int bindPort) {
+        this.bindPort = bindPort;
         return this;
     }
 
@@ -66,8 +65,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         return this;
     }
 
-    public OpcUaServerConfigBuilder setBindPort(int bindPort) {
-        this.bindPort = bindPort;
+    public OpcUaServerConfigBuilder setEndpointAddresses(List<String> endpointAddresses) {
+        this.endpointAddresses = endpointAddresses;
         return this;
     }
 
@@ -88,11 +87,6 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     public OpcUaServerConfigBuilder setLimits(OpcUaServerConfigLimits limits) {
         this.limits = limits;
-        return this;
-    }
-
-    public OpcUaServerConfigBuilder setHostnameResolver(Function<String, Set<String>> hostnameResolver) {
-        this.hostnameResolver = hostnameResolver;
         return this;
     }
 
@@ -167,64 +161,50 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
         return new OpcUaServerConfigImpl(
             stackServerConfig,
-            hostname,
-            bindAddresses,
-            bindPort,
+            bindPort, bindAddresses,
+            endpointAddresses,
             securityPolicies,
             identityValidator,
             buildInfo,
-            limits,
-            hostnameResolver
+            limits
         );
     }
 
-    private static String getDefaultHostname() {
-        try {
-            return System.getProperty("hostname",
-                InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
-            return "localhost";
-        }
-    }
 
     public static final class OpcUaServerConfigImpl implements OpcUaServerConfig {
 
         private final UaTcpStackServerConfig stackServerConfig;
 
-        private final String hostname;
-        private final List<String> bindAddresses;
         private final int bindPort;
+        private final List<String> bindAddresses;
+        private final List<String> endpointAddresses;
         private final EnumSet<SecurityPolicy> securityPolicies;
         private final IdentityValidator identityValidator;
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
-        private final Function<String, Set<String>> hostnameResolver;
 
         public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
-                                     String hostname,
-                                     List<String> bindAddresses,
                                      int bindPort,
+                                     List<String> bindAddresses,
+                                     List<String> endpointAddresses,
                                      EnumSet<SecurityPolicy> securityPolicies,
                                      IdentityValidator identityValidator,
                                      BuildInfo buildInfo,
-                                     OpcUaServerConfigLimits limits,
-                                     Function<String, Set<String>> hostnameResolver) {
+                                     OpcUaServerConfigLimits limits) {
 
             this.stackServerConfig = stackServerConfig;
-
-            this.hostname = hostname;
-            this.bindAddresses = bindAddresses;
             this.bindPort = bindPort;
+            this.bindAddresses = bindAddresses;
+            this.endpointAddresses = endpointAddresses;
             this.securityPolicies = securityPolicies;
             this.identityValidator = identityValidator;
             this.buildInfo = buildInfo;
             this.limits = limits;
-            this.hostnameResolver = hostnameResolver;
         }
 
         @Override
-        public String getHostname() {
-            return hostname;
+        public int getBindPort() {
+            return bindPort;
         }
 
         @Override
@@ -233,8 +213,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         }
 
         @Override
-        public int getBindPort() {
-            return bindPort;
+        public List<String> getEndpointAddresses() {
+            return endpointAddresses;
         }
 
         @Override
@@ -310,11 +290,6 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         @Override
         public boolean isStrictEndpointUrlsEnabled() {
             return stackServerConfig.isStrictEndpointUrlsEnabled();
-        }
-
-        @Override
-        public Function<String, Set<String>> getHostnameResolver() {
-            return hostnameResolver;
         }
 
     }

@@ -15,9 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.api.config;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
@@ -27,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 
@@ -59,22 +58,9 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     );
 
     /**
-     * The set of {@link SecurityPolicy}s supported by this server.
-     * <p>
-     * Any policies other than {@link SecurityPolicy#None} require the server to have a certificate configured.
-     *
-     * @return the set of {@link SecurityPolicy}s supported by this server.
+     * @return the port to bind to.
      */
-    EnumSet<SecurityPolicy> getSecurityPolicies();
-
-    /**
-     * Get the hostname to use in endpoint URLs.
-     * <p>
-     * Endpoint URLs will be of the format "opc.tcp://{hostname}:{port}/{serverName}".
-     *
-     * @return the hostname to use in endpoint URLs.
-     */
-    String getHostname();
+    int getBindPort();
 
     /**
      * @return the list of addresses to bind to.
@@ -82,9 +68,18 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     List<String> getBindAddresses();
 
     /**
-     * @return the port to bind to.
+     * @return the list of addresses used to build endpoint URLs and {@link EndpointDescription}s.
      */
-    int getBindPort();
+    List<String> getEndpointAddresses();
+
+    /**
+     * The set of {@link SecurityPolicy}s supported by this server.
+     * <p>
+     * Any policies other than {@link SecurityPolicy#None} require the server to have a certificate configured.
+     *
+     * @return the set of {@link SecurityPolicy}s supported by this server.
+     */
+    EnumSet<SecurityPolicy> getSecurityPolicies();
 
     /**
      * Get the {@link IdentityValidator} for the server.
@@ -106,12 +101,6 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
      * @return the {@link OpcUaServerConfigLimits}.
      */
     OpcUaServerConfigLimits getLimits();
-
-    /**
-     * @return the lookup function that resolves a bind address to one or more hostnames which will be used to build a
-     * list of endpoints for the server.
-     */
-    Function<String, Set<String>> getHostnameResolver();
 
     /**
      * @return a {@link OpcUaServerConfigBuilder}.
@@ -146,13 +135,12 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
 
         // OpcUaServerConfig values
         builder.setSecurityPolicies(config.getSecurityPolicies());
-        builder.setHostname(config.getHostname());
-        builder.setBindAddresses(config.getBindAddresses());
         builder.setBindPort(config.getBindPort());
+        builder.setBindAddresses(config.getBindAddresses());
+        builder.setEndpointAddresses(config.getEndpointAddresses());
         builder.setIdentityValidator(config.getIdentityValidator());
         builder.setBuildInfo(config.getBuildInfo());
         builder.setLimits(config.getLimits());
-        builder.setHostnameResolver(config.getHostnameResolver());
 
         return builder;
     }

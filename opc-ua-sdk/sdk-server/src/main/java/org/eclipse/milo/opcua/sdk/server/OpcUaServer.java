@@ -13,15 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -72,8 +65,6 @@ import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 public class OpcUaServer {
 
@@ -134,13 +125,8 @@ public class OpcUaServer {
             referenceTypes.put(referenceType.getNodeId(), referenceType);
         }
 
-        String configuredHostname = config.getHostname();
-
         for (String bindAddress : config.getBindAddresses()) {
-            Set<String> hostnames = Sets.union(
-                newHashSet(configuredHostname),
-                config.getHostnameResolver().apply(bindAddress)
-            );
+            Set<String> hostnames = Sets.newHashSet(config.getEndpointAddresses());
 
             for (String hostname : hostnames) {
                 for (SecurityPolicy securityPolicy : config.getSecurityPolicies()) {
@@ -289,47 +275,6 @@ public class OpcUaServer {
         return browseContinuationPoints;
     }
 
-    /**
-     * Given a bind address resolve it to one or more hostnames to be used when building endpoints.
-     *
-     * @param bindAddress the bind address to resolve.
-     * @return the hostnames that will be used to represent this bind address in endpoints.
-     */
-    public static Set<String> getHostnames(String bindAddress) {
-        Set<String> hostnames = newHashSet();
-
-        try {
-            InetAddress inetAddress = InetAddress.getByName(bindAddress);
-
-            if (inetAddress.isAnyLocalAddress()) {
-                try {
-                    Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
-
-                    for (NetworkInterface ni : Collections.list(nis)) {
-                        Collections.list(ni.getInetAddresses()).stream()
-                            .filter(ia -> ia instanceof Inet4Address)
-                            .forEach(ia -> {
-                                hostnames.add(ia.getHostName());
-                                hostnames.add(ia.getHostAddress());
-                                hostnames.add(ia.getCanonicalHostName());
-                            });
-                    }
-                } catch (SocketException e) {
-                    LoggerFactory.getLogger(OpcUaServer.class)
-                        .warn("Failed to NetworkInterfaces for bind address: {}", bindAddress, e);
-                }
-            } else {
-                hostnames.add(inetAddress.getHostName());
-                hostnames.add(inetAddress.getHostAddress());
-                hostnames.add(inetAddress.getCanonicalHostName());
-            }
-        } catch (UnknownHostException e) {
-            LoggerFactory.getLogger(OpcUaServer.class)
-                .warn("Failed to get InetAddress for bind address: {}", bindAddress, e);
-        }
-
-        return hostnames;
-    }
 
     private class OpcUaServerNodeMap extends AbstractServerNodeMap {
         @Override
