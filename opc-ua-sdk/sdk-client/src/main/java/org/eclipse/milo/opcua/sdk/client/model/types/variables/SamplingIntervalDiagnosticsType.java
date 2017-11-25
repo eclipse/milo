@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,33 +18,28 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public interface SamplingIntervalDiagnosticsType extends BaseDataVariableType {
-
-
-    CompletableFuture<? extends BaseDataVariableType> samplingInterval();
+    CompletableFuture<? extends BaseDataVariableType> getSamplingIntervalNode();
 
     CompletableFuture<Double> getSamplingInterval();
 
     CompletableFuture<StatusCode> setSamplingInterval(Double value);
 
-    CompletableFuture<? extends BaseDataVariableType> sampledMonitoredItemsCount();
+    CompletableFuture<? extends BaseDataVariableType> getSampledMonitoredItemsCountNode();
 
     CompletableFuture<UInteger> getSampledMonitoredItemsCount();
 
     CompletableFuture<StatusCode> setSampledMonitoredItemsCount(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> maxSampledMonitoredItemsCount();
+    CompletableFuture<? extends BaseDataVariableType> getMaxSampledMonitoredItemsCountNode();
 
     CompletableFuture<UInteger> getMaxSampledMonitoredItemsCount();
 
     CompletableFuture<StatusCode> setMaxSampledMonitoredItemsCount(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> disabledMonitoredItemsSamplingCount();
+    CompletableFuture<? extends BaseDataVariableType> getDisabledMonitoredItemsSamplingCountNode();
 
     CompletableFuture<UInteger> getDisabledMonitoredItemsSamplingCount();
 
     CompletableFuture<StatusCode> setDisabledMonitoredItemsSamplingCount(UInteger value);
-
-
 }

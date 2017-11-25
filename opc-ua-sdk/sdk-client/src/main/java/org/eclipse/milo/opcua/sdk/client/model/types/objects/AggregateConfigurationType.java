@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,68 +16,66 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
-
 public interface AggregateConfigurationType extends BaseObjectType {
-
-    Property<Boolean> TREAT_UNCERTAIN_AS_BAD = new BasicProperty<>(
-        QualifiedName.parse("0:TreatUncertainAsBad"),
+    QualifiedProperty<Boolean> TREAT_UNCERTAIN_AS_BAD = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "TreatUncertainAsBad",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<UByte> PERCENT_DATA_BAD = new BasicProperty<>(
-        QualifiedName.parse("0:PercentDataBad"),
+    QualifiedProperty<UByte> PERCENT_DATA_BAD = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "PercentDataBad",
         NodeId.parse("ns=0;i=3"),
-        -1,
+        ValueRanks.Scalar,
         UByte.class
     );
 
-    Property<UByte> PERCENT_DATA_GOOD = new BasicProperty<>(
-        QualifiedName.parse("0:PercentDataGood"),
+    QualifiedProperty<UByte> PERCENT_DATA_GOOD = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "PercentDataGood",
         NodeId.parse("ns=0;i=3"),
-        -1,
+        ValueRanks.Scalar,
         UByte.class
     );
 
-    Property<Boolean> USE_SLOPED_EXTRAPOLATION = new BasicProperty<>(
-        QualifiedName.parse("0:UseSlopedExtrapolation"),
+    QualifiedProperty<Boolean> USE_SLOPED_EXTRAPOLATION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UseSlopedExtrapolation",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-
-    CompletableFuture<? extends PropertyType> treatUncertainAsBad();
+    CompletableFuture<? extends PropertyType> getTreatUncertainAsBadNode();
 
     CompletableFuture<Boolean> getTreatUncertainAsBad();
 
     CompletableFuture<StatusCode> setTreatUncertainAsBad(Boolean value);
 
-    CompletableFuture<? extends PropertyType> percentDataBad();
+    CompletableFuture<? extends PropertyType> getPercentDataBadNode();
 
     CompletableFuture<UByte> getPercentDataBad();
 
     CompletableFuture<StatusCode> setPercentDataBad(UByte value);
 
-    CompletableFuture<? extends PropertyType> percentDataGood();
+    CompletableFuture<? extends PropertyType> getPercentDataGoodNode();
 
     CompletableFuture<UByte> getPercentDataGood();
 
     CompletableFuture<StatusCode> setPercentDataGood(UByte value);
 
-    CompletableFuture<? extends PropertyType> useSlopedExtrapolation();
+    CompletableFuture<? extends PropertyType> getUseSlopedExtrapolationNode();
 
     CompletableFuture<Boolean> getUseSlopedExtrapolation();
 
     CompletableFuture<StatusCode> setUseSlopedExtrapolation(Boolean value);
-
-
 }

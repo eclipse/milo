@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,41 +16,37 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
-
-    Property<Object> OLD_STATE_ID = new BasicProperty<>(
-        QualifiedName.parse("0:OldStateId"),
+    QualifiedProperty<Object> OLD_STATE_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OldStateId",
         NodeId.parse("ns=0;i=24"),
-        -1,
+        ValueRanks.Scalar,
         Object.class
     );
 
-    Property<Object> NEW_STATE_ID = new BasicProperty<>(
-        QualifiedName.parse("0:NewStateId"),
+    QualifiedProperty<Object> NEW_STATE_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NewStateId",
         NodeId.parse("ns=0;i=24"),
-        -1,
+        ValueRanks.Scalar,
         Object.class
     );
 
+    CompletableFuture<? extends PropertyType> getOldStateIdNode();
 
-    CompletableFuture<? extends PropertyType> oldStateId();
-
-    CompletableFuture<? extends Object> getOldStateId();
+    CompletableFuture<?> getOldStateId();
 
     CompletableFuture<StatusCode> setOldStateId(Object value);
 
-    CompletableFuture<? extends PropertyType> newStateId();
+    CompletableFuture<? extends PropertyType> getNewStateIdNode();
 
-    CompletableFuture<? extends Object> getNewStateId();
+    CompletableFuture<?> getNewStateId();
 
     CompletableFuture<StatusCode> setNewStateId(Object value);
-
-
 }

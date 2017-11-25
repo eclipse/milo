@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,42 +20,32 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.DataItemType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class DataItemNode extends BaseDataVariableNode implements DataItemType {
-
     public DataItemNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> definition() {
-        return getPropertyNode(DataItemType.DEFINITION.getBrowseName());
+    public CompletableFuture<PropertyNode> getDefinitionNode() {
+        return getPropertyNode(DataItemType.DEFINITION);
     }
 
-    @Override
     public CompletableFuture<String> getDefinition() {
         return getProperty(DataItemType.DEFINITION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDefinition(String value) {
         return setProperty(DataItemType.DEFINITION, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> valuePrecision() {
-        return getPropertyNode(DataItemType.VALUE_PRECISION.getBrowseName());
+    public CompletableFuture<PropertyNode> getValuePrecisionNode() {
+        return getPropertyNode(DataItemType.VALUE_PRECISION);
     }
 
-    @Override
     public CompletableFuture<Double> getValuePrecision() {
         return getProperty(DataItemType.VALUE_PRECISION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setValuePrecision(Double value) {
         return setProperty(DataItemType.VALUE_PRECISION, value);
     }
-
-
 }

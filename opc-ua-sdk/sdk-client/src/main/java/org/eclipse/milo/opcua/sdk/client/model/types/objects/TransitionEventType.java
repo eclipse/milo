@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,26 +20,22 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.TransitionVariabl
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface TransitionEventType extends BaseEventType {
-
-
-    CompletableFuture<? extends TransitionVariableType> transition();
+    CompletableFuture<? extends TransitionVariableType> getTransitionNode();
 
     CompletableFuture<LocalizedText> getTransition();
 
     CompletableFuture<StatusCode> setTransition(LocalizedText value);
 
-    CompletableFuture<? extends StateVariableType> fromState();
+    CompletableFuture<? extends StateVariableType> getFromStateNode();
 
     CompletableFuture<LocalizedText> getFromState();
 
     CompletableFuture<StatusCode> setFromState(LocalizedText value);
 
-    CompletableFuture<? extends StateVariableType> toState();
+    CompletableFuture<? extends StateVariableType> getToStateNode();
 
     CompletableFuture<LocalizedText> getToState();
 
     CompletableFuture<StatusCode> setToState(LocalizedText value);
-
 }

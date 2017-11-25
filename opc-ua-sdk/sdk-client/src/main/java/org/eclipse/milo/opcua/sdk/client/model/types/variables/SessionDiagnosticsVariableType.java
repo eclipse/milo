@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,267 +22,262 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
 
-
 public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
-
-
-    CompletableFuture<? extends BaseDataVariableType> sessionId();
+    CompletableFuture<? extends BaseDataVariableType> getSessionIdNode();
 
     CompletableFuture<NodeId> getSessionId();
 
     CompletableFuture<StatusCode> setSessionId(NodeId value);
 
-    CompletableFuture<? extends BaseDataVariableType> sessionName();
+    CompletableFuture<? extends BaseDataVariableType> getSessionNameNode();
 
     CompletableFuture<String> getSessionName();
 
     CompletableFuture<StatusCode> setSessionName(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> clientDescription();
+    CompletableFuture<? extends BaseDataVariableType> getClientDescriptionNode();
 
     CompletableFuture<ApplicationDescription> getClientDescription();
 
     CompletableFuture<StatusCode> setClientDescription(ApplicationDescription value);
 
-    CompletableFuture<? extends BaseDataVariableType> serverUri();
+    CompletableFuture<? extends BaseDataVariableType> getServerUriNode();
 
     CompletableFuture<String> getServerUri();
 
     CompletableFuture<StatusCode> setServerUri(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> endpointUrl();
+    CompletableFuture<? extends BaseDataVariableType> getEndpointUrlNode();
 
     CompletableFuture<String> getEndpointUrl();
 
     CompletableFuture<StatusCode> setEndpointUrl(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> localeIds();
+    CompletableFuture<? extends BaseDataVariableType> getLocaleIdsNode();
 
     CompletableFuture<String[]> getLocaleIds();
 
     CompletableFuture<StatusCode> setLocaleIds(String[] value);
 
-    CompletableFuture<? extends BaseDataVariableType> actualSessionTimeout();
+    CompletableFuture<? extends BaseDataVariableType> getActualSessionTimeoutNode();
 
     CompletableFuture<Double> getActualSessionTimeout();
 
     CompletableFuture<StatusCode> setActualSessionTimeout(Double value);
 
-    CompletableFuture<? extends BaseDataVariableType> maxResponseMessageSize();
+    CompletableFuture<? extends BaseDataVariableType> getMaxResponseMessageSizeNode();
 
     CompletableFuture<UInteger> getMaxResponseMessageSize();
 
     CompletableFuture<StatusCode> setMaxResponseMessageSize(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> clientConnectionTime();
+    CompletableFuture<? extends BaseDataVariableType> getClientConnectionTimeNode();
 
     CompletableFuture<DateTime> getClientConnectionTime();
 
     CompletableFuture<StatusCode> setClientConnectionTime(DateTime value);
 
-    CompletableFuture<? extends BaseDataVariableType> clientLastContactTime();
+    CompletableFuture<? extends BaseDataVariableType> getClientLastContactTimeNode();
 
     CompletableFuture<DateTime> getClientLastContactTime();
 
     CompletableFuture<StatusCode> setClientLastContactTime(DateTime value);
 
-    CompletableFuture<? extends BaseDataVariableType> currentSubscriptionsCount();
+    CompletableFuture<? extends BaseDataVariableType> getCurrentSubscriptionsCountNode();
 
     CompletableFuture<UInteger> getCurrentSubscriptionsCount();
 
     CompletableFuture<StatusCode> setCurrentSubscriptionsCount(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> currentMonitoredItemsCount();
+    CompletableFuture<? extends BaseDataVariableType> getCurrentMonitoredItemsCountNode();
 
     CompletableFuture<UInteger> getCurrentMonitoredItemsCount();
 
     CompletableFuture<StatusCode> setCurrentMonitoredItemsCount(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> currentPublishRequestsInQueue();
+    CompletableFuture<? extends BaseDataVariableType> getCurrentPublishRequestsInQueueNode();
 
     CompletableFuture<UInteger> getCurrentPublishRequestsInQueue();
 
     CompletableFuture<StatusCode> setCurrentPublishRequestsInQueue(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> totalRequestCount();
+    CompletableFuture<? extends BaseDataVariableType> getTotalRequestCountNode();
 
     CompletableFuture<ServiceCounterDataType> getTotalRequestCount();
 
     CompletableFuture<StatusCode> setTotalRequestCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> unauthorizedRequestCount();
+    CompletableFuture<? extends BaseDataVariableType> getUnauthorizedRequestCountNode();
 
     CompletableFuture<UInteger> getUnauthorizedRequestCount();
 
     CompletableFuture<StatusCode> setUnauthorizedRequestCount(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> readCount();
+    CompletableFuture<? extends BaseDataVariableType> getReadCountNode();
 
     CompletableFuture<ServiceCounterDataType> getReadCount();
 
     CompletableFuture<StatusCode> setReadCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> historyReadCount();
+    CompletableFuture<? extends BaseDataVariableType> getHistoryReadCountNode();
 
     CompletableFuture<ServiceCounterDataType> getHistoryReadCount();
 
     CompletableFuture<StatusCode> setHistoryReadCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> writeCount();
+    CompletableFuture<? extends BaseDataVariableType> getWriteCountNode();
 
     CompletableFuture<ServiceCounterDataType> getWriteCount();
 
     CompletableFuture<StatusCode> setWriteCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> historyUpdateCount();
+    CompletableFuture<? extends BaseDataVariableType> getHistoryUpdateCountNode();
 
     CompletableFuture<ServiceCounterDataType> getHistoryUpdateCount();
 
     CompletableFuture<StatusCode> setHistoryUpdateCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> callCount();
+    CompletableFuture<? extends BaseDataVariableType> getCallCountNode();
 
     CompletableFuture<ServiceCounterDataType> getCallCount();
 
     CompletableFuture<StatusCode> setCallCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> createMonitoredItemsCount();
+    CompletableFuture<? extends BaseDataVariableType> getCreateMonitoredItemsCountNode();
 
     CompletableFuture<ServiceCounterDataType> getCreateMonitoredItemsCount();
 
     CompletableFuture<StatusCode> setCreateMonitoredItemsCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> modifyMonitoredItemsCount();
+    CompletableFuture<? extends BaseDataVariableType> getModifyMonitoredItemsCountNode();
 
     CompletableFuture<ServiceCounterDataType> getModifyMonitoredItemsCount();
 
     CompletableFuture<StatusCode> setModifyMonitoredItemsCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> setMonitoringModeCount();
+    CompletableFuture<? extends BaseDataVariableType> getSetMonitoringModeCountNode();
 
     CompletableFuture<ServiceCounterDataType> getSetMonitoringModeCount();
 
     CompletableFuture<StatusCode> setSetMonitoringModeCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> setTriggeringCount();
+    CompletableFuture<? extends BaseDataVariableType> getSetTriggeringCountNode();
 
     CompletableFuture<ServiceCounterDataType> getSetTriggeringCount();
 
     CompletableFuture<StatusCode> setSetTriggeringCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> deleteMonitoredItemsCount();
+    CompletableFuture<? extends BaseDataVariableType> getDeleteMonitoredItemsCountNode();
 
     CompletableFuture<ServiceCounterDataType> getDeleteMonitoredItemsCount();
 
     CompletableFuture<StatusCode> setDeleteMonitoredItemsCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> createSubscriptionCount();
+    CompletableFuture<? extends BaseDataVariableType> getCreateSubscriptionCountNode();
 
     CompletableFuture<ServiceCounterDataType> getCreateSubscriptionCount();
 
     CompletableFuture<StatusCode> setCreateSubscriptionCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> modifySubscriptionCount();
+    CompletableFuture<? extends BaseDataVariableType> getModifySubscriptionCountNode();
 
     CompletableFuture<ServiceCounterDataType> getModifySubscriptionCount();
 
     CompletableFuture<StatusCode> setModifySubscriptionCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> setPublishingModeCount();
+    CompletableFuture<? extends BaseDataVariableType> getSetPublishingModeCountNode();
 
     CompletableFuture<ServiceCounterDataType> getSetPublishingModeCount();
 
     CompletableFuture<StatusCode> setSetPublishingModeCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> publishCount();
+    CompletableFuture<? extends BaseDataVariableType> getPublishCountNode();
 
     CompletableFuture<ServiceCounterDataType> getPublishCount();
 
     CompletableFuture<StatusCode> setPublishCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> republishCount();
+    CompletableFuture<? extends BaseDataVariableType> getRepublishCountNode();
 
     CompletableFuture<ServiceCounterDataType> getRepublishCount();
 
     CompletableFuture<StatusCode> setRepublishCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> transferSubscriptionsCount();
+    CompletableFuture<? extends BaseDataVariableType> getTransferSubscriptionsCountNode();
 
     CompletableFuture<ServiceCounterDataType> getTransferSubscriptionsCount();
 
     CompletableFuture<StatusCode> setTransferSubscriptionsCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> deleteSubscriptionsCount();
+    CompletableFuture<? extends BaseDataVariableType> getDeleteSubscriptionsCountNode();
 
     CompletableFuture<ServiceCounterDataType> getDeleteSubscriptionsCount();
 
     CompletableFuture<StatusCode> setDeleteSubscriptionsCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> addNodesCount();
+    CompletableFuture<? extends BaseDataVariableType> getAddNodesCountNode();
 
     CompletableFuture<ServiceCounterDataType> getAddNodesCount();
 
     CompletableFuture<StatusCode> setAddNodesCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> addReferencesCount();
+    CompletableFuture<? extends BaseDataVariableType> getAddReferencesCountNode();
 
     CompletableFuture<ServiceCounterDataType> getAddReferencesCount();
 
     CompletableFuture<StatusCode> setAddReferencesCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> deleteNodesCount();
+    CompletableFuture<? extends BaseDataVariableType> getDeleteNodesCountNode();
 
     CompletableFuture<ServiceCounterDataType> getDeleteNodesCount();
 
     CompletableFuture<StatusCode> setDeleteNodesCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> deleteReferencesCount();
+    CompletableFuture<? extends BaseDataVariableType> getDeleteReferencesCountNode();
 
     CompletableFuture<ServiceCounterDataType> getDeleteReferencesCount();
 
     CompletableFuture<StatusCode> setDeleteReferencesCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> browseCount();
+    CompletableFuture<? extends BaseDataVariableType> getBrowseCountNode();
 
     CompletableFuture<ServiceCounterDataType> getBrowseCount();
 
     CompletableFuture<StatusCode> setBrowseCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> browseNextCount();
+    CompletableFuture<? extends BaseDataVariableType> getBrowseNextCountNode();
 
     CompletableFuture<ServiceCounterDataType> getBrowseNextCount();
 
     CompletableFuture<StatusCode> setBrowseNextCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> translateBrowsePathsToNodeIdsCount();
+    CompletableFuture<? extends BaseDataVariableType> getTranslateBrowsePathsToNodeIdsCountNode();
 
     CompletableFuture<ServiceCounterDataType> getTranslateBrowsePathsToNodeIdsCount();
 
     CompletableFuture<StatusCode> setTranslateBrowsePathsToNodeIdsCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> queryFirstCount();
+    CompletableFuture<? extends BaseDataVariableType> getQueryFirstCountNode();
 
     CompletableFuture<ServiceCounterDataType> getQueryFirstCount();
 
     CompletableFuture<StatusCode> setQueryFirstCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> queryNextCount();
+    CompletableFuture<? extends BaseDataVariableType> getQueryNextCountNode();
 
     CompletableFuture<ServiceCounterDataType> getQueryNextCount();
 
     CompletableFuture<StatusCode> setQueryNextCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> registerNodesCount();
+    CompletableFuture<? extends BaseDataVariableType> getRegisterNodesCountNode();
 
     CompletableFuture<ServiceCounterDataType> getRegisterNodesCount();
 
     CompletableFuture<StatusCode> setRegisterNodesCount(ServiceCounterDataType value);
 
-    CompletableFuture<? extends BaseDataVariableType> unregisterNodesCount();
+    CompletableFuture<? extends BaseDataVariableType> getUnregisterNodesCountNode();
 
     CompletableFuture<ServiceCounterDataType> getUnregisterNodesCount();
 
     CompletableFuture<StatusCode> setUnregisterNodesCount(ServiceCounterDataType value);
-
-
 }

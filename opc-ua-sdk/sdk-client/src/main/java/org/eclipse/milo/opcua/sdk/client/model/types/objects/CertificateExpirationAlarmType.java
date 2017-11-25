@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,56 +16,67 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType {
-
-    Property<DateTime> EXPIRATION_DATE = new BasicProperty<>(
-        QualifiedName.parse("0:ExpirationDate"),
+    QualifiedProperty<DateTime> EXPIRATION_DATE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ExpirationDate",
         NodeId.parse("ns=0;i=13"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<NodeId> CERTIFICATE_TYPE = new BasicProperty<>(
-        QualifiedName.parse("0:CertificateType"),
+    QualifiedProperty<Double> EXPIRATION_LIMIT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ExpirationLimit",
+        NodeId.parse("ns=0;i=290"),
+        ValueRanks.Scalar,
+        Double.class
+    );
+
+    QualifiedProperty<NodeId> CERTIFICATE_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "CertificateType",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<ByteString> CERTIFICATE = new BasicProperty<>(
-        QualifiedName.parse("0:Certificate"),
+    QualifiedProperty<ByteString> CERTIFICATE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Certificate",
         NodeId.parse("ns=0;i=15"),
-        -1,
+        ValueRanks.Scalar,
         ByteString.class
     );
 
-
-    CompletableFuture<? extends PropertyType> expirationDate();
+    CompletableFuture<? extends PropertyType> getExpirationDateNode();
 
     CompletableFuture<DateTime> getExpirationDate();
 
     CompletableFuture<StatusCode> setExpirationDate(DateTime value);
 
-    CompletableFuture<? extends PropertyType> certificateType();
+    CompletableFuture<? extends PropertyType> getExpirationLimitNode();
+
+    CompletableFuture<Double> getExpirationLimit();
+
+    CompletableFuture<StatusCode> setExpirationLimit(Double value);
+
+    CompletableFuture<? extends PropertyType> getCertificateTypeNode();
 
     CompletableFuture<NodeId> getCertificateType();
 
     CompletableFuture<StatusCode> setCertificateType(NodeId value);
 
-    CompletableFuture<? extends PropertyType> certificate();
+    CompletableFuture<? extends PropertyType> getCertificateNode();
 
     CompletableFuture<ByteString> getCertificate();
 
     CompletableFuture<StatusCode> setCertificate(ByteString value);
-
-
 }
