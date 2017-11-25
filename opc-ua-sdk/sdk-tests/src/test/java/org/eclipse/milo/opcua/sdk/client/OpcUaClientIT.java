@@ -167,6 +167,7 @@ public class OpcUaClientIT {
             .setApplicationName(LocalizedText.english("digitalpetri opc-ua server"))
             .setApplicationUri("urn:digitalpetri:opcua:server")
             .setBindAddresses(newArrayList("localhost"))
+            .setEndpointAddresses(newArrayList("localhost"))
             .setBindPort(12686)
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
