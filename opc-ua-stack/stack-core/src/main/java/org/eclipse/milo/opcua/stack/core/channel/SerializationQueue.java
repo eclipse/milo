@@ -21,9 +21,6 @@ import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SerializationQueue {
 
-    private final OpcUaBinaryStreamDecoder reader;
-    private final OpcUaBinaryStreamEncoder writer;
-
     private final ChunkEncoder chunkEncoder;
     private final ChunkDecoder chunkDecoder;
 
@@ -31,6 +28,8 @@ public class SerializationQueue {
     private final ExecutionQueue decodingQueue;
 
     private final ChannelParameters parameters;
+    private final int maxArrayLength;
+    private final int maxStringLength;
 
     public SerializationQueue(ExecutorService executor,
                               ChannelParameters parameters,
@@ -38,9 +37,8 @@ public class SerializationQueue {
                               int maxStringLength) {
 
         this.parameters = parameters;
-
-        reader = new OpcUaBinaryStreamDecoder(maxArrayLength, maxStringLength);
-        writer = new OpcUaBinaryStreamEncoder(maxArrayLength, maxStringLength);
+        this.maxArrayLength = maxArrayLength;
+        this.maxStringLength = maxStringLength;
 
         chunkEncoder = new ChunkEncoder(parameters);
         chunkDecoder = new ChunkDecoder(parameters);
@@ -50,11 +48,21 @@ public class SerializationQueue {
     }
 
     public void encode(Encoder encoder) {
-        encodingQueue.submit(() -> encoder.encode(writer, chunkEncoder));
+        encodingQueue.submit(() -> {
+            OpcUaBinaryStreamEncoder binaryEncoder =
+                new OpcUaBinaryStreamEncoder(maxArrayLength, maxStringLength);
+
+            encoder.encode(binaryEncoder, chunkEncoder);
+        });
     }
 
     public void decode(Decoder decoder) {
-        decodingQueue.submit(() -> decoder.decode(reader, chunkDecoder));
+        decodingQueue.submit(() -> {
+            OpcUaBinaryStreamDecoder binaryDecoder =
+                new OpcUaBinaryStreamDecoder(maxArrayLength, maxStringLength);
+
+            decoder.decode(binaryDecoder, chunkDecoder);
+        });
     }
 
     public void pause() {
@@ -68,12 +76,12 @@ public class SerializationQueue {
 
     @FunctionalInterface
     public interface Decoder {
-        void decode(OpcUaBinaryStreamDecoder reader, ChunkDecoder chunkDecoder);
+        void decode(OpcUaBinaryStreamDecoder binaryDecoder, ChunkDecoder chunkDecoder);
     }
 
     @FunctionalInterface
     public interface Encoder {
-        void encode(OpcUaBinaryStreamEncoder writer, ChunkEncoder chunkEncoder);
+        void encode(OpcUaBinaryStreamEncoder binaryEncoder, ChunkEncoder chunkEncoder);
     }
 
 }
