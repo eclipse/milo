@@ -102,8 +102,11 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     @Override
     public CompletableFuture<UaSubscription> createSubscription(double requestedPublishingInterval) {
-        // Keep-alive every ~10-12s or every publishing interval if longer.
-        UInteger maxKeepAliveCount = uint(Math.max(1, (int) Math.ceil(10000.0 / requestedPublishingInterval)));
+        // Keep-alive every ~10-12s for intervals between 100 and 10000.
+        // This naively assumes a publishing interval of less than 100 will be revised to 100 or slower.
+        // TODO if a server revises the publishing interval, re-calculate counts and modify subscription
+        int count = (int) Math.ceil(10000.0 / Math.max(100, requestedPublishingInterval));
+        UInteger maxKeepAliveCount = uint(Math.max(1, count));
 
         // Lifetime must be 3x (or greater) the keep-alive count.
         UInteger maxLifetimeCount = uint(maxKeepAliveCount.intValue() * 6);
