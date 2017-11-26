@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -61,7 +64,6 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -103,19 +105,13 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     @Override
     public CompletableFuture<UaSubscription> createSubscription(double requestedPublishingInterval) {
-        // Keep-alive every ~10-12s for intervals between 1 and 10000.
-        int count = (int) Math.ceil(10000.0 / Math.max(1, requestedPublishingInterval));
-        UInteger maxKeepAliveCount = uint(Math.max(1, count));
-
-        // Lifetime must be 3x (or greater) the keep-alive count.
-        UInteger maxLifetimeCount = uint(maxKeepAliveCount.intValue() * 6);
-
         return createSubscription(
             requestedPublishingInterval,
-            maxLifetimeCount,
-            maxKeepAliveCount,
+            this::getKeepAliveCount,
+            this::getLifetimeCount,
             DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH,
-            true, ubyte(0)
+            true,
+            UByte.MIN
         );
     }
 
@@ -128,71 +124,72 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         boolean publishingEnabled,
         UByte priority) {
 
+        return createSubscription(
+            requestedPublishingInterval,
+            p -> requestedMaxKeepAliveCount,
+            (p, c) -> requestedLifetimeCount,
+            maxNotificationsPerPublish,
+            publishingEnabled,
+            priority
+        );
+    }
+
+    private CompletableFuture<UaSubscription> createSubscription(
+        double requestedPublishingInterval,
+        Function<Double, UInteger> getKeepAliveCount,
+        BiFunction<Double, UInteger, UInteger> getLifetimeCount,
+        UInteger maxNotificationsPerPublish,
+        boolean publishingEnabled,
+        UByte priority) {
+
+        UInteger requestedKeepAliveCount = getKeepAliveCount.apply(requestedPublishingInterval);
+        UInteger requestedLifetimeCount = getLifetimeCount.apply(requestedPublishingInterval, requestedKeepAliveCount);
+
         CompletableFuture<CreateSubscriptionResponse> future = client.createSubscription(
             requestedPublishingInterval,
             requestedLifetimeCount,
-            requestedMaxKeepAliveCount,
+            requestedKeepAliveCount,
             maxNotificationsPerPublish,
             publishingEnabled, priority
         );
 
         return future.thenCompose(response -> {
+            OpcUaSubscription subscription = new OpcUaSubscription(
+                client,
+                response.getSubscriptionId(),
+                response.getRevisedPublishingInterval(),
+                response.getRevisedLifetimeCount(),
+                response.getRevisedMaxKeepAliveCount(),
+                maxNotificationsPerPublish,
+                publishingEnabled,
+                priority
+            );
+
+            subscription.setRequestedPublishingInterval(requestedPublishingInterval);
+            subscription.setRequestedLifetimeCount(requestedLifetimeCount);
+            subscription.setRequestedMaxKeepAliveCount(requestedKeepAliveCount);
+
             double revisedPublishingInterval = response.getRevisedPublishingInterval();
+            UInteger newKeepAliveCount = getKeepAliveCount.apply(revisedPublishingInterval);
 
-            if (revisedPublishingInterval == requestedPublishingInterval) {
-                OpcUaSubscription subscription = new OpcUaSubscription(
-                    client,
-                    response.getSubscriptionId(),
-                    revisedPublishingInterval,
-                    response.getRevisedLifetimeCount(),
-                    response.getRevisedMaxKeepAliveCount(),
-                    maxNotificationsPerPublish,
-                    publishingEnabled,
-                    priority
-                );
+            if (requestedPublishingInterval != revisedPublishingInterval
+                && !requestedKeepAliveCount.equals(newKeepAliveCount)) {
 
-                subscription.setRequestedPublishingInterval(requestedPublishingInterval);
-                subscription.setRequestedLifetimeCount(requestedLifetimeCount);
-                subscription.setRequestedMaxKeepAliveCount(requestedMaxKeepAliveCount);
-
-                subscriptions.put(subscription.getSubscriptionId(), subscription);
-
-                maybeSendPublishRequests();
-
-                return completedFuture(subscription);
-            } else {
-                // Re-calculate the maxKeepAliveCount and maxLifetimeCount based on the revisedPublishingInterval
-                int count = (int) Math.ceil(10000.0 / Math.max(1, revisedPublishingInterval));
-                UInteger newMaxKeepAliveCount = uint(Math.max(1, count));
-
-                // Lifetime must be 3x (or greater) the keep-alive count.
-                UInteger newMaxLifetimeCount = uint(newMaxKeepAliveCount.intValue() * 6);
-
-                OpcUaSubscription subscription = new OpcUaSubscription(
-                    client,
-                    response.getSubscriptionId(),
-                    revisedPublishingInterval,
-                    response.getRevisedLifetimeCount(),
-                    response.getRevisedMaxKeepAliveCount(),
-                    maxNotificationsPerPublish,
-                    publishingEnabled,
-                    priority
-                );
-
-                subscription.setRequestedPublishingInterval(requestedPublishingInterval);
-                subscription.setRequestedLifetimeCount(newMaxLifetimeCount);
-                subscription.setRequestedMaxKeepAliveCount(newMaxKeepAliveCount);
+                UInteger newLifetimeCount = getLifetimeCount.apply(revisedPublishingInterval, newKeepAliveCount);
 
                 CompletableFuture<ModifySubscriptionResponse> modifyFuture = client.modifySubscription(
                     response.getSubscriptionId(),
                     revisedPublishingInterval,
-                    newMaxLifetimeCount,
-                    newMaxKeepAliveCount,
+                    newLifetimeCount,
+                    newKeepAliveCount,
                     maxNotificationsPerPublish,
                     priority
                 );
 
                 return modifyFuture.thenApply(modifyResponse -> {
+                    subscription.setRequestedLifetimeCount(newLifetimeCount);
+                    subscription.setRequestedMaxKeepAliveCount(newKeepAliveCount);
+
                     subscription.setRevisedPublishingInterval(modifyResponse.getRevisedPublishingInterval());
                     subscription.setRevisedLifetimeCount(modifyResponse.getRevisedLifetimeCount());
                     subscription.setRevisedMaxKeepAliveCount(modifyResponse.getRevisedMaxKeepAliveCount());
@@ -203,8 +200,31 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                     return subscription;
                 });
+            } else {
+                subscriptions.put(subscription.getSubscriptionId(), subscription);
+
+                maybeSendPublishRequests();
+
+                return completedFuture(subscription);
             }
         });
+    }
+
+    private UInteger getKeepAliveCount(double publishingInterval) {
+        int count = (int) Math.ceil(10000.0 / Math.max(1, publishingInterval));
+        return uint(Math.max(1, count));
+    }
+
+    private UInteger getLifetimeCount(double publishingInterval, UInteger keepAliveCount) {
+        // Lifetime must be 3x (or greater) the keep-alive count.
+        try {
+            long value = keepAliveCount.toBigInteger()
+                .multiply(BigInteger.valueOf(6)).longValueExact();
+
+            return uint(Math.min(value, UInteger.MAX_VALUE));
+        } catch (ArithmeticException e) {
+            return UInteger.MAX;
+        }
     }
 
     @Override
