@@ -82,6 +82,12 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
 abstract class AbstractSessionState implements SessionState {
 
+    /**
+     * Max amount of time to wait for one of the requests send by the session FSM to complete.
+     * Using the default 120,000ms may result in the appearance of the FSM having deadlocked or stopped working.
+     */
+    private static final UInteger REQUEST_TIMEOUT = uint(16000);
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionState.class);
 
     // <editor-fold desc="Create Session">
@@ -117,7 +123,7 @@ abstract class AbstractSessionState implements SessionState {
             .orElse(ByteString.NULL_VALUE);
 
         CreateSessionRequest request = new CreateSessionRequest(
-            client.newRequestHeader(),
+            client.newRequestHeader(REQUEST_TIMEOUT),
             stackClient.getApplication(),
             serverUri,
             stackClient.getEndpointUrl(),
@@ -226,7 +232,7 @@ abstract class AbstractSessionState implements SessionState {
                 SignatureData userTokenSignature = tuple.v2();
 
                 ActivateSessionRequest request = new ActivateSessionRequest(
-                    client.newRequestHeader(csr.getAuthenticationToken()),
+                    client.newRequestHeader(csr.getAuthenticationToken(), REQUEST_TIMEOUT),
                     buildClientSignature(secureChannel, serverNonce),
                     new SignedSoftwareCertificate[0],
                     new String[0],
@@ -365,7 +371,7 @@ abstract class AbstractSessionState implements SessionState {
                 );
 
                 ActivateSessionRequest request = new ActivateSessionRequest(
-                    client.newRequestHeader(session.getAuthenticationToken()),
+                    client.newRequestHeader(session.getAuthenticationToken(), REQUEST_TIMEOUT),
                     clientSignature,
                     new SignedSoftwareCertificate[0],
                     new String[0],
@@ -429,7 +435,7 @@ abstract class AbstractSessionState implements SessionState {
             .toArray(UInteger[]::new);
 
         TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
-            client.newRequestHeader(session.getAuthenticationToken()),
+            client.newRequestHeader(session.getAuthenticationToken(), REQUEST_TIMEOUT),
             subscriptionIdsArray,
             true
         );
