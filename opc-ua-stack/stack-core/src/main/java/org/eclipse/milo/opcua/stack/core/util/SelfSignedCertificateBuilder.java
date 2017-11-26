@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
@@ -24,10 +25,28 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SelfSignedCertificateBuilder {
 
+    /**
+     * Signature Algorithm for SHA1 with RSA.
+     * <p>
+     * SHA1 was broken in 2017 and this algorithm should not be used.
+     */
     public static final String SA_SHA1_RSA = "SHA1withRSA";
+
+    /**
+     * Signature Algorithm for SHA256 with RSA.
+     */
     public static final String SA_SHA256_RSA = "SHA256withRSA";
+
+    /**
+     * Signature Algorithm for SHA256 with ECDSA.
+     * <p>
+     * May only be uses with EC-based KeyPairs and security profiles.
+     */
     public static final String SA_SHA256_ECDSA = "SHA256withECDSA";
 
     private Period validityPeriod = Period.ofYears(3);
@@ -55,8 +74,17 @@ public class SelfSignedCertificateBuilder {
         this.keyPair = keyPair;
         this.generator = generator;
 
-        if (keyPair.getPublic() instanceof RSAPublicKey) {
+        PublicKey publicKey = keyPair.getPublic();
+
+        if (publicKey instanceof RSAPublicKey) {
             signatureAlgorithm = SA_SHA256_RSA;
+
+            int bitLength = ((RSAPublicKey) keyPair.getPublic()).getModulus().bitLength();
+
+            if (bitLength <= 1024) {
+                Logger logger = LoggerFactory.getLogger(getClass());
+                logger.warn("Using legacy key size: {}", bitLength);
+            }
         } else if (keyPair.getPublic() instanceof ECPublicKey) {
             signatureAlgorithm = SA_SHA256_ECDSA;
         }
