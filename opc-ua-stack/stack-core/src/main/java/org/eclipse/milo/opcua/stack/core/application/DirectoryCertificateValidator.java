@@ -26,7 +26,6 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.security.cert.CRL;
 import java.security.cert.CRLException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -183,7 +182,7 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         try {
             CertificateValidationUtil.validateCertificateValidity(certificate);
         } catch (UaException e) {
-            certificateRejected(certificate);
+            addRejectedCertificate(certificate);
             throw e;
         }
     }
@@ -199,9 +198,25 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
                 issuerCertificates
             );
         } catch (UaException e) {
-            certificateRejected(certificate);
+            addRejectedCertificate(certificate);
             throw e;
         }
+    }
+
+    public synchronized void addTrustedCertificate(X509Certificate certificate) {
+        trustedCertificates.add(certificate);
+
+        writeCertificateToDir(certificate, trustedCertsDir);
+    }
+
+    public synchronized void addIssuerCertificate(X509Certificate certificate) {
+        issuerCertificates.add(certificate);
+
+        writeCertificateToDir(certificate, issuerCertsDir);
+    }
+
+    public synchronized void addRejectedCertificate(X509Certificate certificate) {
+        writeCertificateToDir(certificate, rejectedDir);
     }
 
     public File getBaseDir() {
@@ -236,23 +251,27 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         return rejectedDir;
     }
 
-    private void certificateRejected(X509Certificate certificate) {
+    private static String getFilename(X509Certificate certificate) throws Exception {
+        String[] ss = certificate.getSubjectX500Principal().getName().split(",");
+        String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
+        String thumbprint = ByteBufUtil.hexDump(Unpooled.wrappedBuffer(DigestUtil.sha1(certificate.getEncoded())));
+
+        return String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
+    }
+
+    private void writeCertificateToDir(X509Certificate certificate, File dir) {
         try {
-            String[] ss = certificate.getSubjectX500Principal().getName().split(",");
-            String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
-            String thumbprint = ByteBufUtil.hexDump(Unpooled.wrappedBuffer(DigestUtil.sha1(certificate.getEncoded())));
+            String filename = getFilename(certificate);
 
-            String filename = String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
-
-            File f = new File(rejectedDir.getAbsolutePath() + File.separator + filename);
+            File f = new File(dir.getAbsolutePath() + File.separator + filename);
 
             try (FileOutputStream fos = new FileOutputStream(f)) {
                 fos.write(certificate.getEncoded());
                 fos.flush();
             }
 
-            logger.info("Added rejected certificate entry: {}", filename);
-        } catch (CertificateEncodingException | IOException e) {
+            logger.info("Wrote certificate entry: {}", f.getAbsolutePath());
+        } catch (Exception e) {
             logger.error("Error adding rejected certificate entry.", e);
         }
     }
