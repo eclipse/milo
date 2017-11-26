@@ -12,16 +12,24 @@
     <artifactId>stack-core</artifactId>
 
     <dependencies>
+        <!-- Bouncy Castle dependencies are optional!
+        You must redeclare the dependency on these if
+        you use BC functionality in your project! -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>${bouncycastle.version}</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15on</artifactId>
             <version>${bouncycastle.version}</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
