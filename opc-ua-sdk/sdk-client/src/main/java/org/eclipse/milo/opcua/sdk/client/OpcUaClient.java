@@ -193,20 +193,42 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
+     * Build a new {@link RequestHeader} using a null authentication token and a custom {@code requestTimeout}.
+     *
+     * @param requestTimeout the custom request timeout to use.
+     * @return a new {@link RequestHeader} with a null authentication token and a custom request timeout.
+     */
+    public RequestHeader newRequestHeader(UInteger requestTimeout) {
+        return newRequestHeader(NodeId.NULL_VALUE, requestTimeout);
+    }
+
+    /**
      * Build a new {@link RequestHeader} using {@code authToken}.
      *
      * @param authToken the authentication token (from the session) to use.
      * @return a new {@link RequestHeader}.
      */
     public RequestHeader newRequestHeader(NodeId authToken) {
+        return newRequestHeader(authToken, config.getRequestTimeout());
+    }
+
+    /**
+     * Build a new {@link RequestHeader} using {@code authToken} and a custom {@code requestTimeout}.
+     *
+     * @param authToken      the authentication token (from the session) to use.
+     * @param requestTimeout the custom request timeout to use.
+     * @return a new {@link RequestHeader}.
+     */
+    public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
         return new RequestHeader(
             authToken,
             DateTime.now(),
             uint(requestHandles.getAndIncrement()),
             uint(0),
             null,
-            config.getRequestTimeout(),
-            null);
+            requestTimeout,
+            null
+        );
     }
 
     /**
