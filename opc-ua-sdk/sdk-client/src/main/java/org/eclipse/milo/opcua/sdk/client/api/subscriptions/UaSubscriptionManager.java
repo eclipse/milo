@@ -14,6 +14,8 @@
 package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
@@ -27,6 +29,8 @@ public interface UaSubscriptionManager {
 
     /**
      * Create a {@link UaSubscription} using default parameters.
+     * <p>
+     * The requested max keep-alive count and lifetime count will be derived from the requested publishing interval.
      *
      * @param requestedPublishingInterval the requested publishing interval of the subscription.
      * @return a {@link CompletableFuture} containing the {@link UaSubscription}.
@@ -40,12 +44,36 @@ public interface UaSubscriptionManager {
      * @param requestedLifetimeCount      the requested lifetime count.
      * @param requestedMaxKeepAliveCount  the requested max keep-alive count.
      * @param maxNotificationsPerPublish  the maximum number of notifications allowed in a publish response.
+     * @param publishingEnabled           {@code true} if publishing is enabled for the subscription.
      * @param priority                    the relative priority to assign to the subscription.
      * @return a {@link CompletableFuture} containing the {@link UaSubscription}.
      */
     CompletableFuture<UaSubscription> createSubscription(double requestedPublishingInterval,
                                                          UInteger requestedLifetimeCount,
                                                          UInteger requestedMaxKeepAliveCount,
+                                                         UInteger maxNotificationsPerPublish,
+                                                         boolean publishingEnabled,
+                                                         UByte priority);
+
+    /**
+     * Create a {@link UaSubscription}.
+     * <p>
+     * This overload uses provided functions to calculate keep-alive and lifetime counts. They may be called more than
+     * once, with revised values, in order to modify the subscription if the server revises the requested publishing
+     * interval.
+     *
+     * @param requestedPublishingInterval the requested publishing interval.
+     * @param getLifetimeCount            function returning lifetime count given publishing interval and
+     *                                    keep-alive count.
+     * @param getKeepAliveCount           function returning keep-alive count given publishing interval.
+     * @param maxNotificationsPerPublish  the maximum number of notifications allowed in a publish response.
+     * @param publishingEnabled           {@code true} if publishing is enabled for the subscription.
+     * @param priority                    the relative priority to assign to the subscription.
+     * @return a {@link CompletableFuture} containing the {@link UaSubscription}.
+     */
+    CompletableFuture<UaSubscription> createSubscription(double requestedPublishingInterval,
+                                                         BiFunction<Double, UInteger, UInteger> getLifetimeCount,
+                                                         Function<Double, UInteger> getKeepAliveCount,
                                                          UInteger maxNotificationsPerPublish,
                                                          boolean publishingEnabled,
                                                          UByte priority);
@@ -77,6 +105,29 @@ public interface UaSubscriptionManager {
                                                          double requestedPublishingInterval,
                                                          UInteger requestedLifetimeCount,
                                                          UInteger requestedMaxKeepAliveCount,
+                                                         UInteger maxNotificationsPerPublish,
+                                                         UByte priority);
+
+    /**
+     * Modify a {@link UaSubscription}.
+     * <p>
+     * This overload uses provided functions to calculate keep-alive and lifetime counts. They may be called more than
+     * once, with revised values, in order to modify the subscription if the server revises the requested publishing
+     * interval.
+     *
+     * @param subscriptionId              the server-assigned id of the {@link UaSubscription} to modify.
+     * @param requestedPublishingInterval the requested publishing interval.
+     * @param getLifetimeCount            function returning lifetime count given publishing interval and
+     *                                    keep-alive count.
+     * @param getKeepAliveCount           function returning keep-alive count given publishing interval.
+     * @param maxNotificationsPerPublish  the maximum number of notifications allowed in a publish response.
+     * @param priority                    the relative priority to assign to the subscription.
+     * @return a {@link CompletableFuture} containing the {@link UaSubscription}.
+     */
+    CompletableFuture<UaSubscription> modifySubscription(UInteger subscriptionId,
+                                                         double requestedPublishingInterval,
+                                                         BiFunction<Double, UInteger, UInteger> getLifetimeCount,
+                                                         Function<Double, UInteger> getKeepAliveCount,
                                                          UInteger maxNotificationsPerPublish,
                                                          UByte priority);
 

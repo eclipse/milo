@@ -135,7 +135,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         );
     }
 
-    private CompletableFuture<UaSubscription> createSubscription(
+    @Override
+    public CompletableFuture<UaSubscription> createSubscription(
         double requestedPublishingInterval,
         BiFunction<Double, UInteger, UInteger> getLifetimeCount,
         Function<Double, UInteger> getKeepAliveCount,
@@ -268,7 +269,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         );
     }
 
-    private CompletableFuture<UaSubscription> modifySubscription(
+    @Override
+    public CompletableFuture<UaSubscription> modifySubscription(
         UInteger subscriptionId,
         double requestedPublishingInterval,
         BiFunction<Double, UInteger, UInteger> getLifetimeCount,
