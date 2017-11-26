@@ -20,13 +20,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.time.LocalDate;
-import java.time.Period;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
@@ -80,7 +76,8 @@ public class SelfSignedCertificateGenerator {
 
     public X509Certificate generateSelfSigned(
         KeyPair keyPair,
-        Period validityPeriod,
+        Date notBefore,
+        Date notAfter,
         String commonName,
         String organization,
         String organizationalUnit,
@@ -89,7 +86,8 @@ public class SelfSignedCertificateGenerator {
         String countryCode,
         String applicationUri,
         List<String> dnsNames,
-        List<String> ipAddresses) throws Exception {
+        List<String> ipAddresses,
+        String signatureAlgorithm) throws Exception {
 
         X500NameBuilder nameBuilder = new X500NameBuilder();
         nameBuilder.addRDN(BCStyle.CN, commonName);
@@ -104,12 +102,6 @@ public class SelfSignedCertificateGenerator {
         // Using the current timestamp as the certificate serial number
         BigInteger certSerialNumber = new BigInteger(Long.toString(System.currentTimeMillis()));
 
-        // Calculate start and end date based on validity period
-        LocalDate now = LocalDate.now();
-        LocalDate expiration = now.plus(validityPeriod);
-
-        Date startDate = Date.from(now.atStartOfDay(ZoneId.systemDefault()).toInstant());
-        Date expirationDate = Date.from(expiration.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
         SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(
             keyPair.getPublic().getEncoded()
@@ -118,8 +110,8 @@ public class SelfSignedCertificateGenerator {
         X509v3CertificateBuilder certificateBuilder = new X509v3CertificateBuilder(
             name,
             certSerialNumber,
-            startDate,
-            expirationDate,
+            notBefore,
+            notAfter,
             name,
             subjectPublicKeyInfo
         );
@@ -141,18 +133,13 @@ public class SelfSignedCertificateGenerator {
         // Subject Alternative Name
         addSubjectAlternativeNames(certificateBuilder, keyPair, applicationUri, dnsNames, ipAddresses);
 
-        ContentSigner contentSigner = new JcaContentSignerBuilder(getSignatureAlgorithm())
+        ContentSigner contentSigner = new JcaContentSignerBuilder(signatureAlgorithm)
             .setProvider(new BouncyCastleProvider())
             .build(keyPair.getPrivate());
 
         X509CertificateHolder certificateHolder = certificateBuilder.build(contentSigner);
 
         return new JcaX509CertificateConverter().getCertificate(certificateHolder);
-    }
-
-    @Nonnull
-    protected String getSignatureAlgorithm() {
-        return "SHA256WithRSA";
     }
 
     protected void addSubjectAlternativeNames(

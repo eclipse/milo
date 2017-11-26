@@ -15,11 +15,20 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAPublicKey;
+import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class SelfSignedCertificateBuilder {
+
+    public static final String SA_SHA1_RSA = "SHA1withRSA";
+    public static final String SA_SHA256_RSA = "SHA256withRSA";
+    public static final String SA_SHA256_ECDSA = "SHA256withECDSA";
 
     private Period validityPeriod = Period.ofYears(3);
 
@@ -33,6 +42,7 @@ public class SelfSignedCertificateBuilder {
     private String applicationUri = "";
     private List<String> dnsNames = new ArrayList<>();
     private List<String> ipAddresses = new ArrayList<>();
+    private String signatureAlgorithm = SA_SHA256_RSA;
 
     private final KeyPair keyPair;
     private final SelfSignedCertificateGenerator generator;
@@ -44,6 +54,12 @@ public class SelfSignedCertificateBuilder {
     public SelfSignedCertificateBuilder(KeyPair keyPair, SelfSignedCertificateGenerator generator) {
         this.keyPair = keyPair;
         this.generator = generator;
+
+        if (keyPair.getPublic() instanceof RSAPublicKey) {
+            signatureAlgorithm = SA_SHA256_RSA;
+        } else if (keyPair.getPublic() instanceof ECPublicKey) {
+            signatureAlgorithm = SA_SHA256_ECDSA;
+        }
     }
 
     public SelfSignedCertificateBuilder setValidityPeriod(Period validityPeriod) {
@@ -96,10 +112,23 @@ public class SelfSignedCertificateBuilder {
         return this;
     }
 
+    public SelfSignedCertificateBuilder setSignatureAlgorithm(String signatureAlgorithm) {
+        this.signatureAlgorithm = signatureAlgorithm;
+        return this;
+    }
+
     public X509Certificate build() throws Exception {
+        // Calculate start and end date based on validity period
+        LocalDate now = LocalDate.now();
+        LocalDate expiration = now.plus(validityPeriod);
+
+        Date notBefore = Date.from(now.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date notAfter = Date.from(expiration.atStartOfDay(ZoneId.systemDefault()).toInstant());
+
         return generator.generateSelfSigned(
             keyPair,
-            validityPeriod,
+            notBefore,
+            notAfter,
             commonName,
             organization,
             organizationalUnit,
@@ -108,7 +137,8 @@ public class SelfSignedCertificateBuilder {
             countryCode,
             applicationUri,
             dnsNames,
-            ipAddresses
+            ipAddresses,
+            signatureAlgorithm
         );
     }
 
