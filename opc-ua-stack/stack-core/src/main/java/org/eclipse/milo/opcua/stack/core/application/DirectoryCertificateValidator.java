@@ -159,7 +159,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
      */
     @Override
     public void close() throws IOException {
-        // get and reset
         synchronized (this) {
             logger.info("Closing DefaultCertificateStore at {}", baseDir.getAbsolutePath());
 
