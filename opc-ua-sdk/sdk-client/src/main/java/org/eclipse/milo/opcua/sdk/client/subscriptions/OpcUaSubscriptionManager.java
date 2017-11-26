@@ -108,8 +108,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     public CompletableFuture<UaSubscription> createSubscription(double requestedPublishingInterval) {
         return createSubscription(
             requestedPublishingInterval,
-            this::getKeepAliveCount,
             this::getLifetimeCount,
+            this::getKeepAliveCount,
             DEFAULT_MAX_NOTIFICATIONS_PER_PUBLISH,
             true,
             UByte.MIN
@@ -127,8 +127,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         return createSubscription(
             requestedPublishingInterval,
-            p -> requestedMaxKeepAliveCount,
             (p, c) -> requestedLifetimeCount,
+            p -> requestedMaxKeepAliveCount,
             maxNotificationsPerPublish,
             publishingEnabled,
             priority
@@ -137,8 +137,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     private CompletableFuture<UaSubscription> createSubscription(
         double requestedPublishingInterval,
-        Function<Double, UInteger> getKeepAliveCount,
         BiFunction<Double, UInteger, UInteger> getLifetimeCount,
+        Function<Double, UInteger> getKeepAliveCount,
         UInteger maxNotificationsPerPublish,
         boolean publishingEnabled,
         UByte priority) {
@@ -242,8 +242,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         return modifySubscription(
             subscriptionId,
             requestedPublishingInterval,
-            this::getKeepAliveCount,
             this::getLifetimeCount,
+            this::getKeepAliveCount,
             subscription.getMaxNotificationsPerPublish(),
             subscription.getPriority()
         );
@@ -261,8 +261,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         return modifySubscription(
             subscriptionId,
             requestedPublishingInterval,
-            p -> requestedMaxKeepAliveCount,
             (p, c) -> requestedLifetimeCount,
+            p -> requestedMaxKeepAliveCount,
             maxNotificationsPerPublish,
             priority
         );
@@ -271,8 +271,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     private CompletableFuture<UaSubscription> modifySubscription(
         UInteger subscriptionId,
         double requestedPublishingInterval,
-        Function<Double, UInteger> getKeepAliveCount,
         BiFunction<Double, UInteger, UInteger> getLifetimeCount,
+        Function<Double, UInteger> getKeepAliveCount,
         UInteger maxNotificationsPerPublish,
         UByte priority) {
 
