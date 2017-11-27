@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.netty.buffer.ByteBufUtil;
@@ -203,20 +204,36 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         }
     }
 
-    public synchronized void addTrustedCertificate(X509Certificate certificate) {
-        trustedCertificates.add(certificate);
-
-        writeCertificateToDir(certificate, trustedCertsDir);
-    }
-
     public synchronized void addIssuerCertificate(X509Certificate certificate) {
         issuerCertificates.add(certificate);
 
         writeCertificateToDir(certificate, issuerCertsDir);
     }
 
+    public synchronized void addTrustedCertificate(X509Certificate certificate) {
+        trustedCertificates.add(certificate);
+
+        writeCertificateToDir(certificate, trustedCertsDir);
+    }
+
     public synchronized void addRejectedCertificate(X509Certificate certificate) {
         writeCertificateToDir(certificate, rejectedDir);
+    }
+
+    public synchronized ImmutableSet<X509Certificate> getIssuerCertificates() {
+        return ImmutableSet.copyOf(issuerCertificates);
+    }
+
+    public synchronized ImmutableSet<CRL> getIssuerCrls() {
+        return ImmutableSet.copyOf(issuerCrls);
+    }
+
+    public synchronized ImmutableSet<X509Certificate> getTrustedCertificates() {
+        return ImmutableSet.copyOf(trustedCertificates);
+    }
+
+    public synchronized ImmutableSet<CRL> getTrustedCrls() {
+        return ImmutableSet.copyOf(trustedCrls);
     }
 
     public File getBaseDir() {
