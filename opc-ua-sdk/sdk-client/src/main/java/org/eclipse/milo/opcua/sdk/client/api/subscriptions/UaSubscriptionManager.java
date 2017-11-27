@@ -65,7 +65,7 @@ public interface UaSubscriptionManager {
      * @param requestedPublishingInterval the requested publishing interval.
      * @param getLifetimeCount            function returning lifetime count given publishing interval and
      *                                    keep-alive count.
-     * @param getKeepAliveCount           function returning keep-alive count given publishing interval.
+     * @param getMaxKeepAliveCount        function returning max keep-alive count given publishing interval.
      * @param maxNotificationsPerPublish  the maximum number of notifications allowed in a publish response.
      * @param publishingEnabled           {@code true} if publishing is enabled for the subscription.
      * @param priority                    the relative priority to assign to the subscription.
@@ -73,7 +73,7 @@ public interface UaSubscriptionManager {
      */
     CompletableFuture<UaSubscription> createSubscription(double requestedPublishingInterval,
                                                          BiFunction<Double, UInteger, UInteger> getLifetimeCount,
-                                                         Function<Double, UInteger> getKeepAliveCount,
+                                                         Function<Double, UInteger> getMaxKeepAliveCount,
                                                          UInteger maxNotificationsPerPublish,
                                                          boolean publishingEnabled,
                                                          UByte priority);
@@ -119,7 +119,7 @@ public interface UaSubscriptionManager {
      * @param requestedPublishingInterval the requested publishing interval.
      * @param getLifetimeCount            function returning lifetime count given publishing interval and
      *                                    keep-alive count.
-     * @param getKeepAliveCount           function returning keep-alive count given publishing interval.
+     * @param getMaxKeepAliveCount        function returning max keep-alive count given publishing interval.
      * @param maxNotificationsPerPublish  the maximum number of notifications allowed in a publish response.
      * @param priority                    the relative priority to assign to the subscription.
      * @return a {@link CompletableFuture} containing the {@link UaSubscription}.
@@ -127,7 +127,7 @@ public interface UaSubscriptionManager {
     CompletableFuture<UaSubscription> modifySubscription(UInteger subscriptionId,
                                                          double requestedPublishingInterval,
                                                          BiFunction<Double, UInteger, UInteger> getLifetimeCount,
-                                                         Function<Double, UInteger> getKeepAliveCount,
+                                                         Function<Double, UInteger> getMaxKeepAliveCount,
                                                          UInteger maxNotificationsPerPublish,
                                                          UByte priority);
 
