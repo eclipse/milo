@@ -286,7 +286,8 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         }
 
         UInteger requestedMaxKeepAliveCount = getMaxKeepAliveCount.apply(requestedPublishingInterval);
-        UInteger requestedLifetimeCount = getLifetimeCount.apply(requestedPublishingInterval, requestedMaxKeepAliveCount);
+        UInteger requestedLifetimeCount = getLifetimeCount.apply(
+            requestedPublishingInterval, requestedMaxKeepAliveCount);
 
         CompletableFuture<ModifySubscriptionResponse> future = client.modifySubscription(
             subscriptionId,
