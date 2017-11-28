@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.client.handlers;
 
 import java.nio.ByteOrder;
+import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
@@ -49,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -62,6 +65,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.Logger;
@@ -457,7 +461,23 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         buffer.skipBytes(3 + 1 + 4 + 4); // skip messageType, chunkType, messageSize, secureChannelId
 
         AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(buffer);
-        if (!headerRef.compareAndSet(null, securityHeader)) {
+
+        if (headerRef.compareAndSet(null, securityHeader)) {
+            // first time we've received the header; validate and verify the server certificate
+            CertificateValidator certificateValidator = client.getConfig().getCertificateValidator();
+
+            SecurityPolicy securityPolicy = SecurityPolicy.fromUri(securityHeader.getSecurityPolicyUri());
+
+            if (securityPolicy != SecurityPolicy.None) {
+                ByteString serverCertificateBytes = securityHeader.getSenderCertificate();
+
+                List<X509Certificate> serverCertificateChain =
+                    CertificateUtil.decodeCertificates(serverCertificateBytes.bytesOrEmpty());
+
+                certificateValidator.validate(serverCertificateChain.get(0));
+                certificateValidator.verifyTrustChain(serverCertificateChain.get(0), serverCertificateChain);
+            }
+        } else {
             if (!securityHeader.equals(headerRef.get())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "subsequent AsymmetricSecurityHeader did not match");

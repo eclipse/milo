@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -99,6 +100,12 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     @Override
     public OpcUaClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
         super.setCertificateChain(certificateChain);
+        return this;
+    }
+
+    @Override
+    public OpcUaClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+        super.setCertificateValidator(certificateValidator);
         return this;
     }
 
@@ -257,6 +264,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public Optional<X509Certificate[]> getCertificateChain() {
             return stackClientConfig.getCertificateChain();
+        }
+
+        @Override
+        public CertificateValidator getCertificateValidator() {
+            return stackClientConfig.getCertificateValidator();
         }
 
         @Override

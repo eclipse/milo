@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -68,6 +69,13 @@ public interface UaTcpStackClientConfig {
      * @return the {@link X509Certificate} to use as well as any certificates in the certificate chain.
      */
     Optional<X509Certificate[]> getCertificateChain();
+
+    /**
+     * Get the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     *
+     * @return the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     */
+    CertificateValidator getCertificateValidator();
 
     /**
      * @return the name of the client application, as a {@link LocalizedText}.
@@ -145,6 +153,7 @@ public interface UaTcpStackClientConfig {
         config.getKeyPair().ifPresent(builder::setKeyPair);
         config.getCertificate().ifPresent(builder::setCertificate);
         config.getCertificateChain().ifPresent(builder::setCertificateChain);
+        builder.setCertificateValidator(config.getCertificateValidator());
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
