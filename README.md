@@ -14,15 +14,7 @@ Mailing list: https://dev.eclipse.org/mailman/listinfo/milo-dev
 
 ## Maven
 
-Snapshots and releases are available using Maven. In order to use snapshots a reference to the Sonatype snapshot repository must be added to your pom file:
-
-```xml
-<repository>
-    <id>oss-sonatype</id>
-    <name>oss-sonatype</name>
-    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-</repository>
-```
+Releases are published to Maven Central. 
 
 ### OPC UA Client SDK
 
@@ -61,3 +53,14 @@ Snapshots and releases are available using Maven. In order to use snapshots a re
     <version>0.1.5</version>
 </dependency>
 ```
+
+If you want to reference a `SNAPSHOT` release a reference to the Sonatype snapshot repository must be added to your pom file:
+
+```xml
+<repository>
+    <id>oss-sonatype</id>
+    <name>oss-sonatype</name>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+</repository>
+```
+
