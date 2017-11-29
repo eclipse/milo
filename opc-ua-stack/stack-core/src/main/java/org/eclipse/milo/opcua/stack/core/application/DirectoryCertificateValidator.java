@@ -189,7 +189,10 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
     }
 
     @Override
-    public synchronized void verifyTrustChain(X509Certificate certificate, List<X509Certificate> chain) throws UaException {
+    public synchronized void verifyTrustChain(
+        X509Certificate certificate,
+        List<X509Certificate> chain) throws UaException {
+
         try {
             // TODO pass CRLs to validateTrustChain once supported
             CertificateValidationUtil.validateTrustChain(
