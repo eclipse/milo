@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.application.DirectoryCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -66,11 +66,11 @@ public class ExampleServer {
         );
 
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
+        LoggerFactory.getLogger(getClass()).info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
-        LoggerFactory.getLogger(getClass())
-            .info("security temp dir: {}", securityTempDir.getAbsolutePath());
-
-        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
+        File pkiDir = securityTempDir.toPath().resolve("pki").toFile();
+        DirectoryCertificateValidator certificateValidator = new DirectoryCertificateValidator(pkiDir);
+        LoggerFactory.getLogger(getClass()).info("pki dir: {}", pkiDir.getAbsolutePath());
 
         UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
             true,
