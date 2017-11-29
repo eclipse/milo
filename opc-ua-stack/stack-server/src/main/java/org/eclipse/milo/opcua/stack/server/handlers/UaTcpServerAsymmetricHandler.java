@@ -202,9 +202,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
                     certificateValidator.validate(secureChannel.getRemoteCertificate());
 
-                    certificateValidator.verifyTrustChain(
-                        secureChannel.getRemoteCertificate(),
-                        secureChannel.getRemoteCertificateChain());
+                    certificateValidator.verifyTrustChain(secureChannel.getRemoteCertificateChain());
                 } catch (UaException e) {
                     try {
                         UaException cause = new UaException(e.getStatusCode(), "security checks failed");

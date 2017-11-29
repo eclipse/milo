@@ -35,7 +35,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
         public void validate(X509Certificate certificate) throws UaException {}
 
         @Override
-        public void verifyTrustChain(X509Certificate certificate, List<X509Certificate> chain) throws UaException {}
+        public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {}
     };
 
     @Test

@@ -33,7 +33,9 @@ public class InsecureCertificateValidator implements CertificateValidator {
     }
 
     @Override
-    public void verifyTrustChain(X509Certificate certificate, List<X509Certificate> chain) throws UaException {
+    public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {
+        X509Certificate certificate = certificateChain.get(0);
+
         logger.warn("Skipping trust chain verification for certificate: {}", certificate.getSubjectX500Principal());
     }
 

@@ -28,6 +28,7 @@ import java.security.cert.CRL;
 import java.security.cert.CRLException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableSet;
@@ -49,17 +51,14 @@ import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
-
 public class DirectoryCertificateValidator implements CertificateValidator, AutoCloseable {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Set<X509Certificate> trustedCertificates = Sets.newConcurrentHashSet();
-    private final Set<CRL> trustedCrls = Sets.newConcurrentHashSet();
 
     private final Set<X509Certificate> issuerCertificates = Sets.newConcurrentHashSet();
-    private final Set<CRL> issuerCrls = Sets.newConcurrentHashSet();
+    private final Set<X509CRL> issuerCrls = Sets.newConcurrentHashSet();
 
     private final WatchService watchService;
     private final Thread watchThread;
@@ -71,7 +70,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
 
     private final File trustedDir;
     private final File trustedCertsDir;
-    private final File trustedCrlsDir;
 
     private final File rejectedDir;
 
@@ -93,9 +91,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
 
         trustedCertsDir = trustedDir.toPath().resolve("certs").toFile();
         ensureDirectoryExists(trustedCertsDir);
-
-        trustedCrlsDir = trustedDir.toPath().resolve("crls").toFile();
-        ensureDirectoryExists(trustedCrlsDir);
 
         rejectedDir = baseDir.toPath().resolve("rejected").toFile();
         ensureDirectoryExists(rejectedDir);
@@ -131,15 +126,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
             ),
             this::synchronizeTrustedCerts
         );
-        watchKeys.put(
-            trustedCrlsDir.toPath().register(
-                watchService,
-                StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_DELETE,
-                StandardWatchEventKinds.ENTRY_MODIFY
-            ),
-            this::synchronizeTrustedCrls
-        );
 
         watchThread = new Thread(new Watcher(watchService, watchKeys));
         watchThread.setName("certificate-store-watcher");
@@ -149,13 +135,12 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         synchronizeIssuerCerts();
         synchronizeIssuerCrls();
         synchronizeTrustedCerts();
-        synchronizeTrustedCrls();
     }
 
     /**
      * Stop the certificate store watcher and free all resources.
      * <p>
-     * After calling closing {@link #verifyTrustChain(X509Certificate, List)} will fail for all inputs.
+     * After calling closing {@link CertificateValidator#verifyTrustChain(List)} will fail for all inputs.
      */
     @Override
     public void close() throws IOException {
@@ -174,7 +159,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
             issuerCrls.clear();
 
             trustedCertificates.clear();
-            trustedCrls.clear();
         }
     }
 
@@ -189,19 +173,15 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
     }
 
     @Override
-    public synchronized void verifyTrustChain(
-        X509Certificate certificate,
-        List<X509Certificate> chain) throws UaException {
-
+    public synchronized void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {
         try {
-            // TODO pass CRLs to validateTrustChain once supported
-            CertificateValidationUtil.validateTrustChain(
-                certificate,
-                chain,
-                trustedCertificates,
-                issuerCertificates
+            CertificateValidationUtil.verifyTrustChain(
+                certificateChain,
+                trustedCertificates, issuerCertificates,
+                issuerCrls
             );
         } catch (UaException e) {
+            X509Certificate certificate = certificateChain.get(0);
             addRejectedCertificate(certificate);
             throw e;
         }
@@ -235,10 +215,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         return ImmutableSet.copyOf(trustedCertificates);
     }
 
-    public synchronized ImmutableSet<CRL> getTrustedCrls() {
-        return ImmutableSet.copyOf(trustedCrls);
-    }
-
     public File getBaseDir() {
         return baseDir;
     }
@@ -261,10 +237,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
 
     public File getTrustedCertsDir() {
         return trustedCertsDir;
-    }
-
-    public File getTrustedCrlsDir() {
-        return trustedCrlsDir;
     }
 
     public File getRejectedDir() {
@@ -346,26 +318,17 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
             .forEach(issuerCrls::add);
     }
 
-    private synchronized void synchronizeTrustedCrls() {
-        File[] files = trustedCrlsDir.listFiles();
-        if (files == null) files = new File[0];
-
-
-        trustedCrls.clear();
-
-        Arrays.stream(files)
-            .flatMap(crl ->
-                decodeCrlFile(crl)
-                    .map(Stream::of).orElse(Stream.empty()))
-            .flatMap(List::stream)
-            .forEach(trustedCrls::add);
-    }
-
-    private Optional<List<CRL>> decodeCrlFile(File f) {
+    private Optional<List<X509CRL>> decodeCrlFile(File f) {
         try {
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             Collection<? extends CRL> crls = factory.generateCRLs(new FileInputStream(f));
-            return Optional.of(newArrayList(crls));
+
+            return Optional.of(
+                crls.stream()
+                    .filter(crl -> crl instanceof X509CRL)
+                    .map(X509CRL.class::cast)
+                    .collect(Collectors.toList())
+            );
         } catch (CertificateException | FileNotFoundException | CRLException e) {
             return Optional.empty();
         }
