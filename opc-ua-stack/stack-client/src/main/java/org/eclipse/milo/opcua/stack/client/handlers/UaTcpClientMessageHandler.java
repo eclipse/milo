@@ -480,7 +480,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                     CertificateUtil.decodeCertificates(serverCertificateBytes.bytesOrEmpty());
 
                 certificateValidator.validate(serverCertificateChain.get(0));
-                certificateValidator.verifyTrustChain(serverCertificateChain.get(0), serverCertificateChain);
+                certificateValidator.verifyTrustChain(serverCertificateChain);
             }
         } else {
             if (!securityHeader.equals(headerRef.get())) {

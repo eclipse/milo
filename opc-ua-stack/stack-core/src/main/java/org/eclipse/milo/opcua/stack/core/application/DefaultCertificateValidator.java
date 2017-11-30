@@ -138,7 +138,7 @@ public class DefaultCertificateValidator implements CertificateValidator, AutoCl
      * This will stop the validator and free all resources.
      * <br/>
      * After calling this method the method
-     * {@link #verifyTrustChain(X509Certificate, List)} will report all
+     * {@link CertificateValidator#verifyTrustChain(List)} will report all
      * certificates as invalid.
      */
     @Override
@@ -181,12 +181,12 @@ public class DefaultCertificateValidator implements CertificateValidator, AutoCl
     }
 
     @Override
-    public synchronized void verifyTrustChain(X509Certificate certificate,
-                                              List<X509Certificate> chain) throws UaException {
+    public synchronized void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {
         try {
-            CertificateValidationUtil.validateTrustChain(
-                certificate, chain, trustedCertificates, authorityCertificates);
+            CertificateValidationUtil.verifyTrustChain(
+                certificateChain, trustedCertificates, authorityCertificates);
         } catch (UaException e) {
+            X509Certificate certificate = certificateChain.get(0);
             certificateRejected(certificate);
             throw e;
         }
