@@ -27,6 +27,7 @@ import javax.xml.bind.JAXBException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
@@ -333,7 +334,7 @@ public class DataTypeDictionaryReader {
 
         CompletableFuture<Integer> getPartitionSize = operationLimits
             .thenCompose(OperationLimitsNode::getMaxNodesPerRead)
-            .thenApply(m -> Math.max(1, m.intValue()))
+            .thenApply(m -> Math.max(1, Ints.saturatedCast(m.longValue())))
             .exceptionally(ex -> PARTITION_SIZE);
 
         return getPartitionSize.thenCompose(partitionSize -> {
