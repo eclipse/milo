@@ -392,7 +392,7 @@ public class ClientServerTest extends SecurityFixture {
             uint(0),
             uint(0),
             null,
-            uint(60000),
+            uint(1000),
             null
         );
 
