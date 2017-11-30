@@ -157,14 +157,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         return this;
     }
 
-    @Override
-    public OpcUaClientConfigBuilder setSecureChannelReauthenticationEnabled(
-        boolean secureChannelReauthenticationEnabled) {
-
-        super.setSecureChannelReauthenticationEnabled(secureChannelReauthenticationEnabled);
-        return this;
-    }
-
     public OpcUaClientConfig build() {
         UaTcpStackClientConfig stackClientConfig = super.build();
 
@@ -309,11 +301,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public HashedWheelTimer getWheelTimer() {
             return stackClientConfig.getWheelTimer();
-        }
-
-        @Override
-        public boolean isSecureChannelReauthenticationEnabled() {
-            return stackClientConfig.isSecureChannelReauthenticationEnabled();
         }
 
     }
