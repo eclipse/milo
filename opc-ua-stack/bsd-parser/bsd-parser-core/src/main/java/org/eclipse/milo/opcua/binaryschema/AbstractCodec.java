@@ -53,7 +53,7 @@ import org.opcfoundation.opcua.binaryschema.FieldType;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
 import org.opcfoundation.opcua.binaryschema.SwitchOperand;
 
-public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaBinaryDataTypeCodec<StructureType> {
+public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryDataTypeCodec<StructureT> {
 
     private static final ImmutableMap<String, Function<OpcUaBinaryStreamDecoder, Object>> READERS;
     private static final ImmutableMap<String, BiConsumer<OpcUaBinaryStreamEncoder, Object>> WRITERS;
@@ -94,9 +94,6 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
             .put("WideCharArray", OpcUaBinaryStreamDecoder::readUtf16CharArray)
             .put("WideString", OpcUaBinaryStreamDecoder::readUtf16CharArray)
 
-//            .put("String", OpcUaBinaryStreamDecoder::readUtf8NullTerminatedString)
-//            .put("WideString", OpcUaBinaryStreamDecoder::readUtf16NullTerminatedString)
-
             .build();
 
         WRITERS = ImmutableMap.<String, BiConsumer<OpcUaBinaryStreamEncoder, Object>>builder()
@@ -132,9 +129,6 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
             .put("WideChar", (w, v) -> w.writeWideChar((Character) v))
             .put("WideCharArray", (w, v) -> w.writeUtf16CharArray((String) v))
             .put("WideString", (w, v) -> w.writeUtf16CharArray((String) v))
-
-//            .put("String", (w, v) -> w.writeUtf8NullTerminatedString((String) v))
-//            .put("WideString", (w, v) -> w.writeUtf16NullTerminatedString((String) v))
 
             .build();
 
@@ -181,11 +175,11 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
     }
 
     @Override
-    public StructureType decode(
+    public StructureT decode(
         SerializationContext context,
         OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
 
-        LinkedHashMap<String, MemberType> members = new LinkedHashMap<>();
+        LinkedHashMap<String, MemberT> members = new LinkedHashMap<>();
 
         PeekingIterator<FieldType> fieldIterator = Iterators
             .peekingIterator(structuredType.getField().iterator());
@@ -259,10 +253,10 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
     @Override
     public void encode(
         SerializationContext context,
-        StructureType structure,
+        StructureT structure,
         OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
 
-        LinkedHashMap<String, MemberType> members = new LinkedHashMap<>(getMembers(structure));
+        LinkedHashMap<String, MemberT> members = new LinkedHashMap<>(getMembers(structure));
 
         for (FieldType field : structuredType.getField()) {
             if (!fieldIsPresent(field, members)) {
@@ -272,7 +266,7 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
             String typeName = field.getTypeName().getLocalPart();
             String typeNamespace = field.getTypeName().getNamespaceURI();
 
-            MemberType member = members.get(field.getName());
+            MemberT member = members.get(field.getName());
 
             if (fieldIsScalar(field)) {
                 Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
@@ -325,41 +319,41 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
         }
     }
 
-    protected abstract StructureType createStructure(String name, LinkedHashMap<String, MemberType> members);
+    protected abstract StructureT createStructure(String name, LinkedHashMap<String, MemberT> members);
 
-    protected abstract Map<String, MemberType> getMembers(StructureType value);
+    protected abstract Map<String, MemberT> getMembers(StructureT value);
 
     /**
-     * Convert an OPC UA scalar value into a member of type {@link MemberType}.
+     * Convert an OPC UA scalar value into a member of type {@link MemberT}.
      *
      * @param name     then name of the member.
      * @param value    the value of the member.
      * @param typeName the name of the OPC UA DataType.
-     * @return a member of type {@link MemberType}.
+     * @return a member of type {@link MemberT}.
      */
-    protected abstract MemberType opcUaToMemberTypeScalar(String name, Object value, String typeName);
+    protected abstract MemberT opcUaToMemberTypeScalar(String name, Object value, String typeName);
 
     /**
-     * Convert an OPC UA array value into a member of type {@link MemberType}.
+     * Convert an OPC UA array value into a member of type {@link MemberT}.
      *
      * @param name     the name of the member.
      * @param values   the values of the member array.
      * @param typeName the name of the OPC UA DataType.
-     * @return member of type {@link MemberType}.
+     * @return member of type {@link MemberT}.
      */
-    protected abstract MemberType opcUaToMemberTypeArray(String name, List<Object> values, String typeName);
+    protected abstract MemberT opcUaToMemberTypeArray(String name, List<Object> values, String typeName);
 
-    protected abstract Object memberTypeToOpcUaScalar(MemberType member, String typeName);
+    protected abstract Object memberTypeToOpcUaScalar(MemberT member, String typeName);
 
-    protected abstract List<Object> memberTypeToOpcUaArray(MemberType member, String typeName);
+    protected abstract List<Object> memberTypeToOpcUaArray(MemberT member, String typeName);
 
-    private int fieldLength(FieldType field, LinkedHashMap<String, MemberType> members) {
+    private int fieldLength(FieldType field, LinkedHashMap<String, MemberT> members) {
         int length = 1;
 
         if (field.getLength() != null) {
             length = field.getLength().intValue();
         } else if (field.getLengthField() != null) {
-            MemberType lengthMember = members.get(field.getLengthField());
+            MemberT lengthMember = members.get(field.getLengthField());
 
             if (lengthMember != null) {
                 String lengthTypeName = structuredType.getField().stream()
@@ -375,11 +369,11 @@ public abstract class AbstractCodec<StructureType, MemberType> implements OpcUaB
         return length;
     }
 
-    private boolean fieldIsPresent(FieldType field, Map<String, MemberType> members) {
+    private boolean fieldIsPresent(FieldType field, Map<String, MemberT> members) {
         if (field.getSwitchField() == null) {
             return true;
         } else {
-            MemberType controlField = members.get(field.getSwitchField());
+            MemberT controlField = members.get(field.getSwitchField());
 
             String controlTypeName = structuredType.getField().stream()
                 .filter(f -> f.getName().equals(field.getSwitchField()))
