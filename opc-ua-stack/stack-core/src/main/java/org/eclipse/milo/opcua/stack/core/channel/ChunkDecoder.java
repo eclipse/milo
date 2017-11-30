@@ -47,6 +47,8 @@ public final class ChunkDecoder {
     private final AsymmetricDecoder asymmetricDecoder = new AsymmetricDecoder();
     private final SymmetricDecoder symmetricDecoder = new SymmetricDecoder();
 
+    private volatile long lastSequenceNumber = -1L;
+
     private final ChannelParameters parameters;
 
     public ChunkDecoder(ChannelParameters parameters) {
@@ -101,8 +103,6 @@ public final class ChunkDecoder {
     private abstract class AbstractDecoder {
 
         protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-        private volatile long lastSequenceNumber = -1L;
 
         void decode(
             SecureChannel channel,
