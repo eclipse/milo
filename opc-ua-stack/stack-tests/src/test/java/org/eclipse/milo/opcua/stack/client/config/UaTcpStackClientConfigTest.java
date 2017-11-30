@@ -56,7 +56,6 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setExecutor(Stack.sharedExecutor())
             .setEventLoop(Stack.sharedEventLoop())
             .setWheelTimer(Stack.sharedWheelTimer())
-            .setSecureChannelReauthenticationEnabled(true)
             .build();
 
         UaTcpStackClientConfig copy = UaTcpStackClientConfig.copy(original).build();
@@ -74,9 +73,6 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getExecutor(), original.getExecutor());
         assertEquals(copy.getEventLoop(), original.getEventLoop());
         assertEquals(copy.getWheelTimer(), original.getWheelTimer());
-        assertEquals(
-            copy.isSecureChannelReauthenticationEnabled(),
-            original.isSecureChannelReauthenticationEnabled());
     }
 
     @Test
@@ -94,7 +90,6 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setExecutor(Stack.sharedExecutor())
             .setEventLoop(Stack.sharedEventLoop())
             .setWheelTimer(Stack.sharedWheelTimer())
-            .setSecureChannelReauthenticationEnabled(true)
             .build();
 
         UaTcpStackClientConfig copy = UaTcpStackClientConfig.copy(original,

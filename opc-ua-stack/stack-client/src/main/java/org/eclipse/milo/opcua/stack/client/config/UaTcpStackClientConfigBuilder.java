@@ -50,8 +50,6 @@ public class UaTcpStackClientConfigBuilder {
     private NioEventLoopGroup eventLoop;
     private HashedWheelTimer wheelTimer;
 
-    private boolean secureChannelReauthenticationEnabled = true;
-
     public UaTcpStackClientConfigBuilder setEndpointUrl(String endpointUrl) {
         this.endpointUrl = endpointUrl;
         return this;
@@ -122,13 +120,6 @@ public class UaTcpStackClientConfigBuilder {
         return this;
     }
 
-    public UaTcpStackClientConfigBuilder setSecureChannelReauthenticationEnabled(
-        boolean secureChannelReauthenticationEnabled) {
-
-        this.secureChannelReauthenticationEnabled = secureChannelReauthenticationEnabled;
-        return this;
-    }
-
     public UaTcpStackClientConfig build() {
         if (executor == null) {
             executor = Stack.sharedExecutor();
@@ -154,8 +145,8 @@ public class UaTcpStackClientConfigBuilder {
             channelLifetime,
             executor,
             eventLoop,
-            wheelTimer,
-            secureChannelReauthenticationEnabled);
+            wheelTimer
+        );
     }
 
     public static class UaTcpStackClientConfigImpl implements UaTcpStackClientConfig {
@@ -177,8 +168,6 @@ public class UaTcpStackClientConfigBuilder {
         private final NioEventLoopGroup eventLoop;
         private final HashedWheelTimer wheelTimer;
 
-        private final boolean secureChannelReauthenticationEnabled;
-
         public UaTcpStackClientConfigImpl(
             @Nullable String endpointUrl,
             @Nullable EndpointDescription endpoint,
@@ -193,8 +182,7 @@ public class UaTcpStackClientConfigBuilder {
             UInteger channelLifetime,
             ExecutorService executor,
             NioEventLoopGroup eventLoop,
-            HashedWheelTimer wheelTimer,
-            boolean secureChannelReauthenticationEnabled) {
+            HashedWheelTimer wheelTimer) {
 
             this.endpointUrl = endpointUrl;
             this.endpoint = endpoint;
@@ -210,7 +198,6 @@ public class UaTcpStackClientConfigBuilder {
             this.executor = executor;
             this.eventLoop = eventLoop;
             this.wheelTimer = wheelTimer;
-            this.secureChannelReauthenticationEnabled = secureChannelReauthenticationEnabled;
         }
 
         @Override
@@ -289,11 +276,6 @@ public class UaTcpStackClientConfigBuilder {
         @Override
         public HashedWheelTimer getWheelTimer() {
             return wheelTimer;
-        }
-
-        @Override
-        public boolean isSecureChannelReauthenticationEnabled() {
-            return secureChannelReauthenticationEnabled;
         }
 
     }

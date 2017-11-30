@@ -85,7 +85,6 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
-        builder.setSecureChannelReauthenticationEnabled(config.isSecureChannelReauthenticationEnabled());
 
         // OpcUaClientConfig values
         builder.setSessionName(config.getSessionName());

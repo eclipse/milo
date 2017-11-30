@@ -118,17 +118,6 @@ public interface UaTcpStackClientConfig {
      */
     HashedWheelTimer getWheelTimer();
 
-    /**
-     * Return {@code true} if, upon reconnecting, the client should attempt to re-authenticate using the previous
-     * secure channel.
-     * <p>
-     * This is not optional behavior in the specification. Disabling should only be done for the purpose of
-     * interoperability with other stacks that do not support re-authentication or have otherwise buggy behavior.
-     *
-     * @return {@code true} if, upon reconnecting, the client should attempt to re-authenticate using the previous
-     * secure channel.
-     */
-    boolean isSecureChannelReauthenticationEnabled();
 
     /**
      * @return a new {@link UaTcpStackClientConfigBuilder}.
@@ -162,7 +151,6 @@ public interface UaTcpStackClientConfig {
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
-        builder.setSecureChannelReauthenticationEnabled(config.isSecureChannelReauthenticationEnabled());
 
         return builder;
     }
