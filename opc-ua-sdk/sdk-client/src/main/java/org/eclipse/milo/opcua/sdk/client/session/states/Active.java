@@ -72,6 +72,8 @@ public class Active extends AbstractSessionState implements SessionState {
                 sessionFuture = e.getSessionFuture();
             }
         }
+
+        fsm.getClient().getSubscriptionManager().startPublishing();
     }
 
     @Override
