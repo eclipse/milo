@@ -88,6 +88,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
     private ScheduledFuture renewFuture;
     private Timeout secureChannelTimeout;
+    private volatile boolean openSecureChannelRequestPending = false;
 
     private final Map<Long, UaRequestFuture> pending;
     private final LongSequence requestIdSequence;
@@ -190,6 +191,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     }
 
     private void sendOpenSecureChannelRequest(ChannelHandlerContext ctx, SecurityTokenRequestType requestType) {
+        openSecureChannelRequestPending = true;
+
         SecurityAlgorithm algorithm = secureChannel.getSecurityPolicy().getSymmetricEncryptionAlgorithm();
         int nonceLength = NonceUtil.getNonceLength(algorithm);
 
@@ -442,6 +445,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     }
 
     private void onOpenSecureChannel(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
+        openSecureChannelRequestPending = false;
+
         if (secureChannelTimeout != null) {
             if (secureChannelTimeout.cancel()) {
                 logger.debug("OpenSecureChannel timeout canceled");
@@ -704,21 +709,14 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         try {
             ErrorMessage errorMessage = TcpMessageDecoder.decodeError(buffer);
             StatusCode statusCode = errorMessage.getError();
-            long errorCode = statusCode.getValue();
-
-            boolean secureChannelError =
-                errorCode == StatusCodes.Bad_SecurityChecksFailed ||
-                    errorCode == StatusCodes.Bad_TcpSecureChannelUnknown ||
-                    errorCode == StatusCodes.Bad_SecureChannelIdInvalid ||
-                    errorCode == StatusCodes.Bad_RequestTypeInvalid;
-
-            if (secureChannelError) {
-                secureChannel.setChannelId(0);
-            }
 
             logger.error(
-                "[remote={}] Received error message: {}",
-                ctx.channel().remoteAddress(), errorMessage);
+                "[remote={}] openSecureChannelRequestPending={}, errorMessage={}",
+                ctx.channel().remoteAddress(), openSecureChannelRequestPending, errorMessage);
+
+            if (openSecureChannelRequestPending) {
+                secureChannel.setChannelId(0);
+            }
 
             handshakeFuture.completeExceptionally(new UaException(statusCode, errorMessage.getReason()));
         } catch (UaException e) {
