@@ -33,6 +33,7 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.CodecDescription;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
+import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.OperationLimitsNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.DataTypeDictionaryType;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -327,19 +328,30 @@ public class DataTypeDictionaryReader {
     }
 
     private CompletableFuture<List<String>> readDataTypeDescriptionValues(List<NodeId> nodeIds) {
-        List<List<NodeId>> partitions = Lists.partition(nodeIds, PARTITION_SIZE);
+        CompletableFuture<OperationLimitsNode> operationLimits = client.getAddressSpace()
+            .getObjectNode(Identifiers.Server_ServerCapabilities_OperationLimits, OperationLimitsNode.class);
 
-        CompletableFuture<List<List<DataValue>>> sequence = FutureUtils.sequence(
-            partitions.stream()
-                .map(nodeId -> client.readValues(
-                    0.0, TimestampsToReturn.Neither, nodeId))
-        );
+        CompletableFuture<Integer> getPartitionSize = operationLimits
+            .thenCompose(OperationLimitsNode::getMaxNodesPerRead)
+            .thenApply(m -> Math.max(1, m.intValue()))
+            .exceptionally(ex -> PARTITION_SIZE);
 
-        return sequence.thenApply(values ->
-            values.stream()
-                .flatMap(List::stream)
-                .map(v -> (String) v.getValue().getValue())
-                .collect(Collectors.toList()));
+        return getPartitionSize.thenCompose(partitionSize -> {
+            List<List<NodeId>> partitions = Lists.partition(nodeIds, partitionSize);
+
+            CompletableFuture<List<List<DataValue>>> sequence = FutureUtils.sequence(
+                partitions.stream()
+                    .map(nodeId -> client.readValues(
+                        0.0, TimestampsToReturn.Neither, nodeId))
+            );
+
+            return sequence.thenApply(values ->
+                values.stream()
+                    .flatMap(List::stream)
+                    .map(v -> (String) v.getValue().getValue())
+                    .collect(Collectors.toList())
+            );
+        });
     }
 
     private CompletableFuture<List<NodeId>> browseDataTypeEncodingNodeIds(List<NodeId> nodeIds) {
