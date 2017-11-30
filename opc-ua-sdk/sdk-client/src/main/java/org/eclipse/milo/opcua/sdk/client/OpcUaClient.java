@@ -30,6 +30,8 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -132,6 +134,8 @@ public class OpcUaClient implements UaClient {
 
     private final AddressSpace addressSpace;
     private final NodeCache nodeCache = new DefaultNodeCache();
+
+    private final DataTypeManager dataTypeManager;
     private final TypeRegistry typeRegistry = new TypeRegistry();
 
     private final OpcUaSubscriptionManager subscriptionManager;
@@ -153,6 +157,8 @@ public class OpcUaClient implements UaClient {
         addressSpace = new DefaultAddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
 
+        dataTypeManager = OpcUaDataTypeManager.getInstance();
+
         TypeRegistryInitializer.initialize(typeRegistry);
     }
 
@@ -173,6 +179,11 @@ public class OpcUaClient implements UaClient {
     @Override
     public AddressSpace getAddressSpace() {
         return addressSpace;
+    }
+
+    // TODO add to interface?
+    public DataTypeManager getDataTypeManager() {
+        return dataTypeManager;
     }
 
     TypeRegistry getTypeRegistry() {

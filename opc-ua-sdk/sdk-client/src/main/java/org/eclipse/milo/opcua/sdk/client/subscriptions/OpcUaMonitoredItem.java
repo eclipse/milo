@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.client.subscriptions;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -29,8 +30,10 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaMonitoredItem implements UaMonitoredItem {
 
-    private volatile BiConsumer<UaMonitoredItem, DataValue> valueConsumer;
-    private volatile BiConsumer<UaMonitoredItem, Variant[]> eventConsumer;
+    private final OpcUaClient client;
+
+    private volatile ValueConsumer valueConsumer;
+    private volatile EventConsumer eventConsumer;
 
     private volatile double requestedSamplingInterval = 0.0;
     private volatile UInteger requestedQueueSize = uint(0);
@@ -47,6 +50,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     private final UInteger monitoredItemId;
 
     public OpcUaMonitoredItem(
+        OpcUaClient client,
         UInteger clientHandle,
         ReadValueId readValueId,
         UInteger monitoredItemId,
@@ -57,6 +61,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
         MonitoringMode monitoringMode,
         ExtensionObject monitoringFilter) {
 
+        this.client = client;
         this.clientHandle = clientHandle;
         this.readValueId = readValueId;
         this.monitoredItemId = monitoredItemId;
@@ -125,12 +130,17 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     @Override
     public void setValueConsumer(Consumer<DataValue> consumer) {
-        this.valueConsumer = (item, value) -> consumer.accept(value);
+        this.valueConsumer = (dataTypeManager, item, value) -> consumer.accept(value);
     }
 
     @Override
     public void setValueConsumer(BiConsumer<UaMonitoredItem, DataValue> valueBiConsumer) {
-        this.valueConsumer = valueBiConsumer;
+        this.valueConsumer = (dataTypeManager, item, value) -> valueBiConsumer.accept(item, value);
+    }
+
+    @Override
+    public void setValueConsumer(ValueConsumer valueConsumer) {
+        this.valueConsumer = valueConsumer;
     }
 
     @Override
@@ -140,7 +150,12 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     @Override
     public void setEventConsumer(BiConsumer<UaMonitoredItem, Variant[]> eventBiConsumer) {
-        this.eventConsumer = eventBiConsumer;
+        this.eventConsumer = eventBiConsumer::accept;
+    }
+
+    @Override
+    public void setEventConsumer(EventConsumer eventConsumer) {
+        this.eventConsumer = eventConsumer;
     }
 
     void setStatusCode(StatusCode statusCode) {
@@ -172,13 +187,13 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
     }
 
     void onValueArrived(DataValue value) {
-        BiConsumer<UaMonitoredItem, DataValue> c = valueConsumer;
-        if (c != null) c.accept(this, value);
+        ValueConsumer c = valueConsumer;
+        if (c != null) c.onValueArrived(client.getDataTypeManager(), this, value);
     }
 
     void onEventArrived(Variant[] values) {
-        BiConsumer<UaMonitoredItem, Variant[]> c = eventConsumer;
-        if (c != null) c.accept(this, values);
+        EventConsumer c = eventConsumer;
+        if (c != null) c.onEventArrived(this, values);
     }
 
 }

@@ -112,6 +112,7 @@ public class OpcUaSubscription implements UaSubscription {
                 MonitoredItemCreateResult result = results.get(i);
 
                 OpcUaMonitoredItem item = new OpcUaMonitoredItem(
+                    client,
                     request.getRequestedParameters().getClientHandle(),
                     request.getItemToMonitor(),
                     result.getMonitoredItemId(),
