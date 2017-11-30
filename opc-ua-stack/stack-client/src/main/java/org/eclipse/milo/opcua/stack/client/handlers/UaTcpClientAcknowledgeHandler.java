@@ -206,7 +206,7 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
                 handshakeFuture
             );
 
-            ctx.pipeline().addLast(handler);
+            ctx.pipeline().addFirst(handler);
         });
     }
 
@@ -214,17 +214,6 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
         try {
             ErrorMessage errorMessage = TcpMessageDecoder.decodeError(buffer);
             StatusCode statusCode = errorMessage.getError();
-            long errorCode = statusCode.getValue();
-
-            boolean secureChannelError =
-                errorCode == StatusCodes.Bad_SecurityChecksFailed ||
-                    errorCode == StatusCodes.Bad_TcpSecureChannelUnknown ||
-                    errorCode == StatusCodes.Bad_SecureChannelIdInvalid ||
-                    errorCode == StatusCodes.Bad_RequestTypeInvalid;
-
-            if (secureChannelError) {
-                secureChannel.setChannelId(0);
-            }
 
             logger.error(
                 "[remote={}] Received error message: {}",
