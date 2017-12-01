@@ -61,7 +61,9 @@ public class ClientExampleRunner {
 
     private OpcUaClient createClient() throws Exception {
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
-
+        if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
+            throw new Exception("unable to create security dir: " + securityTempDir);
+        }
         LoggerFactory.getLogger(getClass())
             .info("security temp dir: {}", securityTempDir.getAbsolutePath());
 

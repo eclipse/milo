@@ -66,6 +66,9 @@ public class ExampleServer {
 
     public ExampleServer() throws Exception {
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
+        if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
+            throw new Exception("unable to create security temp dir: " + securityTempDir);
+        }
         LoggerFactory.getLogger(getClass()).info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
