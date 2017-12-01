@@ -108,6 +108,10 @@ public class Session implements SessionServiceSet {
             this::checkTimeout, sessionTimeout.toNanos(), TimeUnit.NANOSECONDS);
     }
 
+    public OpcUaServer getServer() {
+        return server;
+    }
+
     public long getSecureChannelId() {
         return secureChannelId;
     }

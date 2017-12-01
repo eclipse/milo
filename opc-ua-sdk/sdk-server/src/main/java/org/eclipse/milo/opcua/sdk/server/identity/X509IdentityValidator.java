@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
+import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -40,7 +41,7 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
 
     @Override
     public Object validateX509Token(
-        SecureChannel channel,
+        ServerSecureChannel channel,
         Session session,
         X509IdentityToken token,
         UserTokenPolicy tokenPolicy,
