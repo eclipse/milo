@@ -271,7 +271,7 @@ public interface SecureChannel {
             case RsaSha1:
             case RsaSha256:
             case RsaSha256Pss:
-                return (getAsymmetricKeyLength(certificate) + 1) / 8;
+                return (getAsymmetricKeyLength(certificate) + 7) / 8;
             default:
                 return 0;
         }
@@ -282,7 +282,7 @@ public interface SecureChannel {
             case Rsa15:
             case RsaOaepSha1:
             case RsaOaepSha256:
-                return (getAsymmetricKeyLength(certificate) + 1) / 8;
+                return (getAsymmetricKeyLength(certificate) + 7) / 8;
             default:
                 return 1;
         }
@@ -291,11 +291,11 @@ public interface SecureChannel {
     static int getAsymmetricPlainTextBlockSize(X509Certificate certificate, SecurityAlgorithm algorithm) {
         switch (algorithm) {
             case Rsa15:
-                return (getAsymmetricKeyLength(certificate) + 1) / 8 - 11;
+                return (getAsymmetricKeyLength(certificate) + 7) / 8 - 11;
             case RsaOaepSha1:
-                return (getAsymmetricKeyLength(certificate) + 1) / 8 - 42;
+                return (getAsymmetricKeyLength(certificate) + 7) / 8 - 42;
             case RsaOaepSha256:
-                return (getAsymmetricKeyLength(certificate) + 1) / 8 - 66;
+                return (getAsymmetricKeyLength(certificate) + 7) / 8 - 66;
             default:
                 return 1;
         }
