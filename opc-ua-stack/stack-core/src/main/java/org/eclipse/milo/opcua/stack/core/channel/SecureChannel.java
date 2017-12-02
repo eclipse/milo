@@ -143,72 +143,40 @@ public interface SecureChannel {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            switch (algorithm) {
-                case Rsa15:
-                case RsaOaepSha1:
-                case RsaOaepSha256:
-                    return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8;
-                default:
-                    return 1;
-            }
+            return getCipherTextBlockSize(getLocalCertificate(), algorithm);
+        } else {
+            return 1;
         }
-
-        return 1;
     }
 
     default int getRemoteAsymmetricCipherTextBlockSize() {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            switch (algorithm) {
-                case Rsa15:
-                case RsaOaepSha1:
-                case RsaOaepSha256:
-                    return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8;
-                default:
-                    return 1;
-            }
+            return getCipherTextBlockSize(getRemoteCertificate(), algorithm);
+        } else {
+            return 1;
         }
-
-        return 1;
     }
 
     default int getLocalAsymmetricPlainTextBlockSize() {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            switch (algorithm) {
-                case Rsa15:
-                    return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 11;
-                case RsaOaepSha1:
-                    return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 42;
-                case RsaOaepSha256:
-                    return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8 - 66;
-                default:
-                    return 1;
-            }
+            return getPlainTextBlockSize(getLocalCertificate(), algorithm);
+        } else {
+            return 1;
         }
-
-        return 1;
     }
 
     default int getRemoteAsymmetricPlainTextBlockSize() {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            switch (algorithm) {
-                case Rsa15:
-                    return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 11;
-                case RsaOaepSha1:
-                    return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 42;
-                case RsaOaepSha256:
-                    return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8 - 66;
-                default:
-                    return 1;
-            }
+            return getPlainTextBlockSize(getRemoteCertificate(), algorithm);
+        } else {
+            return 1;
         }
-
-        return 1;
     }
 
     default int getLocalAsymmetricSignatureSize() {
@@ -345,6 +313,30 @@ public interface SecureChannel {
 
         return (publicKey instanceof RSAPublicKey) ?
             ((RSAPublicKey) publicKey).getModulus().bitLength() : 0;
+    }
+
+    static int getCipherTextBlockSize(Certificate certificate, SecurityAlgorithm algorithm) {
+        switch (algorithm) {
+            case Rsa15:
+            case RsaOaepSha1:
+            case RsaOaepSha256:
+                return (getAsymmetricKeyLength(certificate) + 1) / 8;
+            default:
+                return 1;
+        }
+    }
+
+    static int getPlainTextBlockSize(X509Certificate certificate, SecurityAlgorithm algorithm) {
+        switch (algorithm) {
+            case Rsa15:
+                return (getAsymmetricKeyLength(certificate) + 1) / 8 - 11;
+            case RsaOaepSha1:
+                return (getAsymmetricKeyLength(certificate) + 1) / 8 - 42;
+            case RsaOaepSha256:
+                return (getAsymmetricKeyLength(certificate) + 1) / 8 - 66;
+            default:
+                return 1;
+        }
     }
 
 }

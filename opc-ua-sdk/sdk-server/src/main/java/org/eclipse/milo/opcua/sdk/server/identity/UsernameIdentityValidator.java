@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
+import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -43,7 +43,7 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
 
     @Override
     public Object validateAnonymousToken(
-        SecureChannel channel,
+        ServerSecureChannel channel,
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -59,7 +59,7 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
 
     @Override
     public Object validateUsernameToken(
-        SecureChannel channel,
+        ServerSecureChannel channel,
         Session session,
         UserNameIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -69,7 +69,7 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
     }
 
     private String validateUserNameIdentityToken(
-        SecureChannel channel,
+        ServerSecureChannel channel,
         Session session,
         UserNameIdentityToken token) throws UaException {
 
@@ -105,8 +105,8 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
         byte[] tokenBytes = token.getPassword().bytes();
         if (tokenBytes == null) tokenBytes = new byte[0];
 
-        if (securityPolicy != SecurityPolicy.None) {
-            byte[] plainTextBytes = decryptTokenData(channel, algorithm, tokenBytes);
+        if (algorithm != SecurityAlgorithm.None) {
+            byte[] plainTextBytes = decryptTokenData(channel, session, algorithm, tokenBytes);
 
             int length = ((plainTextBytes[3] & 0xFF) << 24) |
                 ((plainTextBytes[2] & 0xFF) << 16) |

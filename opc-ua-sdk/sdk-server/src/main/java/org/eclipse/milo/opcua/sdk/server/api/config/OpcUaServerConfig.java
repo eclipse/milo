@@ -37,7 +37,9 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     UserTokenPolicy USER_TOKEN_POLICY_ANONYMOUS = new UserTokenPolicy(
         "anonymous",
         UserTokenType.Anonymous,
-        null, null, null
+        null,
+        null,
+        null
     );
 
     /**
@@ -46,7 +48,9 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     UserTokenPolicy USER_TOKEN_POLICY_USERNAME = new UserTokenPolicy(
         "username",
         UserTokenType.UserName,
-        null, null, null
+        null,
+        null,
+        SecurityPolicy.Basic256.getSecurityPolicyUri()
     );
 
     UserTokenPolicy USER_TOKEN_POLICY_X509 = new UserTokenPolicy(
