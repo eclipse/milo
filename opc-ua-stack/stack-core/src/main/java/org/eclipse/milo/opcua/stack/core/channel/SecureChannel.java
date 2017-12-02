@@ -19,6 +19,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.primitives.Bytes;
@@ -72,17 +73,7 @@ public interface SecureChannel {
         List<X509Certificate> localCertificateChain = getLocalCertificateChain();
 
         if (localCertificateChain != null) {
-            byte[] encoded = localCertificateChain.stream()
-                .map(c -> {
-                    try {
-                        return c.getEncoded();
-                    } catch (CertificateEncodingException e) {
-                        return new byte[0];
-                    }
-                })
-                .reduce(new byte[0], Bytes::concat);
-
-            return ByteString.of(encoded);
+            return getCertificateChainBytes(localCertificateChain);
         } else {
             return ByteString.NULL_VALUE;
         }
@@ -113,17 +104,7 @@ public interface SecureChannel {
         List<X509Certificate> remoteCertificateChain = getRemoteCertificateChain();
 
         if (remoteCertificateChain != null) {
-            byte[] encoded = remoteCertificateChain.stream()
-                .map(c -> {
-                    try {
-                        return c.getEncoded();
-                    } catch (CertificateEncodingException e) {
-                        return new byte[0];
-                    }
-                })
-                .reduce(new byte[0], Bytes::concat);
-
-            return ByteString.of(encoded);
+            return getCertificateChainBytes(remoteCertificateChain);
         } else {
             return ByteString.NULL_VALUE;
         }
@@ -143,7 +124,7 @@ public interface SecureChannel {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            return getCipherTextBlockSize(getLocalCertificate(), algorithm);
+            return getAsymmetricCipherTextBlockSize(getLocalCertificate(), algorithm);
         } else {
             return 1;
         }
@@ -153,7 +134,7 @@ public interface SecureChannel {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            return getCipherTextBlockSize(getRemoteCertificate(), algorithm);
+            return getAsymmetricCipherTextBlockSize(getRemoteCertificate(), algorithm);
         } else {
             return 1;
         }
@@ -163,7 +144,7 @@ public interface SecureChannel {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            return getPlainTextBlockSize(getLocalCertificate(), algorithm);
+            return getAsymmetricPlainTextBlockSize(getLocalCertificate(), algorithm);
         } else {
             return 1;
         }
@@ -173,7 +154,7 @@ public interface SecureChannel {
         if (isAsymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
 
-            return getPlainTextBlockSize(getRemoteCertificate(), algorithm);
+            return getAsymmetricPlainTextBlockSize(getRemoteCertificate(), algorithm);
         } else {
             return 1;
         }
@@ -182,27 +163,13 @@ public interface SecureChannel {
     default int getLocalAsymmetricSignatureSize() {
         SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricSignatureAlgorithm();
 
-        switch (algorithm) {
-            case RsaSha1:
-            case RsaSha256:
-            case RsaSha256Pss:
-                return (getAsymmetricKeyLength(getLocalCertificate()) + 1) / 8;
-            default:
-                return 0;
-        }
+        return getAsymmetricSignatureSize(getLocalCertificate(), algorithm);
     }
 
     default int getRemoteAsymmetricSignatureSize() {
         SecurityAlgorithm algorithm = getSecurityPolicy().getAsymmetricSignatureAlgorithm();
 
-        switch (algorithm) {
-            case RsaSha1:
-            case RsaSha256:
-            case RsaSha256Pss:
-                return (getAsymmetricKeyLength(getRemoteCertificate()) + 1) / 8;
-            default:
-                return 0;
-        }
+        return getAsymmetricSignatureSize(getRemoteCertificate(), algorithm);
     }
 
     default boolean isAsymmetricSigningEnabled() {
@@ -216,7 +183,7 @@ public interface SecureChannel {
             getRemoteCertificate() != null;
     }
 
-    default int getSymmetricCipherTextBlockSize() {
+    default int getSymmetricBlockSize() {
         if (isSymmetricEncryptionEnabled()) {
             SecurityAlgorithm algorithm = getSecurityPolicy().getSymmetricEncryptionAlgorithm();
 
@@ -227,25 +194,9 @@ public interface SecureChannel {
                 default:
                     return 1;
             }
+        } else {
+            return 1;
         }
-
-        return 1;
-    }
-
-    default int getSymmetricPlainTextBlockSize() {
-        if (isSymmetricEncryptionEnabled()) {
-            SecurityAlgorithm algorithm = getSecurityPolicy().getSymmetricEncryptionAlgorithm();
-
-            switch (algorithm) {
-                case Aes128:
-                case Aes256:
-                    return 16;
-                default:
-                    return 1;
-            }
-        }
-
-        return 1;
     }
 
     default int getSymmetricSignatureSize() {
@@ -315,7 +266,18 @@ public interface SecureChannel {
             ((RSAPublicKey) publicKey).getModulus().bitLength() : 0;
     }
 
-    static int getCipherTextBlockSize(Certificate certificate, SecurityAlgorithm algorithm) {
+    static int getAsymmetricSignatureSize(Certificate certificate, SecurityAlgorithm algorithm) {
+        switch (algorithm) {
+            case RsaSha1:
+            case RsaSha256:
+            case RsaSha256Pss:
+                return (getAsymmetricKeyLength(certificate) + 1) / 8;
+            default:
+                return 0;
+        }
+    }
+
+    static int getAsymmetricCipherTextBlockSize(Certificate certificate, SecurityAlgorithm algorithm) {
         switch (algorithm) {
             case Rsa15:
             case RsaOaepSha1:
@@ -326,7 +288,7 @@ public interface SecureChannel {
         }
     }
 
-    static int getPlainTextBlockSize(X509Certificate certificate, SecurityAlgorithm algorithm) {
+    static int getAsymmetricPlainTextBlockSize(X509Certificate certificate, SecurityAlgorithm algorithm) {
         switch (algorithm) {
             case Rsa15:
                 return (getAsymmetricKeyLength(certificate) + 1) / 8 - 11;
@@ -337,6 +299,23 @@ public interface SecureChannel {
             default:
                 return 1;
         }
+    }
+
+    static ByteString getCertificateChainBytes(List<X509Certificate> certificateChain) throws UaException {
+        List<byte[]> certificates = new ArrayList<>(certificateChain.size());
+
+        for (X509Certificate certificate : certificateChain) {
+            try {
+                certificates.add(certificate.getEncoded());
+            } catch (CertificateEncodingException e) {
+                throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
+            }
+        }
+
+        byte[] encoded = certificates.stream()
+            .reduce(new byte[0], Bytes::concat);
+
+        return ByteString.of(encoded);
     }
 
 }

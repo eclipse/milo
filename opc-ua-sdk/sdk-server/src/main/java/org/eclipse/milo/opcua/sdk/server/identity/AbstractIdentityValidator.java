@@ -182,7 +182,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
                 .bytesOrEmpty()
         );
 
-        int cipherTextBlockSize = SecureChannel.getCipherTextBlockSize(certificate, algorithm);
+        int cipherTextBlockSize = SecureChannel.getAsymmetricCipherTextBlockSize(certificate, algorithm);
         int blockCount = dataBytes.length / cipherTextBlockSize;
 
         int plainTextBufferSize = cipherTextBlockSize * blockCount;

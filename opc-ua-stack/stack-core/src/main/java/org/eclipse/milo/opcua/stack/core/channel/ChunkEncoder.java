@@ -402,7 +402,7 @@ public final class ChunkEncoder {
                 Cipher cipher = Cipher.getInstance(transformation);
                 cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
 
-                assert (cipher.getBlockSize() == channel.getSymmetricCipherTextBlockSize());
+                assert (cipher.getBlockSize() == channel.getSymmetricBlockSize());
 
                 return cipher;
             } catch (GeneralSecurityException e) {
@@ -417,12 +417,12 @@ public final class ChunkEncoder {
 
         @Override
         public int getCipherTextBlockSize(SecureChannel channel) {
-            return channel.getSymmetricCipherTextBlockSize();
+            return channel.getSymmetricBlockSize();
         }
 
         @Override
         public int getPlainTextBlockSize(SecureChannel channel) {
-            return channel.getSymmetricPlainTextBlockSize();
+            return channel.getSymmetricBlockSize();
         }
 
         @Override

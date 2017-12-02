@@ -97,11 +97,11 @@ public class UsernameProvider implements IdentityProvider {
             ByteString bs = endpoint.getServerCertificate();
             X509Certificate certificate = CertificateUtil.decodeCertificate(bs.bytes());
 
-            int plainTextBlockSize = SecureChannel.getPlainTextBlockSize(
+            int plainTextBlockSize = SecureChannel.getAsymmetricPlainTextBlockSize(
                 certificate,
                 securityPolicy.getAsymmetricEncryptionAlgorithm()
             );
-            int cipherTextBlockSize = SecureChannel.getCipherTextBlockSize(
+            int cipherTextBlockSize = SecureChannel.getAsymmetricCipherTextBlockSize(
                 certificate,
                 securityPolicy.getAsymmetricEncryptionAlgorithm()
             );

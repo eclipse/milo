@@ -394,7 +394,7 @@ public final class ChunkDecoder {
 
         @Override
         public int getCipherTextBlockSize(SecureChannel channel) {
-            return channel.getSymmetricCipherTextBlockSize();
+            return channel.getSymmetricBlockSize();
         }
 
         @Override
