@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
@@ -26,6 +27,8 @@ import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
@@ -36,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
@@ -118,6 +122,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaClient implements UaClient {
@@ -129,7 +134,6 @@ public class OpcUaClient implements UaClient {
     private final List<ServiceFaultListener> faultListeners = newCopyOnWriteArrayList();
     private final ExecutionQueue faultNotificationQueue;
 
-    // TODO read and update this every time we connect.
     private final NamespaceTable namespaceTable = new NamespaceTable();
 
     private final AddressSpace addressSpace;
@@ -149,6 +153,40 @@ public class OpcUaClient implements UaClient {
         this.config = config;
 
         sessionFsm = new SessionFsm(this);
+
+        sessionFsm.addInitializer((stackClient, session) -> {
+            RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
+
+            ReadRequest readRequest = new ReadRequest(
+                requestHeader,
+                0.0,
+                TimestampsToReturn.Neither,
+                new ReadValueId[]{
+                    new ReadValueId(
+                        Identifiers.Server_NamespaceArray,
+                        AttributeId.Value.uid(),
+                        null,
+                        QualifiedName.NULL_VALUE)
+                }
+            );
+
+            CompletableFuture<String[]> namespaceArray = stackClient.<ReadResponse>sendRequest(readRequest)
+                .thenApply(response -> Objects.requireNonNull(response.getResults()))
+                .thenApply(results -> (String[]) results[0].getValue().getValue());
+
+            return namespaceArray
+                .thenAccept(uris -> {
+                    namespaceTable.update(uriTable -> {
+                        uriTable.clear();
+
+                        for (int i = 0; i < uris.length; i++) {
+                            uriTable.put(ushort(i), uris[i]);
+                        }
+                    });
+                })
+                .thenApply(v -> Unit.VALUE)
+                .exceptionally(ex -> Unit.VALUE);
+        });
 
         stackClient = new UaTcpStackClient(config);
 
