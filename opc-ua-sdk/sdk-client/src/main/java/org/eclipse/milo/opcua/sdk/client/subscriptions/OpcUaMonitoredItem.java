@@ -145,12 +145,12 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     @Override
     public void setEventConsumer(Consumer<Variant[]> consumer) {
-        this.eventConsumer = (item, event) -> consumer.accept(event);
+        this.eventConsumer = (dataTypeManager, item, values) -> consumer.accept(values);
     }
 
     @Override
     public void setEventConsumer(BiConsumer<UaMonitoredItem, Variant[]> eventBiConsumer) {
-        this.eventConsumer = eventBiConsumer::accept;
+        this.eventConsumer = (dataTypeManager, item, values) -> eventBiConsumer.accept(item, values);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class OpcUaMonitoredItem implements UaMonitoredItem {
 
     void onEventArrived(Variant[] values) {
         EventConsumer c = eventConsumer;
-        if (c != null) c.onEventArrived(this, values);
+        if (c != null) c.onEventArrived(client.getDataTypeManager(), this, values);
     }
 
 }

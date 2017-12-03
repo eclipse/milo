@@ -166,7 +166,7 @@ public interface UaMonitoredItem {
     interface EventConsumer {
 
         // TODO javadoc
-        void onEventArrived(UaMonitoredItem item, Variant[] eventValues);
+        void onEventArrived(DataTypeManager dataTypeManager, UaMonitoredItem item, Variant[] eventValues);
 
     }
 
