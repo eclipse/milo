@@ -18,14 +18,11 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
-import org.eclipse.milo.opcua.sdk.client.session.events.TransferFailureEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeFailureEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeSuccessEvent;
 
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
-
-public class Retransferring extends AbstractSessionState implements SessionState {
+public class Initializing extends AbstractSessionState {
 
     private CompletableFuture<OpcUaSession> sessionFuture;
 
@@ -40,32 +37,21 @@ public class Retransferring extends AbstractSessionState implements SessionState
     }
 
     @Override
-    public void onInternalTransition(Fsm fsm, Event event) {
-        if (event instanceof CreateSessionEvent) {
-            CreateSessionEvent e = (CreateSessionEvent) event;
-
-            complete(e.getSessionFuture()).with(sessionFuture);
-        }
-    }
-
-    @Override
     public SessionState execute(Fsm fsm, Event event) {
-        if (event instanceof TransferSuccessEvent) {
-            OpcUaSession session = ((TransferSuccessEvent) event).getSession();
+        if (event instanceof InitializeSuccessEvent) {
+            OpcUaSession session = ((InitializeSuccessEvent) event).getSession();
 
-            initializeSessionAsync(fsm, session, sessionFuture);
+            sessionFuture.complete(session);
 
-            return new Reinitializing();
-        } else if (event instanceof TransferFailureEvent) {
-            Throwable failure = ((TransferFailureEvent) event).getFailure();
+            return new Active();
+        } else if (event instanceof InitializeFailureEvent) {
+            InitializeFailureEvent e = (InitializeFailureEvent) event;
 
-            sessionFuture.completeExceptionally(failure);
+            Closing closing = new Closing();
 
-            Recreating recreating = new Recreating();
+            closeSessionAsync(fsm, e.getSession(), closing.getCloseFuture(), e.getSessionFuture());
 
-            createSessionAsync(fsm, recreating.getSessionFuture());
-
-            return recreating;
+            return closing;
         } else if (event instanceof CloseSessionEvent) {
             // CloseSessionEvent preempted our receipt of a success/failure event.
             // Closing state will receive one of those events and execute the appropriate action.

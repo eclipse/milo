@@ -25,6 +25,8 @@ import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeFailureEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ReactivateFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ReactivateSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferFailureEvent;
@@ -111,6 +113,14 @@ public class Closing extends AbstractSessionState implements SessionState {
             ReactivateFailureEvent e = (ReactivateFailureEvent) event;
 
             fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, e.getSessionFuture()));
+        } else if (event instanceof InitializeSuccessEvent) {
+            InitializeSuccessEvent e = (InitializeSuccessEvent) event;
+
+            closeSessionAsync(fsm, e.getSession(), closeFuture, e.getSessionFuture());
+        } else if (event instanceof InitializeFailureEvent) {
+            InitializeFailureEvent e = (InitializeFailureEvent) event;
+
+            closeSessionAsync(fsm, e.getSession(), closeFuture, e.getSessionFuture());
         }
     }
 

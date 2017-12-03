@@ -20,12 +20,12 @@ import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
-import org.eclipse.milo.opcua.sdk.client.session.events.TransferFailureEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeFailureEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeSuccessEvent;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
-public class Retransferring extends AbstractSessionState implements SessionState {
+public class Reinitializing extends AbstractSessionState {
 
     private CompletableFuture<OpcUaSession> sessionFuture;
 
@@ -50,14 +50,14 @@ public class Retransferring extends AbstractSessionState implements SessionState
 
     @Override
     public SessionState execute(Fsm fsm, Event event) {
-        if (event instanceof TransferSuccessEvent) {
-            OpcUaSession session = ((TransferSuccessEvent) event).getSession();
+        if (event instanceof InitializeSuccessEvent) {
+            OpcUaSession session = ((InitializeSuccessEvent) event).getSession();
 
-            initializeSessionAsync(fsm, session, sessionFuture);
+            sessionFuture.complete(session);
 
-            return new Reinitializing();
-        } else if (event instanceof TransferFailureEvent) {
-            Throwable failure = ((TransferFailureEvent) event).getFailure();
+            return new Active();
+        } else if (event instanceof InitializeFailureEvent) {
+            Throwable failure = ((InitializeFailureEvent) event).getFailure();
 
             sessionFuture.completeExceptionally(failure);
 

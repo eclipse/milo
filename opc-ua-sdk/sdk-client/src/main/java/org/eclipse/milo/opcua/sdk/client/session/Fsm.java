@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.client.session;
 
+import java.util.List;
+
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 
@@ -21,5 +23,7 @@ public interface Fsm {
     OpcUaClient getClient();
 
     void fireEvent(Event event);
+
+    List<SessionFsm.SessionInitializer> getInitializers();
 
 }

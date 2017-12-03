@@ -56,8 +56,14 @@ public class SessionFsm {
         public void fireEvent(Event event) {
             SessionFsm.this.fireEvent(event);
         }
+
+        @Override
+        public List<SessionInitializer> getInitializers() {
+            return initializers;
+        }
     };
 
+    private final List<SessionInitializer> initializers = newCopyOnWriteArrayList();
     private final List<SessionActivityListener> listeners = newCopyOnWriteArrayList();
     private final AtomicReference<SessionState> state = new AtomicReference<>(new Inactive());
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
@@ -112,6 +118,14 @@ public class SessionFsm {
         } finally {
             readWriteLock.readLock().unlock();
         }
+    }
+
+    public void addInitializer(SessionInitializer initializer) {
+        initializers.add(initializer);
+    }
+
+    public void removeInitializer(SessionInitializer initializer) {
+        initializers.remove(initializer);
     }
 
     public void addListener(SessionActivityListener listener) {
@@ -229,6 +243,12 @@ public class SessionFsm {
                 fsm.fireEvent(new ServiceFaultEvent(serviceResult));
             }
         }
+
+    }
+
+    public interface SessionInitializer {
+
+        CompletableFuture<Unit> initialize(OpcUaSession session);
 
     }
 
