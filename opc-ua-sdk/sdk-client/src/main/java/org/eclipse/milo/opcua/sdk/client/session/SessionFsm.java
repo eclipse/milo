@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
 import org.eclipse.milo.opcua.sdk.client.session.states.Active;
 import org.eclipse.milo.opcua.sdk.client.session.states.Inactive;
 import org.eclipse.milo.opcua.sdk.client.session.states.SessionState;
+import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
@@ -248,7 +249,7 @@ public class SessionFsm {
 
     public interface SessionInitializer {
 
-        CompletableFuture<Unit> initialize(OpcUaSession session);
+        CompletableFuture<Unit> initialize(UaTcpStackClient stackClient, OpcUaSession session);
 
     }
 

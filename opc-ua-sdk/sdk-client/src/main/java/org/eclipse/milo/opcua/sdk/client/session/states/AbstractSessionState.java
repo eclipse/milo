@@ -535,7 +535,7 @@ abstract class AbstractSessionState implements SessionState {
             fsm.fireEvent(new InitializeSuccessEvent(session, sessionFuture));
         } else {
             CompletableFuture[] futures = initializers.stream()
-                .map(i -> i.initialize(session))
+                .map(i -> i.initialize(fsm.getClient().getStackClient(), session))
                 .toArray(CompletableFuture[]::new);
 
             CompletableFuture.allOf(futures).whenComplete((v, ex) -> {
