@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
@@ -149,6 +150,38 @@ public class OpcUaClient implements UaClient {
         this.config = config;
 
         sessionFsm = new SessionFsm(this);
+
+        sessionFsm.addInitializer(new SessionFsm.SessionInitializer() {
+            @Override
+            public CompletableFuture<Unit> initialize(OpcUaSession session) {
+                CompletableFuture<Unit> initialized = new CompletableFuture<>();
+
+                // This little hack is so DataTypeDictionaryReader can call services
+                // that rely on the session... which isn't yet available to our OpcUaClient
+                // because we're currently in the Initializing state. Waiting on the session
+                // here would result in a deadlock.
+                // TODO refactor DataTypeDictionaryReader to use only the stack client and the provided session
+                OpcUaClient client = new OpcUaClient(config) {
+                    @Override
+                    public CompletableFuture<UaSession> getSession() {
+                        return CompletableFuture.completedFuture(session);
+                    }
+                };
+
+                DataTypeDictionaryReader reader = new DataTypeDictionaryReader(client, new GenericBsdParser());
+
+                reader.readDataTypeDictionaries().whenComplete((dictionaries, ex) -> {
+                    if (dictionaries != null) {
+                        dictionaries.forEach(
+                            dataTypeManager::registerTypeDictionary);
+                    }
+
+                    initialized.complete(Unit.VALUE);
+                });
+
+                return initialized;
+            }
+        });
 
         stackClient = new UaTcpStackClient(config);
 
@@ -647,7 +680,7 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public final CompletableFuture<UaSession> getSession() {
+    public CompletableFuture<UaSession> getSession() {
         return sessionFsm.getSession().thenApply(s -> (UaSession) s);
     }
 

@@ -34,7 +34,6 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.CodecDescription;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
-import org.eclipse.milo.opcua.sdk.client.model.nodes.objects.OperationLimitsNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.DataTypeDictionaryType;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -46,6 +45,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
@@ -329,11 +329,13 @@ public class DataTypeDictionaryReader {
     }
 
     private CompletableFuture<List<String>> readDataTypeDescriptionValues(List<NodeId> nodeIds) {
-        CompletableFuture<OperationLimitsNode> operationLimits = client.getAddressSpace()
-            .getObjectNode(Identifiers.Server_ServerCapabilities_OperationLimits, OperationLimitsNode.class);
+        CompletableFuture<UInteger> maxNodesPerRead = client.readValue(
+            0.0,
+            TimestampsToReturn.Neither,
+            Identifiers.Server_ServerCapabilities_OperationLimits_MaxNodesPerRead
+        ).thenApply(dv -> (UInteger) dv.getValue().getValue());
 
-        CompletableFuture<Integer> getPartitionSize = operationLimits
-            .thenCompose(OperationLimitsNode::getMaxNodesPerRead)
+        CompletableFuture<Integer> getPartitionSize = maxNodesPerRead
             .thenApply(m -> Math.max(1, Ints.saturatedCast(m.longValue())))
             .exceptionally(ex -> PARTITION_SIZE);
 
