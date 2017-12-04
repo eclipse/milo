@@ -13,16 +13,20 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.mockito.Mockito;
@@ -30,16 +34,16 @@ import org.testng.annotations.Test;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.testng.Assert.assertEquals;
 
 public class DataTypeDictionaryReaderTest {
 
-    private final OpcUaClient client = Mockito.mock(OpcUaClient.class);
+    private final UaTcpStackClient stackClient = Mockito.mock(UaTcpStackClient.class);
+    private final OpcUaSession session = Mockito.mock(OpcUaSession.class);
     private final BsdParser bsdParser = Mockito.mock(BsdParser.class);
 
-    private final DataTypeDictionaryReader dictionaryReader = new DataTypeDictionaryReader(client, bsdParser);
+    private final DataTypeDictionaryReader dictionaryReader =
+        new DataTypeDictionaryReader(stackClient, session, bsdParser);
 
     @Test
     public void testReadDataTypeDictionaryBytes() throws Exception {
@@ -63,15 +67,14 @@ public class DataTypeDictionaryReaderTest {
 
     private void testReadDataTypeDictionaryBytes(ByteString dictionary, int fragmentSize) throws Exception {
         Mockito
-            .when(
-                client.read(
-                    anyDouble(),
-                    any(TimestampsToReturn.class),
-                    anyList()
-                )
-            )
+            .when(stackClient.<ReadResponse>sendRequest(any(ReadRequest.class)))
             .then(invocationOnMock -> {
-                List<ReadValueId> readValueIds = invocationOnMock.getArgument(2);
+                ReadRequest readRequest = invocationOnMock.getArgument(0);
+
+                List<ReadValueId> readValueIds =
+                    Arrays.stream(Objects.requireNonNull(readRequest.getNodesToRead()))
+                        .collect(Collectors.toList());
+
                 ReadValueId readValueId = readValueIds.get(0);
 
                 NumericRange numericRange = NumericRange.parse(readValueId.getIndexRange());

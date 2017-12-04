@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
@@ -36,7 +37,6 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -115,21 +115,17 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
-import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaClient implements UaClient {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
     private final List<ServiceFaultListener> faultListeners = newCopyOnWriteArrayList();
     private final ExecutionQueue faultNotificationQueue;
@@ -153,6 +149,24 @@ public class OpcUaClient implements UaClient {
         this.config = config;
 
         sessionFsm = new SessionFsm(this);
+
+        sessionFsm.addInitializer(new SessionFsm.SessionInitializer() {
+            @Override
+            public CompletableFuture<Unit> initialize(UaTcpStackClient stackClient, OpcUaSession session) {
+                DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
+                    stackClient,
+                    session,
+                    new GenericBsdParser()
+                );
+
+                return reader.readDataTypeDictionaries()
+                    .thenAccept(dictionaries ->
+                        dictionaries.forEach(
+                            dataTypeManager::registerTypeDictionary))
+                    .thenApply(v -> Unit.VALUE)
+                    .exceptionally(e -> Unit.VALUE);
+            }
+        });
 
         sessionFsm.addInitializer((stackClient, session) -> {
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
@@ -187,6 +201,7 @@ public class OpcUaClient implements UaClient {
                 .thenApply(v -> Unit.VALUE)
                 .exceptionally(ex -> Unit.VALUE);
         });
+
 
         stackClient = new UaTcpStackClient(config);
 
@@ -238,7 +253,7 @@ public class OpcUaClient implements UaClient {
      * @return a new {@link RequestHeader} with a null authentication token.
      */
     public RequestHeader newRequestHeader() {
-        return newRequestHeader(NodeId.NULL_VALUE);
+        return newRequestHeader(NodeId.NULL_VALUE, config.getRequestTimeout());
     }
 
     /**
@@ -269,27 +284,19 @@ public class OpcUaClient implements UaClient {
      * @return a new {@link RequestHeader}.
      */
     public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
-        return new RequestHeader(
-            authToken,
-            DateTime.now(),
-            uint(requestHandles.getAndIncrement()),
-            uint(0),
-            null,
-            requestTimeout,
-            null
-        );
+        return getStackClient().newRequestHeader(authToken, requestTimeout);
     }
 
     /**
      * @return the next {@link UInteger} to use as a request handle.
      */
     public UInteger nextRequestHandle() {
-        return uint(requestHandles.getAndIncrement());
+        return getStackClient().nextRequestHandle();
     }
 
     @Override
     public CompletableFuture<UaClient> connect() {
-        return stackClient.connect()
+        return getStackClient().connect()
             .thenCompose(c -> sessionFsm.openSession())
             .thenApply(s -> OpcUaClient.this);
     }
@@ -304,7 +311,7 @@ public class OpcUaClient implements UaClient {
         return sessionFsm
             .closeSession()
             .exceptionally(ex -> Unit.VALUE)
-            .thenCompose(u -> stackClient.disconnect())
+            .thenCompose(u -> getStackClient().disconnect())
             .thenApply(c -> OpcUaClient.this)
             .exceptionally(ex -> OpcUaClient.this);
     }
@@ -691,7 +698,7 @@ public class OpcUaClient implements UaClient {
 
     @Override
     public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {
-        CompletableFuture<T> f = stackClient.sendRequest(request);
+        CompletableFuture<T> f = getStackClient().sendRequest(request);
 
         if (faultListeners.size() > 0) {
             f.whenComplete(this::maybeHandleServiceFault);
@@ -711,7 +718,7 @@ public class OpcUaClient implements UaClient {
 
         futures.forEach(f -> f.whenComplete(this::maybeHandleServiceFault));
 
-        stackClient.sendRequests(requests, futures);
+        getStackClient().sendRequests(requests, futures);
     }
 
     private void maybeHandleServiceFault(UaResponseMessage response, Throwable ex) {
