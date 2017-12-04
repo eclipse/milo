@@ -193,29 +193,15 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
             SecurityPolicy securityPolicy = SecurityPolicy.fromUri(securityHeader.getSecurityPolicyUri());
             secureChannel.setSecurityPolicy(securityPolicy);
 
-            if (!securityHeader.getSenderCertificate().isNull() && securityPolicy != SecurityPolicy.None) {
-                secureChannel.setRemoteCertificate(securityHeader.getSenderCertificate().bytes());
+            if (securityPolicy != SecurityPolicy.None) {
+                secureChannel.setRemoteCertificate(securityHeader.getSenderCertificate().bytesOrEmpty());
 
-                try {
-                    CertificateValidator certificateValidator = server.getCertificateValidator();
+                CertificateValidator certificateValidator = server.getCertificateValidator();
 
-                    certificateValidator.validate(secureChannel.getRemoteCertificate());
+                certificateValidator.validate(secureChannel.getRemoteCertificate());
 
-                    certificateValidator.verifyTrustChain(secureChannel.getRemoteCertificateChain());
-                } catch (UaException e) {
-                    try {
-                        UaException cause = new UaException(e.getStatusCode(), "security checks failed");
-                        ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
+                certificateValidator.verifyTrustChain(secureChannel.getRemoteCertificateChain());
 
-                        logger.debug("[remote={}] {}.",
-                            ctx.channel().remoteAddress(), errorMessage.getReason(), cause);
-                    } catch (Exception inner) {
-                        logger.error("Error sending ErrorMessage: {}", inner.getMessage(), inner);
-                    }
-                }
-            }
-
-            if (!securityHeader.getReceiverThumbprint().isNull()) {
                 CertificateManager certificateManager = server.getCertificateManager();
 
                 Optional<X509Certificate[]> localCertificateChain = certificateManager

@@ -23,6 +23,10 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 
 public interface ClientExample {
 
+    default String getEndpointUrl() {
+        return "opc.tcp://localhost:12686/example";
+    }
+
     default SecurityPolicy getSecurityPolicy() {
         return SecurityPolicy.None;
     }

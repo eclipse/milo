@@ -48,15 +48,23 @@ public class ClientExampleRunner {
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
 
-    private final ExampleServer exampleServer;
+    private ExampleServer exampleServer;
 
     private final ClientExample clientExample;
+    private final boolean serverRequired;
 
     public ClientExampleRunner(ClientExample clientExample) throws Exception {
-        this.clientExample = clientExample;
+        this(clientExample, true);
+    }
 
-        exampleServer = new ExampleServer();
-        exampleServer.startup().get();
+    public ClientExampleRunner(ClientExample clientExample, boolean serverRequired) throws Exception {
+        this.clientExample = clientExample;
+        this.serverRequired = serverRequired;
+
+        if (serverRequired) {
+            exampleServer = new ExampleServer();
+            exampleServer.startup().get();
+        }
     }
 
     private OpcUaClient createClient() throws Exception {
@@ -72,7 +80,7 @@ public class ClientExampleRunner {
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
         EndpointDescription[] endpoints = UaTcpStackClient
-            .getEndpoints("opc.tcp://localhost:12686/example").get();
+            .getEndpoints(clientExample.getEndpointUrl()).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
@@ -98,7 +106,9 @@ public class ClientExampleRunner {
             if (client != null) {
                 try {
                     client.disconnect().get();
-                    exampleServer.shutdown().get();
+                    if (serverRequired && exampleServer != null) {
+                        exampleServer.shutdown().get();
+                    }
                     Stack.releaseSharedResources();
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);
@@ -121,7 +131,7 @@ public class ClientExampleRunner {
 
             try {
                 clientExample.run(client, future);
-                future.get(10, TimeUnit.SECONDS);
+                future.get(15, TimeUnit.SECONDS);
             } catch (Throwable t) {
                 logger.error("Error running client example: {}", t.getMessage(), t);
                 future.complete(client);
