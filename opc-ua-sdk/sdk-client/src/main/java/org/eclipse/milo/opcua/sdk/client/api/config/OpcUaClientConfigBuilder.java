@@ -21,6 +21,8 @@ import java.util.function.Supplier;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
+import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
+import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
@@ -42,6 +44,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     private UInteger requestTimeout = uint(60000);
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
     private IdentityProvider identityProvider = new AnonymousProvider();
+    private BsdParser bsdParser = new GenericBsdParser();
 
     public OpcUaClientConfigBuilder setSessionName(Supplier<String> sessionName) {
         this.sessionName = sessionName;
@@ -70,6 +73,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setIdentityProvider(IdentityProvider identityProvider) {
         this.identityProvider = identityProvider;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setBsdParser(BsdParser bsdParser) {
+        this.bsdParser = bsdParser;
         return this;
     }
 
@@ -173,7 +181,9 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             maxResponseMessageSize,
             maxPendingPublishRequests,
             requestTimeout,
-            identityProvider);
+            identityProvider,
+            bsdParser
+        );
     }
 
     public static class OpcUaClientConfigImpl implements OpcUaClientConfig {
@@ -185,6 +195,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         private final UInteger maxPendingPublishRequests;
         private final UInteger requestTimeout;
         private final IdentityProvider identityProvider;
+        private final BsdParser bsdParser;
 
         public OpcUaClientConfigImpl(UaTcpStackClientConfig stackClientConfig,
                                      Supplier<String> sessionName,
@@ -192,7 +203,8 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
                                      UInteger maxResponseMessageSize,
                                      UInteger maxPendingPublishRequests,
                                      UInteger requestTimeout,
-                                     IdentityProvider identityProvider) {
+                                     IdentityProvider identityProvider,
+                                     BsdParser bsdParser) {
 
             this.stackClientConfig = stackClientConfig;
             this.sessionName = sessionName;
@@ -201,6 +213,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             this.maxPendingPublishRequests = maxPendingPublishRequests;
             this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
+            this.bsdParser = bsdParser;
         }
 
         @Override
@@ -231,6 +244,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public IdentityProvider getIdentityProvider() {
             return identityProvider;
+        }
+
+        @Override
+        public BsdParser getBsdParser() {
+            return bsdParser;
         }
 
         @Override

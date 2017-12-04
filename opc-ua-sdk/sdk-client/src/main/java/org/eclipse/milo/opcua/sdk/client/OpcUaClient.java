@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
@@ -156,7 +155,7 @@ public class OpcUaClient implements UaClient {
                 DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
                     stackClient,
                     session,
-                    new GenericBsdParser()
+                    config.getBsdParser()
                 );
 
                 return reader.readDataTypeDictionaries()
