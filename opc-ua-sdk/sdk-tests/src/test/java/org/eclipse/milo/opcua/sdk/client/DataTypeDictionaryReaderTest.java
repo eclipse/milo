@@ -55,7 +55,9 @@ public class DataTypeDictionaryReaderTest {
             for (int dictionarySize : dictionarySizes) {
                 byte[] dictionary = new byte[dictionarySize];
                 for (int i = 0; i < dictionarySize; i++) {
-                    dictionary[i] = (byte) i;
+                    byte b = (byte) i;
+                    if (b == 0) b++; // no null bytes because they get trimmed
+                    dictionary[i] = b;
                 }
 
                 System.out.printf("fragmentSize=%d dictionarySize=%d\n", fragmentSize, dictionarySize);

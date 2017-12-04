@@ -144,8 +144,31 @@ public class DataTypeDictionaryReader {
         );
 
         return future.thenApply(buffer -> {
-            byte[] bs = new byte[buffer.readableBytes()];
-            buffer.readBytes(bs);
+            // trim any junk at the end. some servers have a bug
+            // that cause a null byte to be appended to the end,
+            // which makes it invalid XML.
+            int length = buffer.readableBytes();
+
+            for (int i = buffer.writerIndex() - 1; i >= 0; i--) {
+                byte lastByte = buffer.getByte(i);
+
+                boolean empty =
+                    (lastByte == 0 ||
+                        Character.isWhitespace(lastByte) ||
+                        Character.isSpaceChar(lastByte));
+
+                if (!empty) break;
+                else length -= 1;
+            }
+
+            byte[] bs = new byte[length];
+            buffer.readBytes(bs, 0, length);
+
+            if (logger.isDebugEnabled()) {
+                String xmlString = new String(bs);
+                logger.debug("Dictionary XML: {}", xmlString);
+            }
+
             return ByteString.of(bs);
         });
     }
@@ -246,6 +269,7 @@ public class DataTypeDictionaryReader {
 
                     if (encodingId != null && encodingId.isNotNull()) {
                         dictionary.registerStructCodec(cd.getCodec(), description, encodingId);
+                        logger.debug("Registered codec description={} encodingId={}", description, encodingId);
                     }
                 });
 
