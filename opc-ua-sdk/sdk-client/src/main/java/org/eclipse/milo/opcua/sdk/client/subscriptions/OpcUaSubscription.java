@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
@@ -143,7 +142,7 @@ public class OpcUaSubscription implements UaSubscription {
     public CompletableFuture<List<UaMonitoredItem>> createMonitoredItems(
         TimestampsToReturn timestampsToReturn,
         List<MonitoredItemCreateRequest> itemsToCreate,
-        BiConsumer<UaMonitoredItem, Integer> itemCreationCallback) {
+        ItemCreationCallback itemCreationCallback) {
 
         return notificationSemaphore.acquire().thenCompose(permit -> {
             CompletableFuture<List<UaMonitoredItem>> itemsFuture =
@@ -155,7 +154,7 @@ public class OpcUaSubscription implements UaSubscription {
                         for (int i = 0; i < items.size(); i++) {
                             UaMonitoredItem item = items.get(i);
 
-                            itemCreationCallback.accept(item, i);
+                            itemCreationCallback.onItemCreated(client.getDataTypeManager(), item, i);
                         }
                     }
                 } finally {
