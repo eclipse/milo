@@ -260,7 +260,7 @@ public class NodeFactory {
                 "no NodeFactory for type definition: " + typeDefinitionId)
             );
 
-        return ctor.apply(
+        UaObjectNode objectNode = ctor.apply(
             nodeMap,
             nodeId,
             typeDefinitionNode.getBrowseName(),
@@ -269,6 +269,16 @@ public class NodeFactory {
             typeDefinitionNode.getWriteMask(),
             typeDefinitionNode.getUserWriteMask()
         );
+
+        objectNode.addReference(new Reference(
+            objectNode.getNodeId(),
+            Identifiers.HasTypeDefinition,
+            typeDefinitionId.expanded(),
+            NodeClass.ObjectType,
+            true
+        ));
+
+        return objectNode;
     }
 
     private UaVariableNode instanceFromTypeDefinition(NodeId nodeId, VariableTypeNode typeDefinitionNode) {
@@ -295,6 +305,14 @@ public class NodeFactory {
         variableNode.setDataType(typeDefinitionNode.getDataType());
         variableNode.setValueRank(typeDefinitionNode.getValueRank());
         variableNode.setArrayDimensions(typeDefinitionNode.getArrayDimensions());
+
+        variableNode.addReference(new Reference(
+            variableNode.getNodeId(),
+            Identifiers.HasTypeDefinition,
+            typeDefinitionId.expanded(),
+            NodeClass.VariableType,
+            true
+        ));
 
         return variableNode;
     }
