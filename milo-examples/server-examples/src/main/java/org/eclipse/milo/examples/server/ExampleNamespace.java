@@ -38,6 +38,8 @@ import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
@@ -173,6 +175,8 @@ public class ExampleNamespace implements Namespace {
             addVariableNodes(folderNode);
 
             addMethodNode(folderNode);
+
+            addCustomObjectTypeAndInstance(folderNode);
         } catch (UaException e) {
             logger.error("Error adding nodes: {}", e.getMessage(), e);
         }
@@ -524,6 +528,91 @@ public class ExampleNamespace implements Namespace {
         } catch (Exception e) {
             logger.error("Error creating sqrt() method.", e);
         }
+    }
+
+    private void addCustomObjectTypeAndInstance(UaFolderNode rootFolder) throws UaException {
+        // Define a new ObjectType called "MyObjectType".
+        UaObjectTypeNode objectTypeNode = UaObjectTypeNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType"))
+            .setBrowseName(new QualifiedName(namespaceIndex, "MyObjectType"))
+            .setDisplayName(LocalizedText.english("MyObjectType"))
+            .setIsAbstract(false)
+            .build();
+
+        // "Foo" and "Bar" are members. These nodes are what are called "instance declarations" by the spec.
+        UaVariableNode foo = UaVariableNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType.Foo"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, "Foo"))
+            .setDisplayName(LocalizedText.english("Foo"))
+            .setDataType(Identifiers.Int16)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        foo.setValue(new DataValue(new Variant(0)));
+        objectTypeNode.addComponent(foo);
+
+        UaVariableNode bar = UaVariableNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType.Bar"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, "Bar"))
+            .setDisplayName(LocalizedText.english("Bar"))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        bar.setValue(new DataValue(new Variant("bar")));
+        objectTypeNode.addComponent(bar);
+
+        // Tell the ObjectTypeManager about our new type.
+        // This let's us use NodeFactory to instantiate instances of the type.
+        server.getObjectTypeManager().registerObjectType(
+            objectTypeNode.getNodeId(),
+            UaObjectNode.class,
+            UaObjectNode::new
+        );
+
+        // Add our ObjectTypeNode as a subtype of BaseObjectType.
+        server.getUaNamespace().addReference(
+            Identifiers.BaseObjectType,
+            Identifiers.HasSubtype,
+            true,
+            objectTypeNode.getNodeId().expanded(),
+            NodeClass.ObjectType
+        );
+
+        // Add the inverse SubtypeOf relationship.
+        objectTypeNode.addReference(new Reference(
+            objectTypeNode.getNodeId(),
+            Identifiers.HasSubtype,
+            Identifiers.BaseObjectType.expanded(),
+            NodeClass.ObjectType,
+            false
+        ));
+
+        // Add it into the address space.
+        server.getNodeMap().addNode(objectTypeNode);
+
+        // Use NodeFactory to create instance of MyObjectType called "MyObject".
+        // NodeFactory takes care of recursively instantiating MyObject member nodes
+        // as well as adding all nodes to the address space.
+        UaObjectNode myObject = nodeFactory.createObject(
+            new NodeId(namespaceIndex, "HelloWorld/MyObject"),
+            new QualifiedName(namespaceIndex, "MyObject"),
+            LocalizedText.english("MyObject"),
+            objectTypeNode.getNodeId()
+        );
+
+        // Add forward and inverse references from the root folder.
+        rootFolder.addOrganizes(myObject);
+
+        myObject.addReference(new Reference(
+            myObject.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            rootFolder.getNodeClass(),
+            false
+        ));
     }
 
     @Override
