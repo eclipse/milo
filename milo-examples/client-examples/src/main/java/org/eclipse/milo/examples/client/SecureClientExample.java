@@ -68,10 +68,10 @@ public class SecureClientExample implements ClientExample {
             is.close();
 
             /*Get key from keystore */
-            PrivateKey key = (PrivateKey)keystore.getKey("opcuakey", passwordArray);
+            PrivateKey key = (PrivateKey)keystore.getKey("opcua", "opcuakey".toCharArray());
 
             /* Get certificate of public key */
-            cert = (X509Certificate) keystore.getCertificate("opcuakey");
+            cert = (X509Certificate) keystore.getCertificate("opcua");
 
             keyPair= new KeyPair(cert.getPublicKey(), key);
 

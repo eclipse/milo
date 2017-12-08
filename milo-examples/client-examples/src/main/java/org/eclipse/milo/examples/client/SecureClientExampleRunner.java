@@ -66,7 +66,7 @@ public class SecureClientExampleRunner {
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("fraunhofer opc-ua client"))
-            .setApplicationUri("opcuakey")
+            .setApplicationUri("urn:eclipse:milo:examples:secureclient")
             .setCertificate(clientExample.getClientCertificate())
             .setKeyPair(clientExample.getKeyPair())
             .setEndpoint(endpoint)
