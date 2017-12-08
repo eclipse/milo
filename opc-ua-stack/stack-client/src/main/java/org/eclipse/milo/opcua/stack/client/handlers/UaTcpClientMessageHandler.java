@@ -274,7 +274,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         int messageSize = messageBuffer.readableBytes();
         int remoteMaxMessageSize = serializationQueue.getParameters().getRemoteMaxMessageSize();
 
-        if (messageSize > remoteMaxMessageSize) {
+        if (remoteMaxMessageSize > 0 && messageSize > remoteMaxMessageSize) {
             throw new UaSerializationException(
                 StatusCodes.Bad_RequestTooLarge,
                 "request exceeds remote max message size: " +
