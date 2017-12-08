@@ -134,7 +134,7 @@ public class ClientExampleRunner {
                 future.get(15, TimeUnit.SECONDS);
             } catch (Throwable t) {
                 logger.error("Error running client example: {}", t.getMessage(), t);
-                future.complete(client);
+                future.completeExceptionally(t);
             }
         } catch (Throwable t) {
             future.completeExceptionally(t);
