@@ -22,6 +22,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -245,7 +246,9 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
                         validateChunkHeaders(buffersToDecode);
                     } catch (UaException e) {
                         logger.error("Error validating chunk headers: {}", e.getMessage(), e);
-                        ctx.close();
+                        buffersToDecode.forEach(ReferenceCountUtil::safeRelease);
+                        ctx.fireExceptionCaught(e);
+                        return;
                     }
 
                     chunkDecoder.decodeSymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
