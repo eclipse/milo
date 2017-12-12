@@ -77,17 +77,27 @@ public final class ChunkDecoder {
         List<ByteBuf> chunkBuffers,
         Callback callback) {
 
+        CompositeByteBuf composite = BufferUtil.compositeBuffer();
+
         try {
-            decoder.decode(channel, chunkBuffers, callback);
+            decoder.decode(channel, composite, chunkBuffers, callback);
         } catch (MessageAbortedException e) {
             callback.onMessageAborted(e);
 
-            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+            releaseBuffers(composite, chunkBuffers);
         } catch (UaException e) {
             callback.onDecodingError(e);
 
-            chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+            releaseBuffers(composite, chunkBuffers);
         }
+    }
+
+    private static void releaseBuffers(CompositeByteBuf composite, List<ByteBuf> chunkBuffers) {
+        while (composite.numComponents() > 0) {
+            composite.removeComponent(0);
+        }
+        ReferenceCountUtil.safeRelease(composite);
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
     }
 
     public interface Callback {
@@ -106,10 +116,9 @@ public final class ChunkDecoder {
 
         void decode(
             SecureChannel channel,
+            CompositeByteBuf composite,
             List<ByteBuf> chunkBuffers,
             Callback callback) throws UaException {
-
-            CompositeByteBuf composite = BufferUtil.compositeBuffer();
 
             int signatureSize = getSignatureSize(channel);
             int cipherTextBlockSize = getCipherTextBlockSize(channel);
