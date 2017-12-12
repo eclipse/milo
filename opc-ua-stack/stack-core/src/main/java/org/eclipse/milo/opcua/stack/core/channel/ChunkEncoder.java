@@ -151,6 +151,15 @@ public final class ChunkEncoder {
 
                 ByteBuf chunkBuffer = BufferUtil.buffer(chunkSize);
 
+                chunks.add(chunkBuffer);
+
+                int remoteMaxChunkCount = parameters.getRemoteMaxChunkCount();
+                if (remoteMaxChunkCount > 0 && chunks.size() > remoteMaxChunkCount) {
+                    throw new UaException(
+                        StatusCodes.Bad_EncodingLimitsExceeded,
+                        "remote chunk count exceeded: " + remoteMaxChunkCount);
+                }
+
                 /* Message Header */
                 SecureMessageHeader messageHeader = new SecureMessageHeader(
                     messageType,
@@ -226,15 +235,6 @@ public final class ChunkEncoder {
                 }
 
                 chunkBuffer.readerIndex(0).writerIndex(chunkSize);
-
-                chunks.add(chunkBuffer);
-
-                int remoteMaxChunkCount = parameters.getRemoteMaxChunkCount();
-                if (remoteMaxChunkCount > 0 && chunks.size() > remoteMaxChunkCount) {
-                    throw new UaException(
-                        StatusCodes.Bad_EncodingLimitsExceeded,
-                        "remote chunk count exceeded: " + remoteMaxChunkCount);
-                }
             }
 
             callback.onMessageEncoded(chunks, requestId);
