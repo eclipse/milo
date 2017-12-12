@@ -180,6 +180,9 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
             "[remote={}] Exception caught: {}",
             ctx.channel().remoteAddress(), cause.getMessage(), cause);
 
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+        chunkBuffers.clear();
+
         ctx.close();
     }
 

@@ -332,7 +332,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        chunkBuffers.forEach(ByteBuf::release);
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
         chunkBuffers.clear();
 
         if (cause instanceof IOException) {
