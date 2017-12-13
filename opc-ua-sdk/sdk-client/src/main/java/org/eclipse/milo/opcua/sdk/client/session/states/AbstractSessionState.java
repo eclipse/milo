@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
+import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionSuccessEvent;
@@ -88,7 +89,7 @@ abstract class AbstractSessionState implements SessionState {
      */
     private static final UInteger REQUEST_TIMEOUT = uint(16000);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SessionState.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionFsm.class);
 
     // <editor-fold desc="Create Session">
     static void createSessionAsync(Fsm fsm, CompletableFuture<OpcUaSession> sessionFuture) {

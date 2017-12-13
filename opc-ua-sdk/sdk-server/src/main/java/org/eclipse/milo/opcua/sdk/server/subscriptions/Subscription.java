@@ -458,15 +458,22 @@ public class Subscription {
         ResponseHeader header = service.createResponseHeader();
 
         PublishResponse response = new PublishResponse(
-            header, subscriptionId,
-            available, moreNotifications, notificationMessage,
-            acknowledgeResults, new DiagnosticInfo[0]);
+            header,
+            subscriptionId,
+            available,
+            moreNotifications,
+            notificationMessage,
+            acknowledgeResults,
+            new DiagnosticInfo[0]
+        );
 
         service.setResponse(response);
 
         logger.debug(
-            "[id={}] returning {} DataChangeNotification(s) and {} EventNotificationList(s) sequenceNumber={}.",
-            subscriptionId, dataNotifications.size(), eventNotifications.size(), sequenceNumber);
+            "[id={}] returning {} DataChangeNotification(s) and " +
+                "{} EventNotificationList(s) sequenceNumber={} moreNotifications={}.",
+            subscriptionId, dataNotifications.size(),
+            eventNotifications.size(), sequenceNumber, moreNotifications);
     }
 
     private boolean notificationsAvailable() {
