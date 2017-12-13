@@ -17,4 +17,14 @@
         <opc:Field Name="OptionalString" TypeName="opc:String" SwitchField="OptionalStringSpecified"/>
     </opc:StructuredType>
 
+    <opc:StructuredType Name="ArrayContainer">
+        <opc:Field Name="IntArrayLen" TypeName="opc:Int32"/>
+        <opc:Field Name="IntArray" TypeName="opc:Int32" LengthField="IntArrayLen"/>
+
+        <opc:Field Name="BitField" TypeName="opc:Bit" Length="8"/>
+
+        <opc:Field Name="StringArrayLen" TypeName="opc:Int32"/>
+        <opc:Field Name="StringArray" TypeName="opc:String" LengthField="StringArrayLen"/>
+    </opc:StructuredType>
+
 </opc:TypeDictionary>

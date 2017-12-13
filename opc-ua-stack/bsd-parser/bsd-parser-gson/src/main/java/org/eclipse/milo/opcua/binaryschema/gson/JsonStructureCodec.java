@@ -13,9 +13,7 @@
 
 package org.eclipse.milo.opcua.binaryschema.gson;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -114,11 +112,19 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
     }
 
     @Override
-    protected JsonElement opcUaToMemberTypeArray(String name, List<Object> values, String typeName) {
+    protected JsonElement opcUaToMemberTypeArray(String name, Object values, String typeName) {
         JsonArray array = new JsonArray();
 
-        for (Object value : values) {
-            array.add(opcUaToMemberTypeScalar(name, value, typeName));
+        if (values instanceof Object[]) {
+            Object[] objects = (Object[]) values;
+
+            for (Object value : objects) {
+                array.add(opcUaToMemberTypeScalar(name, value, typeName));
+            }
+        } else if (values instanceof Number) {
+            // This is a bit array...
+            Number number = (Number) values;
+            return new JsonPrimitive(number);
         }
 
         return array;
@@ -228,16 +234,21 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
     }
 
     @Override
-    protected List<Object> memberTypeToOpcUaArray(JsonElement member, String typeName) {
-        List<Object> values = new ArrayList<>();
+    protected Object memberTypeToOpcUaArray(JsonElement member, String typeName) {
+        if ("Bit".equals(typeName)) {
+            return member.getAsJsonPrimitive().getAsInt();
+        } else {
+            JsonArray array = member.getAsJsonArray();
 
-        JsonArray array = member.getAsJsonArray();
+            Object[] values = new Object[array.size()];
 
-        for (JsonElement e : array) {
-            values.add(memberTypeToOpcUaScalar(e, typeName));
+            for (int i = 0; i < array.size(); i++) {
+                JsonElement element = array.get(i);
+                values[i] = memberTypeToOpcUaScalar(element, typeName);
+            }
+
+            return values;
         }
-
-        return values;
     }
 
     @Override

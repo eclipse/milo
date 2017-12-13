@@ -42,7 +42,6 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("OptionalInt32Specified", 1)
             .addMember("OptionalStringSpecified", 1)
             .addMember("Reserved1", 0)
-
             .addMember("OptionalInt32", 0)
             .addMember("OptionalString", "hello")
             .build();
@@ -58,7 +57,6 @@ public class GenericBsdParserTest extends BsdParserTest {
             .addMember("OptionalInt32Specified", 1)
             .addMember("OptionalStringSpecified", 0)
             .addMember("Reserved1", 0)
-
             .addMember("OptionalInt32", 0)
             .build();
 
@@ -78,6 +76,21 @@ public class GenericBsdParserTest extends BsdParserTest {
         OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
 
         assertRoundTrip("Optionals", optionals, codec);
+    }
+
+    @Test
+    public void testArrayContainer() {
+        Struct arrayContainer = Struct.builder("ArrayContainer")
+            .addMember("IntArrayLen", 3)
+            .addMember("IntArray", new Integer[]{1, 2, 3})
+            .addMember("BitField", 0b10001111)
+            .addMember("StringArrayLen", 2)
+            .addMember("StringArray", new String[]{"hello", "world"})
+            .build();
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ArrayContainer");
+
+        assertRoundTrip("ArrayContainer", arrayContainer, codec);
     }
 
 }

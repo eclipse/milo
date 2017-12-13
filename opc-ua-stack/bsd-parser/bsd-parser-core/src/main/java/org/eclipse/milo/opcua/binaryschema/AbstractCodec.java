@@ -14,9 +14,7 @@
 package org.eclipse.milo.opcua.binaryschema;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -221,24 +219,24 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                     for (int i = 0; i < length; i++) {
                         BigInteger bitValue = BigInteger.valueOf(decoder.readBit());
 
-                        bitAccumulation = bitAccumulation.shiftLeft(1).or(bitValue);
+                        bitAccumulation = bitAccumulation.or(bitValue.shiftLeft(i));
                     }
 
-                    members.put(fieldName, opcUaToMemberTypeScalar(fieldName, bitAccumulation.intValue(), typeName));
+                    members.put(fieldName, opcUaToMemberTypeArray(fieldName, bitAccumulation.intValue(), typeName));
                 } else {
-                    List<Object> values = new ArrayList<>();
+                    Object[] values = new Object[length];
 
                     if (Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace)) {
                         for (int i = 0; i < length; i++) {
                             Object value = READERS.get(typeName).apply(decoder);
 
-                            values.add(value);
+                            values[i] = value;
                         }
                     } else {
                         for (int i = 0; i < length; i++) {
                             Object value = context.decode(typeNamespace, typeName, decoder);
 
-                            values.add(value);
+                            values[i] = value;
                         }
                     }
 
@@ -258,7 +256,12 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
         LinkedHashMap<String, MemberT> members = new LinkedHashMap<>(getMembers(structure));
 
-        for (FieldType field : structuredType.getField()) {
+        PeekingIterator<FieldType> fieldIterator = Iterators
+            .peekingIterator(structuredType.getField().iterator());
+
+        while (fieldIterator.hasNext()) {
+            FieldType field = fieldIterator.next();
+
             if (!fieldIsPresent(field, members)) {
                 continue;
             }
@@ -289,26 +292,25 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                     (Namespaces.OPC_UA.equals(typeNamespace) ||
                         Namespaces.OPC_UA_BSD.equals(typeNamespace))) {
 
-                    // TODO why scalar? this is a bit array...
-                    Number number = (Number) memberTypeToOpcUaScalar(member, typeName);
+                    Number number = (Number) memberTypeToOpcUaArray(member, typeName);
                     BigInteger bi = BigInteger.valueOf(number.longValue());
 
                     for (int i = 0; i < length; i++) {
                         encoder.writeBit(bi.shiftRight(i).and(BigInteger.ONE).intValue());
                     }
                 } else {
-                    List<Object> values = memberTypeToOpcUaArray(member, typeName);
+                    Object[] valueArray = (Object[]) memberTypeToOpcUaArray(member, typeName);
 
-                    if (values != null) {
+                    if (valueArray != null) {
                         if (Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace)) {
                             for (int i = 0; i < length; i++) {
-                                Object value = values.get(i);
+                                Object value = valueArray[i];
 
                                 WRITERS.get(typeName).accept(encoder, value);
                             }
                         } else {
                             for (int i = 0; i < length; i++) {
-                                Object value = values.get(i);
+                                Object value = valueArray[i];
 
                                 context.encode(typeNamespace, typeName, value, encoder);
                             }
@@ -341,11 +343,11 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
      * @param typeName the name of the OPC UA DataType.
      * @return member of type {@link MemberT}.
      */
-    protected abstract MemberT opcUaToMemberTypeArray(String name, List<Object> values, String typeName);
+    protected abstract MemberT opcUaToMemberTypeArray(String name, Object values, String typeName);
 
     protected abstract Object memberTypeToOpcUaScalar(MemberT member, String typeName);
 
-    protected abstract List<Object> memberTypeToOpcUaArray(MemberT member, String typeName);
+    protected abstract Object memberTypeToOpcUaArray(MemberT member, String typeName);
 
     private int fieldLength(FieldType field, LinkedHashMap<String, MemberT> members) {
         int length = 1;

@@ -15,15 +15,12 @@ package org.eclipse.milo.opcua.binaryschema;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 public class GenericStructCodec extends AbstractCodec<Struct, Struct.Member> {
 
@@ -52,7 +49,7 @@ public class GenericStructCodec extends AbstractCodec<Struct, Struct.Member> {
     }
 
     @Override
-    protected Struct.Member opcUaToMemberTypeArray(String name, List<Object> values, String typeName) {
+    protected Struct.Member opcUaToMemberTypeArray(String name, Object values, String typeName) {
         return new Struct.Member(name, values);
     }
 
@@ -62,13 +59,15 @@ public class GenericStructCodec extends AbstractCodec<Struct, Struct.Member> {
     }
 
     @Override
-    protected List<Object> memberTypeToOpcUaArray(Struct.Member member, String typeName) {
+    protected Object memberTypeToOpcUaArray(Struct.Member member, String typeName) {
         Object value = member.getValue();
 
         if (value == null) {
-            return Collections.emptyList();
+            return null;
         } else if (value instanceof List) {
-            return (List<Object>) value;
+            List<Object> list = (List<Object>) value;
+
+            return list.toArray();
         } else if (value.getClass().isArray()) {
             List<Object> values = new ArrayList<>();
 
@@ -78,9 +77,9 @@ public class GenericStructCodec extends AbstractCodec<Struct, Struct.Member> {
                 values.add(Array.get(flattened, i));
             }
 
-            return values;
+            return values.toArray();
         } else {
-            return newArrayList(value);
+            return value;
         }
     }
 

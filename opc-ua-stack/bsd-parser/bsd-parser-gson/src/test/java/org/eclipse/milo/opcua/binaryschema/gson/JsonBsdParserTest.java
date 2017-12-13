@@ -13,9 +13,11 @@
 
 package org.eclipse.milo.opcua.binaryschema.gson;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.eclipse.milo.opcua.binaryschema.BsdParserTest;
+import org.eclipse.milo.opcua.binaryschema.Struct;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.testng.annotations.Test;
@@ -36,6 +38,71 @@ public class JsonBsdParserTest extends BsdParserTest {
         OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Foo");
 
         assertRoundTrip("Foo", foo, codec);
+    }
+
+    @Test
+    public void testOptionals_AllPresent() {
+        JsonObject optionals = new JsonObject();
+        optionals.add("OptionalInt32Specified", new JsonPrimitive(1));
+        optionals.add("OptionalStringSpecified", new JsonPrimitive(1));
+        optionals.add("Reserved1", new JsonPrimitive(0));
+        optionals.add("OptionalInt32", new JsonPrimitive(0));
+        optionals.add("OptionalString", new JsonPrimitive("hello"));
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+
+        assertRoundTrip("Optionals", optionals, codec);
+    }
+
+    @Test
+    public void testOptionals_OnePresent() {
+        JsonObject optionals = new JsonObject();
+        optionals.add("OptionalInt32Specified", new JsonPrimitive(1));
+        optionals.add("OptionalStringSpecified", new JsonPrimitive(0));
+        optionals.add("Reserved1", new JsonPrimitive(0));
+        optionals.add("OptionalInt32", new JsonPrimitive(0));
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+
+        assertRoundTrip("Optionals", optionals, codec);
+    }
+
+    @Test
+    public void testOptionals_NonePresent() {
+        JsonObject optionals = new JsonObject();
+        optionals.add("OptionalInt32Specified", new JsonPrimitive(0));
+        optionals.add("OptionalStringSpecified", new JsonPrimitive(0));
+        optionals.add("Reserved1", new JsonPrimitive(0));
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Optionals");
+
+        assertRoundTrip("Optionals", optionals, codec);
+    }
+
+    @Test
+    public void testArrayContainer() {
+        JsonObject arrayContainer = new JsonObject();
+
+        arrayContainer.add("IntArrayLen", new JsonPrimitive(3));
+
+        JsonArray intArray = new JsonArray();
+        intArray.add(1);
+        intArray.add(2);
+        intArray.add(3);
+        arrayContainer.add("IntArray", intArray);
+
+        arrayContainer.add("BitField", new JsonPrimitive(0b10001111));
+
+        arrayContainer.add("StringArrayLen", new JsonPrimitive(2));
+
+        JsonArray stringArray = new JsonArray();
+        stringArray.add("hello");
+        stringArray.add("world");
+        arrayContainer.add("StringArray", stringArray);
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ArrayContainer");
+
+        assertRoundTrip("ArrayContainer", arrayContainer, codec);
     }
 
 }
