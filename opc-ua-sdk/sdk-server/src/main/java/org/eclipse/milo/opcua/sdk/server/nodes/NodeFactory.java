@@ -178,8 +178,6 @@ public class NodeFactory {
             .map(UaVariableNode.class::cast)
             .collect(Collectors.toList());
 
-        System.out.println(nodeId);
-
         for (UaVariableNode declaration : variableComponents) {
             boolean placeholder = declaration.getReferences().stream()
                 .anyMatch(r -> r.isForward() &&
