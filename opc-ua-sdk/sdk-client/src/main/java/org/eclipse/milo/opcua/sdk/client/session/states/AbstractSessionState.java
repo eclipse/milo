@@ -194,7 +194,7 @@ abstract class AbstractSessionState implements SessionState {
 
                 fsm.fireEvent(new CreateSessionFailureEvent(ex, sessionFuture));
             }
-        });
+        }, stackClient.getExecutorService());
     }
     // </editor-fold>
 
@@ -218,8 +218,6 @@ abstract class AbstractSessionState implements SessionState {
 
         CompletableFuture<ActivateSessionResponse> af = cf.thenCompose(secureChannel -> {
             try {
-                // TODO InactivityHandler?
-
                 EndpointDescription endpoint = client.getStackClient().getEndpoint().orElseThrow(
                     () -> new UaException(StatusCodes.Bad_InternalError,
                         "cannot create session with no endpoint configured")
@@ -356,8 +354,6 @@ abstract class AbstractSessionState implements SessionState {
 
         Function<ClientSecureChannel, CompletionStage<ActivateSessionResponse>> activate = secureChannel -> {
             try {
-                // TODO InactivityHandler?
-
                 EndpointDescription endpoint = stackClient.getEndpoint().orElseThrow(
                     () -> new Exception("cannot create session with no endpoint configured"));
 
@@ -404,7 +400,7 @@ abstract class AbstractSessionState implements SessionState {
 
                 fsm.fireEvent(new ReactivateFailureEvent(ex, session, sessionFuture));
             }
-        });
+        }, stackClient.getExecutorService());
     }
     // </editor-fold>
 
@@ -511,10 +507,11 @@ abstract class AbstractSessionState implements SessionState {
                     fsm.fireEvent(new TransferFailureEvent(ex, session, sessionFuture));
                 }
             }
-        });
+        }, stackClient.getExecutorService());
     }
     // </editor-fold>
 
+    // <editor-fold desc="Initialize Session">
     static void initializeSessionAsync(
         Fsm fsm,
         OpcUaSession session,
@@ -547,6 +544,7 @@ abstract class AbstractSessionState implements SessionState {
             });
         }
     }
+    // </editor-fold>
 
     private static SignatureData buildClientSignature(
         ClientSecureChannel secureChannel, ByteString serverNonce) throws Exception {
