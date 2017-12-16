@@ -53,9 +53,9 @@ public class Retransferring extends AbstractSessionState implements SessionState
         if (event instanceof TransferSuccessEvent) {
             OpcUaSession session = ((TransferSuccessEvent) event).getSession();
 
-            sessionFuture.complete(session);
+            initializeSessionAsync(fsm, session, sessionFuture);
 
-            return new Active();
+            return new Reinitializing();
         } else if (event instanceof TransferFailureEvent) {
             Throwable failure = ((TransferFailureEvent) event).getFailure();
 

@@ -17,6 +17,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ConversionUtil {
 
@@ -33,12 +34,20 @@ public class ConversionUtil {
         return array != null ? Arrays.asList(array) : Collections.emptyList();
     }
 
+    public static <T> Stream<T> toStream(T[] array) {
+        return array != null ? Arrays.stream(array) : Stream.empty();
+    }
+
     public static <T> T[] a(List<T> list, Class<T> c) {
         return toArray(list, c);
     }
 
     public static <T> List<T> l(T[] array) {
         return toList(array);
+    }
+
+    public static <T> Stream<T> s(T[] array) {
+        return toStream(array);
     }
 
 }

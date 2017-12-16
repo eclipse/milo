@@ -56,9 +56,9 @@ public class Transferring extends AbstractSessionState implements SessionState {
         if (event instanceof TransferSuccessEvent) {
             OpcUaSession session = ((TransferSuccessEvent) event).getSession();
 
-            sessionFuture.complete(session);
+            initializeSessionAsync(fsm, session, sessionFuture);
 
-            return new Active();
+            return new Initializing();
         } else if (event instanceof TransferFailureEvent) {
             TransferFailureEvent e = (TransferFailureEvent) event;
 

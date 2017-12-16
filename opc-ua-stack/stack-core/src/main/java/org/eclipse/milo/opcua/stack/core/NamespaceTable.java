@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.BiMap;
@@ -60,6 +61,10 @@ public class NamespaceTable {
      */
     public synchronized UShort getIndex(String uri) {
         return uriTable.inverse().getOrDefault(uri, null);
+    }
+
+    public synchronized void update(Consumer<BiMap<UShort, String>> uriTableConsumer) {
+        uriTableConsumer.accept(uriTable);
     }
 
     public synchronized String[] toArray() {

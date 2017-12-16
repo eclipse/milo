@@ -360,7 +360,7 @@ public abstract class UaNode implements Node {
      * @param clazz the type to cast {@code o} to.
      * @return the object after casting, or null if {@code o} is null.
      */
-    protected static <T> T cast(Object o, Class<T> clazz) {
+    protected <T> T cast(Object o, Class<T> clazz) {
         if (UaEnumeration.class.isAssignableFrom(clazz) && o instanceof Integer) {
             try {
                 Object enumeration = clazz
@@ -372,8 +372,7 @@ public abstract class UaNode implements Node {
                 return null;
             }
         } else if (UaStructure.class.isAssignableFrom(clazz) && o instanceof ExtensionObject) {
-            // TODO decode() should get the DataTypeManager passed to it.
-            Object decoded = ((ExtensionObject) o).decode();
+            Object decoded = ((ExtensionObject) o).decode(client.getDataTypeManager());
             return clazz.cast(decoded);
         } else {
             return clazz.cast(o);

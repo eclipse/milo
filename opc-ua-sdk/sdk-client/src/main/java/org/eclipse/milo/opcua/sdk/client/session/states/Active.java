@@ -25,9 +25,9 @@ import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ReactivateSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,9 +57,9 @@ public class Active extends AbstractSessionState implements SessionState {
             }
         });
 
-        if (prev instanceof Transferring || prev instanceof Retransferring) {
-            if (event instanceof TransferSuccessEvent) {
-                TransferSuccessEvent e = (TransferSuccessEvent) event;
+        if (prev instanceof Initializing || prev instanceof Reinitializing) {
+            if (event instanceof InitializeSuccessEvent) {
+                InitializeSuccessEvent e = (InitializeSuccessEvent) event;
 
                 session = e.getSession();
                 sessionFuture = e.getSessionFuture();

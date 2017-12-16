@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.client.api.config;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -52,6 +53,11 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
      * @return an {@link IdentityProvider} to use when activating a session.
      */
     IdentityProvider getIdentityProvider();
+
+    /**
+     * @return the {@link BsdParser} implementation used to serialize DataTypes defined by the server.
+     */
+    BsdParser getBsdParser();
 
     /**
      * @return a new {@link OpcUaClientConfigBuilder}.
@@ -93,6 +99,7 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
         builder.setMaxResponseMessageSize(config.getMaxResponseMessageSize());
         builder.setMaxPendingPublishRequests(config.getMaxPendingPublishRequests());
         builder.setIdentityProvider(config.getIdentityProvider());
+        builder.setBsdParser(config.getBsdParser());
 
         return builder;
     }
