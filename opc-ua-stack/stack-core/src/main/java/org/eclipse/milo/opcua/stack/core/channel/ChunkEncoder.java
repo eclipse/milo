@@ -135,6 +135,8 @@ public class ChunkEncoder {
 
             ByteBuf chunkBuffer = BufferUtil.buffer(chunkSize);
 
+            chunks.add(chunkBuffer);
+
             /* Message Header */
             SecureMessageHeader messageHeader = new SecureMessageHeader(
                 messageType,
@@ -210,8 +212,6 @@ public class ChunkEncoder {
             }
 
             chunkBuffer.readerIndex(0).writerIndex(chunkSize);
-
-            chunks.add(chunkBuffer);
         }
 
         lastRequestId = requestId;
