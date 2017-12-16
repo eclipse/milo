@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,28 +16,23 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface AuditConditionShelvingEventType extends AuditConditionEventType {
-
-    Property<Double> SHELVING_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:ShelvingTime"),
+    QualifiedProperty<Double> SHELVING_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ShelvingTime",
         NodeId.parse("ns=0;i=290"),
-        -1,
+        ValueRanks.Scalar,
         Double.class
     );
 
-
-    CompletableFuture<? extends PropertyType> shelvingTime();
+    CompletableFuture<? extends PropertyType> getShelvingTimeNode();
 
     CompletableFuture<Double> getShelvingTime();
 
     CompletableFuture<StatusCode> setShelvingTime(Double value);
-
-
 }

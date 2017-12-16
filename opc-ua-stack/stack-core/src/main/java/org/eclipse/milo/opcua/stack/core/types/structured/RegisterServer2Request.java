@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,43 +17,42 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RegisterServer2Request")
 public class RegisterServer2Request implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterServer2Request;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterServer2Request_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterServer2Request_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final RegisteredServer _server;
-    protected final ExtensionObject[] _discoveryConfiguration;
+    protected final RequestHeader requestHeader;
+    protected final RegisteredServer server;
+    protected final ExtensionObject[] discoveryConfiguration;
 
     public RegisterServer2Request() {
-        this._requestHeader = null;
-        this._server = null;
-        this._discoveryConfiguration = null;
+        this.requestHeader = null;
+        this.server = null;
+        this.discoveryConfiguration = null;
     }
 
-    public RegisterServer2Request(RequestHeader _requestHeader, RegisteredServer _server, ExtensionObject[] _discoveryConfiguration) {
-        this._requestHeader = _requestHeader;
-        this._server = _server;
-        this._discoveryConfiguration = _discoveryConfiguration;
+    public RegisterServer2Request(RequestHeader requestHeader, RegisteredServer server, ExtensionObject[] discoveryConfiguration) {
+        this.requestHeader = requestHeader;
+        this.server = server;
+        this.discoveryConfiguration = discoveryConfiguration;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public RegisteredServer getServer() { return _server; }
+    public RegisteredServer getServer() { return server; }
 
     @Nullable
-    public ExtensionObject[] getDiscoveryConfiguration() { return _discoveryConfiguration; }
+    public ExtensionObject[] getDiscoveryConfiguration() { return discoveryConfiguration; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,29 +66,34 @@ public class RegisterServer2Request implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("Server", _server)
-            .add("DiscoveryConfiguration", _discoveryConfiguration)
+            .add("RequestHeader", requestHeader)
+            .add("Server", server)
+            .add("DiscoveryConfiguration", discoveryConfiguration)
             .toString();
     }
 
-    public static void encode(RegisterServer2Request registerServer2Request, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", registerServer2Request._requestHeader != null ? registerServer2Request._requestHeader : new RequestHeader());
-        encoder.encodeSerializable("Server", registerServer2Request._server != null ? registerServer2Request._server : new RegisteredServer());
-        encoder.encodeArray("DiscoveryConfiguration", registerServer2Request._discoveryConfiguration, encoder::encodeExtensionObject);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<RegisterServer2Request> {
 
-    public static RegisterServer2Request decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        RegisteredServer _server = decoder.decodeSerializable("Server", RegisteredServer.class);
-        ExtensionObject[] _discoveryConfiguration = decoder.decodeArray("DiscoveryConfiguration", decoder::decodeExtensionObject, ExtensionObject.class);
+        @Override
+        public Class<RegisterServer2Request> getType() {
+            return RegisterServer2Request.class;
+        }
 
-        return new RegisterServer2Request(_requestHeader, _server, _discoveryConfiguration);
-    }
+        @Override
+        public RegisterServer2Request decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            RegisteredServer server = (RegisteredServer) decoder.readBuiltinStruct("Server", RegisteredServer.class);
+            ExtensionObject[] discoveryConfiguration = decoder.readArray("DiscoveryConfiguration", decoder::readExtensionObject, ExtensionObject.class);
 
-    static {
-        DelegateRegistry.registerEncoder(RegisterServer2Request::encode, RegisterServer2Request.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RegisterServer2Request::decode, RegisterServer2Request.class, BinaryEncodingId, XmlEncodingId);
+            return new RegisterServer2Request(requestHeader, server, discoveryConfiguration);
+        }
+
+        @Override
+        public void encode(RegisterServer2Request value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStruct("Server", value.server, RegisteredServer.class);
+            encoder.writeArray("DiscoveryConfiguration", value.discoveryConfiguration, encoder::writeExtensionObject);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,46 +16,41 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface ShelvedStateMachineType extends FiniteStateMachineType {
-
-    Property<Double> UNSHELVE_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:UnshelveTime"),
+    QualifiedProperty<Double> UNSHELVE_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UnshelveTime",
         NodeId.parse("ns=0;i=290"),
-        -1,
+        ValueRanks.Scalar,
         Double.class
     );
 
-
-    CompletableFuture<? extends PropertyType> unshelveTime();
+    CompletableFuture<? extends PropertyType> getUnshelveTimeNode();
 
     CompletableFuture<Double> getUnshelveTime();
 
     CompletableFuture<StatusCode> setUnshelveTime(Double value);
 
-    CompletableFuture<? extends StateType> unshelved();
+    CompletableFuture<? extends StateType> getUnshelvedNode();
 
-    CompletableFuture<? extends StateType> timedShelved();
+    CompletableFuture<? extends StateType> getTimedShelvedNode();
 
-    CompletableFuture<? extends StateType> oneShotShelved();
+    CompletableFuture<? extends StateType> getOneShotShelvedNode();
 
-    CompletableFuture<? extends TransitionType> unshelvedToTimedShelved();
+    CompletableFuture<? extends TransitionType> getUnshelvedToTimedShelvedNode();
 
-    CompletableFuture<? extends TransitionType> unshelvedToOneShotShelved();
+    CompletableFuture<? extends TransitionType> getUnshelvedToOneShotShelvedNode();
 
-    CompletableFuture<? extends TransitionType> timedShelvedToUnshelved();
+    CompletableFuture<? extends TransitionType> getTimedShelvedToUnshelvedNode();
 
-    CompletableFuture<? extends TransitionType> timedShelvedToOneShotShelved();
+    CompletableFuture<? extends TransitionType> getTimedShelvedToOneShotShelvedNode();
 
-    CompletableFuture<? extends TransitionType> oneShotShelvedToUnshelved();
+    CompletableFuture<? extends TransitionType> getOneShotShelvedToUnshelvedNode();
 
-    CompletableFuture<? extends TransitionType> oneShotShelvedToTimedShelved();
-
-
+    CompletableFuture<? extends TransitionType> getOneShotShelvedToTimedShelvedNode();
 }

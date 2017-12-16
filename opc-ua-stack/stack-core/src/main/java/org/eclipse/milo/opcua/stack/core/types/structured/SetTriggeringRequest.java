@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,54 +17,53 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("SetTriggeringRequest")
 public class SetTriggeringRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.SetTriggeringRequest;
     public static final NodeId BinaryEncodingId = Identifiers.SetTriggeringRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SetTriggeringRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger _subscriptionId;
-    protected final UInteger _triggeringItemId;
-    protected final UInteger[] _linksToAdd;
-    protected final UInteger[] _linksToRemove;
+    protected final RequestHeader requestHeader;
+    protected final UInteger subscriptionId;
+    protected final UInteger triggeringItemId;
+    protected final UInteger[] linksToAdd;
+    protected final UInteger[] linksToRemove;
 
     public SetTriggeringRequest() {
-        this._requestHeader = null;
-        this._subscriptionId = null;
-        this._triggeringItemId = null;
-        this._linksToAdd = null;
-        this._linksToRemove = null;
+        this.requestHeader = null;
+        this.subscriptionId = null;
+        this.triggeringItemId = null;
+        this.linksToAdd = null;
+        this.linksToRemove = null;
     }
 
-    public SetTriggeringRequest(RequestHeader _requestHeader, UInteger _subscriptionId, UInteger _triggeringItemId, UInteger[] _linksToAdd, UInteger[] _linksToRemove) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionId = _subscriptionId;
-        this._triggeringItemId = _triggeringItemId;
-        this._linksToAdd = _linksToAdd;
-        this._linksToRemove = _linksToRemove;
+    public SetTriggeringRequest(RequestHeader requestHeader, UInteger subscriptionId, UInteger triggeringItemId, UInteger[] linksToAdd, UInteger[] linksToRemove) {
+        this.requestHeader = requestHeader;
+        this.subscriptionId = subscriptionId;
+        this.triggeringItemId = triggeringItemId;
+        this.linksToAdd = linksToAdd;
+        this.linksToRemove = linksToRemove;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
-    public UInteger getTriggeringItemId() { return _triggeringItemId; }
-
-    @Nullable
-    public UInteger[] getLinksToAdd() { return _linksToAdd; }
+    public UInteger getTriggeringItemId() { return triggeringItemId; }
 
     @Nullable
-    public UInteger[] getLinksToRemove() { return _linksToRemove; }
+    public UInteger[] getLinksToAdd() { return linksToAdd; }
+
+    @Nullable
+    public UInteger[] getLinksToRemove() { return linksToRemove; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -78,35 +77,40 @@ public class SetTriggeringRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionId", _subscriptionId)
-            .add("TriggeringItemId", _triggeringItemId)
-            .add("LinksToAdd", _linksToAdd)
-            .add("LinksToRemove", _linksToRemove)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionId", subscriptionId)
+            .add("TriggeringItemId", triggeringItemId)
+            .add("LinksToAdd", linksToAdd)
+            .add("LinksToRemove", linksToRemove)
             .toString();
     }
 
-    public static void encode(SetTriggeringRequest setTriggeringRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", setTriggeringRequest._requestHeader != null ? setTriggeringRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("SubscriptionId", setTriggeringRequest._subscriptionId);
-        encoder.encodeUInt32("TriggeringItemId", setTriggeringRequest._triggeringItemId);
-        encoder.encodeArray("LinksToAdd", setTriggeringRequest._linksToAdd, encoder::encodeUInt32);
-        encoder.encodeArray("LinksToRemove", setTriggeringRequest._linksToRemove, encoder::encodeUInt32);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SetTriggeringRequest> {
 
-    public static SetTriggeringRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        UInteger _triggeringItemId = decoder.decodeUInt32("TriggeringItemId");
-        UInteger[] _linksToAdd = decoder.decodeArray("LinksToAdd", decoder::decodeUInt32, UInteger.class);
-        UInteger[] _linksToRemove = decoder.decodeArray("LinksToRemove", decoder::decodeUInt32, UInteger.class);
+        @Override
+        public Class<SetTriggeringRequest> getType() {
+            return SetTriggeringRequest.class;
+        }
 
-        return new SetTriggeringRequest(_requestHeader, _subscriptionId, _triggeringItemId, _linksToAdd, _linksToRemove);
-    }
+        @Override
+        public SetTriggeringRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            UInteger triggeringItemId = decoder.readUInt32("TriggeringItemId");
+            UInteger[] linksToAdd = decoder.readArray("LinksToAdd", decoder::readUInt32, UInteger.class);
+            UInteger[] linksToRemove = decoder.readArray("LinksToRemove", decoder::readUInt32, UInteger.class);
 
-    static {
-        DelegateRegistry.registerEncoder(SetTriggeringRequest::encode, SetTriggeringRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SetTriggeringRequest::decode, SetTriggeringRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new SetTriggeringRequest(requestHeader, subscriptionId, triggeringItemId, linksToAdd, linksToRemove);
+        }
+
+        @Override
+        public void encode(SetTriggeringRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeUInt32("TriggeringItemId", value.triggeringItemId);
+            encoder.writeArray("LinksToAdd", value.linksToAdd, encoder::writeUInt32);
+            encoder.writeArray("LinksToRemove", value.linksToRemove, encoder::writeUInt32);
+        }
     }
 
 }

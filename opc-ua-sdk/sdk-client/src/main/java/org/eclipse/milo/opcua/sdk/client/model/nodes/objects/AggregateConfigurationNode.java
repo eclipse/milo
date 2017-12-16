@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,72 +22,56 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
-
 public class AggregateConfigurationNode extends BaseObjectNode implements AggregateConfigurationType {
-
     public AggregateConfigurationNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> treatUncertainAsBad() {
-        return getPropertyNode(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD.getBrowseName());
+    public CompletableFuture<PropertyNode> getTreatUncertainAsBadNode() {
+        return getPropertyNode(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD);
     }
 
-    @Override
     public CompletableFuture<Boolean> getTreatUncertainAsBad() {
         return getProperty(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTreatUncertainAsBad(Boolean value) {
         return setProperty(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> percentDataBad() {
-        return getPropertyNode(AggregateConfigurationType.PERCENT_DATA_BAD.getBrowseName());
+    public CompletableFuture<PropertyNode> getPercentDataBadNode() {
+        return getPropertyNode(AggregateConfigurationType.PERCENT_DATA_BAD);
     }
 
-    @Override
     public CompletableFuture<UByte> getPercentDataBad() {
         return getProperty(AggregateConfigurationType.PERCENT_DATA_BAD);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setPercentDataBad(UByte value) {
         return setProperty(AggregateConfigurationType.PERCENT_DATA_BAD, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> percentDataGood() {
-        return getPropertyNode(AggregateConfigurationType.PERCENT_DATA_GOOD.getBrowseName());
+    public CompletableFuture<PropertyNode> getPercentDataGoodNode() {
+        return getPropertyNode(AggregateConfigurationType.PERCENT_DATA_GOOD);
     }
 
-    @Override
     public CompletableFuture<UByte> getPercentDataGood() {
         return getProperty(AggregateConfigurationType.PERCENT_DATA_GOOD);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setPercentDataGood(UByte value) {
         return setProperty(AggregateConfigurationType.PERCENT_DATA_GOOD, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> useSlopedExtrapolation() {
-        return getPropertyNode(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION.getBrowseName());
+    public CompletableFuture<PropertyNode> getUseSlopedExtrapolationNode() {
+        return getPropertyNode(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION);
     }
 
-    @Override
     public CompletableFuture<Boolean> getUseSlopedExtrapolation() {
         return getProperty(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setUseSlopedExtrapolation(Boolean value) {
         return setProperty(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION, value);
     }
-
-
 }

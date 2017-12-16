@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.config;
 
+import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -33,6 +34,7 @@ public class OpcUaClientConfigTest {
             .setMaxResponseMessageSize(UInteger.MAX)
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
+            .setBsdParser(new GenericBsdParser())
             .build();
 
         OpcUaClientConfig copy = OpcUaClientConfig.copy(original).build();
@@ -43,6 +45,7 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getMaxResponseMessageSize(), original.getMaxResponseMessageSize());
         assertEquals(copy.getMaxPendingPublishRequests(), original.getMaxPendingPublishRequests());
         assertEquals(copy.getIdentityProvider(), original.getIdentityProvider());
+        assertEquals(copy.getBsdParser(), original.getBsdParser());
     }
 
     @Test
@@ -64,10 +67,12 @@ public class OpcUaClientConfigTest {
                     .setMaxResponseMessageSize(uint(0))
                     .setMaxPendingPublishRequests(uint(0))
                     .setIdentityProvider(new AnonymousProvider())
+                    .setBsdParser(new GenericBsdParser())
         );
 
         assertNotEquals(copy.getSessionName(), original.getSessionName());
         assertNotEquals(copy.getIdentityProvider(), original.getIdentityProvider());
+        assertNotEquals(copy.getBsdParser(), original.getBsdParser());
 
         assertEquals(copy.getSessionTimeout(), uint(0));
         assertEquals(copy.getRequestTimeout(), uint(0));

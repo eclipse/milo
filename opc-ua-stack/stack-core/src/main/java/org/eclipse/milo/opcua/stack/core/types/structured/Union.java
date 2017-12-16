@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,14 +15,13 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("Union")
 public class Union implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.Union;
@@ -48,17 +47,22 @@ public class Union implements UaStructure {
             .toString();
     }
 
-    public static void encode(Union union, UaEncoder encoder) {
-    }
+    public static class Codec extends BuiltinDataTypeCodec<Union> {
 
-    public static Union decode(UaDecoder decoder) {
+        @Override
+        public Class<Union> getType() {
+            return Union.class;
+        }
 
-        return new Union();
-    }
+        @Override
+        public Union decode(UaDecoder decoder) throws UaSerializationException {
 
-    static {
-        DelegateRegistry.registerEncoder(Union::encode, Union.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(Union::decode, Union.class, BinaryEncodingId, XmlEncodingId);
+            return new Union();
+        }
+
+        @Override
+        public void encode(Union value, UaEncoder encoder) throws UaSerializationException {
+        }
     }
 
 }

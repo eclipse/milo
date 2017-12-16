@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,43 +15,42 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("AggregateFilterResult")
 public class AggregateFilterResult extends MonitoringFilterResult {
 
     public static final NodeId TypeId = Identifiers.AggregateFilterResult;
     public static final NodeId BinaryEncodingId = Identifiers.AggregateFilterResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AggregateFilterResult_Encoding_DefaultXml;
 
-    protected final DateTime _revisedStartTime;
-    protected final Double _revisedProcessingInterval;
-    protected final AggregateConfiguration _revisedAggregateConfiguration;
+    protected final DateTime revisedStartTime;
+    protected final Double revisedProcessingInterval;
+    protected final AggregateConfiguration revisedAggregateConfiguration;
 
     public AggregateFilterResult() {
         super();
-        this._revisedStartTime = null;
-        this._revisedProcessingInterval = null;
-        this._revisedAggregateConfiguration = null;
+        this.revisedStartTime = null;
+        this.revisedProcessingInterval = null;
+        this.revisedAggregateConfiguration = null;
     }
 
-    public AggregateFilterResult(DateTime _revisedStartTime, Double _revisedProcessingInterval, AggregateConfiguration _revisedAggregateConfiguration) {
+    public AggregateFilterResult(DateTime revisedStartTime, Double revisedProcessingInterval, AggregateConfiguration revisedAggregateConfiguration) {
         super();
-        this._revisedStartTime = _revisedStartTime;
-        this._revisedProcessingInterval = _revisedProcessingInterval;
-        this._revisedAggregateConfiguration = _revisedAggregateConfiguration;
+        this.revisedStartTime = revisedStartTime;
+        this.revisedProcessingInterval = revisedProcessingInterval;
+        this.revisedAggregateConfiguration = revisedAggregateConfiguration;
     }
 
-    public DateTime getRevisedStartTime() { return _revisedStartTime; }
+    public DateTime getRevisedStartTime() { return revisedStartTime; }
 
-    public Double getRevisedProcessingInterval() { return _revisedProcessingInterval; }
+    public Double getRevisedProcessingInterval() { return revisedProcessingInterval; }
 
-    public AggregateConfiguration getRevisedAggregateConfiguration() { return _revisedAggregateConfiguration; }
+    public AggregateConfiguration getRevisedAggregateConfiguration() { return revisedAggregateConfiguration; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -65,29 +64,34 @@ public class AggregateFilterResult extends MonitoringFilterResult {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RevisedStartTime", _revisedStartTime)
-            .add("RevisedProcessingInterval", _revisedProcessingInterval)
-            .add("RevisedAggregateConfiguration", _revisedAggregateConfiguration)
+            .add("RevisedStartTime", revisedStartTime)
+            .add("RevisedProcessingInterval", revisedProcessingInterval)
+            .add("RevisedAggregateConfiguration", revisedAggregateConfiguration)
             .toString();
     }
 
-    public static void encode(AggregateFilterResult aggregateFilterResult, UaEncoder encoder) {
-        encoder.encodeDateTime("RevisedStartTime", aggregateFilterResult._revisedStartTime);
-        encoder.encodeDouble("RevisedProcessingInterval", aggregateFilterResult._revisedProcessingInterval);
-        encoder.encodeSerializable("RevisedAggregateConfiguration", aggregateFilterResult._revisedAggregateConfiguration != null ? aggregateFilterResult._revisedAggregateConfiguration : new AggregateConfiguration());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<AggregateFilterResult> {
 
-    public static AggregateFilterResult decode(UaDecoder decoder) {
-        DateTime _revisedStartTime = decoder.decodeDateTime("RevisedStartTime");
-        Double _revisedProcessingInterval = decoder.decodeDouble("RevisedProcessingInterval");
-        AggregateConfiguration _revisedAggregateConfiguration = decoder.decodeSerializable("RevisedAggregateConfiguration", AggregateConfiguration.class);
+        @Override
+        public Class<AggregateFilterResult> getType() {
+            return AggregateFilterResult.class;
+        }
 
-        return new AggregateFilterResult(_revisedStartTime, _revisedProcessingInterval, _revisedAggregateConfiguration);
-    }
+        @Override
+        public AggregateFilterResult decode(UaDecoder decoder) throws UaSerializationException {
+            DateTime revisedStartTime = decoder.readDateTime("RevisedStartTime");
+            Double revisedProcessingInterval = decoder.readDouble("RevisedProcessingInterval");
+            AggregateConfiguration revisedAggregateConfiguration = (AggregateConfiguration) decoder.readBuiltinStruct("RevisedAggregateConfiguration", AggregateConfiguration.class);
 
-    static {
-        DelegateRegistry.registerEncoder(AggregateFilterResult::encode, AggregateFilterResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(AggregateFilterResult::decode, AggregateFilterResult.class, BinaryEncodingId, XmlEncodingId);
+            return new AggregateFilterResult(revisedStartTime, revisedProcessingInterval, revisedAggregateConfiguration);
+        }
+
+        @Override
+        public void encode(AggregateFilterResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeDateTime("RevisedStartTime", value.revisedStartTime);
+            encoder.writeDouble("RevisedProcessingInterval", value.revisedProcessingInterval);
+            encoder.writeBuiltinStruct("RevisedAggregateConfiguration", value.revisedAggregateConfiguration, AggregateConfiguration.class);
+        }
     }
 
 }

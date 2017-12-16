@@ -16,8 +16,10 @@ package org.eclipse.milo.opcua.stack.core.types.builtin;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 
 public final class ExtensionObject {
 
@@ -63,7 +65,15 @@ public final class ExtensionObject {
         return decode(DataTypeEncoding.OPC_UA);
     }
 
-    public <T> T decode(DataTypeEncoding context) throws UaSerializationException {
+    public <T> T decode(DataTypeManager dataTypeManager) throws UaSerializationException {
+        return decode(DataTypeEncoding.OPC_UA, dataTypeManager);
+    }
+
+    public <T> T decode(DataTypeEncoding encoding) throws UaSerializationException {
+        return decode(encoding, OpcUaDataTypeManager.getInstance());
+    }
+
+    public <T> T decode(DataTypeEncoding encoding, DataTypeManager dataTypeManager) throws UaSerializationException {
         if (decoded != null) return (T) decoded;
 
         switch (bodyType) {
@@ -72,7 +82,7 @@ public final class ExtensionObject {
                 if (bs == null || bs.isNull()) {
                     return null;
                 } else {
-                    decoded = context.decodeFromByteString((ByteString) encoded, encodingTypeId);
+                    decoded = encoding.decodeFromByteString((ByteString) encoded, encodingTypeId, dataTypeManager);
                     return (T) decoded;
                 }
             }
@@ -82,7 +92,7 @@ public final class ExtensionObject {
                 if (e == null || e.isNull()) {
                     return null;
                 } else {
-                    decoded = context.decodeFromXmlElement((XmlElement) encoded, encodingTypeId);
+                    decoded = encoding.decodeFromXmlElement((XmlElement) encoded, encodingTypeId, dataTypeManager);
                     return (T) decoded;
                 }
             }
@@ -96,6 +106,12 @@ public final class ExtensionObject {
         return encodeAsByteString(structure, structure.getBinaryEncodingId());
     }
 
+    public static ExtensionObject encode(UaStructure structure,
+                                         DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        return encodeAsByteString(structure, structure.getBinaryEncodingId(), dataTypeManager);
+    }
+
     public static ExtensionObject encodeAsByteString(Object object,
                                                      NodeId encodingTypeId) throws UaSerializationException {
 
@@ -104,9 +120,24 @@ public final class ExtensionObject {
 
     public static ExtensionObject encodeAsByteString(Object object,
                                                      NodeId encodingTypeId,
+                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        return encodeAsByteString(object, encodingTypeId, DataTypeEncoding.OPC_UA, dataTypeManager);
+    }
+
+    public static ExtensionObject encodeAsByteString(Object object,
+                                                     NodeId encodingTypeId,
                                                      DataTypeEncoding context) throws UaSerializationException {
 
-        ByteString encoded = context.encodeToByteString(object, encodingTypeId);
+        return encodeAsByteString(object, encodingTypeId, context, OpcUaDataTypeManager.getInstance());
+    }
+
+    public static ExtensionObject encodeAsByteString(Object object,
+                                                     NodeId encodingTypeId,
+                                                     DataTypeEncoding encoding,
+                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        ByteString encoded = encoding.encodeToByteString(object, encodingTypeId, dataTypeManager);
 
         return new ExtensionObject(encoded, encodingTypeId);
     }
@@ -119,9 +150,24 @@ public final class ExtensionObject {
 
     public static ExtensionObject encodeAsXmlElement(Object object,
                                                      NodeId encodingTypeId,
+                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        return encodeAsXmlElement(object, encodingTypeId, DataTypeEncoding.OPC_UA, dataTypeManager);
+    }
+
+    public static ExtensionObject encodeAsXmlElement(Object object,
+                                                     NodeId encodingTypeId,
                                                      DataTypeEncoding context) throws UaSerializationException {
 
-        XmlElement encoded = context.encodeToXmlElement(object, encodingTypeId);
+        return encodeAsXmlElement(object, encodingTypeId, context, OpcUaDataTypeManager.getInstance());
+    }
+
+    public static ExtensionObject encodeAsXmlElement(Object object,
+                                                     NodeId encodingTypeId,
+                                                     DataTypeEncoding encoding,
+                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        XmlElement encoded = encoding.encodeToXmlElement(object, encodingTypeId, dataTypeManager);
 
         return new ExtensionObject(encoded, encodingTypeId);
     }

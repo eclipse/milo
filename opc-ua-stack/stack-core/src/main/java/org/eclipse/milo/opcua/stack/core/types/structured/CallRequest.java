@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,37 +17,36 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("CallRequest")
 public class CallRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.CallRequest;
     public static final NodeId BinaryEncodingId = Identifiers.CallRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CallRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final CallMethodRequest[] _methodsToCall;
+    protected final RequestHeader requestHeader;
+    protected final CallMethodRequest[] methodsToCall;
 
     public CallRequest() {
-        this._requestHeader = null;
-        this._methodsToCall = null;
+        this.requestHeader = null;
+        this.methodsToCall = null;
     }
 
-    public CallRequest(RequestHeader _requestHeader, CallMethodRequest[] _methodsToCall) {
-        this._requestHeader = _requestHeader;
-        this._methodsToCall = _methodsToCall;
+    public CallRequest(RequestHeader requestHeader, CallMethodRequest[] methodsToCall) {
+        this.requestHeader = requestHeader;
+        this.methodsToCall = methodsToCall;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public CallMethodRequest[] getMethodsToCall() { return _methodsToCall; }
+    public CallMethodRequest[] getMethodsToCall() { return methodsToCall; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,39 @@ public class CallRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("MethodsToCall", _methodsToCall)
+            .add("RequestHeader", requestHeader)
+            .add("MethodsToCall", methodsToCall)
             .toString();
     }
 
-    public static void encode(CallRequest callRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", callRequest._requestHeader != null ? callRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("MethodsToCall", callRequest._methodsToCall, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<CallRequest> {
 
-    public static CallRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        CallMethodRequest[] _methodsToCall = decoder.decodeArray("MethodsToCall", decoder::decodeSerializable, CallMethodRequest.class);
+        @Override
+        public Class<CallRequest> getType() {
+            return CallRequest.class;
+        }
 
-        return new CallRequest(_requestHeader, _methodsToCall);
-    }
+        @Override
+        public CallRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            CallMethodRequest[] methodsToCall =
+                decoder.readBuiltinStructArray(
+                    "MethodsToCall",
+                    CallMethodRequest.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(CallRequest::encode, CallRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CallRequest::decode, CallRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new CallRequest(requestHeader, methodsToCall);
+        }
+
+        @Override
+        public void encode(CallRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStructArray(
+                "MethodsToCall",
+                value.methodsToCall,
+                CallMethodRequest.class
+            );
+        }
     }
 
 }

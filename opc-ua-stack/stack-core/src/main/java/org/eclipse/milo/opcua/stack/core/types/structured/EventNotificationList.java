@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,33 +17,32 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("EventNotificationList")
 public class EventNotificationList extends NotificationData {
 
     public static final NodeId TypeId = Identifiers.EventNotificationList;
     public static final NodeId BinaryEncodingId = Identifiers.EventNotificationList_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EventNotificationList_Encoding_DefaultXml;
 
-    protected final EventFieldList[] _events;
+    protected final EventFieldList[] events;
 
     public EventNotificationList() {
         super();
-        this._events = null;
+        this.events = null;
     }
 
-    public EventNotificationList(EventFieldList[] _events) {
+    public EventNotificationList(EventFieldList[] events) {
         super();
-        this._events = _events;
+        this.events = events;
     }
 
     @Nullable
-    public EventFieldList[] getEvents() { return _events; }
+    public EventFieldList[] getEvents() { return events; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -57,23 +56,36 @@ public class EventNotificationList extends NotificationData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Events", _events)
+            .add("Events", events)
             .toString();
     }
 
-    public static void encode(EventNotificationList eventNotificationList, UaEncoder encoder) {
-        encoder.encodeArray("Events", eventNotificationList._events, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<EventNotificationList> {
 
-    public static EventNotificationList decode(UaDecoder decoder) {
-        EventFieldList[] _events = decoder.decodeArray("Events", decoder::decodeSerializable, EventFieldList.class);
+        @Override
+        public Class<EventNotificationList> getType() {
+            return EventNotificationList.class;
+        }
 
-        return new EventNotificationList(_events);
-    }
+        @Override
+        public EventNotificationList decode(UaDecoder decoder) throws UaSerializationException {
+            EventFieldList[] events =
+                decoder.readBuiltinStructArray(
+                    "Events",
+                    EventFieldList.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(EventNotificationList::encode, EventNotificationList.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EventNotificationList::decode, EventNotificationList.class, BinaryEncodingId, XmlEncodingId);
+            return new EventNotificationList(events);
+        }
+
+        @Override
+        public void encode(EventNotificationList value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStructArray(
+                "Events",
+                value.events,
+                EventFieldList.class
+            );
+        }
     }
 
 }

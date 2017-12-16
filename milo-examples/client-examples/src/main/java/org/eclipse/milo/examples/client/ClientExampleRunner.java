@@ -13,12 +13,14 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.io.File;
+import java.security.Security;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.examples.client.util.KeyStoreLoader;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
@@ -27,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +37,16 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class ClientExampleRunner {
 
+    static {
+        CryptoRestrictions.remove();
+
+        // Required for SecurityPolicy.Aes256_Sha256_RsaPss
+        Security.addProvider(new BouncyCastleProvider());
+    }
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
-
-    private final KeyStoreLoader loader = new KeyStoreLoader();
 
     private ExampleServer exampleServer;
 
@@ -60,6 +68,15 @@ public class ClientExampleRunner {
     }
 
     private OpcUaClient createClient() throws Exception {
+        File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
+        if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
+            throw new Exception("unable to create security dir: " + securityTempDir);
+        }
+        LoggerFactory.getLogger(getClass())
+            .info("security temp dir: {}", securityTempDir.getAbsolutePath());
+
+        KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
+
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
         EndpointDescription[] endpoints = UaTcpStackClient
@@ -70,8 +87,6 @@ public class ClientExampleRunner {
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
-
-        loader.load();
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
@@ -119,7 +134,7 @@ public class ClientExampleRunner {
                 future.get(15, TimeUnit.SECONDS);
             } catch (Throwable t) {
                 logger.error("Error running client example: {}", t.getMessage(), t);
-                future.complete(client);
+                future.completeExceptionally(t);
             }
         } catch (Throwable t) {
             future.completeExceptionally(t);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,792 +20,529 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.SessionDiagnostic
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
 
-
 public class SessionDiagnosticsVariableNode extends BaseDataVariableNode implements SessionDiagnosticsVariableType {
-
     public SessionDiagnosticsVariableNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<BaseDataVariableNode> sessionId() {
-        return getComponent(QualifiedName.parse("0:SessionId"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSessionIdNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "SessionId").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<NodeId> getSessionId() {
-        return sessionId()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, NodeId.class));
+        return getSessionIdNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, NodeId.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSessionId(NodeId value) {
-        return sessionId()
-            .thenCompose(node -> node.setValue(value));
+        return getSessionIdNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> sessionName() {
-        return getComponent(QualifiedName.parse("0:SessionName"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSessionNameNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "SessionName").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getSessionName() {
-        return sessionName()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getSessionNameNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSessionName(String value) {
-        return sessionName()
-            .thenCompose(node -> node.setValue(value));
+        return getSessionNameNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> clientDescription() {
-        return getComponent(QualifiedName.parse("0:ClientDescription"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getClientDescriptionNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ClientDescription").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ApplicationDescription> getClientDescription() {
-        return clientDescription()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ApplicationDescription.class));
+        return getClientDescriptionNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ApplicationDescription.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientDescription(ApplicationDescription value) {
-        return clientDescription()
-            .thenCompose(node -> node.setValue(value));
+        return getClientDescriptionNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> serverUri() {
-        return getComponent(QualifiedName.parse("0:ServerUri"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getServerUriNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ServerUri").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getServerUri() {
-        return serverUri()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getServerUriNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setServerUri(String value) {
-        return serverUri()
-            .thenCompose(node -> node.setValue(value));
+        return getServerUriNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> endpointUrl() {
-        return getComponent(QualifiedName.parse("0:EndpointUrl"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getEndpointUrlNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "EndpointUrl").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getEndpointUrl() {
-        return endpointUrl()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getEndpointUrlNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEndpointUrl(String value) {
-        return endpointUrl()
-            .thenCompose(node -> node.setValue(value));
+        return getEndpointUrlNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> localeIds() {
-        return getComponent(QualifiedName.parse("0:LocaleIds"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getLocaleIdsNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "LocaleIds").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String[]> getLocaleIds() {
-        return localeIds()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String[].class));
+        return getLocaleIdsNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String[].class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setLocaleIds(String[] value) {
-        return localeIds()
-            .thenCompose(node -> node.setValue(value));
+        return getLocaleIdsNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> actualSessionTimeout() {
-        return getComponent(QualifiedName.parse("0:ActualSessionTimeout"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getActualSessionTimeoutNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ActualSessionTimeout").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<Double> getActualSessionTimeout() {
-        return actualSessionTimeout()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, Double.class));
+        return getActualSessionTimeoutNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, Double.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setActualSessionTimeout(Double value) {
-        return actualSessionTimeout()
-            .thenCompose(node -> node.setValue(value));
+        return getActualSessionTimeoutNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> maxResponseMessageSize() {
-        return getComponent(QualifiedName.parse("0:MaxResponseMessageSize"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getMaxResponseMessageSizeNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "MaxResponseMessageSize").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getMaxResponseMessageSize() {
-        return maxResponseMessageSize()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getMaxResponseMessageSizeNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setMaxResponseMessageSize(UInteger value) {
-        return maxResponseMessageSize()
-            .thenCompose(node -> node.setValue(value));
+        return getMaxResponseMessageSizeNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> clientConnectionTime() {
-        return getComponent(QualifiedName.parse("0:ClientConnectionTime"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getClientConnectionTimeNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ClientConnectionTime").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getClientConnectionTime() {
-        return clientConnectionTime()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, DateTime.class));
+        return getClientConnectionTimeNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, DateTime.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientConnectionTime(DateTime value) {
-        return clientConnectionTime()
-            .thenCompose(node -> node.setValue(value));
+        return getClientConnectionTimeNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> clientLastContactTime() {
-        return getComponent(QualifiedName.parse("0:ClientLastContactTime"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getClientLastContactTimeNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ClientLastContactTime").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getClientLastContactTime() {
-        return clientLastContactTime()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, DateTime.class));
+        return getClientLastContactTimeNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, DateTime.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientLastContactTime(DateTime value) {
-        return clientLastContactTime()
-            .thenCompose(node -> node.setValue(value));
+        return getClientLastContactTimeNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> currentSubscriptionsCount() {
-        return getComponent(QualifiedName.parse("0:CurrentSubscriptionsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCurrentSubscriptionsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentSubscriptionsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCurrentSubscriptionsCount() {
-        return currentSubscriptionsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getCurrentSubscriptionsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentSubscriptionsCount(UInteger value) {
-        return currentSubscriptionsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentSubscriptionsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> currentMonitoredItemsCount() {
-        return getComponent(QualifiedName.parse("0:CurrentMonitoredItemsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCurrentMonitoredItemsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentMonitoredItemsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCurrentMonitoredItemsCount() {
-        return currentMonitoredItemsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getCurrentMonitoredItemsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentMonitoredItemsCount(UInteger value) {
-        return currentMonitoredItemsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentMonitoredItemsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> currentPublishRequestsInQueue() {
-        return getComponent(QualifiedName.parse("0:CurrentPublishRequestsInQueue"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCurrentPublishRequestsInQueueNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentPublishRequestsInQueue").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getCurrentPublishRequestsInQueue() {
-        return currentPublishRequestsInQueue()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getCurrentPublishRequestsInQueueNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentPublishRequestsInQueue(UInteger value) {
-        return currentPublishRequestsInQueue()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentPublishRequestsInQueueNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> totalRequestCount() {
-        return getComponent(QualifiedName.parse("0:TotalRequestCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getTotalRequestCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "TotalRequestCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getTotalRequestCount() {
-        return totalRequestCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getTotalRequestCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTotalRequestCount(ServiceCounterDataType value) {
-        return totalRequestCount()
-            .thenCompose(node -> node.setValue(value));
+        return getTotalRequestCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> unauthorizedRequestCount() {
-        return getComponent(QualifiedName.parse("0:UnauthorizedRequestCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getUnauthorizedRequestCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "UnauthorizedRequestCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getUnauthorizedRequestCount() {
-        return unauthorizedRequestCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getUnauthorizedRequestCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setUnauthorizedRequestCount(UInteger value) {
-        return unauthorizedRequestCount()
-            .thenCompose(node -> node.setValue(value));
+        return getUnauthorizedRequestCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> readCount() {
-        return getComponent(QualifiedName.parse("0:ReadCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getReadCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ReadCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getReadCount() {
-        return readCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getReadCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setReadCount(ServiceCounterDataType value) {
-        return readCount()
-            .thenCompose(node -> node.setValue(value));
+        return getReadCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> historyReadCount() {
-        return getComponent(QualifiedName.parse("0:HistoryReadCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getHistoryReadCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "HistoryReadCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getHistoryReadCount() {
-        return historyReadCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getHistoryReadCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setHistoryReadCount(ServiceCounterDataType value) {
-        return historyReadCount()
-            .thenCompose(node -> node.setValue(value));
+        return getHistoryReadCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> writeCount() {
-        return getComponent(QualifiedName.parse("0:WriteCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getWriteCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "WriteCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getWriteCount() {
-        return writeCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getWriteCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setWriteCount(ServiceCounterDataType value) {
-        return writeCount()
-            .thenCompose(node -> node.setValue(value));
+        return getWriteCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> historyUpdateCount() {
-        return getComponent(QualifiedName.parse("0:HistoryUpdateCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getHistoryUpdateCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "HistoryUpdateCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getHistoryUpdateCount() {
-        return historyUpdateCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getHistoryUpdateCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setHistoryUpdateCount(ServiceCounterDataType value) {
-        return historyUpdateCount()
-            .thenCompose(node -> node.setValue(value));
+        return getHistoryUpdateCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> callCount() {
-        return getComponent(QualifiedName.parse("0:CallCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCallCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CallCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getCallCount() {
-        return callCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getCallCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCallCount(ServiceCounterDataType value) {
-        return callCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCallCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> createMonitoredItemsCount() {
-        return getComponent(QualifiedName.parse("0:CreateMonitoredItemsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCreateMonitoredItemsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CreateMonitoredItemsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getCreateMonitoredItemsCount() {
-        return createMonitoredItemsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getCreateMonitoredItemsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCreateMonitoredItemsCount(ServiceCounterDataType value) {
-        return createMonitoredItemsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCreateMonitoredItemsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> modifyMonitoredItemsCount() {
-        return getComponent(QualifiedName.parse("0:ModifyMonitoredItemsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getModifyMonitoredItemsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ModifyMonitoredItemsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getModifyMonitoredItemsCount() {
-        return modifyMonitoredItemsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getModifyMonitoredItemsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setModifyMonitoredItemsCount(ServiceCounterDataType value) {
-        return modifyMonitoredItemsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getModifyMonitoredItemsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> setMonitoringModeCount() {
-        return getComponent(QualifiedName.parse("0:SetMonitoringModeCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSetMonitoringModeCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "SetMonitoringModeCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getSetMonitoringModeCount() {
-        return setMonitoringModeCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getSetMonitoringModeCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSetMonitoringModeCount(ServiceCounterDataType value) {
-        return setMonitoringModeCount()
-            .thenCompose(node -> node.setValue(value));
+        return getSetMonitoringModeCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> setTriggeringCount() {
-        return getComponent(QualifiedName.parse("0:SetTriggeringCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSetTriggeringCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "SetTriggeringCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getSetTriggeringCount() {
-        return setTriggeringCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getSetTriggeringCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSetTriggeringCount(ServiceCounterDataType value) {
-        return setTriggeringCount()
-            .thenCompose(node -> node.setValue(value));
+        return getSetTriggeringCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> deleteMonitoredItemsCount() {
-        return getComponent(QualifiedName.parse("0:DeleteMonitoredItemsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getDeleteMonitoredItemsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "DeleteMonitoredItemsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getDeleteMonitoredItemsCount() {
-        return deleteMonitoredItemsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getDeleteMonitoredItemsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDeleteMonitoredItemsCount(ServiceCounterDataType value) {
-        return deleteMonitoredItemsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getDeleteMonitoredItemsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> createSubscriptionCount() {
-        return getComponent(QualifiedName.parse("0:CreateSubscriptionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCreateSubscriptionCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CreateSubscriptionCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getCreateSubscriptionCount() {
-        return createSubscriptionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getCreateSubscriptionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCreateSubscriptionCount(ServiceCounterDataType value) {
-        return createSubscriptionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getCreateSubscriptionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> modifySubscriptionCount() {
-        return getComponent(QualifiedName.parse("0:ModifySubscriptionCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getModifySubscriptionCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ModifySubscriptionCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getModifySubscriptionCount() {
-        return modifySubscriptionCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getModifySubscriptionCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setModifySubscriptionCount(ServiceCounterDataType value) {
-        return modifySubscriptionCount()
-            .thenCompose(node -> node.setValue(value));
+        return getModifySubscriptionCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> setPublishingModeCount() {
-        return getComponent(QualifiedName.parse("0:SetPublishingModeCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSetPublishingModeCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "SetPublishingModeCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getSetPublishingModeCount() {
-        return setPublishingModeCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getSetPublishingModeCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSetPublishingModeCount(ServiceCounterDataType value) {
-        return setPublishingModeCount()
-            .thenCompose(node -> node.setValue(value));
+        return getSetPublishingModeCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> publishCount() {
-        return getComponent(QualifiedName.parse("0:PublishCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getPublishCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "PublishCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getPublishCount() {
-        return publishCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getPublishCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setPublishCount(ServiceCounterDataType value) {
-        return publishCount()
-            .thenCompose(node -> node.setValue(value));
+        return getPublishCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> republishCount() {
-        return getComponent(QualifiedName.parse("0:RepublishCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getRepublishCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "RepublishCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getRepublishCount() {
-        return republishCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getRepublishCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRepublishCount(ServiceCounterDataType value) {
-        return republishCount()
-            .thenCompose(node -> node.setValue(value));
+        return getRepublishCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> transferSubscriptionsCount() {
-        return getComponent(QualifiedName.parse("0:TransferSubscriptionsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getTransferSubscriptionsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "TransferSubscriptionsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getTransferSubscriptionsCount() {
-        return transferSubscriptionsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getTransferSubscriptionsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTransferSubscriptionsCount(ServiceCounterDataType value) {
-        return transferSubscriptionsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getTransferSubscriptionsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> deleteSubscriptionsCount() {
-        return getComponent(QualifiedName.parse("0:DeleteSubscriptionsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getDeleteSubscriptionsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "DeleteSubscriptionsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getDeleteSubscriptionsCount() {
-        return deleteSubscriptionsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getDeleteSubscriptionsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDeleteSubscriptionsCount(ServiceCounterDataType value) {
-        return deleteSubscriptionsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getDeleteSubscriptionsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> addNodesCount() {
-        return getComponent(QualifiedName.parse("0:AddNodesCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getAddNodesCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "AddNodesCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getAddNodesCount() {
-        return addNodesCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getAddNodesCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setAddNodesCount(ServiceCounterDataType value) {
-        return addNodesCount()
-            .thenCompose(node -> node.setValue(value));
+        return getAddNodesCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> addReferencesCount() {
-        return getComponent(QualifiedName.parse("0:AddReferencesCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getAddReferencesCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "AddReferencesCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getAddReferencesCount() {
-        return addReferencesCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getAddReferencesCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setAddReferencesCount(ServiceCounterDataType value) {
-        return addReferencesCount()
-            .thenCompose(node -> node.setValue(value));
+        return getAddReferencesCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> deleteNodesCount() {
-        return getComponent(QualifiedName.parse("0:DeleteNodesCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getDeleteNodesCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "DeleteNodesCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getDeleteNodesCount() {
-        return deleteNodesCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getDeleteNodesCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDeleteNodesCount(ServiceCounterDataType value) {
-        return deleteNodesCount()
-            .thenCompose(node -> node.setValue(value));
+        return getDeleteNodesCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> deleteReferencesCount() {
-        return getComponent(QualifiedName.parse("0:DeleteReferencesCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getDeleteReferencesCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "DeleteReferencesCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getDeleteReferencesCount() {
-        return deleteReferencesCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getDeleteReferencesCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDeleteReferencesCount(ServiceCounterDataType value) {
-        return deleteReferencesCount()
-            .thenCompose(node -> node.setValue(value));
+        return getDeleteReferencesCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> browseCount() {
-        return getComponent(QualifiedName.parse("0:BrowseCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getBrowseCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "BrowseCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getBrowseCount() {
-        return browseCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getBrowseCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setBrowseCount(ServiceCounterDataType value) {
-        return browseCount()
-            .thenCompose(node -> node.setValue(value));
+        return getBrowseCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> browseNextCount() {
-        return getComponent(QualifiedName.parse("0:BrowseNextCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getBrowseNextCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "BrowseNextCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getBrowseNextCount() {
-        return browseNextCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getBrowseNextCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setBrowseNextCount(ServiceCounterDataType value) {
-        return browseNextCount()
-            .thenCompose(node -> node.setValue(value));
+        return getBrowseNextCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> translateBrowsePathsToNodeIdsCount() {
-        return getComponent(QualifiedName.parse("0:TranslateBrowsePathsToNodeIdsCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getTranslateBrowsePathsToNodeIdsCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "TranslateBrowsePathsToNodeIdsCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getTranslateBrowsePathsToNodeIdsCount() {
-        return translateBrowsePathsToNodeIdsCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getTranslateBrowsePathsToNodeIdsCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTranslateBrowsePathsToNodeIdsCount(ServiceCounterDataType value) {
-        return translateBrowsePathsToNodeIdsCount()
-            .thenCompose(node -> node.setValue(value));
+        return getTranslateBrowsePathsToNodeIdsCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> queryFirstCount() {
-        return getComponent(QualifiedName.parse("0:QueryFirstCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getQueryFirstCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "QueryFirstCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getQueryFirstCount() {
-        return queryFirstCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getQueryFirstCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setQueryFirstCount(ServiceCounterDataType value) {
-        return queryFirstCount()
-            .thenCompose(node -> node.setValue(value));
+        return getQueryFirstCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> queryNextCount() {
-        return getComponent(QualifiedName.parse("0:QueryNextCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getQueryNextCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "QueryNextCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getQueryNextCount() {
-        return queryNextCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getQueryNextCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setQueryNextCount(ServiceCounterDataType value) {
-        return queryNextCount()
-            .thenCompose(node -> node.setValue(value));
+        return getQueryNextCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> registerNodesCount() {
-        return getComponent(QualifiedName.parse("0:RegisterNodesCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getRegisterNodesCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "RegisterNodesCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getRegisterNodesCount() {
-        return registerNodesCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getRegisterNodesCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRegisterNodesCount(ServiceCounterDataType value) {
-        return registerNodesCount()
-            .thenCompose(node -> node.setValue(value));
+        return getRegisterNodesCountNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> unregisterNodesCount() {
-        return getComponent(QualifiedName.parse("0:UnregisterNodesCount"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getUnregisterNodesCountNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "UnregisterNodesCount").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServiceCounterDataType> getUnregisterNodesCount() {
-        return unregisterNodesCount()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServiceCounterDataType.class));
+        return getUnregisterNodesCountNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServiceCounterDataType.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setUnregisterNodesCount(ServiceCounterDataType value) {
-        return unregisterNodesCount()
-            .thenCompose(node -> node.setValue(value));
+        return getUnregisterNodesCountNode().thenCompose(node -> node.setValue(value));
     }
-
 }

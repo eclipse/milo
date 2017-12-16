@@ -58,6 +58,7 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
@@ -72,6 +73,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +84,8 @@ public class UaTcpStackClient implements UaStackClient {
     private static final long DEFAULT_TIMEOUT_MS = 60000;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
     private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
     private final Map<UInteger, Timeout> timeouts = Maps.newConcurrentMap();
@@ -137,6 +141,42 @@ public class UaTcpStackClient implements UaStackClient {
                     new UaException(StatusCodes.Bad_Disconnect, "client disconnect")))
             )
             .thenApply(v -> UaTcpStackClient.this);
+    }
+
+    /**
+     * Build a new {@link RequestHeader} using a null authentication token and a custom {@code requestTimeout}.
+     *
+     * @param requestTimeout the custom request timeout to use.
+     * @return a new {@link RequestHeader} with a null authentication token and a custom request timeout.
+     */
+    public RequestHeader newRequestHeader(UInteger requestTimeout) {
+        return newRequestHeader(NodeId.NULL_VALUE, requestTimeout);
+    }
+
+    /**
+     * Build a new {@link RequestHeader} using {@code authToken} and a custom {@code requestTimeout}.
+     *
+     * @param authToken      the authentication token (from the session) to use.
+     * @param requestTimeout the custom request timeout to use.
+     * @return a new {@link RequestHeader}.
+     */
+    public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
+        return new RequestHeader(
+            authToken,
+            DateTime.now(),
+            uint(requestHandles.getAndIncrement()),
+            uint(0),
+            null,
+            requestTimeout,
+            null
+        );
+    }
+
+    /**
+     * @return the next {@link UInteger} to use as a request handle.
+     */
+    public UInteger nextRequestHandle() {
+        return uint(requestHandles.getAndIncrement());
     }
 
     public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,39 +17,38 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReadAtTimeDetails")
 public class ReadAtTimeDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadAtTimeDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadAtTimeDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadAtTimeDetails_Encoding_DefaultXml;
 
-    protected final DateTime[] _reqTimes;
-    protected final Boolean _useSimpleBounds;
+    protected final DateTime[] reqTimes;
+    protected final Boolean useSimpleBounds;
 
     public ReadAtTimeDetails() {
         super();
-        this._reqTimes = null;
-        this._useSimpleBounds = null;
+        this.reqTimes = null;
+        this.useSimpleBounds = null;
     }
 
-    public ReadAtTimeDetails(DateTime[] _reqTimes, Boolean _useSimpleBounds) {
+    public ReadAtTimeDetails(DateTime[] reqTimes, Boolean useSimpleBounds) {
         super();
-        this._reqTimes = _reqTimes;
-        this._useSimpleBounds = _useSimpleBounds;
+        this.reqTimes = reqTimes;
+        this.useSimpleBounds = useSimpleBounds;
     }
 
     @Nullable
-    public DateTime[] getReqTimes() { return _reqTimes; }
+    public DateTime[] getReqTimes() { return reqTimes; }
 
-    public Boolean getUseSimpleBounds() { return _useSimpleBounds; }
+    public Boolean getUseSimpleBounds() { return useSimpleBounds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,26 +62,31 @@ public class ReadAtTimeDetails extends HistoryReadDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ReqTimes", _reqTimes)
-            .add("UseSimpleBounds", _useSimpleBounds)
+            .add("ReqTimes", reqTimes)
+            .add("UseSimpleBounds", useSimpleBounds)
             .toString();
     }
 
-    public static void encode(ReadAtTimeDetails readAtTimeDetails, UaEncoder encoder) {
-        encoder.encodeArray("ReqTimes", readAtTimeDetails._reqTimes, encoder::encodeDateTime);
-        encoder.encodeBoolean("UseSimpleBounds", readAtTimeDetails._useSimpleBounds);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ReadAtTimeDetails> {
 
-    public static ReadAtTimeDetails decode(UaDecoder decoder) {
-        DateTime[] _reqTimes = decoder.decodeArray("ReqTimes", decoder::decodeDateTime, DateTime.class);
-        Boolean _useSimpleBounds = decoder.decodeBoolean("UseSimpleBounds");
+        @Override
+        public Class<ReadAtTimeDetails> getType() {
+            return ReadAtTimeDetails.class;
+        }
 
-        return new ReadAtTimeDetails(_reqTimes, _useSimpleBounds);
-    }
+        @Override
+        public ReadAtTimeDetails decode(UaDecoder decoder) throws UaSerializationException {
+            DateTime[] reqTimes = decoder.readArray("ReqTimes", decoder::readDateTime, DateTime.class);
+            Boolean useSimpleBounds = decoder.readBoolean("UseSimpleBounds");
 
-    static {
-        DelegateRegistry.registerEncoder(ReadAtTimeDetails::encode, ReadAtTimeDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReadAtTimeDetails::decode, ReadAtTimeDetails.class, BinaryEncodingId, XmlEncodingId);
+            return new ReadAtTimeDetails(reqTimes, useSimpleBounds);
+        }
+
+        @Override
+        public void encode(ReadAtTimeDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeArray("ReqTimes", value.reqTimes, encoder::writeDateTime);
+            encoder.writeBoolean("UseSimpleBounds", value.useSimpleBounds);
+        }
     }
 
 }

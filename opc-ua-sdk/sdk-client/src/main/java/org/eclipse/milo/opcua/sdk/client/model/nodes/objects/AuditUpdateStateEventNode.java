@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,42 +21,32 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditUpdateStateEve
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditUpdateStateEventNode extends AuditUpdateMethodEventNode implements AuditUpdateStateEventType {
-
     public AuditUpdateStateEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> oldStateId() {
-        return getPropertyNode(AuditUpdateStateEventType.OLD_STATE_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getOldStateIdNode() {
+        return getPropertyNode(AuditUpdateStateEventType.OLD_STATE_ID);
     }
 
-    @Override
-    public CompletableFuture<? extends Object> getOldStateId() {
+    public CompletableFuture<?> getOldStateId() {
         return getProperty(AuditUpdateStateEventType.OLD_STATE_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOldStateId(Object value) {
         return setProperty(AuditUpdateStateEventType.OLD_STATE_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> newStateId() {
-        return getPropertyNode(AuditUpdateStateEventType.NEW_STATE_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getNewStateIdNode() {
+        return getPropertyNode(AuditUpdateStateEventType.NEW_STATE_ID);
     }
 
-    @Override
-    public CompletableFuture<? extends Object> getNewStateId() {
+    public CompletableFuture<?> getNewStateId() {
         return getProperty(AuditUpdateStateEventType.NEW_STATE_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setNewStateId(Object value) {
         return setProperty(AuditUpdateStateEventType.NEW_STATE_ID, value);
     }
-
-
 }

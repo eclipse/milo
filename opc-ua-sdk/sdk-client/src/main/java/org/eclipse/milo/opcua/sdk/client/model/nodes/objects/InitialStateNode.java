@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,12 +17,8 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.InitialStateType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-
 public class InitialStateNode extends StateNode implements InitialStateType {
-
     public InitialStateNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
-
-
 }

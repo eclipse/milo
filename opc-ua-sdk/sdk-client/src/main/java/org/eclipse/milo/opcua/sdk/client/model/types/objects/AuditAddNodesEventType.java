@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,29 +16,24 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 
-
 public interface AuditAddNodesEventType extends AuditNodeManagementEventType {
-
-    Property<AddNodesItem[]> NODES_TO_ADD = new BasicProperty<>(
-        QualifiedName.parse("0:NodesToAdd"),
+    QualifiedProperty<AddNodesItem[]> NODES_TO_ADD = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NodesToAdd",
         NodeId.parse("ns=0;i=376"),
-        1,
+        ValueRanks.OneDimension,
         AddNodesItem[].class
     );
 
-
-    CompletableFuture<? extends PropertyType> nodesToAdd();
+    CompletableFuture<? extends PropertyType> getNodesToAddNode();
 
     CompletableFuture<AddNodesItem[]> getNodesToAdd();
 
     CompletableFuture<StatusCode> setNodesToAdd(AddNodesItem[] value);
-
-
 }

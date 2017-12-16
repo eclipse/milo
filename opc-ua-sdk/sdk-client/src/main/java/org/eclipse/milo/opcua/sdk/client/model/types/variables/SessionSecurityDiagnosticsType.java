@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,63 +20,58 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 
-
 public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
-
-
-    CompletableFuture<? extends BaseDataVariableType> sessionId();
+    CompletableFuture<? extends BaseDataVariableType> getSessionIdNode();
 
     CompletableFuture<NodeId> getSessionId();
 
     CompletableFuture<StatusCode> setSessionId(NodeId value);
 
-    CompletableFuture<? extends BaseDataVariableType> clientUserIdOfSession();
+    CompletableFuture<? extends BaseDataVariableType> getClientUserIdOfSessionNode();
 
     CompletableFuture<String> getClientUserIdOfSession();
 
     CompletableFuture<StatusCode> setClientUserIdOfSession(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> clientUserIdHistory();
+    CompletableFuture<? extends BaseDataVariableType> getClientUserIdHistoryNode();
 
     CompletableFuture<String[]> getClientUserIdHistory();
 
     CompletableFuture<StatusCode> setClientUserIdHistory(String[] value);
 
-    CompletableFuture<? extends BaseDataVariableType> authenticationMechanism();
+    CompletableFuture<? extends BaseDataVariableType> getAuthenticationMechanismNode();
 
     CompletableFuture<String> getAuthenticationMechanism();
 
     CompletableFuture<StatusCode> setAuthenticationMechanism(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> encoding();
+    CompletableFuture<? extends BaseDataVariableType> getEncodingNode();
 
     CompletableFuture<String> getEncoding();
 
     CompletableFuture<StatusCode> setEncoding(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> transportProtocol();
+    CompletableFuture<? extends BaseDataVariableType> getTransportProtocolNode();
 
     CompletableFuture<String> getTransportProtocol();
 
     CompletableFuture<StatusCode> setTransportProtocol(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> securityMode();
+    CompletableFuture<? extends BaseDataVariableType> getSecurityModeNode();
 
     CompletableFuture<MessageSecurityMode> getSecurityMode();
 
     CompletableFuture<StatusCode> setSecurityMode(MessageSecurityMode value);
 
-    CompletableFuture<? extends BaseDataVariableType> securityPolicyUri();
+    CompletableFuture<? extends BaseDataVariableType> getSecurityPolicyUriNode();
 
     CompletableFuture<String> getSecurityPolicyUri();
 
     CompletableFuture<StatusCode> setSecurityPolicyUri(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> clientCertificate();
+    CompletableFuture<? extends BaseDataVariableType> getClientCertificateNode();
 
     CompletableFuture<ByteString> getClientCertificate();
 
     CompletableFuture<StatusCode> setClientCertificate(ByteString value);
-
-
 }

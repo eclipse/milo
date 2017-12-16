@@ -25,23 +25,27 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
+import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
+import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
 import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
+import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
-import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -197,10 +201,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
                 certificateValidator.validate(secureChannel.getRemoteCertificate());
 
-                certificateValidator.verifyTrustChain(
-                    secureChannel.getRemoteCertificate(),
-                    secureChannel.getRemoteCertificateChain()
-                );
+                certificateValidator.verifyTrustChain(secureChannel.getRemoteCertificateChain());
 
                 CertificateManager certificateManager = server.getCertificateManager();
 
@@ -231,7 +232,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
             chunkBuffers.add(buffer.retain());
 
-            if (chunkBuffers.size() > maxChunkCount) {
+            if (maxChunkCount > 0 && chunkBuffers.size() > maxChunkCount) {
                 throw new UaException(StatusCodes.Bad_TcpMessageTooLarge,
                     String.format("max chunk count exceeded (%s)", maxChunkCount));
             }
@@ -239,34 +240,52 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
             if (chunkType == 'F') {
                 final List<ByteBuf> buffersToDecode = chunkBuffers;
 
-                chunkBuffers = new ArrayList<>(maxChunkCount);
+                chunkBuffers = new ArrayList<>();
                 headerRef.set(null);
 
-                serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
-                    ByteBuf messageBuffer = null;
+                serializationQueue.decode((binaryDecoder, chunkDecoder) ->
+                    chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
+                        @Override
+                        public void onDecodingError(UaException ex) {
+                            logger.error(
+                                "Error decoding asymmetric message: {}",
+                                ex.getMessage(), ex);
 
-                    try {
-                        messageBuffer = chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode);
-
-                        OpenSecureChannelRequest request = binaryDecoder
-                            .setBuffer(messageBuffer)
-                            .decodeMessage(null);
-
-                        logger.debug("Received OpenSecureChannelRequest ({}, id={}).",
-                            request.getRequestType(), secureChannelId);
-
-                        long requestId = chunkDecoder.getLastRequestId();
-                        installSecurityToken(ctx, request, requestId);
-                    } catch (UaException e) {
-                        logger.error("Error decoding asymmetric message: {}", e.getMessage(), e);
-                        ctx.close();
-                    } finally {
-                        if (messageBuffer != null) {
-                            messageBuffer.release();
+                            ctx.close();
                         }
-                        buffersToDecode.clear();
-                    }
-                });
+
+                        @Override
+                        public void onMessageAborted(MessageAbortedException ex) {
+                            logger.warn(
+                                "Asymmetric message aborted. error={} reason={}",
+                                ex.getStatusCode(), ex.getMessage());
+                        }
+
+                        @Override
+                        public void onMessageDecoded(ByteBuf message, long requestId) {
+                            try {
+                                OpenSecureChannelRequest request = (OpenSecureChannelRequest) binaryDecoder
+                                    .setBuffer(message)
+                                    .readMessage(null);
+
+                                logger.debug(
+                                    "Received OpenSecureChannelRequest ({}, id={}).",
+                                    request.getRequestType(), secureChannelId);
+
+                                installSecurityToken(ctx, request, requestId);
+                            } catch (UaSerializationException e) {
+                                logger.error("Error decoding OpenSecureChannelRequest: {}", e.getStatusCode(), e);
+                                ctx.close();
+                            } catch (UaException e) {
+                                logger.error("Error installing security token: {}", e.getStatusCode(), e);
+                                ctx.close();
+                            } finally {
+                                message.release();
+                                buffersToDecode.clear();
+                            }
+                        }
+                    })
+                );
             }
         }
     }
@@ -310,23 +329,20 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         ChannelSecurity.SecuritySecrets newKeys = null;
 
         if (secureChannel.isSymmetricSigningEnabled()) {
-            SecurityAlgorithm algorithm = secureChannel.getSecurityPolicy().getSymmetricEncryptionAlgorithm();
-
             // Validate the remote nonce; it must be non-null and the correct length for the security algorithm.
             ByteString remoteNonce = request.getClientNonce();
             if (remoteNonce == null || remoteNonce.isNull()) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "remote nonce must be non-null");
             }
-            if (remoteNonce.length() < getNonceLength(algorithm)) {
+            if (remoteNonce.length() < getNonceLength(secureChannel.getSecurityPolicy())) {
                 String message = String.format(
                     "remote nonce length must be at least %d bytes",
-                    getNonceLength(algorithm));
+                    getNonceLength(secureChannel.getSecurityPolicy()));
 
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
             }
 
-
-            ByteString localNonce = generateNonce(getNonceLength(algorithm));
+            ByteString localNonce = generateNonce(secureChannel.getSecurityPolicy());
 
             secureChannel.setLocalNonce(localNonce);
             secureChannel.setRemoteNonce(remoteNonce);
@@ -373,39 +389,72 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         long requestId,
         OpenSecureChannelResponse response) {
 
-        serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
+        serializationQueue.encode((writer, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.buffer();
 
             try {
-                binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.encodeMessage(null, response);
+                writer.setBuffer(messageBuffer);
+                writer.writeMessage(null, response);
 
-                List<ByteBuf> chunks = chunkEncoder.encodeAsymmetric(
+                checkMessageSize(messageBuffer);
+
+                chunkEncoder.encodeAsymmetric(
                     secureChannel,
-                    MessageType.OpenSecureChannel,
+                    requestId,
                     messageBuffer,
-                    requestId
+                    MessageType.OpenSecureChannel,
+                    new ChunkEncoder.Callback() {
+                        @Override
+                        public void onEncodingError(UaException ex) {
+                            logger.error("Error encoding OpenSecureChannelResponse: {}", ex.getMessage(), ex);
+                            ctx.fireExceptionCaught(ex);
+                        }
+
+                        @Override
+                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                            if (!symmetricHandlerAdded) {
+                                UaTcpServerSymmetricHandler symmetricHandler =
+                                    new UaTcpServerSymmetricHandler(
+                                        server, serializationQueue, secureChannel);
+
+                                ctx.pipeline().addFirst(symmetricHandler);
+                                symmetricHandlerAdded = true;
+                            }
+
+                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                            for (ByteBuf chunk : messageChunks) {
+                                chunkComposite.addComponent(chunk);
+                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                            }
+
+                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+
+                            long lifetime = response.getSecurityToken().getRevisedLifetime().longValue();
+                            server.secureChannelIssuedOrRenewed(secureChannel, lifetime);
+
+                            logger.debug("Sent OpenSecureChannelResponse.");
+                        }
+                    }
                 );
-
-                if (!symmetricHandlerAdded) {
-                    ctx.pipeline().addFirst(new UaTcpServerSymmetricHandler(server, serializationQueue, secureChannel));
-                    symmetricHandlerAdded = true;
-                }
-
-                chunks.forEach(c -> ctx.write(c, ctx.voidPromise()));
-                ctx.flush();
-
-                long lifetime = response.getSecurityToken().getRevisedLifetime().longValue();
-                server.secureChannelIssuedOrRenewed(secureChannel, lifetime);
-
-                logger.debug("Sent OpenSecureChannelResponse.");
-            } catch (UaException e) {
-                logger.error("Error encoding OpenSecureChannelResponse: {}", e.getMessage(), e);
-                ctx.close();
+            } catch (UaSerializationException e) {
+                ctx.fireExceptionCaught(e);
             } finally {
                 messageBuffer.release();
             }
         });
+    }
+
+    private void checkMessageSize(ByteBuf messageBuffer) throws UaSerializationException {
+        int messageSize = messageBuffer.readableBytes();
+        int remoteMaxMessageSize = serializationQueue.getParameters().getRemoteMaxMessageSize();
+
+        if (messageSize > remoteMaxMessageSize) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_ResponseTooLarge,
+                "response exceeds remote max message size: " +
+                    messageSize + " > " + remoteMaxMessageSize);
+        }
     }
 
     @Override

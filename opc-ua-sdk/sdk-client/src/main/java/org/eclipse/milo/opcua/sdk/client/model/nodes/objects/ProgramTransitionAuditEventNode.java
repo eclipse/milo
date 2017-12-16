@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,34 +21,22 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ProgramTransitionAu
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class ProgramTransitionAuditEventNode extends AuditUpdateStateEventNode implements ProgramTransitionAuditEventType {
-
     public ProgramTransitionAuditEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<FiniteTransitionVariableNode> transition() {
-        return getVariableComponent(QualifiedName.parse("0:Transition"))
-            .thenApply(FiniteTransitionVariableNode.class::cast);
+    public CompletableFuture<FiniteTransitionVariableNode> getTransitionNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "Transition").thenApply(FiniteTransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getTransition() {
-        return transition()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getTransitionNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTransition(LocalizedText value) {
-        return transition()
-            .thenCompose(node -> node.setValue(value));
+        return getTransitionNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,43 +17,42 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("QueryNextResponse")
 public class QueryNextResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.QueryNextResponse;
     public static final NodeId BinaryEncodingId = Identifiers.QueryNextResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.QueryNextResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final QueryDataSet[] _queryDataSets;
-    protected final ByteString _revisedContinuationPoint;
+    protected final ResponseHeader responseHeader;
+    protected final QueryDataSet[] queryDataSets;
+    protected final ByteString revisedContinuationPoint;
 
     public QueryNextResponse() {
-        this._responseHeader = null;
-        this._queryDataSets = null;
-        this._revisedContinuationPoint = null;
+        this.responseHeader = null;
+        this.queryDataSets = null;
+        this.revisedContinuationPoint = null;
     }
 
-    public QueryNextResponse(ResponseHeader _responseHeader, QueryDataSet[] _queryDataSets, ByteString _revisedContinuationPoint) {
-        this._responseHeader = _responseHeader;
-        this._queryDataSets = _queryDataSets;
-        this._revisedContinuationPoint = _revisedContinuationPoint;
+    public QueryNextResponse(ResponseHeader responseHeader, QueryDataSet[] queryDataSets, ByteString revisedContinuationPoint) {
+        this.responseHeader = responseHeader;
+        this.queryDataSets = queryDataSets;
+        this.revisedContinuationPoint = revisedContinuationPoint;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public QueryDataSet[] getQueryDataSets() { return _queryDataSets; }
+    public QueryDataSet[] getQueryDataSets() { return queryDataSets; }
 
-    public ByteString getRevisedContinuationPoint() { return _revisedContinuationPoint; }
+    public ByteString getRevisedContinuationPoint() { return revisedContinuationPoint; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,29 +66,42 @@ public class QueryNextResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("QueryDataSets", _queryDataSets)
-            .add("RevisedContinuationPoint", _revisedContinuationPoint)
+            .add("ResponseHeader", responseHeader)
+            .add("QueryDataSets", queryDataSets)
+            .add("RevisedContinuationPoint", revisedContinuationPoint)
             .toString();
     }
 
-    public static void encode(QueryNextResponse queryNextResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", queryNextResponse._responseHeader != null ? queryNextResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("QueryDataSets", queryNextResponse._queryDataSets, encoder::encodeSerializable);
-        encoder.encodeByteString("RevisedContinuationPoint", queryNextResponse._revisedContinuationPoint);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<QueryNextResponse> {
 
-    public static QueryNextResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        QueryDataSet[] _queryDataSets = decoder.decodeArray("QueryDataSets", decoder::decodeSerializable, QueryDataSet.class);
-        ByteString _revisedContinuationPoint = decoder.decodeByteString("RevisedContinuationPoint");
+        @Override
+        public Class<QueryNextResponse> getType() {
+            return QueryNextResponse.class;
+        }
 
-        return new QueryNextResponse(_responseHeader, _queryDataSets, _revisedContinuationPoint);
-    }
+        @Override
+        public QueryNextResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            QueryDataSet[] queryDataSets =
+                decoder.readBuiltinStructArray(
+                    "QueryDataSets",
+                    QueryDataSet.class
+                );
+            ByteString revisedContinuationPoint = decoder.readByteString("RevisedContinuationPoint");
 
-    static {
-        DelegateRegistry.registerEncoder(QueryNextResponse::encode, QueryNextResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryNextResponse::decode, QueryNextResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new QueryNextResponse(responseHeader, queryDataSets, revisedContinuationPoint);
+        }
+
+        @Override
+        public void encode(QueryNextResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStructArray(
+                "QueryDataSets",
+                value.queryDataSets,
+                QueryDataSet.class
+            );
+            encoder.writeByteString("RevisedContinuationPoint", value.revisedContinuationPoint);
+        }
     }
 
 }

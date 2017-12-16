@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,10 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -28,47 +28,46 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("VariableTypeNode")
 public class VariableTypeNode extends TypeNode {
 
     public static final NodeId TypeId = Identifiers.VariableTypeNode;
     public static final NodeId BinaryEncodingId = Identifiers.VariableTypeNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.VariableTypeNode_Encoding_DefaultXml;
 
-    protected final Variant _value;
-    protected final NodeId _dataType;
-    protected final Integer _valueRank;
-    protected final UInteger[] _arrayDimensions;
-    protected final Boolean _isAbstract;
+    protected final Variant value;
+    protected final NodeId dataType;
+    protected final Integer valueRank;
+    protected final UInteger[] arrayDimensions;
+    protected final Boolean isAbstract;
 
     public VariableTypeNode() {
         super(null, null, null, null, null, null, null, null);
-        this._value = null;
-        this._dataType = null;
-        this._valueRank = null;
-        this._arrayDimensions = null;
-        this._isAbstract = null;
+        this.value = null;
+        this.dataType = null;
+        this.valueRank = null;
+        this.arrayDimensions = null;
+        this.isAbstract = null;
     }
 
-    public VariableTypeNode(NodeId _nodeId, NodeClass _nodeClass, QualifiedName _browseName, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, ReferenceNode[] _references, Variant _value, NodeId _dataType, Integer _valueRank, UInteger[] _arrayDimensions, Boolean _isAbstract) {
-        super(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
-        this._value = _value;
-        this._dataType = _dataType;
-        this._valueRank = _valueRank;
-        this._arrayDimensions = _arrayDimensions;
-        this._isAbstract = _isAbstract;
+    public VariableTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Variant value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, Boolean isAbstract) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+        this.isAbstract = isAbstract;
     }
 
-    public Variant getValue() { return _value; }
+    public Variant getValue() { return value; }
 
-    public NodeId getDataType() { return _dataType; }
+    public NodeId getDataType() { return dataType; }
 
-    public Integer getValueRank() { return _valueRank; }
+    public Integer getValueRank() { return valueRank; }
 
     @Nullable
-    public UInteger[] getArrayDimensions() { return _arrayDimensions; }
+    public UInteger[] getArrayDimensions() { return arrayDimensions; }
 
-    public Boolean getIsAbstract() { return _isAbstract; }
+    public Boolean getIsAbstract() { return isAbstract; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -82,59 +81,72 @@ public class VariableTypeNode extends TypeNode {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("NodeClass", _nodeClass)
-            .add("BrowseName", _browseName)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("References", _references)
-            .add("Value", _value)
-            .add("DataType", _dataType)
-            .add("ValueRank", _valueRank)
-            .add("ArrayDimensions", _arrayDimensions)
-            .add("IsAbstract", _isAbstract)
+            .add("NodeId", nodeId)
+            .add("NodeClass", nodeClass)
+            .add("BrowseName", browseName)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("References", references)
+            .add("Value", value)
+            .add("DataType", dataType)
+            .add("ValueRank", valueRank)
+            .add("ArrayDimensions", arrayDimensions)
+            .add("IsAbstract", isAbstract)
             .toString();
     }
 
-    public static void encode(VariableTypeNode variableTypeNode, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", variableTypeNode._nodeId);
-        encoder.encodeEnumeration("NodeClass", variableTypeNode._nodeClass);
-        encoder.encodeQualifiedName("BrowseName", variableTypeNode._browseName);
-        encoder.encodeLocalizedText("DisplayName", variableTypeNode._displayName);
-        encoder.encodeLocalizedText("Description", variableTypeNode._description);
-        encoder.encodeUInt32("WriteMask", variableTypeNode._writeMask);
-        encoder.encodeUInt32("UserWriteMask", variableTypeNode._userWriteMask);
-        encoder.encodeArray("References", variableTypeNode._references, encoder::encodeSerializable);
-        encoder.encodeVariant("Value", variableTypeNode._value);
-        encoder.encodeNodeId("DataType", variableTypeNode._dataType);
-        encoder.encodeInt32("ValueRank", variableTypeNode._valueRank);
-        encoder.encodeArray("ArrayDimensions", variableTypeNode._arrayDimensions, encoder::encodeUInt32);
-        encoder.encodeBoolean("IsAbstract", variableTypeNode._isAbstract);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<VariableTypeNode> {
 
-    public static VariableTypeNode decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        NodeClass _nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        QualifiedName _browseName = decoder.decodeQualifiedName("BrowseName");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        ReferenceNode[] _references = decoder.decodeArray("References", decoder::decodeSerializable, ReferenceNode.class);
-        Variant _value = decoder.decodeVariant("Value");
-        NodeId _dataType = decoder.decodeNodeId("DataType");
-        Integer _valueRank = decoder.decodeInt32("ValueRank");
-        UInteger[] _arrayDimensions = decoder.decodeArray("ArrayDimensions", decoder::decodeUInt32, UInteger.class);
-        Boolean _isAbstract = decoder.decodeBoolean("IsAbstract");
+        @Override
+        public Class<VariableTypeNode> getType() {
+            return VariableTypeNode.class;
+        }
 
-        return new VariableTypeNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _value, _dataType, _valueRank, _arrayDimensions, _isAbstract);
-    }
+        @Override
+        public VariableTypeNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            ReferenceNode[] references =
+                decoder.readBuiltinStructArray(
+                    "References",
+                    ReferenceNode.class
+                );
+            Variant value = decoder.readVariant("Value");
+            NodeId dataType = decoder.readNodeId("DataType");
+            Integer valueRank = decoder.readInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.readArray("ArrayDimensions", decoder::readUInt32, UInteger.class);
+            Boolean isAbstract = decoder.readBoolean("IsAbstract");
 
-    static {
-        DelegateRegistry.registerEncoder(VariableTypeNode::encode, VariableTypeNode.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(VariableTypeNode::decode, VariableTypeNode.class, BinaryEncodingId, XmlEncodingId);
+            return new VariableTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, value, dataType, valueRank, arrayDimensions, isAbstract);
+        }
+
+        @Override
+        public void encode(VariableTypeNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBuiltinStructArray(
+                "References",
+                value.references,
+                ReferenceNode.class
+            );
+            encoder.writeVariant("Value", value.value);
+            encoder.writeNodeId("DataType", value.dataType);
+            encoder.writeInt32("ValueRank", value.valueRank);
+            encoder.writeArray("ArrayDimensions", value.arrayDimensions, encoder::writeUInt32);
+            encoder.writeBoolean("IsAbstract", value.isAbstract);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,42 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditConditionAcknowledgeEventNode extends AuditConditionEventNode implements AuditConditionAcknowledgeEventType {
-
     public AuditConditionAcknowledgeEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> eventId() {
-        return getPropertyNode(AuditConditionAcknowledgeEventType.EVENT_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getEventIdNode() {
+        return getPropertyNode(AuditConditionAcknowledgeEventType.EVENT_ID);
     }
 
-    @Override
     public CompletableFuture<ByteString> getEventId() {
         return getProperty(AuditConditionAcknowledgeEventType.EVENT_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEventId(ByteString value) {
         return setProperty(AuditConditionAcknowledgeEventType.EVENT_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> comment() {
-        return getPropertyNode(AuditConditionAcknowledgeEventType.COMMENT.getBrowseName());
+    public CompletableFuture<PropertyNode> getCommentNode() {
+        return getPropertyNode(AuditConditionAcknowledgeEventType.COMMENT);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getComment() {
         return getProperty(AuditConditionAcknowledgeEventType.COMMENT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setComment(LocalizedText value) {
         return setProperty(AuditConditionAcknowledgeEventType.COMMENT, value);
     }
-
-
 }

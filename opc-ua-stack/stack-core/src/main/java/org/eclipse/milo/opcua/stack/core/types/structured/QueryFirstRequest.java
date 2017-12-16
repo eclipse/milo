@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,58 +17,57 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("QueryFirstRequest")
 public class QueryFirstRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.QueryFirstRequest;
     public static final NodeId BinaryEncodingId = Identifiers.QueryFirstRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.QueryFirstRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final ViewDescription _view;
-    protected final NodeTypeDescription[] _nodeTypes;
-    protected final ContentFilter _filter;
-    protected final UInteger _maxDataSetsToReturn;
-    protected final UInteger _maxReferencesToReturn;
+    protected final RequestHeader requestHeader;
+    protected final ViewDescription view;
+    protected final NodeTypeDescription[] nodeTypes;
+    protected final ContentFilter filter;
+    protected final UInteger maxDataSetsToReturn;
+    protected final UInteger maxReferencesToReturn;
 
     public QueryFirstRequest() {
-        this._requestHeader = null;
-        this._view = null;
-        this._nodeTypes = null;
-        this._filter = null;
-        this._maxDataSetsToReturn = null;
-        this._maxReferencesToReturn = null;
+        this.requestHeader = null;
+        this.view = null;
+        this.nodeTypes = null;
+        this.filter = null;
+        this.maxDataSetsToReturn = null;
+        this.maxReferencesToReturn = null;
     }
 
-    public QueryFirstRequest(RequestHeader _requestHeader, ViewDescription _view, NodeTypeDescription[] _nodeTypes, ContentFilter _filter, UInteger _maxDataSetsToReturn, UInteger _maxReferencesToReturn) {
-        this._requestHeader = _requestHeader;
-        this._view = _view;
-        this._nodeTypes = _nodeTypes;
-        this._filter = _filter;
-        this._maxDataSetsToReturn = _maxDataSetsToReturn;
-        this._maxReferencesToReturn = _maxReferencesToReturn;
+    public QueryFirstRequest(RequestHeader requestHeader, ViewDescription view, NodeTypeDescription[] nodeTypes, ContentFilter filter, UInteger maxDataSetsToReturn, UInteger maxReferencesToReturn) {
+        this.requestHeader = requestHeader;
+        this.view = view;
+        this.nodeTypes = nodeTypes;
+        this.filter = filter;
+        this.maxDataSetsToReturn = maxDataSetsToReturn;
+        this.maxReferencesToReturn = maxReferencesToReturn;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public ViewDescription getView() { return _view; }
+    public ViewDescription getView() { return view; }
 
     @Nullable
-    public NodeTypeDescription[] getNodeTypes() { return _nodeTypes; }
+    public NodeTypeDescription[] getNodeTypes() { return nodeTypes; }
 
-    public ContentFilter getFilter() { return _filter; }
+    public ContentFilter getFilter() { return filter; }
 
-    public UInteger getMaxDataSetsToReturn() { return _maxDataSetsToReturn; }
+    public UInteger getMaxDataSetsToReturn() { return maxDataSetsToReturn; }
 
-    public UInteger getMaxReferencesToReturn() { return _maxReferencesToReturn; }
+    public UInteger getMaxReferencesToReturn() { return maxReferencesToReturn; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -82,38 +81,51 @@ public class QueryFirstRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("View", _view)
-            .add("NodeTypes", _nodeTypes)
-            .add("Filter", _filter)
-            .add("MaxDataSetsToReturn", _maxDataSetsToReturn)
-            .add("MaxReferencesToReturn", _maxReferencesToReturn)
+            .add("RequestHeader", requestHeader)
+            .add("View", view)
+            .add("NodeTypes", nodeTypes)
+            .add("Filter", filter)
+            .add("MaxDataSetsToReturn", maxDataSetsToReturn)
+            .add("MaxReferencesToReturn", maxReferencesToReturn)
             .toString();
     }
 
-    public static void encode(QueryFirstRequest queryFirstRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", queryFirstRequest._requestHeader != null ? queryFirstRequest._requestHeader : new RequestHeader());
-        encoder.encodeSerializable("View", queryFirstRequest._view != null ? queryFirstRequest._view : new ViewDescription());
-        encoder.encodeArray("NodeTypes", queryFirstRequest._nodeTypes, encoder::encodeSerializable);
-        encoder.encodeSerializable("Filter", queryFirstRequest._filter != null ? queryFirstRequest._filter : new ContentFilter());
-        encoder.encodeUInt32("MaxDataSetsToReturn", queryFirstRequest._maxDataSetsToReturn);
-        encoder.encodeUInt32("MaxReferencesToReturn", queryFirstRequest._maxReferencesToReturn);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<QueryFirstRequest> {
 
-    public static QueryFirstRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        ViewDescription _view = decoder.decodeSerializable("View", ViewDescription.class);
-        NodeTypeDescription[] _nodeTypes = decoder.decodeArray("NodeTypes", decoder::decodeSerializable, NodeTypeDescription.class);
-        ContentFilter _filter = decoder.decodeSerializable("Filter", ContentFilter.class);
-        UInteger _maxDataSetsToReturn = decoder.decodeUInt32("MaxDataSetsToReturn");
-        UInteger _maxReferencesToReturn = decoder.decodeUInt32("MaxReferencesToReturn");
+        @Override
+        public Class<QueryFirstRequest> getType() {
+            return QueryFirstRequest.class;
+        }
 
-        return new QueryFirstRequest(_requestHeader, _view, _nodeTypes, _filter, _maxDataSetsToReturn, _maxReferencesToReturn);
-    }
+        @Override
+        public QueryFirstRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            ViewDescription view = (ViewDescription) decoder.readBuiltinStruct("View", ViewDescription.class);
+            NodeTypeDescription[] nodeTypes =
+                decoder.readBuiltinStructArray(
+                    "NodeTypes",
+                    NodeTypeDescription.class
+                );
+            ContentFilter filter = (ContentFilter) decoder.readBuiltinStruct("Filter", ContentFilter.class);
+            UInteger maxDataSetsToReturn = decoder.readUInt32("MaxDataSetsToReturn");
+            UInteger maxReferencesToReturn = decoder.readUInt32("MaxReferencesToReturn");
 
-    static {
-        DelegateRegistry.registerEncoder(QueryFirstRequest::encode, QueryFirstRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryFirstRequest::decode, QueryFirstRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new QueryFirstRequest(requestHeader, view, nodeTypes, filter, maxDataSetsToReturn, maxReferencesToReturn);
+        }
+
+        @Override
+        public void encode(QueryFirstRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStruct("View", value.view, ViewDescription.class);
+            encoder.writeBuiltinStructArray(
+                "NodeTypes",
+                value.nodeTypes,
+                NodeTypeDescription.class
+            );
+            encoder.writeBuiltinStruct("Filter", value.filter, ContentFilter.class);
+            encoder.writeUInt32("MaxDataSetsToReturn", value.maxDataSetsToReturn);
+            encoder.writeUInt32("MaxReferencesToReturn", value.maxReferencesToReturn);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,102 +24,80 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 
-
 public class AuditOpenSecureChannelEventNode extends AuditChannelEventNode implements AuditOpenSecureChannelEventType {
-
     public AuditOpenSecureChannelEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> clientCertificate() {
-        return getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getClientCertificateNode() {
+        return getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE);
     }
 
-    @Override
     public CompletableFuture<ByteString> getClientCertificate() {
         return getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientCertificate(ByteString value) {
         return setProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> clientCertificateThumbprint() {
-        return getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT.getBrowseName());
+    public CompletableFuture<PropertyNode> getClientCertificateThumbprintNode() {
+        return getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT);
     }
 
-    @Override
     public CompletableFuture<String> getClientCertificateThumbprint() {
         return getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientCertificateThumbprint(String value) {
         return setProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> requestType() {
-        return getPropertyNode(AuditOpenSecureChannelEventType.REQUEST_TYPE.getBrowseName());
+    public CompletableFuture<PropertyNode> getRequestTypeNode() {
+        return getPropertyNode(AuditOpenSecureChannelEventType.REQUEST_TYPE);
     }
 
-    @Override
     public CompletableFuture<SecurityTokenRequestType> getRequestType() {
         return getProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRequestType(SecurityTokenRequestType value) {
         return setProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> securityPolicyUri() {
-        return getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI.getBrowseName());
+    public CompletableFuture<PropertyNode> getSecurityPolicyUriNode() {
+        return getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI);
     }
 
-    @Override
     public CompletableFuture<String> getSecurityPolicyUri() {
         return getProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecurityPolicyUri(String value) {
         return setProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> securityMode() {
-        return getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_MODE.getBrowseName());
+    public CompletableFuture<PropertyNode> getSecurityModeNode() {
+        return getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_MODE);
     }
 
-    @Override
     public CompletableFuture<MessageSecurityMode> getSecurityMode() {
         return getProperty(AuditOpenSecureChannelEventType.SECURITY_MODE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecurityMode(MessageSecurityMode value) {
         return setProperty(AuditOpenSecureChannelEventType.SECURITY_MODE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> requestedLifetime() {
-        return getPropertyNode(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME.getBrowseName());
+    public CompletableFuture<PropertyNode> getRequestedLifetimeNode() {
+        return getPropertyNode(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME);
     }
 
-    @Override
     public CompletableFuture<Double> getRequestedLifetime() {
         return getProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRequestedLifetime(Double value) {
         return setProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME, value);
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,106 +21,70 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.NonExclusiveLimitAl
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class NonExclusiveLimitAlarmNode extends LimitAlarmNode implements NonExclusiveLimitAlarmType {
-
     public NonExclusiveLimitAlarmNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<TwoStateVariableNode> activeState() {
-        return getVariableComponent(QualifiedName.parse("0:ActiveState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getActiveStateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ActiveState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getActiveState() {
-        return activeState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getActiveStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setActiveState(LocalizedText value) {
-        return activeState()
-            .thenCompose(node -> node.setValue(value));
+        return getActiveStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<TwoStateVariableNode> highHighState() {
-        return getVariableComponent(QualifiedName.parse("0:HighHighState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getHighHighStateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "HighHighState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getHighHighState() {
-        return highHighState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getHighHighStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setHighHighState(LocalizedText value) {
-        return highHighState()
-            .thenCompose(node -> node.setValue(value));
+        return getHighHighStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<TwoStateVariableNode> highState() {
-        return getVariableComponent(QualifiedName.parse("0:HighState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getHighStateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "HighState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getHighState() {
-        return highState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getHighStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setHighState(LocalizedText value) {
-        return highState()
-            .thenCompose(node -> node.setValue(value));
+        return getHighStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<TwoStateVariableNode> lowState() {
-        return getVariableComponent(QualifiedName.parse("0:LowState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getLowStateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "LowState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLowState() {
-        return lowState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getLowStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setLowState(LocalizedText value) {
-        return lowState()
-            .thenCompose(node -> node.setValue(value));
+        return getLowStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<TwoStateVariableNode> lowLowState() {
-        return getVariableComponent(QualifiedName.parse("0:LowLowState"))
-            .thenApply(TwoStateVariableNode.class::cast);
+    public CompletableFuture<TwoStateVariableNode> getLowLowStateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "LowLowState").thenApply(TwoStateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLowLowState() {
-        return lowLowState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getLowLowStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setLowLowState(LocalizedText value) {
-        return lowLowState()
-            .thenCompose(node -> node.setValue(value));
+        return getLowLowStateNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }

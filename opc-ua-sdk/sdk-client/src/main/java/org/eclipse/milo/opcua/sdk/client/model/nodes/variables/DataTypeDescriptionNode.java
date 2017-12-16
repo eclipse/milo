@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,42 +21,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class DataTypeDescriptionNode extends BaseDataVariableNode implements DataTypeDescriptionType {
-
     public DataTypeDescriptionNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> dataTypeVersion() {
-        return getPropertyNode(DataTypeDescriptionType.DATA_TYPE_VERSION.getBrowseName());
+    public CompletableFuture<PropertyNode> getDataTypeVersionNode() {
+        return getPropertyNode(DataTypeDescriptionType.DATA_TYPE_VERSION);
     }
 
-    @Override
     public CompletableFuture<String> getDataTypeVersion() {
         return getProperty(DataTypeDescriptionType.DATA_TYPE_VERSION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDataTypeVersion(String value) {
         return setProperty(DataTypeDescriptionType.DATA_TYPE_VERSION, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> dictionaryFragment() {
-        return getPropertyNode(DataTypeDescriptionType.DICTIONARY_FRAGMENT.getBrowseName());
+    public CompletableFuture<PropertyNode> getDictionaryFragmentNode() {
+        return getPropertyNode(DataTypeDescriptionType.DICTIONARY_FRAGMENT);
     }
 
-    @Override
     public CompletableFuture<ByteString> getDictionaryFragment() {
         return getProperty(DataTypeDescriptionType.DICTIONARY_FRAGMENT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDictionaryFragment(ByteString value) {
         return setProperty(DataTypeDescriptionType.DICTIONARY_FRAGMENT, value);
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,36 +15,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ComplexNumberType")
 public class ComplexNumberType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ComplexNumberType;
     public static final NodeId BinaryEncodingId = Identifiers.ComplexNumberType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ComplexNumberType_Encoding_DefaultXml;
 
-    protected final Float _real;
-    protected final Float _imaginary;
+    protected final Float real;
+    protected final Float imaginary;
 
     public ComplexNumberType() {
-        this._real = null;
-        this._imaginary = null;
+        this.real = null;
+        this.imaginary = null;
     }
 
-    public ComplexNumberType(Float _real, Float _imaginary) {
-        this._real = _real;
-        this._imaginary = _imaginary;
+    public ComplexNumberType(Float real, Float imaginary) {
+        this.real = real;
+        this.imaginary = imaginary;
     }
 
-    public Float getReal() { return _real; }
+    public Float getReal() { return real; }
 
-    public Float getImaginary() { return _imaginary; }
+    public Float getImaginary() { return imaginary; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class ComplexNumberType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Real", _real)
-            .add("Imaginary", _imaginary)
+            .add("Real", real)
+            .add("Imaginary", imaginary)
             .toString();
     }
 
-    public static void encode(ComplexNumberType complexNumberType, UaEncoder encoder) {
-        encoder.encodeFloat("Real", complexNumberType._real);
-        encoder.encodeFloat("Imaginary", complexNumberType._imaginary);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ComplexNumberType> {
 
-    public static ComplexNumberType decode(UaDecoder decoder) {
-        Float _real = decoder.decodeFloat("Real");
-        Float _imaginary = decoder.decodeFloat("Imaginary");
+        @Override
+        public Class<ComplexNumberType> getType() {
+            return ComplexNumberType.class;
+        }
 
-        return new ComplexNumberType(_real, _imaginary);
-    }
+        @Override
+        public ComplexNumberType decode(UaDecoder decoder) throws UaSerializationException {
+            Float real = decoder.readFloat("Real");
+            Float imaginary = decoder.readFloat("Imaginary");
 
-    static {
-        DelegateRegistry.registerEncoder(ComplexNumberType::encode, ComplexNumberType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ComplexNumberType::decode, ComplexNumberType.class, BinaryEncodingId, XmlEncodingId);
+            return new ComplexNumberType(real, imaginary);
+        }
+
+        @Override
+        public void encode(ComplexNumberType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeFloat("Real", value.real);
+            encoder.writeFloat("Imaginary", value.imaginary);
+        }
     }
 
 }

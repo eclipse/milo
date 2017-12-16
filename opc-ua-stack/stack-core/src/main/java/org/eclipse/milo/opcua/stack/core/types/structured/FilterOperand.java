@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,14 +15,13 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("FilterOperand")
 public class FilterOperand implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.FilterOperand;
@@ -48,17 +47,22 @@ public class FilterOperand implements UaStructure {
             .toString();
     }
 
-    public static void encode(FilterOperand filterOperand, UaEncoder encoder) {
-    }
+    public static class Codec extends BuiltinDataTypeCodec<FilterOperand> {
 
-    public static FilterOperand decode(UaDecoder decoder) {
+        @Override
+        public Class<FilterOperand> getType() {
+            return FilterOperand.class;
+        }
 
-        return new FilterOperand();
-    }
+        @Override
+        public FilterOperand decode(UaDecoder decoder) throws UaSerializationException {
 
-    static {
-        DelegateRegistry.registerEncoder(FilterOperand::encode, FilterOperand.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(FilterOperand::decode, FilterOperand.class, BinaryEncodingId, XmlEncodingId);
+            return new FilterOperand();
+        }
+
+        @Override
+        public void encode(FilterOperand value, UaEncoder encoder) throws UaSerializationException {
+        }
     }
 
 }

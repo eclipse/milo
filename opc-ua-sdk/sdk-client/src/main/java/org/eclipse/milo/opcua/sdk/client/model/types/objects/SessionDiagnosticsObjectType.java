@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,26 +23,22 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
-
 public interface SessionDiagnosticsObjectType extends BaseObjectType {
-
-
-    CompletableFuture<? extends SessionDiagnosticsVariableType> sessionDiagnostics();
+    CompletableFuture<? extends SessionDiagnosticsVariableType> getSessionDiagnosticsNode();
 
     CompletableFuture<SessionDiagnosticsDataType> getSessionDiagnostics();
 
     CompletableFuture<StatusCode> setSessionDiagnostics(SessionDiagnosticsDataType value);
 
-    CompletableFuture<? extends SessionSecurityDiagnosticsType> sessionSecurityDiagnostics();
+    CompletableFuture<? extends SessionSecurityDiagnosticsType> getSessionSecurityDiagnosticsNode();
 
     CompletableFuture<SessionSecurityDiagnosticsDataType> getSessionSecurityDiagnostics();
 
     CompletableFuture<StatusCode> setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value);
 
-    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> subscriptionDiagnosticsArray();
+    CompletableFuture<? extends SubscriptionDiagnosticsArrayType> getSubscriptionDiagnosticsArrayNode();
 
     CompletableFuture<SubscriptionDiagnosticsDataType[]> getSubscriptionDiagnosticsArray();
 
     CompletableFuture<StatusCode> setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value);
-
 }

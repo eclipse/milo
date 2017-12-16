@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditHistoryDeleteE
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditHistoryDeleteEventNode extends AuditHistoryUpdateEventNode implements AuditHistoryDeleteEventType {
-
     public AuditHistoryDeleteEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> updatedNode() {
-        return getPropertyNode(AuditHistoryDeleteEventType.UPDATED_NODE.getBrowseName());
+    public CompletableFuture<PropertyNode> getUpdatedNodeNode() {
+        return getPropertyNode(AuditHistoryDeleteEventType.UPDATED_NODE);
     }
 
-    @Override
     public CompletableFuture<NodeId> getUpdatedNode() {
         return getProperty(AuditHistoryDeleteEventType.UPDATED_NODE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setUpdatedNode(NodeId value) {
         return setProperty(AuditHistoryDeleteEventType.UPDATED_NODE, value);
     }
-
-
 }

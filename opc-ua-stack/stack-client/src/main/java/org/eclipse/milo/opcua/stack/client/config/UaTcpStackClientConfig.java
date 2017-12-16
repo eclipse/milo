@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -70,6 +71,13 @@ public interface UaTcpStackClientConfig {
     Optional<X509Certificate[]> getCertificateChain();
 
     /**
+     * Get the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     *
+     * @return the {@link CertificateValidator} this client will use to validate server certificates when connecting.
+     */
+    CertificateValidator getCertificateValidator();
+
+    /**
      * @return the name of the client application, as a {@link LocalizedText}.
      */
     LocalizedText getApplicationName();
@@ -110,17 +118,6 @@ public interface UaTcpStackClientConfig {
      */
     HashedWheelTimer getWheelTimer();
 
-    /**
-     * Return {@code true} if, upon reconnecting, the client should attempt to re-authenticate using the previous
-     * secure channel.
-     * <p>
-     * This is not optional behavior in the specification. Disabling should only be done for the purpose of
-     * interoperability with other stacks that do not support re-authentication or have otherwise buggy behavior.
-     *
-     * @return {@code true} if, upon reconnecting, the client should attempt to re-authenticate using the previous
-     * secure channel.
-     */
-    boolean isSecureChannelReauthenticationEnabled();
 
     /**
      * @return a new {@link UaTcpStackClientConfigBuilder}.
@@ -145,6 +142,7 @@ public interface UaTcpStackClientConfig {
         config.getKeyPair().ifPresent(builder::setKeyPair);
         config.getCertificate().ifPresent(builder::setCertificate);
         config.getCertificateChain().ifPresent(builder::setCertificateChain);
+        builder.setCertificateValidator(config.getCertificateValidator());
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
@@ -153,7 +151,6 @@ public interface UaTcpStackClientConfig {
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
-        builder.setSecureChannelReauthenticationEnabled(config.isSecureChannelReauthenticationEnabled());
 
         return builder;
     }

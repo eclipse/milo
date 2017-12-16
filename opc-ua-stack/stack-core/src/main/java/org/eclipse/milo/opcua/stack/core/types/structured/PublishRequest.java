@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,37 +17,36 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("PublishRequest")
 public class PublishRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.PublishRequest;
     public static final NodeId BinaryEncodingId = Identifiers.PublishRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.PublishRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final SubscriptionAcknowledgement[] _subscriptionAcknowledgements;
+    protected final RequestHeader requestHeader;
+    protected final SubscriptionAcknowledgement[] subscriptionAcknowledgements;
 
     public PublishRequest() {
-        this._requestHeader = null;
-        this._subscriptionAcknowledgements = null;
+        this.requestHeader = null;
+        this.subscriptionAcknowledgements = null;
     }
 
-    public PublishRequest(RequestHeader _requestHeader, SubscriptionAcknowledgement[] _subscriptionAcknowledgements) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionAcknowledgements = _subscriptionAcknowledgements;
+    public PublishRequest(RequestHeader requestHeader, SubscriptionAcknowledgement[] subscriptionAcknowledgements) {
+        this.requestHeader = requestHeader;
+        this.subscriptionAcknowledgements = subscriptionAcknowledgements;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public SubscriptionAcknowledgement[] getSubscriptionAcknowledgements() { return _subscriptionAcknowledgements; }
+    public SubscriptionAcknowledgement[] getSubscriptionAcknowledgements() { return subscriptionAcknowledgements; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,39 @@ public class PublishRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionAcknowledgements", _subscriptionAcknowledgements)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionAcknowledgements", subscriptionAcknowledgements)
             .toString();
     }
 
-    public static void encode(PublishRequest publishRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", publishRequest._requestHeader != null ? publishRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("SubscriptionAcknowledgements", publishRequest._subscriptionAcknowledgements, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<PublishRequest> {
 
-    public static PublishRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        SubscriptionAcknowledgement[] _subscriptionAcknowledgements = decoder.decodeArray("SubscriptionAcknowledgements", decoder::decodeSerializable, SubscriptionAcknowledgement.class);
+        @Override
+        public Class<PublishRequest> getType() {
+            return PublishRequest.class;
+        }
 
-        return new PublishRequest(_requestHeader, _subscriptionAcknowledgements);
-    }
+        @Override
+        public PublishRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            SubscriptionAcknowledgement[] subscriptionAcknowledgements =
+                decoder.readBuiltinStructArray(
+                    "SubscriptionAcknowledgements",
+                    SubscriptionAcknowledgement.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(PublishRequest::encode, PublishRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(PublishRequest::decode, PublishRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new PublishRequest(requestHeader, subscriptionAcknowledgements);
+        }
+
+        @Override
+        public void encode(PublishRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStructArray(
+                "SubscriptionAcknowledgements",
+                value.subscriptionAcknowledgements,
+                SubscriptionAcknowledgement.class
+            );
+        }
     }
 
 }

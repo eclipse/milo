@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,39 +25,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AuditCancelEventType")
 public class AuditCancelEventNode extends AuditSessionEventNode implements AuditCancelEventType {
+    public AuditCancelEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AuditCancelEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AuditCancelEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public UInteger getRequestHandle() {
-        Optional<UInteger> property = getProperty(AuditCancelEventType.REQUEST_HANDLE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getRequestHandleNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditCancelEventType.REQUEST_HANDLE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCancelEventType.REQUEST_HANDLE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public UInteger getRequestHandle() {
+        Optional<UInteger> propertyValue = getProperty(AuditCancelEventType.REQUEST_HANDLE);
+        return propertyValue.orElse(null);
+    }
+
     public void setRequestHandle(UInteger value) {
         setProperty(AuditCancelEventType.REQUEST_HANDLE, value);
     }
-
 }

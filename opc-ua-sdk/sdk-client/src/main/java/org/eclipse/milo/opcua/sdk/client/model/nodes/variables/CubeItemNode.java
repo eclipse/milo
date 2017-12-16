@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,57 +21,44 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
 
-
 public class CubeItemNode extends ArrayItemNode implements CubeItemType {
-
     public CubeItemNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> xAxisDefinition() {
-        return getPropertyNode(CubeItemType.X_AXIS_DEFINITION.getBrowseName());
+    public CompletableFuture<PropertyNode> getXAxisDefinitionNode() {
+        return getPropertyNode(CubeItemType.X_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<AxisInformation> getXAxisDefinition() {
         return getProperty(CubeItemType.X_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setXAxisDefinition(AxisInformation value) {
         return setProperty(CubeItemType.X_AXIS_DEFINITION, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> yAxisDefinition() {
-        return getPropertyNode(CubeItemType.Y_AXIS_DEFINITION.getBrowseName());
+    public CompletableFuture<PropertyNode> getYAxisDefinitionNode() {
+        return getPropertyNode(CubeItemType.Y_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<AxisInformation> getYAxisDefinition() {
         return getProperty(CubeItemType.Y_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setYAxisDefinition(AxisInformation value) {
         return setProperty(CubeItemType.Y_AXIS_DEFINITION, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> zAxisDefinition() {
-        return getPropertyNode(CubeItemType.Z_AXIS_DEFINITION.getBrowseName());
+    public CompletableFuture<PropertyNode> getZAxisDefinitionNode() {
+        return getPropertyNode(CubeItemType.Z_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<AxisInformation> getZAxisDefinition() {
         return getProperty(CubeItemType.Z_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setZAxisDefinition(AxisInformation value) {
         return setProperty(CubeItemType.Z_AXIS_DEFINITION, value);
     }
-
-
 }

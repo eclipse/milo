@@ -22,15 +22,17 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.application.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -60,14 +62,29 @@ public class ClientExample {
         client = new UaTcpStackClient(config);
     }
 
-    public CompletableFuture<TestStackResponse> testStack(int input) {
+    public CompletableFuture<ReadResponse> testStack(NodeId nodeId) {
         RequestHeader header = new RequestHeader(
             NodeId.NULL_VALUE,
             DateTime.now(),
             uint(requestHandle.getAndIncrement()),
-            uint(0), null, uint(60), null);
+            uint(0),
+            null,
+            uint(60000),
+            null
+        );
 
-        TestStackRequest request = new TestStackRequest(header, uint(0), 1, new Variant(input));
+        ReadRequest request = new ReadRequest(
+            header,
+            0.0,
+            TimestampsToReturn.Neither,
+            new ReadValueId[]{
+                new ReadValueId(
+                    nodeId,
+                    AttributeId.Value.uid(),
+                    null,
+                    null)
+            }
+        );
 
         return client.sendRequest(request);
     }

@@ -84,7 +84,7 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
 
         ByteBuf messageBuffer = TcpMessageEncoder.encode(hello);
 
-        ctx.writeAndFlush(messageBuffer);
+        ctx.writeAndFlush(messageBuffer, ctx.voidPromise());
 
         logger.debug("Sent Hello message on channel={}.", ctx.channel());
 

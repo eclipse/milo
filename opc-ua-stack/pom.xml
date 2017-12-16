@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo</artifactId>
-        <version>0.1.7-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>opc-ua-stack</artifactId>
     <packaging>pom</packaging>
 
     <properties>
+        <bouncycastle.version>1.58</bouncycastle.version>
         <guava.version>19.0</guava.version>
         <javassist.version>3.20.0-GA</javassist.version>
         <jool.version>0.9.10</jool.version>
@@ -22,6 +24,7 @@
     </properties>
 
     <modules>
+        <module>bsd-parser</module>
         <module>stack-client</module>
         <module>stack-core</module>
         <module>stack-examples</module>

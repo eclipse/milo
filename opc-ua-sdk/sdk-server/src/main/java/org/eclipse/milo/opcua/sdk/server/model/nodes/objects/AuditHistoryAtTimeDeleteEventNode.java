@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,58 +27,44 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AuditHistoryAtTimeDeleteEventType")
 public class AuditHistoryAtTimeDeleteEventNode extends AuditHistoryDeleteEventNode implements AuditHistoryAtTimeDeleteEventType {
+    public AuditHistoryAtTimeDeleteEventNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                             QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                             UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AuditHistoryAtTimeDeleteEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AuditHistoryAtTimeDeleteEventNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                             QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                             UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public DateTime[] getReqTimes() {
-        Optional<DateTime[]> property = getProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getReqTimesNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.REQ_TIMES.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public DateTime[] getReqTimes() {
+        Optional<DateTime[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
+        return propertyValue.orElse(null);
+    }
+
     public void setReqTimes(DateTime[] value) {
         setProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES, value);
     }
 
-    @Override
-    public DataValue[] getOldValues() {
-        Optional<DataValue[]> property = getProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getOldValuesNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.OLD_VALUES.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public DataValue[] getOldValues() {
+        Optional<DataValue[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
+        return propertyValue.orElse(null);
+    }
+
     public void setOldValues(DataValue[] value) {
         setProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES, value);
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,50 +17,49 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("SimpleAttributeOperand")
 public class SimpleAttributeOperand extends FilterOperand {
 
     public static final NodeId TypeId = Identifiers.SimpleAttributeOperand;
     public static final NodeId BinaryEncodingId = Identifiers.SimpleAttributeOperand_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SimpleAttributeOperand_Encoding_DefaultXml;
 
-    protected final NodeId _typeDefinitionId;
-    protected final QualifiedName[] _browsePath;
-    protected final UInteger _attributeId;
-    protected final String _indexRange;
+    protected final NodeId typeDefinitionId;
+    protected final QualifiedName[] browsePath;
+    protected final UInteger attributeId;
+    protected final String indexRange;
 
     public SimpleAttributeOperand() {
         super();
-        this._typeDefinitionId = null;
-        this._browsePath = null;
-        this._attributeId = null;
-        this._indexRange = null;
+        this.typeDefinitionId = null;
+        this.browsePath = null;
+        this.attributeId = null;
+        this.indexRange = null;
     }
 
-    public SimpleAttributeOperand(NodeId _typeDefinitionId, QualifiedName[] _browsePath, UInteger _attributeId, String _indexRange) {
+    public SimpleAttributeOperand(NodeId typeDefinitionId, QualifiedName[] browsePath, UInteger attributeId, String indexRange) {
         super();
-        this._typeDefinitionId = _typeDefinitionId;
-        this._browsePath = _browsePath;
-        this._attributeId = _attributeId;
-        this._indexRange = _indexRange;
+        this.typeDefinitionId = typeDefinitionId;
+        this.browsePath = browsePath;
+        this.attributeId = attributeId;
+        this.indexRange = indexRange;
     }
 
-    public NodeId getTypeDefinitionId() { return _typeDefinitionId; }
+    public NodeId getTypeDefinitionId() { return typeDefinitionId; }
 
     @Nullable
-    public QualifiedName[] getBrowsePath() { return _browsePath; }
+    public QualifiedName[] getBrowsePath() { return browsePath; }
 
-    public UInteger getAttributeId() { return _attributeId; }
+    public UInteger getAttributeId() { return attributeId; }
 
-    public String getIndexRange() { return _indexRange; }
+    public String getIndexRange() { return indexRange; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -74,32 +73,37 @@ public class SimpleAttributeOperand extends FilterOperand {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("TypeDefinitionId", _typeDefinitionId)
-            .add("BrowsePath", _browsePath)
-            .add("AttributeId", _attributeId)
-            .add("IndexRange", _indexRange)
+            .add("TypeDefinitionId", typeDefinitionId)
+            .add("BrowsePath", browsePath)
+            .add("AttributeId", attributeId)
+            .add("IndexRange", indexRange)
             .toString();
     }
 
-    public static void encode(SimpleAttributeOperand simpleAttributeOperand, UaEncoder encoder) {
-        encoder.encodeNodeId("TypeDefinitionId", simpleAttributeOperand._typeDefinitionId);
-        encoder.encodeArray("BrowsePath", simpleAttributeOperand._browsePath, encoder::encodeQualifiedName);
-        encoder.encodeUInt32("AttributeId", simpleAttributeOperand._attributeId);
-        encoder.encodeString("IndexRange", simpleAttributeOperand._indexRange);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SimpleAttributeOperand> {
 
-    public static SimpleAttributeOperand decode(UaDecoder decoder) {
-        NodeId _typeDefinitionId = decoder.decodeNodeId("TypeDefinitionId");
-        QualifiedName[] _browsePath = decoder.decodeArray("BrowsePath", decoder::decodeQualifiedName, QualifiedName.class);
-        UInteger _attributeId = decoder.decodeUInt32("AttributeId");
-        String _indexRange = decoder.decodeString("IndexRange");
+        @Override
+        public Class<SimpleAttributeOperand> getType() {
+            return SimpleAttributeOperand.class;
+        }
 
-        return new SimpleAttributeOperand(_typeDefinitionId, _browsePath, _attributeId, _indexRange);
-    }
+        @Override
+        public SimpleAttributeOperand decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId typeDefinitionId = decoder.readNodeId("TypeDefinitionId");
+            QualifiedName[] browsePath = decoder.readArray("BrowsePath", decoder::readQualifiedName, QualifiedName.class);
+            UInteger attributeId = decoder.readUInt32("AttributeId");
+            String indexRange = decoder.readString("IndexRange");
 
-    static {
-        DelegateRegistry.registerEncoder(SimpleAttributeOperand::encode, SimpleAttributeOperand.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SimpleAttributeOperand::decode, SimpleAttributeOperand.class, BinaryEncodingId, XmlEncodingId);
+            return new SimpleAttributeOperand(typeDefinitionId, browsePath, attributeId, indexRange);
+        }
+
+        @Override
+        public void encode(SimpleAttributeOperand value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("TypeDefinitionId", value.typeDefinitionId);
+            encoder.writeArray("BrowsePath", value.browsePath, encoder::writeQualifiedName);
+            encoder.writeUInt32("AttributeId", value.attributeId);
+            encoder.writeString("IndexRange", value.indexRange);
+        }
     }
 
 }

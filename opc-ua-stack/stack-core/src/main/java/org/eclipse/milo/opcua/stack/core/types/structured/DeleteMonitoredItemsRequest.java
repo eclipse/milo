@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,43 +17,42 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("DeleteMonitoredItemsRequest")
 public class DeleteMonitoredItemsRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.DeleteMonitoredItemsRequest;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteMonitoredItemsRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteMonitoredItemsRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger _subscriptionId;
-    protected final UInteger[] _monitoredItemIds;
+    protected final RequestHeader requestHeader;
+    protected final UInteger subscriptionId;
+    protected final UInteger[] monitoredItemIds;
 
     public DeleteMonitoredItemsRequest() {
-        this._requestHeader = null;
-        this._subscriptionId = null;
-        this._monitoredItemIds = null;
+        this.requestHeader = null;
+        this.subscriptionId = null;
+        this.monitoredItemIds = null;
     }
 
-    public DeleteMonitoredItemsRequest(RequestHeader _requestHeader, UInteger _subscriptionId, UInteger[] _monitoredItemIds) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionId = _subscriptionId;
-        this._monitoredItemIds = _monitoredItemIds;
+    public DeleteMonitoredItemsRequest(RequestHeader requestHeader, UInteger subscriptionId, UInteger[] monitoredItemIds) {
+        this.requestHeader = requestHeader;
+        this.subscriptionId = subscriptionId;
+        this.monitoredItemIds = monitoredItemIds;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
     @Nullable
-    public UInteger[] getMonitoredItemIds() { return _monitoredItemIds; }
+    public UInteger[] getMonitoredItemIds() { return monitoredItemIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,29 +66,34 @@ public class DeleteMonitoredItemsRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionId", _subscriptionId)
-            .add("MonitoredItemIds", _monitoredItemIds)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionId", subscriptionId)
+            .add("MonitoredItemIds", monitoredItemIds)
             .toString();
     }
 
-    public static void encode(DeleteMonitoredItemsRequest deleteMonitoredItemsRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", deleteMonitoredItemsRequest._requestHeader != null ? deleteMonitoredItemsRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("SubscriptionId", deleteMonitoredItemsRequest._subscriptionId);
-        encoder.encodeArray("MonitoredItemIds", deleteMonitoredItemsRequest._monitoredItemIds, encoder::encodeUInt32);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DeleteMonitoredItemsRequest> {
 
-    public static DeleteMonitoredItemsRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        UInteger[] _monitoredItemIds = decoder.decodeArray("MonitoredItemIds", decoder::decodeUInt32, UInteger.class);
+        @Override
+        public Class<DeleteMonitoredItemsRequest> getType() {
+            return DeleteMonitoredItemsRequest.class;
+        }
 
-        return new DeleteMonitoredItemsRequest(_requestHeader, _subscriptionId, _monitoredItemIds);
-    }
+        @Override
+        public DeleteMonitoredItemsRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            UInteger[] monitoredItemIds = decoder.readArray("MonitoredItemIds", decoder::readUInt32, UInteger.class);
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteMonitoredItemsRequest::encode, DeleteMonitoredItemsRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteMonitoredItemsRequest::decode, DeleteMonitoredItemsRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new DeleteMonitoredItemsRequest(requestHeader, subscriptionId, monitoredItemIds);
+        }
+
+        @Override
+        public void encode(DeleteMonitoredItemsRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeArray("MonitoredItemIds", value.monitoredItemIds, encoder::writeUInt32);
+        }
     }
 
 }

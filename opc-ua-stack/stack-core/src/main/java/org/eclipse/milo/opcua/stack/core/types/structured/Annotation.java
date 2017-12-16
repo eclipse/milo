@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,42 +15,41 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("Annotation")
 public class Annotation implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.Annotation;
     public static final NodeId BinaryEncodingId = Identifiers.Annotation_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.Annotation_Encoding_DefaultXml;
 
-    protected final String _message;
-    protected final String _userName;
-    protected final DateTime _annotationTime;
+    protected final String message;
+    protected final String userName;
+    protected final DateTime annotationTime;
 
     public Annotation() {
-        this._message = null;
-        this._userName = null;
-        this._annotationTime = null;
+        this.message = null;
+        this.userName = null;
+        this.annotationTime = null;
     }
 
-    public Annotation(String _message, String _userName, DateTime _annotationTime) {
-        this._message = _message;
-        this._userName = _userName;
-        this._annotationTime = _annotationTime;
+    public Annotation(String message, String userName, DateTime annotationTime) {
+        this.message = message;
+        this.userName = userName;
+        this.annotationTime = annotationTime;
     }
 
-    public String getMessage() { return _message; }
+    public String getMessage() { return message; }
 
-    public String getUserName() { return _userName; }
+    public String getUserName() { return userName; }
 
-    public DateTime getAnnotationTime() { return _annotationTime; }
+    public DateTime getAnnotationTime() { return annotationTime; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,29 +63,34 @@ public class Annotation implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Message", _message)
-            .add("UserName", _userName)
-            .add("AnnotationTime", _annotationTime)
+            .add("Message", message)
+            .add("UserName", userName)
+            .add("AnnotationTime", annotationTime)
             .toString();
     }
 
-    public static void encode(Annotation annotation, UaEncoder encoder) {
-        encoder.encodeString("Message", annotation._message);
-        encoder.encodeString("UserName", annotation._userName);
-        encoder.encodeDateTime("AnnotationTime", annotation._annotationTime);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<Annotation> {
 
-    public static Annotation decode(UaDecoder decoder) {
-        String _message = decoder.decodeString("Message");
-        String _userName = decoder.decodeString("UserName");
-        DateTime _annotationTime = decoder.decodeDateTime("AnnotationTime");
+        @Override
+        public Class<Annotation> getType() {
+            return Annotation.class;
+        }
 
-        return new Annotation(_message, _userName, _annotationTime);
-    }
+        @Override
+        public Annotation decode(UaDecoder decoder) throws UaSerializationException {
+            String message = decoder.readString("Message");
+            String userName = decoder.readString("UserName");
+            DateTime annotationTime = decoder.readDateTime("AnnotationTime");
 
-    static {
-        DelegateRegistry.registerEncoder(Annotation::encode, Annotation.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(Annotation::decode, Annotation.class, BinaryEncodingId, XmlEncodingId);
+            return new Annotation(message, userName, annotationTime);
+        }
+
+        @Override
+        public void encode(Annotation value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("Message", value.message);
+            encoder.writeString("UserName", value.userName);
+            encoder.writeDateTime("AnnotationTime", value.annotationTime);
+        }
     }
 
 }

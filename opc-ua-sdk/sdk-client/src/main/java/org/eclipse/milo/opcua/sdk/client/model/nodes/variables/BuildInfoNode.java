@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,123 +20,82 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.BuildInfoType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class BuildInfoNode extends BaseDataVariableNode implements BuildInfoType {
-
     public BuildInfoNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<BaseDataVariableNode> productUri() {
-        return getComponent(QualifiedName.parse("0:ProductUri"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getProductUriNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ProductUri").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getProductUri() {
-        return productUri()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getProductUriNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setProductUri(String value) {
-        return productUri()
-            .thenCompose(node -> node.setValue(value));
+        return getProductUriNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> manufacturerName() {
-        return getComponent(QualifiedName.parse("0:ManufacturerName"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getManufacturerNameNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ManufacturerName").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getManufacturerName() {
-        return manufacturerName()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getManufacturerNameNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setManufacturerName(String value) {
-        return manufacturerName()
-            .thenCompose(node -> node.setValue(value));
+        return getManufacturerNameNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> productName() {
-        return getComponent(QualifiedName.parse("0:ProductName"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getProductNameNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ProductName").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getProductName() {
-        return productName()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getProductNameNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setProductName(String value) {
-        return productName()
-            .thenCompose(node -> node.setValue(value));
+        return getProductNameNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> softwareVersion() {
-        return getComponent(QualifiedName.parse("0:SoftwareVersion"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSoftwareVersionNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "SoftwareVersion").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getSoftwareVersion() {
-        return softwareVersion()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getSoftwareVersionNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSoftwareVersion(String value) {
-        return softwareVersion()
-            .thenCompose(node -> node.setValue(value));
+        return getSoftwareVersionNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> buildNumber() {
-        return getComponent(QualifiedName.parse("0:BuildNumber"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getBuildNumberNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "BuildNumber").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<String> getBuildNumber() {
-        return buildNumber()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, String.class));
+        return getBuildNumberNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, String.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setBuildNumber(String value) {
-        return buildNumber()
-            .thenCompose(node -> node.setValue(value));
+        return getBuildNumberNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> buildDate() {
-        return getComponent(QualifiedName.parse("0:BuildDate"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getBuildDateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "BuildDate").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getBuildDate() {
-        return buildDate()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, DateTime.class));
+        return getBuildDateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, DateTime.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setBuildDate(DateTime value) {
-        return buildDate()
-            .thenCompose(node -> node.setValue(value));
+        return getBuildDateNode().thenCompose(node -> node.setValue(value));
     }
-
 }

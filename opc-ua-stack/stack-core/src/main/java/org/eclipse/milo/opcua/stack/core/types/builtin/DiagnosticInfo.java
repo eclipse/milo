@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 /**
  * Vendor-specific diagnostic information
@@ -93,9 +94,9 @@ public final class DiagnosticInfo {
                           int symbolicId,
                           int locale,
                           int localizedText,
-                          String additionalInfo,
-                          StatusCode innerStatusCode,
-                          DiagnosticInfo innerDiagnosticInfo) {
+                          @Nullable String additionalInfo,
+                          @Nullable StatusCode innerStatusCode,
+                          @Nullable DiagnosticInfo innerDiagnosticInfo) {
 
         this.namespaceUri = namespaceUri;
         this.symbolicId = symbolicId;

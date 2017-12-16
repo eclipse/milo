@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,29 +16,24 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 
-
 public interface AuditDeleteReferencesEventType extends AuditNodeManagementEventType {
-
-    Property<DeleteReferencesItem[]> REFERENCES_TO_DELETE = new BasicProperty<>(
-        QualifiedName.parse("0:ReferencesToDelete"),
+    QualifiedProperty<DeleteReferencesItem[]> REFERENCES_TO_DELETE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ReferencesToDelete",
         NodeId.parse("ns=0;i=385"),
-        1,
+        ValueRanks.OneDimension,
         DeleteReferencesItem[].class
     );
 
-
-    CompletableFuture<? extends PropertyType> referencesToDelete();
+    CompletableFuture<? extends PropertyType> getReferencesToDeleteNode();
 
     CompletableFuture<DeleteReferencesItem[]> getReferencesToDelete();
 
     CompletableFuture<StatusCode> setReferencesToDelete(DeleteReferencesItem[] value);
-
-
 }

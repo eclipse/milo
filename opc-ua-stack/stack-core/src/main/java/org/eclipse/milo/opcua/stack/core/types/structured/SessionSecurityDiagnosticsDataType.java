@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,74 +17,73 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 
-@UaDataType("SessionSecurityDiagnosticsDataType")
 public class SessionSecurityDiagnosticsDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SessionSecurityDiagnosticsDataType;
     public static final NodeId BinaryEncodingId = Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SessionSecurityDiagnosticsDataType_Encoding_DefaultXml;
 
-    protected final NodeId _sessionId;
-    protected final String _clientUserIdOfSession;
-    protected final String[] _clientUserIdHistory;
-    protected final String _authenticationMechanism;
-    protected final String _encoding;
-    protected final String _transportProtocol;
-    protected final MessageSecurityMode _securityMode;
-    protected final String _securityPolicyUri;
-    protected final ByteString _clientCertificate;
+    protected final NodeId sessionId;
+    protected final String clientUserIdOfSession;
+    protected final String[] clientUserIdHistory;
+    protected final String authenticationMechanism;
+    protected final String encoding;
+    protected final String transportProtocol;
+    protected final MessageSecurityMode securityMode;
+    protected final String securityPolicyUri;
+    protected final ByteString clientCertificate;
 
     public SessionSecurityDiagnosticsDataType() {
-        this._sessionId = null;
-        this._clientUserIdOfSession = null;
-        this._clientUserIdHistory = null;
-        this._authenticationMechanism = null;
-        this._encoding = null;
-        this._transportProtocol = null;
-        this._securityMode = null;
-        this._securityPolicyUri = null;
-        this._clientCertificate = null;
+        this.sessionId = null;
+        this.clientUserIdOfSession = null;
+        this.clientUserIdHistory = null;
+        this.authenticationMechanism = null;
+        this.encoding = null;
+        this.transportProtocol = null;
+        this.securityMode = null;
+        this.securityPolicyUri = null;
+        this.clientCertificate = null;
     }
 
-    public SessionSecurityDiagnosticsDataType(NodeId _sessionId, String _clientUserIdOfSession, String[] _clientUserIdHistory, String _authenticationMechanism, String _encoding, String _transportProtocol, MessageSecurityMode _securityMode, String _securityPolicyUri, ByteString _clientCertificate) {
-        this._sessionId = _sessionId;
-        this._clientUserIdOfSession = _clientUserIdOfSession;
-        this._clientUserIdHistory = _clientUserIdHistory;
-        this._authenticationMechanism = _authenticationMechanism;
-        this._encoding = _encoding;
-        this._transportProtocol = _transportProtocol;
-        this._securityMode = _securityMode;
-        this._securityPolicyUri = _securityPolicyUri;
-        this._clientCertificate = _clientCertificate;
+    public SessionSecurityDiagnosticsDataType(NodeId sessionId, String clientUserIdOfSession, String[] clientUserIdHistory, String authenticationMechanism, String encoding, String transportProtocol, MessageSecurityMode securityMode, String securityPolicyUri, ByteString clientCertificate) {
+        this.sessionId = sessionId;
+        this.clientUserIdOfSession = clientUserIdOfSession;
+        this.clientUserIdHistory = clientUserIdHistory;
+        this.authenticationMechanism = authenticationMechanism;
+        this.encoding = encoding;
+        this.transportProtocol = transportProtocol;
+        this.securityMode = securityMode;
+        this.securityPolicyUri = securityPolicyUri;
+        this.clientCertificate = clientCertificate;
     }
 
-    public NodeId getSessionId() { return _sessionId; }
+    public NodeId getSessionId() { return sessionId; }
 
-    public String getClientUserIdOfSession() { return _clientUserIdOfSession; }
+    public String getClientUserIdOfSession() { return clientUserIdOfSession; }
 
     @Nullable
-    public String[] getClientUserIdHistory() { return _clientUserIdHistory; }
+    public String[] getClientUserIdHistory() { return clientUserIdHistory; }
 
-    public String getAuthenticationMechanism() { return _authenticationMechanism; }
+    public String getAuthenticationMechanism() { return authenticationMechanism; }
 
-    public String getEncoding() { return _encoding; }
+    public String getEncoding() { return encoding; }
 
-    public String getTransportProtocol() { return _transportProtocol; }
+    public String getTransportProtocol() { return transportProtocol; }
 
-    public MessageSecurityMode getSecurityMode() { return _securityMode; }
+    public MessageSecurityMode getSecurityMode() { return securityMode; }
 
-    public String getSecurityPolicyUri() { return _securityPolicyUri; }
+    public String getSecurityPolicyUri() { return securityPolicyUri; }
 
-    public ByteString getClientCertificate() { return _clientCertificate; }
+    public ByteString getClientCertificate() { return clientCertificate; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -98,47 +97,52 @@ public class SessionSecurityDiagnosticsDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SessionId", _sessionId)
-            .add("ClientUserIdOfSession", _clientUserIdOfSession)
-            .add("ClientUserIdHistory", _clientUserIdHistory)
-            .add("AuthenticationMechanism", _authenticationMechanism)
-            .add("Encoding", _encoding)
-            .add("TransportProtocol", _transportProtocol)
-            .add("SecurityMode", _securityMode)
-            .add("SecurityPolicyUri", _securityPolicyUri)
-            .add("ClientCertificate", _clientCertificate)
+            .add("SessionId", sessionId)
+            .add("ClientUserIdOfSession", clientUserIdOfSession)
+            .add("ClientUserIdHistory", clientUserIdHistory)
+            .add("AuthenticationMechanism", authenticationMechanism)
+            .add("Encoding", encoding)
+            .add("TransportProtocol", transportProtocol)
+            .add("SecurityMode", securityMode)
+            .add("SecurityPolicyUri", securityPolicyUri)
+            .add("ClientCertificate", clientCertificate)
             .toString();
     }
 
-    public static void encode(SessionSecurityDiagnosticsDataType sessionSecurityDiagnosticsDataType, UaEncoder encoder) {
-        encoder.encodeNodeId("SessionId", sessionSecurityDiagnosticsDataType._sessionId);
-        encoder.encodeString("ClientUserIdOfSession", sessionSecurityDiagnosticsDataType._clientUserIdOfSession);
-        encoder.encodeArray("ClientUserIdHistory", sessionSecurityDiagnosticsDataType._clientUserIdHistory, encoder::encodeString);
-        encoder.encodeString("AuthenticationMechanism", sessionSecurityDiagnosticsDataType._authenticationMechanism);
-        encoder.encodeString("Encoding", sessionSecurityDiagnosticsDataType._encoding);
-        encoder.encodeString("TransportProtocol", sessionSecurityDiagnosticsDataType._transportProtocol);
-        encoder.encodeEnumeration("SecurityMode", sessionSecurityDiagnosticsDataType._securityMode);
-        encoder.encodeString("SecurityPolicyUri", sessionSecurityDiagnosticsDataType._securityPolicyUri);
-        encoder.encodeByteString("ClientCertificate", sessionSecurityDiagnosticsDataType._clientCertificate);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SessionSecurityDiagnosticsDataType> {
 
-    public static SessionSecurityDiagnosticsDataType decode(UaDecoder decoder) {
-        NodeId _sessionId = decoder.decodeNodeId("SessionId");
-        String _clientUserIdOfSession = decoder.decodeString("ClientUserIdOfSession");
-        String[] _clientUserIdHistory = decoder.decodeArray("ClientUserIdHistory", decoder::decodeString, String.class);
-        String _authenticationMechanism = decoder.decodeString("AuthenticationMechanism");
-        String _encoding = decoder.decodeString("Encoding");
-        String _transportProtocol = decoder.decodeString("TransportProtocol");
-        MessageSecurityMode _securityMode = decoder.decodeEnumeration("SecurityMode", MessageSecurityMode.class);
-        String _securityPolicyUri = decoder.decodeString("SecurityPolicyUri");
-        ByteString _clientCertificate = decoder.decodeByteString("ClientCertificate");
+        @Override
+        public Class<SessionSecurityDiagnosticsDataType> getType() {
+            return SessionSecurityDiagnosticsDataType.class;
+        }
 
-        return new SessionSecurityDiagnosticsDataType(_sessionId, _clientUserIdOfSession, _clientUserIdHistory, _authenticationMechanism, _encoding, _transportProtocol, _securityMode, _securityPolicyUri, _clientCertificate);
-    }
+        @Override
+        public SessionSecurityDiagnosticsDataType decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId sessionId = decoder.readNodeId("SessionId");
+            String clientUserIdOfSession = decoder.readString("ClientUserIdOfSession");
+            String[] clientUserIdHistory = decoder.readArray("ClientUserIdHistory", decoder::readString, String.class);
+            String authenticationMechanism = decoder.readString("AuthenticationMechanism");
+            String encoding = decoder.readString("Encoding");
+            String transportProtocol = decoder.readString("TransportProtocol");
+            MessageSecurityMode securityMode = MessageSecurityMode.from(decoder.readInt32("SecurityMode"));
+            String securityPolicyUri = decoder.readString("SecurityPolicyUri");
+            ByteString clientCertificate = decoder.readByteString("ClientCertificate");
 
-    static {
-        DelegateRegistry.registerEncoder(SessionSecurityDiagnosticsDataType::encode, SessionSecurityDiagnosticsDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SessionSecurityDiagnosticsDataType::decode, SessionSecurityDiagnosticsDataType.class, BinaryEncodingId, XmlEncodingId);
+            return new SessionSecurityDiagnosticsDataType(sessionId, clientUserIdOfSession, clientUserIdHistory, authenticationMechanism, encoding, transportProtocol, securityMode, securityPolicyUri, clientCertificate);
+        }
+
+        @Override
+        public void encode(SessionSecurityDiagnosticsDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("SessionId", value.sessionId);
+            encoder.writeString("ClientUserIdOfSession", value.clientUserIdOfSession);
+            encoder.writeArray("ClientUserIdHistory", value.clientUserIdHistory, encoder::writeString);
+            encoder.writeString("AuthenticationMechanism", value.authenticationMechanism);
+            encoder.writeString("Encoding", value.encoding);
+            encoder.writeString("TransportProtocol", value.transportProtocol);
+            encoder.writeInt32("SecurityMode", value.securityMode != null ? value.securityMode.getValue() : 0);
+            encoder.writeString("SecurityPolicyUri", value.securityPolicyUri);
+            encoder.writeByteString("ClientCertificate", value.clientCertificate);
+        }
     }
 
 }

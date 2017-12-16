@@ -117,6 +117,8 @@ public class SignatureUtil {
             }
 
             return mac.doFinal();
+        } catch (NoSuchAlgorithmException e) {
+            throw new UaException(StatusCodes.Bad_InternalError, e);
         } catch (GeneralSecurityException e) {
             throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
         }

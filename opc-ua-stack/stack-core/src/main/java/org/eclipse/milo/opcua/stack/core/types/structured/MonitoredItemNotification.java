@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,38 +15,37 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("MonitoredItemNotification")
 public class MonitoredItemNotification implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.MonitoredItemNotification;
     public static final NodeId BinaryEncodingId = Identifiers.MonitoredItemNotification_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.MonitoredItemNotification_Encoding_DefaultXml;
 
-    protected final UInteger _clientHandle;
-    protected final DataValue _value;
+    protected final UInteger clientHandle;
+    protected final DataValue value;
 
     public MonitoredItemNotification() {
-        this._clientHandle = null;
-        this._value = null;
+        this.clientHandle = null;
+        this.value = null;
     }
 
-    public MonitoredItemNotification(UInteger _clientHandle, DataValue _value) {
-        this._clientHandle = _clientHandle;
-        this._value = _value;
+    public MonitoredItemNotification(UInteger clientHandle, DataValue value) {
+        this.clientHandle = clientHandle;
+        this.value = value;
     }
 
-    public UInteger getClientHandle() { return _clientHandle; }
+    public UInteger getClientHandle() { return clientHandle; }
 
-    public DataValue getValue() { return _value; }
+    public DataValue getValue() { return value; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -60,26 +59,31 @@ public class MonitoredItemNotification implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ClientHandle", _clientHandle)
-            .add("Value", _value)
+            .add("ClientHandle", clientHandle)
+            .add("Value", value)
             .toString();
     }
 
-    public static void encode(MonitoredItemNotification monitoredItemNotification, UaEncoder encoder) {
-        encoder.encodeUInt32("ClientHandle", monitoredItemNotification._clientHandle);
-        encoder.encodeDataValue("Value", monitoredItemNotification._value);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<MonitoredItemNotification> {
 
-    public static MonitoredItemNotification decode(UaDecoder decoder) {
-        UInteger _clientHandle = decoder.decodeUInt32("ClientHandle");
-        DataValue _value = decoder.decodeDataValue("Value");
+        @Override
+        public Class<MonitoredItemNotification> getType() {
+            return MonitoredItemNotification.class;
+        }
 
-        return new MonitoredItemNotification(_clientHandle, _value);
-    }
+        @Override
+        public MonitoredItemNotification decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger clientHandle = decoder.readUInt32("ClientHandle");
+            DataValue value = decoder.readDataValue("Value");
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoredItemNotification::encode, MonitoredItemNotification.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoredItemNotification::decode, MonitoredItemNotification.class, BinaryEncodingId, XmlEncodingId);
+            return new MonitoredItemNotification(clientHandle, value);
+        }
+
+        @Override
+        public void encode(MonitoredItemNotification value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("ClientHandle", value.clientHandle);
+            encoder.writeDataValue("Value", value.value);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,48 +17,47 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ServerOnNetwork")
 public class ServerOnNetwork implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ServerOnNetwork;
     public static final NodeId BinaryEncodingId = Identifiers.ServerOnNetwork_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ServerOnNetwork_Encoding_DefaultXml;
 
-    protected final UInteger _recordId;
-    protected final String _serverName;
-    protected final String _discoveryUrl;
-    protected final String[] _serverCapabilities;
+    protected final UInteger recordId;
+    protected final String serverName;
+    protected final String discoveryUrl;
+    protected final String[] serverCapabilities;
 
     public ServerOnNetwork() {
-        this._recordId = null;
-        this._serverName = null;
-        this._discoveryUrl = null;
-        this._serverCapabilities = null;
+        this.recordId = null;
+        this.serverName = null;
+        this.discoveryUrl = null;
+        this.serverCapabilities = null;
     }
 
-    public ServerOnNetwork(UInteger _recordId, String _serverName, String _discoveryUrl, String[] _serverCapabilities) {
-        this._recordId = _recordId;
-        this._serverName = _serverName;
-        this._discoveryUrl = _discoveryUrl;
-        this._serverCapabilities = _serverCapabilities;
+    public ServerOnNetwork(UInteger recordId, String serverName, String discoveryUrl, String[] serverCapabilities) {
+        this.recordId = recordId;
+        this.serverName = serverName;
+        this.discoveryUrl = discoveryUrl;
+        this.serverCapabilities = serverCapabilities;
     }
 
-    public UInteger getRecordId() { return _recordId; }
+    public UInteger getRecordId() { return recordId; }
 
-    public String getServerName() { return _serverName; }
+    public String getServerName() { return serverName; }
 
-    public String getDiscoveryUrl() { return _discoveryUrl; }
+    public String getDiscoveryUrl() { return discoveryUrl; }
 
     @Nullable
-    public String[] getServerCapabilities() { return _serverCapabilities; }
+    public String[] getServerCapabilities() { return serverCapabilities; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -72,32 +71,37 @@ public class ServerOnNetwork implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RecordId", _recordId)
-            .add("ServerName", _serverName)
-            .add("DiscoveryUrl", _discoveryUrl)
-            .add("ServerCapabilities", _serverCapabilities)
+            .add("RecordId", recordId)
+            .add("ServerName", serverName)
+            .add("DiscoveryUrl", discoveryUrl)
+            .add("ServerCapabilities", serverCapabilities)
             .toString();
     }
 
-    public static void encode(ServerOnNetwork serverOnNetwork, UaEncoder encoder) {
-        encoder.encodeUInt32("RecordId", serverOnNetwork._recordId);
-        encoder.encodeString("ServerName", serverOnNetwork._serverName);
-        encoder.encodeString("DiscoveryUrl", serverOnNetwork._discoveryUrl);
-        encoder.encodeArray("ServerCapabilities", serverOnNetwork._serverCapabilities, encoder::encodeString);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ServerOnNetwork> {
 
-    public static ServerOnNetwork decode(UaDecoder decoder) {
-        UInteger _recordId = decoder.decodeUInt32("RecordId");
-        String _serverName = decoder.decodeString("ServerName");
-        String _discoveryUrl = decoder.decodeString("DiscoveryUrl");
-        String[] _serverCapabilities = decoder.decodeArray("ServerCapabilities", decoder::decodeString, String.class);
+        @Override
+        public Class<ServerOnNetwork> getType() {
+            return ServerOnNetwork.class;
+        }
 
-        return new ServerOnNetwork(_recordId, _serverName, _discoveryUrl, _serverCapabilities);
-    }
+        @Override
+        public ServerOnNetwork decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger recordId = decoder.readUInt32("RecordId");
+            String serverName = decoder.readString("ServerName");
+            String discoveryUrl = decoder.readString("DiscoveryUrl");
+            String[] serverCapabilities = decoder.readArray("ServerCapabilities", decoder::readString, String.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ServerOnNetwork::encode, ServerOnNetwork.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ServerOnNetwork::decode, ServerOnNetwork.class, BinaryEncodingId, XmlEncodingId);
+            return new ServerOnNetwork(recordId, serverName, discoveryUrl, serverCapabilities);
+        }
+
+        @Override
+        public void encode(ServerOnNetwork value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("RecordId", value.recordId);
+            encoder.writeString("ServerName", value.serverName);
+            encoder.writeString("DiscoveryUrl", value.discoveryUrl);
+            encoder.writeArray("ServerCapabilities", value.serverCapabilities, encoder::writeString);
+        }
     }
 
 }

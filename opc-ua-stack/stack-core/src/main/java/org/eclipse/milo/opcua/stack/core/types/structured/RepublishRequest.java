@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,42 +15,41 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("RepublishRequest")
 public class RepublishRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.RepublishRequest;
     public static final NodeId BinaryEncodingId = Identifiers.RepublishRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RepublishRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger _subscriptionId;
-    protected final UInteger _retransmitSequenceNumber;
+    protected final RequestHeader requestHeader;
+    protected final UInteger subscriptionId;
+    protected final UInteger retransmitSequenceNumber;
 
     public RepublishRequest() {
-        this._requestHeader = null;
-        this._subscriptionId = null;
-        this._retransmitSequenceNumber = null;
+        this.requestHeader = null;
+        this.subscriptionId = null;
+        this.retransmitSequenceNumber = null;
     }
 
-    public RepublishRequest(RequestHeader _requestHeader, UInteger _subscriptionId, UInteger _retransmitSequenceNumber) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionId = _subscriptionId;
-        this._retransmitSequenceNumber = _retransmitSequenceNumber;
+    public RepublishRequest(RequestHeader requestHeader, UInteger subscriptionId, UInteger retransmitSequenceNumber) {
+        this.requestHeader = requestHeader;
+        this.subscriptionId = subscriptionId;
+        this.retransmitSequenceNumber = retransmitSequenceNumber;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
-    public UInteger getRetransmitSequenceNumber() { return _retransmitSequenceNumber; }
+    public UInteger getRetransmitSequenceNumber() { return retransmitSequenceNumber; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,29 +63,34 @@ public class RepublishRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionId", _subscriptionId)
-            .add("RetransmitSequenceNumber", _retransmitSequenceNumber)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionId", subscriptionId)
+            .add("RetransmitSequenceNumber", retransmitSequenceNumber)
             .toString();
     }
 
-    public static void encode(RepublishRequest republishRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", republishRequest._requestHeader != null ? republishRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("SubscriptionId", republishRequest._subscriptionId);
-        encoder.encodeUInt32("RetransmitSequenceNumber", republishRequest._retransmitSequenceNumber);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<RepublishRequest> {
 
-    public static RepublishRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        UInteger _retransmitSequenceNumber = decoder.decodeUInt32("RetransmitSequenceNumber");
+        @Override
+        public Class<RepublishRequest> getType() {
+            return RepublishRequest.class;
+        }
 
-        return new RepublishRequest(_requestHeader, _subscriptionId, _retransmitSequenceNumber);
-    }
+        @Override
+        public RepublishRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            UInteger retransmitSequenceNumber = decoder.readUInt32("RetransmitSequenceNumber");
 
-    static {
-        DelegateRegistry.registerEncoder(RepublishRequest::encode, RepublishRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RepublishRequest::decode, RepublishRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new RepublishRequest(requestHeader, subscriptionId, retransmitSequenceNumber);
+        }
+
+        @Override
+        public void encode(RepublishRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeUInt32("RetransmitSequenceNumber", value.retransmitSequenceNumber);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,39 +17,38 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("EventFieldList")
 public class EventFieldList implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.EventFieldList;
     public static final NodeId BinaryEncodingId = Identifiers.EventFieldList_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EventFieldList_Encoding_DefaultXml;
 
-    protected final UInteger _clientHandle;
-    protected final Variant[] _eventFields;
+    protected final UInteger clientHandle;
+    protected final Variant[] eventFields;
 
     public EventFieldList() {
-        this._clientHandle = null;
-        this._eventFields = null;
+        this.clientHandle = null;
+        this.eventFields = null;
     }
 
-    public EventFieldList(UInteger _clientHandle, Variant[] _eventFields) {
-        this._clientHandle = _clientHandle;
-        this._eventFields = _eventFields;
+    public EventFieldList(UInteger clientHandle, Variant[] eventFields) {
+        this.clientHandle = clientHandle;
+        this.eventFields = eventFields;
     }
 
-    public UInteger getClientHandle() { return _clientHandle; }
+    public UInteger getClientHandle() { return clientHandle; }
 
     @Nullable
-    public Variant[] getEventFields() { return _eventFields; }
+    public Variant[] getEventFields() { return eventFields; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,26 +62,31 @@ public class EventFieldList implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ClientHandle", _clientHandle)
-            .add("EventFields", _eventFields)
+            .add("ClientHandle", clientHandle)
+            .add("EventFields", eventFields)
             .toString();
     }
 
-    public static void encode(EventFieldList eventFieldList, UaEncoder encoder) {
-        encoder.encodeUInt32("ClientHandle", eventFieldList._clientHandle);
-        encoder.encodeArray("EventFields", eventFieldList._eventFields, encoder::encodeVariant);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<EventFieldList> {
 
-    public static EventFieldList decode(UaDecoder decoder) {
-        UInteger _clientHandle = decoder.decodeUInt32("ClientHandle");
-        Variant[] _eventFields = decoder.decodeArray("EventFields", decoder::decodeVariant, Variant.class);
+        @Override
+        public Class<EventFieldList> getType() {
+            return EventFieldList.class;
+        }
 
-        return new EventFieldList(_clientHandle, _eventFields);
-    }
+        @Override
+        public EventFieldList decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger clientHandle = decoder.readUInt32("ClientHandle");
+            Variant[] eventFields = decoder.readArray("EventFields", decoder::readVariant, Variant.class);
 
-    static {
-        DelegateRegistry.registerEncoder(EventFieldList::encode, EventFieldList.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EventFieldList::decode, EventFieldList.class, BinaryEncodingId, XmlEncodingId);
+            return new EventFieldList(clientHandle, eventFields);
+        }
+
+        @Override
+        public void encode(EventFieldList value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("ClientHandle", value.clientHandle);
+            encoder.writeArray("EventFields", value.eventFields, encoder::writeVariant);
+        }
     }
 
 }

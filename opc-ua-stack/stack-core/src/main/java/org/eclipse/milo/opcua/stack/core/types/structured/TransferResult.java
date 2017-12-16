@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,39 +17,38 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("TransferResult")
 public class TransferResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.TransferResult;
     public static final NodeId BinaryEncodingId = Identifiers.TransferResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.TransferResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final UInteger[] _availableSequenceNumbers;
+    protected final StatusCode statusCode;
+    protected final UInteger[] availableSequenceNumbers;
 
     public TransferResult() {
-        this._statusCode = null;
-        this._availableSequenceNumbers = null;
+        this.statusCode = null;
+        this.availableSequenceNumbers = null;
     }
 
-    public TransferResult(StatusCode _statusCode, UInteger[] _availableSequenceNumbers) {
-        this._statusCode = _statusCode;
-        this._availableSequenceNumbers = _availableSequenceNumbers;
+    public TransferResult(StatusCode statusCode, UInteger[] availableSequenceNumbers) {
+        this.statusCode = statusCode;
+        this.availableSequenceNumbers = availableSequenceNumbers;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
     @Nullable
-    public UInteger[] getAvailableSequenceNumbers() { return _availableSequenceNumbers; }
+    public UInteger[] getAvailableSequenceNumbers() { return availableSequenceNumbers; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,26 +62,31 @@ public class TransferResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("AvailableSequenceNumbers", _availableSequenceNumbers)
+            .add("StatusCode", statusCode)
+            .add("AvailableSequenceNumbers", availableSequenceNumbers)
             .toString();
     }
 
-    public static void encode(TransferResult transferResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", transferResult._statusCode);
-        encoder.encodeArray("AvailableSequenceNumbers", transferResult._availableSequenceNumbers, encoder::encodeUInt32);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<TransferResult> {
 
-    public static TransferResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        UInteger[] _availableSequenceNumbers = decoder.decodeArray("AvailableSequenceNumbers", decoder::decodeUInt32, UInteger.class);
+        @Override
+        public Class<TransferResult> getType() {
+            return TransferResult.class;
+        }
 
-        return new TransferResult(_statusCode, _availableSequenceNumbers);
-    }
+        @Override
+        public TransferResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            UInteger[] availableSequenceNumbers = decoder.readArray("AvailableSequenceNumbers", decoder::readUInt32, UInteger.class);
 
-    static {
-        DelegateRegistry.registerEncoder(TransferResult::encode, TransferResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(TransferResult::decode, TransferResult.class, BinaryEncodingId, XmlEncodingId);
+            return new TransferResult(statusCode, availableSequenceNumbers);
+        }
+
+        @Override
+        public void encode(TransferResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeArray("AvailableSequenceNumbers", value.availableSequenceNumbers, encoder::writeUInt32);
+        }
     }
 
 }

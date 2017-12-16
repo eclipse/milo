@@ -38,6 +38,8 @@ import org.eclipse.milo.opcua.sdk.client.session.events.ActivateSessionSuccessEv
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionSuccessEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeFailureEvent;
+import org.eclipse.milo.opcua.sdk.client.session.events.InitializeSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ReactivateFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.ReactivateSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferFailureEvent;
@@ -512,6 +514,39 @@ abstract class AbstractSessionState implements SessionState {
         });
     }
     // </editor-fold>
+
+    static void initializeSessionAsync(
+        Fsm fsm,
+        OpcUaSession session,
+        CompletableFuture<OpcUaSession> sessionFuture) {
+
+        fsm.getClient().getConfig().getExecutor().execute(
+            () -> initializeSession(fsm, session, sessionFuture));
+    }
+
+    private static void initializeSession(
+        Fsm fsm,
+        OpcUaSession session,
+        CompletableFuture<OpcUaSession> sessionFuture) {
+
+        List<SessionFsm.SessionInitializer> initializers = fsm.getInitializers();
+
+        if (initializers.isEmpty()) {
+            fsm.fireEvent(new InitializeSuccessEvent(session, sessionFuture));
+        } else {
+            CompletableFuture[] futures = initializers.stream()
+                .map(i -> i.initialize(fsm.getClient().getStackClient(), session))
+                .toArray(CompletableFuture[]::new);
+
+            CompletableFuture.allOf(futures).whenComplete((v, ex) -> {
+                if (ex != null) {
+                    fsm.fireEvent(new InitializeFailureEvent(ex, session, sessionFuture));
+                } else {
+                    fsm.fireEvent(new InitializeSuccessEvent(session, sessionFuture));
+                }
+            });
+        }
+    }
 
     private static SignatureData buildClientSignature(
         ClientSecureChannel secureChannel, ByteString serverNonce) throws Exception {

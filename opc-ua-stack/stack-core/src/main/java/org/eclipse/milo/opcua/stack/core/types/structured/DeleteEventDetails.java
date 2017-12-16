@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,34 +17,33 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("DeleteEventDetails")
 public class DeleteEventDetails extends HistoryUpdateDetails {
 
     public static final NodeId TypeId = Identifiers.DeleteEventDetails;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteEventDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteEventDetails_Encoding_DefaultXml;
 
-    protected final ByteString[] _eventIds;
+    protected final ByteString[] eventIds;
 
     public DeleteEventDetails() {
         super(null);
-        this._eventIds = null;
+        this.eventIds = null;
     }
 
-    public DeleteEventDetails(NodeId _nodeId, ByteString[] _eventIds) {
-        super(_nodeId);
-        this._eventIds = _eventIds;
+    public DeleteEventDetails(NodeId nodeId, ByteString[] eventIds) {
+        super(nodeId);
+        this.eventIds = eventIds;
     }
 
     @Nullable
-    public ByteString[] getEventIds() { return _eventIds; }
+    public ByteString[] getEventIds() { return eventIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class DeleteEventDetails extends HistoryUpdateDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("EventIds", _eventIds)
+            .add("NodeId", nodeId)
+            .add("EventIds", eventIds)
             .toString();
     }
 
-    public static void encode(DeleteEventDetails deleteEventDetails, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", deleteEventDetails._nodeId);
-        encoder.encodeArray("EventIds", deleteEventDetails._eventIds, encoder::encodeByteString);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DeleteEventDetails> {
 
-    public static DeleteEventDetails decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        ByteString[] _eventIds = decoder.decodeArray("EventIds", decoder::decodeByteString, ByteString.class);
+        @Override
+        public Class<DeleteEventDetails> getType() {
+            return DeleteEventDetails.class;
+        }
 
-        return new DeleteEventDetails(_nodeId, _eventIds);
-    }
+        @Override
+        public DeleteEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            ByteString[] eventIds = decoder.readArray("EventIds", decoder::readByteString, ByteString.class);
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteEventDetails::encode, DeleteEventDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteEventDetails::decode, DeleteEventDetails.class, BinaryEncodingId, XmlEncodingId);
+            return new DeleteEventDetails(nodeId, eventIds);
+        }
+
+        @Override
+        public void encode(DeleteEventDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeArray("EventIds", value.eventIds, encoder::writeByteString);
+        }
     }
 
 }

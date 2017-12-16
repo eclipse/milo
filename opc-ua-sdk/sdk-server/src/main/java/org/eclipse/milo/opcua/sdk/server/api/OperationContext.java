@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 
-public class OperationContext<T, U> {
+public class OperationContext<T, U> implements AccessContext {
 
     private final CompletableFuture<List<U>> future;
 
@@ -60,6 +60,7 @@ public class OperationContext<T, U> {
         return server;
     }
 
+    @Override
     public Optional<Session> getSession() {
         return Optional.ofNullable(session);
     }

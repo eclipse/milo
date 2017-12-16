@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,42 +15,41 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReferenceNode")
 public class ReferenceNode implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ReferenceNode;
     public static final NodeId BinaryEncodingId = Identifiers.ReferenceNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReferenceNode_Encoding_DefaultXml;
 
-    protected final NodeId _referenceTypeId;
-    protected final Boolean _isInverse;
-    protected final ExpandedNodeId _targetId;
+    protected final NodeId referenceTypeId;
+    protected final Boolean isInverse;
+    protected final ExpandedNodeId targetId;
 
     public ReferenceNode() {
-        this._referenceTypeId = null;
-        this._isInverse = null;
-        this._targetId = null;
+        this.referenceTypeId = null;
+        this.isInverse = null;
+        this.targetId = null;
     }
 
-    public ReferenceNode(NodeId _referenceTypeId, Boolean _isInverse, ExpandedNodeId _targetId) {
-        this._referenceTypeId = _referenceTypeId;
-        this._isInverse = _isInverse;
-        this._targetId = _targetId;
+    public ReferenceNode(NodeId referenceTypeId, Boolean isInverse, ExpandedNodeId targetId) {
+        this.referenceTypeId = referenceTypeId;
+        this.isInverse = isInverse;
+        this.targetId = targetId;
     }
 
-    public NodeId getReferenceTypeId() { return _referenceTypeId; }
+    public NodeId getReferenceTypeId() { return referenceTypeId; }
 
-    public Boolean getIsInverse() { return _isInverse; }
+    public Boolean getIsInverse() { return isInverse; }
 
-    public ExpandedNodeId getTargetId() { return _targetId; }
+    public ExpandedNodeId getTargetId() { return targetId; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,29 +63,34 @@ public class ReferenceNode implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ReferenceTypeId", _referenceTypeId)
-            .add("IsInverse", _isInverse)
-            .add("TargetId", _targetId)
+            .add("ReferenceTypeId", referenceTypeId)
+            .add("IsInverse", isInverse)
+            .add("TargetId", targetId)
             .toString();
     }
 
-    public static void encode(ReferenceNode referenceNode, UaEncoder encoder) {
-        encoder.encodeNodeId("ReferenceTypeId", referenceNode._referenceTypeId);
-        encoder.encodeBoolean("IsInverse", referenceNode._isInverse);
-        encoder.encodeExpandedNodeId("TargetId", referenceNode._targetId);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ReferenceNode> {
 
-    public static ReferenceNode decode(UaDecoder decoder) {
-        NodeId _referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
-        Boolean _isInverse = decoder.decodeBoolean("IsInverse");
-        ExpandedNodeId _targetId = decoder.decodeExpandedNodeId("TargetId");
+        @Override
+        public Class<ReferenceNode> getType() {
+            return ReferenceNode.class;
+        }
 
-        return new ReferenceNode(_referenceTypeId, _isInverse, _targetId);
-    }
+        @Override
+        public ReferenceNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
+            Boolean isInverse = decoder.readBoolean("IsInverse");
+            ExpandedNodeId targetId = decoder.readExpandedNodeId("TargetId");
 
-    static {
-        DelegateRegistry.registerEncoder(ReferenceNode::encode, ReferenceNode.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReferenceNode::decode, ReferenceNode.class, BinaryEncodingId, XmlEncodingId);
+            return new ReferenceNode(referenceTypeId, isInverse, targetId);
+        }
+
+        @Override
+        public void encode(ReferenceNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
+            encoder.writeBoolean("IsInverse", value.isInverse);
+            encoder.writeExpandedNodeId("TargetId", value.targetId);
+        }
     }
 
 }

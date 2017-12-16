@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,37 +15,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("CancelRequest")
 public class CancelRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.CancelRequest;
     public static final NodeId BinaryEncodingId = Identifiers.CancelRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CancelRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger _requestHandle;
+    protected final RequestHeader requestHeader;
+    protected final UInteger requestHandle;
 
     public CancelRequest() {
-        this._requestHeader = null;
-        this._requestHandle = null;
+        this.requestHeader = null;
+        this.requestHandle = null;
     }
 
-    public CancelRequest(RequestHeader _requestHeader, UInteger _requestHandle) {
-        this._requestHeader = _requestHeader;
-        this._requestHandle = _requestHandle;
+    public CancelRequest(RequestHeader requestHeader, UInteger requestHandle) {
+        this.requestHeader = requestHeader;
+        this.requestHandle = requestHandle;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public UInteger getRequestHandle() { return _requestHandle; }
+    public UInteger getRequestHandle() { return requestHandle; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -59,26 +58,31 @@ public class CancelRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("RequestHandle", _requestHandle)
+            .add("RequestHeader", requestHeader)
+            .add("RequestHandle", requestHandle)
             .toString();
     }
 
-    public static void encode(CancelRequest cancelRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", cancelRequest._requestHeader != null ? cancelRequest._requestHeader : new RequestHeader());
-        encoder.encodeUInt32("RequestHandle", cancelRequest._requestHandle);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<CancelRequest> {
 
-    public static CancelRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger _requestHandle = decoder.decodeUInt32("RequestHandle");
+        @Override
+        public Class<CancelRequest> getType() {
+            return CancelRequest.class;
+        }
 
-        return new CancelRequest(_requestHeader, _requestHandle);
-    }
+        @Override
+        public CancelRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger requestHandle = decoder.readUInt32("RequestHandle");
 
-    static {
-        DelegateRegistry.registerEncoder(CancelRequest::encode, CancelRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CancelRequest::decode, CancelRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new CancelRequest(requestHeader, requestHandle);
+        }
+
+        @Override
+        public void encode(CancelRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeUInt32("RequestHandle", value.requestHandle);
+        }
     }
 
 }

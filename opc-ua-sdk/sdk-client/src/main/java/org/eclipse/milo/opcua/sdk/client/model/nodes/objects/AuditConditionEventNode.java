@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,12 +17,8 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditConditionEventType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-
 public class AuditConditionEventNode extends AuditUpdateMethodEventNode implements AuditConditionEventType {
-
     public AuditConditionEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
-
-
 }

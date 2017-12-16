@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
 import org.eclipse.milo.opcua.sdk.client.session.states.Active;
 import org.eclipse.milo.opcua.sdk.client.session.states.Inactive;
 import org.eclipse.milo.opcua.sdk.client.session.states.SessionState;
+import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
@@ -56,8 +57,14 @@ public class SessionFsm {
         public void fireEvent(Event event) {
             SessionFsm.this.fireEvent(event);
         }
+
+        @Override
+        public List<SessionInitializer> getInitializers() {
+            return initializers;
+        }
     };
 
+    private final List<SessionInitializer> initializers = newCopyOnWriteArrayList();
     private final List<SessionActivityListener> listeners = newCopyOnWriteArrayList();
     private final AtomicReference<SessionState> state = new AtomicReference<>(new Inactive());
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
@@ -112,6 +119,14 @@ public class SessionFsm {
         } finally {
             readWriteLock.readLock().unlock();
         }
+    }
+
+    public void addInitializer(SessionInitializer initializer) {
+        initializers.add(initializer);
+    }
+
+    public void removeInitializer(SessionInitializer initializer) {
+        initializers.remove(initializer);
     }
 
     public void addListener(SessionActivityListener listener) {
@@ -229,6 +244,12 @@ public class SessionFsm {
                 fsm.fireEvent(new ServiceFaultEvent(serviceResult));
             }
         }
+
+    }
+
+    public interface SessionInitializer {
+
+        CompletableFuture<Unit> initialize(UaTcpStackClient stackClient, OpcUaSession session);
 
     }
 

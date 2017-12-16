@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SemanticChangeStructureDataType;
 
-
 public class SemanticChangeEventNode extends BaseModelChangeEventNode implements SemanticChangeEventType {
-
     public SemanticChangeEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> changes() {
-        return getPropertyNode(SemanticChangeEventType.CHANGES.getBrowseName());
+    public CompletableFuture<PropertyNode> getChangesNode() {
+        return getPropertyNode(SemanticChangeEventType.CHANGES);
     }
 
-    @Override
     public CompletableFuture<SemanticChangeStructureDataType[]> getChanges() {
         return getProperty(SemanticChangeEventType.CHANGES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setChanges(SemanticChangeStructureDataType[] value) {
         return setProperty(SemanticChangeEventType.CHANGES, value);
     }
-
-
 }

@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -23,15 +24,12 @@ import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.DecoderDelegate;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.binary.BinaryDecoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -73,6 +71,12 @@ public abstract class UaNode implements Node {
         nodeCache = client.getNodeCache();
     }
 
+    protected CompletableFuture<PropertyNode> getPropertyNode(QualifiedProperty<?> property) {
+        return property.getQualifiedName(client.getNamespaceTable())
+            .map(this::getPropertyNode)
+            .orElse(failedUaFuture(StatusCodes.Bad_NotFound));
+    }
+
     protected CompletableFuture<PropertyNode> getPropertyNode(QualifiedName browseName) {
         UInteger nodeClassMask = uint(NodeClass.Variable.getValue());
         UInteger resultMask = uint(BrowseResultMask.BrowseName.getValue());
@@ -107,20 +111,31 @@ public abstract class UaNode implements Node {
         });
     }
 
+    protected <T> CompletableFuture<T> getProperty(QualifiedProperty<T> property) {
+        return getPropertyNode(property)
+            .thenCompose(VariableNode::getValue)
+            .thenApply(value -> property.getJavaType().cast(value));
+    }
+
     protected <T> CompletableFuture<T> getProperty(Property<T> property) {
         return getPropertyNode(property.getBrowseName())
             .thenCompose(VariableNode::getValue)
             .thenApply(value -> property.getJavaType().cast(value));
     }
 
-    protected CompletableFuture<DataValue> readProperty(Property<?> property) {
-        return getPropertyNode(property.getBrowseName())
-            .thenCompose(VariableNode::readValue);
+    protected <T> CompletableFuture<StatusCode> setProperty(QualifiedProperty<T> property, T value) {
+        return getPropertyNode(property)
+            .thenCompose(node -> node.setValue(value));
     }
 
     protected <T> CompletableFuture<StatusCode> setProperty(Property<T> property, T value) {
         return getPropertyNode(property.getBrowseName())
             .thenCompose(node -> node.setValue(value));
+    }
+
+    protected CompletableFuture<DataValue> readProperty(Property<?> property) {
+        return getPropertyNode(property.getBrowseName())
+            .thenCompose(VariableNode::readValue);
     }
 
     protected CompletableFuture<StatusCode> writeProperty(Property<?> property, DataValue value) {
@@ -345,41 +360,24 @@ public abstract class UaNode implements Node {
      * @param clazz the type to cast {@code o} to.
      * @return the object after casting, or null if {@code o} is null.
      */
-    protected static <T> T cast(Object o, Class<T> clazz) {
+    protected <T> T cast(Object o, Class<T> clazz) {
         if (UaEnumeration.class.isAssignableFrom(clazz) && o instanceof Integer) {
-            return DelegateRegistry.getInstance().getDecoder(clazz).decode(
-                new EnumDecoder((Integer) o)
-            );
+            try {
+                Object enumeration = clazz
+                    .getMethod("from", new Class[]{Integer.class})
+                    .invoke(null, (Integer) o);
+
+                return clazz.cast(enumeration);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                return null;
+            }
         } else if (UaStructure.class.isAssignableFrom(clazz) && o instanceof ExtensionObject) {
-            Object decoded = ((ExtensionObject) o).decode();
+            Object decoded = ((ExtensionObject) o).decode(client.getDataTypeManager());
             return clazz.cast(decoded);
         } else {
             return clazz.cast(o);
         }
     }
 
-    private static class EnumDecoder extends BinaryDecoder {
-
-        private final int value;
-
-        EnumDecoder(int value) {
-            this.value = value;
-        }
-
-        @Override
-        public Integer decodeInt32(String field) throws UaSerializationException {
-            return value;
-        }
-
-        @Override
-        public <T extends UaEnumeration> T decodeEnumeration(
-            String field, Class<T> clazz) throws UaSerializationException {
-
-            DecoderDelegate<T> delegate = DelegateRegistry.getInstance().getDecoder(clazz);
-
-            return delegate.decode(this);
-        }
-
-    }
 
 }

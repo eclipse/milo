@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,7 +17,6 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.FiniteTransitionVariableType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -26,56 +25,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaVariableNode(typeName = "0:FiniteTransitionVariableType")
 public class FiniteTransitionVariableNode extends TransitionVariableNode implements FiniteTransitionVariableType {
-
-    public FiniteTransitionVariableNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        VariableTypeNode variableTypeNode) {
-
-        super(nodeMap, nodeId, variableTypeNode);
+    public FiniteTransitionVariableNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
     }
 
-    public FiniteTransitionVariableNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        DataValue value,
-        NodeId dataType,
-        Integer valueRank,
-        UInteger[] arrayDimensions,
-        UByte accessLevel,
-        UByte userAccessLevel,
-        Double minimumSamplingInterval,
-        boolean historizing) {
-
-        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask,
-            value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+    public FiniteTransitionVariableNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask, DataValue value, NodeId dataType,
+                                        Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel,
+                                        double minimumSamplingInterval, boolean historizing) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
     }
 
-
-    @Override
-    public NodeId getId() {
-        Optional<NodeId> property = getProperty(FiniteTransitionVariableType.ID);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getIdNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(FiniteTransitionVariableType.ID.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(FiniteTransitionVariableType.ID);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public NodeId getId() {
+        Optional<NodeId> propertyValue = getProperty(FiniteTransitionVariableType.ID);
+        return propertyValue.orElse(null);
+    }
+
     public void setId(NodeId value) {
         setProperty(FiniteTransitionVariableType.ID, value);
     }
-
 }

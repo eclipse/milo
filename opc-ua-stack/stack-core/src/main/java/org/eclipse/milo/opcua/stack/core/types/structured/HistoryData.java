@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,33 +17,32 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("HistoryData")
 public class HistoryData implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.HistoryData;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryData_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryData_Encoding_DefaultXml;
 
-    protected final DataValue[] _dataValues;
+    protected final DataValue[] dataValues;
 
     public HistoryData() {
-        this._dataValues = null;
+        this.dataValues = null;
     }
 
-    public HistoryData(DataValue[] _dataValues) {
-        this._dataValues = _dataValues;
+    public HistoryData(DataValue[] dataValues) {
+        this.dataValues = dataValues;
     }
 
     @Nullable
-    public DataValue[] getDataValues() { return _dataValues; }
+    public DataValue[] getDataValues() { return dataValues; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -57,23 +56,28 @@ public class HistoryData implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("DataValues", _dataValues)
+            .add("DataValues", dataValues)
             .toString();
     }
 
-    public static void encode(HistoryData historyData, UaEncoder encoder) {
-        encoder.encodeArray("DataValues", historyData._dataValues, encoder::encodeDataValue);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<HistoryData> {
 
-    public static HistoryData decode(UaDecoder decoder) {
-        DataValue[] _dataValues = decoder.decodeArray("DataValues", decoder::decodeDataValue, DataValue.class);
+        @Override
+        public Class<HistoryData> getType() {
+            return HistoryData.class;
+        }
 
-        return new HistoryData(_dataValues);
-    }
+        @Override
+        public HistoryData decode(UaDecoder decoder) throws UaSerializationException {
+            DataValue[] dataValues = decoder.readArray("DataValues", decoder::readDataValue, DataValue.class);
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryData::encode, HistoryData.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryData::decode, HistoryData.class, BinaryEncodingId, XmlEncodingId);
+            return new HistoryData(dataValues);
+        }
+
+        @Override
+        public void encode(HistoryData value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeArray("DataValues", value.dataValues, encoder::writeDataValue);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,44 +15,43 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("HistoryReadResult")
 public class HistoryReadResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.HistoryReadResult;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryReadResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryReadResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final ByteString _continuationPoint;
-    protected final ExtensionObject _historyData;
+    protected final StatusCode statusCode;
+    protected final ByteString continuationPoint;
+    protected final ExtensionObject historyData;
 
     public HistoryReadResult() {
-        this._statusCode = null;
-        this._continuationPoint = null;
-        this._historyData = null;
+        this.statusCode = null;
+        this.continuationPoint = null;
+        this.historyData = null;
     }
 
-    public HistoryReadResult(StatusCode _statusCode, ByteString _continuationPoint, ExtensionObject _historyData) {
-        this._statusCode = _statusCode;
-        this._continuationPoint = _continuationPoint;
-        this._historyData = _historyData;
+    public HistoryReadResult(StatusCode statusCode, ByteString continuationPoint, ExtensionObject historyData) {
+        this.statusCode = statusCode;
+        this.continuationPoint = continuationPoint;
+        this.historyData = historyData;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
-    public ByteString getContinuationPoint() { return _continuationPoint; }
+    public ByteString getContinuationPoint() { return continuationPoint; }
 
-    public ExtensionObject getHistoryData() { return _historyData; }
+    public ExtensionObject getHistoryData() { return historyData; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -66,29 +65,34 @@ public class HistoryReadResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("ContinuationPoint", _continuationPoint)
-            .add("HistoryData", _historyData)
+            .add("StatusCode", statusCode)
+            .add("ContinuationPoint", continuationPoint)
+            .add("HistoryData", historyData)
             .toString();
     }
 
-    public static void encode(HistoryReadResult historyReadResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", historyReadResult._statusCode);
-        encoder.encodeByteString("ContinuationPoint", historyReadResult._continuationPoint);
-        encoder.encodeExtensionObject("HistoryData", historyReadResult._historyData);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<HistoryReadResult> {
 
-    public static HistoryReadResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        ByteString _continuationPoint = decoder.decodeByteString("ContinuationPoint");
-        ExtensionObject _historyData = decoder.decodeExtensionObject("HistoryData");
+        @Override
+        public Class<HistoryReadResult> getType() {
+            return HistoryReadResult.class;
+        }
 
-        return new HistoryReadResult(_statusCode, _continuationPoint, _historyData);
-    }
+        @Override
+        public HistoryReadResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
+            ExtensionObject historyData = decoder.readExtensionObject("HistoryData");
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryReadResult::encode, HistoryReadResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryReadResult::decode, HistoryReadResult.class, BinaryEncodingId, XmlEncodingId);
+            return new HistoryReadResult(statusCode, continuationPoint, historyData);
+        }
+
+        @Override
+        public void encode(HistoryReadResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
+            encoder.writeExtensionObject("HistoryData", value.historyData);
+        }
     }
 
 }

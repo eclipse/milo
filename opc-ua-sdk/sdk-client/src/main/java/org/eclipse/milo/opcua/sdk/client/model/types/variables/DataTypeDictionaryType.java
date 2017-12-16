@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,41 +15,37 @@ package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface DataTypeDictionaryType extends BaseDataVariableType {
-
-    Property<String> DATA_TYPE_VERSION = new BasicProperty<>(
-        QualifiedName.parse("0:DataTypeVersion"),
+    QualifiedProperty<String> DATA_TYPE_VERSION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DataTypeVersion",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<String> NAMESPACE_URI = new BasicProperty<>(
-        QualifiedName.parse("0:NamespaceUri"),
+    QualifiedProperty<String> NAMESPACE_URI = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NamespaceUri",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-
-    CompletableFuture<? extends PropertyType> dataTypeVersion();
+    CompletableFuture<? extends PropertyType> getDataTypeVersionNode();
 
     CompletableFuture<String> getDataTypeVersion();
 
     CompletableFuture<StatusCode> setDataTypeVersion(String value);
 
-    CompletableFuture<? extends PropertyType> namespaceUri();
+    CompletableFuture<? extends PropertyType> getNamespaceUriNode();
 
     CompletableFuture<String> getNamespaceUri();
 
     CompletableFuture<StatusCode> setNamespaceUri(String value);
-
-
 }
