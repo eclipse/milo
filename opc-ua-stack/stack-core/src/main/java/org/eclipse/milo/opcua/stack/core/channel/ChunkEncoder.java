@@ -23,6 +23,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
@@ -60,7 +61,14 @@ public class ChunkEncoder {
         ByteBuf messageBuffer,
         long requestId) throws UaException {
 
-        return encode(asymmetricDelegate, channel, messageType, messageBuffer, requestId);
+        List<ByteBuf> chunks = new ArrayList<>();
+
+        try {
+            return encode(asymmetricDelegate, channel, messageType, messageBuffer, requestId, chunks);
+        } catch (UaException e) {
+            chunks.forEach(ReferenceCountUtil::safeRelease);
+            throw e;
+        }
     }
 
     public List<ByteBuf> encodeSymmetric(
@@ -69,7 +77,14 @@ public class ChunkEncoder {
         ByteBuf messageBuffer,
         long requestId) throws UaException {
 
-        return encode(symmetricDelegate, channel, messageType, messageBuffer, requestId);
+        List<ByteBuf> chunks = new ArrayList<>();
+
+        try {
+            return encode(symmetricDelegate, channel, messageType, messageBuffer, requestId, chunks);
+        } catch (UaException e) {
+            chunks.forEach(ReferenceCountUtil::safeRelease);
+            throw e;
+        }
     }
 
     private List<ByteBuf> encode(
@@ -77,9 +92,8 @@ public class ChunkEncoder {
         SecureChannel channel,
         MessageType messageType,
         ByteBuf messageBuffer,
-        long requestId) throws UaException {
-
-        List<ByteBuf> chunks = new ArrayList<>();
+        long requestId,
+        List<ByteBuf> chunks) throws UaException {
 
         boolean encrypted = delegate.isEncryptionEnabled(channel);
 
@@ -120,6 +134,8 @@ public class ChunkEncoder {
             assert (chunkSize <= maxChunkSize);
 
             ByteBuf chunkBuffer = BufferUtil.buffer(chunkSize);
+
+            chunks.add(chunkBuffer);
 
             /* Message Header */
             SecureMessageHeader messageHeader = new SecureMessageHeader(
@@ -196,8 +212,6 @@ public class ChunkEncoder {
             }
 
             chunkBuffer.readerIndex(0).writerIndex(chunkSize);
-
-            chunks.add(chunkBuffer);
         }
 
         lastRequestId = requestId;

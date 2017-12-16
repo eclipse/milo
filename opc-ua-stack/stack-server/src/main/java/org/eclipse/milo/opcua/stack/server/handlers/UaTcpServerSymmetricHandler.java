@@ -21,6 +21,7 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
@@ -228,7 +229,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        chunkBuffers.forEach(ByteBuf::release);
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
         chunkBuffers.clear();
 
         if (cause instanceof IOException) {

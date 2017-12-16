@@ -29,6 +29,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.AttributeKey;
+import io.netty.util.ReferenceCountUtil;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -173,6 +174,9 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         logger.error(
             "[remote={}] Exception caught: {}",
             ctx.channel().remoteAddress(), cause.getMessage(), cause);
+
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+        chunkBuffers.clear();
 
         ctx.close();
     }

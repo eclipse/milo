@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
@@ -59,15 +60,34 @@ public class ChunkDecoder {
     }
 
     public ByteBuf decodeAsymmetric(SecureChannel channel, List<ByteBuf> chunkBuffers) throws UaException {
-        return decode(asymmetricDelegate, channel, chunkBuffers);
+        CompositeByteBuf composite = BufferUtil.compositeBuffer();
+
+        try {
+            return decode(asymmetricDelegate, channel, composite, chunkBuffers);
+        } catch (UaException e) {
+            releaseBuffers(composite, chunkBuffers);
+
+            throw e;
+        }
     }
 
     public ByteBuf decodeSymmetric(SecureChannel channel, List<ByteBuf> chunkBuffers) throws UaException {
-        return decode(symmetricDelegate, channel, chunkBuffers);
+        CompositeByteBuf composite = BufferUtil.compositeBuffer();
+
+        try {
+            return decode(symmetricDelegate, channel, composite, chunkBuffers);
+        } catch (UaException e) {
+            releaseBuffers(composite, chunkBuffers);
+
+            throw e;
+        }
     }
 
-    private ByteBuf decode(Delegate delegate, SecureChannel channel, List<ByteBuf> chunkBuffers) throws UaException {
-        CompositeByteBuf composite = BufferUtil.compositeBuffer();
+    private ByteBuf decode(
+        Delegate delegate,
+        SecureChannel channel,
+        CompositeByteBuf composite,
+        List<ByteBuf> chunkBuffers) throws UaException {
 
         int signatureSize = delegate.getSignatureSize(channel);
         int cipherTextBlockSize = delegate.getCipherTextBlockSize(channel);
@@ -131,6 +151,14 @@ public class ChunkDecoder {
         }
 
         return composite.order(ByteOrder.LITTLE_ENDIAN);
+    }
+
+    private static void releaseBuffers(CompositeByteBuf composite, List<ByteBuf> chunkBuffers) {
+        while (composite.numComponents() > 0) {
+            composite.removeComponent(0);
+        }
+        composite.release();
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
     }
 
     /**

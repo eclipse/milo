@@ -28,6 +28,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
@@ -409,7 +410,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        chunkBuffers.forEach(ByteBuf::release);
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
         chunkBuffers.clear();
 
         if (cause instanceof IOException) {
