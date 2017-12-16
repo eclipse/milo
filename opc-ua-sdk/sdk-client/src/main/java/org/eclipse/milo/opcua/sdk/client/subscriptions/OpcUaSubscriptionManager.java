@@ -58,6 +58,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusChangeNotification;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -476,22 +477,19 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         }
 
         client.<PublishResponse>sendRequest(request).whenComplete((response, ex) -> {
-
-            pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
-
             if (response != null) {
                 logger.debug("Received PublishResponse, sequenceNumber={}",
                     response.getNotificationMessage().getSequenceNumber());
 
-                processingQueue.submit(() -> onPublishComplete(response));
-
-                maybeSendPublishRequests();
+                processingQueue.submit(() -> onPublishComplete(response, pendingCount));
             } else {
                 StatusCode statusCode = UaException.extract(ex)
                     .map(UaException::getStatusCode)
                     .orElse(StatusCode.BAD);
 
                 logger.debug("Publish service failure (requestHandle={}): {}", requestHandle, statusCode, ex);
+
+                pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
 
                 if (statusCode.getValue() != StatusCodes.Bad_NoSubscription &&
                     statusCode.getValue() != StatusCodes.Bad_TooManyPublishRequests) {
@@ -509,13 +507,17 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
         });
     }
 
-    private void onPublishComplete(PublishResponse response) {
+    private void onPublishComplete(PublishResponse response, AtomicLong pendingCount) {
         logger.debug("onPublishComplete() response for subscriptionId={}", response.getSubscriptionId());
 
         UInteger subscriptionId = response.getSubscriptionId();
         OpcUaSubscription subscription = subscriptions.get(subscriptionId);
 
-        if (subscription == null) return;
+        if (subscription == null) {
+            pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
+            maybeSendPublishRequests();
+            return;
+        }
 
         NotificationMessage notificationMessage = response.getNotificationMessage();
 
@@ -527,7 +529,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 subscriptionId, expectedSequenceNumber, sequenceNumber);
 
             processingQueue.pause();
-            processingQueue.submitToHead(() -> onPublishComplete(response));
+            processingQueue.submitToHead(() -> onPublishComplete(response, pendingCount));
 
             republish(subscriptionId, expectedSequenceNumber, sequenceNumber).whenComplete((dataLost, ex) -> {
                 if (ex != null) {
@@ -570,7 +572,19 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             }
         }
 
-        onNotificationMessage(subscriptionId, notificationMessage);
+        DateTime publishTime = notificationMessage.getPublishTime();
+
+        logger.debug("onPublishComplete(), subscriptionId={}, sequenceNumber={}, publishTime={}",
+            subscriptionId, notificationMessage.getSequenceNumber(), publishTime);
+
+        deliverNotificationMessage(subscription, notificationMessage).thenRunAsync(
+            () -> {
+                pendingCount.getAndUpdate(p -> (p > 0) ? p - 1 : 0);
+
+                maybeSendPublishRequests();
+            },
+            client.getStackClient().getExecutorService()
+        );
     }
 
     private CompletableFuture<Boolean> republish(UInteger subscriptionId, long fromSequence, long toSequence) {
@@ -626,23 +640,23 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 "expected sequence=" + expectedSequenceNumber + ", received sequence=" + sequenceNumber);
         }
 
-        onNotificationMessage(subscriptionId, notificationMessage);
-    }
-
-    private void onNotificationMessage(UInteger subscriptionId, NotificationMessage notificationMessage) {
         DateTime publishTime = notificationMessage.getPublishTime();
 
-        logger.debug("onNotificationMessage(), subscriptionId={}, sequenceNumber={}, publishTime={}",
+        logger.debug("onRepublishComplete(), subscriptionId={}, sequenceNumber={}, publishTime={}",
             subscriptionId, notificationMessage.getSequenceNumber(), publishTime);
 
-
         OpcUaSubscription subscription = subscriptions.get(subscriptionId);
+
         if (subscription != null) {
             deliverNotificationMessage(subscription, notificationMessage);
         }
     }
 
-    private void deliverNotificationMessage(OpcUaSubscription subscription, NotificationMessage notificationMessage) {
+    private CompletableFuture<Unit> deliverNotificationMessage(
+        OpcUaSubscription subscription, NotificationMessage notificationMessage) {
+
+        CompletableFuture<Unit> delivered = new CompletableFuture<>();
+
         subscription.getNotificationSemaphore().acquire().thenAccept(permit -> deliveryQueue.submit(() -> {
             try {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
@@ -748,14 +762,17 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                         if (scn.getStatus().getValue() == StatusCodes.Bad_Timeout) {
                             subscriptions.remove(subscription.getSubscriptionId());
-                            maybeSendPublishRequests();
                         }
                     }
                 }
             } finally {
                 permit.release();
+
+                delivered.complete(Unit.VALUE);
             }
         }));
+
+        return delivered;
     }
 
     public void startPublishing() {
