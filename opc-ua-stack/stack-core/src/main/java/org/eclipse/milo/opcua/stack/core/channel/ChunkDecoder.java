@@ -29,6 +29,7 @@ import javax.crypto.spec.SecretKeySpec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.headers.AsymmetricSecurityHeader;
@@ -157,7 +158,7 @@ public class ChunkDecoder {
             composite.removeComponent(0);
         }
         composite.release();
-        chunkBuffers.forEach(ByteBuf::release);
+        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
     }
 
     /**
