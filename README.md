@@ -22,7 +22,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
 </dependency>
 ```
 
@@ -32,7 +32,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-server</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
 </dependency>
 ```
 
@@ -42,7 +42,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-client</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
 </dependency>
 ```
 
@@ -50,7 +50,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-server</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
 </dependency>
 ```
 
