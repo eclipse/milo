@@ -222,17 +222,17 @@ public final class ChunkDecoder {
                 } else {
                     cipher.doFinal(chunkNioBuffer, plainTextNioBuffer);
                 }
+
+                /* Write plainTextBuffer back into the chunk buffer we decrypted from. */
+                plainTextNioBuffer.flip(); // limit = pos, pos = 0
+
+                chunkBuffer.writerIndex(chunkBuffer.readerIndex());
+                chunkBuffer.writeBytes(plainTextNioBuffer);
             } catch (GeneralSecurityException e) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+            } finally {
+                plainTextBuffer.release();
             }
-
-            /* Write plainTextBuffer back into the chunk buffer we decrypted from. */
-            plainTextNioBuffer.flip(); // limit = pos, pos = 0
-
-            chunkBuffer.writerIndex(chunkBuffer.readerIndex());
-            chunkBuffer.writeBytes(plainTextNioBuffer);
-
-            plainTextBuffer.release();
         }
 
         private int getPaddingSize(int cipherTextBlockSize, int signatureSize, ByteBuf buffer) {
