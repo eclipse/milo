@@ -53,22 +53,17 @@ public class SecureClientStandalone implements ClientExample {
 
     private SecureClientStandalone(){
         /* Get keystore password */
-        Console console = System.console();
-        if (console == null) {
-            logger.error("Couldn't get Console instance");
-            System.exit(0);
-        }
-        char[] keystorePasswordArray = console.readPassword("Enter your keystore password: ");
+        char[] keystorePasswordArray = System.getenv("KEYSTOREPSWED").toCharArray();
 
         try{
-            File file = new File(System.getProperty("user.home") + File.separatorChar + "opcua.keystore");
+            File file = new File("secret" + File.separatorChar + "opcua.keystore");
             FileInputStream is = new FileInputStream(file);
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             keystore.load(is, keystorePasswordArray);
             is.close();
 
             /*Get key from keystore */
-            char[] keyPasswordArray = console.readPassword("Enter your key password: ");
+            char[] keyPasswordArray = System.getenv("KEYPSWD").toCharArray();
             PrivateKey key = (PrivateKey)keystore.getKey("opcua", keyPasswordArray);
 
             /* Get certificate of public key */
