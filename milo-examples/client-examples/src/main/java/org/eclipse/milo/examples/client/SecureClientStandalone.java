@@ -84,8 +84,6 @@ public class SecureClientStandalone implements ClientExample {
             logger.error("Loading from keystore failed.");
             System.exit(1);
         }
-
-
     }
 
     @Override
