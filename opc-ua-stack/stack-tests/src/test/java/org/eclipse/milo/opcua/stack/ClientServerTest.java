@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -24,6 +25,7 @@ import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -531,6 +533,13 @@ public class ClientServerTest extends SecurityFixture {
             .setEndpoint(endpoint)
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
+            .setCertificateValidator(new InsecureCertificateValidator() {
+                @Override
+                public void validate(X509Certificate certificate) throws UaException {}
+
+                @Override
+                public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {}
+            })
             .build();
 
         return new UaTcpStackClient(config);
