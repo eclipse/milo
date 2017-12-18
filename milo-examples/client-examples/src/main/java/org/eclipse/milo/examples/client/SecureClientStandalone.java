@@ -14,7 +14,6 @@
 package org.eclipse.milo.examples.client;
 
 import com.google.common.collect.ImmutableList;
-import org.eclipse.milo.examples.client.ClientExample;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
