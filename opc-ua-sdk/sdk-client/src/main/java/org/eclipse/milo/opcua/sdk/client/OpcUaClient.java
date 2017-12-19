@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.client.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
-import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
@@ -691,8 +690,8 @@ public class OpcUaClient implements UaClient {
     }
 
     @Override
-    public CompletableFuture<UaSession> getSession() {
-        return sessionFsm.getSession().thenApply(s -> (UaSession) s);
+    public CompletableFuture<OpcUaSession> getSession() {
+        return sessionFsm.getSession();
     }
 
     @Override
