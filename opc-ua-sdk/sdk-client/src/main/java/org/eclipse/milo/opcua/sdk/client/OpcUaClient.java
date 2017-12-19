@@ -730,7 +730,7 @@ public class OpcUaClient implements UaClient {
                 logger.debug("Notifying {} ServiceFaultListeners", faultListeners.size());
 
                 faultNotificationQueue.submit(() ->
-                    faultListeners.stream().forEach(h -> h.onServiceFault(serviceFault)));
+                    faultListeners.forEach(h -> h.onServiceFault(serviceFault)));
             } else if (ex.getCause() instanceof UaServiceFaultException) {
                 UaServiceFaultException faultException = (UaServiceFaultException) ex.getCause();
                 ServiceFault serviceFault = faultException.getServiceFault();
@@ -738,7 +738,7 @@ public class OpcUaClient implements UaClient {
                 logger.debug("Notifying {} ServiceFaultListeners", faultListeners.size());
 
                 faultNotificationQueue.submit(() ->
-                    faultListeners.stream().forEach(h -> h.onServiceFault(serviceFault)));
+                    faultListeners.forEach(h -> h.onServiceFault(serviceFault)));
             }
         }
     }
