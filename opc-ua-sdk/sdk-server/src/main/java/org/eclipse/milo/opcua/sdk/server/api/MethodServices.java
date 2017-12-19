@@ -55,17 +55,18 @@ public interface MethodServices {
             } catch (Throwable t) {
                 LoggerFactory.getLogger(getClass())
                     .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
-
-                resultFuture.complete(new CallMethodResult(
-                    new StatusCode(StatusCodes.Bad_InternalError),
-                    new StatusCode[0], new DiagnosticInfo[0], new Variant[0]
-                ));
             }
 
-            results.add(resultFuture);
+            results.add(
+                resultFuture.exceptionally(ex ->
+                    new CallMethodResult(
+                        new StatusCode(StatusCodes.Bad_InternalError),
+                        new StatusCode[0], new DiagnosticInfo[0], new Variant[0])
+                )
+            );
         }
 
-        FutureUtils.sequence(results).thenAccept(rs -> context.complete(rs));
+        FutureUtils.sequence(results).thenAccept(context::complete);
     }
 
     /**
