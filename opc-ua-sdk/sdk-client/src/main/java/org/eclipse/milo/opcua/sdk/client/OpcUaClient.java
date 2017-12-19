@@ -763,4 +763,14 @@ public class OpcUaClient implements UaClient {
         logger.debug("Removed SessionActivityListener: {}", listener);
     }
 
+    public void addSessionInitializer(SessionFsm.SessionInitializer initializer) {
+        sessionFsm.addInitializer(initializer);
+        logger.debug("Added SessionInitializer: {}", initializer);
+    }
+
+    public void removeSessionInitializer(SessionFsm.SessionInitializer initializer) {
+        sessionFsm.removeInitializer(initializer);
+        logger.debug("Removed SessionInitializer: {}", initializer);
+    }
+
 }
