@@ -232,12 +232,11 @@ public class OpcUaClient implements UaClient {
         return addressSpace;
     }
 
-    // TODO add to interface?
     public DataTypeManager getDataTypeManager() {
         return dataTypeManager;
     }
 
-    TypeRegistry getTypeRegistry() {
+    public TypeRegistry getTypeRegistry() {
         return typeRegistry;
     }
 
