@@ -102,8 +102,14 @@ public class ClientExampleRunner {
     }
 
     public void run() {
-        future.whenComplete((client, ex) -> {
-            if (client != null) {
+        try {
+            OpcUaClient client = createClient();
+
+            future.whenComplete((c, ex) -> {
+                if (ex != null) {
+                    logger.error("Error running example: {}", ex.getMessage(), ex);
+                }
+
                 try {
                     client.disconnect().get();
                     if (serverRequired && exampleServer != null) {
@@ -113,21 +119,14 @@ public class ClientExampleRunner {
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);
                 }
-            } else {
-                logger.error("Error running example: {}", ex.getMessage(), ex);
-                Stack.releaseSharedResources();
-            }
 
-            try {
-                Thread.sleep(1000);
-                System.exit(0);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        try {
-            OpcUaClient client = createClient();
+                try {
+                    Thread.sleep(1000);
+                    System.exit(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
 
             try {
                 clientExample.run(client, future);
