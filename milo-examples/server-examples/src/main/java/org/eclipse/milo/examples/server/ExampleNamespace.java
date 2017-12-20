@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
+import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
@@ -36,6 +37,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
@@ -49,9 +51,12 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -175,6 +180,8 @@ public class ExampleNamespace implements Namespace {
             addVariableNodes(folderNode);
 
             addMethodNode(folderNode);
+
+            addCustomDataTypeVariable(folderNode);
 
             addCustomObjectTypeAndInstance(folderNode);
         } catch (UaException e) {
@@ -608,6 +615,93 @@ public class ExampleNamespace implements Namespace {
 
         myObject.addReference(new Reference(
             myObject.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            rootFolder.getNodeClass(),
+            false
+        ));
+    }
+
+    private void addCustomDataTypeVariable(UaFolderNode rootFolder) {
+        // add a custom DataTypeNode as a subtype of the built-in Structure DataTypeNode
+        NodeId dataTypeId = new NodeId(namespaceIndex, "DataType.CustomDataType");
+
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            server.getNodeMap(),
+            dataTypeId,
+            new QualifiedName(namespaceIndex, "CustomDataType"),
+            LocalizedText.english("CustomDataType"),
+            LocalizedText.english("CustomDataType"),
+            uint(0),
+            uint(0),
+            false
+        );
+
+        // Inverse ref to Structure
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            Identifiers.HasSubtype,
+            Identifiers.Structure.expanded(),
+            NodeClass.DataType,
+            false
+        ));
+
+        // Forward ref from Structure
+        Optional<UaDataTypeNode> structureDataTypeNode = server.getNodeMap()
+            .getNode(Identifiers.Structure)
+            .map(UaDataTypeNode.class::cast);
+
+        structureDataTypeNode.ifPresent(node ->
+            node.addReference(new Reference(
+                node.getNodeId(),
+                Identifiers.HasSubtype,
+                dataTypeId.expanded(),
+                NodeClass.DataType,
+                true
+            ))
+        );
+
+        // Create a dictionary, binaryEncodingId, and register the codec under that id
+        OpcUaBinaryDataTypeDictionary dictionary = new OpcUaBinaryDataTypeDictionary(
+            "urn:eclipse:milo:example:custom-data-type"
+        );
+
+        NodeId binaryEncodingId = new NodeId(namespaceIndex, "DataType.CustomDataType.BinaryEncoding");
+
+        dictionary.registerStructCodec(
+            new CustomDataType.Codec().asBinaryCodec(),
+            "CustomDataType",
+            binaryEncodingId
+        );
+
+        // Register dictionary with the shared DataTypeManager instance
+        OpcUaDataTypeManager.getInstance().registerTypeDictionary(dictionary);
+
+
+        UaVariableNode customDataTypeVariable = UaVariableNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/CustomDataTypeVariable"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, "CustomDataTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomDataTypeVariable"))
+            .setDataType(dataTypeId)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        CustomDataType value = new CustomDataType(
+            "foo",
+            uint(42),
+            true
+        );
+
+        ExtensionObject xo = ExtensionObject.encode(value, binaryEncodingId);
+
+        customDataTypeVariable.setValue(new DataValue(new Variant(xo)));
+
+        rootFolder.addOrganizes(customDataTypeVariable);
+
+        customDataTypeVariable.addReference(new Reference(
+            customDataTypeVariable.getNodeId(),
             Identifiers.Organizes,
             rootFolder.getNodeId().expanded(),
             rootFolder.getNodeClass(),

@@ -112,6 +112,12 @@ public final class ExtensionObject {
         return encodeAsByteString(structure, structure.getBinaryEncodingId(), dataTypeManager);
     }
 
+    public static ExtensionObject encode(Object object,
+                                         NodeId encodingTypeId) throws UaSerializationException {
+
+        return encodeAsByteString(object, encodingTypeId);
+    }
+
     public static ExtensionObject encodeAsByteString(Object object,
                                                      NodeId encodingTypeId) throws UaSerializationException {
 
