@@ -41,7 +41,7 @@ public class SecureClientStandaloneRunner {
 
     private final SecureClientStandalone clientExample;
 
-    public SecureClientStandaloneRunner(SecureClientStandalone clientExample){
+    SecureClientStandaloneRunner(SecureClientStandalone clientExample){
         this.clientExample = clientExample;
     }
 
@@ -49,6 +49,7 @@ public class SecureClientStandaloneRunner {
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
         String endpointURL = System.getenv("ENDPOINT_URL");
+        logger.info("ENDPOINTURL="+endpointURL);
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointURL).get();
 
