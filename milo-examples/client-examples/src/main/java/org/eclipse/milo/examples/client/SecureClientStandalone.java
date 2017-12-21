@@ -56,7 +56,9 @@ public class SecureClientStandalone implements ClientExample {
         char[] keystorePasswordArray = System.getenv("KEYSTOREPSWED").toCharArray();
 
         try{
-            File file = new File("secret" + File.separatorChar + "opcua.keystore");
+            String keystorepath = "secrets/opcua.keystore";
+            logger.info("Trying to load keyfile from "+keystorepath);
+            File file = new File(keystorepath);
             FileInputStream is = new FileInputStream(file);
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
             keystore.load(is, keystorePasswordArray);
