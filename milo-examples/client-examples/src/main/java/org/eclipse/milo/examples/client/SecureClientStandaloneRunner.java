@@ -53,6 +53,10 @@ public class SecureClientStandaloneRunner {
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointURL).get();
 
+        logger.info("Available endpoints:");
+        for (EndpointDescription endpointDescription : endpoints){
+            logger.info(endpointDescription.getEndpointUrl()+ " "+endpointDescription.getSecurityPolicyUri());
+        }
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
