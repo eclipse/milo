@@ -37,7 +37,7 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.*;
 
 public class SecureServerStandalone {
 
-    String ip = System.getProperty("OPCUA_SERVER_IP");
+    String ip = System.getenv("OPCUA_SERVER_IP");
 
     private static final Logger logger = LoggerFactory.getLogger(SecureServerStandalone.class);
 
@@ -91,7 +91,7 @@ public class SecureServerStandalone {
             loader.getServerCertificate()
         );
 
-        File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
+        File securityTempDir = new File(System.getenv("OPCUA_CERT_DIR"), "security");
 
         logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
@@ -103,7 +103,7 @@ public class SecureServerStandalone {
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
             .setBindAddresses(newArrayList(ip))
-            .setBindPort(12686)
+            .setBindPort(4840)
             .setBuildInfo(
                 new BuildInfo(
                     "urn:eclipse:milo:example-server",
