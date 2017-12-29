@@ -33,10 +33,14 @@ import java.util.concurrent.CompletableFuture;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.*;
 
-public class ExampleServerAcceptingX509Identities {
+public class SecureServerStandalone {
+
+    String ip = System.getProperty("OPCUA_SERVER_IP");
+
+    private final OpcUaServer server;
 
     public static void main(String[] args) throws Exception {
-        ExampleServerAcceptingX509Identities server = new ExampleServerAcceptingX509Identities();
+        SecureServerStandalone server = new SecureServerStandalone();
 
         server.startup().get();
 
@@ -47,9 +51,7 @@ public class ExampleServerAcceptingX509Identities {
         future.get();
     }
 
-    private final OpcUaServer server;
-
-    public ExampleServerAcceptingX509Identities() throws Exception {
+    public SecureServerStandalone() throws Exception {
         CryptoRestrictions.remove();
 
         KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -71,7 +73,7 @@ public class ExampleServerAcceptingX509Identities {
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
-            .setBindAddresses(newArrayList("0.0.0.0"))
+            .setBindAddresses(newArrayList(ip))
             .setBindPort(12686)
             .setBuildInfo(
                 new BuildInfo(
@@ -84,7 +86,7 @@ public class ExampleServerAcceptingX509Identities {
             .setCertificateValidator(certificateValidator)
             .setIdentityValidator(x509identityValidator)
             .setProductUri("urn:eclipse:milo:example-server")
-            .setServerName("example")
+            .setServerName("OPCUA Fraunhofer Secure Example")
             .setSecurityPolicies(
                 EnumSet.of(
                     SecurityPolicy.None,

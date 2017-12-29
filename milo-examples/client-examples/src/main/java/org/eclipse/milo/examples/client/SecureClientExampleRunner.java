@@ -14,7 +14,7 @@
 package org.eclipse.milo.examples.client;
 
 import org.eclipse.milo.examples.client.util.KeyStoreLoader;
-import org.eclipse.milo.examples.server.ExampleServerAcceptingX509Identities;
+import org.eclipse.milo.examples.server.SecureServerStandalone;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
@@ -40,14 +40,14 @@ public class SecureClientExampleRunner {
 
     private final KeyStoreLoader loader = new KeyStoreLoader();
 
-    private final ExampleServerAcceptingX509Identities exampleServer;
+    private final SecureServerStandalone exampleServer;
 
     private final SecureClientExample clientExample;
 
-    public SecureClientExampleRunner(SecureClientExample clientExample) throws Exception {
+    SecureClientExampleRunner(SecureClientExample clientExample) throws Exception {
         this.clientExample = clientExample;
 
-        exampleServer = new ExampleServerAcceptingX509Identities();
+        exampleServer = new SecureServerStandalone();
         exampleServer.startup().get();
     }
 
@@ -96,7 +96,7 @@ public class SecureClientExampleRunner {
                 Thread.sleep(1000);
                 System.exit(0);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Client was interrupted while waiting before exit.", e);
             }
         });
 
