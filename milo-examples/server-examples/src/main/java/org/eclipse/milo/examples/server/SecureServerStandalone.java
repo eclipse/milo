@@ -115,7 +115,6 @@ public class SecureServerStandalone {
             .setCertificateValidator(certificateValidator)
             .setIdentityValidator(x509identityValidator)
             .setProductUri("urn:eclipse:milo:example-server")
-            .setServerName("OPCUA Fraunhofer Secure Example")
             .setSecurityPolicies(
                 EnumSet.of(
                     SecurityPolicy.None,
