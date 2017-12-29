@@ -37,7 +37,7 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.*;
 
 public class SecureServerStandalone {
 
-    String ip = System.getenv("OPCUA_SERVER_IP");
+    private String ip = System.getenv("OPCUA_SERVER_IP");
 
     private static final Logger logger = LoggerFactory.getLogger(SecureServerStandalone.class);
 
@@ -133,22 +133,6 @@ public class SecureServerStandalone {
         server.getNamespaceManager().registerAndAdd(
             ExampleNamespace.NAMESPACE_URI,
             idx -> new ExampleNamespace(server, idx));
-
-        server.getServer().addRequestHandler(TestStackRequest.class, service -> {
-            TestStackRequest request = service.getRequest();
-
-            ResponseHeader header = service.createResponseHeader();
-
-            service.setResponse(new TestStackResponse(header, request.getInput()));
-        });
-
-        server.getServer().addRequestHandler(TestStackExRequest.class, service -> {
-            TestStackExRequest request = service.getRequest();
-
-            ResponseHeader header = service.createResponseHeader();
-
-            service.setResponse(new TestStackExResponse(header, request.getInput()));
-        });
     }
 
     public OpcUaServer getServer() {
