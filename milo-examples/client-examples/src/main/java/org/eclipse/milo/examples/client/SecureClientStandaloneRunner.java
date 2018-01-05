@@ -13,6 +13,11 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
@@ -23,18 +28,13 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class SecureClientStandaloneRunner {
 
-    private static final String APPLICATION_NAME="fraunhofer opc-ua client";
+    private static final String APPLICATION_NAME = "fraunhofer opc-ua client";
 
-    private static final String APPLICATION_URI="urn:eclipse:milo:examples:secureclient";
+    private static final String APPLICATION_URI = "urn:eclipse:milo:examples:secureclient";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -42,21 +42,21 @@ public class SecureClientStandaloneRunner {
 
     private final SecureClientStandalone clientExample;
 
-    SecureClientStandaloneRunner(SecureClientStandalone clientExample){
+    SecureClientStandaloneRunner(SecureClientStandalone clientExample) {
         this.clientExample = clientExample;
     }
 
     private OpcUaClient createClient() throws Exception {
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
-        String endpointURL = System.getenv("ENDPOINT_URL");
-        logger.info("ENDPOINTURL={}", endpointURL);
+        String endpointUrl = System.getenv("ENDPOINT_URL");
+        logger.info("ENDPOINTURL={}", endpointUrl);
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointURL).get();
+        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointUrl).get();
 
         logger.info("Available endpoints:");
-        for (EndpointDescription endpointDescription : endpoints){
-            logger.info(endpointDescription.getEndpointUrl()+ " "+endpointDescription.getSecurityPolicyUri());
+        for (EndpointDescription endpointDescription : endpoints) {
+            logger.info(endpointDescription.getEndpointUrl() + " " + endpointDescription.getSecurityPolicyUri());
         }
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
