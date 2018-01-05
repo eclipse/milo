@@ -82,9 +82,13 @@ public class SecureServerStandalone {
     public SecureServerStandalone(){
         CryptoRestrictions.remove();
 
+        File securityTempDir = new File(System.getenv("OPCUA_CERT_DIR"), "security");
+
+        logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
+
         KeyStoreLoader loader= new KeyStoreLoader();
         try {
-            loader = loader.load();
+            loader = loader.load(securityTempDir);
         }
         catch (Exception e){
             logger.error("Could not aquire KeyStoreLoader.", e);
@@ -94,10 +98,6 @@ public class SecureServerStandalone {
             loader.getServerKeyPair(),
             loader.getServerCertificate()
         );
-
-        File securityTempDir = new File(System.getenv("OPCUA_CERT_DIR"), "security");
-
-        logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
         DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
 
