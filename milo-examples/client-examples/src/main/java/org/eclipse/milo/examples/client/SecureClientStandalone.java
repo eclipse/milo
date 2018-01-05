@@ -13,6 +13,16 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.security.KeyPair;
+import java.security.KeyStore;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
@@ -27,17 +37,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Console;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.security.KeyPair;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 public class SecureClientStandalone implements ClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -46,18 +45,18 @@ public class SecureClientStandalone implements ClientExample {
     private X509Certificate cert;
     private KeyPair keyPair;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         SecureClientStandalone example = new SecureClientStandalone();
         new SecureClientStandaloneRunner(example).run();
     }
 
-    private SecureClientStandalone(){
+    private SecureClientStandalone() {
         /* Get keystore password */
         char[] keystorePasswordArray = System.getenv("KEYSTOREPSWED").toCharArray();
 
-        try{
+        try {
             String keystorepath = "secrets/opcua.keystore";
-            logger.info("Trying to load keyfile from "+keystorepath);
+            logger.info("Trying to load keyfile from " + keystorepath);
             File file = new File(keystorepath);
             FileInputStream is = new FileInputStream(file);
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -66,18 +65,18 @@ public class SecureClientStandalone implements ClientExample {
 
             /*Get key from keystore */
             char[] keyPasswordArray = System.getenv("KEYPSWD").toCharArray();
-            PrivateKey key = (PrivateKey)keystore.getKey("opcua", keyPasswordArray);
+            PrivateKey key = (PrivateKey) keystore.getKey("opcua", keyPasswordArray);
 
             /* Get certificate of public key */
             cert = (X509Certificate) keystore.getCertificate("opcua");
 
-            keyPair= new KeyPair(cert.getPublicKey(), key);
+            keyPair = new KeyPair(cert.getPublicKey(), key);
 
             identityProvider = new X509IdentityProvider(cert, key);
-        } catch (FileNotFoundException f){
+        } catch (FileNotFoundException f) {
             logger.error("Keystore file not found.");
             System.exit(1);
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("Loading from keystore failed.");
             System.exit(1);
         }
@@ -89,7 +88,7 @@ public class SecureClientStandalone implements ClientExample {
     }
 
     @Override
-    public IdentityProvider getIdentityProvider(){
+    public IdentityProvider getIdentityProvider() {
         return identityProvider;
     }
 
@@ -97,7 +96,7 @@ public class SecureClientStandalone implements ClientExample {
         return cert;
     }
 
-    KeyPair getKeyPair(){
+    KeyPair getKeyPair() {
         return keyPair;
     }
 
