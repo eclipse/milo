@@ -13,6 +13,11 @@
 
 package org.eclipse.milo.examples.server;
 
+import java.io.File;
+import java.util.EnumSet;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
@@ -27,11 +32,6 @@ import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.EnumSet;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
@@ -40,9 +40,9 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 
 public class SecureServerStandalone {
 
-    private static final String APPLICATION_NAME="Eclipse Milo OPC-UA Example Server";
+    private static final String APPLICATION_NAME = "Eclipse Milo OPC-UA Example Server";
 
-    private static final String APPLICATION_URI="urn:eclipse:milo:examples:server";
+    private static final String APPLICATION_URI = "urn:eclipse:milo:examples:server";
 
     private String ip = System.getenv("OPCUA_SERVER_IP");
 
@@ -50,17 +50,15 @@ public class SecureServerStandalone {
 
     private final OpcUaServer server;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         SecureServerStandalone server = new SecureServerStandalone();
 
-        try{
+        try {
             server.startup().get();
-        }
-        catch (InterruptedException i){
+        } catch (InterruptedException i) {
             logger.error("Starting up the server was interrupted.", i);
             System.exit(1);
-        }
-        catch (ExecutionException e){
+        } catch (ExecutionException e) {
             logger.error("Concurrency problems encountered during startup", e);
         }
 
@@ -70,30 +68,27 @@ public class SecureServerStandalone {
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> future.complete(null)));
 
-        try{
+        try {
             future.get();
-        }
-        catch (InterruptedException i){
+        } catch (InterruptedException i) {
             logger.error("Running the server was interrupted.", i);
             System.exit(1);
-        }
-        catch (ExecutionException e){
+        } catch (ExecutionException e) {
             logger.error("Concurrency problems encountered", e);
         }
     }
 
-    public SecureServerStandalone(){
+    public SecureServerStandalone() {
         CryptoRestrictions.remove();
 
         File securityTempDir = new File(System.getenv("OPCUA_CERT_DIR"), "security");
 
         logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
-        KeyStoreLoader loader= new KeyStoreLoader();
+        KeyStoreLoader loader = new KeyStoreLoader();
         try {
             loader = loader.load(securityTempDir);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             logger.error("Could not aquire KeyStoreLoader.", e);
         }
 
