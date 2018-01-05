@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.structured.*;
+import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +36,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_X509;
+
 
 public class SecureServerStandalone {
 
