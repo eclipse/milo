@@ -37,6 +37,10 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.*;
 
 public class SecureServerStandalone {
 
+    private static final String APPLICATION_NAME="Eclipse Milo OPC-UA Example Server";
+
+    private static final String APPLICATION_URI="urn:eclipse:milo:examples:server";
+
     private String ip = System.getenv("OPCUA_SERVER_IP");
 
     private static final Logger logger = LoggerFactory.getLogger(SecureServerStandalone.class);
@@ -100,8 +104,8 @@ public class SecureServerStandalone {
         X509IdentityValidator x509identityValidator = new X509IdentityValidator(c -> true);
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
-            .setApplicationUri("urn:eclipse:milo:examples:server")
-            .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
+            .setApplicationUri(APPLICATION_URI)
+            .setApplicationName(LocalizedText.english(APPLICATION_NAME))
             .setBindAddresses(newArrayList(ip))
             .setBindPort(4840)
             .setBuildInfo(
