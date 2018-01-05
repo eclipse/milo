@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,10 +17,10 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -29,62 +29,61 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("VariableNode")
 public class VariableNode extends InstanceNode {
 
     public static final NodeId TypeId = Identifiers.VariableNode;
     public static final NodeId BinaryEncodingId = Identifiers.VariableNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.VariableNode_Encoding_DefaultXml;
 
-    protected final Variant _value;
-    protected final NodeId _dataType;
-    protected final Integer _valueRank;
-    protected final UInteger[] _arrayDimensions;
-    protected final UByte _accessLevel;
-    protected final UByte _userAccessLevel;
-    protected final Double _minimumSamplingInterval;
-    protected final Boolean _historizing;
+    protected final Variant value;
+    protected final NodeId dataType;
+    protected final Integer valueRank;
+    protected final UInteger[] arrayDimensions;
+    protected final UByte accessLevel;
+    protected final UByte userAccessLevel;
+    protected final Double minimumSamplingInterval;
+    protected final Boolean historizing;
 
     public VariableNode() {
         super(null, null, null, null, null, null, null, null);
-        this._value = null;
-        this._dataType = null;
-        this._valueRank = null;
-        this._arrayDimensions = null;
-        this._accessLevel = null;
-        this._userAccessLevel = null;
-        this._minimumSamplingInterval = null;
-        this._historizing = null;
+        this.value = null;
+        this.dataType = null;
+        this.valueRank = null;
+        this.arrayDimensions = null;
+        this.accessLevel = null;
+        this.userAccessLevel = null;
+        this.minimumSamplingInterval = null;
+        this.historizing = null;
     }
 
-    public VariableNode(NodeId _nodeId, NodeClass _nodeClass, QualifiedName _browseName, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, ReferenceNode[] _references, Variant _value, NodeId _dataType, Integer _valueRank, UInteger[] _arrayDimensions, UByte _accessLevel, UByte _userAccessLevel, Double _minimumSamplingInterval, Boolean _historizing) {
-        super(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
-        this._value = _value;
-        this._dataType = _dataType;
-        this._valueRank = _valueRank;
-        this._arrayDimensions = _arrayDimensions;
-        this._accessLevel = _accessLevel;
-        this._userAccessLevel = _userAccessLevel;
-        this._minimumSamplingInterval = _minimumSamplingInterval;
-        this._historizing = _historizing;
+    public VariableNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Variant value, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, UByte accessLevel, UByte userAccessLevel, Double minimumSamplingInterval, Boolean historizing) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+        this.value = value;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+        this.accessLevel = accessLevel;
+        this.userAccessLevel = userAccessLevel;
+        this.minimumSamplingInterval = minimumSamplingInterval;
+        this.historizing = historizing;
     }
 
-    public Variant getValue() { return _value; }
+    public Variant getValue() { return value; }
 
-    public NodeId getDataType() { return _dataType; }
+    public NodeId getDataType() { return dataType; }
 
-    public Integer getValueRank() { return _valueRank; }
+    public Integer getValueRank() { return valueRank; }
 
     @Nullable
-    public UInteger[] getArrayDimensions() { return _arrayDimensions; }
+    public UInteger[] getArrayDimensions() { return arrayDimensions; }
 
-    public UByte getAccessLevel() { return _accessLevel; }
+    public UByte getAccessLevel() { return accessLevel; }
 
-    public UByte getUserAccessLevel() { return _userAccessLevel; }
+    public UByte getUserAccessLevel() { return userAccessLevel; }
 
-    public Double getMinimumSamplingInterval() { return _minimumSamplingInterval; }
+    public Double getMinimumSamplingInterval() { return minimumSamplingInterval; }
 
-    public Boolean getHistorizing() { return _historizing; }
+    public Boolean getHistorizing() { return historizing; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -98,68 +97,81 @@ public class VariableNode extends InstanceNode {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("NodeClass", _nodeClass)
-            .add("BrowseName", _browseName)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("References", _references)
-            .add("Value", _value)
-            .add("DataType", _dataType)
-            .add("ValueRank", _valueRank)
-            .add("ArrayDimensions", _arrayDimensions)
-            .add("AccessLevel", _accessLevel)
-            .add("UserAccessLevel", _userAccessLevel)
-            .add("MinimumSamplingInterval", _minimumSamplingInterval)
-            .add("Historizing", _historizing)
+            .add("NodeId", nodeId)
+            .add("NodeClass", nodeClass)
+            .add("BrowseName", browseName)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("References", references)
+            .add("Value", value)
+            .add("DataType", dataType)
+            .add("ValueRank", valueRank)
+            .add("ArrayDimensions", arrayDimensions)
+            .add("AccessLevel", accessLevel)
+            .add("UserAccessLevel", userAccessLevel)
+            .add("MinimumSamplingInterval", minimumSamplingInterval)
+            .add("Historizing", historizing)
             .toString();
     }
 
-    public static void encode(VariableNode variableNode, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", variableNode._nodeId);
-        encoder.encodeEnumeration("NodeClass", variableNode._nodeClass);
-        encoder.encodeQualifiedName("BrowseName", variableNode._browseName);
-        encoder.encodeLocalizedText("DisplayName", variableNode._displayName);
-        encoder.encodeLocalizedText("Description", variableNode._description);
-        encoder.encodeUInt32("WriteMask", variableNode._writeMask);
-        encoder.encodeUInt32("UserWriteMask", variableNode._userWriteMask);
-        encoder.encodeArray("References", variableNode._references, encoder::encodeSerializable);
-        encoder.encodeVariant("Value", variableNode._value);
-        encoder.encodeNodeId("DataType", variableNode._dataType);
-        encoder.encodeInt32("ValueRank", variableNode._valueRank);
-        encoder.encodeArray("ArrayDimensions", variableNode._arrayDimensions, encoder::encodeUInt32);
-        encoder.encodeByte("AccessLevel", variableNode._accessLevel);
-        encoder.encodeByte("UserAccessLevel", variableNode._userAccessLevel);
-        encoder.encodeDouble("MinimumSamplingInterval", variableNode._minimumSamplingInterval);
-        encoder.encodeBoolean("Historizing", variableNode._historizing);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<VariableNode> {
 
-    public static VariableNode decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        NodeClass _nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        QualifiedName _browseName = decoder.decodeQualifiedName("BrowseName");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        ReferenceNode[] _references = decoder.decodeArray("References", decoder::decodeSerializable, ReferenceNode.class);
-        Variant _value = decoder.decodeVariant("Value");
-        NodeId _dataType = decoder.decodeNodeId("DataType");
-        Integer _valueRank = decoder.decodeInt32("ValueRank");
-        UInteger[] _arrayDimensions = decoder.decodeArray("ArrayDimensions", decoder::decodeUInt32, UInteger.class);
-        UByte _accessLevel = decoder.decodeByte("AccessLevel");
-        UByte _userAccessLevel = decoder.decodeByte("UserAccessLevel");
-        Double _minimumSamplingInterval = decoder.decodeDouble("MinimumSamplingInterval");
-        Boolean _historizing = decoder.decodeBoolean("Historizing");
+        @Override
+        public Class<VariableNode> getType() {
+            return VariableNode.class;
+        }
 
-        return new VariableNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _value, _dataType, _valueRank, _arrayDimensions, _accessLevel, _userAccessLevel, _minimumSamplingInterval, _historizing);
-    }
+        @Override
+        public VariableNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            ReferenceNode[] references =
+                decoder.readBuiltinStructArray(
+                    "References",
+                    ReferenceNode.class
+                );
+            Variant value = decoder.readVariant("Value");
+            NodeId dataType = decoder.readNodeId("DataType");
+            Integer valueRank = decoder.readInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.readArray("ArrayDimensions", decoder::readUInt32, UInteger.class);
+            UByte accessLevel = decoder.readByte("AccessLevel");
+            UByte userAccessLevel = decoder.readByte("UserAccessLevel");
+            Double minimumSamplingInterval = decoder.readDouble("MinimumSamplingInterval");
+            Boolean historizing = decoder.readBoolean("Historizing");
 
-    static {
-        DelegateRegistry.registerEncoder(VariableNode::encode, VariableNode.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(VariableNode::decode, VariableNode.class, BinaryEncodingId, XmlEncodingId);
+            return new VariableNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, value, dataType, valueRank, arrayDimensions, accessLevel, userAccessLevel, minimumSamplingInterval, historizing);
+        }
+
+        @Override
+        public void encode(VariableNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBuiltinStructArray(
+                "References",
+                value.references,
+                ReferenceNode.class
+            );
+            encoder.writeVariant("Value", value.value);
+            encoder.writeNodeId("DataType", value.dataType);
+            encoder.writeInt32("ValueRank", value.valueRank);
+            encoder.writeArray("ArrayDimensions", value.arrayDimensions, encoder::writeUInt32);
+            encoder.writeByte("AccessLevel", value.accessLevel);
+            encoder.writeByte("UserAccessLevel", value.userAccessLevel);
+            encoder.writeDouble("MinimumSamplingInterval", value.minimumSamplingInterval);
+            encoder.writeBoolean("Historizing", value.historizing);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public class AuditCancelEventNode extends AuditSessionEventNode implements AuditCancelEventType {
-
     public AuditCancelEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> requestHandle() {
-        return getPropertyNode(AuditCancelEventType.REQUEST_HANDLE.getBrowseName());
+    public CompletableFuture<PropertyNode> getRequestHandleNode() {
+        return getPropertyNode(AuditCancelEventType.REQUEST_HANDLE);
     }
 
-    @Override
     public CompletableFuture<UInteger> getRequestHandle() {
         return getProperty(AuditCancelEventType.REQUEST_HANDLE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRequestHandle(UInteger value) {
         return setProperty(AuditCancelEventType.REQUEST_HANDLE, value);
     }
-
-
 }

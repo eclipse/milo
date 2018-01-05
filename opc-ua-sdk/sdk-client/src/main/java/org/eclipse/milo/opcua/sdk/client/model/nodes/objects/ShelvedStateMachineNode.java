@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,84 +19,58 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.ShelvedStateMachineType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class ShelvedStateMachineNode extends FiniteStateMachineNode implements ShelvedStateMachineType {
-
     public ShelvedStateMachineNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> unshelveTime() {
-        return getPropertyNode(ShelvedStateMachineType.UNSHELVE_TIME.getBrowseName());
+    public CompletableFuture<PropertyNode> getUnshelveTimeNode() {
+        return getPropertyNode(ShelvedStateMachineType.UNSHELVE_TIME);
     }
 
-    @Override
     public CompletableFuture<Double> getUnshelveTime() {
         return getProperty(ShelvedStateMachineType.UNSHELVE_TIME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setUnshelveTime(Double value) {
         return setProperty(ShelvedStateMachineType.UNSHELVE_TIME, value);
     }
 
-
-    @Override
-    public CompletableFuture<StateNode> unshelved() {
-        return getObjectComponent(QualifiedName.parse("0:Unshelved"))
-            .thenApply(StateNode.class::cast);
+    public CompletableFuture<StateNode> getUnshelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "Unshelved").thenApply(StateNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<StateNode> timedShelved() {
-        return getObjectComponent(QualifiedName.parse("0:TimedShelved"))
-            .thenApply(StateNode.class::cast);
+    public CompletableFuture<StateNode> getTimedShelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "TimedShelved").thenApply(StateNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<StateNode> oneShotShelved() {
-        return getObjectComponent(QualifiedName.parse("0:OneShotShelved"))
-            .thenApply(StateNode.class::cast);
+    public CompletableFuture<StateNode> getOneShotShelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelved").thenApply(StateNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> unshelvedToTimedShelved() {
-        return getObjectComponent(QualifiedName.parse("0:UnshelvedToTimedShelved"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getUnshelvedToTimedShelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "UnshelvedToTimedShelved").thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> unshelvedToOneShotShelved() {
-        return getObjectComponent(QualifiedName.parse("0:UnshelvedToOneShotShelved"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getUnshelvedToOneShotShelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "UnshelvedToOneShotShelved").thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> timedShelvedToUnshelved() {
-        return getObjectComponent(QualifiedName.parse("0:TimedShelvedToUnshelved"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getTimedShelvedToUnshelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "TimedShelvedToUnshelved").thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> timedShelvedToOneShotShelved() {
-        return getObjectComponent(QualifiedName.parse("0:TimedShelvedToOneShotShelved"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getTimedShelvedToOneShotShelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "TimedShelvedToOneShotShelved").thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> oneShotShelvedToUnshelved() {
-        return getObjectComponent(QualifiedName.parse("0:OneShotShelvedToUnshelved"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getOneShotShelvedToUnshelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelvedToUnshelved").thenApply(TransitionNode.class::cast);
     }
 
-    @Override
-    public CompletableFuture<TransitionNode> oneShotShelvedToTimedShelved() {
-        return getObjectComponent(QualifiedName.parse("0:OneShotShelvedToTimedShelved"))
-            .thenApply(TransitionNode.class::cast);
+    public CompletableFuture<TransitionNode> getOneShotShelvedToTimedShelvedNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "OneShotShelvedToTimedShelved").thenApply(TransitionNode.class::cast);
     }
-
 }

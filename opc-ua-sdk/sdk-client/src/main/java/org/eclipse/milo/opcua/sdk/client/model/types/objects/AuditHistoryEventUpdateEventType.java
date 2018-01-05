@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,83 +16,82 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 
-
 public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEventType {
-
-    Property<NodeId> UPDATED_NODE = new BasicProperty<>(
-        QualifiedName.parse("0:UpdatedNode"),
+    QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UpdatedNode",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<PerformUpdateType> PERFORM_INSERT_REPLACE = new BasicProperty<>(
-        QualifiedName.parse("0:PerformInsertReplace"),
+    QualifiedProperty<PerformUpdateType> PERFORM_INSERT_REPLACE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "PerformInsertReplace",
         NodeId.parse("ns=0;i=11293"),
-        -1,
+        ValueRanks.Scalar,
         PerformUpdateType.class
     );
 
-    Property<EventFilter> FILTER = new BasicProperty<>(
-        QualifiedName.parse("0:Filter"),
+    QualifiedProperty<EventFilter> FILTER = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Filter",
         NodeId.parse("ns=0;i=725"),
-        -1,
+        ValueRanks.Scalar,
         EventFilter.class
     );
 
-    Property<HistoryEventFieldList[]> NEW_VALUES = new BasicProperty<>(
-        QualifiedName.parse("0:NewValues"),
+    QualifiedProperty<HistoryEventFieldList[]> NEW_VALUES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NewValues",
         NodeId.parse("ns=0;i=920"),
-        1,
+        ValueRanks.OneDimension,
         HistoryEventFieldList[].class
     );
 
-    Property<HistoryEventFieldList[]> OLD_VALUES = new BasicProperty<>(
-        QualifiedName.parse("0:OldValues"),
+    QualifiedProperty<HistoryEventFieldList[]> OLD_VALUES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OldValues",
         NodeId.parse("ns=0;i=920"),
-        1,
+        ValueRanks.OneDimension,
         HistoryEventFieldList[].class
     );
 
-
-    CompletableFuture<? extends PropertyType> updatedNode();
+    CompletableFuture<? extends PropertyType> getUpdatedNodeNode();
 
     CompletableFuture<NodeId> getUpdatedNode();
 
     CompletableFuture<StatusCode> setUpdatedNode(NodeId value);
 
-    CompletableFuture<? extends PropertyType> performInsertReplace();
+    CompletableFuture<? extends PropertyType> getPerformInsertReplaceNode();
 
     CompletableFuture<PerformUpdateType> getPerformInsertReplace();
 
     CompletableFuture<StatusCode> setPerformInsertReplace(PerformUpdateType value);
 
-    CompletableFuture<? extends PropertyType> filter();
+    CompletableFuture<? extends PropertyType> getFilterNode();
 
     CompletableFuture<EventFilter> getFilter();
 
     CompletableFuture<StatusCode> setFilter(EventFilter value);
 
-    CompletableFuture<? extends PropertyType> newValues();
+    CompletableFuture<? extends PropertyType> getNewValuesNode();
 
     CompletableFuture<HistoryEventFieldList[]> getNewValues();
 
     CompletableFuture<StatusCode> setNewValues(HistoryEventFieldList[] value);
 
-    CompletableFuture<? extends PropertyType> oldValues();
+    CompletableFuture<? extends PropertyType> getOldValuesNode();
 
     CompletableFuture<HistoryEventFieldList[]> getOldValues();
 
     CompletableFuture<StatusCode> setOldValues(HistoryEventFieldList[] value);
-
-
 }

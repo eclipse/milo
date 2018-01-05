@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,31 +15,30 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("CloseSessionResponse")
 public class CloseSessionResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.CloseSessionResponse;
     public static final NodeId BinaryEncodingId = Identifiers.CloseSessionResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CloseSessionResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
+    protected final ResponseHeader responseHeader;
 
     public CloseSessionResponse() {
-        this._responseHeader = null;
+        this.responseHeader = null;
     }
 
-    public CloseSessionResponse(ResponseHeader _responseHeader) {
-        this._responseHeader = _responseHeader;
+    public CloseSessionResponse(ResponseHeader responseHeader) {
+        this.responseHeader = responseHeader;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -53,23 +52,28 @@ public class CloseSessionResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
+            .add("ResponseHeader", responseHeader)
             .toString();
     }
 
-    public static void encode(CloseSessionResponse closeSessionResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", closeSessionResponse._responseHeader != null ? closeSessionResponse._responseHeader : new ResponseHeader());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<CloseSessionResponse> {
 
-    public static CloseSessionResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
+        @Override
+        public Class<CloseSessionResponse> getType() {
+            return CloseSessionResponse.class;
+        }
 
-        return new CloseSessionResponse(_responseHeader);
-    }
+        @Override
+        public CloseSessionResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
 
-    static {
-        DelegateRegistry.registerEncoder(CloseSessionResponse::encode, CloseSessionResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CloseSessionResponse::decode, CloseSessionResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new CloseSessionResponse(responseHeader);
+        }
+
+        @Override
+        public void encode(CloseSessionResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+        }
     }
 
 }

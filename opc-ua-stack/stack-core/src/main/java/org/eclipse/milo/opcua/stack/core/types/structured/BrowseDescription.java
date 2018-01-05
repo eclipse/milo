@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,58 +15,57 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 
-@UaDataType("BrowseDescription")
 public class BrowseDescription implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.BrowseDescription;
     public static final NodeId BinaryEncodingId = Identifiers.BrowseDescription_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BrowseDescription_Encoding_DefaultXml;
 
-    protected final NodeId _nodeId;
-    protected final BrowseDirection _browseDirection;
-    protected final NodeId _referenceTypeId;
-    protected final Boolean _includeSubtypes;
-    protected final UInteger _nodeClassMask;
-    protected final UInteger _resultMask;
+    protected final NodeId nodeId;
+    protected final BrowseDirection browseDirection;
+    protected final NodeId referenceTypeId;
+    protected final Boolean includeSubtypes;
+    protected final UInteger nodeClassMask;
+    protected final UInteger resultMask;
 
     public BrowseDescription() {
-        this._nodeId = null;
-        this._browseDirection = null;
-        this._referenceTypeId = null;
-        this._includeSubtypes = null;
-        this._nodeClassMask = null;
-        this._resultMask = null;
+        this.nodeId = null;
+        this.browseDirection = null;
+        this.referenceTypeId = null;
+        this.includeSubtypes = null;
+        this.nodeClassMask = null;
+        this.resultMask = null;
     }
 
-    public BrowseDescription(NodeId _nodeId, BrowseDirection _browseDirection, NodeId _referenceTypeId, Boolean _includeSubtypes, UInteger _nodeClassMask, UInteger _resultMask) {
-        this._nodeId = _nodeId;
-        this._browseDirection = _browseDirection;
-        this._referenceTypeId = _referenceTypeId;
-        this._includeSubtypes = _includeSubtypes;
-        this._nodeClassMask = _nodeClassMask;
-        this._resultMask = _resultMask;
+    public BrowseDescription(NodeId nodeId, BrowseDirection browseDirection, NodeId referenceTypeId, Boolean includeSubtypes, UInteger nodeClassMask, UInteger resultMask) {
+        this.nodeId = nodeId;
+        this.browseDirection = browseDirection;
+        this.referenceTypeId = referenceTypeId;
+        this.includeSubtypes = includeSubtypes;
+        this.nodeClassMask = nodeClassMask;
+        this.resultMask = resultMask;
     }
 
-    public NodeId getNodeId() { return _nodeId; }
+    public NodeId getNodeId() { return nodeId; }
 
-    public BrowseDirection getBrowseDirection() { return _browseDirection; }
+    public BrowseDirection getBrowseDirection() { return browseDirection; }
 
-    public NodeId getReferenceTypeId() { return _referenceTypeId; }
+    public NodeId getReferenceTypeId() { return referenceTypeId; }
 
-    public Boolean getIncludeSubtypes() { return _includeSubtypes; }
+    public Boolean getIncludeSubtypes() { return includeSubtypes; }
 
-    public UInteger getNodeClassMask() { return _nodeClassMask; }
+    public UInteger getNodeClassMask() { return nodeClassMask; }
 
-    public UInteger getResultMask() { return _resultMask; }
+    public UInteger getResultMask() { return resultMask; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -80,38 +79,43 @@ public class BrowseDescription implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("BrowseDirection", _browseDirection)
-            .add("ReferenceTypeId", _referenceTypeId)
-            .add("IncludeSubtypes", _includeSubtypes)
-            .add("NodeClassMask", _nodeClassMask)
-            .add("ResultMask", _resultMask)
+            .add("NodeId", nodeId)
+            .add("BrowseDirection", browseDirection)
+            .add("ReferenceTypeId", referenceTypeId)
+            .add("IncludeSubtypes", includeSubtypes)
+            .add("NodeClassMask", nodeClassMask)
+            .add("ResultMask", resultMask)
             .toString();
     }
 
-    public static void encode(BrowseDescription browseDescription, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", browseDescription._nodeId);
-        encoder.encodeEnumeration("BrowseDirection", browseDescription._browseDirection);
-        encoder.encodeNodeId("ReferenceTypeId", browseDescription._referenceTypeId);
-        encoder.encodeBoolean("IncludeSubtypes", browseDescription._includeSubtypes);
-        encoder.encodeUInt32("NodeClassMask", browseDescription._nodeClassMask);
-        encoder.encodeUInt32("ResultMask", browseDescription._resultMask);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<BrowseDescription> {
 
-    public static BrowseDescription decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        BrowseDirection _browseDirection = decoder.decodeEnumeration("BrowseDirection", BrowseDirection.class);
-        NodeId _referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
-        Boolean _includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
-        UInteger _nodeClassMask = decoder.decodeUInt32("NodeClassMask");
-        UInteger _resultMask = decoder.decodeUInt32("ResultMask");
+        @Override
+        public Class<BrowseDescription> getType() {
+            return BrowseDescription.class;
+        }
 
-        return new BrowseDescription(_nodeId, _browseDirection, _referenceTypeId, _includeSubtypes, _nodeClassMask, _resultMask);
-    }
+        @Override
+        public BrowseDescription decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            BrowseDirection browseDirection = BrowseDirection.from(decoder.readInt32("BrowseDirection"));
+            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
+            Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
+            UInteger nodeClassMask = decoder.readUInt32("NodeClassMask");
+            UInteger resultMask = decoder.readUInt32("ResultMask");
 
-    static {
-        DelegateRegistry.registerEncoder(BrowseDescription::encode, BrowseDescription.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(BrowseDescription::decode, BrowseDescription.class, BinaryEncodingId, XmlEncodingId);
+            return new BrowseDescription(nodeId, browseDirection, referenceTypeId, includeSubtypes, nodeClassMask, resultMask);
+        }
+
+        @Override
+        public void encode(BrowseDescription value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("BrowseDirection", value.browseDirection != null ? value.browseDirection.getValue() : 0);
+            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
+            encoder.writeBoolean("IncludeSubtypes", value.includeSubtypes);
+            encoder.writeUInt32("NodeClassMask", value.nodeClassMask);
+            encoder.writeUInt32("ResultMask", value.resultMask);
+        }
     }
 
 }

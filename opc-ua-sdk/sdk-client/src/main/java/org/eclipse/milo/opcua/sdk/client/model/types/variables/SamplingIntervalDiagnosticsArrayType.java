@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,7 +13,15 @@
 
 package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 
+import java.util.concurrent.CompletableFuture;
+
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagnosticsDataType;
+
 public interface SamplingIntervalDiagnosticsArrayType extends BaseDataVariableType {
+    CompletableFuture<? extends SamplingIntervalDiagnosticsType> getSamplingIntervalDiagnosticsNode();
 
+    CompletableFuture<SamplingIntervalDiagnosticsDataType> getSamplingIntervalDiagnostics();
 
+    CompletableFuture<StatusCode> setSamplingIntervalDiagnostics(SamplingIntervalDiagnosticsDataType value);
 }

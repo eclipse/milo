@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 
-
 public class SystemStatusChangeEventNode extends SystemEventNode implements SystemStatusChangeEventType {
-
     public SystemStatusChangeEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> systemState() {
-        return getPropertyNode(SystemStatusChangeEventType.SYSTEM_STATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getSystemStateNode() {
+        return getPropertyNode(SystemStatusChangeEventType.SYSTEM_STATE);
     }
 
-    @Override
     public CompletableFuture<ServerState> getSystemState() {
         return getProperty(SystemStatusChangeEventType.SYSTEM_STATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSystemState(ServerState value) {
         return setProperty(SystemStatusChangeEventType.SYSTEM_STATE, value);
     }
-
-
 }

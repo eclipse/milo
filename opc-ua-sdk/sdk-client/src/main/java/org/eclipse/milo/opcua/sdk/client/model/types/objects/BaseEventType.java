@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,137 +16,140 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
-
 public interface BaseEventType extends BaseObjectType {
-
-    Property<ByteString> EVENT_ID = new BasicProperty<>(
-        QualifiedName.parse("0:EventId"),
+    QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EventId",
         NodeId.parse("ns=0;i=15"),
-        -1,
+        ValueRanks.Scalar,
         ByteString.class
     );
 
-    Property<NodeId> EVENT_TYPE = new BasicProperty<>(
-        QualifiedName.parse("0:EventType"),
+    QualifiedProperty<NodeId> EVENT_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EventType",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<NodeId> SOURCE_NODE = new BasicProperty<>(
-        QualifiedName.parse("0:SourceNode"),
+    QualifiedProperty<NodeId> SOURCE_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SourceNode",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<String> SOURCE_NAME = new BasicProperty<>(
-        QualifiedName.parse("0:SourceName"),
+    QualifiedProperty<String> SOURCE_NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SourceName",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<DateTime> TIME = new BasicProperty<>(
-        QualifiedName.parse("0:Time"),
+    QualifiedProperty<DateTime> TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Time",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<DateTime> RECEIVE_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:ReceiveTime"),
+    QualifiedProperty<DateTime> RECEIVE_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ReceiveTime",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<TimeZoneDataType> LOCAL_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:LocalTime"),
+    QualifiedProperty<TimeZoneDataType> LOCAL_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LocalTime",
         NodeId.parse("ns=0;i=8912"),
-        -1,
+        ValueRanks.Scalar,
         TimeZoneDataType.class
     );
 
-    Property<LocalizedText> MESSAGE = new BasicProperty<>(
-        QualifiedName.parse("0:Message"),
+    QualifiedProperty<LocalizedText> MESSAGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Message",
         NodeId.parse("ns=0;i=21"),
-        -1,
+        ValueRanks.Scalar,
         LocalizedText.class
     );
 
-    Property<UShort> SEVERITY = new BasicProperty<>(
-        QualifiedName.parse("0:Severity"),
+    QualifiedProperty<UShort> SEVERITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Severity",
         NodeId.parse("ns=0;i=5"),
-        -1,
+        ValueRanks.Scalar,
         UShort.class
     );
 
-
-    CompletableFuture<? extends PropertyType> eventId();
+    CompletableFuture<? extends PropertyType> getEventIdNode();
 
     CompletableFuture<ByteString> getEventId();
 
     CompletableFuture<StatusCode> setEventId(ByteString value);
 
-    CompletableFuture<? extends PropertyType> eventType();
+    CompletableFuture<? extends PropertyType> getEventTypeNode();
 
     CompletableFuture<NodeId> getEventType();
 
     CompletableFuture<StatusCode> setEventType(NodeId value);
 
-    CompletableFuture<? extends PropertyType> sourceNode();
+    CompletableFuture<? extends PropertyType> getSourceNodeNode();
 
     CompletableFuture<NodeId> getSourceNode();
 
     CompletableFuture<StatusCode> setSourceNode(NodeId value);
 
-    CompletableFuture<? extends PropertyType> sourceName();
+    CompletableFuture<? extends PropertyType> getSourceNameNode();
 
     CompletableFuture<String> getSourceName();
 
     CompletableFuture<StatusCode> setSourceName(String value);
 
-    CompletableFuture<? extends PropertyType> time();
+    CompletableFuture<? extends PropertyType> getTimeNode();
 
     CompletableFuture<DateTime> getTime();
 
     CompletableFuture<StatusCode> setTime(DateTime value);
 
-    CompletableFuture<? extends PropertyType> receiveTime();
+    CompletableFuture<? extends PropertyType> getReceiveTimeNode();
 
     CompletableFuture<DateTime> getReceiveTime();
 
     CompletableFuture<StatusCode> setReceiveTime(DateTime value);
 
-    CompletableFuture<? extends PropertyType> localTime();
+    CompletableFuture<? extends PropertyType> getLocalTimeNode();
 
     CompletableFuture<TimeZoneDataType> getLocalTime();
 
     CompletableFuture<StatusCode> setLocalTime(TimeZoneDataType value);
 
-    CompletableFuture<? extends PropertyType> message();
+    CompletableFuture<? extends PropertyType> getMessageNode();
 
     CompletableFuture<LocalizedText> getMessage();
 
     CompletableFuture<StatusCode> setMessage(LocalizedText value);
 
-    CompletableFuture<? extends PropertyType> severity();
+    CompletableFuture<? extends PropertyType> getSeverityNode();
 
     CompletableFuture<UShort> getSeverity();
 
     CompletableFuture<StatusCode> setSeverity(UShort value);
-
-
 }

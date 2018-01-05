@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,79 +17,78 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ProgramDiagnosticDataType")
 public class ProgramDiagnosticDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ProgramDiagnosticDataType;
     public static final NodeId BinaryEncodingId = Identifiers.ProgramDiagnosticDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ProgramDiagnosticDataType_Encoding_DefaultXml;
 
-    protected final NodeId _createSessionId;
-    protected final String _createClientName;
-    protected final DateTime _invocationCreationTime;
-    protected final DateTime _lastTransitionTime;
-    protected final String _lastMethodCall;
-    protected final NodeId _lastMethodSessionId;
-    protected final Argument[] _lastMethodInputArguments;
-    protected final Argument[] _lastMethodOutputArguments;
-    protected final DateTime _lastMethodCallTime;
-    protected final StatusResult _lastMethodReturnStatus;
+    protected final NodeId createSessionId;
+    protected final String createClientName;
+    protected final DateTime invocationCreationTime;
+    protected final DateTime lastTransitionTime;
+    protected final String lastMethodCall;
+    protected final NodeId lastMethodSessionId;
+    protected final Argument[] lastMethodInputArguments;
+    protected final Argument[] lastMethodOutputArguments;
+    protected final DateTime lastMethodCallTime;
+    protected final StatusResult lastMethodReturnStatus;
 
     public ProgramDiagnosticDataType() {
-        this._createSessionId = null;
-        this._createClientName = null;
-        this._invocationCreationTime = null;
-        this._lastTransitionTime = null;
-        this._lastMethodCall = null;
-        this._lastMethodSessionId = null;
-        this._lastMethodInputArguments = null;
-        this._lastMethodOutputArguments = null;
-        this._lastMethodCallTime = null;
-        this._lastMethodReturnStatus = null;
+        this.createSessionId = null;
+        this.createClientName = null;
+        this.invocationCreationTime = null;
+        this.lastTransitionTime = null;
+        this.lastMethodCall = null;
+        this.lastMethodSessionId = null;
+        this.lastMethodInputArguments = null;
+        this.lastMethodOutputArguments = null;
+        this.lastMethodCallTime = null;
+        this.lastMethodReturnStatus = null;
     }
 
-    public ProgramDiagnosticDataType(NodeId _createSessionId, String _createClientName, DateTime _invocationCreationTime, DateTime _lastTransitionTime, String _lastMethodCall, NodeId _lastMethodSessionId, Argument[] _lastMethodInputArguments, Argument[] _lastMethodOutputArguments, DateTime _lastMethodCallTime, StatusResult _lastMethodReturnStatus) {
-        this._createSessionId = _createSessionId;
-        this._createClientName = _createClientName;
-        this._invocationCreationTime = _invocationCreationTime;
-        this._lastTransitionTime = _lastTransitionTime;
-        this._lastMethodCall = _lastMethodCall;
-        this._lastMethodSessionId = _lastMethodSessionId;
-        this._lastMethodInputArguments = _lastMethodInputArguments;
-        this._lastMethodOutputArguments = _lastMethodOutputArguments;
-        this._lastMethodCallTime = _lastMethodCallTime;
-        this._lastMethodReturnStatus = _lastMethodReturnStatus;
+    public ProgramDiagnosticDataType(NodeId createSessionId, String createClientName, DateTime invocationCreationTime, DateTime lastTransitionTime, String lastMethodCall, NodeId lastMethodSessionId, Argument[] lastMethodInputArguments, Argument[] lastMethodOutputArguments, DateTime lastMethodCallTime, StatusResult lastMethodReturnStatus) {
+        this.createSessionId = createSessionId;
+        this.createClientName = createClientName;
+        this.invocationCreationTime = invocationCreationTime;
+        this.lastTransitionTime = lastTransitionTime;
+        this.lastMethodCall = lastMethodCall;
+        this.lastMethodSessionId = lastMethodSessionId;
+        this.lastMethodInputArguments = lastMethodInputArguments;
+        this.lastMethodOutputArguments = lastMethodOutputArguments;
+        this.lastMethodCallTime = lastMethodCallTime;
+        this.lastMethodReturnStatus = lastMethodReturnStatus;
     }
 
-    public NodeId getCreateSessionId() { return _createSessionId; }
+    public NodeId getCreateSessionId() { return createSessionId; }
 
-    public String getCreateClientName() { return _createClientName; }
+    public String getCreateClientName() { return createClientName; }
 
-    public DateTime getInvocationCreationTime() { return _invocationCreationTime; }
+    public DateTime getInvocationCreationTime() { return invocationCreationTime; }
 
-    public DateTime getLastTransitionTime() { return _lastTransitionTime; }
+    public DateTime getLastTransitionTime() { return lastTransitionTime; }
 
-    public String getLastMethodCall() { return _lastMethodCall; }
+    public String getLastMethodCall() { return lastMethodCall; }
 
-    public NodeId getLastMethodSessionId() { return _lastMethodSessionId; }
-
-    @Nullable
-    public Argument[] getLastMethodInputArguments() { return _lastMethodInputArguments; }
+    public NodeId getLastMethodSessionId() { return lastMethodSessionId; }
 
     @Nullable
-    public Argument[] getLastMethodOutputArguments() { return _lastMethodOutputArguments; }
+    public Argument[] getLastMethodInputArguments() { return lastMethodInputArguments; }
 
-    public DateTime getLastMethodCallTime() { return _lastMethodCallTime; }
+    @Nullable
+    public Argument[] getLastMethodOutputArguments() { return lastMethodOutputArguments; }
 
-    public StatusResult getLastMethodReturnStatus() { return _lastMethodReturnStatus; }
+    public DateTime getLastMethodCallTime() { return lastMethodCallTime; }
+
+    public StatusResult getLastMethodReturnStatus() { return lastMethodReturnStatus; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -103,50 +102,71 @@ public class ProgramDiagnosticDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("CreateSessionId", _createSessionId)
-            .add("CreateClientName", _createClientName)
-            .add("InvocationCreationTime", _invocationCreationTime)
-            .add("LastTransitionTime", _lastTransitionTime)
-            .add("LastMethodCall", _lastMethodCall)
-            .add("LastMethodSessionId", _lastMethodSessionId)
-            .add("LastMethodInputArguments", _lastMethodInputArguments)
-            .add("LastMethodOutputArguments", _lastMethodOutputArguments)
-            .add("LastMethodCallTime", _lastMethodCallTime)
-            .add("LastMethodReturnStatus", _lastMethodReturnStatus)
+            .add("CreateSessionId", createSessionId)
+            .add("CreateClientName", createClientName)
+            .add("InvocationCreationTime", invocationCreationTime)
+            .add("LastTransitionTime", lastTransitionTime)
+            .add("LastMethodCall", lastMethodCall)
+            .add("LastMethodSessionId", lastMethodSessionId)
+            .add("LastMethodInputArguments", lastMethodInputArguments)
+            .add("LastMethodOutputArguments", lastMethodOutputArguments)
+            .add("LastMethodCallTime", lastMethodCallTime)
+            .add("LastMethodReturnStatus", lastMethodReturnStatus)
             .toString();
     }
 
-    public static void encode(ProgramDiagnosticDataType programDiagnosticDataType, UaEncoder encoder) {
-        encoder.encodeNodeId("CreateSessionId", programDiagnosticDataType._createSessionId);
-        encoder.encodeString("CreateClientName", programDiagnosticDataType._createClientName);
-        encoder.encodeDateTime("InvocationCreationTime", programDiagnosticDataType._invocationCreationTime);
-        encoder.encodeDateTime("LastTransitionTime", programDiagnosticDataType._lastTransitionTime);
-        encoder.encodeString("LastMethodCall", programDiagnosticDataType._lastMethodCall);
-        encoder.encodeNodeId("LastMethodSessionId", programDiagnosticDataType._lastMethodSessionId);
-        encoder.encodeArray("LastMethodInputArguments", programDiagnosticDataType._lastMethodInputArguments, encoder::encodeSerializable);
-        encoder.encodeArray("LastMethodOutputArguments", programDiagnosticDataType._lastMethodOutputArguments, encoder::encodeSerializable);
-        encoder.encodeDateTime("LastMethodCallTime", programDiagnosticDataType._lastMethodCallTime);
-        encoder.encodeSerializable("LastMethodReturnStatus", programDiagnosticDataType._lastMethodReturnStatus != null ? programDiagnosticDataType._lastMethodReturnStatus : new StatusResult());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ProgramDiagnosticDataType> {
 
-    public static ProgramDiagnosticDataType decode(UaDecoder decoder) {
-        NodeId _createSessionId = decoder.decodeNodeId("CreateSessionId");
-        String _createClientName = decoder.decodeString("CreateClientName");
-        DateTime _invocationCreationTime = decoder.decodeDateTime("InvocationCreationTime");
-        DateTime _lastTransitionTime = decoder.decodeDateTime("LastTransitionTime");
-        String _lastMethodCall = decoder.decodeString("LastMethodCall");
-        NodeId _lastMethodSessionId = decoder.decodeNodeId("LastMethodSessionId");
-        Argument[] _lastMethodInputArguments = decoder.decodeArray("LastMethodInputArguments", decoder::decodeSerializable, Argument.class);
-        Argument[] _lastMethodOutputArguments = decoder.decodeArray("LastMethodOutputArguments", decoder::decodeSerializable, Argument.class);
-        DateTime _lastMethodCallTime = decoder.decodeDateTime("LastMethodCallTime");
-        StatusResult _lastMethodReturnStatus = decoder.decodeSerializable("LastMethodReturnStatus", StatusResult.class);
+        @Override
+        public Class<ProgramDiagnosticDataType> getType() {
+            return ProgramDiagnosticDataType.class;
+        }
 
-        return new ProgramDiagnosticDataType(_createSessionId, _createClientName, _invocationCreationTime, _lastTransitionTime, _lastMethodCall, _lastMethodSessionId, _lastMethodInputArguments, _lastMethodOutputArguments, _lastMethodCallTime, _lastMethodReturnStatus);
-    }
+        @Override
+        public ProgramDiagnosticDataType decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId createSessionId = decoder.readNodeId("CreateSessionId");
+            String createClientName = decoder.readString("CreateClientName");
+            DateTime invocationCreationTime = decoder.readDateTime("InvocationCreationTime");
+            DateTime lastTransitionTime = decoder.readDateTime("LastTransitionTime");
+            String lastMethodCall = decoder.readString("LastMethodCall");
+            NodeId lastMethodSessionId = decoder.readNodeId("LastMethodSessionId");
+            Argument[] lastMethodInputArguments =
+                decoder.readBuiltinStructArray(
+                    "LastMethodInputArguments",
+                    Argument.class
+                );
+            Argument[] lastMethodOutputArguments =
+                decoder.readBuiltinStructArray(
+                    "LastMethodOutputArguments",
+                    Argument.class
+                );
+            DateTime lastMethodCallTime = decoder.readDateTime("LastMethodCallTime");
+            StatusResult lastMethodReturnStatus = (StatusResult) decoder.readBuiltinStruct("LastMethodReturnStatus", StatusResult.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ProgramDiagnosticDataType::encode, ProgramDiagnosticDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ProgramDiagnosticDataType::decode, ProgramDiagnosticDataType.class, BinaryEncodingId, XmlEncodingId);
+            return new ProgramDiagnosticDataType(createSessionId, createClientName, invocationCreationTime, lastTransitionTime, lastMethodCall, lastMethodSessionId, lastMethodInputArguments, lastMethodOutputArguments, lastMethodCallTime, lastMethodReturnStatus);
+        }
+
+        @Override
+        public void encode(ProgramDiagnosticDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("CreateSessionId", value.createSessionId);
+            encoder.writeString("CreateClientName", value.createClientName);
+            encoder.writeDateTime("InvocationCreationTime", value.invocationCreationTime);
+            encoder.writeDateTime("LastTransitionTime", value.lastTransitionTime);
+            encoder.writeString("LastMethodCall", value.lastMethodCall);
+            encoder.writeNodeId("LastMethodSessionId", value.lastMethodSessionId);
+            encoder.writeBuiltinStructArray(
+                "LastMethodInputArguments",
+                value.lastMethodInputArguments,
+                Argument.class
+            );
+            encoder.writeBuiltinStructArray(
+                "LastMethodOutputArguments",
+                value.lastMethodOutputArguments,
+                Argument.class
+            );
+            encoder.writeDateTime("LastMethodCallTime", value.lastMethodCallTime);
+            encoder.writeBuiltinStruct("LastMethodReturnStatus", value.lastMethodReturnStatus, StatusResult.class);
+        }
     }
 
 }

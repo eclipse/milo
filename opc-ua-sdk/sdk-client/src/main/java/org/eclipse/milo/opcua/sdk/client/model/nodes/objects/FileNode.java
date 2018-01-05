@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,87 +23,68 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-
 public class FileNode extends BaseObjectNode implements FileType {
-
     public FileNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> size() {
-        return getPropertyNode(FileType.SIZE.getBrowseName());
+    public CompletableFuture<PropertyNode> getSizeNode() {
+        return getPropertyNode(FileType.SIZE);
     }
 
-    @Override
     public CompletableFuture<ULong> getSize() {
         return getProperty(FileType.SIZE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSize(ULong value) {
         return setProperty(FileType.SIZE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> writable() {
-        return getPropertyNode(FileType.WRITABLE.getBrowseName());
+    public CompletableFuture<PropertyNode> getWritableNode() {
+        return getPropertyNode(FileType.WRITABLE);
     }
 
-    @Override
     public CompletableFuture<Boolean> getWritable() {
         return getProperty(FileType.WRITABLE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setWritable(Boolean value) {
         return setProperty(FileType.WRITABLE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> userWritable() {
-        return getPropertyNode(FileType.USER_WRITABLE.getBrowseName());
+    public CompletableFuture<PropertyNode> getUserWritableNode() {
+        return getPropertyNode(FileType.USER_WRITABLE);
     }
 
-    @Override
     public CompletableFuture<Boolean> getUserWritable() {
         return getProperty(FileType.USER_WRITABLE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setUserWritable(Boolean value) {
         return setProperty(FileType.USER_WRITABLE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> openCount() {
-        return getPropertyNode(FileType.OPEN_COUNT.getBrowseName());
+    public CompletableFuture<PropertyNode> getOpenCountNode() {
+        return getPropertyNode(FileType.OPEN_COUNT);
     }
 
-    @Override
     public CompletableFuture<UShort> getOpenCount() {
         return getProperty(FileType.OPEN_COUNT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOpenCount(UShort value) {
         return setProperty(FileType.OPEN_COUNT, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> mimeType() {
-        return getPropertyNode(FileType.MIME_TYPE.getBrowseName());
+    public CompletableFuture<PropertyNode> getMimeTypeNode() {
+        return getPropertyNode(FileType.MIME_TYPE);
     }
 
-    @Override
     public CompletableFuture<String> getMimeType() {
         return getProperty(FileType.MIME_TYPE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setMimeType(String value) {
         return setProperty(FileType.MIME_TYPE, value);
     }
-
-
 }

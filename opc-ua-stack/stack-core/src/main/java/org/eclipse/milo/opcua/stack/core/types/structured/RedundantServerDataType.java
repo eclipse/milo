@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,43 +15,42 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 
-@UaDataType("RedundantServerDataType")
 public class RedundantServerDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.RedundantServerDataType;
     public static final NodeId BinaryEncodingId = Identifiers.RedundantServerDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RedundantServerDataType_Encoding_DefaultXml;
 
-    protected final String _serverId;
-    protected final UByte _serviceLevel;
-    protected final ServerState _serverState;
+    protected final String serverId;
+    protected final UByte serviceLevel;
+    protected final ServerState serverState;
 
     public RedundantServerDataType() {
-        this._serverId = null;
-        this._serviceLevel = null;
-        this._serverState = null;
+        this.serverId = null;
+        this.serviceLevel = null;
+        this.serverState = null;
     }
 
-    public RedundantServerDataType(String _serverId, UByte _serviceLevel, ServerState _serverState) {
-        this._serverId = _serverId;
-        this._serviceLevel = _serviceLevel;
-        this._serverState = _serverState;
+    public RedundantServerDataType(String serverId, UByte serviceLevel, ServerState serverState) {
+        this.serverId = serverId;
+        this.serviceLevel = serviceLevel;
+        this.serverState = serverState;
     }
 
-    public String getServerId() { return _serverId; }
+    public String getServerId() { return serverId; }
 
-    public UByte getServiceLevel() { return _serviceLevel; }
+    public UByte getServiceLevel() { return serviceLevel; }
 
-    public ServerState getServerState() { return _serverState; }
+    public ServerState getServerState() { return serverState; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -65,29 +64,34 @@ public class RedundantServerDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ServerId", _serverId)
-            .add("ServiceLevel", _serviceLevel)
-            .add("ServerState", _serverState)
+            .add("ServerId", serverId)
+            .add("ServiceLevel", serviceLevel)
+            .add("ServerState", serverState)
             .toString();
     }
 
-    public static void encode(RedundantServerDataType redundantServerDataType, UaEncoder encoder) {
-        encoder.encodeString("ServerId", redundantServerDataType._serverId);
-        encoder.encodeByte("ServiceLevel", redundantServerDataType._serviceLevel);
-        encoder.encodeEnumeration("ServerState", redundantServerDataType._serverState);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<RedundantServerDataType> {
 
-    public static RedundantServerDataType decode(UaDecoder decoder) {
-        String _serverId = decoder.decodeString("ServerId");
-        UByte _serviceLevel = decoder.decodeByte("ServiceLevel");
-        ServerState _serverState = decoder.decodeEnumeration("ServerState", ServerState.class);
+        @Override
+        public Class<RedundantServerDataType> getType() {
+            return RedundantServerDataType.class;
+        }
 
-        return new RedundantServerDataType(_serverId, _serviceLevel, _serverState);
-    }
+        @Override
+        public RedundantServerDataType decode(UaDecoder decoder) throws UaSerializationException {
+            String serverId = decoder.readString("ServerId");
+            UByte serviceLevel = decoder.readByte("ServiceLevel");
+            ServerState serverState = ServerState.from(decoder.readInt32("ServerState"));
 
-    static {
-        DelegateRegistry.registerEncoder(RedundantServerDataType::encode, RedundantServerDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RedundantServerDataType::decode, RedundantServerDataType.class, BinaryEncodingId, XmlEncodingId);
+            return new RedundantServerDataType(serverId, serviceLevel, serverState);
+        }
+
+        @Override
+        public void encode(RedundantServerDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("ServerId", value.serverId);
+            encoder.writeByte("ServiceLevel", value.serviceLevel);
+            encoder.writeInt32("ServerState", value.serverState != null ? value.serverState.getValue() : 0);
+        }
     }
 
 }

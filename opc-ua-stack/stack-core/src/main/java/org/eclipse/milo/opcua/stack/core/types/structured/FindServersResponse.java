@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,37 +17,36 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("FindServersResponse")
 public class FindServersResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.FindServersResponse;
     public static final NodeId BinaryEncodingId = Identifiers.FindServersResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.FindServersResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final ApplicationDescription[] _servers;
+    protected final ResponseHeader responseHeader;
+    protected final ApplicationDescription[] servers;
 
     public FindServersResponse() {
-        this._responseHeader = null;
-        this._servers = null;
+        this.responseHeader = null;
+        this.servers = null;
     }
 
-    public FindServersResponse(ResponseHeader _responseHeader, ApplicationDescription[] _servers) {
-        this._responseHeader = _responseHeader;
-        this._servers = _servers;
+    public FindServersResponse(ResponseHeader responseHeader, ApplicationDescription[] servers) {
+        this.responseHeader = responseHeader;
+        this.servers = servers;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public ApplicationDescription[] getServers() { return _servers; }
+    public ApplicationDescription[] getServers() { return servers; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,39 @@ public class FindServersResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("Servers", _servers)
+            .add("ResponseHeader", responseHeader)
+            .add("Servers", servers)
             .toString();
     }
 
-    public static void encode(FindServersResponse findServersResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", findServersResponse._responseHeader != null ? findServersResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Servers", findServersResponse._servers, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<FindServersResponse> {
 
-    public static FindServersResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        ApplicationDescription[] _servers = decoder.decodeArray("Servers", decoder::decodeSerializable, ApplicationDescription.class);
+        @Override
+        public Class<FindServersResponse> getType() {
+            return FindServersResponse.class;
+        }
 
-        return new FindServersResponse(_responseHeader, _servers);
-    }
+        @Override
+        public FindServersResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            ApplicationDescription[] servers =
+                decoder.readBuiltinStructArray(
+                    "Servers",
+                    ApplicationDescription.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(FindServersResponse::encode, FindServersResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(FindServersResponse::decode, FindServersResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new FindServersResponse(responseHeader, servers);
+        }
+
+        @Override
+        public void encode(FindServersResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStructArray(
+                "Servers",
+                value.servers,
+                ApplicationDescription.class
+            );
+        }
     }
 
 }

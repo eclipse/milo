@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,37 +17,36 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("AddReferencesRequest")
 public class AddReferencesRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.AddReferencesRequest;
     public static final NodeId BinaryEncodingId = Identifiers.AddReferencesRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AddReferencesRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final AddReferencesItem[] _referencesToAdd;
+    protected final RequestHeader requestHeader;
+    protected final AddReferencesItem[] referencesToAdd;
 
     public AddReferencesRequest() {
-        this._requestHeader = null;
-        this._referencesToAdd = null;
+        this.requestHeader = null;
+        this.referencesToAdd = null;
     }
 
-    public AddReferencesRequest(RequestHeader _requestHeader, AddReferencesItem[] _referencesToAdd) {
-        this._requestHeader = _requestHeader;
-        this._referencesToAdd = _referencesToAdd;
+    public AddReferencesRequest(RequestHeader requestHeader, AddReferencesItem[] referencesToAdd) {
+        this.requestHeader = requestHeader;
+        this.referencesToAdd = referencesToAdd;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public AddReferencesItem[] getReferencesToAdd() { return _referencesToAdd; }
+    public AddReferencesItem[] getReferencesToAdd() { return referencesToAdd; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,39 @@ public class AddReferencesRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("ReferencesToAdd", _referencesToAdd)
+            .add("RequestHeader", requestHeader)
+            .add("ReferencesToAdd", referencesToAdd)
             .toString();
     }
 
-    public static void encode(AddReferencesRequest addReferencesRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", addReferencesRequest._requestHeader != null ? addReferencesRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("ReferencesToAdd", addReferencesRequest._referencesToAdd, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<AddReferencesRequest> {
 
-    public static AddReferencesRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        AddReferencesItem[] _referencesToAdd = decoder.decodeArray("ReferencesToAdd", decoder::decodeSerializable, AddReferencesItem.class);
+        @Override
+        public Class<AddReferencesRequest> getType() {
+            return AddReferencesRequest.class;
+        }
 
-        return new AddReferencesRequest(_requestHeader, _referencesToAdd);
-    }
+        @Override
+        public AddReferencesRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            AddReferencesItem[] referencesToAdd =
+                decoder.readBuiltinStructArray(
+                    "ReferencesToAdd",
+                    AddReferencesItem.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(AddReferencesRequest::encode, AddReferencesRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(AddReferencesRequest::decode, AddReferencesRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new AddReferencesRequest(requestHeader, referencesToAdd);
+        }
+
+        @Override
+        public void encode(AddReferencesRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStructArray(
+                "ReferencesToAdd",
+                value.referencesToAdd,
+                AddReferencesItem.class
+            );
+        }
     }
 
 }

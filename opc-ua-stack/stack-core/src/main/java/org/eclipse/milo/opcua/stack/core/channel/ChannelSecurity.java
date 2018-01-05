@@ -67,7 +67,7 @@ public class ChannelSecurity {
 
         int signatureKeySize = channel.getSymmetricSignatureKeySize();
         int encryptionKeySize = channel.getSymmetricEncryptionKeySize();
-        int cipherTextBlockSize = channel.getSymmetricCipherTextBlockSize();
+        int cipherTextBlockSize = channel.getSymmetricBlockSize();
 
         assert (clientNonce != null);
         assert (serverNonce != null);

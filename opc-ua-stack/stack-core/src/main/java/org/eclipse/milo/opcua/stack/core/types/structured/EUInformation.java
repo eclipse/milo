@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,47 +15,46 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("EUInformation")
 public class EUInformation implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.EUInformation;
     public static final NodeId BinaryEncodingId = Identifiers.EUInformation_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EUInformation_Encoding_DefaultXml;
 
-    protected final String _namespaceUri;
-    protected final Integer _unitId;
-    protected final LocalizedText _displayName;
-    protected final LocalizedText _description;
+    protected final String namespaceUri;
+    protected final Integer unitId;
+    protected final LocalizedText displayName;
+    protected final LocalizedText description;
 
     public EUInformation() {
-        this._namespaceUri = null;
-        this._unitId = null;
-        this._displayName = null;
-        this._description = null;
+        this.namespaceUri = null;
+        this.unitId = null;
+        this.displayName = null;
+        this.description = null;
     }
 
-    public EUInformation(String _namespaceUri, Integer _unitId, LocalizedText _displayName, LocalizedText _description) {
-        this._namespaceUri = _namespaceUri;
-        this._unitId = _unitId;
-        this._displayName = _displayName;
-        this._description = _description;
+    public EUInformation(String namespaceUri, Integer unitId, LocalizedText displayName, LocalizedText description) {
+        this.namespaceUri = namespaceUri;
+        this.unitId = unitId;
+        this.displayName = displayName;
+        this.description = description;
     }
 
-    public String getNamespaceUri() { return _namespaceUri; }
+    public String getNamespaceUri() { return namespaceUri; }
 
-    public Integer getUnitId() { return _unitId; }
+    public Integer getUnitId() { return unitId; }
 
-    public LocalizedText getDisplayName() { return _displayName; }
+    public LocalizedText getDisplayName() { return displayName; }
 
-    public LocalizedText getDescription() { return _description; }
+    public LocalizedText getDescription() { return description; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,32 +68,37 @@ public class EUInformation implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NamespaceUri", _namespaceUri)
-            .add("UnitId", _unitId)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
+            .add("NamespaceUri", namespaceUri)
+            .add("UnitId", unitId)
+            .add("DisplayName", displayName)
+            .add("Description", description)
             .toString();
     }
 
-    public static void encode(EUInformation eUInformation, UaEncoder encoder) {
-        encoder.encodeString("NamespaceUri", eUInformation._namespaceUri);
-        encoder.encodeInt32("UnitId", eUInformation._unitId);
-        encoder.encodeLocalizedText("DisplayName", eUInformation._displayName);
-        encoder.encodeLocalizedText("Description", eUInformation._description);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<EUInformation> {
 
-    public static EUInformation decode(UaDecoder decoder) {
-        String _namespaceUri = decoder.decodeString("NamespaceUri");
-        Integer _unitId = decoder.decodeInt32("UnitId");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
+        @Override
+        public Class<EUInformation> getType() {
+            return EUInformation.class;
+        }
 
-        return new EUInformation(_namespaceUri, _unitId, _displayName, _description);
-    }
+        @Override
+        public EUInformation decode(UaDecoder decoder) throws UaSerializationException {
+            String namespaceUri = decoder.readString("NamespaceUri");
+            Integer unitId = decoder.readInt32("UnitId");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
 
-    static {
-        DelegateRegistry.registerEncoder(EUInformation::encode, EUInformation.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EUInformation::decode, EUInformation.class, BinaryEncodingId, XmlEncodingId);
+            return new EUInformation(namespaceUri, unitId, displayName, description);
+        }
+
+        @Override
+        public void encode(EUInformation value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("NamespaceUri", value.namespaceUri);
+            encoder.writeInt32("UnitId", value.unitId);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+        }
     }
 
 }

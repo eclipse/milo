@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,20 +20,16 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteTransitionV
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface FiniteStateMachineType extends StateMachineType {
-
-
-    CompletableFuture<? extends FiniteStateVariableType> currentState();
+    CompletableFuture<? extends FiniteStateVariableType> getCurrentStateNode();
 
     CompletableFuture<LocalizedText> getCurrentState();
 
     CompletableFuture<StatusCode> setCurrentState(LocalizedText value);
 
-    CompletableFuture<? extends FiniteTransitionVariableType> lastTransition();
+    CompletableFuture<? extends FiniteTransitionVariableType> getLastTransitionNode();
 
     CompletableFuture<LocalizedText> getLastTransition();
 
     CompletableFuture<StatusCode> setLastTransition(LocalizedText value);
-
 }

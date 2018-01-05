@@ -1,91 +1,81 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 
 public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEventType {
-
-    Property<NodeId> UPDATED_NODE = new BasicProperty<>(
-        QualifiedName.parse("0:UpdatedNode"),
+    QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UpdatedNode",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<PerformUpdateType> PERFORM_INSERT_REPLACE = new BasicProperty<>(
-        QualifiedName.parse("0:PerformInsertReplace"),
+    QualifiedProperty<PerformUpdateType> PERFORM_INSERT_REPLACE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "PerformInsertReplace",
         NodeId.parse("ns=0;i=11293"),
-        -1,
+        ValueRanks.Scalar,
         PerformUpdateType.class
     );
 
-    Property<EventFilter> FILTER = new BasicProperty<>(
-        QualifiedName.parse("0:Filter"),
+    QualifiedProperty<EventFilter> FILTER = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Filter",
         NodeId.parse("ns=0;i=725"),
-        -1,
+        ValueRanks.Scalar,
         EventFilter.class
     );
 
-    Property<HistoryEventFieldList[]> NEW_VALUES = new BasicProperty<>(
-        QualifiedName.parse("0:NewValues"),
+    QualifiedProperty<HistoryEventFieldList[]> NEW_VALUES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NewValues",
         NodeId.parse("ns=0;i=920"),
-        1,
+        ValueRanks.OneDimension,
         HistoryEventFieldList[].class
     );
 
-    Property<HistoryEventFieldList[]> OLD_VALUES = new BasicProperty<>(
-        QualifiedName.parse("0:OldValues"),
+    QualifiedProperty<HistoryEventFieldList[]> OLD_VALUES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OldValues",
         NodeId.parse("ns=0;i=920"),
-        1,
+        ValueRanks.OneDimension,
         HistoryEventFieldList[].class
     );
-
-    NodeId getUpdatedNode();
 
     PropertyType getUpdatedNodeNode();
 
-    void setUpdatedNode(NodeId value);
+    NodeId getUpdatedNode();
 
-    PerformUpdateType getPerformInsertReplace();
+    void setUpdatedNode(NodeId value);
 
     PropertyType getPerformInsertReplaceNode();
 
-    void setPerformInsertReplace(PerformUpdateType value);
+    PerformUpdateType getPerformInsertReplace();
 
-    EventFilter getFilter();
+    void setPerformInsertReplace(PerformUpdateType value);
 
     PropertyType getFilterNode();
 
-    void setFilter(EventFilter value);
+    EventFilter getFilter();
 
-    HistoryEventFieldList[] getNewValues();
+    void setFilter(EventFilter value);
 
     PropertyType getNewValuesNode();
 
+    HistoryEventFieldList[] getNewValues();
+
     void setNewValues(HistoryEventFieldList[] value);
 
-    HistoryEventFieldList[] getOldValues();
-
     PropertyType getOldValuesNode();
+
+    HistoryEventFieldList[] getOldValues();
 
     void setOldValues(HistoryEventFieldList[] value);
 }

@@ -55,7 +55,6 @@ import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHand
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
 import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.TestServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
@@ -131,8 +130,6 @@ public class UaTcpStackServer implements UaStackServer {
         addServiceSet(new SessionServiceSet() {
         });
         addServiceSet(new SubscriptionServiceSet() {
-        });
-        addServiceSet(new TestServiceSet() {
         });
         addServiceSet(new ViewServiceSet() {
         });
@@ -459,7 +456,20 @@ public class UaTcpStackServer implements UaStackServer {
                 new ArrayList<>();
 
             List<EndpointDescription> allEndpoints = endpoints.stream()
-                .map(UaTcpStackServer.this::mapEndpoint)
+                .map(endpoint -> {
+                    List<UserTokenPolicy> userTokenPolicies = config.getUserTokenPolicies();
+
+                    return new EndpointDescription(
+                        endpoint.getEndpointUri().toString(),
+                        getFilteredApplicationDescription(request.getEndpointUrl()),
+                        certificateByteString(endpoint.getCertificate()),
+                        endpoint.getMessageSecurity(),
+                        endpoint.getSecurityPolicy().getSecurityPolicyUri(),
+                        userTokenPolicies.toArray(new UserTokenPolicy[userTokenPolicies.size()]),
+                        Stack.UA_TCP_BINARY_TRANSPORT_URI,
+                        ubyte(endpoint.getSecurityLevel())
+                    );
+                })
                 .filter(ed -> filterProfileUris(ed, profileUris))
                 .collect(toList());
 
@@ -488,7 +498,7 @@ public class UaTcpStackServer implements UaStackServer {
 
                 return requestedHost.equalsIgnoreCase(endpointHost);
             } catch (Throwable e) {
-                logger.warn("Unable to create URI.", e);
+                logger.debug("Unable to create URI.", e);
                 return false;
             }
         }
@@ -502,7 +512,7 @@ public class UaTcpStackServer implements UaStackServer {
                 new ArrayList<>();
 
             List<ApplicationDescription> applicationDescriptions =
-                newArrayList(getApplicationDescription(request.getEndpointUrl()));
+                newArrayList(getFilteredApplicationDescription(request.getEndpointUrl()));
 
             applicationDescriptions = applicationDescriptions.stream()
                 .filter(ad -> filterServerUris(ad, serverUris))
@@ -516,7 +526,7 @@ public class UaTcpStackServer implements UaStackServer {
             serviceRequest.setResponse(response);
         }
 
-        private ApplicationDescription getApplicationDescription(String endpointUrl) {
+        private ApplicationDescription getFilteredApplicationDescription(String endpointUrl) {
             List<String> allDiscoveryUrls = newArrayList(discoveryUrls);
 
             List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
@@ -529,7 +539,7 @@ public class UaTcpStackServer implements UaStackServer {
 
                         return requestedHost.equalsIgnoreCase(discoveryHost);
                     } catch (Throwable e) {
-                        logger.warn("Unable to create URI.", e);
+                        logger.debug("Unable to create URI.", e);
                         return false;
                     }
                 })
@@ -550,7 +560,7 @@ public class UaTcpStackServer implements UaStackServer {
 
                             return requestedHostAddress.equals(discoveryHostAddress);
                         } catch (Throwable e) {
-                            logger.warn("Unable to create URI.", e);
+                            logger.debug("Unable to create URI.", e);
                             return false;
                         }
                     })

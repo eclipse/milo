@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.ProgramTransitionEv
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class ProgramTransitionEventNode extends TransitionEventNode implements ProgramTransitionEventType {
-
     public ProgramTransitionEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> intermediateResult() {
-        return getPropertyNode(ProgramTransitionEventType.INTERMEDIATE_RESULT.getBrowseName());
+    public CompletableFuture<PropertyNode> getIntermediateResultNode() {
+        return getPropertyNode(ProgramTransitionEventType.INTERMEDIATE_RESULT);
     }
 
-    @Override
-    public CompletableFuture<? extends Object> getIntermediateResult() {
+    public CompletableFuture<?> getIntermediateResult() {
         return getProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setIntermediateResult(Object value) {
         return setProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT, value);
     }
-
-
 }

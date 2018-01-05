@@ -1,16 +1,3 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -19,265 +6,262 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
 
-
 public interface SessionDiagnosticsVariableType extends BaseDataVariableType {
-
+    BaseDataVariableType getSessionIdNode();
 
     NodeId getSessionId();
 
-    BaseDataVariableType getSessionIdNode();
-
     void setSessionId(NodeId value);
-
-    String getSessionName();
 
     BaseDataVariableType getSessionNameNode();
 
-    void setSessionName(String value);
+    String getSessionName();
 
-    ApplicationDescription getClientDescription();
+    void setSessionName(String value);
 
     BaseDataVariableType getClientDescriptionNode();
 
-    void setClientDescription(ApplicationDescription value);
+    ApplicationDescription getClientDescription();
 
-    String getServerUri();
+    void setClientDescription(ApplicationDescription value);
 
     BaseDataVariableType getServerUriNode();
 
-    void setServerUri(String value);
+    String getServerUri();
 
-    String getEndpointUrl();
+    void setServerUri(String value);
 
     BaseDataVariableType getEndpointUrlNode();
 
-    void setEndpointUrl(String value);
+    String getEndpointUrl();
 
-    String[] getLocaleIds();
+    void setEndpointUrl(String value);
 
     BaseDataVariableType getLocaleIdsNode();
 
-    void setLocaleIds(String[] value);
+    String[] getLocaleIds();
 
-    Double getActualSessionTimeout();
+    void setLocaleIds(String[] value);
 
     BaseDataVariableType getActualSessionTimeoutNode();
 
-    void setActualSessionTimeout(Double value);
+    Double getActualSessionTimeout();
 
-    UInteger getMaxResponseMessageSize();
+    void setActualSessionTimeout(Double value);
 
     BaseDataVariableType getMaxResponseMessageSizeNode();
 
-    void setMaxResponseMessageSize(UInteger value);
+    UInteger getMaxResponseMessageSize();
 
-    DateTime getClientConnectionTime();
+    void setMaxResponseMessageSize(UInteger value);
 
     BaseDataVariableType getClientConnectionTimeNode();
 
-    void setClientConnectionTime(DateTime value);
+    DateTime getClientConnectionTime();
 
-    DateTime getClientLastContactTime();
+    void setClientConnectionTime(DateTime value);
 
     BaseDataVariableType getClientLastContactTimeNode();
 
-    void setClientLastContactTime(DateTime value);
+    DateTime getClientLastContactTime();
 
-    UInteger getCurrentSubscriptionsCount();
+    void setClientLastContactTime(DateTime value);
 
     BaseDataVariableType getCurrentSubscriptionsCountNode();
 
-    void setCurrentSubscriptionsCount(UInteger value);
+    UInteger getCurrentSubscriptionsCount();
 
-    UInteger getCurrentMonitoredItemsCount();
+    void setCurrentSubscriptionsCount(UInteger value);
 
     BaseDataVariableType getCurrentMonitoredItemsCountNode();
 
-    void setCurrentMonitoredItemsCount(UInteger value);
+    UInteger getCurrentMonitoredItemsCount();
 
-    UInteger getCurrentPublishRequestsInQueue();
+    void setCurrentMonitoredItemsCount(UInteger value);
 
     BaseDataVariableType getCurrentPublishRequestsInQueueNode();
 
-    void setCurrentPublishRequestsInQueue(UInteger value);
+    UInteger getCurrentPublishRequestsInQueue();
 
-    ServiceCounterDataType getTotalRequestCount();
+    void setCurrentPublishRequestsInQueue(UInteger value);
 
     BaseDataVariableType getTotalRequestCountNode();
 
-    void setTotalRequestCount(ServiceCounterDataType value);
+    ServiceCounterDataType getTotalRequestCount();
 
-    UInteger getUnauthorizedRequestCount();
+    void setTotalRequestCount(ServiceCounterDataType value);
 
     BaseDataVariableType getUnauthorizedRequestCountNode();
 
-    void setUnauthorizedRequestCount(UInteger value);
+    UInteger getUnauthorizedRequestCount();
 
-    ServiceCounterDataType getReadCount();
+    void setUnauthorizedRequestCount(UInteger value);
 
     BaseDataVariableType getReadCountNode();
 
-    void setReadCount(ServiceCounterDataType value);
+    ServiceCounterDataType getReadCount();
 
-    ServiceCounterDataType getHistoryReadCount();
+    void setReadCount(ServiceCounterDataType value);
 
     BaseDataVariableType getHistoryReadCountNode();
 
-    void setHistoryReadCount(ServiceCounterDataType value);
+    ServiceCounterDataType getHistoryReadCount();
 
-    ServiceCounterDataType getWriteCount();
+    void setHistoryReadCount(ServiceCounterDataType value);
 
     BaseDataVariableType getWriteCountNode();
 
-    void setWriteCount(ServiceCounterDataType value);
+    ServiceCounterDataType getWriteCount();
 
-    ServiceCounterDataType getHistoryUpdateCount();
+    void setWriteCount(ServiceCounterDataType value);
 
     BaseDataVariableType getHistoryUpdateCountNode();
 
-    void setHistoryUpdateCount(ServiceCounterDataType value);
+    ServiceCounterDataType getHistoryUpdateCount();
 
-    ServiceCounterDataType getCallCount();
+    void setHistoryUpdateCount(ServiceCounterDataType value);
 
     BaseDataVariableType getCallCountNode();
 
-    void setCallCount(ServiceCounterDataType value);
+    ServiceCounterDataType getCallCount();
 
-    ServiceCounterDataType getCreateMonitoredItemsCount();
+    void setCallCount(ServiceCounterDataType value);
 
     BaseDataVariableType getCreateMonitoredItemsCountNode();
 
-    void setCreateMonitoredItemsCount(ServiceCounterDataType value);
+    ServiceCounterDataType getCreateMonitoredItemsCount();
 
-    ServiceCounterDataType getModifyMonitoredItemsCount();
+    void setCreateMonitoredItemsCount(ServiceCounterDataType value);
 
     BaseDataVariableType getModifyMonitoredItemsCountNode();
 
-    void setModifyMonitoredItemsCount(ServiceCounterDataType value);
+    ServiceCounterDataType getModifyMonitoredItemsCount();
 
-    ServiceCounterDataType getSetMonitoringModeCount();
+    void setModifyMonitoredItemsCount(ServiceCounterDataType value);
 
     BaseDataVariableType getSetMonitoringModeCountNode();
 
-    void setSetMonitoringModeCount(ServiceCounterDataType value);
+    ServiceCounterDataType getSetMonitoringModeCount();
 
-    ServiceCounterDataType getSetTriggeringCount();
+    void setSetMonitoringModeCount(ServiceCounterDataType value);
 
     BaseDataVariableType getSetTriggeringCountNode();
 
-    void setSetTriggeringCount(ServiceCounterDataType value);
+    ServiceCounterDataType getSetTriggeringCount();
 
-    ServiceCounterDataType getDeleteMonitoredItemsCount();
+    void setSetTriggeringCount(ServiceCounterDataType value);
 
     BaseDataVariableType getDeleteMonitoredItemsCountNode();
 
-    void setDeleteMonitoredItemsCount(ServiceCounterDataType value);
+    ServiceCounterDataType getDeleteMonitoredItemsCount();
 
-    ServiceCounterDataType getCreateSubscriptionCount();
+    void setDeleteMonitoredItemsCount(ServiceCounterDataType value);
 
     BaseDataVariableType getCreateSubscriptionCountNode();
 
-    void setCreateSubscriptionCount(ServiceCounterDataType value);
+    ServiceCounterDataType getCreateSubscriptionCount();
 
-    ServiceCounterDataType getModifySubscriptionCount();
+    void setCreateSubscriptionCount(ServiceCounterDataType value);
 
     BaseDataVariableType getModifySubscriptionCountNode();
 
-    void setModifySubscriptionCount(ServiceCounterDataType value);
+    ServiceCounterDataType getModifySubscriptionCount();
 
-    ServiceCounterDataType getSetPublishingModeCount();
+    void setModifySubscriptionCount(ServiceCounterDataType value);
 
     BaseDataVariableType getSetPublishingModeCountNode();
 
-    void setSetPublishingModeCount(ServiceCounterDataType value);
+    ServiceCounterDataType getSetPublishingModeCount();
 
-    ServiceCounterDataType getPublishCount();
+    void setSetPublishingModeCount(ServiceCounterDataType value);
 
     BaseDataVariableType getPublishCountNode();
 
-    void setPublishCount(ServiceCounterDataType value);
+    ServiceCounterDataType getPublishCount();
 
-    ServiceCounterDataType getRepublishCount();
+    void setPublishCount(ServiceCounterDataType value);
 
     BaseDataVariableType getRepublishCountNode();
 
-    void setRepublishCount(ServiceCounterDataType value);
+    ServiceCounterDataType getRepublishCount();
 
-    ServiceCounterDataType getTransferSubscriptionsCount();
+    void setRepublishCount(ServiceCounterDataType value);
 
     BaseDataVariableType getTransferSubscriptionsCountNode();
 
-    void setTransferSubscriptionsCount(ServiceCounterDataType value);
+    ServiceCounterDataType getTransferSubscriptionsCount();
 
-    ServiceCounterDataType getDeleteSubscriptionsCount();
+    void setTransferSubscriptionsCount(ServiceCounterDataType value);
 
     BaseDataVariableType getDeleteSubscriptionsCountNode();
 
-    void setDeleteSubscriptionsCount(ServiceCounterDataType value);
+    ServiceCounterDataType getDeleteSubscriptionsCount();
 
-    ServiceCounterDataType getAddNodesCount();
+    void setDeleteSubscriptionsCount(ServiceCounterDataType value);
 
     BaseDataVariableType getAddNodesCountNode();
 
-    void setAddNodesCount(ServiceCounterDataType value);
+    ServiceCounterDataType getAddNodesCount();
 
-    ServiceCounterDataType getAddReferencesCount();
+    void setAddNodesCount(ServiceCounterDataType value);
 
     BaseDataVariableType getAddReferencesCountNode();
 
-    void setAddReferencesCount(ServiceCounterDataType value);
+    ServiceCounterDataType getAddReferencesCount();
 
-    ServiceCounterDataType getDeleteNodesCount();
+    void setAddReferencesCount(ServiceCounterDataType value);
 
     BaseDataVariableType getDeleteNodesCountNode();
 
-    void setDeleteNodesCount(ServiceCounterDataType value);
+    ServiceCounterDataType getDeleteNodesCount();
 
-    ServiceCounterDataType getDeleteReferencesCount();
+    void setDeleteNodesCount(ServiceCounterDataType value);
 
     BaseDataVariableType getDeleteReferencesCountNode();
 
-    void setDeleteReferencesCount(ServiceCounterDataType value);
+    ServiceCounterDataType getDeleteReferencesCount();
 
-    ServiceCounterDataType getBrowseCount();
+    void setDeleteReferencesCount(ServiceCounterDataType value);
 
     BaseDataVariableType getBrowseCountNode();
 
-    void setBrowseCount(ServiceCounterDataType value);
+    ServiceCounterDataType getBrowseCount();
 
-    ServiceCounterDataType getBrowseNextCount();
+    void setBrowseCount(ServiceCounterDataType value);
 
     BaseDataVariableType getBrowseNextCountNode();
 
-    void setBrowseNextCount(ServiceCounterDataType value);
+    ServiceCounterDataType getBrowseNextCount();
 
-    ServiceCounterDataType getTranslateBrowsePathsToNodeIdsCount();
+    void setBrowseNextCount(ServiceCounterDataType value);
 
     BaseDataVariableType getTranslateBrowsePathsToNodeIdsCountNode();
 
-    void setTranslateBrowsePathsToNodeIdsCount(ServiceCounterDataType value);
+    ServiceCounterDataType getTranslateBrowsePathsToNodeIdsCount();
 
-    ServiceCounterDataType getQueryFirstCount();
+    void setTranslateBrowsePathsToNodeIdsCount(ServiceCounterDataType value);
 
     BaseDataVariableType getQueryFirstCountNode();
 
-    void setQueryFirstCount(ServiceCounterDataType value);
+    ServiceCounterDataType getQueryFirstCount();
 
-    ServiceCounterDataType getQueryNextCount();
+    void setQueryFirstCount(ServiceCounterDataType value);
 
     BaseDataVariableType getQueryNextCountNode();
 
-    void setQueryNextCount(ServiceCounterDataType value);
+    ServiceCounterDataType getQueryNextCount();
 
-    ServiceCounterDataType getRegisterNodesCount();
+    void setQueryNextCount(ServiceCounterDataType value);
 
     BaseDataVariableType getRegisterNodesCountNode();
 
+    ServiceCounterDataType getRegisterNodesCount();
+
     void setRegisterNodesCount(ServiceCounterDataType value);
 
-    ServiceCounterDataType getUnregisterNodesCount();
-
     BaseDataVariableType getUnregisterNodesCountNode();
+
+    ServiceCounterDataType getUnregisterNodesCount();
 
     void setUnregisterNodesCount(ServiceCounterDataType value);
 }

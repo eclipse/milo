@@ -22,6 +22,8 @@ import javax.annotation.Nullable;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -36,6 +38,7 @@ public class UaTcpStackClientConfigBuilder {
     private KeyPair keyPair;
     private X509Certificate certificate;
     private X509Certificate[] certificateChain;
+    private CertificateValidator certificateValidator = new InsecureCertificateValidator();
 
     private LocalizedText applicationName = LocalizedText.english("client application name not configured");
     private String applicationUri = "client application uri not configured";
@@ -46,8 +49,6 @@ public class UaTcpStackClientConfigBuilder {
     private ExecutorService executor;
     private NioEventLoopGroup eventLoop;
     private HashedWheelTimer wheelTimer;
-
-    private boolean secureChannelReauthenticationEnabled = true;
 
     public UaTcpStackClientConfigBuilder setEndpointUrl(String endpointUrl) {
         this.endpointUrl = endpointUrl;
@@ -71,6 +72,11 @@ public class UaTcpStackClientConfigBuilder {
 
     public UaTcpStackClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
         this.certificateChain = certificateChain;
+        return this;
+    }
+
+    public UaTcpStackClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+        this.certificateValidator = certificateValidator;
         return this;
     }
 
@@ -114,13 +120,6 @@ public class UaTcpStackClientConfigBuilder {
         return this;
     }
 
-    public UaTcpStackClientConfigBuilder setSecureChannelReauthenticationEnabled(
-        boolean secureChannelReauthenticationEnabled) {
-
-        this.secureChannelReauthenticationEnabled = secureChannelReauthenticationEnabled;
-        return this;
-    }
-
     public UaTcpStackClientConfig build() {
         if (executor == null) {
             executor = Stack.sharedExecutor();
@@ -138,6 +137,7 @@ public class UaTcpStackClientConfigBuilder {
             keyPair,
             certificate,
             certificateChain,
+            certificateValidator,
             applicationName,
             applicationUri,
             productUri,
@@ -145,8 +145,8 @@ public class UaTcpStackClientConfigBuilder {
             channelLifetime,
             executor,
             eventLoop,
-            wheelTimer,
-            secureChannelReauthenticationEnabled);
+            wheelTimer
+        );
     }
 
     public static class UaTcpStackClientConfigImpl implements UaTcpStackClientConfig {
@@ -156,6 +156,7 @@ public class UaTcpStackClientConfigBuilder {
         private final KeyPair keyPair;
         private final X509Certificate certificate;
         private final X509Certificate[] certificateChain;
+        private final CertificateValidator certificateValidator;
 
         private final LocalizedText applicationName;
         private final String applicationUri;
@@ -167,14 +168,13 @@ public class UaTcpStackClientConfigBuilder {
         private final NioEventLoopGroup eventLoop;
         private final HashedWheelTimer wheelTimer;
 
-        private final boolean secureChannelReauthenticationEnabled;
-
         public UaTcpStackClientConfigImpl(
             @Nullable String endpointUrl,
             @Nullable EndpointDescription endpoint,
             @Nullable KeyPair keyPair,
             @Nullable X509Certificate certificate,
             @Nullable X509Certificate[] certificateChain,
+            CertificateValidator certificateValidator,
             LocalizedText applicationName,
             String applicationUri,
             String productUri,
@@ -182,14 +182,14 @@ public class UaTcpStackClientConfigBuilder {
             UInteger channelLifetime,
             ExecutorService executor,
             NioEventLoopGroup eventLoop,
-            HashedWheelTimer wheelTimer,
-            boolean secureChannelReauthenticationEnabled) {
+            HashedWheelTimer wheelTimer) {
 
             this.endpointUrl = endpointUrl;
             this.endpoint = endpoint;
             this.keyPair = keyPair;
             this.certificate = certificate;
             this.certificateChain = certificateChain;
+            this.certificateValidator = certificateValidator;
             this.applicationName = applicationName;
             this.applicationUri = applicationUri;
             this.productUri = productUri;
@@ -198,7 +198,6 @@ public class UaTcpStackClientConfigBuilder {
             this.executor = executor;
             this.eventLoop = eventLoop;
             this.wheelTimer = wheelTimer;
-            this.secureChannelReauthenticationEnabled = secureChannelReauthenticationEnabled;
         }
 
         @Override
@@ -232,6 +231,11 @@ public class UaTcpStackClientConfigBuilder {
                     return Optional.empty();
                 }
             }
+        }
+
+        @Override
+        public CertificateValidator getCertificateValidator() {
+            return certificateValidator;
         }
 
         @Override
@@ -272,11 +276,6 @@ public class UaTcpStackClientConfigBuilder {
         @Override
         public HashedWheelTimer getWheelTimer() {
             return wheelTimer;
-        }
-
-        @Override
-        public boolean isSecureChannelReauthenticationEnabled() {
-            return secureChannelReauthenticationEnabled;
         }
 
     }

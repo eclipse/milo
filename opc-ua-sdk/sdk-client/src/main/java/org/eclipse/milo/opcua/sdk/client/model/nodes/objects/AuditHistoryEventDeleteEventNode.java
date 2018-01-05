@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,42 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 
-
 public class AuditHistoryEventDeleteEventNode extends AuditHistoryDeleteEventNode implements AuditHistoryEventDeleteEventType {
-
     public AuditHistoryEventDeleteEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> eventIds() {
-        return getPropertyNode(AuditHistoryEventDeleteEventType.EVENT_IDS.getBrowseName());
+    public CompletableFuture<PropertyNode> getEventIdsNode() {
+        return getPropertyNode(AuditHistoryEventDeleteEventType.EVENT_IDS);
     }
 
-    @Override
     public CompletableFuture<ByteString[]> getEventIds() {
         return getProperty(AuditHistoryEventDeleteEventType.EVENT_IDS);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEventIds(ByteString[] value) {
         return setProperty(AuditHistoryEventDeleteEventType.EVENT_IDS, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> oldValues() {
-        return getPropertyNode(AuditHistoryEventDeleteEventType.OLD_VALUES.getBrowseName());
+    public CompletableFuture<PropertyNode> getOldValuesNode() {
+        return getPropertyNode(AuditHistoryEventDeleteEventType.OLD_VALUES);
     }
 
-    @Override
     public CompletableFuture<HistoryEventFieldList> getOldValues() {
         return getProperty(AuditHistoryEventDeleteEventType.OLD_VALUES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOldValues(HistoryEventFieldList value) {
         return setProperty(AuditHistoryEventDeleteEventType.OLD_VALUES, value);
     }
-
-
 }

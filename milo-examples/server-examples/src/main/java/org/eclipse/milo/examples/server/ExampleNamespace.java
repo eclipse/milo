@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
+import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
@@ -32,10 +33,15 @@ import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
@@ -45,9 +51,12 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -58,6 +67,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
@@ -127,6 +137,8 @@ public class ExampleNamespace implements Namespace {
 
     private final SubscriptionModel subscriptionModel;
 
+    private final NodeFactory nodeFactory;
+
     private final OpcUaServer server;
     private final UShort namespaceIndex;
 
@@ -135,6 +147,12 @@ public class ExampleNamespace implements Namespace {
         this.namespaceIndex = namespaceIndex;
 
         subscriptionModel = new SubscriptionModel(server, this);
+
+        nodeFactory = new NodeFactory(
+            server.getNodeMap(),
+            server.getObjectTypeManager(),
+            server.getVariableTypeManager()
+        );
 
         try {
             // Create a "HelloWorld" folder and add it to the node manager
@@ -162,6 +180,10 @@ public class ExampleNamespace implements Namespace {
             addVariableNodes(folderNode);
 
             addMethodNode(folderNode);
+
+            addCustomDataTypeVariable(folderNode);
+
+            addCustomObjectTypeAndInstance(folderNode);
         } catch (UaException e) {
             logger.error("Error adding nodes: {}", e.getMessage(), e);
         }
@@ -183,6 +205,7 @@ public class ExampleNamespace implements Namespace {
         addAdminReadableNodes(rootNode);
         addAdminWritableNodes(rootNode);
         addDynamicNodes(rootNode);
+        addDataAccessNodes(rootNode);
     }
 
     private void addArrayNodes(UaFolderNode rootNode) {
@@ -443,6 +466,36 @@ public class ExampleNamespace implements Namespace {
         }
     }
 
+    private void addDataAccessNodes(UaFolderNode rootNode) {
+        // DataAccess folder
+        UaFolderNode dataAccessFolder = new UaFolderNode(
+            server.getNodeMap(),
+            new NodeId(namespaceIndex, "HelloWorld/DataAccess"),
+            new QualifiedName(namespaceIndex, "DataAccess"),
+            LocalizedText.english("DataAccess")
+        );
+
+        server.getNodeMap().addNode(dataAccessFolder);
+        rootNode.addOrganizes(dataAccessFolder);
+
+        // AnalogItemType node
+        AnalogItemNode node = nodeFactory.createVariable(
+            new NodeId(namespaceIndex, "HelloWorld/DataAccess/AnalogValue"),
+            new QualifiedName(namespaceIndex, "AnalogValue"),
+            LocalizedText.english("AnalogValue"),
+            Identifiers.AnalogItemType,
+            AnalogItemNode.class
+        );
+
+        node.setDataType(Identifiers.Double);
+        node.setValue(new DataValue(new Variant(3.14d)));
+
+        node.setEURange(new Range(0.0, 100.0));
+
+        server.getNodeMap().addNode(node);
+        dataAccessFolder.addOrganizes(node);
+    }
+
     private void addMethodNode(UaFolderNode folderNode) {
         UaMethodNode methodNode = UaMethodNode.builder(server.getNodeMap())
             .setNodeId(new NodeId(namespaceIndex, "HelloWorld/sqrt(x)"))
@@ -482,6 +535,178 @@ public class ExampleNamespace implements Namespace {
         } catch (Exception e) {
             logger.error("Error creating sqrt() method.", e);
         }
+    }
+
+    private void addCustomObjectTypeAndInstance(UaFolderNode rootFolder) throws UaException {
+        // Define a new ObjectType called "MyObjectType".
+        UaObjectTypeNode objectTypeNode = UaObjectTypeNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType"))
+            .setBrowseName(new QualifiedName(namespaceIndex, "MyObjectType"))
+            .setDisplayName(LocalizedText.english("MyObjectType"))
+            .setIsAbstract(false)
+            .build();
+
+        // "Foo" and "Bar" are members. These nodes are what are called "instance declarations" by the spec.
+        UaVariableNode foo = UaVariableNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType.Foo"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, "Foo"))
+            .setDisplayName(LocalizedText.english("Foo"))
+            .setDataType(Identifiers.Int16)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        foo.setValue(new DataValue(new Variant(0)));
+        objectTypeNode.addComponent(foo);
+
+        UaVariableNode bar = UaVariableNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType.Bar"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, "Bar"))
+            .setDisplayName(LocalizedText.english("Bar"))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        bar.setValue(new DataValue(new Variant("bar")));
+        objectTypeNode.addComponent(bar);
+
+        // Tell the ObjectTypeManager about our new type.
+        // This let's us use NodeFactory to instantiate instances of the type.
+        server.getObjectTypeManager().registerObjectType(
+            objectTypeNode.getNodeId(),
+            UaObjectNode.class,
+            UaObjectNode::new
+        );
+
+        // Add our ObjectTypeNode as a subtype of BaseObjectType.
+        server.getUaNamespace().addReference(
+            Identifiers.BaseObjectType,
+            Identifiers.HasSubtype,
+            true,
+            objectTypeNode.getNodeId().expanded(),
+            NodeClass.ObjectType
+        );
+
+        // Add the inverse SubtypeOf relationship.
+        objectTypeNode.addReference(new Reference(
+            objectTypeNode.getNodeId(),
+            Identifiers.HasSubtype,
+            Identifiers.BaseObjectType.expanded(),
+            NodeClass.ObjectType,
+            false
+        ));
+
+        // Add it into the address space.
+        server.getNodeMap().addNode(objectTypeNode);
+
+        // Use NodeFactory to create instance of MyObjectType called "MyObject".
+        // NodeFactory takes care of recursively instantiating MyObject member nodes
+        // as well as adding all nodes to the address space.
+        UaObjectNode myObject = nodeFactory.createObject(
+            new NodeId(namespaceIndex, "HelloWorld/MyObject"),
+            new QualifiedName(namespaceIndex, "MyObject"),
+            LocalizedText.english("MyObject"),
+            objectTypeNode.getNodeId()
+        );
+
+        // Add forward and inverse references from the root folder.
+        rootFolder.addOrganizes(myObject);
+
+        myObject.addReference(new Reference(
+            myObject.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            rootFolder.getNodeClass(),
+            false
+        ));
+    }
+
+    private void addCustomDataTypeVariable(UaFolderNode rootFolder) {
+        // add a custom DataTypeNode as a subtype of the built-in Structure DataTypeNode
+        NodeId dataTypeId = new NodeId(namespaceIndex, "DataType.CustomDataType");
+
+        UaDataTypeNode dataTypeNode = new UaDataTypeNode(
+            server.getNodeMap(),
+            dataTypeId,
+            new QualifiedName(namespaceIndex, "CustomDataType"),
+            LocalizedText.english("CustomDataType"),
+            LocalizedText.english("CustomDataType"),
+            uint(0),
+            uint(0),
+            false
+        );
+
+        // Inverse ref to Structure
+        dataTypeNode.addReference(new Reference(
+            dataTypeId,
+            Identifiers.HasSubtype,
+            Identifiers.Structure.expanded(),
+            NodeClass.DataType,
+            false
+        ));
+
+        // Forward ref from Structure
+        Optional<UaDataTypeNode> structureDataTypeNode = server.getNodeMap()
+            .getNode(Identifiers.Structure)
+            .map(UaDataTypeNode.class::cast);
+
+        structureDataTypeNode.ifPresent(node ->
+            node.addReference(new Reference(
+                node.getNodeId(),
+                Identifiers.HasSubtype,
+                dataTypeId.expanded(),
+                NodeClass.DataType,
+                true
+            ))
+        );
+
+        // Create a dictionary, binaryEncodingId, and register the codec under that id
+        OpcUaBinaryDataTypeDictionary dictionary = new OpcUaBinaryDataTypeDictionary(
+            "urn:eclipse:milo:example:custom-data-type"
+        );
+
+        NodeId binaryEncodingId = new NodeId(namespaceIndex, "DataType.CustomDataType.BinaryEncoding");
+
+        dictionary.registerStructCodec(
+            new CustomDataType.Codec().asBinaryCodec(),
+            "CustomDataType",
+            binaryEncodingId
+        );
+
+        // Register dictionary with the shared DataTypeManager instance
+        OpcUaDataTypeManager.getInstance().registerTypeDictionary(dictionary);
+
+
+        UaVariableNode customDataTypeVariable = UaVariableNode.builder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/CustomDataTypeVariable"))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
+            .setBrowseName(new QualifiedName(namespaceIndex, "CustomDataTypeVariable"))
+            .setDisplayName(LocalizedText.english("CustomDataTypeVariable"))
+            .setDataType(dataTypeId)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        CustomDataType value = new CustomDataType(
+            "foo",
+            uint(42),
+            true
+        );
+
+        ExtensionObject xo = ExtensionObject.encode(value, binaryEncodingId);
+
+        customDataTypeVariable.setValue(new DataValue(new Variant(xo)));
+
+        rootFolder.addOrganizes(customDataTypeVariable);
+
+        customDataTypeVariable.addReference(new Reference(
+            customDataTypeVariable.getNodeId(),
+            Identifiers.Organizes,
+            rootFolder.getNodeId().expanded(),
+            rootFolder.getNodeClass(),
+            false
+        ));
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,57 +23,56 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class CertificateExpirationAlarmNode extends SystemOffNormalAlarmNode implements CertificateExpirationAlarmType {
-
     public CertificateExpirationAlarmNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> expirationDate() {
-        return getPropertyNode(CertificateExpirationAlarmType.EXPIRATION_DATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getExpirationDateNode() {
+        return getPropertyNode(CertificateExpirationAlarmType.EXPIRATION_DATE);
     }
 
-    @Override
     public CompletableFuture<DateTime> getExpirationDate() {
         return getProperty(CertificateExpirationAlarmType.EXPIRATION_DATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setExpirationDate(DateTime value) {
         return setProperty(CertificateExpirationAlarmType.EXPIRATION_DATE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> certificateType() {
-        return getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE_TYPE.getBrowseName());
+    public CompletableFuture<PropertyNode> getExpirationLimitNode() {
+        return getPropertyNode(CertificateExpirationAlarmType.EXPIRATION_LIMIT);
     }
 
-    @Override
+    public CompletableFuture<Double> getExpirationLimit() {
+        return getProperty(CertificateExpirationAlarmType.EXPIRATION_LIMIT);
+    }
+
+    public CompletableFuture<StatusCode> setExpirationLimit(Double value) {
+        return setProperty(CertificateExpirationAlarmType.EXPIRATION_LIMIT, value);
+    }
+
+    public CompletableFuture<PropertyNode> getCertificateTypeNode() {
+        return getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE_TYPE);
+    }
+
     public CompletableFuture<NodeId> getCertificateType() {
         return getProperty(CertificateExpirationAlarmType.CERTIFICATE_TYPE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCertificateType(NodeId value) {
         return setProperty(CertificateExpirationAlarmType.CERTIFICATE_TYPE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> certificate() {
-        return getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getCertificateNode() {
+        return getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE);
     }
 
-    @Override
     public CompletableFuture<ByteString> getCertificate() {
         return getProperty(CertificateExpirationAlarmType.CERTIFICATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCertificate(ByteString value) {
         return setProperty(CertificateExpirationAlarmType.CERTIFICATE, value);
     }
-
-
 }

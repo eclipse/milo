@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,38 +17,37 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("EventFilter")
 public class EventFilter extends MonitoringFilter {
 
     public static final NodeId TypeId = Identifiers.EventFilter;
     public static final NodeId BinaryEncodingId = Identifiers.EventFilter_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EventFilter_Encoding_DefaultXml;
 
-    protected final SimpleAttributeOperand[] _selectClauses;
-    protected final ContentFilter _whereClause;
+    protected final SimpleAttributeOperand[] selectClauses;
+    protected final ContentFilter whereClause;
 
     public EventFilter() {
         super();
-        this._selectClauses = null;
-        this._whereClause = null;
+        this.selectClauses = null;
+        this.whereClause = null;
     }
 
-    public EventFilter(SimpleAttributeOperand[] _selectClauses, ContentFilter _whereClause) {
+    public EventFilter(SimpleAttributeOperand[] selectClauses, ContentFilter whereClause) {
         super();
-        this._selectClauses = _selectClauses;
-        this._whereClause = _whereClause;
+        this.selectClauses = selectClauses;
+        this.whereClause = whereClause;
     }
 
     @Nullable
-    public SimpleAttributeOperand[] getSelectClauses() { return _selectClauses; }
+    public SimpleAttributeOperand[] getSelectClauses() { return selectClauses; }
 
-    public ContentFilter getWhereClause() { return _whereClause; }
+    public ContentFilter getWhereClause() { return whereClause; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -62,26 +61,39 @@ public class EventFilter extends MonitoringFilter {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SelectClauses", _selectClauses)
-            .add("WhereClause", _whereClause)
+            .add("SelectClauses", selectClauses)
+            .add("WhereClause", whereClause)
             .toString();
     }
 
-    public static void encode(EventFilter eventFilter, UaEncoder encoder) {
-        encoder.encodeArray("SelectClauses", eventFilter._selectClauses, encoder::encodeSerializable);
-        encoder.encodeSerializable("WhereClause", eventFilter._whereClause != null ? eventFilter._whereClause : new ContentFilter());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<EventFilter> {
 
-    public static EventFilter decode(UaDecoder decoder) {
-        SimpleAttributeOperand[] _selectClauses = decoder.decodeArray("SelectClauses", decoder::decodeSerializable, SimpleAttributeOperand.class);
-        ContentFilter _whereClause = decoder.decodeSerializable("WhereClause", ContentFilter.class);
+        @Override
+        public Class<EventFilter> getType() {
+            return EventFilter.class;
+        }
 
-        return new EventFilter(_selectClauses, _whereClause);
-    }
+        @Override
+        public EventFilter decode(UaDecoder decoder) throws UaSerializationException {
+            SimpleAttributeOperand[] selectClauses =
+                decoder.readBuiltinStructArray(
+                    "SelectClauses",
+                    SimpleAttributeOperand.class
+                );
+            ContentFilter whereClause = (ContentFilter) decoder.readBuiltinStruct("WhereClause", ContentFilter.class);
 
-    static {
-        DelegateRegistry.registerEncoder(EventFilter::encode, EventFilter.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EventFilter::decode, EventFilter.class, BinaryEncodingId, XmlEncodingId);
+            return new EventFilter(selectClauses, whereClause);
+        }
+
+        @Override
+        public void encode(EventFilter value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStructArray(
+                "SelectClauses",
+                value.selectClauses,
+                SimpleAttributeOperand.class
+            );
+            encoder.writeBuiltinStruct("WhereClause", value.whereClause, ContentFilter.class);
+        }
     }
 
 }

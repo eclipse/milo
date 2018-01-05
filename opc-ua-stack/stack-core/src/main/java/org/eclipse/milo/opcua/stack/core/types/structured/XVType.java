@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,36 +15,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("XVType")
 public class XVType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.XVType;
     public static final NodeId BinaryEncodingId = Identifiers.XVType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.XVType_Encoding_DefaultXml;
 
-    protected final Double _x;
-    protected final Float _value;
+    protected final Double x;
+    protected final Float value;
 
     public XVType() {
-        this._x = null;
-        this._value = null;
+        this.x = null;
+        this.value = null;
     }
 
-    public XVType(Double _x, Float _value) {
-        this._x = _x;
-        this._value = _value;
+    public XVType(Double x, Float value) {
+        this.x = x;
+        this.value = value;
     }
 
-    public Double getX() { return _x; }
+    public Double getX() { return x; }
 
-    public Float getValue() { return _value; }
+    public Float getValue() { return value; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class XVType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("X", _x)
-            .add("Value", _value)
+            .add("X", x)
+            .add("Value", value)
             .toString();
     }
 
-    public static void encode(XVType xVType, UaEncoder encoder) {
-        encoder.encodeDouble("X", xVType._x);
-        encoder.encodeFloat("Value", xVType._value);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<XVType> {
 
-    public static XVType decode(UaDecoder decoder) {
-        Double _x = decoder.decodeDouble("X");
-        Float _value = decoder.decodeFloat("Value");
+        @Override
+        public Class<XVType> getType() {
+            return XVType.class;
+        }
 
-        return new XVType(_x, _value);
-    }
+        @Override
+        public XVType decode(UaDecoder decoder) throws UaSerializationException {
+            Double x = decoder.readDouble("X");
+            Float value = decoder.readFloat("Value");
 
-    static {
-        DelegateRegistry.registerEncoder(XVType::encode, XVType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(XVType::decode, XVType.class, BinaryEncodingId, XmlEncodingId);
+            return new XVType(x, value);
+        }
+
+        @Override
+        public void encode(XVType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeDouble("X", value.x);
+            encoder.writeFloat("Value", value.value);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,42 +21,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class OptionSetNode extends BaseDataVariableNode implements OptionSetType {
-
     public OptionSetNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> optionSetValues() {
-        return getPropertyNode(OptionSetType.OPTION_SET_VALUES.getBrowseName());
+    public CompletableFuture<PropertyNode> getOptionSetValuesNode() {
+        return getPropertyNode(OptionSetType.OPTION_SET_VALUES);
     }
 
-    @Override
     public CompletableFuture<LocalizedText[]> getOptionSetValues() {
         return getProperty(OptionSetType.OPTION_SET_VALUES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOptionSetValues(LocalizedText[] value) {
         return setProperty(OptionSetType.OPTION_SET_VALUES, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> bitMask() {
-        return getPropertyNode(OptionSetType.BIT_MASK.getBrowseName());
+    public CompletableFuture<PropertyNode> getBitMaskNode() {
+        return getPropertyNode(OptionSetType.BIT_MASK);
     }
 
-    @Override
     public CompletableFuture<Boolean[]> getBitMask() {
         return getProperty(OptionSetType.BIT_MASK);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setBitMask(Boolean[] value) {
         return setProperty(OptionSetType.BIT_MASK, value);
     }
-
-
 }

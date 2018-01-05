@@ -21,10 +21,13 @@ import java.util.function.Supplier;
 
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
+import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
+import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -41,6 +44,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     private UInteger requestTimeout = uint(60000);
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
     private IdentityProvider identityProvider = new AnonymousProvider();
+    private BsdParser bsdParser = new GenericBsdParser();
 
     public OpcUaClientConfigBuilder setSessionName(Supplier<String> sessionName) {
         this.sessionName = sessionName;
@@ -72,6 +76,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         return this;
     }
 
+    public OpcUaClientConfigBuilder setBsdParser(BsdParser bsdParser) {
+        this.bsdParser = bsdParser;
+        return this;
+    }
+
     @Override
     public OpcUaClientConfigBuilder setEndpointUrl(String endpointUrl) {
         super.setEndpointUrl(endpointUrl);
@@ -99,6 +108,12 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     @Override
     public OpcUaClientConfigBuilder setCertificateChain(X509Certificate[] certificateChain) {
         super.setCertificateChain(certificateChain);
+        return this;
+    }
+
+    @Override
+    public OpcUaClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
+        super.setCertificateValidator(certificateValidator);
         return this;
     }
 
@@ -150,14 +165,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         return this;
     }
 
-    @Override
-    public OpcUaClientConfigBuilder setSecureChannelReauthenticationEnabled(
-        boolean secureChannelReauthenticationEnabled) {
-
-        super.setSecureChannelReauthenticationEnabled(secureChannelReauthenticationEnabled);
-        return this;
-    }
-
     public OpcUaClientConfig build() {
         UaTcpStackClientConfig stackClientConfig = super.build();
 
@@ -174,7 +181,9 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             maxResponseMessageSize,
             maxPendingPublishRequests,
             requestTimeout,
-            identityProvider);
+            identityProvider,
+            bsdParser
+        );
     }
 
     public static class OpcUaClientConfigImpl implements OpcUaClientConfig {
@@ -186,6 +195,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         private final UInteger maxPendingPublishRequests;
         private final UInteger requestTimeout;
         private final IdentityProvider identityProvider;
+        private final BsdParser bsdParser;
 
         public OpcUaClientConfigImpl(UaTcpStackClientConfig stackClientConfig,
                                      Supplier<String> sessionName,
@@ -193,7 +203,8 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
                                      UInteger maxResponseMessageSize,
                                      UInteger maxPendingPublishRequests,
                                      UInteger requestTimeout,
-                                     IdentityProvider identityProvider) {
+                                     IdentityProvider identityProvider,
+                                     BsdParser bsdParser) {
 
             this.stackClientConfig = stackClientConfig;
             this.sessionName = sessionName;
@@ -202,6 +213,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             this.maxPendingPublishRequests = maxPendingPublishRequests;
             this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
+            this.bsdParser = bsdParser;
         }
 
         @Override
@@ -235,6 +247,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         }
 
         @Override
+        public BsdParser getBsdParser() {
+            return bsdParser;
+        }
+
+        @Override
         public Optional<String> getEndpointUrl() {
             return stackClientConfig.getEndpointUrl();
         }
@@ -257,6 +274,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public Optional<X509Certificate[]> getCertificateChain() {
             return stackClientConfig.getCertificateChain();
+        }
+
+        @Override
+        public CertificateValidator getCertificateValidator() {
+            return stackClientConfig.getCertificateValidator();
         }
 
         @Override
@@ -297,11 +319,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public HashedWheelTimer getWheelTimer() {
             return stackClientConfig.getWheelTimer();
-        }
-
-        @Override
-        public boolean isSecureChannelReauthenticationEnabled() {
-            return stackClientConfig.isSecureChannelReauthenticationEnabled();
         }
 
     }

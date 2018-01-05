@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,31 +15,30 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("CloseSecureChannelRequest")
 public class CloseSecureChannelRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.CloseSecureChannelRequest;
     public static final NodeId BinaryEncodingId = Identifiers.CloseSecureChannelRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CloseSecureChannelRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
+    protected final RequestHeader requestHeader;
 
     public CloseSecureChannelRequest() {
-        this._requestHeader = null;
+        this.requestHeader = null;
     }
 
-    public CloseSecureChannelRequest(RequestHeader _requestHeader) {
-        this._requestHeader = _requestHeader;
+    public CloseSecureChannelRequest(RequestHeader requestHeader) {
+        this.requestHeader = requestHeader;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -53,23 +52,28 @@ public class CloseSecureChannelRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
+            .add("RequestHeader", requestHeader)
             .toString();
     }
 
-    public static void encode(CloseSecureChannelRequest closeSecureChannelRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", closeSecureChannelRequest._requestHeader != null ? closeSecureChannelRequest._requestHeader : new RequestHeader());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<CloseSecureChannelRequest> {
 
-    public static CloseSecureChannelRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
+        @Override
+        public Class<CloseSecureChannelRequest> getType() {
+            return CloseSecureChannelRequest.class;
+        }
 
-        return new CloseSecureChannelRequest(_requestHeader);
-    }
+        @Override
+        public CloseSecureChannelRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
 
-    static {
-        DelegateRegistry.registerEncoder(CloseSecureChannelRequest::encode, CloseSecureChannelRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CloseSecureChannelRequest::decode, CloseSecureChannelRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new CloseSecureChannelRequest(requestHeader);
+        }
+
+        @Override
+        public void encode(CloseSecureChannelRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 
-
 public class ModellingRuleNode extends BaseObjectNode implements ModellingRuleType {
-
     public ModellingRuleNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> namingRule() {
-        return getPropertyNode(ModellingRuleType.NAMING_RULE.getBrowseName());
+    public CompletableFuture<PropertyNode> getNamingRuleNode() {
+        return getPropertyNode(ModellingRuleType.NAMING_RULE);
     }
 
-    @Override
     public CompletableFuture<NamingRuleType> getNamingRule() {
         return getProperty(ModellingRuleType.NAMING_RULE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setNamingRule(NamingRuleType value) {
         return setProperty(ModellingRuleType.NAMING_RULE, value);
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,49 +15,48 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ReadEventDetails")
 public class ReadEventDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadEventDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadEventDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadEventDetails_Encoding_DefaultXml;
 
-    protected final UInteger _numValuesPerNode;
-    protected final DateTime _startTime;
-    protected final DateTime _endTime;
-    protected final EventFilter _filter;
+    protected final UInteger numValuesPerNode;
+    protected final DateTime startTime;
+    protected final DateTime endTime;
+    protected final EventFilter filter;
 
     public ReadEventDetails() {
         super();
-        this._numValuesPerNode = null;
-        this._startTime = null;
-        this._endTime = null;
-        this._filter = null;
+        this.numValuesPerNode = null;
+        this.startTime = null;
+        this.endTime = null;
+        this.filter = null;
     }
 
-    public ReadEventDetails(UInteger _numValuesPerNode, DateTime _startTime, DateTime _endTime, EventFilter _filter) {
+    public ReadEventDetails(UInteger numValuesPerNode, DateTime startTime, DateTime endTime, EventFilter filter) {
         super();
-        this._numValuesPerNode = _numValuesPerNode;
-        this._startTime = _startTime;
-        this._endTime = _endTime;
-        this._filter = _filter;
+        this.numValuesPerNode = numValuesPerNode;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.filter = filter;
     }
 
-    public UInteger getNumValuesPerNode() { return _numValuesPerNode; }
+    public UInteger getNumValuesPerNode() { return numValuesPerNode; }
 
-    public DateTime getStartTime() { return _startTime; }
+    public DateTime getStartTime() { return startTime; }
 
-    public DateTime getEndTime() { return _endTime; }
+    public DateTime getEndTime() { return endTime; }
 
-    public EventFilter getFilter() { return _filter; }
+    public EventFilter getFilter() { return filter; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -71,32 +70,37 @@ public class ReadEventDetails extends HistoryReadDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NumValuesPerNode", _numValuesPerNode)
-            .add("StartTime", _startTime)
-            .add("EndTime", _endTime)
-            .add("Filter", _filter)
+            .add("NumValuesPerNode", numValuesPerNode)
+            .add("StartTime", startTime)
+            .add("EndTime", endTime)
+            .add("Filter", filter)
             .toString();
     }
 
-    public static void encode(ReadEventDetails readEventDetails, UaEncoder encoder) {
-        encoder.encodeUInt32("NumValuesPerNode", readEventDetails._numValuesPerNode);
-        encoder.encodeDateTime("StartTime", readEventDetails._startTime);
-        encoder.encodeDateTime("EndTime", readEventDetails._endTime);
-        encoder.encodeSerializable("Filter", readEventDetails._filter != null ? readEventDetails._filter : new EventFilter());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ReadEventDetails> {
 
-    public static ReadEventDetails decode(UaDecoder decoder) {
-        UInteger _numValuesPerNode = decoder.decodeUInt32("NumValuesPerNode");
-        DateTime _startTime = decoder.decodeDateTime("StartTime");
-        DateTime _endTime = decoder.decodeDateTime("EndTime");
-        EventFilter _filter = decoder.decodeSerializable("Filter", EventFilter.class);
+        @Override
+        public Class<ReadEventDetails> getType() {
+            return ReadEventDetails.class;
+        }
 
-        return new ReadEventDetails(_numValuesPerNode, _startTime, _endTime, _filter);
-    }
+        @Override
+        public ReadEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
+            DateTime startTime = decoder.readDateTime("StartTime");
+            DateTime endTime = decoder.readDateTime("EndTime");
+            EventFilter filter = (EventFilter) decoder.readBuiltinStruct("Filter", EventFilter.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ReadEventDetails::encode, ReadEventDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReadEventDetails::decode, ReadEventDetails.class, BinaryEncodingId, XmlEncodingId);
+            return new ReadEventDetails(numValuesPerNode, startTime, endTime, filter);
+        }
+
+        @Override
+        public void encode(ReadEventDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("NumValuesPerNode", value.numValuesPerNode);
+            encoder.writeDateTime("StartTime", value.startTime);
+            encoder.writeDateTime("EndTime", value.endTime);
+            encoder.writeBuiltinStruct("Filter", value.filter, EventFilter.class);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,39 +15,38 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("StatusChangeNotification")
 public class StatusChangeNotification extends NotificationData {
 
     public static final NodeId TypeId = Identifiers.StatusChangeNotification;
     public static final NodeId BinaryEncodingId = Identifiers.StatusChangeNotification_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.StatusChangeNotification_Encoding_DefaultXml;
 
-    protected final StatusCode _status;
-    protected final DiagnosticInfo _diagnosticInfo;
+    protected final StatusCode status;
+    protected final DiagnosticInfo diagnosticInfo;
 
     public StatusChangeNotification() {
         super();
-        this._status = null;
-        this._diagnosticInfo = null;
+        this.status = null;
+        this.diagnosticInfo = null;
     }
 
-    public StatusChangeNotification(StatusCode _status, DiagnosticInfo _diagnosticInfo) {
+    public StatusChangeNotification(StatusCode status, DiagnosticInfo diagnosticInfo) {
         super();
-        this._status = _status;
-        this._diagnosticInfo = _diagnosticInfo;
+        this.status = status;
+        this.diagnosticInfo = diagnosticInfo;
     }
 
-    public StatusCode getStatus() { return _status; }
+    public StatusCode getStatus() { return status; }
 
-    public DiagnosticInfo getDiagnosticInfo() { return _diagnosticInfo; }
+    public DiagnosticInfo getDiagnosticInfo() { return diagnosticInfo; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,31 @@ public class StatusChangeNotification extends NotificationData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Status", _status)
-            .add("DiagnosticInfo", _diagnosticInfo)
+            .add("Status", status)
+            .add("DiagnosticInfo", diagnosticInfo)
             .toString();
     }
 
-    public static void encode(StatusChangeNotification statusChangeNotification, UaEncoder encoder) {
-        encoder.encodeStatusCode("Status", statusChangeNotification._status);
-        encoder.encodeDiagnosticInfo("DiagnosticInfo", statusChangeNotification._diagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<StatusChangeNotification> {
 
-    public static StatusChangeNotification decode(UaDecoder decoder) {
-        StatusCode _status = decoder.decodeStatusCode("Status");
-        DiagnosticInfo _diagnosticInfo = decoder.decodeDiagnosticInfo("DiagnosticInfo");
+        @Override
+        public Class<StatusChangeNotification> getType() {
+            return StatusChangeNotification.class;
+        }
 
-        return new StatusChangeNotification(_status, _diagnosticInfo);
-    }
+        @Override
+        public StatusChangeNotification decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode status = decoder.readStatusCode("Status");
+            DiagnosticInfo diagnosticInfo = decoder.readDiagnosticInfo("DiagnosticInfo");
 
-    static {
-        DelegateRegistry.registerEncoder(StatusChangeNotification::encode, StatusChangeNotification.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(StatusChangeNotification::decode, StatusChangeNotification.class, BinaryEncodingId, XmlEncodingId);
+            return new StatusChangeNotification(status, diagnosticInfo);
+        }
+
+        @Override
+        public void encode(StatusChangeNotification value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("Status", value.status);
+            encoder.writeDiagnosticInfo("DiagnosticInfo", value.diagnosticInfo);
+        }
     }
 
 }

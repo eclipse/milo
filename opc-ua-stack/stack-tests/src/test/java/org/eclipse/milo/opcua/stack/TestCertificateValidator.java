@@ -41,9 +41,8 @@ public class TestCertificateValidator implements CertificateValidator {
     }
 
     @Override
-    public void verifyTrustChain(X509Certificate certificate, List<X509Certificate> chain) throws UaException {
-        CertificateValidationUtil.validateTrustChain(
-            certificate, chain, trustedCertificates, Sets.<X509Certificate>newHashSet());
+    public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {
+        CertificateValidationUtil.verifyTrustChain(certificateChain, trustedCertificates, Sets.newHashSet());
     }
 
 }

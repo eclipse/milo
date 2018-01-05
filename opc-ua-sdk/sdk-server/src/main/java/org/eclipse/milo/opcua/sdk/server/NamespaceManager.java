@@ -20,9 +20,9 @@ import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import org.eclipse.milo.opcua.sdk.core.NamespaceTable;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.util.NoOpNamespace;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -47,7 +47,7 @@ public class NamespaceManager {
     private final Map<UShort, Namespace> namespaces = Maps.newConcurrentMap();
 
     public NamespaceManager() {
-        namespaceTable.putUri(NamespaceTable.OpcUaNamespace, ushort(0));
+        namespaceTable.putUri(NamespaceTable.OPC_UA_NAMESPACE, ushort(0));
     }
 
     /**

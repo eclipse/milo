@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.NonExclusiveDeviati
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class NonExclusiveDeviationAlarmNode extends NonExclusiveLimitAlarmNode implements NonExclusiveDeviationAlarmType {
-
     public NonExclusiveDeviationAlarmNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> setpointNode() {
-        return getPropertyNode(NonExclusiveDeviationAlarmType.SETPOINT_NODE.getBrowseName());
+    public CompletableFuture<PropertyNode> getSetpointNodeNode() {
+        return getPropertyNode(NonExclusiveDeviationAlarmType.SETPOINT_NODE);
     }
 
-    @Override
     public CompletableFuture<NodeId> getSetpointNode() {
         return getProperty(NonExclusiveDeviationAlarmType.SETPOINT_NODE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSetpointNode(NodeId value) {
         return setProperty(NonExclusiveDeviationAlarmType.SETPOINT_NODE, value);
     }
-
-
 }

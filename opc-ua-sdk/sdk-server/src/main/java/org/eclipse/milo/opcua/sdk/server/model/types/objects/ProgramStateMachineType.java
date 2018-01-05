@@ -1,122 +1,132 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.FiniteStateVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.FiniteTransitionVariableType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.ProgramDiagnosticType;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ProgramDiagnosticDataType;
 
 public interface ProgramStateMachineType extends FiniteStateMachineType {
-
-    Property<Boolean> CREATABLE = new BasicProperty<>(
-        QualifiedName.parse("0:Creatable"),
+    QualifiedProperty<Boolean> CREATABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Creatable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> DELETABLE = new BasicProperty<>(
-        QualifiedName.parse("0:Deletable"),
+    QualifiedProperty<Boolean> DELETABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Deletable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> AUTO_DELETE = new BasicProperty<>(
-        QualifiedName.parse("0:AutoDelete"),
+    QualifiedProperty<Boolean> AUTO_DELETE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "AutoDelete",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Integer> RECYCLE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:RecycleCount"),
+    QualifiedProperty<Integer> RECYCLE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "RecycleCount",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<UInteger> INSTANCE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:InstanceCount"),
+    QualifiedProperty<UInteger> INSTANCE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InstanceCount",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-    Property<UInteger> MAX_INSTANCE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:MaxInstanceCount"),
+    QualifiedProperty<UInteger> MAX_INSTANCE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxInstanceCount",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-    Property<UInteger> MAX_RECYCLE_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:MaxRecycleCount"),
+    QualifiedProperty<UInteger> MAX_RECYCLE_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxRecycleCount",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
-
-    Boolean getCreatable();
 
     PropertyType getCreatableNode();
 
-    void setCreatable(Boolean value);
+    Boolean getCreatable();
 
-    Boolean getDeletable();
+    void setCreatable(Boolean value);
 
     PropertyType getDeletableNode();
 
-    void setDeletable(Boolean value);
+    Boolean getDeletable();
 
-    Boolean getAutoDelete();
+    void setDeletable(Boolean value);
 
     PropertyType getAutoDeleteNode();
 
-    void setAutoDelete(Boolean value);
+    Boolean getAutoDelete();
 
-    Integer getRecycleCount();
+    void setAutoDelete(Boolean value);
 
     PropertyType getRecycleCountNode();
 
-    void setRecycleCount(Integer value);
+    Integer getRecycleCount();
 
-    UInteger getInstanceCount();
+    void setRecycleCount(Integer value);
 
     PropertyType getInstanceCountNode();
 
-    void setInstanceCount(UInteger value);
+    UInteger getInstanceCount();
 
-    UInteger getMaxInstanceCount();
+    void setInstanceCount(UInteger value);
 
     PropertyType getMaxInstanceCountNode();
 
-    void setMaxInstanceCount(UInteger value);
+    UInteger getMaxInstanceCount();
 
-    UInteger getMaxRecycleCount();
+    void setMaxInstanceCount(UInteger value);
 
     PropertyType getMaxRecycleCountNode();
 
+    UInteger getMaxRecycleCount();
+
     void setMaxRecycleCount(UInteger value);
+
+    FiniteStateVariableType getCurrentStateNode();
+
+    LocalizedText getCurrentState();
+
+    void setCurrentState(LocalizedText value);
+
+    FiniteTransitionVariableType getLastTransitionNode();
+
+    LocalizedText getLastTransition();
+
+    void setLastTransition(LocalizedText value);
+
+    ProgramDiagnosticType getProgramDiagnosticsNode();
+
+    ProgramDiagnosticDataType getProgramDiagnostics();
+
+    void setProgramDiagnostics(ProgramDiagnosticDataType value);
 
     BaseObjectType getFinalResultDataNode();
 
@@ -145,22 +155,4 @@ public interface ProgramStateMachineType extends FiniteStateMachineType {
     TransitionType getSuspendedToReadyNode();
 
     TransitionType getReadyToHaltedNode();
-
-    LocalizedText getCurrentState();
-
-    FiniteStateVariableType getCurrentStateNode();
-
-    void setCurrentState(LocalizedText value);
-
-    LocalizedText getLastTransition();
-
-    FiniteTransitionVariableType getLastTransitionNode();
-
-    void setLastTransition(LocalizedText value);
-
-    ProgramDiagnosticDataType getProgramDiagnostics();
-
-    ProgramDiagnosticType getProgramDiagnosticsNode();
-
-    void setProgramDiagnostics(ProgramDiagnosticDataType value);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditHistoryUpdateE
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditHistoryUpdateEventNode extends AuditUpdateEventNode implements AuditHistoryUpdateEventType {
-
     public AuditHistoryUpdateEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> parameterDataTypeId() {
-        return getPropertyNode(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getParameterDataTypeIdNode() {
+        return getPropertyNode(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID);
     }
 
-    @Override
     public CompletableFuture<NodeId> getParameterDataTypeId() {
         return getProperty(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setParameterDataTypeId(NodeId value) {
         return setProperty(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID, value);
     }
-
-
 }

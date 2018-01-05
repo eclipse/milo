@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,44 +17,43 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
-@UaDataType("UpdateEventDetails")
 public class UpdateEventDetails extends HistoryUpdateDetails {
 
     public static final NodeId TypeId = Identifiers.UpdateEventDetails;
     public static final NodeId BinaryEncodingId = Identifiers.UpdateEventDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.UpdateEventDetails_Encoding_DefaultXml;
 
-    protected final PerformUpdateType _performInsertReplace;
-    protected final EventFilter _filter;
-    protected final HistoryEventFieldList[] _eventData;
+    protected final PerformUpdateType performInsertReplace;
+    protected final EventFilter filter;
+    protected final HistoryEventFieldList[] eventData;
 
     public UpdateEventDetails() {
         super(null);
-        this._performInsertReplace = null;
-        this._filter = null;
-        this._eventData = null;
+        this.performInsertReplace = null;
+        this.filter = null;
+        this.eventData = null;
     }
 
-    public UpdateEventDetails(NodeId _nodeId, PerformUpdateType _performInsertReplace, EventFilter _filter, HistoryEventFieldList[] _eventData) {
-        super(_nodeId);
-        this._performInsertReplace = _performInsertReplace;
-        this._filter = _filter;
-        this._eventData = _eventData;
+    public UpdateEventDetails(NodeId nodeId, PerformUpdateType performInsertReplace, EventFilter filter, HistoryEventFieldList[] eventData) {
+        super(nodeId);
+        this.performInsertReplace = performInsertReplace;
+        this.filter = filter;
+        this.eventData = eventData;
     }
 
-    public PerformUpdateType getPerformInsertReplace() { return _performInsertReplace; }
+    public PerformUpdateType getPerformInsertReplace() { return performInsertReplace; }
 
-    public EventFilter getFilter() { return _filter; }
+    public EventFilter getFilter() { return filter; }
 
     @Nullable
-    public HistoryEventFieldList[] getEventData() { return _eventData; }
+    public HistoryEventFieldList[] getEventData() { return eventData; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,32 +67,45 @@ public class UpdateEventDetails extends HistoryUpdateDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("PerformInsertReplace", _performInsertReplace)
-            .add("Filter", _filter)
-            .add("EventData", _eventData)
+            .add("NodeId", nodeId)
+            .add("PerformInsertReplace", performInsertReplace)
+            .add("Filter", filter)
+            .add("EventData", eventData)
             .toString();
     }
 
-    public static void encode(UpdateEventDetails updateEventDetails, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", updateEventDetails._nodeId);
-        encoder.encodeEnumeration("PerformInsertReplace", updateEventDetails._performInsertReplace);
-        encoder.encodeSerializable("Filter", updateEventDetails._filter != null ? updateEventDetails._filter : new EventFilter());
-        encoder.encodeArray("EventData", updateEventDetails._eventData, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<UpdateEventDetails> {
 
-    public static UpdateEventDetails decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        PerformUpdateType _performInsertReplace = decoder.decodeEnumeration("PerformInsertReplace", PerformUpdateType.class);
-        EventFilter _filter = decoder.decodeSerializable("Filter", EventFilter.class);
-        HistoryEventFieldList[] _eventData = decoder.decodeArray("EventData", decoder::decodeSerializable, HistoryEventFieldList.class);
+        @Override
+        public Class<UpdateEventDetails> getType() {
+            return UpdateEventDetails.class;
+        }
 
-        return new UpdateEventDetails(_nodeId, _performInsertReplace, _filter, _eventData);
-    }
+        @Override
+        public UpdateEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            PerformUpdateType performInsertReplace = PerformUpdateType.from(decoder.readInt32("PerformInsertReplace"));
+            EventFilter filter = (EventFilter) decoder.readBuiltinStruct("Filter", EventFilter.class);
+            HistoryEventFieldList[] eventData =
+                decoder.readBuiltinStructArray(
+                    "EventData",
+                    HistoryEventFieldList.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(UpdateEventDetails::encode, UpdateEventDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(UpdateEventDetails::decode, UpdateEventDetails.class, BinaryEncodingId, XmlEncodingId);
+            return new UpdateEventDetails(nodeId, performInsertReplace, filter, eventData);
+        }
+
+        @Override
+        public void encode(UpdateEventDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("PerformInsertReplace", value.performInsertReplace != null ? value.performInsertReplace.getValue() : 0);
+            encoder.writeBuiltinStruct("Filter", value.filter, EventFilter.class);
+            encoder.writeBuiltinStructArray(
+                "EventData",
+                value.eventData,
+                HistoryEventFieldList.class
+            );
+        }
     }
 
 }

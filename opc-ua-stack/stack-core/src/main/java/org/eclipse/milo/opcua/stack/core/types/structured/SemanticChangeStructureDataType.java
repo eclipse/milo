@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,36 +15,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("SemanticChangeStructureDataType")
 public class SemanticChangeStructureDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SemanticChangeStructureDataType;
     public static final NodeId BinaryEncodingId = Identifiers.SemanticChangeStructureDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SemanticChangeStructureDataType_Encoding_DefaultXml;
 
-    protected final NodeId _affected;
-    protected final NodeId _affectedType;
+    protected final NodeId affected;
+    protected final NodeId affectedType;
 
     public SemanticChangeStructureDataType() {
-        this._affected = null;
-        this._affectedType = null;
+        this.affected = null;
+        this.affectedType = null;
     }
 
-    public SemanticChangeStructureDataType(NodeId _affected, NodeId _affectedType) {
-        this._affected = _affected;
-        this._affectedType = _affectedType;
+    public SemanticChangeStructureDataType(NodeId affected, NodeId affectedType) {
+        this.affected = affected;
+        this.affectedType = affectedType;
     }
 
-    public NodeId getAffected() { return _affected; }
+    public NodeId getAffected() { return affected; }
 
-    public NodeId getAffectedType() { return _affectedType; }
+    public NodeId getAffectedType() { return affectedType; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class SemanticChangeStructureDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Affected", _affected)
-            .add("AffectedType", _affectedType)
+            .add("Affected", affected)
+            .add("AffectedType", affectedType)
             .toString();
     }
 
-    public static void encode(SemanticChangeStructureDataType semanticChangeStructureDataType, UaEncoder encoder) {
-        encoder.encodeNodeId("Affected", semanticChangeStructureDataType._affected);
-        encoder.encodeNodeId("AffectedType", semanticChangeStructureDataType._affectedType);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SemanticChangeStructureDataType> {
 
-    public static SemanticChangeStructureDataType decode(UaDecoder decoder) {
-        NodeId _affected = decoder.decodeNodeId("Affected");
-        NodeId _affectedType = decoder.decodeNodeId("AffectedType");
+        @Override
+        public Class<SemanticChangeStructureDataType> getType() {
+            return SemanticChangeStructureDataType.class;
+        }
 
-        return new SemanticChangeStructureDataType(_affected, _affectedType);
-    }
+        @Override
+        public SemanticChangeStructureDataType decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId affected = decoder.readNodeId("Affected");
+            NodeId affectedType = decoder.readNodeId("AffectedType");
 
-    static {
-        DelegateRegistry.registerEncoder(SemanticChangeStructureDataType::encode, SemanticChangeStructureDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SemanticChangeStructureDataType::decode, SemanticChangeStructureDataType.class, BinaryEncodingId, XmlEncodingId);
+            return new SemanticChangeStructureDataType(affected, affectedType);
+        }
+
+        @Override
+        public void encode(SemanticChangeStructureDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("Affected", value.affected);
+            encoder.writeNodeId("AffectedType", value.affectedType);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,36 +15,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("DeleteNodesItem")
 public class DeleteNodesItem implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.DeleteNodesItem;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteNodesItem_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteNodesItem_Encoding_DefaultXml;
 
-    protected final NodeId _nodeId;
-    protected final Boolean _deleteTargetReferences;
+    protected final NodeId nodeId;
+    protected final Boolean deleteTargetReferences;
 
     public DeleteNodesItem() {
-        this._nodeId = null;
-        this._deleteTargetReferences = null;
+        this.nodeId = null;
+        this.deleteTargetReferences = null;
     }
 
-    public DeleteNodesItem(NodeId _nodeId, Boolean _deleteTargetReferences) {
-        this._nodeId = _nodeId;
-        this._deleteTargetReferences = _deleteTargetReferences;
+    public DeleteNodesItem(NodeId nodeId, Boolean deleteTargetReferences) {
+        this.nodeId = nodeId;
+        this.deleteTargetReferences = deleteTargetReferences;
     }
 
-    public NodeId getNodeId() { return _nodeId; }
+    public NodeId getNodeId() { return nodeId; }
 
-    public Boolean getDeleteTargetReferences() { return _deleteTargetReferences; }
+    public Boolean getDeleteTargetReferences() { return deleteTargetReferences; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class DeleteNodesItem implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("DeleteTargetReferences", _deleteTargetReferences)
+            .add("NodeId", nodeId)
+            .add("DeleteTargetReferences", deleteTargetReferences)
             .toString();
     }
 
-    public static void encode(DeleteNodesItem deleteNodesItem, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", deleteNodesItem._nodeId);
-        encoder.encodeBoolean("DeleteTargetReferences", deleteNodesItem._deleteTargetReferences);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DeleteNodesItem> {
 
-    public static DeleteNodesItem decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        Boolean _deleteTargetReferences = decoder.decodeBoolean("DeleteTargetReferences");
+        @Override
+        public Class<DeleteNodesItem> getType() {
+            return DeleteNodesItem.class;
+        }
 
-        return new DeleteNodesItem(_nodeId, _deleteTargetReferences);
-    }
+        @Override
+        public DeleteNodesItem decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            Boolean deleteTargetReferences = decoder.readBoolean("DeleteTargetReferences");
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteNodesItem::encode, DeleteNodesItem.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteNodesItem::decode, DeleteNodesItem.class, BinaryEncodingId, XmlEncodingId);
+            return new DeleteNodesItem(nodeId, deleteTargetReferences);
+        }
+
+        @Override
+        public void encode(DeleteNodesItem value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeBoolean("DeleteTargetReferences", value.deleteTargetReferences);
+        }
     }
 
 }

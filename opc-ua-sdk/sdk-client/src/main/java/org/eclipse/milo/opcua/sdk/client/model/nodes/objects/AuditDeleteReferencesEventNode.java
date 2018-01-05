@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 
-
 public class AuditDeleteReferencesEventNode extends AuditNodeManagementEventNode implements AuditDeleteReferencesEventType {
-
     public AuditDeleteReferencesEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> referencesToDelete() {
-        return getPropertyNode(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE.getBrowseName());
+    public CompletableFuture<PropertyNode> getReferencesToDeleteNode() {
+        return getPropertyNode(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
     }
 
-    @Override
     public CompletableFuture<DeleteReferencesItem[]> getReferencesToDelete() {
         return getProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setReferencesToDelete(DeleteReferencesItem[] value) {
         return setProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE, value);
     }
-
-
 }

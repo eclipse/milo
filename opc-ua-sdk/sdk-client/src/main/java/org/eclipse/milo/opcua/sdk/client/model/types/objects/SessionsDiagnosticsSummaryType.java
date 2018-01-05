@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,20 +21,16 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 
-
 public interface SessionsDiagnosticsSummaryType extends BaseObjectType {
-
-
-    CompletableFuture<? extends SessionDiagnosticsArrayType> sessionDiagnosticsArray();
+    CompletableFuture<? extends SessionDiagnosticsArrayType> getSessionDiagnosticsArrayNode();
 
     CompletableFuture<SessionDiagnosticsDataType[]> getSessionDiagnosticsArray();
 
     CompletableFuture<StatusCode> setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value);
 
-    CompletableFuture<? extends SessionSecurityDiagnosticsArrayType> sessionSecurityDiagnosticsArray();
+    CompletableFuture<? extends SessionSecurityDiagnosticsArrayType> getSessionSecurityDiagnosticsArrayNode();
 
     CompletableFuture<SessionSecurityDiagnosticsDataType[]> getSessionSecurityDiagnosticsArray();
 
     CompletableFuture<StatusCode> setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value);
-
 }

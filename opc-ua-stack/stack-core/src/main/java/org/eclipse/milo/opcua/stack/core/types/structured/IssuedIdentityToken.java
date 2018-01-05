@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,38 +15,37 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("IssuedIdentityToken")
 public class IssuedIdentityToken extends UserIdentityToken {
 
     public static final NodeId TypeId = Identifiers.IssuedIdentityToken;
     public static final NodeId BinaryEncodingId = Identifiers.IssuedIdentityToken_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.IssuedIdentityToken_Encoding_DefaultXml;
 
-    protected final ByteString _tokenData;
-    protected final String _encryptionAlgorithm;
+    protected final ByteString tokenData;
+    protected final String encryptionAlgorithm;
 
     public IssuedIdentityToken() {
         super(null);
-        this._tokenData = null;
-        this._encryptionAlgorithm = null;
+        this.tokenData = null;
+        this.encryptionAlgorithm = null;
     }
 
-    public IssuedIdentityToken(String _policyId, ByteString _tokenData, String _encryptionAlgorithm) {
-        super(_policyId);
-        this._tokenData = _tokenData;
-        this._encryptionAlgorithm = _encryptionAlgorithm;
+    public IssuedIdentityToken(String policyId, ByteString tokenData, String encryptionAlgorithm) {
+        super(policyId);
+        this.tokenData = tokenData;
+        this.encryptionAlgorithm = encryptionAlgorithm;
     }
 
-    public ByteString getTokenData() { return _tokenData; }
+    public ByteString getTokenData() { return tokenData; }
 
-    public String getEncryptionAlgorithm() { return _encryptionAlgorithm; }
+    public String getEncryptionAlgorithm() { return encryptionAlgorithm; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -60,29 +59,34 @@ public class IssuedIdentityToken extends UserIdentityToken {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("PolicyId", _policyId)
-            .add("TokenData", _tokenData)
-            .add("EncryptionAlgorithm", _encryptionAlgorithm)
+            .add("PolicyId", policyId)
+            .add("TokenData", tokenData)
+            .add("EncryptionAlgorithm", encryptionAlgorithm)
             .toString();
     }
 
-    public static void encode(IssuedIdentityToken issuedIdentityToken, UaEncoder encoder) {
-        encoder.encodeString("PolicyId", issuedIdentityToken._policyId);
-        encoder.encodeByteString("TokenData", issuedIdentityToken._tokenData);
-        encoder.encodeString("EncryptionAlgorithm", issuedIdentityToken._encryptionAlgorithm);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<IssuedIdentityToken> {
 
-    public static IssuedIdentityToken decode(UaDecoder decoder) {
-        String _policyId = decoder.decodeString("PolicyId");
-        ByteString _tokenData = decoder.decodeByteString("TokenData");
-        String _encryptionAlgorithm = decoder.decodeString("EncryptionAlgorithm");
+        @Override
+        public Class<IssuedIdentityToken> getType() {
+            return IssuedIdentityToken.class;
+        }
 
-        return new IssuedIdentityToken(_policyId, _tokenData, _encryptionAlgorithm);
-    }
+        @Override
+        public IssuedIdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+            String policyId = decoder.readString("PolicyId");
+            ByteString tokenData = decoder.readByteString("TokenData");
+            String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
 
-    static {
-        DelegateRegistry.registerEncoder(IssuedIdentityToken::encode, IssuedIdentityToken.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(IssuedIdentityToken::decode, IssuedIdentityToken.class, BinaryEncodingId, XmlEncodingId);
+            return new IssuedIdentityToken(policyId, tokenData, encryptionAlgorithm);
+        }
+
+        @Override
+        public void encode(IssuedIdentityToken value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("PolicyId", value.policyId);
+            encoder.writeByteString("TokenData", value.tokenData);
+            encoder.writeString("EncryptionAlgorithm", value.encryptionAlgorithm);
+        }
     }
 
 }

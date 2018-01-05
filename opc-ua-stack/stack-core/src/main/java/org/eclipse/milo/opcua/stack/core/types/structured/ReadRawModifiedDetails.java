@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,54 +15,53 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ReadRawModifiedDetails")
 public class ReadRawModifiedDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadRawModifiedDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadRawModifiedDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadRawModifiedDetails_Encoding_DefaultXml;
 
-    protected final Boolean _isReadModified;
-    protected final DateTime _startTime;
-    protected final DateTime _endTime;
-    protected final UInteger _numValuesPerNode;
-    protected final Boolean _returnBounds;
+    protected final Boolean isReadModified;
+    protected final DateTime startTime;
+    protected final DateTime endTime;
+    protected final UInteger numValuesPerNode;
+    protected final Boolean returnBounds;
 
     public ReadRawModifiedDetails() {
         super();
-        this._isReadModified = null;
-        this._startTime = null;
-        this._endTime = null;
-        this._numValuesPerNode = null;
-        this._returnBounds = null;
+        this.isReadModified = null;
+        this.startTime = null;
+        this.endTime = null;
+        this.numValuesPerNode = null;
+        this.returnBounds = null;
     }
 
-    public ReadRawModifiedDetails(Boolean _isReadModified, DateTime _startTime, DateTime _endTime, UInteger _numValuesPerNode, Boolean _returnBounds) {
+    public ReadRawModifiedDetails(Boolean isReadModified, DateTime startTime, DateTime endTime, UInteger numValuesPerNode, Boolean returnBounds) {
         super();
-        this._isReadModified = _isReadModified;
-        this._startTime = _startTime;
-        this._endTime = _endTime;
-        this._numValuesPerNode = _numValuesPerNode;
-        this._returnBounds = _returnBounds;
+        this.isReadModified = isReadModified;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.numValuesPerNode = numValuesPerNode;
+        this.returnBounds = returnBounds;
     }
 
-    public Boolean getIsReadModified() { return _isReadModified; }
+    public Boolean getIsReadModified() { return isReadModified; }
 
-    public DateTime getStartTime() { return _startTime; }
+    public DateTime getStartTime() { return startTime; }
 
-    public DateTime getEndTime() { return _endTime; }
+    public DateTime getEndTime() { return endTime; }
 
-    public UInteger getNumValuesPerNode() { return _numValuesPerNode; }
+    public UInteger getNumValuesPerNode() { return numValuesPerNode; }
 
-    public Boolean getReturnBounds() { return _returnBounds; }
+    public Boolean getReturnBounds() { return returnBounds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -76,35 +75,40 @@ public class ReadRawModifiedDetails extends HistoryReadDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("IsReadModified", _isReadModified)
-            .add("StartTime", _startTime)
-            .add("EndTime", _endTime)
-            .add("NumValuesPerNode", _numValuesPerNode)
-            .add("ReturnBounds", _returnBounds)
+            .add("IsReadModified", isReadModified)
+            .add("StartTime", startTime)
+            .add("EndTime", endTime)
+            .add("NumValuesPerNode", numValuesPerNode)
+            .add("ReturnBounds", returnBounds)
             .toString();
     }
 
-    public static void encode(ReadRawModifiedDetails readRawModifiedDetails, UaEncoder encoder) {
-        encoder.encodeBoolean("IsReadModified", readRawModifiedDetails._isReadModified);
-        encoder.encodeDateTime("StartTime", readRawModifiedDetails._startTime);
-        encoder.encodeDateTime("EndTime", readRawModifiedDetails._endTime);
-        encoder.encodeUInt32("NumValuesPerNode", readRawModifiedDetails._numValuesPerNode);
-        encoder.encodeBoolean("ReturnBounds", readRawModifiedDetails._returnBounds);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ReadRawModifiedDetails> {
 
-    public static ReadRawModifiedDetails decode(UaDecoder decoder) {
-        Boolean _isReadModified = decoder.decodeBoolean("IsReadModified");
-        DateTime _startTime = decoder.decodeDateTime("StartTime");
-        DateTime _endTime = decoder.decodeDateTime("EndTime");
-        UInteger _numValuesPerNode = decoder.decodeUInt32("NumValuesPerNode");
-        Boolean _returnBounds = decoder.decodeBoolean("ReturnBounds");
+        @Override
+        public Class<ReadRawModifiedDetails> getType() {
+            return ReadRawModifiedDetails.class;
+        }
 
-        return new ReadRawModifiedDetails(_isReadModified, _startTime, _endTime, _numValuesPerNode, _returnBounds);
-    }
+        @Override
+        public ReadRawModifiedDetails decode(UaDecoder decoder) throws UaSerializationException {
+            Boolean isReadModified = decoder.readBoolean("IsReadModified");
+            DateTime startTime = decoder.readDateTime("StartTime");
+            DateTime endTime = decoder.readDateTime("EndTime");
+            UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
+            Boolean returnBounds = decoder.readBoolean("ReturnBounds");
 
-    static {
-        DelegateRegistry.registerEncoder(ReadRawModifiedDetails::encode, ReadRawModifiedDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReadRawModifiedDetails::decode, ReadRawModifiedDetails.class, BinaryEncodingId, XmlEncodingId);
+            return new ReadRawModifiedDetails(isReadModified, startTime, endTime, numValuesPerNode, returnBounds);
+        }
+
+        @Override
+        public void encode(ReadRawModifiedDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBoolean("IsReadModified", value.isReadModified);
+            encoder.writeDateTime("StartTime", value.startTime);
+            encoder.writeDateTime("EndTime", value.endTime);
+            encoder.writeUInt32("NumValuesPerNode", value.numValuesPerNode);
+            encoder.writeBoolean("ReturnBounds", value.returnBounds);
+        }
     }
 
 }

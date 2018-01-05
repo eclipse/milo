@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,34 +17,33 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("DeleteAtTimeDetails")
 public class DeleteAtTimeDetails extends HistoryUpdateDetails {
 
     public static final NodeId TypeId = Identifiers.DeleteAtTimeDetails;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteAtTimeDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteAtTimeDetails_Encoding_DefaultXml;
 
-    protected final DateTime[] _reqTimes;
+    protected final DateTime[] reqTimes;
 
     public DeleteAtTimeDetails() {
         super(null);
-        this._reqTimes = null;
+        this.reqTimes = null;
     }
 
-    public DeleteAtTimeDetails(NodeId _nodeId, DateTime[] _reqTimes) {
-        super(_nodeId);
-        this._reqTimes = _reqTimes;
+    public DeleteAtTimeDetails(NodeId nodeId, DateTime[] reqTimes) {
+        super(nodeId);
+        this.reqTimes = reqTimes;
     }
 
     @Nullable
-    public DateTime[] getReqTimes() { return _reqTimes; }
+    public DateTime[] getReqTimes() { return reqTimes; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("ReqTimes", _reqTimes)
+            .add("NodeId", nodeId)
+            .add("ReqTimes", reqTimes)
             .toString();
     }
 
-    public static void encode(DeleteAtTimeDetails deleteAtTimeDetails, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", deleteAtTimeDetails._nodeId);
-        encoder.encodeArray("ReqTimes", deleteAtTimeDetails._reqTimes, encoder::encodeDateTime);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DeleteAtTimeDetails> {
 
-    public static DeleteAtTimeDetails decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        DateTime[] _reqTimes = decoder.decodeArray("ReqTimes", decoder::decodeDateTime, DateTime.class);
+        @Override
+        public Class<DeleteAtTimeDetails> getType() {
+            return DeleteAtTimeDetails.class;
+        }
 
-        return new DeleteAtTimeDetails(_nodeId, _reqTimes);
-    }
+        @Override
+        public DeleteAtTimeDetails decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            DateTime[] reqTimes = decoder.readArray("ReqTimes", decoder::readDateTime, DateTime.class);
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteAtTimeDetails::encode, DeleteAtTimeDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteAtTimeDetails::decode, DeleteAtTimeDetails.class, BinaryEncodingId, XmlEncodingId);
+            return new DeleteAtTimeDetails(nodeId, reqTimes);
+        }
+
+        @Override
+        public void encode(DeleteAtTimeDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeArray("ReqTimes", value.reqTimes, encoder::writeDateTime);
+        }
     }
 
 }

@@ -18,12 +18,16 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class MessageAbortedException extends UaException {
 
-    public MessageAbortedException(long statusCode, String message) {
+    private final long requestId;
+
+    MessageAbortedException(StatusCode statusCode, String message, long requestId) {
         super(statusCode, message);
+
+        this.requestId = requestId;
     }
 
-    public MessageAbortedException(StatusCode statusCode, String message) {
-        super(statusCode, message);
+    public long getRequestId() {
+        return requestId;
     }
 
 }

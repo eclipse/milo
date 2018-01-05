@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,16 +19,12 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.TwoStateVariableT
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface ExclusiveLimitAlarmType extends LimitAlarmType {
-
-
-    CompletableFuture<? extends ExclusiveLimitStateMachineType> limitState();
-
-    CompletableFuture<? extends TwoStateVariableType> activeState();
+    CompletableFuture<? extends TwoStateVariableType> getActiveStateNode();
 
     CompletableFuture<LocalizedText> getActiveState();
 
     CompletableFuture<StatusCode> setActiveState(LocalizedText value);
 
+    CompletableFuture<? extends ExclusiveLimitStateMachineType> getLimitStateNode();
 }

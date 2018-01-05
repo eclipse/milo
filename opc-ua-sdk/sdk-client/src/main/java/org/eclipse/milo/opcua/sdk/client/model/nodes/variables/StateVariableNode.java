@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,72 +23,56 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public class StateVariableNode extends BaseDataVariableNode implements StateVariableType {
-
     public StateVariableNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> id() {
-        return getPropertyNode(StateVariableType.ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getIdNode() {
+        return getPropertyNode(StateVariableType.ID);
     }
 
-    @Override
-    public CompletableFuture<? extends Object> getId() {
+    public CompletableFuture<?> getId() {
         return getProperty(StateVariableType.ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setId(Object value) {
         return setProperty(StateVariableType.ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> name() {
-        return getPropertyNode(StateVariableType.NAME.getBrowseName());
+    public CompletableFuture<PropertyNode> getNameNode() {
+        return getPropertyNode(StateVariableType.NAME);
     }
 
-    @Override
     public CompletableFuture<QualifiedName> getName() {
         return getProperty(StateVariableType.NAME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setName(QualifiedName value) {
         return setProperty(StateVariableType.NAME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> number() {
-        return getPropertyNode(StateVariableType.NUMBER.getBrowseName());
+    public CompletableFuture<PropertyNode> getNumberNode() {
+        return getPropertyNode(StateVariableType.NUMBER);
     }
 
-    @Override
     public CompletableFuture<UInteger> getNumber() {
         return getProperty(StateVariableType.NUMBER);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setNumber(UInteger value) {
         return setProperty(StateVariableType.NUMBER, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> effectiveDisplayName() {
-        return getPropertyNode(StateVariableType.EFFECTIVE_DISPLAY_NAME.getBrowseName());
+    public CompletableFuture<PropertyNode> getEffectiveDisplayNameNode() {
+        return getPropertyNode(StateVariableType.EFFECTIVE_DISPLAY_NAME);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getEffectiveDisplayName() {
         return getProperty(StateVariableType.EFFECTIVE_DISPLAY_NAME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEffectiveDisplayName(LocalizedText value) {
         return setProperty(StateVariableType.EFFECTIVE_DISPLAY_NAME, value);
     }
-
-
 }

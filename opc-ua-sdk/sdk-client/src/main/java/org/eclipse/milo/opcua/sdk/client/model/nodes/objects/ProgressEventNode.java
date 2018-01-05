@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,42 +22,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-
 public class ProgressEventNode extends BaseEventNode implements ProgressEventType {
-
     public ProgressEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> context() {
-        return getPropertyNode(ProgressEventType.CONTEXT.getBrowseName());
+    public CompletableFuture<PropertyNode> getContextNode() {
+        return getPropertyNode(ProgressEventType.CONTEXT);
     }
 
-    @Override
-    public CompletableFuture<? extends Object> getContext() {
+    public CompletableFuture<?> getContext() {
         return getProperty(ProgressEventType.CONTEXT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setContext(Object value) {
         return setProperty(ProgressEventType.CONTEXT, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> progress() {
-        return getPropertyNode(ProgressEventType.PROGRESS.getBrowseName());
+    public CompletableFuture<PropertyNode> getProgressNode() {
+        return getPropertyNode(ProgressEventType.PROGRESS);
     }
 
-    @Override
     public CompletableFuture<UShort> getProgress() {
         return getProperty(ProgressEventType.PROGRESS);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setProgress(UShort value) {
         return setProperty(ProgressEventType.PROGRESS, value);
     }
-
-
 }

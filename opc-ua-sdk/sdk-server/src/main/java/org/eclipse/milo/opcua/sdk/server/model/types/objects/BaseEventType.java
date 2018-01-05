@@ -1,145 +1,139 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
 public interface BaseEventType extends BaseObjectType {
-
-    Property<ByteString> EVENT_ID = new BasicProperty<>(
-        QualifiedName.parse("0:EventId"),
+    QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EventId",
         NodeId.parse("ns=0;i=15"),
-        -1,
+        ValueRanks.Scalar,
         ByteString.class
     );
 
-    Property<NodeId> EVENT_TYPE = new BasicProperty<>(
-        QualifiedName.parse("0:EventType"),
+    QualifiedProperty<NodeId> EVENT_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EventType",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<NodeId> SOURCE_NODE = new BasicProperty<>(
-        QualifiedName.parse("0:SourceNode"),
+    QualifiedProperty<NodeId> SOURCE_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SourceNode",
         NodeId.parse("ns=0;i=17"),
-        -1,
+        ValueRanks.Scalar,
         NodeId.class
     );
 
-    Property<String> SOURCE_NAME = new BasicProperty<>(
-        QualifiedName.parse("0:SourceName"),
+    QualifiedProperty<String> SOURCE_NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SourceName",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<DateTime> TIME = new BasicProperty<>(
-        QualifiedName.parse("0:Time"),
+    QualifiedProperty<DateTime> TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Time",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<DateTime> RECEIVE_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:ReceiveTime"),
+    QualifiedProperty<DateTime> RECEIVE_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ReceiveTime",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<TimeZoneDataType> LOCAL_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:LocalTime"),
+    QualifiedProperty<TimeZoneDataType> LOCAL_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LocalTime",
         NodeId.parse("ns=0;i=8912"),
-        -1,
+        ValueRanks.Scalar,
         TimeZoneDataType.class
     );
 
-    Property<LocalizedText> MESSAGE = new BasicProperty<>(
-        QualifiedName.parse("0:Message"),
+    QualifiedProperty<LocalizedText> MESSAGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Message",
         NodeId.parse("ns=0;i=21"),
-        -1,
+        ValueRanks.Scalar,
         LocalizedText.class
     );
 
-    Property<UShort> SEVERITY = new BasicProperty<>(
-        QualifiedName.parse("0:Severity"),
+    QualifiedProperty<UShort> SEVERITY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Severity",
         NodeId.parse("ns=0;i=5"),
-        -1,
+        ValueRanks.Scalar,
         UShort.class
     );
 
-    ByteString getEventId();
-
     PropertyType getEventIdNode();
+
+    ByteString getEventId();
 
     void setEventId(ByteString value);
 
-    NodeId getEventType();
-
     PropertyType getEventTypeNode();
+
+    NodeId getEventType();
 
     void setEventType(NodeId value);
 
-    NodeId getSourceNode();
-
     PropertyType getSourceNodeNode();
+
+    NodeId getSourceNode();
 
     void setSourceNode(NodeId value);
 
-    String getSourceName();
-
     PropertyType getSourceNameNode();
+
+    String getSourceName();
 
     void setSourceName(String value);
 
-    DateTime getTime();
-
     PropertyType getTimeNode();
+
+    DateTime getTime();
 
     void setTime(DateTime value);
 
-    DateTime getReceiveTime();
-
     PropertyType getReceiveTimeNode();
+
+    DateTime getReceiveTime();
 
     void setReceiveTime(DateTime value);
 
-    TimeZoneDataType getLocalTime();
-
     PropertyType getLocalTimeNode();
+
+    TimeZoneDataType getLocalTime();
 
     void setLocalTime(TimeZoneDataType value);
 
-    LocalizedText getMessage();
-
     PropertyType getMessageNode();
+
+    LocalizedText getMessage();
 
     void setMessage(LocalizedText value);
 
-    UShort getSeverity();
-
     PropertyType getSeverityNode();
+
+    UShort getSeverity();
 
     void setSeverity(UShort value);
 }

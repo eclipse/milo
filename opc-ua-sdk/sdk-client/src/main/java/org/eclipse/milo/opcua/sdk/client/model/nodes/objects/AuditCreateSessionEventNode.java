@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,72 +22,56 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditCreateSessionEventNode extends AuditSessionEventNode implements AuditCreateSessionEventType {
-
     public AuditCreateSessionEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> secureChannelId() {
-        return getPropertyNode(AuditCreateSessionEventType.SECURE_CHANNEL_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getSecureChannelIdNode() {
+        return getPropertyNode(AuditCreateSessionEventType.SECURE_CHANNEL_ID);
     }
 
-    @Override
     public CompletableFuture<String> getSecureChannelId() {
         return getProperty(AuditCreateSessionEventType.SECURE_CHANNEL_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecureChannelId(String value) {
         return setProperty(AuditCreateSessionEventType.SECURE_CHANNEL_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> clientCertificate() {
-        return getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getClientCertificateNode() {
+        return getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE);
     }
 
-    @Override
     public CompletableFuture<ByteString> getClientCertificate() {
         return getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientCertificate(ByteString value) {
         return setProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> clientCertificateThumbprint() {
-        return getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT.getBrowseName());
+    public CompletableFuture<PropertyNode> getClientCertificateThumbprintNode() {
+        return getPropertyNode(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT);
     }
 
-    @Override
     public CompletableFuture<String> getClientCertificateThumbprint() {
         return getProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientCertificateThumbprint(String value) {
         return setProperty(AuditCreateSessionEventType.CLIENT_CERTIFICATE_THUMBPRINT, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> revisedSessionTimeout() {
-        return getPropertyNode(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT.getBrowseName());
+    public CompletableFuture<PropertyNode> getRevisedSessionTimeoutNode() {
+        return getPropertyNode(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT);
     }
 
-    @Override
     public CompletableFuture<Double> getRevisedSessionTimeout() {
         return getProperty(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRevisedSessionTimeout(Double value) {
         return setProperty(AuditCreateSessionEventType.REVISED_SESSION_TIMEOUT, value);
     }
-
-
 }

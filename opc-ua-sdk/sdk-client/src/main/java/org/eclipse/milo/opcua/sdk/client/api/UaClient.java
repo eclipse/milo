@@ -52,7 +52,7 @@ public interface UaClient extends AttributeServices,
     /**
      * @return a {@link CompletableFuture} holding the {@link UaSession}.
      */
-    CompletableFuture<UaSession> getSession();
+    CompletableFuture<? extends UaSession> getSession();
 
     /**
      * @return the {@link AddressSpace}.

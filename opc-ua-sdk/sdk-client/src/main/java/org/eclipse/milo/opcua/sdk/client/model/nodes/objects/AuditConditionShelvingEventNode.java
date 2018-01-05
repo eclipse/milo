@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.AuditConditionShelv
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditConditionShelvingEventNode extends AuditConditionEventNode implements AuditConditionShelvingEventType {
-
     public AuditConditionShelvingEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> shelvingTime() {
-        return getPropertyNode(AuditConditionShelvingEventType.SHELVING_TIME.getBrowseName());
+    public CompletableFuture<PropertyNode> getShelvingTimeNode() {
+        return getPropertyNode(AuditConditionShelvingEventType.SHELVING_TIME);
     }
 
-    @Override
     public CompletableFuture<Double> getShelvingTime() {
         return getProperty(AuditConditionShelvingEventType.SHELVING_TIME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setShelvingTime(Double value) {
         return setProperty(AuditConditionShelvingEventType.SHELVING_TIME, value);
     }
-
-
 }
