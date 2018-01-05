@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import org.eclipse.milo.examples.client.util.KeyStoreLoader;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
@@ -41,8 +40,6 @@ public class SecureClientStandaloneRunner {
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
 
-    private final KeyStoreLoader loader = new KeyStoreLoader();
-
     private final SecureClientStandalone clientExample;
 
     SecureClientStandaloneRunner(SecureClientStandalone clientExample){
@@ -63,11 +60,9 @@ public class SecureClientStandaloneRunner {
         }
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
-            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+            .findFirst().orElseThrow(() -> new Exception(("no desired endpoints returned")));
 
         logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
-
-        loader.load();
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english(APPLICATION_NAME))
@@ -100,7 +95,7 @@ public class SecureClientStandaloneRunner {
                 Thread.sleep(1000);
                 System.exit(0);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Interrupted exception", e);
             }
         });
 
@@ -110,18 +105,18 @@ public class SecureClientStandaloneRunner {
             try {
                 clientExample.run(client, future);
                 future.get(10, TimeUnit.SECONDS);
-            } catch (Throwable t) {
-                logger.error("Error running client example: {}", t.getMessage(), t);
+            } catch (Exception e) {
+                logger.error("Error running client example: {}", e.getMessage(), e);
                 future.complete(client);
             }
-        } catch (Throwable t) {
-            future.completeExceptionally(t);
+        } catch (Exception e) {
+            future.completeExceptionally(e);
         }
 
         try {
             Thread.sleep(999999999);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Error running client example: {}", e.getMessage(), e);
         }
     }
 

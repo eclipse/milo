@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import org.eclipse.milo.examples.client.util.KeyStoreLoader;
 import org.eclipse.milo.examples.server.SecureServerStandalone;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
@@ -38,8 +37,6 @@ public class SecureClientExampleRunner {
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
 
-    private final KeyStoreLoader loader = new KeyStoreLoader();
-
     private final SecureServerStandalone exampleServer;
 
     private final SecureClientExample clientExample;
@@ -61,8 +58,6 @@ public class SecureClientExampleRunner {
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
-
-        loader.load();
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("fraunhofer opc-ua client"))
@@ -106,18 +101,18 @@ public class SecureClientExampleRunner {
             try {
                 clientExample.run(client, future);
                 future.get(10, TimeUnit.SECONDS);
-            } catch (Throwable t) {
-                logger.error("Error running client example: {}", t.getMessage(), t);
+            } catch (Exception e) {
+                logger.error("Error running client example: {}", e.getMessage(), e);
                 future.complete(client);
             }
-        } catch (Throwable t) {
-            future.completeExceptionally(t);
+        } catch (Exception e) {
+            future.completeExceptionally(e);
         }
 
         try {
             Thread.sleep(999999999);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Interrupted exception", e);
         }
     }
 
