@@ -33,6 +33,10 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class SecureClientStandaloneRunner {
 
+    private static final String APPLICATION_NAME="fraunhofer opc-ua client";
+
+    private static final String APPLICATION_URI="urn:eclipse:milo:examples:secureclient";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
@@ -49,7 +53,7 @@ public class SecureClientStandaloneRunner {
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
         String endpointURL = System.getenv("ENDPOINT_URL");
-        logger.info("ENDPOINTURL="+endpointURL);
+        logger.info("ENDPOINTURL={}", endpointURL);
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointURL).get();
 
@@ -66,8 +70,8 @@ public class SecureClientStandaloneRunner {
         loader.load();
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
-            .setApplicationName(LocalizedText.english("fraunhofer opc-ua client"))
-            .setApplicationUri("urn:eclipse:milo:examples:secureclient")
+            .setApplicationName(LocalizedText.english(APPLICATION_NAME))
+            .setApplicationUri(APPLICATION_URI)
             .setCertificate(clientExample.getClientCertificate())
             .setKeyPair(clientExample.getKeyPair())
             .setEndpoint(endpoint)
