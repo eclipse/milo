@@ -168,6 +168,10 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (renewFuture != null) renewFuture.cancel(false);
 
+        if (openSecureChannelRequestPending) {
+            secureChannel.setChannelId(0);
+        }
+
         handshakeFuture.completeExceptionally(
             new UaException(StatusCodes.Bad_ConnectionClosed, "connection closed"));
 
