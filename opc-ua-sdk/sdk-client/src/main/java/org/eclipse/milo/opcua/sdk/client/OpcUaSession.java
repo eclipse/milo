@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -112,5 +113,13 @@ public class OpcUaSession extends ConcurrentHashMap<String, Object> implements U
     public Object removeAttribute(@Nonnull String name) {
         return remove(name);
     }
-    
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("sessionId", sessionId)
+            .add("sessionName", sessionName)
+            .toString();
+    }
+
 }

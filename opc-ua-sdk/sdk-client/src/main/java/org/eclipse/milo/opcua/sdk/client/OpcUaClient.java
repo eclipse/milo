@@ -151,6 +151,8 @@ public class OpcUaClient implements UaClient {
         sessionFsm.addInitializer(new SessionFsm.SessionInitializer() {
             @Override
             public CompletableFuture<Unit> initialize(UaTcpStackClient stackClient, OpcUaSession session) {
+                logger.debug("SessionInitializer: DataTypeDictionary");
+
                 DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
                     stackClient,
                     session,
@@ -167,6 +169,7 @@ public class OpcUaClient implements UaClient {
         });
 
         sessionFsm.addInitializer((stackClient, session) -> {
+            logger.debug("SessionInitializer: NamespaceTable");
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 
             ReadRequest readRequest = new ReadRequest(
