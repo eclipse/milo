@@ -17,7 +17,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.eclipse.milo.opcua.binaryschema.BsdParserTest;
-import org.eclipse.milo.opcua.binaryschema.Struct;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.testng.annotations.Test;
@@ -103,6 +102,22 @@ public class JsonBsdParserTest extends BsdParserTest {
         OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ArrayContainer");
 
         assertRoundTrip("ArrayContainer", arrayContainer, codec);
+    }
+
+    @Test
+    public void testBar() throws Exception {
+        JsonObject foo = new JsonObject();
+        foo.add("Bar", new JsonPrimitive(0));
+        foo.add("Baz", new JsonPrimitive("hello"));
+
+        JsonObject bar = new JsonObject();
+        bar.add("Foo", foo);
+        bar.add("Int", new JsonPrimitive(1));
+        bar.add("Str", new JsonPrimitive("goodbye"));
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("Bar");
+
+        assertRoundTrip("Bar", bar, codec);
     }
 
 }

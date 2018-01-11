@@ -253,8 +253,6 @@ abstract class AbstractSessionState implements SessionState {
 
         af.whenComplete((asr, ex) -> {
             if (asr != null) {
-                LOGGER.debug("Session activated: {}", csr.getSessionId());
-
                 OpcUaSession session = new OpcUaSession(
                     csr.getAuthenticationToken(),
                     csr.getSessionId(),
@@ -264,6 +262,8 @@ abstract class AbstractSessionState implements SessionState {
                     csr.getServerCertificate(),
                     csr.getServerSoftwareCertificates()
                 );
+
+                LOGGER.debug("Session activated: {}", session);
 
                 session.setServerNonce(asr.getServerNonce());
 
@@ -390,13 +390,13 @@ abstract class AbstractSessionState implements SessionState {
 
         stackClient.getChannelFuture().thenCompose(activate).whenCompleteAsync((asr, ex) -> {
             if (asr != null) {
-                LOGGER.debug("Session reactivated: {}", session.getSessionId());
+                LOGGER.debug("Session reactivated: {}", session);
 
                 session.setServerNonce(asr.getServerNonce());
 
                 fsm.fireEvent(new ReactivateSuccessEvent(session, sessionFuture));
             } else {
-                LOGGER.debug("(re)ActivateSession failed: {}", ex.getMessage(), ex);
+                LOGGER.debug("(re)ActivateSession failed: {}", session, ex);
 
                 fsm.fireEvent(new ReactivateFailureEvent(ex, session, sessionFuture));
             }
@@ -537,8 +537,10 @@ abstract class AbstractSessionState implements SessionState {
 
             CompletableFuture.allOf(futures).whenComplete((v, ex) -> {
                 if (ex != null) {
+                    LOGGER.warn("Initialization failed: {}", session, ex);
                     fsm.fireEvent(new InitializeFailureEvent(ex, session, sessionFuture));
                 } else {
+                    LOGGER.debug("Initialization succeeded: {}", session);
                     fsm.fireEvent(new InitializeSuccessEvent(session, sessionFuture));
                 }
             });
