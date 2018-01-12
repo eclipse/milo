@@ -66,7 +66,7 @@ class ClientChannelManager {
             Connecting nextState = new Connecting();
 
             if (state.compareAndSet(currentState, nextState)) {
-                logger.debug("connect() while NotConnected", new Exception());
+                logger.debug("connect() while NotConnected");
 
                 CompletableFuture<ClientSecureChannel> connected = nextState.connected;
 
