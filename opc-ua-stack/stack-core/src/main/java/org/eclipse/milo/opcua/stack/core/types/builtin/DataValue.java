@@ -143,7 +143,7 @@ public final class DataValue {
     }
 
     /**
-     * Derive a new {@link DataValue} from a given {@link DataValue}.
+     * Derive a new {@link DataValue} from a given {@link DataValue} with a current timestamp, if applicable.
      *
      * @param from       the {@link DataValue} to derive from.
      * @param timestamps the timestamps to return in the derived value.
