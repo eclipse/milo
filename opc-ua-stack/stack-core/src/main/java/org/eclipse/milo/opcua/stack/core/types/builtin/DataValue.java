@@ -157,7 +157,7 @@ public final class DataValue {
             from.value,
             from.status,
             includeSource ? from.sourceTime : null,
-            includeServer ? from.serverTime : null
+            includeServer ? new DateTime() : null
         );
     }
 
