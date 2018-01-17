@@ -349,6 +349,11 @@ public class UaTcpStackClient implements UaStackClient {
                         serviceFault = new ServiceFault(header);
                     }
 
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Received ServiceFault requestHandle={}, result={}",
+                            requestHandle, serviceFault.getResponseHeader().getServiceResult());
+                    }
+
                     future.completeExceptionally(new UaServiceFaultException(serviceFault));
                 }
 
