@@ -19,7 +19,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.Nullable;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -29,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -70,7 +68,7 @@ class ClientChannelManager {
 
                 CompletableFuture<ClientSecureChannel> connected = nextState.connected;
 
-                connect(true, null, connected);
+                connect(connected);
 
                 return connected.whenCompleteAsync(
                     (chan, ex) -> {
@@ -246,14 +244,10 @@ class ClientChannelManager {
         }
     }
 
-    private void connect(
-        boolean initialAttempt,
-        @Nullable ClientSecureChannel previousChannel,
-        CompletableFuture<ClientSecureChannel> future) {
-
+    private void connect(CompletableFuture<ClientSecureChannel> future) {
         try {
             CompletableFuture<ClientSecureChannel> bootstrap =
-                UaTcpStackClient.bootstrap(client, previousChannel);
+                UaTcpStackClient.bootstrap(client);
 
             bootstrap.whenCompleteAsync(
                 (chan, ex) -> {
@@ -266,25 +260,7 @@ class ClientChannelManager {
                     } else {
                         logger.debug("Channel bootstrap failed: {}", ex.getMessage(), ex);
 
-                        long statusCode = UaException.extract(ex)
-                            .map(UaException::getStatusCode)
-                            .orElse(StatusCode.BAD)
-                            .getValue();
-
-                        boolean secureChannelError =
-                            statusCode == StatusCodes.Bad_SecureChannelIdInvalid ||
-                                statusCode == StatusCodes.Bad_SecurityChecksFailed ||
-                                statusCode == StatusCodes.Bad_TcpSecureChannelUnknown ||
-                                statusCode == StatusCodes.Bad_RequestTypeInvalid;
-
-                        if (initialAttempt && secureChannelError) {
-                            // Try again if bootstrapping failed because we couldn't re-open the previous channel.
-                            logger.debug("Previous channel unusable, retrying...");
-
-                            connect(false, null, future);
-                        } else {
-                            future.completeExceptionally(ex);
-                        }
+                        future.completeExceptionally(ex);
                     }
                 },
                 client.getExecutorService()
@@ -303,7 +279,7 @@ class ClientChannelManager {
 
                 CompletableFuture<ClientSecureChannel> reconnected = reconnectState.reconnected;
 
-                connect(true, previousChannel, reconnected);
+                connect(reconnected);
 
                 reconnected.whenCompleteAsync(
                     (chan, ex) -> {
