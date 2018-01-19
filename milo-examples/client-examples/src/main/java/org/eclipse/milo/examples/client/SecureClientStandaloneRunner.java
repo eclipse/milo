@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +61,10 @@ public class SecureClientStandaloneRunner {
         }
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+            .filter(e -> e.getSecurityMode().equals(MessageSecurityMode.SignAndEncrypt))
             .findFirst().orElseThrow(() -> new Exception(("no desired endpoints returned")));
 
-        logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
+        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), securityPolicy, endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english(APPLICATION_NAME))
