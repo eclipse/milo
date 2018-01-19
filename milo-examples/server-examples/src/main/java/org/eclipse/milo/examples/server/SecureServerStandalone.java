@@ -44,7 +44,7 @@ public class SecureServerStandalone {
 
     private static final String APPLICATION_URI = "urn:eclipse:milo:examples:server";
 
-    private String ip = System.getenv("OPCUA_SERVER_IP");
+    private String ip = "localhost";
 
     private static final Logger logger = LoggerFactory.getLogger(SecureServerStandalone.class);
 
@@ -78,10 +78,10 @@ public class SecureServerStandalone {
         }
     }
 
-    public SecureServerStandalone() {
+    private SecureServerStandalone() {
         CryptoRestrictions.remove();
 
-        File securityTempDir = new File(System.getenv("OPCUA_CERT_DIR"), "security");
+        File securityTempDir = new File("security");
 
         logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
@@ -141,7 +141,7 @@ public class SecureServerStandalone {
         return server;
     }
 
-    public CompletableFuture<OpcUaServer> startup() {
+    private CompletableFuture<OpcUaServer> startup() {
         return server.startup();
     }
 

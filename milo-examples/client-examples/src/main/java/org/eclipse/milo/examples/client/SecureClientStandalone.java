@@ -52,7 +52,7 @@ public class SecureClientStandalone implements ClientExample {
 
     private SecureClientStandalone() {
         /* Get keystore password */
-        char[] keystorePasswordArray = System.getenv("KEYSTOREPSWED").toCharArray();
+        char[] keystorePasswordArray = "opcuakeystore".toCharArray();
 
         try {
             String keystorepath = "secrets/opcua.keystore";
@@ -64,7 +64,7 @@ public class SecureClientStandalone implements ClientExample {
             is.close();
 
             /*Get key from keystore */
-            char[] keyPasswordArray = System.getenv("KEYPSWD").toCharArray();
+            char[] keyPasswordArray = "opcuakey".toCharArray();
             PrivateKey key = (PrivateKey) keystore.getKey("opcua", keyPasswordArray);
 
             /* Get certificate of public key */

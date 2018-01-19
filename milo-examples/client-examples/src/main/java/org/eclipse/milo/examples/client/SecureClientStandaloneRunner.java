@@ -50,7 +50,7 @@ public class SecureClientStandaloneRunner {
     private OpcUaClient createClient() throws Exception {
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
-        String endpointUrl = System.getenv("ENDPOINT_URL");
+        String endpointUrl = "opc.tcp://localhost:4840";
         logger.info("ENDPOINTURL={}", endpointUrl);
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointUrl).get();
@@ -64,7 +64,8 @@ public class SecureClientStandaloneRunner {
             .filter(e -> e.getSecurityMode().equals(MessageSecurityMode.SignAndEncrypt))
             .findFirst().orElseThrow(() -> new Exception(("no desired endpoints returned")));
 
-        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), securityPolicy, endpoint.getSecurityMode());
+        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), securityPolicy,
+                endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english(APPLICATION_NAME))
