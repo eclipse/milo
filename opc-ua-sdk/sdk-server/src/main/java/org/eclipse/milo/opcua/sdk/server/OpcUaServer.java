@@ -88,7 +88,8 @@ public class OpcUaServer {
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
 
-    private final UaStackServer stackServer;
+    private final UaTcpStackServer discoveryServer;
+    private final UaTcpStackServer stackServer;
     private final EventBus eventBus;
 
     private final OpcUaNamespace uaNamespace;
@@ -99,8 +100,17 @@ public class OpcUaServer {
     public OpcUaServer(OpcUaServerConfig config) {
         this.config = config;
 
-        stackServer = new UaTcpStackServer(config);
+        discoveryServer = new UaTcpStackServer(OpcUaServerConfig.copy(config, b -> {
+            String serverName = config.getServerName();
 
+            String discoveryServerName = serverName.endsWith("/") ?
+                serverName + "discovery" :
+                serverName + "/discovery";
+
+            b.setServerName(discoveryServerName);
+        }));
+
+        stackServer = new UaTcpStackServer(config);
         stackServer.addServiceSet((AttributeServiceSet) sessionManager);
         stackServer.addServiceSet((AttributeHistoryServiceSet) sessionManager);
         stackServer.addServiceSet((MethodServiceSet) sessionManager);
@@ -129,11 +139,11 @@ public class OpcUaServer {
             Set<String> hostnames = Sets.newHashSet(config.getEndpointAddresses());
 
             for (String hostname : hostnames) {
+                String endpointUrl = endpointUrl(hostname, config.getBindPort(), config.getServerName());
+
                 for (SecurityPolicy securityPolicy : config.getSecurityPolicies()) {
                     MessageSecurityMode messageSecurity = securityPolicy == SecurityPolicy.None ?
                         MessageSecurityMode.None : MessageSecurityMode.SignAndEncrypt;
-
-                    String endpointUrl = endpointUrl(hostname, config.getBindPort(), config.getServerName());
 
                     Set<X509Certificate> certificates = config.getCertificateManager().getCertificates();
 
@@ -142,6 +152,7 @@ public class OpcUaServer {
                             endpointUrl, bindAddress, securityPolicy, messageSecurity);
 
                         stackServer.addEndpoint(endpointUrl, bindAddress, null, securityPolicy, messageSecurity);
+                        discoveryServer.addEndpoint(endpointUrl, bindAddress, null, securityPolicy, messageSecurity);
                     } else {
                         for (X509Certificate certificate : certificates) {
                             logger.info("Binding endpoint {} to {} [{}/{}]",
@@ -149,9 +160,25 @@ public class OpcUaServer {
 
                             stackServer.addEndpoint(
                                 endpointUrl, bindAddress, certificate, securityPolicy, messageSecurity);
+                            discoveryServer.addEndpoint(
+                                endpointUrl, bindAddress, certificate, securityPolicy, messageSecurity);
                         }
                     }
                 }
+
+                // Add a discovery endpoint that doesn't require security.
+                // This is necessary in the case where the server was not configured to use SecurityPolicy.None for
+                // any of its endpoints so that clients can still call GetEndpoints without security. When the server
+                // has no SecurityPolicy.None endpoints and the client cannot connect with security, this endpoint URL
+                // must be explicitly specified by the client when it connects.
+                String discoveryUrl = endpointUrl(
+                    hostname,
+                    config.getBindPort(),
+                    discoveryServer.getConfig().getServerName()
+                );
+
+                discoveryServer.addEndpoint(
+                    discoveryUrl, bindAddress, null, SecurityPolicy.None, MessageSecurityMode.None);
             }
         }
 
@@ -162,11 +189,23 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
-        return stackServer.startup().thenApply(ignored -> OpcUaServer.this);
+        return discoveryServer.startup()
+            .exceptionally(ex -> {
+                logger.warn("failed to start discoveryServer", ex);
+                return null;
+            })
+            .thenRun(stackServer::startup)
+            .thenApply(v -> OpcUaServer.this);
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
-        return stackServer.shutdown().thenApply(ignored -> OpcUaServer.this);
+        return discoveryServer.shutdown()
+            .exceptionally(ex -> {
+                logger.warn("failed to shutdown discoveryServer", ex);
+                return null;
+            })
+            .thenRun(stackServer::shutdown)
+            .thenApply(v -> OpcUaServer.this);
     }
 
     private static String endpointUrl(String hostname, int port, String serverName) {
