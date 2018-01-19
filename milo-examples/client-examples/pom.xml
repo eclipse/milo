@@ -13,7 +13,7 @@
 
     <profiles>
         <profile>
-            <id>standalone-server-and-client</id>
+            <id>standalone-client</id>
             <build>
                 <plugins>
                     <plugin>
