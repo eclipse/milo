@@ -64,7 +64,8 @@ public class SecureClientStandaloneRunner {
             .filter(e -> e.getSecurityMode().equals(MessageSecurityMode.SignAndEncrypt))
             .findFirst().orElseThrow(() -> new Exception(("no desired endpoints returned")));
 
-        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), securityPolicy, endpoint.getSecurityMode());
+        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), securityPolicy,
+                endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english(APPLICATION_NAME))
