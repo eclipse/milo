@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class SecureClientStandalone implements ClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private SecurityPolicy securityPolicy = SecurityPolicy.valueOf("Basic256Sha256");
+    private SecurityPolicy securityPolicy = SecurityPolicy.Basic256Sha256;
     private IdentityProvider identityProvider;
     private X509Certificate cert;
     private KeyPair keyPair;
