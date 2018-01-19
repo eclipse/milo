@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -408,9 +407,7 @@ public class UaTcpStackClient implements UaStackClient {
         return config.getExecutor();
     }
 
-    public static CompletableFuture<ClientSecureChannel> bootstrap(
-        UaTcpStackClient client,
-        @Nullable ClientSecureChannel existingChannel) {
+    public static CompletableFuture<ClientSecureChannel> bootstrap(UaTcpStackClient client) {
 
         CompletableFuture<ClientSecureChannel> handshake = new CompletableFuture<>();
 
@@ -421,67 +418,63 @@ public class UaTcpStackClient implements UaStackClient {
 
                 ClientSecureChannel secureChannel;
 
-                if (existingChannel != null) {
-                    secureChannel = existingChannel;
+                EndpointDescription endpoint = config.getEndpoint().orElseGet(() -> {
+                    String endpointUrl = config.getEndpointUrl().orElseThrow(() ->
+                        new UaRuntimeException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no endpoint or endpoint URL configured")
+                    );
+                    return new EndpointDescription(
+                        endpointUrl,
+                        null, null,
+                        MessageSecurityMode.None,
+                        SecurityPolicy.None.getSecurityPolicyUri(),
+                        null, null, null
+                    );
+                });
+
+                SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+
+                if (securityPolicy == SecurityPolicy.None) {
+                    secureChannel = new ClientSecureChannel(
+                        securityPolicy,
+                        endpoint.getSecurityMode()
+                    );
                 } else {
-                    EndpointDescription endpoint = config.getEndpoint().orElseGet(() -> {
-                        String endpointUrl = config.getEndpointUrl().orElseThrow(() ->
-                            new UaRuntimeException(
-                                StatusCodes.Bad_ConfigurationError,
-                                "no endpoint or endpoint URL configured")
-                        );
-                        return new EndpointDescription(
-                            endpointUrl,
-                            null, null,
-                            MessageSecurityMode.None,
-                            SecurityPolicy.None.getSecurityPolicyUri(),
-                            null, null, null
-                        );
-                    });
+                    KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                        new UaException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no KeyPair configured")
+                    );
 
-                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+                    X509Certificate certificate = config.getCertificate().orElseThrow(() ->
+                        new UaException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no certificate configured")
+                    );
 
-                    if (securityPolicy == SecurityPolicy.None) {
-                        secureChannel = new ClientSecureChannel(
-                            securityPolicy,
-                            endpoint.getSecurityMode()
-                        );
-                    } else {
-                        KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                    List<X509Certificate> certificateChain = Arrays.asList(
+                        config.getCertificateChain().orElseThrow(() ->
                             new UaException(
                                 StatusCodes.Bad_ConfigurationError,
-                                "no KeyPair configured")
-                        );
+                                "no certificate chain configured"))
+                    );
 
-                        X509Certificate certificate = config.getCertificate().orElseThrow(() ->
-                            new UaException(
-                                StatusCodes.Bad_ConfigurationError,
-                                "no certificate configured")
-                        );
+                    X509Certificate remoteCertificate = CertificateUtil
+                        .decodeCertificate(endpoint.getServerCertificate().bytes());
 
-                        List<X509Certificate> certificateChain = Arrays.asList(
-                            config.getCertificateChain().orElseThrow(() ->
-                                new UaException(
-                                    StatusCodes.Bad_ConfigurationError,
-                                    "no certificate chain configured"))
-                        );
+                    List<X509Certificate> remoteCertificateChain = CertificateUtil
+                        .decodeCertificates(endpoint.getServerCertificate().bytes());
 
-                        X509Certificate remoteCertificate = CertificateUtil
-                            .decodeCertificate(endpoint.getServerCertificate().bytes());
-
-                        List<X509Certificate> remoteCertificateChain = CertificateUtil
-                            .decodeCertificates(endpoint.getServerCertificate().bytes());
-
-                        secureChannel = new ClientSecureChannel(
-                            keyPair,
-                            certificate,
-                            certificateChain,
-                            remoteCertificate,
-                            remoteCertificateChain,
-                            securityPolicy,
-                            endpoint.getSecurityMode()
-                        );
-                    }
+                    secureChannel = new ClientSecureChannel(
+                        keyPair,
+                        certificate,
+                        certificateChain,
+                        remoteCertificate,
+                        remoteCertificateChain,
+                        securityPolicy,
+                        endpoint.getSecurityMode()
+                    );
                 }
 
                 UaTcpClientAcknowledgeHandler acknowledgeHandler =
