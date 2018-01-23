@@ -164,7 +164,10 @@ public class OpcUaClient implements UaClient {
                         dictionaries.forEach(
                             dataTypeManager::registerTypeDictionary))
                     .thenApply(v -> Unit.VALUE)
-                    .exceptionally(e -> Unit.VALUE);
+                    .exceptionally(ex -> {
+                        logger.warn("SessionInitializer: DataTypeDictionary", ex);
+                        return Unit.VALUE;
+                    });
             }
         });
 
@@ -200,7 +203,10 @@ public class OpcUaClient implements UaClient {
                     });
                 })
                 .thenApply(v -> Unit.VALUE)
-                .exceptionally(ex -> Unit.VALUE);
+                .exceptionally(ex -> {
+                    logger.warn("SessionInitializer: NamespaceTable", ex);
+                    return Unit.VALUE;
+                });
         });
 
 

@@ -128,6 +128,8 @@ public class DataTypeDictionaryReader {
     }
 
     private CompletableFuture<DataTypeDictionary<?>> readDataTypeDictionary(NodeId nodeId) {
+        logger.debug("Reading DataTypeDictionary nodeId={}", nodeId);
+
         return readDataTypeDictionaryBytes(nodeId, DEFAULT_FRAGMENT_SIZE)
             .thenCompose(bs -> createDataTypeDictionary(nodeId, bs))
             .exceptionally(ex -> null);

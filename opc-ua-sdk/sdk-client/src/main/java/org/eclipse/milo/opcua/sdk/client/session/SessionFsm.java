@@ -184,27 +184,35 @@ public class SessionFsm {
     }
 
     private void notifySessionActive(OpcUaSession session) {
-        notificationQueue.submit(() ->
+        logger.debug("notifySessionActive()");
+
+        notificationQueue.submit(() -> {
+            logger.debug("notifying {} listeners...", listeners.size());
+
             listeners.forEach(listener -> {
                 try {
                     listener.onSessionActive(session);
                 } catch (Throwable t) {
                     logger.warn("Uncaught Throwable notifying listener: {}", listener, t);
                 }
-            })
-        );
+            });
+        });
     }
 
     private void notifySessionInactive(OpcUaSession session) {
-        notificationQueue.submit(() ->
+        logger.debug("notifySessionInactive()");
+
+        notificationQueue.submit(() -> {
+            logger.debug("notifying {} listeners...", listeners.size());
+
             listeners.forEach(listener -> {
                 try {
                     listener.onSessionInactive(session);
                 } catch (Throwable t) {
                     logger.warn("Uncaught Throwable notifying listener: {}", listener, t);
                 }
-            })
-        );
+            });
+        });
     }
 
     private static class FaultListener implements ServiceFaultListener {
