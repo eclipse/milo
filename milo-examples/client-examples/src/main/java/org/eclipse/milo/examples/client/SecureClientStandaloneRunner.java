@@ -50,10 +50,10 @@ public class SecureClientStandaloneRunner {
     private OpcUaClient createClient() throws Exception {
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
-        String endpointUrl = "opc.tcp://localhost:4840";
-        logger.info("ENDPOINTURL={}", endpointUrl);
+        String discoveryUrl = "opc.tcp://localhost:4840" + "/discovery";
+        logger.info("URL of discovery endpoint = {}", discoveryUrl);
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(endpointUrl).get();
+        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(discoveryUrl).get();
 
         logger.info("Available endpoints:");
         for (EndpointDescription endpointDescription : endpoints) {

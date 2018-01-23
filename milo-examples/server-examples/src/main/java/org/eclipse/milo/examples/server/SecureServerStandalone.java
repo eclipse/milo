@@ -119,7 +119,6 @@ public class SecureServerStandalone {
             .setProductUri("urn:eclipse:milo:example-server")
             .setSecurityPolicies(
                 EnumSet.of(
-                    SecurityPolicy.None,
                     SecurityPolicy.Basic128Rsa15,
                     SecurityPolicy.Basic256,
                     SecurityPolicy.Basic256Sha256))
