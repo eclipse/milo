@@ -79,8 +79,20 @@ public class ClientExampleRunner {
 
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
-            .getEndpoints(clientExample.getEndpointUrl()).get();
+        EndpointDescription[] endpoints;
+
+        try {
+            endpoints = UaTcpStackClient
+                .getEndpoints(clientExample.getEndpointUrl())
+                .get();
+        } catch (Throwable ex) {
+            // try the explicit discovery endpoint as well
+            String discoveryUrl = clientExample.getEndpointUrl() + "/discovery";
+            logger.info("Trying explicit discovery URL: {}", discoveryUrl);
+            endpoints = UaTcpStackClient
+                .getEndpoints(discoveryUrl)
+                .get();
+        }
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
@@ -136,7 +148,16 @@ public class ClientExampleRunner {
                 future.completeExceptionally(t);
             }
         } catch (Throwable t) {
+            logger.error("Error getting client: {}", t.getMessage(), t);
+
             future.completeExceptionally(t);
+
+            try {
+                Thread.sleep(1000);
+                System.exit(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         try {

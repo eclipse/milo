@@ -88,7 +88,6 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
     private ScheduledFuture renewFuture;
     private Timeout secureChannelTimeout;
-    private volatile boolean openSecureChannelRequestPending = false;
 
     private final Map<Long, UaRequestFuture> pending;
     private final LongSequence requestIdSequence;
@@ -168,10 +167,6 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (renewFuture != null) renewFuture.cancel(false);
 
-        if (openSecureChannelRequestPending) {
-            secureChannel.setChannelId(0);
-        }
-
         handshakeFuture.completeExceptionally(
             new UaException(StatusCodes.Bad_ConnectionClosed, "connection closed"));
 
@@ -198,8 +193,6 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     }
 
     private void sendOpenSecureChannelRequest(ChannelHandlerContext ctx, SecurityTokenRequestType requestType) {
-        openSecureChannelRequestPending = true;
-
         ByteString clientNonce = secureChannel.isSymmetricSigningEnabled() ?
             NonceUtil.generateNonce(secureChannel.getSecurityPolicy()) :
             ByteString.NULL_VALUE;
@@ -449,8 +442,6 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     }
 
     private void onOpenSecureChannel(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
-        openSecureChannelRequestPending = false;
-
         if (secureChannelTimeout != null) {
             if (secureChannelTimeout.cancel()) {
                 logger.debug("OpenSecureChannel timeout canceled");
@@ -716,13 +707,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
             ErrorMessage errorMessage = TcpMessageDecoder.decodeError(buffer);
             StatusCode statusCode = errorMessage.getError();
 
-            logger.error(
-                "[remote={}] openSecureChannelRequestPending={}, errorMessage={}",
-                ctx.channel().remoteAddress(), openSecureChannelRequestPending, errorMessage);
-
-            if (openSecureChannelRequestPending) {
-                secureChannel.setChannelId(0);
-            }
+            logger.error("[remote={}] errorMessage={}", ctx.channel().remoteAddress(), errorMessage);
 
             handshakeFuture.completeExceptionally(new UaException(statusCode, errorMessage.getReason()));
         } catch (UaException e) {

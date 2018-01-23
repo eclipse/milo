@@ -156,11 +156,17 @@ public class SocketServers {
             Stream<String> discoveryUrls = server.getDiscoveryUrls().stream();
 
             Stream.concat(endpointUrls, discoveryUrls).forEach(url -> {
-                String key = pathOrUrl(url);
+                String serverKey = pathOrUrl(url);
 
-                if (!boundServers.containsKey(key)) {
-                    boundServers.put(key, server);
-                    logger.debug("Added server at path: \"{}\"", key);
+                String serverName = serverKey.startsWith("/") ?
+                    serverKey.substring(1) :
+                    serverKey;
+
+                if (!boundServers.containsKey(serverKey) &&
+                    serverName.equals(server.getConfig().getServerName())) {
+
+                    boundServers.put(serverKey, server);
+                    logger.debug("Added server at path: \"{}\"", serverName);
                 }
             });
         }

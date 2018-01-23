@@ -143,7 +143,7 @@ public final class DataValue {
     }
 
     /**
-     * Derive a new {@link DataValue} from a given {@link DataValue}.
+     * Derive a new {@link DataValue} from a given {@link DataValue} with a current server timestamp, if applicable.
      *
      * @param from       the {@link DataValue} to derive from.
      * @param timestamps the timestamps to return in the derived value.
@@ -157,12 +157,12 @@ public final class DataValue {
             from.value,
             from.status,
             includeSource ? from.sourceTime : null,
-            includeServer ? from.serverTime : null
+            includeServer ? new DateTime() : null
         );
     }
 
     /**
-     * Derive a new {@link DataValue} from a given {@link DataValue}.
+     * Derive a new {@link DataValue} from a given {@link DataValue} with a current server timestamp, if applicable.
      * <p>
      * The value is assumed to be for a non-value Node attribute, and therefore the source timestamp is not returned.
      *
@@ -177,7 +177,7 @@ public final class DataValue {
             from.value,
             from.status,
             null,
-            includeServer ? from.serverTime : null
+            includeServer ? new DateTime() : null
         );
     }
 
