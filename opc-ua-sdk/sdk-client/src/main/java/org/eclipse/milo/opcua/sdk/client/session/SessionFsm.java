@@ -247,7 +247,7 @@ public class SessionFsm {
             StatusCode serviceResult = serviceFault.getResponseHeader().getServiceResult();
 
             if (SESSION_ERROR.or(SECURE_CHANNEL_ERROR).test(serviceResult)) {
-                logger.warn("ServiceFault: {}", serviceResult);
+                logger.debug("ServiceFault: {}", serviceResult);
 
                 fsm.fireEvent(new ServiceFaultEvent(serviceResult));
             }
