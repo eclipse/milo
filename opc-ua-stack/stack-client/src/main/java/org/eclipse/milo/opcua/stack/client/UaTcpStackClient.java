@@ -361,8 +361,8 @@ public class UaTcpStackClient implements UaStackClient {
                 Timeout timeout = timeouts.remove(requestHandle);
                 if (timeout != null) timeout.cancel();
             } else {
-                logger.warn("Received {} for unknown requestHandle: {}",
-                    response.getClass().getSimpleName(), requestHandle);
+                logger.warn("Received unmatched {} with requestHandle={}, timestamp={}",
+                    response.getClass().getSimpleName(), requestHandle, response.getResponseHeader().getTimestamp());
             }
         });
     }
