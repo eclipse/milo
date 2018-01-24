@@ -216,14 +216,16 @@ public class UaTcpStackClient implements UaStackClient {
                 if (cause instanceof ClosedChannelException) {
                     logger.debug("Channel closed; retrying...");
 
-                    sendRequest(request).whenComplete((r, ex) -> {
-                        if (r != null) {
-                            T t = (T) r;
-                            future.complete(t);
-                        } else {
-                            future.completeExceptionally(ex);
-                        }
-                    });
+                    getExecutorService().execute(() ->
+                        sendRequest(request).whenComplete((r, ex) -> {
+                            if (r != null) {
+                                T t = (T) r;
+                                future.complete(t);
+                            } else {
+                                future.completeExceptionally(ex);
+                            }
+                        })
+                    );
                 } else {
                     UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
