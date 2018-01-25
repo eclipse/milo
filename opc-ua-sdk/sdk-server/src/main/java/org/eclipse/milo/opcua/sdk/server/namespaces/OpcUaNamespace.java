@@ -130,7 +130,8 @@ public class OpcUaNamespace implements Namespace {
                     new AttributeContext(context),
                     id.getAttributeId(),
                     timestamps,
-                    id.getIndexRange()
+                    id.getIndexRange(),
+                    id.getDataEncoding()
                 );
             } else {
                 value = new DataValue(new StatusCode(StatusCodes.Bad_NodeIdUnknown));

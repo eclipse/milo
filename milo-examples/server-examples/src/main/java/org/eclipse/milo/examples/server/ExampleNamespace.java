@@ -737,7 +737,8 @@ public class ExampleNamespace implements Namespace {
                     new AttributeContext(context),
                     readValueId.getAttributeId(),
                     timestamps,
-                    readValueId.getIndexRange()
+                    readValueId.getIndexRange(),
+                    readValueId.getDataEncoding()
                 );
 
                 results.add(value);
