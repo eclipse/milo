@@ -273,11 +273,11 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                                     request.getRequestType(), secureChannelId);
 
                                 installSecurityToken(ctx, request, requestId);
-                            } catch (UaSerializationException e) {
-                                logger.error("Error decoding OpenSecureChannelRequest: {}", e.getStatusCode(), e);
-                                ctx.close();
                             } catch (UaException e) {
                                 logger.error("Error installing security token: {}", e.getStatusCode(), e);
+                                ctx.close();
+                            } catch (Throwable t) {
+                                logger.error("Error decoding OpenSecureChannelRequest", t);
                                 ctx.close();
                             } finally {
                                 message.release();
