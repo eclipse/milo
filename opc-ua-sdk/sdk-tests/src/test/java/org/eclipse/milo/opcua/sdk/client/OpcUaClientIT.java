@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -102,7 +103,7 @@ public class OpcUaClientIT {
     public void startClientAndServer() throws Exception {
         logger.info("startClientAndServer()");
 
-        startServer();
+        startServer(ThreadLocalRandom.current().nextInt(1025, 65536));
         startClient();
     }
 
@@ -115,8 +116,10 @@ public class OpcUaClientIT {
     }
 
     private void startClient() throws Exception {
+        int port = server.getConfig().getBindPort();
+
         EndpointDescription[] endpoints = UaTcpStackClient
-            .getEndpoints("opc.tcp://localhost:12686/test-server").get();
+            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
@@ -137,7 +140,7 @@ public class OpcUaClientIT {
         client.connect().get();
     }
 
-    private void startServer() throws Exception {
+    private void startServer(int port) throws Exception {
         UsernameIdentityValidator usernameValidator = new UsernameIdentityValidator(
             true, // allow anonymous access
             challenge -> {
@@ -183,7 +186,7 @@ public class OpcUaClientIT {
             .setApplicationUri("urn:eclipse:milo:examples:server")
             .setBindAddresses(newArrayList("localhost"))
             .setEndpointAddresses(newArrayList("localhost"))
-            .setBindPort(12686)
+            .setBindPort(port)
             .setCertificateManager(certificateManager)
             .setCertificateValidator(certificateValidator)
             .setSecurityPolicies(
@@ -430,7 +433,10 @@ public class OpcUaClientIT {
     public void testUsernamePassword() throws Exception {
         logger.info("testUsernamePassword()");
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+        int port = server.getConfig().getBindPort();
+
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
@@ -460,7 +466,10 @@ public class OpcUaClientIT {
     public void testUsernamePassword_MultiBlock() throws Exception {
         logger.info("testUsernamePassword_MultiBlock()");
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+        int port = server.getConfig().getBindPort();
+
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
@@ -493,7 +502,10 @@ public class OpcUaClientIT {
     public void testUsernamePassword_WithSecurity() throws Exception {
         logger.info("testUsernamePassword_WithSecurity()");
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+        int port = server.getConfig().getBindPort();
+
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.Aes256_Sha256_RsaPss.getSecurityPolicyUri()))
@@ -529,8 +541,10 @@ public class OpcUaClientIT {
     private void testX509IdentityProvider(SecurityPolicy securityPolicy) throws Exception {
         logger.info("testX509IdentityProvider({})", securityPolicy);
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(
-            "opc.tcp://localhost:12686/test-server").get();
+        int port = server.getConfig().getBindPort();
+
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
@@ -565,7 +579,10 @@ public class OpcUaClientIT {
     public void testConnectAndDisconnect() throws Exception {
         logger.info("testConnectAndDisconnect()");
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+        int port = server.getConfig().getBindPort();
+
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
@@ -628,7 +645,10 @@ public class OpcUaClientIT {
     public void testReactivate() throws Exception {
         logger.info("testReactivate()");
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12686/test-server").get();
+        int port = server.getConfig().getBindPort();
+
+        EndpointDescription[] endpoints = UaTcpStackClient
+            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
@@ -732,7 +752,7 @@ public class OpcUaClientIT {
         createItemAndWait(notificationListener, notificationLock);
 
         stopServer();
-        startServer();
+        startServer(server.getConfig().getBindPort());
 
         future.get(15, TimeUnit.SECONDS);
     }
