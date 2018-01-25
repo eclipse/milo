@@ -75,7 +75,7 @@ public class ExampleServer {
 
         DefaultCertificateManager certificateManager = new DefaultCertificateManager(
             loader.getServerKeyPair(),
-            loader.getServerCertificate()
+            loader.getServerCertificateChain()
         );
 
         File pkiDir = securityTempDir.toPath().resolve("pki").toFile();
