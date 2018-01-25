@@ -73,9 +73,6 @@ public class AttributeReader {
                 if (attributeId != AttributeId.Value) {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
                 }
-                if (!dataEncoding.equals(ENCODING_DEFAULT_BINARY)) {
-                    throw new UaException(StatusCodes.Bad_DataEncodingUnsupported);
-                }
 
                 NodeId dataTypeId;
                 if (node instanceof VariableNode) {
@@ -90,6 +87,10 @@ public class AttributeReader {
 
                 if (!structured) {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
+                }
+
+                if (!dataEncoding.equals(ENCODING_DEFAULT_BINARY)) {
+                    throw new UaException(StatusCodes.Bad_DataEncodingUnsupported);
                 }
             }
 
