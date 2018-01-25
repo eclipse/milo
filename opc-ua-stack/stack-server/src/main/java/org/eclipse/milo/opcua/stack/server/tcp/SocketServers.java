@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.server.tcp;
 
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +36,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.server.handlers.UaTcpServerHelloHandler;
@@ -136,19 +136,9 @@ public class SocketServers {
         }
 
         private UaTcpStackServer getServer(String endpointUrl) {
-            String path = pathOrUrl(endpointUrl);
+            String path = EndpointUtil.getPath(endpointUrl);
 
             return boundServers.get(path);
-        }
-
-        private String pathOrUrl(String endpointUrl) {
-            try {
-                URI uri = new URI(endpointUrl).parseServerAuthority();
-                return uri.getPath();
-            } catch (Throwable e) {
-                logger.warn("Endpoint URL '{}' is not a valid URI: {}", e.getMessage(), e);
-                return endpointUrl;
-            }
         }
 
         private void addServer(UaTcpStackServer server) {
@@ -156,7 +146,7 @@ public class SocketServers {
             Stream<String> discoveryUrls = server.getDiscoveryUrls().stream();
 
             Stream.concat(endpointUrls, discoveryUrls).forEach(url -> {
-                String serverKey = pathOrUrl(url);
+                String serverKey = EndpointUtil.getPath(url);
 
                 String serverName = serverKey.startsWith("/") ?
                     serverKey.substring(1) :
@@ -176,7 +166,7 @@ public class SocketServers {
             Stream<String> discoveryUrls = server.getDiscoveryUrls().stream();
 
             Stream.concat(endpointUrls, discoveryUrls).forEach(url -> {
-                String key = pathOrUrl(url);
+                String key = EndpointUtil.getPath(url);
 
                 if (boundServers.get(key) == server) {
                     boundServers.remove(key);
