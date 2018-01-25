@@ -106,7 +106,7 @@ public final class NumericRange {
 
         if (!array.getClass().isArray()) {
             if (!(array instanceof String) && !(array instanceof ByteString)) {
-                throw new UaException(StatusCodes.Bad_IndexRangeInvalid);
+                throw new UaException(StatusCodes.Bad_IndexRangeNoData);
             }
         }
 
