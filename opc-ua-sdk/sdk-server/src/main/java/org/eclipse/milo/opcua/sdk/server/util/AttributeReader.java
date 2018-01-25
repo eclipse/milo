@@ -18,12 +18,15 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -33,11 +36,16 @@ import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccess
 
 public class AttributeReader {
 
-    public static DataValue readAttribute(AttributeContext context,
-                                          ServerNode node,
-                                          AttributeId attributeId,
-                                          @Nullable TimestampsToReturn timestamps,
-                                          @Nullable String indexRange) {
+    private static QualifiedName ENCODING_DEFAULT_BINARY = new QualifiedName(0, "DefaultBinary");
+    private static QualifiedName ENCODING_DEFAULT_XML = new QualifiedName(0, "DefaultXML");
+
+    public static DataValue readAttribute(
+        AttributeContext context,
+        ServerNode node,
+        AttributeId attributeId,
+        @Nullable TimestampsToReturn timestamps,
+        @Nullable String indexRange,
+        @Nullable QualifiedName dataEncoding) {
 
         try {
             AttributeContext internalContext = new AttributeContext(context.getServer());
@@ -53,6 +61,20 @@ public class AttributeReader {
                 Set<AccessLevel> userAccessLevels = getUserAccessLevels(node, context);
                 if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
                     throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                }
+            }
+
+            if (dataEncoding != null && dataEncoding.isNotNull()) {
+                if (attributeId != AttributeId.Value) {
+                    throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
+                }
+                if (!dataEncoding.equals(ENCODING_DEFAULT_BINARY)) {
+                    throw new UaException(StatusCodes.Bad_DataEncodingUnsupported);
+                }
+                if (node instanceof VariableNode) {
+                    NodeId dataTypeId = ((VariableNode) node).getDataType();
+
+                    // TODO Bad_DataEncodingInvalid unless this DataType is a subtype of Structure
                 }
             }
 
