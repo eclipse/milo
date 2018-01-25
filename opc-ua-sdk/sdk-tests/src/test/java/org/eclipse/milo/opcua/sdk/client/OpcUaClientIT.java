@@ -754,7 +754,7 @@ public class OpcUaClientIT {
         stopServer();
         startServer(server.getConfig().getBindPort());
 
-        future.get(15, TimeUnit.SECONDS);
+        future.get(30, TimeUnit.SECONDS);
     }
 
     private void createItemAndWait(
