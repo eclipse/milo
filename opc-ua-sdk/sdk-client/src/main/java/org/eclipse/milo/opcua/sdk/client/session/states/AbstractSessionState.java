@@ -213,12 +213,13 @@ abstract class AbstractSessionState implements SessionState {
         CompletableFuture<OpcUaSession> sessionFuture) {
 
         OpcUaClient client = fsm.getClient();
+        UaTcpStackClient stackClient = client.getStackClient();
 
-        CompletableFuture<ClientSecureChannel> cf = client.getStackClient().getChannelFuture();
+        CompletableFuture<ClientSecureChannel> cf = stackClient.getChannelFuture();
 
         CompletableFuture<ActivateSessionResponse> af = cf.thenCompose(secureChannel -> {
             try {
-                EndpointDescription endpoint = client.getStackClient().getEndpoint().orElseThrow(
+                EndpointDescription endpoint = stackClient.getEndpoint().orElseThrow(
                     () -> new UaException(StatusCodes.Bad_InternalError,
                         "cannot create session with no endpoint configured")
                 );
@@ -245,13 +246,13 @@ abstract class AbstractSessionState implements SessionState {
                     "Sending ActivateSessionRequest, secureChannelId={}, channel={}...",
                     secureChannel.getChannelId(), secureChannel.getChannel());
 
-                return client.getStackClient().sendRequest(request);
+                return stackClient.sendRequest(request);
             } catch (Exception e) {
                 return failedFuture(e);
             }
         });
 
-        af.whenComplete((asr, ex) -> {
+        af.whenCompleteAsync((asr, ex) -> {
             if (asr != null) {
                 OpcUaSession session = new OpcUaSession(
                     csr.getAuthenticationToken(),
@@ -271,7 +272,7 @@ abstract class AbstractSessionState implements SessionState {
             } else {
                 fsm.fireEvent(new ActivateSessionFailureEvent(ex, sessionFuture));
             }
-        });
+        }, stackClient.getExecutorService());
     }
     // </editor-fold>
 
@@ -531,11 +532,13 @@ abstract class AbstractSessionState implements SessionState {
         if (initializers.isEmpty()) {
             fsm.fireEvent(new InitializeSuccessEvent(session, sessionFuture));
         } else {
+            UaTcpStackClient stackClient = fsm.getClient().getStackClient();
+
             CompletableFuture[] futures = initializers.stream()
-                .map(i -> i.initialize(fsm.getClient().getStackClient(), session))
+                .map(i -> i.initialize(stackClient, session))
                 .toArray(CompletableFuture[]::new);
 
-            CompletableFuture.allOf(futures).whenComplete((v, ex) -> {
+            CompletableFuture.allOf(futures).whenCompleteAsync((v, ex) -> {
                 if (ex != null) {
                     LOGGER.warn("Initialization failed: {}", session, ex);
                     fsm.fireEvent(new InitializeFailureEvent(ex, session, sessionFuture));
@@ -543,7 +546,7 @@ abstract class AbstractSessionState implements SessionState {
                     LOGGER.debug("Initialization succeeded: {}", session);
                     fsm.fireEvent(new InitializeSuccessEvent(session, sessionFuture));
                 }
-            });
+            }, stackClient.getExecutorService());
         }
     }
     // </editor-fold>

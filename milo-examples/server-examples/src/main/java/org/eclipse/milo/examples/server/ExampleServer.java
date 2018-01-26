@@ -17,6 +17,7 @@ import java.io.File;
 import java.security.Security;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
@@ -33,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,7 @@ public class ExampleServer {
 
         DefaultCertificateManager certificateManager = new DefaultCertificateManager(
             loader.getServerKeyPair(),
-            loader.getServerCertificate()
+            loader.getServerCertificateChain()
         );
 
         File pkiDir = securityTempDir.toPath().resolve("pki").toFile();
@@ -104,9 +106,18 @@ public class ExampleServer {
         endpointAddresses.add(HostnameUtil.getHostname());
         endpointAddresses.addAll(HostnameUtil.getHostnames("0.0.0.0"));
 
+        // The configured application URI must match the one in the certificate(s)
+        String applicationUri = certificateManager.getCertificates().stream()
+            .findFirst()
+            .map(certificate ->
+                CertificateUtil.getSubjectAltNameField(certificate, CertificateUtil.SUBJECT_ALT_NAME_URI)
+                    .map(Object::toString)
+                    .orElseThrow(() -> new RuntimeException("certificate is missing the application URI")))
+            .orElse("urn:eclipse:milo:examples:server:" + UUID.randomUUID());
+
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
-            .setApplicationUri("urn:eclipse:milo:examples:server")
-            .setApplicationName(LocalizedText.english("Eclipse Milo OPC-UA Example Server"))
+            .setApplicationUri(applicationUri)
+            .setApplicationName(LocalizedText.english("Eclipse Milo OPC UA Example Server"))
             .setBindPort(12686)
             .setBindAddresses(bindAddresses)
             .setEndpointAddresses(endpointAddresses)

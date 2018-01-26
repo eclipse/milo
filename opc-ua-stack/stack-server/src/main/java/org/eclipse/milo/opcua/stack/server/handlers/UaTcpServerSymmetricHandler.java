@@ -25,6 +25,7 @@ import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.UaExceptionStatus;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
@@ -282,14 +283,18 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
                                         server,
                                         secureChannel
                                     ));
-                                } catch (UaSerializationException e) {
-                                    logger.error("Error decoding request: {}", e.getStatusCode(), e);
+                                } catch (Throwable t) {
+                                    logger.error("Error decoding UaRequestMessage", t);
+
+                                    StatusCode statusCode = UaExceptionStatus.extract(t)
+                                        .map(UaExceptionStatus::getStatusCode)
+                                        .orElse(StatusCode.BAD);
 
                                     ServiceFault serviceFault = new ServiceFault(
                                         new ResponseHeader(
                                             DateTime.now(),
                                             uint(0),
-                                            e.getStatusCode(),
+                                            statusCode,
                                             null, null, null
                                         )
                                     );

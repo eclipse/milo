@@ -216,14 +216,16 @@ public class UaTcpStackClient implements UaStackClient {
                 if (cause instanceof ClosedChannelException) {
                     logger.debug("Channel closed; retrying...");
 
-                    sendRequest(request).whenComplete((r, ex) -> {
-                        if (r != null) {
-                            T t = (T) r;
-                            future.complete(t);
-                        } else {
-                            future.completeExceptionally(ex);
-                        }
-                    });
+                    getExecutorService().execute(() ->
+                        sendRequest(request).whenComplete((r, ex) -> {
+                            if (r != null) {
+                                T t = (T) r;
+                                future.complete(t);
+                            } else {
+                                future.completeExceptionally(ex);
+                            }
+                        })
+                    );
                 } else {
                     UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
@@ -359,8 +361,8 @@ public class UaTcpStackClient implements UaStackClient {
                 Timeout timeout = timeouts.remove(requestHandle);
                 if (timeout != null) timeout.cancel();
             } else {
-                logger.warn("Received {} for unknown requestHandle: {}",
-                    response.getClass().getSimpleName(), requestHandle);
+                logger.warn("Received unmatched {} with requestHandle={}, timestamp={}",
+                    response.getClass().getSimpleName(), requestHandle, response.getResponseHeader().getTimestamp());
             }
         });
     }

@@ -533,8 +533,10 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                                 handshakeFuture.completeExceptionally(new UaServiceFaultException(serviceFault));
                                 ctx.close();
                             }
-                        } catch (UaSerializationException e) {
-                            handshakeFuture.completeExceptionally(e);
+                        } catch (Throwable t) {
+                            logger.error("Error decoding OpenSecureChannelResponse", t);
+
+                            handshakeFuture.completeExceptionally(t);
                             ctx.close();
                         } finally {
                             message.release();
@@ -666,9 +668,11 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                             } else {
                                 logger.warn("No UaRequestFuture for requestId={}", requestId);
                             }
-                        } catch (UaSerializationException e) {
+                        } catch (Throwable t) {
+                            logger.error("Error decoding UaResponseMessage", t);
+
                             if (request != null) {
-                                request.getFuture().completeExceptionally(e);
+                                request.getFuture().completeExceptionally(t);
                             }
                         } finally {
                             message.release();

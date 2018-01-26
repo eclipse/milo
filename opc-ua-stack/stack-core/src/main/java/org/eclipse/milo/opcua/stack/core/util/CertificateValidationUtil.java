@@ -178,21 +178,34 @@ public class CertificateValidationUtil {
     }
 
     /**
-     * Validate that the hostname used in the endpoint URL matches either the SubjectAltName DNSName or IPAddress in
-     * the given certificate.
+     * Validate that one of {@code hostnames} matches a SubjectAltName DNSName or IPAddress entry in the certificate.
      *
      * @param certificate the certificate to validate against.
-     * @param hostname    the hostname used in the endpoint URL.
+     * @param hostnames   the hostnames to look for.
      * @throws UaException if there is no matching DNSName or IPAddress entry.
      */
-    public static void validateHostnameOrIpAddress(X509Certificate certificate, String hostname) throws UaException {
-        boolean dnsNameMatches =
-            validateSubjectAltNameField(certificate, SUBJECT_ALT_NAME_DNS_NAME, hostname::equals);
+    public static void validateHostnameOrIpAddress(
+        X509Certificate certificate, String... hostnames) throws UaException {
 
-        boolean ipAddressMatches =
-            validateSubjectAltNameField(certificate, SUBJECT_ALT_NAME_IP_ADDRESS, hostname::equals);
+        boolean dnsNameMatch = Arrays.stream(hostnames).anyMatch(n -> {
+            try {
+                return validateSubjectAltNameField(
+                    certificate, SUBJECT_ALT_NAME_DNS_NAME, n::equals);
+            } catch (Throwable t) {
+                return false;
+            }
+        });
 
-        if (!(dnsNameMatches || ipAddressMatches)) {
+        boolean ipAddressMatch = Arrays.stream(hostnames).anyMatch(n -> {
+            try {
+                return validateSubjectAltNameField(
+                    certificate, SUBJECT_ALT_NAME_IP_ADDRESS, n::equals);
+            } catch (Throwable t) {
+                return false;
+            }
+        });
+
+        if (!(dnsNameMatch || ipAddressMatch)) {
             throw new UaException(StatusCodes.Bad_CertificateHostNameInvalid);
         }
     }
