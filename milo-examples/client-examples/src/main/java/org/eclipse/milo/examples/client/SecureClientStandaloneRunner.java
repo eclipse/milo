@@ -75,13 +75,22 @@ public class SecureClientStandaloneRunner {
         return new OpcUaClient(config);
     }
 
-    private EndpointDescription chooseEndpoint(EndpointDescription[] endpoints, SecurityPolicy securityPolicy,
-                                               MessageSecurityMode messageSecurityMode) {
+    private EndpointDescription chooseEndpoint(EndpointDescription[] endpoints, SecurityPolicy minSecurityPolicy,
+                                               MessageSecurityMode minMessageSecurityMode) {
         EndpointDescription bestFound = null;
         for (EndpointDescription endpoint : endpoints) {
-            if (securityPolicy.getSecurityPolicyUri().equals(endpoint.getSecurityPolicyUri())) {
-                if (messageSecurityMode.equals(MessageSecurityMode.SignAndEncrypt)) {
-                    bestFound = endpoint;
+            if (minSecurityPolicy.compareTo(SecurityPolicy.valueOf(endpoint.getSecurityPolicyUri())) < 0) {
+                if (minMessageSecurityMode.compareTo(endpoint.getSecurityMode()) < 0) {
+                    //Found endpoint which fulfills minimum requirements
+                    if (bestFound == null) {
+                        bestFound = endpoint;
+                    } else {
+                        if (SecurityPolicy.valueOf(bestFound.getSecurityPolicyUri()).compareTo(
+                                SecurityPolicy.valueOf(endpoint.getSecurityPolicyUri())) < 0) {
+                            //Found endpoint that has higher security than previously found one
+                            bestFound = endpoint;
+                        }
+                    }
                 }
             }
         }
