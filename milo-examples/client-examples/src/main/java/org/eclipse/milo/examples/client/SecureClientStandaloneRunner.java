@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
@@ -79,8 +80,14 @@ public class SecureClientStandaloneRunner {
                                                MessageSecurityMode minMessageSecurityMode) {
         EndpointDescription bestFound = null;
         for (EndpointDescription endpoint : endpoints) {
-            if (minSecurityPolicy.compareTo(SecurityPolicy.valueOf(endpoint.getSecurityPolicyUri())) < 0) {
-                if (minMessageSecurityMode.compareTo(endpoint.getSecurityMode()) < 0) {
+            SecurityPolicy endpointSecurityPolicy;
+            try {
+                endpointSecurityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+            } catch (UaException e) {
+                continue;
+            }
+            if (minSecurityPolicy.compareTo(endpointSecurityPolicy) <= 0) {
+                if (minMessageSecurityMode.compareTo(endpoint.getSecurityMode()) <= 0) {
                     //Found endpoint which fulfills minimum requirements
                     if (bestFound == null) {
                         bestFound = endpoint;
