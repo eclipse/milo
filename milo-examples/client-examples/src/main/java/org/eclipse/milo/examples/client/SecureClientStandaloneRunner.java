@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -48,8 +47,6 @@ public class SecureClientStandaloneRunner {
     }
 
     private OpcUaClient createClient() throws Exception {
-        SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
-
         String discoveryUrl = "opc.tcp://localhost:4840" + "/discovery";
         logger.info("URL of discovery endpoint = {}", discoveryUrl);
 
@@ -59,12 +56,10 @@ public class SecureClientStandaloneRunner {
         for (EndpointDescription endpointDescription : endpoints) {
             logger.info(endpointDescription.getEndpointUrl() + " " + endpointDescription.getSecurityPolicyUri());
         }
-        EndpointDescription endpoint = Arrays.stream(endpoints)
-            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
-            .filter(e -> e.getSecurityMode().equals(MessageSecurityMode.SignAndEncrypt))
-            .findFirst().orElseThrow(() -> new Exception(("no desired endpoints returned")));
+        EndpointDescription endpoint = chooseEndpoint(endpoints, clientExample.getSecurityPolicy(),
+                MessageSecurityMode.SignAndEncrypt);
 
-        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), securityPolicy,
+        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), endpoint.getSecurityPolicyUri(),
                 endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
@@ -80,12 +75,39 @@ public class SecureClientStandaloneRunner {
         return new OpcUaClient(config);
     }
 
+    private EndpointDescription chooseEndpoint(EndpointDescription[] endpoints, SecurityPolicy minSecurityPolicy,
+                                               MessageSecurityMode minMessageSecurityMode) {
+        EndpointDescription bestFound = null;
+        for (EndpointDescription endpoint : endpoints) {
+            if (minSecurityPolicy.compareTo(SecurityPolicy.valueOf(endpoint.getSecurityPolicyUri())) < 0) {
+                if (minMessageSecurityMode.compareTo(endpoint.getSecurityMode()) < 0) {
+                    //Found endpoint which fulfills minimum requirements
+                    if (bestFound == null) {
+                        bestFound = endpoint;
+                    } else {
+                        if (SecurityPolicy.valueOf(bestFound.getSecurityPolicyUri()).compareTo(
+                                SecurityPolicy.valueOf(endpoint.getSecurityPolicyUri())) < 0) {
+                            //Found endpoint that has higher security than previously found one
+                            bestFound = endpoint;
+                        }
+                    }
+                }
+            }
+        }
+        if (bestFound == null) {
+            throw new RuntimeException("no desired endpoints returned");
+        } else {
+            return bestFound;
+        }
+    }
+
     public void run() {
         future.whenComplete((client, ex) -> {
             if (client != null) {
                 try {
                     client.disconnect().get();
                     Stack.releaseSharedResources();
+                    System.exit(0);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);
                 }

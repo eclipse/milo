@@ -124,7 +124,6 @@ public class SecureServerStandalone {
                     SecurityPolicy.Basic256Sha256))
             .setUserTokenPolicies(
                 ImmutableList.of(
-                    USER_TOKEN_POLICY_ANONYMOUS,
                     USER_TOKEN_POLICY_USERNAME,
                     USER_TOKEN_POLICY_X509))
             .build();

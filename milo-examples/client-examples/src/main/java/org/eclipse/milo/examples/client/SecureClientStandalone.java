@@ -117,6 +117,7 @@ public class SecureClientStandalone implements ClientExample {
             DataValue v0 = values.get(0);
             DataValue v1 = values.get(1);
 
+            logger.info("Succeeded in making a connection on a secure channel.");
             logger.info("State={}", ServerState.from((Integer) v0.getValue().getValue()));
             logger.info("CurrentTime={}", v1.getValue().getValue());
 
