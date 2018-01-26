@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -48,8 +47,6 @@ public class SecureClientStandaloneRunner {
     }
 
     private OpcUaClient createClient() throws Exception {
-        SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
-
         String discoveryUrl = System.getenv("ENDPOINT_URL") + "/discovery";
         logger.info("URL of discovery endpoint = {}", discoveryUrl);
 
@@ -59,12 +56,10 @@ public class SecureClientStandaloneRunner {
         for (EndpointDescription endpointDescription : endpoints) {
             logger.info(endpointDescription.getEndpointUrl() + " " + endpointDescription.getSecurityPolicyUri());
         }
-        EndpointDescription endpoint = Arrays.stream(endpoints)
-            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
-            .filter(e -> e.getSecurityMode().equals(MessageSecurityMode.SignAndEncrypt))
-            .findFirst().orElseThrow(() -> new Exception(("no desired endpoints returned")));
+        EndpointDescription endpoint = chooseEndpoint(endpoints, clientExample.getSecurityPolicy(),
+                MessageSecurityMode.SignAndEncrypt);
 
-        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), securityPolicy,
+        logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), endpoint.getSecurityPolicyUri(),
                 endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
@@ -78,6 +73,23 @@ public class SecureClientStandaloneRunner {
             .build();
 
         return new OpcUaClient(config);
+    }
+
+    private EndpointDescription chooseEndpoint(EndpointDescription[] endpoints, SecurityPolicy securityPolicy,
+                                               MessageSecurityMode messageSecurityMode) {
+        EndpointDescription bestFound = null;
+        for (EndpointDescription endpoint : endpoints) {
+            if (securityPolicy.getSecurityPolicyUri().equals(endpoint.getSecurityPolicyUri())) {
+                if (messageSecurityMode.equals(MessageSecurityMode.SignAndEncrypt)) {
+                    bestFound = endpoint;
+                }
+            }
+        }
+        if (bestFound == null) {
+            throw new RuntimeException("no desired endpoints returned");
+        } else {
+            return bestFound;
+        }
     }
 
     public void run() {
