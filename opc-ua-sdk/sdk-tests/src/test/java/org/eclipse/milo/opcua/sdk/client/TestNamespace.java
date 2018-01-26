@@ -146,7 +146,8 @@ public class TestNamespace implements Namespace {
                     new AttributeContext(context),
                     id.getAttributeId(),
                     timestamps,
-                    id.getIndexRange()
+                    id.getIndexRange(),
+                    id.getDataEncoding()
                 );
 
                 if (logger.isTraceEnabled()) {

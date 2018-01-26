@@ -22,6 +22,8 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
@@ -40,6 +42,7 @@ class KeyStoreLoader {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private X509Certificate[] serverCertificateChain;
     private X509Certificate serverCertificate;
     private KeyPair serverKeyPair;
 
@@ -55,6 +58,8 @@ class KeyStoreLoader {
 
             KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
+            String applicationUri = "urn:eclipse:milo:examples:server:" + UUID.randomUUID();
+
             SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
                 .setCommonName("Eclipse Milo Example Server")
                 .setOrganization("digitalpetri")
@@ -62,7 +67,7 @@ class KeyStoreLoader {
                 .setLocalityName("Folsom")
                 .setStateName("CA")
                 .setCountryCode("US")
-                .setApplicationUri("urn:eclipse:milo:examples:server")
+                .setApplicationUri(applicationUri)
                 .addDnsName("localhost")
                 .addIpAddress("127.0.0.1");
 
@@ -86,6 +91,11 @@ class KeyStoreLoader {
         Key serverPrivateKey = keyStore.getKey(SERVER_ALIAS, PASSWORD);
         if (serverPrivateKey instanceof PrivateKey) {
             serverCertificate = (X509Certificate) keyStore.getCertificate(SERVER_ALIAS);
+
+            serverCertificateChain = Arrays.stream(keyStore.getCertificateChain(SERVER_ALIAS))
+                .map(X509Certificate.class::cast)
+                .toArray(X509Certificate[]::new);
+
             PublicKey serverPublicKey = serverCertificate.getPublicKey();
             serverKeyPair = new KeyPair(serverPublicKey, (PrivateKey) serverPrivateKey);
         }
@@ -95,6 +105,10 @@ class KeyStoreLoader {
 
     X509Certificate getServerCertificate() {
         return serverCertificate;
+    }
+
+    public X509Certificate[] getServerCertificateChain() {
+        return serverCertificateChain;
     }
 
     KeyPair getServerKeyPair() {

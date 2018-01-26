@@ -132,7 +132,7 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
 
     @Override
     protected Object memberTypeToOpcUaScalar(JsonElement member, String typeName) {
-        if (member.isJsonNull()) {
+        if (member == null || member.isJsonNull()) {
             return null;
         } else if (member.isJsonArray()) {
             JsonArray array = member.getAsJsonArray();

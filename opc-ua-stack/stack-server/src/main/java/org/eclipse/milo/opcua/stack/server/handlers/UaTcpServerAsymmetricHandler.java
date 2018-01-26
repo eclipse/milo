@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.server.handlers;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.ByteOrder;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
@@ -57,6 +56,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelReque
 import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,8 +145,8 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
                 EndpointDescription endpointDescription = Arrays.stream(server.getEndpointDescriptions())
                     .filter(e -> {
-                        String s1 = pathOrUrl(endpointUrl);
-                        String s2 = pathOrUrl(e.getEndpointUrl());
+                        String s1 = EndpointUtil.getPath(endpointUrl);
+                        String s2 = EndpointUtil.getPath(e.getEndpointUrl());
                         boolean uriMatch = s1.equals(s2);
                         boolean policyMatch = e.getSecurityPolicyUri().equals(securityPolicyUri);
                         return uriMatch && policyMatch;
@@ -273,11 +273,11 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                                     request.getRequestType(), secureChannelId);
 
                                 installSecurityToken(ctx, request, requestId);
-                            } catch (UaSerializationException e) {
-                                logger.error("Error decoding OpenSecureChannelRequest: {}", e.getStatusCode(), e);
-                                ctx.close();
                             } catch (UaException e) {
                                 logger.error("Error installing security token: {}", e.getStatusCode(), e);
+                                ctx.close();
+                            } catch (Throwable t) {
+                                logger.error("Error decoding OpenSecureChannelRequest", t);
                                 ctx.close();
                             } finally {
                                 message.release();
@@ -287,16 +287,6 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                     })
                 );
             }
-        }
-    }
-
-    private String pathOrUrl(String endpointUrl) {
-        try {
-            URI uri = new URI(endpointUrl).parseServerAuthority();
-            return uri.getPath();
-        } catch (Throwable e) {
-            logger.warn("Endpoint URL '{}' is not a valid URI: {}", e.getMessage(), e);
-            return endpointUrl;
         }
     }
 

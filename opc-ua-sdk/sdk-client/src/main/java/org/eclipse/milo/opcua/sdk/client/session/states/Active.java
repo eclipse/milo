@@ -152,7 +152,9 @@ public class Active extends AbstractSessionState implements SessionState {
                 "[local={}, remote={}] channelInactive()",
                 ctx.channel().localAddress(), ctx.channel().remoteAddress());
 
-            fsm.fireEvent(new ChannelInactiveEvent());
+            fsm.getClient().getConfig().getExecutor().execute(
+                () -> fsm.fireEvent(new ChannelInactiveEvent())
+            );
 
             super.channelInactive(ctx);
         }
