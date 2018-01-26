@@ -23,6 +23,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
@@ -57,6 +58,8 @@ class KeyStoreLoader {
 
             KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
+            String applicationUri = "urn:eclipse:milo:examples:server:" + UUID.randomUUID();
+
             SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
                 .setCommonName("Eclipse Milo Example Server")
                 .setOrganization("digitalpetri")
@@ -64,7 +67,7 @@ class KeyStoreLoader {
                 .setLocalityName("Folsom")
                 .setStateName("CA")
                 .setCountryCode("US")
-                .setApplicationUri("urn:eclipse:milo:examples:server")
+                .setApplicationUri(applicationUri)
                 .addDnsName("localhost")
                 .addIpAddress("127.0.0.1");
 
