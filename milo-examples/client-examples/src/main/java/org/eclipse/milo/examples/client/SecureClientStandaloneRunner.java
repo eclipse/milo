@@ -86,6 +86,7 @@ public class SecureClientStandaloneRunner {
                 try {
                     client.disconnect().get();
                     Stack.releaseSharedResources();
+                    System.exit(0);
                 } catch (InterruptedException | ExecutionException e) {
                     logger.error("Error disconnecting:", e.getMessage(), e);
                 }
