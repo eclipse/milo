@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -152,19 +153,26 @@ abstract class AbstractSessionState implements SessionState {
                     SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
 
                     if (securityPolicy != SecurityPolicy.None) {
-                        X509Certificate certificateFromResponse = CertificateUtil
-                            .decodeCertificate(response.getServerCertificate().bytesOrEmpty());
+                        List<X509Certificate> serverCertificateChain = CertificateUtil
+                            .decodeCertificates(response.getServerCertificate().bytesOrEmpty());
+
+                        X509Certificate serverCertificate = serverCertificateChain.get(0);
 
                         X509Certificate certificateFromEndpoint = CertificateUtil
                             .decodeCertificate(endpoint.getServerCertificate().bytesOrEmpty());
 
-                        if (!certificateFromResponse.equals(certificateFromEndpoint)) {
+                        if (!serverCertificate.equals(certificateFromEndpoint)) {
                             throw new UaException(
                                 StatusCodes.Bad_SecurityChecksFailed,
                                 "Certificate from CreateSessionResponse did not " +
                                     "match certificate from EndpointDescription!"
                             );
                         }
+
+                        CertificateValidator certificateValidator = client.getConfig().getCertificateValidator();
+
+                        certificateValidator.validate(serverCertificate);
+                        certificateValidator.verifyTrustChain(serverCertificateChain);
 
                         SignatureData serverSignature = response.getServerSignature();
 
@@ -177,7 +185,7 @@ abstract class AbstractSessionState implements SessionState {
 
                         SignatureUtil.verify(
                             SecurityAlgorithm.fromUri(serverSignature.getAlgorithm()),
-                            certificateFromResponse,
+                            serverCertificate,
                             dataBytes,
                             signatureBytes
                         );

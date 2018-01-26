@@ -202,7 +202,6 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                 CertificateValidator certificateValidator = server.getCertificateValidator();
 
                 certificateValidator.validate(secureChannel.getRemoteCertificate());
-
                 certificateValidator.verifyTrustChain(secureChannel.getRemoteCertificateChain());
 
                 CertificateManager certificateManager = server.getCertificateManager();
