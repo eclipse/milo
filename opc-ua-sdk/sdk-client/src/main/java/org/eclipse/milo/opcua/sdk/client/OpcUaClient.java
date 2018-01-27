@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -113,6 +114,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +124,15 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
 public class OpcUaClient implements UaClient {
+
+    public static final String SDK_VERSION =
+        ManifestUtil.read("X-SDK-Version").orElse("dev");
+
+    static {
+        Logger logger = LoggerFactory.getLogger(OpcUaClient.class);
+        logger.info("Eclipse Milo OPC UA Stack version: {}", Stack.VERSION);
+        logger.info("Eclipse Milo OPC UA Client SDK version: {}", SDK_VERSION);
+    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
