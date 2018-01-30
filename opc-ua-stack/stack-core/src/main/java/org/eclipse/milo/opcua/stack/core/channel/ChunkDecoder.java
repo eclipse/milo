@@ -183,7 +183,9 @@ public final class ChunkDecoder {
 
             ByteBuf message = composite.order(ByteOrder.LITTLE_ENDIAN);
 
-            if (message.readableBytes() > parameters.getLocalMaxMessageSize()) {
+            if (parameters.getLocalMaxMessageSize() > 0 &&
+                message.readableBytes() > parameters.getLocalMaxMessageSize()) {
+
                 String errorMessage = String.format(
                     "message size exceeds configured limit: %s > %s",
                     message.readableBytes(), parameters.getLocalMaxMessageSize());

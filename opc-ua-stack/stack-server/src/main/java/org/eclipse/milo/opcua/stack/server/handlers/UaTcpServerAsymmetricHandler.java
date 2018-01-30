@@ -439,7 +439,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         int messageSize = messageBuffer.readableBytes();
         int remoteMaxMessageSize = serializationQueue.getParameters().getRemoteMaxMessageSize();
 
-        if (messageSize > remoteMaxMessageSize) {
+        if (remoteMaxMessageSize > 0 && messageSize > remoteMaxMessageSize) {
             throw new UaSerializationException(
                 StatusCodes.Bad_ResponseTooLarge,
                 "response exceeds remote max message size: " +
