@@ -71,6 +71,12 @@ public class OpcUaServer {
     public static final String SDK_VERSION =
         ManifestUtil.read("X-SDK-Version").orElse("dev");
 
+    static {
+        Logger logger = LoggerFactory.getLogger(OpcUaServer.class);
+        logger.info("Eclipse Milo OPC UA Stack version: {}", Stack.VERSION);
+        logger.info("Eclipse Milo OPC UA Server SDK version: {}", SDK_VERSION);
+    }
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
@@ -189,9 +195,6 @@ public class OpcUaServer {
         }
 
         eventBus = new AsyncEventBus("server", stackServer.getExecutorService());
-
-        logger.info("eclipse milo opc-ua stack version: {}", Stack.VERSION);
-        logger.info("eclipse milo opc-ua sdk version: {}", SDK_VERSION);
     }
 
     public CompletableFuture<OpcUaServer> startup() {

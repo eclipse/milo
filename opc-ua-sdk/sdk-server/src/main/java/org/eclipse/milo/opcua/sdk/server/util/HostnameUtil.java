@@ -46,6 +46,17 @@ public class HostnameUtil {
      * @return the addresses and hostnames that were resolved from {@code address}.
      */
     public static Set<String> getHostnames(String address) {
+        return getHostnames(address, true);
+    }
+
+    /**
+     * Given an address resolve it to as many unique addresses or hostnames as can be found.
+     *
+     * @param address         the address to resolve.
+     * @param includeLoopback if {@code true} loopback addresses will be included in the returned set.
+     * @return the addresses and hostnames that were resolved from {@code address}.
+     */
+    public static Set<String> getHostnames(String address, boolean includeLoopback) {
         Set<String> hostnames = newHashSet();
 
         try {
@@ -58,9 +69,13 @@ public class HostnameUtil {
                     for (NetworkInterface ni : Collections.list(nis)) {
                         Collections.list(ni.getInetAddresses()).forEach(ia -> {
                             if (ia instanceof Inet4Address) {
-                                hostnames.add(ia.getHostName());
-                                hostnames.add(ia.getHostAddress());
-                                hostnames.add(ia.getCanonicalHostName());
+                                boolean loopback = ia.isLoopbackAddress();
+
+                                if (!loopback || includeLoopback) {
+                                    hostnames.add(ia.getHostName());
+                                    hostnames.add(ia.getHostAddress());
+                                    hostnames.add(ia.getCanonicalHostName());
+                                }
                             }
                         });
                     }
@@ -69,9 +84,13 @@ public class HostnameUtil {
                         .warn("Failed to NetworkInterfaces for bind address: {}", address, e);
                 }
             } else {
-                hostnames.add(inetAddress.getHostName());
-                hostnames.add(inetAddress.getHostAddress());
-                hostnames.add(inetAddress.getCanonicalHostName());
+                boolean loopback = inetAddress.isLoopbackAddress();
+
+                if (!loopback || includeLoopback) {
+                    hostnames.add(inetAddress.getHostName());
+                    hostnames.add(inetAddress.getHostAddress());
+                    hostnames.add(inetAddress.getCanonicalHostName());
+                }
             }
         } catch (UnknownHostException e) {
             LoggerFactory.getLogger(HostnameUtil.class)
