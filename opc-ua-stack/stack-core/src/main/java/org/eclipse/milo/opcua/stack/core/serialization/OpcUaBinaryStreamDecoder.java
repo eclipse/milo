@@ -242,14 +242,16 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     public DataValue readDataValue() throws UaSerializationException {
-        int mask = buffer.readByte() & 0x0F;
+        int mask = buffer.readByte() & 0xFF;
 
-        Variant value = ((mask & 0x01) == 0x01) ? readVariant() : Variant.NULL_VALUE;
-        StatusCode status = ((mask & 0x02) == 0x02) ? readStatusCode() : StatusCode.GOOD;
-        DateTime sourceTime = ((mask & 0x04) == 0x04) ? readDateTime() : DateTime.MIN_VALUE;
-        DateTime serverTime = ((mask & 0x08) == 0x08) ? readDateTime() : DateTime.MIN_VALUE;
+        Variant value = ((mask & 0x01) != 0) ? readVariant() : Variant.NULL_VALUE;
+        StatusCode status = ((mask & 0x02) != 0) ? readStatusCode() : StatusCode.GOOD;
+        DateTime sourceTime = ((mask & 0x04) != 0) ? readDateTime() : DateTime.MIN_VALUE;
+        UShort sourcePicoseconds = ((mask & 0x10) != 0) ? readUInt16() : null;
+        DateTime serverTime = ((mask & 0x08) != 0) ? readDateTime() : DateTime.MIN_VALUE;
+        UShort serverPicoseconds = ((mask & 0x20) != 0) ? readUInt16() : null;
 
-        return new DataValue(value, status, sourceTime, serverTime);
+        return new DataValue(value, status, sourceTime, sourcePicoseconds, serverTime, serverPicoseconds);
     }
 
     public DiagnosticInfo readDiagnosticInfo() throws UaSerializationException {
