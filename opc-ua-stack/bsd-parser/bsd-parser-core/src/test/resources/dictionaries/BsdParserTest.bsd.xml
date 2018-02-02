@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<opc:TypeDictionary DefaultByteOrder="LittleEndian"
+                    TargetNamespace="https://github.com/eclipse/milo"
+                    xmlns:opc="http://opcfoundation.org/BinarySchema/"
+                    xmlns:tns="https://github.com/eclipse/milo">
+
+    <opc:StructuredType Name="Foo">
+        <opc:Field Name="Bar" TypeName="opc:Int32"/>
+        <opc:Field Name="Baz" TypeName="opc:String"/>
+    </opc:StructuredType>
+
+    <opc:StructuredType Name="Optionals">
+        <opc:Field Name="OptionalInt32Specified" TypeName="opc:Bit"/>
+        <opc:Field Name="OptionalStringSpecified" TypeName="opc:Bit"/>
+        <opc:Field Name="Reserved1" TypeName="opc:Bit" Length="30"/>
+
+        <opc:Field Name="OptionalInt32" TypeName="opc:Int32" SwitchField="OptionalInt32Specified"/>
+        <opc:Field Name="OptionalString" TypeName="opc:String" SwitchField="OptionalStringSpecified"/>
+    </opc:StructuredType>
+
+    <opc:StructuredType Name="ArrayContainer">
+        <opc:Field Name="IntArrayLen" TypeName="opc:Int32"/>
+        <opc:Field Name="IntArray" TypeName="opc:Int32" LengthField="IntArrayLen"/>
+
+        <opc:Field Name="BitField" TypeName="opc:Bit" Length="8"/>
+
+        <opc:Field Name="StringArrayLen" TypeName="opc:Int32"/>
+        <opc:Field Name="StringArray" TypeName="opc:String" LengthField="StringArrayLen"/>
+    </opc:StructuredType>
+
+    <opc:StructuredType Name="Bar">
+        <opc:Field Name="Foo" TypeName="tns:Foo"/>
+        <opc:Field Name="Int" TypeName="opc:Int32"/>
+        <opc:Field Name="Str" TypeName="opc:String"/>
+    </opc:StructuredType>
+
+</opc:TypeDictionary>

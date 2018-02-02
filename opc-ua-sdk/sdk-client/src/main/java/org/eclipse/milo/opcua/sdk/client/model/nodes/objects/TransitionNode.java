@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public class TransitionNode extends BaseObjectNode implements TransitionType {
-
     public TransitionNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> transitionNumber() {
-        return getPropertyNode(TransitionType.TRANSITION_NUMBER.getBrowseName());
+    public CompletableFuture<PropertyNode> getTransitionNumberNode() {
+        return getPropertyNode(TransitionType.TRANSITION_NUMBER);
     }
 
-    @Override
     public CompletableFuture<UInteger> getTransitionNumber() {
         return getProperty(TransitionType.TRANSITION_NUMBER);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTransitionNumber(UInteger value) {
         return setProperty(TransitionType.TRANSITION_NUMBER, value);
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -29,191 +29,142 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:BaseEventType")
 public class BaseEventNode extends BaseObjectNode implements BaseEventType {
+    public BaseEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                         UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public BaseEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public BaseEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                         UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public ByteString getEventId() {
-        Optional<ByteString> property = getProperty(BaseEventType.EVENT_ID);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getEventIdNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.EVENT_ID.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.EVENT_ID);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public ByteString getEventId() {
+        Optional<ByteString> propertyValue = getProperty(BaseEventType.EVENT_ID);
+        return propertyValue.orElse(null);
+    }
+
     public void setEventId(ByteString value) {
         setProperty(BaseEventType.EVENT_ID, value);
     }
 
-    @Override
-    public NodeId getEventType() {
-        Optional<NodeId> property = getProperty(BaseEventType.EVENT_TYPE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getEventTypeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.EVENT_TYPE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.EVENT_TYPE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public NodeId getEventType() {
+        Optional<NodeId> propertyValue = getProperty(BaseEventType.EVENT_TYPE);
+        return propertyValue.orElse(null);
+    }
+
     public void setEventType(NodeId value) {
         setProperty(BaseEventType.EVENT_TYPE, value);
     }
 
-    @Override
-    public NodeId getSourceNode() {
-        Optional<NodeId> property = getProperty(BaseEventType.SOURCE_NODE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getSourceNodeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.SOURCE_NODE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.SOURCE_NODE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public NodeId getSourceNode() {
+        Optional<NodeId> propertyValue = getProperty(BaseEventType.SOURCE_NODE);
+        return propertyValue.orElse(null);
+    }
+
     public void setSourceNode(NodeId value) {
         setProperty(BaseEventType.SOURCE_NODE, value);
     }
 
-    @Override
-    public String getSourceName() {
-        Optional<String> property = getProperty(BaseEventType.SOURCE_NAME);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getSourceNameNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.SOURCE_NAME.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.SOURCE_NAME);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public String getSourceName() {
+        Optional<String> propertyValue = getProperty(BaseEventType.SOURCE_NAME);
+        return propertyValue.orElse(null);
+    }
+
     public void setSourceName(String value) {
         setProperty(BaseEventType.SOURCE_NAME, value);
     }
 
-    @Override
-    public DateTime getTime() {
-        Optional<DateTime> property = getProperty(BaseEventType.TIME);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getTimeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.TIME.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.TIME);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public DateTime getTime() {
+        Optional<DateTime> propertyValue = getProperty(BaseEventType.TIME);
+        return propertyValue.orElse(null);
+    }
+
     public void setTime(DateTime value) {
         setProperty(BaseEventType.TIME, value);
     }
 
-    @Override
-    public DateTime getReceiveTime() {
-        Optional<DateTime> property = getProperty(BaseEventType.RECEIVE_TIME);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getReceiveTimeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.RECEIVE_TIME.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.RECEIVE_TIME);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public DateTime getReceiveTime() {
+        Optional<DateTime> propertyValue = getProperty(BaseEventType.RECEIVE_TIME);
+        return propertyValue.orElse(null);
+    }
+
     public void setReceiveTime(DateTime value) {
         setProperty(BaseEventType.RECEIVE_TIME, value);
     }
 
-    @Override
-    public TimeZoneDataType getLocalTime() {
-        Optional<TimeZoneDataType> property = getProperty(BaseEventType.LOCAL_TIME);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getLocalTimeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.LOCAL_TIME.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.LOCAL_TIME);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public TimeZoneDataType getLocalTime() {
+        Optional<TimeZoneDataType> propertyValue = getProperty(BaseEventType.LOCAL_TIME);
+        return propertyValue.orElse(null);
+    }
+
     public void setLocalTime(TimeZoneDataType value) {
         setProperty(BaseEventType.LOCAL_TIME, value);
     }
 
-    @Override
-    public LocalizedText getMessage() {
-        Optional<LocalizedText> property = getProperty(BaseEventType.MESSAGE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getMessageNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.MESSAGE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.MESSAGE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public LocalizedText getMessage() {
+        Optional<LocalizedText> propertyValue = getProperty(BaseEventType.MESSAGE);
+        return propertyValue.orElse(null);
+    }
+
     public void setMessage(LocalizedText value) {
         setProperty(BaseEventType.MESSAGE, value);
     }
 
-    @Override
-    public UShort getSeverity() {
-        Optional<UShort> property = getProperty(BaseEventType.SEVERITY);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getSeverityNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.SEVERITY.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(BaseEventType.SEVERITY);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public UShort getSeverity() {
+        Optional<UShort> propertyValue = getProperty(BaseEventType.SEVERITY);
+        return propertyValue.orElse(null);
+    }
+
     public void setSeverity(UShort value) {
         setProperty(BaseEventType.SEVERITY, value);
     }
-
 }

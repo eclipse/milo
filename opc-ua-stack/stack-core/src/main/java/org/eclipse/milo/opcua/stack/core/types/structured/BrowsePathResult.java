@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,38 +17,37 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("BrowsePathResult")
 public class BrowsePathResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.BrowsePathResult;
     public static final NodeId BinaryEncodingId = Identifiers.BrowsePathResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BrowsePathResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final BrowsePathTarget[] _targets;
+    protected final StatusCode statusCode;
+    protected final BrowsePathTarget[] targets;
 
     public BrowsePathResult() {
-        this._statusCode = null;
-        this._targets = null;
+        this.statusCode = null;
+        this.targets = null;
     }
 
-    public BrowsePathResult(StatusCode _statusCode, BrowsePathTarget[] _targets) {
-        this._statusCode = _statusCode;
-        this._targets = _targets;
+    public BrowsePathResult(StatusCode statusCode, BrowsePathTarget[] targets) {
+        this.statusCode = statusCode;
+        this.targets = targets;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
     @Nullable
-    public BrowsePathTarget[] getTargets() { return _targets; }
+    public BrowsePathTarget[] getTargets() { return targets; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -62,26 +61,39 @@ public class BrowsePathResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("Targets", _targets)
+            .add("StatusCode", statusCode)
+            .add("Targets", targets)
             .toString();
     }
 
-    public static void encode(BrowsePathResult browsePathResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", browsePathResult._statusCode);
-        encoder.encodeArray("Targets", browsePathResult._targets, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<BrowsePathResult> {
 
-    public static BrowsePathResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        BrowsePathTarget[] _targets = decoder.decodeArray("Targets", decoder::decodeSerializable, BrowsePathTarget.class);
+        @Override
+        public Class<BrowsePathResult> getType() {
+            return BrowsePathResult.class;
+        }
 
-        return new BrowsePathResult(_statusCode, _targets);
-    }
+        @Override
+        public BrowsePathResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            BrowsePathTarget[] targets =
+                decoder.readBuiltinStructArray(
+                    "Targets",
+                    BrowsePathTarget.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(BrowsePathResult::encode, BrowsePathResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(BrowsePathResult::decode, BrowsePathResult.class, BinaryEncodingId, XmlEncodingId);
+            return new BrowsePathResult(statusCode, targets);
+        }
+
+        @Override
+        public void encode(BrowsePathResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeBuiltinStructArray(
+                "Targets",
+                value.targets,
+                BrowsePathTarget.class
+            );
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,44 +17,43 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ModifyMonitoredItemsResponse")
 public class ModifyMonitoredItemsResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.ModifyMonitoredItemsResponse;
     public static final NodeId BinaryEncodingId = Identifiers.ModifyMonitoredItemsResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ModifyMonitoredItemsResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final MonitoredItemModifyResult[] _results;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final MonitoredItemModifyResult[] results;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public ModifyMonitoredItemsResponse() {
-        this._responseHeader = null;
-        this._results = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.results = null;
+        this.diagnosticInfos = null;
     }
 
-    public ModifyMonitoredItemsResponse(ResponseHeader _responseHeader, MonitoredItemModifyResult[] _results, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._results = _results;
-        this._diagnosticInfos = _diagnosticInfos;
+    public ModifyMonitoredItemsResponse(ResponseHeader responseHeader, MonitoredItemModifyResult[] results, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.results = results;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public MonitoredItemModifyResult[] getResults() { return _results; }
+    public MonitoredItemModifyResult[] getResults() { return results; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,29 +67,42 @@ public class ModifyMonitoredItemsResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("Results", _results)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("Results", results)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static void encode(ModifyMonitoredItemsResponse modifyMonitoredItemsResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", modifyMonitoredItemsResponse._responseHeader != null ? modifyMonitoredItemsResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Results", modifyMonitoredItemsResponse._results, encoder::encodeSerializable);
-        encoder.encodeArray("DiagnosticInfos", modifyMonitoredItemsResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ModifyMonitoredItemsResponse> {
 
-    public static ModifyMonitoredItemsResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        MonitoredItemModifyResult[] _results = decoder.decodeArray("Results", decoder::decodeSerializable, MonitoredItemModifyResult.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+        @Override
+        public Class<ModifyMonitoredItemsResponse> getType() {
+            return ModifyMonitoredItemsResponse.class;
+        }
 
-        return new ModifyMonitoredItemsResponse(_responseHeader, _results, _diagnosticInfos);
-    }
+        @Override
+        public ModifyMonitoredItemsResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            MonitoredItemModifyResult[] results =
+                decoder.readBuiltinStructArray(
+                    "Results",
+                    MonitoredItemModifyResult.class
+                );
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ModifyMonitoredItemsResponse::encode, ModifyMonitoredItemsResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ModifyMonitoredItemsResponse::decode, ModifyMonitoredItemsResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new ModifyMonitoredItemsResponse(responseHeader, results, diagnosticInfos);
+        }
+
+        @Override
+        public void encode(ModifyMonitoredItemsResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStructArray(
+                "Results",
+                value.results,
+                MonitoredItemModifyResult.class
+            );
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        }
     }
 
 }

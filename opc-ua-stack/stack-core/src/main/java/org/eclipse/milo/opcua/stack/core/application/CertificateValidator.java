@@ -30,12 +30,13 @@ public interface CertificateValidator {
     void validate(X509Certificate certificate) throws UaException;
 
     /**
-     * Check that the provided certificate is trusted.
+     * Check that trust can be established using the provided certificate chain.
+     * <p>
+     * The chain must begin with the end-entity certificate at index 0 followed by the remaining certificates in the
+     * chain, if any, in the correct order.
      *
-     * @param certificate the {@link X509Certificate} to verify.
-     * @param chain       the chain of intermediate certificates, if present, that lead to a trust anchor.
      * @throws UaException if {@code certificate} is not trusted.
      */
-    void verifyTrustChain(X509Certificate certificate, List<X509Certificate> chain) throws UaException;
+    void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException;
 
 }

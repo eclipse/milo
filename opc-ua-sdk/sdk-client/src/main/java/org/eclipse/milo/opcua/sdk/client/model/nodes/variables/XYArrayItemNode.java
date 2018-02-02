@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
 
-
 public class XYArrayItemNode extends ArrayItemNode implements XYArrayItemType {
-
     public XYArrayItemNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> xAxisDefinition() {
-        return getPropertyNode(XYArrayItemType.X_AXIS_DEFINITION.getBrowseName());
+    public CompletableFuture<PropertyNode> getXAxisDefinitionNode() {
+        return getPropertyNode(XYArrayItemType.X_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<AxisInformation> getXAxisDefinition() {
         return getProperty(XYArrayItemType.X_AXIS_DEFINITION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setXAxisDefinition(AxisInformation value) {
         return setProperty(XYArrayItemType.X_AXIS_DEFINITION, value);
     }
-
-
 }

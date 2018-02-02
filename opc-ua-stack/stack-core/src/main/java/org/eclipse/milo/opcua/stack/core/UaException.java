@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class UaException extends Exception {
+public class UaException extends Exception implements UaExceptionStatus {
 
     private final StatusCode statusCode;
 
@@ -53,6 +53,7 @@ public class UaException extends Exception {
         this.statusCode = statusCode;
     }
 
+    @Override
     public StatusCode getStatusCode() {
         return statusCode;
     }

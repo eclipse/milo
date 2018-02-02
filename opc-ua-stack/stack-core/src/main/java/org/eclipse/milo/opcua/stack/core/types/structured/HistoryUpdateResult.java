@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,45 +17,44 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("HistoryUpdateResult")
 public class HistoryUpdateResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.HistoryUpdateResult;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryUpdateResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryUpdateResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final StatusCode[] _operationResults;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final StatusCode statusCode;
+    protected final StatusCode[] operationResults;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public HistoryUpdateResult() {
-        this._statusCode = null;
-        this._operationResults = null;
-        this._diagnosticInfos = null;
+        this.statusCode = null;
+        this.operationResults = null;
+        this.diagnosticInfos = null;
     }
 
-    public HistoryUpdateResult(StatusCode _statusCode, StatusCode[] _operationResults, DiagnosticInfo[] _diagnosticInfos) {
-        this._statusCode = _statusCode;
-        this._operationResults = _operationResults;
-        this._diagnosticInfos = _diagnosticInfos;
+    public HistoryUpdateResult(StatusCode statusCode, StatusCode[] operationResults, DiagnosticInfo[] diagnosticInfos) {
+        this.statusCode = statusCode;
+        this.operationResults = operationResults;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
     @Nullable
-    public StatusCode[] getOperationResults() { return _operationResults; }
+    public StatusCode[] getOperationResults() { return operationResults; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,29 +68,34 @@ public class HistoryUpdateResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("OperationResults", _operationResults)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("StatusCode", statusCode)
+            .add("OperationResults", operationResults)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static void encode(HistoryUpdateResult historyUpdateResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", historyUpdateResult._statusCode);
-        encoder.encodeArray("OperationResults", historyUpdateResult._operationResults, encoder::encodeStatusCode);
-        encoder.encodeArray("DiagnosticInfos", historyUpdateResult._diagnosticInfos, encoder::encodeDiagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<HistoryUpdateResult> {
 
-    public static HistoryUpdateResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        StatusCode[] _operationResults = decoder.decodeArray("OperationResults", decoder::decodeStatusCode, StatusCode.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+        @Override
+        public Class<HistoryUpdateResult> getType() {
+            return HistoryUpdateResult.class;
+        }
 
-        return new HistoryUpdateResult(_statusCode, _operationResults, _diagnosticInfos);
-    }
+        @Override
+        public HistoryUpdateResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            StatusCode[] operationResults = decoder.readArray("OperationResults", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryUpdateResult::encode, HistoryUpdateResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryUpdateResult::decode, HistoryUpdateResult.class, BinaryEncodingId, XmlEncodingId);
+            return new HistoryUpdateResult(statusCode, operationResults, diagnosticInfos);
+        }
+
+        @Override
+        public void encode(HistoryUpdateResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeArray("OperationResults", value.operationResults, encoder::writeStatusCode);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        }
     }
 
 }

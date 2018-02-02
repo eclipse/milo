@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,43 +15,42 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("UserNameIdentityToken")
 public class UserNameIdentityToken extends UserIdentityToken {
 
     public static final NodeId TypeId = Identifiers.UserNameIdentityToken;
     public static final NodeId BinaryEncodingId = Identifiers.UserNameIdentityToken_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.UserNameIdentityToken_Encoding_DefaultXml;
 
-    protected final String _userName;
-    protected final ByteString _password;
-    protected final String _encryptionAlgorithm;
+    protected final String userName;
+    protected final ByteString password;
+    protected final String encryptionAlgorithm;
 
     public UserNameIdentityToken() {
         super(null);
-        this._userName = null;
-        this._password = null;
-        this._encryptionAlgorithm = null;
+        this.userName = null;
+        this.password = null;
+        this.encryptionAlgorithm = null;
     }
 
-    public UserNameIdentityToken(String _policyId, String _userName, ByteString _password, String _encryptionAlgorithm) {
-        super(_policyId);
-        this._userName = _userName;
-        this._password = _password;
-        this._encryptionAlgorithm = _encryptionAlgorithm;
+    public UserNameIdentityToken(String policyId, String userName, ByteString password, String encryptionAlgorithm) {
+        super(policyId);
+        this.userName = userName;
+        this.password = password;
+        this.encryptionAlgorithm = encryptionAlgorithm;
     }
 
-    public String getUserName() { return _userName; }
+    public String getUserName() { return userName; }
 
-    public ByteString getPassword() { return _password; }
+    public ByteString getPassword() { return password; }
 
-    public String getEncryptionAlgorithm() { return _encryptionAlgorithm; }
+    public String getEncryptionAlgorithm() { return encryptionAlgorithm; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -65,32 +64,37 @@ public class UserNameIdentityToken extends UserIdentityToken {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("PolicyId", _policyId)
-            .add("UserName", _userName)
-            .add("Password", _password)
-            .add("EncryptionAlgorithm", _encryptionAlgorithm)
+            .add("PolicyId", policyId)
+            .add("UserName", userName)
+            .add("Password", password)
+            .add("EncryptionAlgorithm", encryptionAlgorithm)
             .toString();
     }
 
-    public static void encode(UserNameIdentityToken userNameIdentityToken, UaEncoder encoder) {
-        encoder.encodeString("PolicyId", userNameIdentityToken._policyId);
-        encoder.encodeString("UserName", userNameIdentityToken._userName);
-        encoder.encodeByteString("Password", userNameIdentityToken._password);
-        encoder.encodeString("EncryptionAlgorithm", userNameIdentityToken._encryptionAlgorithm);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<UserNameIdentityToken> {
 
-    public static UserNameIdentityToken decode(UaDecoder decoder) {
-        String _policyId = decoder.decodeString("PolicyId");
-        String _userName = decoder.decodeString("UserName");
-        ByteString _password = decoder.decodeByteString("Password");
-        String _encryptionAlgorithm = decoder.decodeString("EncryptionAlgorithm");
+        @Override
+        public Class<UserNameIdentityToken> getType() {
+            return UserNameIdentityToken.class;
+        }
 
-        return new UserNameIdentityToken(_policyId, _userName, _password, _encryptionAlgorithm);
-    }
+        @Override
+        public UserNameIdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+            String policyId = decoder.readString("PolicyId");
+            String userName = decoder.readString("UserName");
+            ByteString password = decoder.readByteString("Password");
+            String encryptionAlgorithm = decoder.readString("EncryptionAlgorithm");
 
-    static {
-        DelegateRegistry.registerEncoder(UserNameIdentityToken::encode, UserNameIdentityToken.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(UserNameIdentityToken::decode, UserNameIdentityToken.class, BinaryEncodingId, XmlEncodingId);
+            return new UserNameIdentityToken(policyId, userName, password, encryptionAlgorithm);
+        }
+
+        @Override
+        public void encode(UserNameIdentityToken value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("PolicyId", value.policyId);
+            encoder.writeString("UserName", value.userName);
+            encoder.writeByteString("Password", value.password);
+            encoder.writeString("EncryptionAlgorithm", value.encryptionAlgorithm);
+        }
     }
 
 }

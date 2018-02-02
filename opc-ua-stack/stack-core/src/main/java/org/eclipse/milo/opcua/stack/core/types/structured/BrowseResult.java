@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,44 +17,43 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("BrowseResult")
 public class BrowseResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.BrowseResult;
     public static final NodeId BinaryEncodingId = Identifiers.BrowseResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BrowseResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final ByteString _continuationPoint;
-    protected final ReferenceDescription[] _references;
+    protected final StatusCode statusCode;
+    protected final ByteString continuationPoint;
+    protected final ReferenceDescription[] references;
 
     public BrowseResult() {
-        this._statusCode = null;
-        this._continuationPoint = null;
-        this._references = null;
+        this.statusCode = null;
+        this.continuationPoint = null;
+        this.references = null;
     }
 
-    public BrowseResult(StatusCode _statusCode, ByteString _continuationPoint, ReferenceDescription[] _references) {
-        this._statusCode = _statusCode;
-        this._continuationPoint = _continuationPoint;
-        this._references = _references;
+    public BrowseResult(StatusCode statusCode, ByteString continuationPoint, ReferenceDescription[] references) {
+        this.statusCode = statusCode;
+        this.continuationPoint = continuationPoint;
+        this.references = references;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
-    public ByteString getContinuationPoint() { return _continuationPoint; }
+    public ByteString getContinuationPoint() { return continuationPoint; }
 
     @Nullable
-    public ReferenceDescription[] getReferences() { return _references; }
+    public ReferenceDescription[] getReferences() { return references; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,29 +67,42 @@ public class BrowseResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("ContinuationPoint", _continuationPoint)
-            .add("References", _references)
+            .add("StatusCode", statusCode)
+            .add("ContinuationPoint", continuationPoint)
+            .add("References", references)
             .toString();
     }
 
-    public static void encode(BrowseResult browseResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", browseResult._statusCode);
-        encoder.encodeByteString("ContinuationPoint", browseResult._continuationPoint);
-        encoder.encodeArray("References", browseResult._references, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<BrowseResult> {
 
-    public static BrowseResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        ByteString _continuationPoint = decoder.decodeByteString("ContinuationPoint");
-        ReferenceDescription[] _references = decoder.decodeArray("References", decoder::decodeSerializable, ReferenceDescription.class);
+        @Override
+        public Class<BrowseResult> getType() {
+            return BrowseResult.class;
+        }
 
-        return new BrowseResult(_statusCode, _continuationPoint, _references);
-    }
+        @Override
+        public BrowseResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
+            ReferenceDescription[] references =
+                decoder.readBuiltinStructArray(
+                    "References",
+                    ReferenceDescription.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(BrowseResult::encode, BrowseResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(BrowseResult::decode, BrowseResult.class, BinaryEncodingId, XmlEncodingId);
+            return new BrowseResult(statusCode, continuationPoint, references);
+        }
+
+        @Override
+        public void encode(BrowseResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
+            encoder.writeBuiltinStructArray(
+                "References",
+                value.references,
+                ReferenceDescription.class
+            );
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,79 +17,78 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("SoftwareCertificate")
 public class SoftwareCertificate implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SoftwareCertificate;
     public static final NodeId BinaryEncodingId = Identifiers.SoftwareCertificate_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SoftwareCertificate_Encoding_DefaultXml;
 
-    protected final String _productName;
-    protected final String _productUri;
-    protected final String _vendorName;
-    protected final ByteString _vendorProductCertificate;
-    protected final String _softwareVersion;
-    protected final String _buildNumber;
-    protected final DateTime _buildDate;
-    protected final String _issuedBy;
-    protected final DateTime _issueDate;
-    protected final SupportedProfile[] _supportedProfiles;
+    protected final String productName;
+    protected final String productUri;
+    protected final String vendorName;
+    protected final ByteString vendorProductCertificate;
+    protected final String softwareVersion;
+    protected final String buildNumber;
+    protected final DateTime buildDate;
+    protected final String issuedBy;
+    protected final DateTime issueDate;
+    protected final SupportedProfile[] supportedProfiles;
 
     public SoftwareCertificate() {
-        this._productName = null;
-        this._productUri = null;
-        this._vendorName = null;
-        this._vendorProductCertificate = null;
-        this._softwareVersion = null;
-        this._buildNumber = null;
-        this._buildDate = null;
-        this._issuedBy = null;
-        this._issueDate = null;
-        this._supportedProfiles = null;
+        this.productName = null;
+        this.productUri = null;
+        this.vendorName = null;
+        this.vendorProductCertificate = null;
+        this.softwareVersion = null;
+        this.buildNumber = null;
+        this.buildDate = null;
+        this.issuedBy = null;
+        this.issueDate = null;
+        this.supportedProfiles = null;
     }
 
-    public SoftwareCertificate(String _productName, String _productUri, String _vendorName, ByteString _vendorProductCertificate, String _softwareVersion, String _buildNumber, DateTime _buildDate, String _issuedBy, DateTime _issueDate, SupportedProfile[] _supportedProfiles) {
-        this._productName = _productName;
-        this._productUri = _productUri;
-        this._vendorName = _vendorName;
-        this._vendorProductCertificate = _vendorProductCertificate;
-        this._softwareVersion = _softwareVersion;
-        this._buildNumber = _buildNumber;
-        this._buildDate = _buildDate;
-        this._issuedBy = _issuedBy;
-        this._issueDate = _issueDate;
-        this._supportedProfiles = _supportedProfiles;
+    public SoftwareCertificate(String productName, String productUri, String vendorName, ByteString vendorProductCertificate, String softwareVersion, String buildNumber, DateTime buildDate, String issuedBy, DateTime issueDate, SupportedProfile[] supportedProfiles) {
+        this.productName = productName;
+        this.productUri = productUri;
+        this.vendorName = vendorName;
+        this.vendorProductCertificate = vendorProductCertificate;
+        this.softwareVersion = softwareVersion;
+        this.buildNumber = buildNumber;
+        this.buildDate = buildDate;
+        this.issuedBy = issuedBy;
+        this.issueDate = issueDate;
+        this.supportedProfiles = supportedProfiles;
     }
 
-    public String getProductName() { return _productName; }
+    public String getProductName() { return productName; }
 
-    public String getProductUri() { return _productUri; }
+    public String getProductUri() { return productUri; }
 
-    public String getVendorName() { return _vendorName; }
+    public String getVendorName() { return vendorName; }
 
-    public ByteString getVendorProductCertificate() { return _vendorProductCertificate; }
+    public ByteString getVendorProductCertificate() { return vendorProductCertificate; }
 
-    public String getSoftwareVersion() { return _softwareVersion; }
+    public String getSoftwareVersion() { return softwareVersion; }
 
-    public String getBuildNumber() { return _buildNumber; }
+    public String getBuildNumber() { return buildNumber; }
 
-    public DateTime getBuildDate() { return _buildDate; }
+    public DateTime getBuildDate() { return buildDate; }
 
-    public String getIssuedBy() { return _issuedBy; }
+    public String getIssuedBy() { return issuedBy; }
 
-    public DateTime getIssueDate() { return _issueDate; }
+    public DateTime getIssueDate() { return issueDate; }
 
     @Nullable
-    public SupportedProfile[] getSupportedProfiles() { return _supportedProfiles; }
+    public SupportedProfile[] getSupportedProfiles() { return supportedProfiles; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -103,50 +102,63 @@ public class SoftwareCertificate implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ProductName", _productName)
-            .add("ProductUri", _productUri)
-            .add("VendorName", _vendorName)
-            .add("VendorProductCertificate", _vendorProductCertificate)
-            .add("SoftwareVersion", _softwareVersion)
-            .add("BuildNumber", _buildNumber)
-            .add("BuildDate", _buildDate)
-            .add("IssuedBy", _issuedBy)
-            .add("IssueDate", _issueDate)
-            .add("SupportedProfiles", _supportedProfiles)
+            .add("ProductName", productName)
+            .add("ProductUri", productUri)
+            .add("VendorName", vendorName)
+            .add("VendorProductCertificate", vendorProductCertificate)
+            .add("SoftwareVersion", softwareVersion)
+            .add("BuildNumber", buildNumber)
+            .add("BuildDate", buildDate)
+            .add("IssuedBy", issuedBy)
+            .add("IssueDate", issueDate)
+            .add("SupportedProfiles", supportedProfiles)
             .toString();
     }
 
-    public static void encode(SoftwareCertificate softwareCertificate, UaEncoder encoder) {
-        encoder.encodeString("ProductName", softwareCertificate._productName);
-        encoder.encodeString("ProductUri", softwareCertificate._productUri);
-        encoder.encodeString("VendorName", softwareCertificate._vendorName);
-        encoder.encodeByteString("VendorProductCertificate", softwareCertificate._vendorProductCertificate);
-        encoder.encodeString("SoftwareVersion", softwareCertificate._softwareVersion);
-        encoder.encodeString("BuildNumber", softwareCertificate._buildNumber);
-        encoder.encodeDateTime("BuildDate", softwareCertificate._buildDate);
-        encoder.encodeString("IssuedBy", softwareCertificate._issuedBy);
-        encoder.encodeDateTime("IssueDate", softwareCertificate._issueDate);
-        encoder.encodeArray("SupportedProfiles", softwareCertificate._supportedProfiles, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SoftwareCertificate> {
 
-    public static SoftwareCertificate decode(UaDecoder decoder) {
-        String _productName = decoder.decodeString("ProductName");
-        String _productUri = decoder.decodeString("ProductUri");
-        String _vendorName = decoder.decodeString("VendorName");
-        ByteString _vendorProductCertificate = decoder.decodeByteString("VendorProductCertificate");
-        String _softwareVersion = decoder.decodeString("SoftwareVersion");
-        String _buildNumber = decoder.decodeString("BuildNumber");
-        DateTime _buildDate = decoder.decodeDateTime("BuildDate");
-        String _issuedBy = decoder.decodeString("IssuedBy");
-        DateTime _issueDate = decoder.decodeDateTime("IssueDate");
-        SupportedProfile[] _supportedProfiles = decoder.decodeArray("SupportedProfiles", decoder::decodeSerializable, SupportedProfile.class);
+        @Override
+        public Class<SoftwareCertificate> getType() {
+            return SoftwareCertificate.class;
+        }
 
-        return new SoftwareCertificate(_productName, _productUri, _vendorName, _vendorProductCertificate, _softwareVersion, _buildNumber, _buildDate, _issuedBy, _issueDate, _supportedProfiles);
-    }
+        @Override
+        public SoftwareCertificate decode(UaDecoder decoder) throws UaSerializationException {
+            String productName = decoder.readString("ProductName");
+            String productUri = decoder.readString("ProductUri");
+            String vendorName = decoder.readString("VendorName");
+            ByteString vendorProductCertificate = decoder.readByteString("VendorProductCertificate");
+            String softwareVersion = decoder.readString("SoftwareVersion");
+            String buildNumber = decoder.readString("BuildNumber");
+            DateTime buildDate = decoder.readDateTime("BuildDate");
+            String issuedBy = decoder.readString("IssuedBy");
+            DateTime issueDate = decoder.readDateTime("IssueDate");
+            SupportedProfile[] supportedProfiles =
+                decoder.readBuiltinStructArray(
+                    "SupportedProfiles",
+                    SupportedProfile.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(SoftwareCertificate::encode, SoftwareCertificate.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SoftwareCertificate::decode, SoftwareCertificate.class, BinaryEncodingId, XmlEncodingId);
+            return new SoftwareCertificate(productName, productUri, vendorName, vendorProductCertificate, softwareVersion, buildNumber, buildDate, issuedBy, issueDate, supportedProfiles);
+        }
+
+        @Override
+        public void encode(SoftwareCertificate value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("ProductName", value.productName);
+            encoder.writeString("ProductUri", value.productUri);
+            encoder.writeString("VendorName", value.vendorName);
+            encoder.writeByteString("VendorProductCertificate", value.vendorProductCertificate);
+            encoder.writeString("SoftwareVersion", value.softwareVersion);
+            encoder.writeString("BuildNumber", value.buildNumber);
+            encoder.writeDateTime("BuildDate", value.buildDate);
+            encoder.writeString("IssuedBy", value.issuedBy);
+            encoder.writeDateTime("IssueDate", value.issueDate);
+            encoder.writeBuiltinStructArray(
+                "SupportedProfiles",
+                value.supportedProfiles,
+                SupportedProfile.class
+            );
+        }
     }
 
 }

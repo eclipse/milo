@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,33 +17,32 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-@UaDataType("HistoryEventFieldList")
 public class HistoryEventFieldList implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.HistoryEventFieldList;
     public static final NodeId BinaryEncodingId = Identifiers.HistoryEventFieldList_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.HistoryEventFieldList_Encoding_DefaultXml;
 
-    protected final Variant[] _eventFields;
+    protected final Variant[] eventFields;
 
     public HistoryEventFieldList() {
-        this._eventFields = null;
+        this.eventFields = null;
     }
 
-    public HistoryEventFieldList(Variant[] _eventFields) {
-        this._eventFields = _eventFields;
+    public HistoryEventFieldList(Variant[] eventFields) {
+        this.eventFields = eventFields;
     }
 
     @Nullable
-    public Variant[] getEventFields() { return _eventFields; }
+    public Variant[] getEventFields() { return eventFields; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -57,23 +56,28 @@ public class HistoryEventFieldList implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("EventFields", _eventFields)
+            .add("EventFields", eventFields)
             .toString();
     }
 
-    public static void encode(HistoryEventFieldList historyEventFieldList, UaEncoder encoder) {
-        encoder.encodeArray("EventFields", historyEventFieldList._eventFields, encoder::encodeVariant);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<HistoryEventFieldList> {
 
-    public static HistoryEventFieldList decode(UaDecoder decoder) {
-        Variant[] _eventFields = decoder.decodeArray("EventFields", decoder::decodeVariant, Variant.class);
+        @Override
+        public Class<HistoryEventFieldList> getType() {
+            return HistoryEventFieldList.class;
+        }
 
-        return new HistoryEventFieldList(_eventFields);
-    }
+        @Override
+        public HistoryEventFieldList decode(UaDecoder decoder) throws UaSerializationException {
+            Variant[] eventFields = decoder.readArray("EventFields", decoder::readVariant, Variant.class);
 
-    static {
-        DelegateRegistry.registerEncoder(HistoryEventFieldList::encode, HistoryEventFieldList.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(HistoryEventFieldList::decode, HistoryEventFieldList.class, BinaryEncodingId, XmlEncodingId);
+            return new HistoryEventFieldList(eventFields);
+        }
+
+        @Override
+        public void encode(HistoryEventFieldList value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeArray("EventFields", value.eventFields, encoder::writeVariant);
+        }
     }
 
 }

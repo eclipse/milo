@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
+import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
@@ -46,7 +46,7 @@ public class CompositeValidator implements IdentityValidator {
 
     @Override
     public Object validateIdentityToken(
-        SecureChannel channel,
+        ServerSecureChannel channel,
         Session session,
         UserIdentityToken token,
         UserTokenPolicy tokenPolicy,

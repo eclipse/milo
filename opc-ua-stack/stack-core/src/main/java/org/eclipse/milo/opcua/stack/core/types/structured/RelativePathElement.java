@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,47 +15,46 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
-@UaDataType("RelativePathElement")
 public class RelativePathElement implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.RelativePathElement;
     public static final NodeId BinaryEncodingId = Identifiers.RelativePathElement_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RelativePathElement_Encoding_DefaultXml;
 
-    protected final NodeId _referenceTypeId;
-    protected final Boolean _isInverse;
-    protected final Boolean _includeSubtypes;
-    protected final QualifiedName _targetName;
+    protected final NodeId referenceTypeId;
+    protected final Boolean isInverse;
+    protected final Boolean includeSubtypes;
+    protected final QualifiedName targetName;
 
     public RelativePathElement() {
-        this._referenceTypeId = null;
-        this._isInverse = null;
-        this._includeSubtypes = null;
-        this._targetName = null;
+        this.referenceTypeId = null;
+        this.isInverse = null;
+        this.includeSubtypes = null;
+        this.targetName = null;
     }
 
-    public RelativePathElement(NodeId _referenceTypeId, Boolean _isInverse, Boolean _includeSubtypes, QualifiedName _targetName) {
-        this._referenceTypeId = _referenceTypeId;
-        this._isInverse = _isInverse;
-        this._includeSubtypes = _includeSubtypes;
-        this._targetName = _targetName;
+    public RelativePathElement(NodeId referenceTypeId, Boolean isInverse, Boolean includeSubtypes, QualifiedName targetName) {
+        this.referenceTypeId = referenceTypeId;
+        this.isInverse = isInverse;
+        this.includeSubtypes = includeSubtypes;
+        this.targetName = targetName;
     }
 
-    public NodeId getReferenceTypeId() { return _referenceTypeId; }
+    public NodeId getReferenceTypeId() { return referenceTypeId; }
 
-    public Boolean getIsInverse() { return _isInverse; }
+    public Boolean getIsInverse() { return isInverse; }
 
-    public Boolean getIncludeSubtypes() { return _includeSubtypes; }
+    public Boolean getIncludeSubtypes() { return includeSubtypes; }
 
-    public QualifiedName getTargetName() { return _targetName; }
+    public QualifiedName getTargetName() { return targetName; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,32 +68,37 @@ public class RelativePathElement implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ReferenceTypeId", _referenceTypeId)
-            .add("IsInverse", _isInverse)
-            .add("IncludeSubtypes", _includeSubtypes)
-            .add("TargetName", _targetName)
+            .add("ReferenceTypeId", referenceTypeId)
+            .add("IsInverse", isInverse)
+            .add("IncludeSubtypes", includeSubtypes)
+            .add("TargetName", targetName)
             .toString();
     }
 
-    public static void encode(RelativePathElement relativePathElement, UaEncoder encoder) {
-        encoder.encodeNodeId("ReferenceTypeId", relativePathElement._referenceTypeId);
-        encoder.encodeBoolean("IsInverse", relativePathElement._isInverse);
-        encoder.encodeBoolean("IncludeSubtypes", relativePathElement._includeSubtypes);
-        encoder.encodeQualifiedName("TargetName", relativePathElement._targetName);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<RelativePathElement> {
 
-    public static RelativePathElement decode(UaDecoder decoder) {
-        NodeId _referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
-        Boolean _isInverse = decoder.decodeBoolean("IsInverse");
-        Boolean _includeSubtypes = decoder.decodeBoolean("IncludeSubtypes");
-        QualifiedName _targetName = decoder.decodeQualifiedName("TargetName");
+        @Override
+        public Class<RelativePathElement> getType() {
+            return RelativePathElement.class;
+        }
 
-        return new RelativePathElement(_referenceTypeId, _isInverse, _includeSubtypes, _targetName);
-    }
+        @Override
+        public RelativePathElement decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
+            Boolean isInverse = decoder.readBoolean("IsInverse");
+            Boolean includeSubtypes = decoder.readBoolean("IncludeSubtypes");
+            QualifiedName targetName = decoder.readQualifiedName("TargetName");
 
-    static {
-        DelegateRegistry.registerEncoder(RelativePathElement::encode, RelativePathElement.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RelativePathElement::decode, RelativePathElement.class, BinaryEncodingId, XmlEncodingId);
+            return new RelativePathElement(referenceTypeId, isInverse, includeSubtypes, targetName);
+        }
+
+        @Override
+        public void encode(RelativePathElement value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
+            encoder.writeBoolean("IsInverse", value.isInverse);
+            encoder.writeBoolean("IncludeSubtypes", value.includeSubtypes);
+            encoder.writeQualifiedName("TargetName", value.targetName);
+        }
     }
 
 }

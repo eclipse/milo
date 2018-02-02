@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,13 +15,12 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("AnonymousIdentityToken")
 public class AnonymousIdentityToken extends UserIdentityToken {
 
     public static final NodeId TypeId = Identifiers.AnonymousIdentityToken;
@@ -33,8 +32,8 @@ public class AnonymousIdentityToken extends UserIdentityToken {
         super(null);
     }
 
-    public AnonymousIdentityToken(String _policyId) {
-        super(_policyId);
+    public AnonymousIdentityToken(String policyId) {
+        super(policyId);
     }
 
 
@@ -50,23 +49,28 @@ public class AnonymousIdentityToken extends UserIdentityToken {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("PolicyId", _policyId)
+            .add("PolicyId", policyId)
             .toString();
     }
 
-    public static void encode(AnonymousIdentityToken anonymousIdentityToken, UaEncoder encoder) {
-        encoder.encodeString("PolicyId", anonymousIdentityToken._policyId);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<AnonymousIdentityToken> {
 
-    public static AnonymousIdentityToken decode(UaDecoder decoder) {
-        String _policyId = decoder.decodeString("PolicyId");
+        @Override
+        public Class<AnonymousIdentityToken> getType() {
+            return AnonymousIdentityToken.class;
+        }
 
-        return new AnonymousIdentityToken(_policyId);
-    }
+        @Override
+        public AnonymousIdentityToken decode(UaDecoder decoder) throws UaSerializationException {
+            String policyId = decoder.readString("PolicyId");
 
-    static {
-        DelegateRegistry.registerEncoder(AnonymousIdentityToken::encode, AnonymousIdentityToken.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(AnonymousIdentityToken::decode, AnonymousIdentityToken.class, BinaryEncodingId, XmlEncodingId);
+            return new AnonymousIdentityToken(policyId);
+        }
+
+        @Override
+        public void encode(AnonymousIdentityToken value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("PolicyId", value.policyId);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,45 +22,40 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 
-
 public interface ServerStatusType extends BaseDataVariableType {
-
-
-    CompletableFuture<? extends BaseDataVariableType> startTime();
+    CompletableFuture<? extends BaseDataVariableType> getStartTimeNode();
 
     CompletableFuture<DateTime> getStartTime();
 
     CompletableFuture<StatusCode> setStartTime(DateTime value);
 
-    CompletableFuture<? extends BaseDataVariableType> currentTime();
+    CompletableFuture<? extends BaseDataVariableType> getCurrentTimeNode();
 
     CompletableFuture<DateTime> getCurrentTime();
 
     CompletableFuture<StatusCode> setCurrentTime(DateTime value);
 
-    CompletableFuture<? extends BaseDataVariableType> state();
+    CompletableFuture<? extends BaseDataVariableType> getStateNode();
 
     CompletableFuture<ServerState> getState();
 
     CompletableFuture<StatusCode> setState(ServerState value);
 
-    CompletableFuture<? extends BaseDataVariableType> buildInfo();
+    CompletableFuture<? extends BuildInfoType> getBuildInfoNode();
 
     CompletableFuture<BuildInfo> getBuildInfo();
 
     CompletableFuture<StatusCode> setBuildInfo(BuildInfo value);
 
-    CompletableFuture<? extends BaseDataVariableType> secondsTillShutdown();
+    CompletableFuture<? extends BaseDataVariableType> getSecondsTillShutdownNode();
 
     CompletableFuture<UInteger> getSecondsTillShutdown();
 
     CompletableFuture<StatusCode> setSecondsTillShutdown(UInteger value);
 
-    CompletableFuture<? extends BaseDataVariableType> shutdownReason();
+    CompletableFuture<? extends BaseDataVariableType> getShutdownReasonNode();
 
     CompletableFuture<LocalizedText> getShutdownReason();
 
     CompletableFuture<StatusCode> setShutdownReason(LocalizedText value);
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,42 +21,32 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.CertificateUpdatedA
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class CertificateUpdatedAuditEventNode extends AuditUpdateMethodEventNode implements CertificateUpdatedAuditEventType {
-
     public CertificateUpdatedAuditEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> certificateGroup() {
-        return getPropertyNode(CertificateUpdatedAuditEventType.CERTIFICATE_GROUP.getBrowseName());
+    public CompletableFuture<PropertyNode> getCertificateGroupNode() {
+        return getPropertyNode(CertificateUpdatedAuditEventType.CERTIFICATE_GROUP);
     }
 
-    @Override
     public CompletableFuture<NodeId> getCertificateGroup() {
         return getProperty(CertificateUpdatedAuditEventType.CERTIFICATE_GROUP);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCertificateGroup(NodeId value) {
         return setProperty(CertificateUpdatedAuditEventType.CERTIFICATE_GROUP, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> certificateType() {
-        return getPropertyNode(CertificateUpdatedAuditEventType.CERTIFICATE_TYPE.getBrowseName());
+    public CompletableFuture<PropertyNode> getCertificateTypeNode() {
+        return getPropertyNode(CertificateUpdatedAuditEventType.CERTIFICATE_TYPE);
     }
 
-    @Override
     public CompletableFuture<NodeId> getCertificateType() {
         return getProperty(CertificateUpdatedAuditEventType.CERTIFICATE_TYPE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCertificateType(NodeId value) {
         return setProperty(CertificateUpdatedAuditEventType.CERTIFICATE_TYPE, value);
     }
-
-
 }

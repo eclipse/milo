@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo</artifactId>
-        <version>0.1.6-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>opc-ua-sdk</artifactId>
@@ -14,9 +14,8 @@
     <properties>
         <metrics.version>3.1.2</metrics.version>
         <protonpack.version>1.8</protonpack.version>
-        <reflections.version>0.9.10</reflections.version>
         <slf4j.version>1.7.21</slf4j.version>
-        <testng.version>6.9.10</testng.version>
+        <testng.version>6.11</testng.version>
     </properties>
 
     <modules>

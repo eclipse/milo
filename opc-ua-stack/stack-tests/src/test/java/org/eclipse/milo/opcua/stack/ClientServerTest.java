@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -21,11 +23,14 @@ import java.util.concurrent.ExecutionException;
 import com.beust.jcommander.internal.Lists;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -36,12 +41,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TestStackResponse;
 import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
@@ -57,6 +63,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertThrows;
@@ -119,22 +127,33 @@ public class ClientServerTest extends SecurityFixture {
             .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic256, MessageSecurityMode.SignAndEncrypt)
             .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic256Sha256, MessageSecurityMode.SignAndEncrypt);
 
-        server.addRequestHandler(TestStackRequest.class, (service) -> {
-            TestStackRequest request = service.getRequest();
+        setReadRequestHandler(new Variant(42));
+
+        server.startup().get();
+
+        endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12685/test").get();
+    }
+
+    private void setReadRequestHandler(Variant variant) {
+        server.addRequestHandler(ReadRequest.class, service -> {
+            ReadRequest request = service.getRequest();
 
             ResponseHeader header = new ResponseHeader(
                 DateTime.now(),
                 request.getRequestHeader().getRequestHandle(),
                 StatusCode.GOOD,
-                null, null, null
+                null,
+                null,
+                null
             );
 
-            service.setResponse(new TestStackResponse(header, request.getInput()));
+            List<ReadValueId> nodesToRead = l(request.getNodesToRead());
+            List<DataValue> results = Collections.nCopies(nodesToRead.size(), new DataValue(variant));
+
+            ReadResponse response = new ReadResponse(header, a(results, DataValue.class), null);
+
+            service.setResponse(response);
         });
-
-        server.startup().get();
-
-        endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12685/test").get();
     }
 
     @AfterSuite
@@ -239,12 +258,30 @@ public class ClientServerTest extends SecurityFixture {
 
         // Test some where we don't wait for disconnect to finish...
         for (int i = 0; i < 1000; i++) {
+            client.connect().get();
+
             RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
                 DateTime.now(),
-                uint(i), uint(0), null, uint(60000), null);
+                uint(i),
+                uint(0),
+                null,
+                uint(60000),
+                null
+            );
 
-            TestStackRequest request = new TestStackRequest(header, uint(i), i, input);
+            ReadRequest request = new ReadRequest(
+                header,
+                0.0,
+                TimestampsToReturn.Neither,
+                new ReadValueId[]{
+                    new ReadValueId(
+                        NodeId.NULL_VALUE,
+                        AttributeId.Value.uid(),
+                        null,
+                        null)
+                }
+            );
 
             logger.debug("sending request: {}", request);
             UaResponseMessage response = client.sendRequest(request).get();
@@ -255,12 +292,30 @@ public class ClientServerTest extends SecurityFixture {
 
         // and test some where we DO wait...
         for (int i = 0; i < 1000; i++) {
+            client.connect().get();
+
             RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
                 DateTime.now(),
-                uint(i), uint(0), null, uint(60000), null);
+                uint(i),
+                uint(0),
+                null,
+                uint(60000),
+                null
+            );
 
-            TestStackRequest request = new TestStackRequest(header, uint(i), i, input);
+            ReadRequest request = new ReadRequest(
+                header,
+                0.0,
+                TimestampsToReturn.Neither,
+                new ReadValueId[]{
+                    new ReadValueId(
+                        NodeId.NULL_VALUE,
+                        AttributeId.Value.uid(),
+                        null,
+                        null)
+                }
+            );
 
             logger.debug("sending request: {}", request);
             UaResponseMessage response = client.sendRequest(request).get();
@@ -280,12 +335,30 @@ public class ClientServerTest extends SecurityFixture {
 
         UaTcpStackClient client = createClient(endpoint);
 
+        client.connect().get();
+
         RequestHeader header = new RequestHeader(
             NodeId.NULL_VALUE,
             DateTime.now(),
-            uint(0), uint(0), null, uint(60000), null);
+            uint(0),
+            uint(0),
+            null,
+            uint(60000),
+            null
+        );
 
-        TestStackRequest request = new TestStackRequest(header, uint(0), 0, input);
+        ReadRequest request = new ReadRequest(
+            header,
+            0.0,
+            TimestampsToReturn.Neither,
+            new ReadValueId[]{
+                new ReadValueId(
+                    NodeId.NULL_VALUE,
+                    AttributeId.Value.uid(),
+                    null,
+                    null)
+            }
+        );
 
         logger.info("sending request: {}", request);
         UaResponseMessage response0 = client.sendRequest(request).get();
@@ -313,12 +386,30 @@ public class ClientServerTest extends SecurityFixture {
 
         UaTcpStackClient client = createClient(endpoint);
 
+        client.connect().get();
+
         RequestHeader header = new RequestHeader(
             NodeId.NULL_VALUE,
             DateTime.now(),
-            uint(0), uint(0), null, uint(60000), null);
+            uint(0),
+            uint(0),
+            null,
+            uint(1000),
+            null
+        );
 
-        TestStackRequest request = new TestStackRequest(header, uint(0), 0, input);
+        ReadRequest request = new ReadRequest(
+            header,
+            0.0,
+            TimestampsToReturn.Neither,
+            new ReadValueId[]{
+                new ReadValueId(
+                    NodeId.NULL_VALUE,
+                    AttributeId.Value.uid(),
+                    null,
+                    null)
+            }
+        );
 
         logger.info("sending request: {}", request);
         UaResponseMessage response0 = client.sendRequest(request).get();
@@ -345,12 +436,30 @@ public class ClientServerTest extends SecurityFixture {
 
         UaTcpStackClient client = createClient(endpoint);
 
+        client.connect().get();
+
         RequestHeader header = new RequestHeader(
             NodeId.NULL_VALUE,
             DateTime.now(),
-            uint(0), uint(0), null, uint(60000), null);
+            uint(0),
+            uint(0),
+            null,
+            uint(2000),
+            null
+        );
 
-        TestStackRequest request = new TestStackRequest(header, uint(0), 0, input);
+        ReadRequest request = new ReadRequest(
+            header,
+            0.0,
+            TimestampsToReturn.Neither,
+            new ReadValueId[]{
+                new ReadValueId(
+                    NodeId.NULL_VALUE,
+                    AttributeId.Value.uid(),
+                    null,
+                    null)
+            }
+        );
 
         logger.info("sending request: {}", request);
         UaResponseMessage response0 = client.sendRequest(request).get();
@@ -384,21 +493,33 @@ public class ClientServerTest extends SecurityFixture {
 
         UaTcpStackClient client = new UaTcpStackClient(config);
 
-        server.addRequestHandler(TestStackRequest.class, service -> {
+        server.addRequestHandler(ReadRequest.class, service -> {
             // intentionally do nothing so the request can timeout
             logger.info("received {}; ignoring...", service.getRequest());
         });
 
         RequestHeader header = new RequestHeader(
-            NodeId.NULL_VALUE, DateTime.now(),
+            NodeId.NULL_VALUE,
+            DateTime.now(),
             uint(0),
             uint(0),
             null,
-            uint(1000), // timeout
+            uint(5000),
             null
         );
 
-        TestStackRequest request = new TestStackRequest(header, uint(0), 0, new Variant(42));
+        ReadRequest request = new ReadRequest(
+            header,
+            0.0,
+            TimestampsToReturn.Neither,
+            new ReadValueId[]{
+                new ReadValueId(
+                    NodeId.NULL_VALUE,
+                    AttributeId.Value.uid(),
+                    null,
+                    null)
+            }
+        );
 
         assertThrows(ExecutionException.class, () -> {
             UaResponseMessage response = client.sendRequest(request).get();
@@ -412,29 +533,56 @@ public class ClientServerTest extends SecurityFixture {
             .setEndpoint(endpoint)
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
+            .setCertificateValidator(new InsecureCertificateValidator() {
+                @Override
+                public void validate(X509Certificate certificate) throws UaException {}
+
+                @Override
+                public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {}
+            })
             .build();
 
         return new UaTcpStackClient(config);
     }
 
     private void connectAndTest(Variant input, UaTcpStackClient client) throws InterruptedException, java.util.concurrent.ExecutionException {
+        setReadRequestHandler(input);
+
         client.connect().get();
 
-        List<TestStackRequest> requests = Lists.newArrayList();
+        List<ReadRequest> requests = Lists.newArrayList();
         List<CompletableFuture<? extends UaResponseMessage>> futures = Lists.newArrayList();
 
         for (int i = 0; i < 1000; i++) {
             RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
                 DateTime.now(),
-                uint(i), uint(0), null,
-                uint(60000), null);
+                uint(i),
+                uint(0),
+                null,
+                uint(60000),
+                null
+            );
 
-            requests.add(new TestStackRequest(header, uint(i), i, input));
+            ReadRequest request = new ReadRequest(
+                header,
+                0.0,
+                TimestampsToReturn.Neither,
+                new ReadValueId[]{
+                    new ReadValueId(
+                        NodeId.NULL_VALUE,
+                        AttributeId.Value.uid(),
+                        null,
+                        null)
+                }
+            );
 
-            CompletableFuture<TestStackResponse> future = new CompletableFuture<>();
+            requests.add(request);
 
-            future.thenAccept((response) -> assertEquals(response.getOutput(), input));
+            CompletableFuture<ReadResponse> future = new CompletableFuture<>();
+
+            future.thenAccept((response) ->
+                assertEquals(l(response.getResults()).get(0).getValue(), input));
 
             futures.add(future);
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 
-
 public class ServerRedundancyNode extends BaseObjectNode implements ServerRedundancyType {
-
     public ServerRedundancyNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> redundancySupport() {
-        return getPropertyNode(ServerRedundancyType.REDUNDANCY_SUPPORT.getBrowseName());
+    public CompletableFuture<PropertyNode> getRedundancySupportNode() {
+        return getPropertyNode(ServerRedundancyType.REDUNDANCY_SUPPORT);
     }
 
-    @Override
     public CompletableFuture<RedundancySupport> getRedundancySupport() {
         return getProperty(ServerRedundancyType.REDUNDANCY_SUPPORT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRedundancySupport(RedundancySupport value) {
         return setProperty(ServerRedundancyType.REDUNDANCY_SUPPORT, value);
     }
-
-
 }

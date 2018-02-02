@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,72 +23,56 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class AuditHistoryRawModifyDeleteEventNode extends AuditHistoryDeleteEventNode implements AuditHistoryRawModifyDeleteEventType {
-
     public AuditHistoryRawModifyDeleteEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> isDeleteModified() {
-        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.IS_DELETE_MODIFIED.getBrowseName());
+    public CompletableFuture<PropertyNode> getIsDeleteModifiedNode() {
+        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.IS_DELETE_MODIFIED);
     }
 
-    @Override
     public CompletableFuture<Boolean> getIsDeleteModified() {
         return getProperty(AuditHistoryRawModifyDeleteEventType.IS_DELETE_MODIFIED);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setIsDeleteModified(Boolean value) {
         return setProperty(AuditHistoryRawModifyDeleteEventType.IS_DELETE_MODIFIED, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> startTime() {
-        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.START_TIME.getBrowseName());
+    public CompletableFuture<PropertyNode> getStartTimeNode() {
+        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.START_TIME);
     }
 
-    @Override
     public CompletableFuture<DateTime> getStartTime() {
         return getProperty(AuditHistoryRawModifyDeleteEventType.START_TIME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setStartTime(DateTime value) {
         return setProperty(AuditHistoryRawModifyDeleteEventType.START_TIME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> endTime() {
-        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.END_TIME.getBrowseName());
+    public CompletableFuture<PropertyNode> getEndTimeNode() {
+        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.END_TIME);
     }
 
-    @Override
     public CompletableFuture<DateTime> getEndTime() {
         return getProperty(AuditHistoryRawModifyDeleteEventType.END_TIME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEndTime(DateTime value) {
         return setProperty(AuditHistoryRawModifyDeleteEventType.END_TIME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> oldValues() {
-        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.OLD_VALUES.getBrowseName());
+    public CompletableFuture<PropertyNode> getOldValuesNode() {
+        return getPropertyNode(AuditHistoryRawModifyDeleteEventType.OLD_VALUES);
     }
 
-    @Override
     public CompletableFuture<DataValue[]> getOldValues() {
         return getProperty(AuditHistoryRawModifyDeleteEventType.OLD_VALUES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setOldValues(DataValue[] value) {
         return setProperty(AuditHistoryRawModifyDeleteEventType.OLD_VALUES, value);
     }
-
-
 }

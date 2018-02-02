@@ -27,6 +27,7 @@ public final class StatusCode {
 
     public static final StatusCode GOOD = new StatusCode(SEVERITY_GOOD);
     public static final StatusCode BAD = new StatusCode(SEVERITY_BAD);
+    public static final StatusCode UNCERTAIN = new StatusCode(SEVERITY_UNCERTAIN);
 
     private final long value;
 

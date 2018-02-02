@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public class StateNode extends BaseObjectNode implements StateType {
-
     public StateNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> stateNumber() {
-        return getPropertyNode(StateType.STATE_NUMBER.getBrowseName());
+    public CompletableFuture<PropertyNode> getStateNumberNode() {
+        return getPropertyNode(StateType.STATE_NUMBER);
     }
 
-    @Override
     public CompletableFuture<UInteger> getStateNumber() {
         return getProperty(StateType.STATE_NUMBER);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setStateNumber(UInteger value) {
         return setProperty(StateType.STATE_NUMBER, value);
     }
-
-
 }

@@ -261,19 +261,27 @@ public class SessionManager implements
             }
         }
 
-        ByteString clientCertificate = request.getClientCertificate();
-        if (clientCertificate.isNotNull()) {
-            if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
-                String applicationUri = request.getClientDescription().getApplicationUri();
-                X509Certificate certificate = CertificateUtil.decodeCertificate(clientCertificate.bytes());
+        ByteString clientCertificateBytes = request.getClientCertificate();
 
-                validateApplicationUri(applicationUri, certificate);
+        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
+            X509Certificate clientCertificate = CertificateUtil
+                .decodeCertificate(clientCertificateBytes.bytes());
+
+            if (!secureChannel.getRemoteCertificate().equals(clientCertificate)) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
+                    "certificate used to open secure channel " +
+                        "differs from certificate used to create session");
             }
+
+            validateApplicationUri(request.getClientDescription().getApplicationUri(), clientCertificate);
         }
 
+        // clientCertificateBytes may contain the bytes of the entire chain, but the
+        // signature must be created using only the bytes of the leaf certificate,
+        // so use the certificate bytes from secure channel instead.
         SignatureData serverSignature = getServerSignature(
             clientNonce,
-            clientCertificate,
+            secureChannel.getRemoteCertificateBytes(),
             securityPolicy,
             secureChannel.getKeyPair()
         );

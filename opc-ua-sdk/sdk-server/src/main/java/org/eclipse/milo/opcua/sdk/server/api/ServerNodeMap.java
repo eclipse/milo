@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -101,5 +102,14 @@ public interface ServerNodeMap extends ConcurrentMap<NodeId, ServerNode> {
     default Optional<ServerNode> removeNode(NodeId nodeId) {
         return Optional.ofNullable(remove(nodeId));
     }
+
+    /**
+     * Get the server's {@link NamespaceTable}.
+     * <p>
+     * // TODO this has no business here, but ServerNodeMap is currently the only thing passed into UaNode.
+     *
+     * @return the server's {@link NamespaceTable}.
+     */
+    NamespaceTable getNamespaceTable();
 
 }

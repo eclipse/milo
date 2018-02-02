@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,39 +17,38 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
 
-@UaDataType("ContentFilterElement")
 public class ContentFilterElement implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ContentFilterElement;
     public static final NodeId BinaryEncodingId = Identifiers.ContentFilterElement_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ContentFilterElement_Encoding_DefaultXml;
 
-    protected final FilterOperator _filterOperator;
-    protected final ExtensionObject[] _filterOperands;
+    protected final FilterOperator filterOperator;
+    protected final ExtensionObject[] filterOperands;
 
     public ContentFilterElement() {
-        this._filterOperator = null;
-        this._filterOperands = null;
+        this.filterOperator = null;
+        this.filterOperands = null;
     }
 
-    public ContentFilterElement(FilterOperator _filterOperator, ExtensionObject[] _filterOperands) {
-        this._filterOperator = _filterOperator;
-        this._filterOperands = _filterOperands;
+    public ContentFilterElement(FilterOperator filterOperator, ExtensionObject[] filterOperands) {
+        this.filterOperator = filterOperator;
+        this.filterOperands = filterOperands;
     }
 
-    public FilterOperator getFilterOperator() { return _filterOperator; }
+    public FilterOperator getFilterOperator() { return filterOperator; }
 
     @Nullable
-    public ExtensionObject[] getFilterOperands() { return _filterOperands; }
+    public ExtensionObject[] getFilterOperands() { return filterOperands; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,26 +62,31 @@ public class ContentFilterElement implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("FilterOperator", _filterOperator)
-            .add("FilterOperands", _filterOperands)
+            .add("FilterOperator", filterOperator)
+            .add("FilterOperands", filterOperands)
             .toString();
     }
 
-    public static void encode(ContentFilterElement contentFilterElement, UaEncoder encoder) {
-        encoder.encodeEnumeration("FilterOperator", contentFilterElement._filterOperator);
-        encoder.encodeArray("FilterOperands", contentFilterElement._filterOperands, encoder::encodeExtensionObject);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ContentFilterElement> {
 
-    public static ContentFilterElement decode(UaDecoder decoder) {
-        FilterOperator _filterOperator = decoder.decodeEnumeration("FilterOperator", FilterOperator.class);
-        ExtensionObject[] _filterOperands = decoder.decodeArray("FilterOperands", decoder::decodeExtensionObject, ExtensionObject.class);
+        @Override
+        public Class<ContentFilterElement> getType() {
+            return ContentFilterElement.class;
+        }
 
-        return new ContentFilterElement(_filterOperator, _filterOperands);
-    }
+        @Override
+        public ContentFilterElement decode(UaDecoder decoder) throws UaSerializationException {
+            FilterOperator filterOperator = FilterOperator.from(decoder.readInt32("FilterOperator"));
+            ExtensionObject[] filterOperands = decoder.readArray("FilterOperands", decoder::readExtensionObject, ExtensionObject.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ContentFilterElement::encode, ContentFilterElement.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ContentFilterElement::decode, ContentFilterElement.class, BinaryEncodingId, XmlEncodingId);
+            return new ContentFilterElement(filterOperator, filterOperands);
+        }
+
+        @Override
+        public void encode(ContentFilterElement value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeInt32("FilterOperator", value.filterOperator != null ? value.filterOperator.getValue() : 0);
+            encoder.writeArray("FilterOperands", value.filterOperands, encoder::writeExtensionObject);
+        }
     }
 
 }

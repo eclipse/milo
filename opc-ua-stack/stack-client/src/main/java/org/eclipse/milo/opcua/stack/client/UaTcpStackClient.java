@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -58,6 +57,7 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
@@ -72,6 +72,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
+import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +83,8 @@ public class UaTcpStackClient implements UaStackClient {
     private static final long DEFAULT_TIMEOUT_MS = 60000;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
     private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
     private final Map<UInteger, Timeout> timeouts = Maps.newConcurrentMap();
@@ -121,7 +124,7 @@ public class UaTcpStackClient implements UaStackClient {
     public CompletableFuture<UaStackClient> connect() {
         CompletableFuture<UaStackClient> future = new CompletableFuture<>();
 
-        channelManager.getChannel().whenComplete((ch, ex) -> {
+        channelManager.connect().whenComplete((ch, ex) -> {
             if (ch != null) future.complete(this);
             else future.completeExceptionally(ex);
         });
@@ -137,6 +140,42 @@ public class UaTcpStackClient implements UaStackClient {
                     new UaException(StatusCodes.Bad_Disconnect, "client disconnect")))
             )
             .thenApply(v -> UaTcpStackClient.this);
+    }
+
+    /**
+     * Build a new {@link RequestHeader} using a null authentication token and a custom {@code requestTimeout}.
+     *
+     * @param requestTimeout the custom request timeout to use.
+     * @return a new {@link RequestHeader} with a null authentication token and a custom request timeout.
+     */
+    public RequestHeader newRequestHeader(UInteger requestTimeout) {
+        return newRequestHeader(NodeId.NULL_VALUE, requestTimeout);
+    }
+
+    /**
+     * Build a new {@link RequestHeader} using {@code authToken} and a custom {@code requestTimeout}.
+     *
+     * @param authToken      the authentication token (from the session) to use.
+     * @param requestTimeout the custom request timeout to use.
+     * @return a new {@link RequestHeader}.
+     */
+    public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
+        return new RequestHeader(
+            authToken,
+            DateTime.now(),
+            uint(requestHandles.getAndIncrement()),
+            uint(0),
+            null,
+            requestTimeout,
+            null
+        );
+    }
+
+    /**
+     * @return the next {@link UInteger} to use as a request handle.
+     */
+    public UInteger nextRequestHandle() {
+        return uint(requestHandles.getAndIncrement());
     }
 
     public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {
@@ -177,14 +216,16 @@ public class UaTcpStackClient implements UaStackClient {
                 if (cause instanceof ClosedChannelException) {
                     logger.debug("Channel closed; retrying...");
 
-                    sendRequest(request).whenComplete((r, ex) -> {
-                        if (r != null) {
-                            T t = (T) r;
-                            future.complete(t);
-                        } else {
-                            future.completeExceptionally(ex);
-                        }
-                    });
+                    getExecutorService().execute(() ->
+                        sendRequest(request).whenComplete((r, ex) -> {
+                            if (r != null) {
+                                T t = (T) r;
+                                future.complete(t);
+                            } else {
+                                future.completeExceptionally(ex);
+                            }
+                        })
+                    );
                 } else {
                     UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
@@ -309,14 +350,19 @@ public class UaTcpStackClient implements UaStackClient {
                         serviceFault = new ServiceFault(header);
                     }
 
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Received ServiceFault requestHandle={}, result={}",
+                            requestHandle, serviceFault.getResponseHeader().getServiceResult());
+                    }
+
                     future.completeExceptionally(new UaServiceFaultException(serviceFault));
                 }
 
                 Timeout timeout = timeouts.remove(requestHandle);
                 if (timeout != null) timeout.cancel();
             } else {
-                logger.warn("Received {} for unknown requestHandle: {}",
-                    response.getClass().getSimpleName(), requestHandle);
+                logger.warn("Received unmatched {} with requestHandle={}, timestamp={}",
+                    response.getClass().getSimpleName(), requestHandle, response.getResponseHeader().getTimestamp());
             }
         });
     }
@@ -363,9 +409,7 @@ public class UaTcpStackClient implements UaStackClient {
         return config.getExecutor();
     }
 
-    public static CompletableFuture<ClientSecureChannel> bootstrap(
-        UaTcpStackClient client,
-        @Nullable ClientSecureChannel existingChannel) {
+    public static CompletableFuture<ClientSecureChannel> bootstrap(UaTcpStackClient client) {
 
         CompletableFuture<ClientSecureChannel> handshake = new CompletableFuture<>();
 
@@ -376,67 +420,63 @@ public class UaTcpStackClient implements UaStackClient {
 
                 ClientSecureChannel secureChannel;
 
-                if (existingChannel != null) {
-                    secureChannel = existingChannel;
+                EndpointDescription endpoint = config.getEndpoint().orElseGet(() -> {
+                    String endpointUrl = config.getEndpointUrl().orElseThrow(() ->
+                        new UaRuntimeException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no endpoint or endpoint URL configured")
+                    );
+                    return new EndpointDescription(
+                        endpointUrl,
+                        null, null,
+                        MessageSecurityMode.None,
+                        SecurityPolicy.None.getSecurityPolicyUri(),
+                        null, null, null
+                    );
+                });
+
+                SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+
+                if (securityPolicy == SecurityPolicy.None) {
+                    secureChannel = new ClientSecureChannel(
+                        securityPolicy,
+                        endpoint.getSecurityMode()
+                    );
                 } else {
-                    EndpointDescription endpoint = config.getEndpoint().orElseGet(() -> {
-                        String endpointUrl = config.getEndpointUrl().orElseThrow(() ->
-                            new UaRuntimeException(
-                                StatusCodes.Bad_ConfigurationError,
-                                "no endpoint or endpoint URL configured")
-                        );
-                        return new EndpointDescription(
-                            endpointUrl,
-                            null, null,
-                            MessageSecurityMode.None,
-                            SecurityPolicy.None.getSecurityPolicyUri(),
-                            null, null, null
-                        );
-                    });
+                    KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                        new UaException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no KeyPair configured")
+                    );
 
-                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+                    X509Certificate certificate = config.getCertificate().orElseThrow(() ->
+                        new UaException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no certificate configured")
+                    );
 
-                    if (securityPolicy == SecurityPolicy.None) {
-                        secureChannel = new ClientSecureChannel(
-                            securityPolicy,
-                            endpoint.getSecurityMode()
-                        );
-                    } else {
-                        KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                    List<X509Certificate> certificateChain = Arrays.asList(
+                        config.getCertificateChain().orElseThrow(() ->
                             new UaException(
                                 StatusCodes.Bad_ConfigurationError,
-                                "no KeyPair configured")
-                        );
+                                "no certificate chain configured"))
+                    );
 
-                        X509Certificate certificate = config.getCertificate().orElseThrow(() ->
-                            new UaException(
-                                StatusCodes.Bad_ConfigurationError,
-                                "no certificate configured")
-                        );
+                    X509Certificate remoteCertificate = CertificateUtil
+                        .decodeCertificate(endpoint.getServerCertificate().bytes());
 
-                        List<X509Certificate> certificateChain = Arrays.asList(
-                            config.getCertificateChain().orElseThrow(() ->
-                                new UaException(
-                                    StatusCodes.Bad_ConfigurationError,
-                                    "no certificate chain configured"))
-                        );
+                    List<X509Certificate> remoteCertificateChain = CertificateUtil
+                        .decodeCertificates(endpoint.getServerCertificate().bytes());
 
-                        X509Certificate remoteCertificate = CertificateUtil
-                            .decodeCertificate(endpoint.getServerCertificate().bytes());
-
-                        List<X509Certificate> remoteCertificateChain = CertificateUtil
-                            .decodeCertificates(endpoint.getServerCertificate().bytes());
-
-                        secureChannel = new ClientSecureChannel(
-                            keyPair,
-                            certificate,
-                            certificateChain,
-                            remoteCertificate,
-                            remoteCertificateChain,
-                            securityPolicy,
-                            endpoint.getSecurityMode()
-                        );
-                    }
+                    secureChannel = new ClientSecureChannel(
+                        keyPair,
+                        certificate,
+                        certificateChain,
+                        remoteCertificate,
+                        remoteCertificateChain,
+                        securityPolicy,
+                        endpoint.getSecurityMode()
+                    );
                 }
 
                 UaTcpClientAcknowledgeHandler acknowledgeHandler =
@@ -525,9 +565,11 @@ public class UaTcpStackClient implements UaStackClient {
             new RequestHeader(null, DateTime.now(), uint(1), uint(0), null, uint(5000), null),
             endpointUrl, null, new String[]{Stack.UA_TCP_BINARY_TRANSPORT_URI});
 
-        return client.<GetEndpointsResponse>sendRequest(request)
-            .whenComplete((r, ex) -> client.disconnect())
-            .thenApply(GetEndpointsResponse::getEndpoints);
+        return client.connect().thenCompose(c ->
+            c.<GetEndpointsResponse>sendRequest(request)
+                .whenComplete((r, ex) -> client.disconnect())
+                .thenApply(GetEndpointsResponse::getEndpoints)
+        );
     }
 
 }

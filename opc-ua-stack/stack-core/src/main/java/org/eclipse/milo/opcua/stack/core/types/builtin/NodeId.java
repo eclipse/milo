@@ -258,7 +258,7 @@ public final class NodeId {
             m = NS_INT.matcher(s);
             if (m.matches()) {
                 Integer nsi = Integer.valueOf(m.group(1));
-                Integer obj = Integer.valueOf(m.group(2));
+                Long obj = Long.valueOf(m.group(2));
                 return new NodeId(ushort(nsi), uint(obj));
             }
 
@@ -291,7 +291,7 @@ public final class NodeId {
 
             m = NONE_INT.matcher(s);
             if (m.matches()) {
-                Integer obj = Integer.valueOf(m.group(1));
+                Long obj = Long.valueOf(m.group(1));
                 return new NodeId(ushort(0), uint(obj));
             }
 
@@ -314,7 +314,7 @@ public final class NodeId {
     public static Optional<NodeId> parseSafe(String s) {
         try {
             return Optional.of(parse(s));
-        } catch (UaRuntimeException e) {
+        } catch (Throwable t) {
             return Optional.empty();
         }
     }

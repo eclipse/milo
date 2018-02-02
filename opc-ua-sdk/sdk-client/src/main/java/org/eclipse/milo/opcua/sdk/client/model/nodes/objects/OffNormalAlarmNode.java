@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.OffNormalAlarmType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class OffNormalAlarmNode extends DiscreteAlarmNode implements OffNormalAlarmType {
-
     public OffNormalAlarmNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> normalState() {
-        return getPropertyNode(OffNormalAlarmType.NORMAL_STATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getNormalStateNode() {
+        return getPropertyNode(OffNormalAlarmType.NORMAL_STATE);
     }
 
-    @Override
     public CompletableFuture<NodeId> getNormalState() {
         return getProperty(OffNormalAlarmType.NORMAL_STATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setNormalState(NodeId value) {
         return setProperty(OffNormalAlarmType.NORMAL_STATE, value);
     }
-
-
 }

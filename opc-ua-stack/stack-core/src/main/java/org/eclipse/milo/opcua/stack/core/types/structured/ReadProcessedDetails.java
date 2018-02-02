@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,54 +17,53 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReadProcessedDetails")
 public class ReadProcessedDetails extends HistoryReadDetails {
 
     public static final NodeId TypeId = Identifiers.ReadProcessedDetails;
     public static final NodeId BinaryEncodingId = Identifiers.ReadProcessedDetails_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadProcessedDetails_Encoding_DefaultXml;
 
-    protected final DateTime _startTime;
-    protected final DateTime _endTime;
-    protected final Double _processingInterval;
-    protected final NodeId[] _aggregateType;
-    protected final AggregateConfiguration _aggregateConfiguration;
+    protected final DateTime startTime;
+    protected final DateTime endTime;
+    protected final Double processingInterval;
+    protected final NodeId[] aggregateType;
+    protected final AggregateConfiguration aggregateConfiguration;
 
     public ReadProcessedDetails() {
         super();
-        this._startTime = null;
-        this._endTime = null;
-        this._processingInterval = null;
-        this._aggregateType = null;
-        this._aggregateConfiguration = null;
+        this.startTime = null;
+        this.endTime = null;
+        this.processingInterval = null;
+        this.aggregateType = null;
+        this.aggregateConfiguration = null;
     }
 
-    public ReadProcessedDetails(DateTime _startTime, DateTime _endTime, Double _processingInterval, NodeId[] _aggregateType, AggregateConfiguration _aggregateConfiguration) {
+    public ReadProcessedDetails(DateTime startTime, DateTime endTime, Double processingInterval, NodeId[] aggregateType, AggregateConfiguration aggregateConfiguration) {
         super();
-        this._startTime = _startTime;
-        this._endTime = _endTime;
-        this._processingInterval = _processingInterval;
-        this._aggregateType = _aggregateType;
-        this._aggregateConfiguration = _aggregateConfiguration;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.processingInterval = processingInterval;
+        this.aggregateType = aggregateType;
+        this.aggregateConfiguration = aggregateConfiguration;
     }
 
-    public DateTime getStartTime() { return _startTime; }
+    public DateTime getStartTime() { return startTime; }
 
-    public DateTime getEndTime() { return _endTime; }
+    public DateTime getEndTime() { return endTime; }
 
-    public Double getProcessingInterval() { return _processingInterval; }
+    public Double getProcessingInterval() { return processingInterval; }
 
     @Nullable
-    public NodeId[] getAggregateType() { return _aggregateType; }
+    public NodeId[] getAggregateType() { return aggregateType; }
 
-    public AggregateConfiguration getAggregateConfiguration() { return _aggregateConfiguration; }
+    public AggregateConfiguration getAggregateConfiguration() { return aggregateConfiguration; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -78,35 +77,40 @@ public class ReadProcessedDetails extends HistoryReadDetails {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StartTime", _startTime)
-            .add("EndTime", _endTime)
-            .add("ProcessingInterval", _processingInterval)
-            .add("AggregateType", _aggregateType)
-            .add("AggregateConfiguration", _aggregateConfiguration)
+            .add("StartTime", startTime)
+            .add("EndTime", endTime)
+            .add("ProcessingInterval", processingInterval)
+            .add("AggregateType", aggregateType)
+            .add("AggregateConfiguration", aggregateConfiguration)
             .toString();
     }
 
-    public static void encode(ReadProcessedDetails readProcessedDetails, UaEncoder encoder) {
-        encoder.encodeDateTime("StartTime", readProcessedDetails._startTime);
-        encoder.encodeDateTime("EndTime", readProcessedDetails._endTime);
-        encoder.encodeDouble("ProcessingInterval", readProcessedDetails._processingInterval);
-        encoder.encodeArray("AggregateType", readProcessedDetails._aggregateType, encoder::encodeNodeId);
-        encoder.encodeSerializable("AggregateConfiguration", readProcessedDetails._aggregateConfiguration != null ? readProcessedDetails._aggregateConfiguration : new AggregateConfiguration());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ReadProcessedDetails> {
 
-    public static ReadProcessedDetails decode(UaDecoder decoder) {
-        DateTime _startTime = decoder.decodeDateTime("StartTime");
-        DateTime _endTime = decoder.decodeDateTime("EndTime");
-        Double _processingInterval = decoder.decodeDouble("ProcessingInterval");
-        NodeId[] _aggregateType = decoder.decodeArray("AggregateType", decoder::decodeNodeId, NodeId.class);
-        AggregateConfiguration _aggregateConfiguration = decoder.decodeSerializable("AggregateConfiguration", AggregateConfiguration.class);
+        @Override
+        public Class<ReadProcessedDetails> getType() {
+            return ReadProcessedDetails.class;
+        }
 
-        return new ReadProcessedDetails(_startTime, _endTime, _processingInterval, _aggregateType, _aggregateConfiguration);
-    }
+        @Override
+        public ReadProcessedDetails decode(UaDecoder decoder) throws UaSerializationException {
+            DateTime startTime = decoder.readDateTime("StartTime");
+            DateTime endTime = decoder.readDateTime("EndTime");
+            Double processingInterval = decoder.readDouble("ProcessingInterval");
+            NodeId[] aggregateType = decoder.readArray("AggregateType", decoder::readNodeId, NodeId.class);
+            AggregateConfiguration aggregateConfiguration = (AggregateConfiguration) decoder.readBuiltinStruct("AggregateConfiguration", AggregateConfiguration.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ReadProcessedDetails::encode, ReadProcessedDetails.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReadProcessedDetails::decode, ReadProcessedDetails.class, BinaryEncodingId, XmlEncodingId);
+            return new ReadProcessedDetails(startTime, endTime, processingInterval, aggregateType, aggregateConfiguration);
+        }
+
+        @Override
+        public void encode(ReadProcessedDetails value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeDateTime("StartTime", value.startTime);
+            encoder.writeDateTime("EndTime", value.endTime);
+            encoder.writeDouble("ProcessingInterval", value.processingInterval);
+            encoder.writeArray("AggregateType", value.aggregateType, encoder::writeNodeId);
+            encoder.writeBuiltinStruct("AggregateConfiguration", value.aggregateConfiguration, AggregateConfiguration.class);
+        }
     }
 
 }

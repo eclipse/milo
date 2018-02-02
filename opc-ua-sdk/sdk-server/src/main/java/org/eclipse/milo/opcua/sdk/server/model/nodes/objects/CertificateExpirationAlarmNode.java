@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,77 +27,72 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:CertificateExpirationAlarmType")
 public class CertificateExpirationAlarmNode extends SystemOffNormalAlarmNode implements CertificateExpirationAlarmType {
+    public CertificateExpirationAlarmNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public CertificateExpirationAlarmNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public CertificateExpirationAlarmNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public DateTime getExpirationDate() {
-        Optional<DateTime> property = getProperty(CertificateExpirationAlarmType.EXPIRATION_DATE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getExpirationDateNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(CertificateExpirationAlarmType.EXPIRATION_DATE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(CertificateExpirationAlarmType.EXPIRATION_DATE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public DateTime getExpirationDate() {
+        Optional<DateTime> propertyValue = getProperty(CertificateExpirationAlarmType.EXPIRATION_DATE);
+        return propertyValue.orElse(null);
+    }
+
     public void setExpirationDate(DateTime value) {
         setProperty(CertificateExpirationAlarmType.EXPIRATION_DATE, value);
     }
 
-    @Override
-    public NodeId getCertificateType() {
-        Optional<NodeId> property = getProperty(CertificateExpirationAlarmType.CERTIFICATE_TYPE);
-
-        return property.orElse(null);
+    public PropertyNode getExpirationLimitNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(CertificateExpirationAlarmType.EXPIRATION_LIMIT);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Double getExpirationLimit() {
+        Optional<Double> propertyValue = getProperty(CertificateExpirationAlarmType.EXPIRATION_LIMIT);
+        return propertyValue.orElse(null);
+    }
+
+    public void setExpirationLimit(Double value) {
+        setProperty(CertificateExpirationAlarmType.EXPIRATION_LIMIT, value);
+    }
+
     public PropertyNode getCertificateTypeNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE_TYPE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE_TYPE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public NodeId getCertificateType() {
+        Optional<NodeId> propertyValue = getProperty(CertificateExpirationAlarmType.CERTIFICATE_TYPE);
+        return propertyValue.orElse(null);
+    }
+
     public void setCertificateType(NodeId value) {
         setProperty(CertificateExpirationAlarmType.CERTIFICATE_TYPE, value);
     }
 
-    @Override
-    public ByteString getCertificate() {
-        Optional<ByteString> property = getProperty(CertificateExpirationAlarmType.CERTIFICATE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getCertificateNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(CertificateExpirationAlarmType.CERTIFICATE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public ByteString getCertificate() {
+        Optional<ByteString> propertyValue = getProperty(CertificateExpirationAlarmType.CERTIFICATE);
+        return propertyValue.orElse(null);
+    }
+
     public void setCertificate(ByteString value) {
         setProperty(CertificateExpirationAlarmType.CERTIFICATE, value);
     }
-
 }

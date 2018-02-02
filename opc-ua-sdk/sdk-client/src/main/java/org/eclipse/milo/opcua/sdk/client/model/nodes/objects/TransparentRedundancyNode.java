@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,42 +22,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.RedundantServerDataType;
 
-
 public class TransparentRedundancyNode extends ServerRedundancyNode implements TransparentRedundancyType {
-
     public TransparentRedundancyNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> currentServerId() {
-        return getPropertyNode(TransparentRedundancyType.CURRENT_SERVER_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getCurrentServerIdNode() {
+        return getPropertyNode(TransparentRedundancyType.CURRENT_SERVER_ID);
     }
 
-    @Override
     public CompletableFuture<String> getCurrentServerId() {
         return getProperty(TransparentRedundancyType.CURRENT_SERVER_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentServerId(String value) {
         return setProperty(TransparentRedundancyType.CURRENT_SERVER_ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> redundantServerArray() {
-        return getPropertyNode(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY.getBrowseName());
+    public CompletableFuture<PropertyNode> getRedundantServerArrayNode() {
+        return getPropertyNode(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY);
     }
 
-    @Override
     public CompletableFuture<RedundantServerDataType[]> getRedundantServerArray() {
         return getProperty(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setRedundantServerArray(RedundantServerDataType[] value) {
         return setProperty(TransparentRedundancyType.REDUNDANT_SERVER_ARRAY, value);
     }
-
-
 }

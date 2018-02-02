@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,45 +17,44 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ReadResponse")
 public class ReadResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.ReadResponse;
     public static final NodeId BinaryEncodingId = Identifiers.ReadResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ReadResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final DataValue[] _results;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final DataValue[] results;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public ReadResponse() {
-        this._responseHeader = null;
-        this._results = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.results = null;
+        this.diagnosticInfos = null;
     }
 
-    public ReadResponse(ResponseHeader _responseHeader, DataValue[] _results, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._results = _results;
-        this._diagnosticInfos = _diagnosticInfos;
+    public ReadResponse(ResponseHeader responseHeader, DataValue[] results, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.results = results;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public DataValue[] getResults() { return _results; }
+    public DataValue[] getResults() { return results; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,29 +68,34 @@ public class ReadResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("Results", _results)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("Results", results)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static void encode(ReadResponse readResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", readResponse._responseHeader != null ? readResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Results", readResponse._results, encoder::encodeDataValue);
-        encoder.encodeArray("DiagnosticInfos", readResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ReadResponse> {
 
-    public static ReadResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        DataValue[] _results = decoder.decodeArray("Results", decoder::decodeDataValue, DataValue.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+        @Override
+        public Class<ReadResponse> getType() {
+            return ReadResponse.class;
+        }
 
-        return new ReadResponse(_responseHeader, _results, _diagnosticInfos);
-    }
+        @Override
+        public ReadResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            DataValue[] results = decoder.readArray("Results", decoder::readDataValue, DataValue.class);
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ReadResponse::encode, ReadResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ReadResponse::decode, ReadResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new ReadResponse(responseHeader, results, diagnosticInfos);
+        }
+
+        @Override
+        public void encode(ReadResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeArray("Results", value.results, encoder::writeDataValue);
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        }
     }
 
 }

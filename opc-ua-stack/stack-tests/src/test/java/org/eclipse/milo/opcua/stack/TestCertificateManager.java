@@ -43,6 +43,11 @@ public class TestCertificateManager implements CertificateManager {
     }
 
     @Override
+    public Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
+        return getCertificate(thumbprint).map(c -> new X509Certificate[]{c});
+    }
+
+    @Override
     public Set<KeyPair> getKeyPairs() {
         return Sets.newHashSet(keyPair);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,39 +17,38 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ContentFilterResult")
 public class ContentFilterResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ContentFilterResult;
     public static final NodeId BinaryEncodingId = Identifiers.ContentFilterResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ContentFilterResult_Encoding_DefaultXml;
 
-    protected final ContentFilterElementResult[] _elementResults;
-    protected final DiagnosticInfo[] _elementDiagnosticInfos;
+    protected final ContentFilterElementResult[] elementResults;
+    protected final DiagnosticInfo[] elementDiagnosticInfos;
 
     public ContentFilterResult() {
-        this._elementResults = null;
-        this._elementDiagnosticInfos = null;
+        this.elementResults = null;
+        this.elementDiagnosticInfos = null;
     }
 
-    public ContentFilterResult(ContentFilterElementResult[] _elementResults, DiagnosticInfo[] _elementDiagnosticInfos) {
-        this._elementResults = _elementResults;
-        this._elementDiagnosticInfos = _elementDiagnosticInfos;
+    public ContentFilterResult(ContentFilterElementResult[] elementResults, DiagnosticInfo[] elementDiagnosticInfos) {
+        this.elementResults = elementResults;
+        this.elementDiagnosticInfos = elementDiagnosticInfos;
     }
 
     @Nullable
-    public ContentFilterElementResult[] getElementResults() { return _elementResults; }
+    public ContentFilterElementResult[] getElementResults() { return elementResults; }
 
     @Nullable
-    public DiagnosticInfo[] getElementDiagnosticInfos() { return _elementDiagnosticInfos; }
+    public DiagnosticInfo[] getElementDiagnosticInfos() { return elementDiagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -63,26 +62,39 @@ public class ContentFilterResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ElementResults", _elementResults)
-            .add("ElementDiagnosticInfos", _elementDiagnosticInfos)
+            .add("ElementResults", elementResults)
+            .add("ElementDiagnosticInfos", elementDiagnosticInfos)
             .toString();
     }
 
-    public static void encode(ContentFilterResult contentFilterResult, UaEncoder encoder) {
-        encoder.encodeArray("ElementResults", contentFilterResult._elementResults, encoder::encodeSerializable);
-        encoder.encodeArray("ElementDiagnosticInfos", contentFilterResult._elementDiagnosticInfos, encoder::encodeDiagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ContentFilterResult> {
 
-    public static ContentFilterResult decode(UaDecoder decoder) {
-        ContentFilterElementResult[] _elementResults = decoder.decodeArray("ElementResults", decoder::decodeSerializable, ContentFilterElementResult.class);
-        DiagnosticInfo[] _elementDiagnosticInfos = decoder.decodeArray("ElementDiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+        @Override
+        public Class<ContentFilterResult> getType() {
+            return ContentFilterResult.class;
+        }
 
-        return new ContentFilterResult(_elementResults, _elementDiagnosticInfos);
-    }
+        @Override
+        public ContentFilterResult decode(UaDecoder decoder) throws UaSerializationException {
+            ContentFilterElementResult[] elementResults =
+                decoder.readBuiltinStructArray(
+                    "ElementResults",
+                    ContentFilterElementResult.class
+                );
+            DiagnosticInfo[] elementDiagnosticInfos = decoder.readArray("ElementDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    static {
-        DelegateRegistry.registerEncoder(ContentFilterResult::encode, ContentFilterResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ContentFilterResult::decode, ContentFilterResult.class, BinaryEncodingId, XmlEncodingId);
+            return new ContentFilterResult(elementResults, elementDiagnosticInfos);
+        }
+
+        @Override
+        public void encode(ContentFilterResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStructArray(
+                "ElementResults",
+                value.elementResults,
+                ContentFilterElementResult.class
+            );
+            encoder.writeArray("ElementDiagnosticInfos", value.elementDiagnosticInfos, encoder::writeDiagnosticInfo);
+        }
     }
 
 }

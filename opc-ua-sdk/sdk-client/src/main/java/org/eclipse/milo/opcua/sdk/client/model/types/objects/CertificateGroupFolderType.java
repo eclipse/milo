@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,15 +15,10 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 
 import java.util.concurrent.CompletableFuture;
 
-
 public interface CertificateGroupFolderType extends FolderType {
+    CompletableFuture<? extends CertificateGroupType> getDefaultApplicationGroupNode();
 
+    CompletableFuture<? extends CertificateGroupType> getDefaultHttpsGroupNode();
 
-    CompletableFuture<? extends CertificateGroupType> defaultApplicationGroup();
-
-    CompletableFuture<? extends CertificateGroupType> defaultHttpsGroup();
-
-    CompletableFuture<? extends CertificateGroupType> defaultUserTokenGroup();
-
-
+    CompletableFuture<? extends CertificateGroupType> getDefaultUserTokenGroupNode();
 }

@@ -5,21 +5,69 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo-examples</artifactId>
-        <version>0.1.6-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>client-examples</artifactId>
+
+    <profiles>
+        <profile>
+            <id>standalone-client</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>build-client</id>
+                                <configuration>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>org.eclipse.milo.examples.client.SecureClientStandalone</mainClass>
+                                        </manifest>
+                                    </archive>
+                                    <descriptorRefs>
+                                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                                    </descriptorRefs>
+                                    <finalName>milo-opcua-client</finalName>
+                                </configuration>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-client</artifactId>
-            <version>0.1.6-SNAPSHOT</version>
+            <version>0.2.1-SNAPSHOT</version>
         </dependency>
+
+        <!-- Redeclare our dependency on Bouncy Castle
+        because we use SelfSignedCertificateBuilder -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.58</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.58</version>
+        </dependency>
+
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>server-examples</artifactId>
-            <version>0.1.6-SNAPSHOT</version>
+            <version>0.2.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

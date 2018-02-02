@@ -20,15 +20,18 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
+import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
@@ -91,7 +94,11 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     }
 
     @Override
-    public void invoke(CallMethodRequest request, CompletableFuture<CallMethodResult> future) {
+    public void invoke(
+        AccessContext accessContext,
+        CallMethodRequest request,
+        CompletableFuture<CallMethodResult> future) {
+        
         NodeId objectId = request.getObjectId();
 
         List<Variant> inputVariants = l(request.getInputArguments());
@@ -142,7 +149,13 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
                     (UaObjectNode) nodeMap.getNode(objectId)
                         .orElseThrow(() -> new Exception("owner Object node found"));
 
-                InvocationContext context = new InvocationContextImpl(objectNode, future, inputArgumentResults, latch);
+                InvocationContext context = new InvocationContextImpl(
+                    accessContext,
+                    objectNode,
+                    future,
+                    inputArgumentResults,
+                    latch
+                );
 
                 parameters[0] = context;
 
@@ -273,7 +286,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
         void set(T value);
     }
 
-    public interface InvocationContext {
+    public interface InvocationContext extends AccessContext {
         UaObjectNode getObjectNode();
 
         void setFailure(UaException failure);
@@ -307,21 +320,29 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     }
 
     private static class InvocationContextImpl implements InvocationContext {
+        private final AccessContext accessContext;
         private final UaObjectNode objectNode;
         private final CompletableFuture<CallMethodResult> future;
         private final StatusCode[] inputArgumentResults;
         private final CountDownLatch latch;
 
         private InvocationContextImpl(
+            AccessContext accessContext,
             UaObjectNode objectNode,
             CompletableFuture<CallMethodResult> future,
             StatusCode[] inputArgumentResults,
             CountDownLatch latch) {
 
+            this.accessContext = accessContext;
             this.objectNode = objectNode;
             this.inputArgumentResults = inputArgumentResults;
             this.future = future;
             this.latch = latch;
+        }
+
+        @Override
+        public Optional<Session> getSession() {
+            return accessContext.getSession();
         }
 
         @Override

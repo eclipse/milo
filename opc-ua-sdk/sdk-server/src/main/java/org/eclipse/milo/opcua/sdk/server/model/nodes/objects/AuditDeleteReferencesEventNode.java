@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,39 +26,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AuditDeleteReferencesEventType")
 public class AuditDeleteReferencesEventNode extends AuditNodeManagementEventNode implements AuditDeleteReferencesEventType {
+    public AuditDeleteReferencesEventNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AuditDeleteReferencesEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AuditDeleteReferencesEventNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public DeleteReferencesItem[] getReferencesToDelete() {
-        Optional<DeleteReferencesItem[]> property = getProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getReferencesToDeleteNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public DeleteReferencesItem[] getReferencesToDelete() {
+        Optional<DeleteReferencesItem[]> propertyValue = getProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
+        return propertyValue.orElse(null);
+    }
+
     public void setReferencesToDelete(DeleteReferencesItem[] value) {
         setProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE, value);
     }
-
 }

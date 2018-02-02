@@ -1,119 +1,110 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
 
 public interface NamespaceMetadataType extends BaseObjectType {
-
-    Property<String> NAMESPACE_URI = new BasicProperty<>(
-        QualifiedName.parse("0:NamespaceUri"),
+    QualifiedProperty<String> NAMESPACE_URI = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NamespaceUri",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<String> NAMESPACE_VERSION = new BasicProperty<>(
-        QualifiedName.parse("0:NamespaceVersion"),
+    QualifiedProperty<String> NAMESPACE_VERSION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NamespaceVersion",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    Property<DateTime> NAMESPACE_PUBLICATION_DATE = new BasicProperty<>(
-        QualifiedName.parse("0:NamespacePublicationDate"),
+    QualifiedProperty<DateTime> NAMESPACE_PUBLICATION_DATE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NamespacePublicationDate",
         NodeId.parse("ns=0;i=13"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<Boolean> IS_NAMESPACE_SUBSET = new BasicProperty<>(
-        QualifiedName.parse("0:IsNamespaceSubset"),
+    QualifiedProperty<Boolean> IS_NAMESPACE_SUBSET = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "IsNamespaceSubset",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<IdType[]> STATIC_NODE_ID_IDENTIFIER_TYPES = new BasicProperty<>(
-        QualifiedName.parse("0:StaticNodeIdIdentifierTypes"),
+    QualifiedProperty<IdType[]> STATIC_NODE_ID_TYPES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StaticNodeIdTypes",
         NodeId.parse("ns=0;i=256"),
-        1,
+        ValueRanks.OneDimension,
         IdType[].class
     );
 
-    Property<String[]> STATIC_NUMERIC_NODE_ID_RANGE = new BasicProperty<>(
-        QualifiedName.parse("0:StaticNumericNodeIdRange"),
+    QualifiedProperty<String[]> STATIC_NUMERIC_NODE_ID_RANGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StaticNumericNodeIdRange",
         NodeId.parse("ns=0;i=291"),
-        1,
+        ValueRanks.OneDimension,
         String[].class
     );
 
-    Property<String[]> STATIC_STRING_NODE_ID_PATTERN = new BasicProperty<>(
-        QualifiedName.parse("0:StaticStringNodeIdPattern"),
+    QualifiedProperty<String> STATIC_STRING_NODE_ID_PATTERN = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StaticStringNodeIdPattern",
         NodeId.parse("ns=0;i=12"),
-        1,
-        String[].class
+        ValueRanks.Scalar,
+        String.class
     );
-
-    String getNamespaceUri();
 
     PropertyType getNamespaceUriNode();
 
-    void setNamespaceUri(String value);
+    String getNamespaceUri();
 
-    String getNamespaceVersion();
+    void setNamespaceUri(String value);
 
     PropertyType getNamespaceVersionNode();
 
-    void setNamespaceVersion(String value);
+    String getNamespaceVersion();
 
-    DateTime getNamespacePublicationDate();
+    void setNamespaceVersion(String value);
 
     PropertyType getNamespacePublicationDateNode();
 
-    void setNamespacePublicationDate(DateTime value);
+    DateTime getNamespacePublicationDate();
 
-    Boolean getIsNamespaceSubset();
+    void setNamespacePublicationDate(DateTime value);
 
     PropertyType getIsNamespaceSubsetNode();
 
+    Boolean getIsNamespaceSubset();
+
     void setIsNamespaceSubset(Boolean value);
 
-    IdType[] getStaticNodeIdIdentifierTypes();
+    PropertyType getStaticNodeIdTypesNode();
 
-    PropertyType getStaticNodeIdIdentifierTypesNode();
+    IdType[] getStaticNodeIdTypes();
 
-    void setStaticNodeIdIdentifierTypes(IdType[] value);
-
-    String[] getStaticNumericNodeIdRange();
+    void setStaticNodeIdTypes(IdType[] value);
 
     PropertyType getStaticNumericNodeIdRangeNode();
 
-    void setStaticNumericNodeIdRange(String[] value);
+    String[] getStaticNumericNodeIdRange();
 
-    String[] getStaticStringNodeIdPattern();
+    void setStaticNumericNodeIdRange(String[] value);
 
     PropertyType getStaticStringNodeIdPatternNode();
 
-    void setStaticStringNodeIdPattern(String[] value);
+    String getStaticStringNodeIdPattern();
+
+    void setStaticStringNodeIdPattern(String value);
 
     AddressSpaceFileType getNamespaceFileNode();
-
 }

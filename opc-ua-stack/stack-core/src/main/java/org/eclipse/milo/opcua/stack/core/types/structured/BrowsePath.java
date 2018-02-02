@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,36 +15,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("BrowsePath")
 public class BrowsePath implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.BrowsePath;
     public static final NodeId BinaryEncodingId = Identifiers.BrowsePath_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.BrowsePath_Encoding_DefaultXml;
 
-    protected final NodeId _startingNode;
-    protected final RelativePath _relativePath;
+    protected final NodeId startingNode;
+    protected final RelativePath relativePath;
 
     public BrowsePath() {
-        this._startingNode = null;
-        this._relativePath = null;
+        this.startingNode = null;
+        this.relativePath = null;
     }
 
-    public BrowsePath(NodeId _startingNode, RelativePath _relativePath) {
-        this._startingNode = _startingNode;
-        this._relativePath = _relativePath;
+    public BrowsePath(NodeId startingNode, RelativePath relativePath) {
+        this.startingNode = startingNode;
+        this.relativePath = relativePath;
     }
 
-    public NodeId getStartingNode() { return _startingNode; }
+    public NodeId getStartingNode() { return startingNode; }
 
-    public RelativePath getRelativePath() { return _relativePath; }
+    public RelativePath getRelativePath() { return relativePath; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class BrowsePath implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StartingNode", _startingNode)
-            .add("RelativePath", _relativePath)
+            .add("StartingNode", startingNode)
+            .add("RelativePath", relativePath)
             .toString();
     }
 
-    public static void encode(BrowsePath browsePath, UaEncoder encoder) {
-        encoder.encodeNodeId("StartingNode", browsePath._startingNode);
-        encoder.encodeSerializable("RelativePath", browsePath._relativePath != null ? browsePath._relativePath : new RelativePath());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<BrowsePath> {
 
-    public static BrowsePath decode(UaDecoder decoder) {
-        NodeId _startingNode = decoder.decodeNodeId("StartingNode");
-        RelativePath _relativePath = decoder.decodeSerializable("RelativePath", RelativePath.class);
+        @Override
+        public Class<BrowsePath> getType() {
+            return BrowsePath.class;
+        }
 
-        return new BrowsePath(_startingNode, _relativePath);
-    }
+        @Override
+        public BrowsePath decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId startingNode = decoder.readNodeId("StartingNode");
+            RelativePath relativePath = (RelativePath) decoder.readBuiltinStruct("RelativePath", RelativePath.class);
 
-    static {
-        DelegateRegistry.registerEncoder(BrowsePath::encode, BrowsePath.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(BrowsePath::decode, BrowsePath.class, BinaryEncodingId, XmlEncodingId);
+            return new BrowsePath(startingNode, relativePath);
+        }
+
+        @Override
+        public void encode(BrowsePath value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("StartingNode", value.startingNode);
+            encoder.writeBuiltinStruct("RelativePath", value.relativePath, RelativePath.class);
+        }
     }
 
 }

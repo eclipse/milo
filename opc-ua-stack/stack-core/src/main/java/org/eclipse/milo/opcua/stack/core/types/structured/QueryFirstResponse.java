@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,61 +17,60 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("QueryFirstResponse")
 public class QueryFirstResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.QueryFirstResponse;
     public static final NodeId BinaryEncodingId = Identifiers.QueryFirstResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.QueryFirstResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final QueryDataSet[] _queryDataSets;
-    protected final ByteString _continuationPoint;
-    protected final ParsingResult[] _parsingResults;
-    protected final DiagnosticInfo[] _diagnosticInfos;
-    protected final ContentFilterResult _filterResult;
+    protected final ResponseHeader responseHeader;
+    protected final QueryDataSet[] queryDataSets;
+    protected final ByteString continuationPoint;
+    protected final ParsingResult[] parsingResults;
+    protected final DiagnosticInfo[] diagnosticInfos;
+    protected final ContentFilterResult filterResult;
 
     public QueryFirstResponse() {
-        this._responseHeader = null;
-        this._queryDataSets = null;
-        this._continuationPoint = null;
-        this._parsingResults = null;
-        this._diagnosticInfos = null;
-        this._filterResult = null;
+        this.responseHeader = null;
+        this.queryDataSets = null;
+        this.continuationPoint = null;
+        this.parsingResults = null;
+        this.diagnosticInfos = null;
+        this.filterResult = null;
     }
 
-    public QueryFirstResponse(ResponseHeader _responseHeader, QueryDataSet[] _queryDataSets, ByteString _continuationPoint, ParsingResult[] _parsingResults, DiagnosticInfo[] _diagnosticInfos, ContentFilterResult _filterResult) {
-        this._responseHeader = _responseHeader;
-        this._queryDataSets = _queryDataSets;
-        this._continuationPoint = _continuationPoint;
-        this._parsingResults = _parsingResults;
-        this._diagnosticInfos = _diagnosticInfos;
-        this._filterResult = _filterResult;
+    public QueryFirstResponse(ResponseHeader responseHeader, QueryDataSet[] queryDataSets, ByteString continuationPoint, ParsingResult[] parsingResults, DiagnosticInfo[] diagnosticInfos, ContentFilterResult filterResult) {
+        this.responseHeader = responseHeader;
+        this.queryDataSets = queryDataSets;
+        this.continuationPoint = continuationPoint;
+        this.parsingResults = parsingResults;
+        this.diagnosticInfos = diagnosticInfos;
+        this.filterResult = filterResult;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public QueryDataSet[] getQueryDataSets() { return _queryDataSets; }
+    public QueryDataSet[] getQueryDataSets() { return queryDataSets; }
 
-    public ByteString getContinuationPoint() { return _continuationPoint; }
-
-    @Nullable
-    public ParsingResult[] getParsingResults() { return _parsingResults; }
+    public ByteString getContinuationPoint() { return continuationPoint; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public ParsingResult[] getParsingResults() { return parsingResults; }
 
-    public ContentFilterResult getFilterResult() { return _filterResult; }
+    @Nullable
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
+
+    public ContentFilterResult getFilterResult() { return filterResult; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -85,38 +84,59 @@ public class QueryFirstResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("QueryDataSets", _queryDataSets)
-            .add("ContinuationPoint", _continuationPoint)
-            .add("ParsingResults", _parsingResults)
-            .add("DiagnosticInfos", _diagnosticInfos)
-            .add("FilterResult", _filterResult)
+            .add("ResponseHeader", responseHeader)
+            .add("QueryDataSets", queryDataSets)
+            .add("ContinuationPoint", continuationPoint)
+            .add("ParsingResults", parsingResults)
+            .add("DiagnosticInfos", diagnosticInfos)
+            .add("FilterResult", filterResult)
             .toString();
     }
 
-    public static void encode(QueryFirstResponse queryFirstResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", queryFirstResponse._responseHeader != null ? queryFirstResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("QueryDataSets", queryFirstResponse._queryDataSets, encoder::encodeSerializable);
-        encoder.encodeByteString("ContinuationPoint", queryFirstResponse._continuationPoint);
-        encoder.encodeArray("ParsingResults", queryFirstResponse._parsingResults, encoder::encodeSerializable);
-        encoder.encodeArray("DiagnosticInfos", queryFirstResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
-        encoder.encodeSerializable("FilterResult", queryFirstResponse._filterResult != null ? queryFirstResponse._filterResult : new ContentFilterResult());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<QueryFirstResponse> {
 
-    public static QueryFirstResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        QueryDataSet[] _queryDataSets = decoder.decodeArray("QueryDataSets", decoder::decodeSerializable, QueryDataSet.class);
-        ByteString _continuationPoint = decoder.decodeByteString("ContinuationPoint");
-        ParsingResult[] _parsingResults = decoder.decodeArray("ParsingResults", decoder::decodeSerializable, ParsingResult.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
-        ContentFilterResult _filterResult = decoder.decodeSerializable("FilterResult", ContentFilterResult.class);
+        @Override
+        public Class<QueryFirstResponse> getType() {
+            return QueryFirstResponse.class;
+        }
 
-        return new QueryFirstResponse(_responseHeader, _queryDataSets, _continuationPoint, _parsingResults, _diagnosticInfos, _filterResult);
-    }
+        @Override
+        public QueryFirstResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            QueryDataSet[] queryDataSets =
+                decoder.readBuiltinStructArray(
+                    "QueryDataSets",
+                    QueryDataSet.class
+                );
+            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
+            ParsingResult[] parsingResults =
+                decoder.readBuiltinStructArray(
+                    "ParsingResults",
+                    ParsingResult.class
+                );
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
+            ContentFilterResult filterResult = (ContentFilterResult) decoder.readBuiltinStruct("FilterResult", ContentFilterResult.class);
 
-    static {
-        DelegateRegistry.registerEncoder(QueryFirstResponse::encode, QueryFirstResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryFirstResponse::decode, QueryFirstResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new QueryFirstResponse(responseHeader, queryDataSets, continuationPoint, parsingResults, diagnosticInfos, filterResult);
+        }
+
+        @Override
+        public void encode(QueryFirstResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStructArray(
+                "QueryDataSets",
+                value.queryDataSets,
+                QueryDataSet.class
+            );
+            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
+            encoder.writeBuiltinStructArray(
+                "ParsingResults",
+                value.parsingResults,
+                ParsingResult.class
+            );
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+            encoder.writeBuiltinStruct("FilterResult", value.filterResult, ContentFilterResult.class);
+        }
     }
 
 }

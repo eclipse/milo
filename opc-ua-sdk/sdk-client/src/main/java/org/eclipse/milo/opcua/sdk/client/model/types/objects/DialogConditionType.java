@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,106 +17,106 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.TwoStateVariableType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface DialogConditionType extends ConditionType {
-
-    Property<LocalizedText> PROMPT = new BasicProperty<>(
-        QualifiedName.parse("0:Prompt"),
+    QualifiedProperty<LocalizedText> PROMPT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Prompt",
         NodeId.parse("ns=0;i=21"),
-        -1,
+        ValueRanks.Scalar,
         LocalizedText.class
     );
 
-    Property<LocalizedText[]> RESPONSE_OPTION_SET = new BasicProperty<>(
-        QualifiedName.parse("0:ResponseOptionSet"),
+    QualifiedProperty<LocalizedText[]> RESPONSE_OPTION_SET = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ResponseOptionSet",
         NodeId.parse("ns=0;i=21"),
-        1,
+        ValueRanks.OneDimension,
         LocalizedText[].class
     );
 
-    Property<Integer> DEFAULT_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:DefaultResponse"),
+    QualifiedProperty<Integer> DEFAULT_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DefaultResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<Integer> OK_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:OkResponse"),
+    QualifiedProperty<Integer> OK_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OkResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<Integer> CANCEL_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:CancelResponse"),
+    QualifiedProperty<Integer> CANCEL_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "CancelResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-    Property<Integer> LAST_RESPONSE = new BasicProperty<>(
-        QualifiedName.parse("0:LastResponse"),
+    QualifiedProperty<Integer> LAST_RESPONSE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastResponse",
         NodeId.parse("ns=0;i=6"),
-        -1,
+        ValueRanks.Scalar,
         Integer.class
     );
 
-
-    CompletableFuture<? extends PropertyType> prompt();
+    CompletableFuture<? extends PropertyType> getPromptNode();
 
     CompletableFuture<LocalizedText> getPrompt();
 
     CompletableFuture<StatusCode> setPrompt(LocalizedText value);
 
-    CompletableFuture<? extends PropertyType> responseOptionSet();
+    CompletableFuture<? extends PropertyType> getResponseOptionSetNode();
 
     CompletableFuture<LocalizedText[]> getResponseOptionSet();
 
     CompletableFuture<StatusCode> setResponseOptionSet(LocalizedText[] value);
 
-    CompletableFuture<? extends PropertyType> defaultResponse();
+    CompletableFuture<? extends PropertyType> getDefaultResponseNode();
 
     CompletableFuture<Integer> getDefaultResponse();
 
     CompletableFuture<StatusCode> setDefaultResponse(Integer value);
 
-    CompletableFuture<? extends PropertyType> okResponse();
+    CompletableFuture<? extends PropertyType> getOkResponseNode();
 
     CompletableFuture<Integer> getOkResponse();
 
     CompletableFuture<StatusCode> setOkResponse(Integer value);
 
-    CompletableFuture<? extends PropertyType> cancelResponse();
+    CompletableFuture<? extends PropertyType> getCancelResponseNode();
 
     CompletableFuture<Integer> getCancelResponse();
 
     CompletableFuture<StatusCode> setCancelResponse(Integer value);
 
-    CompletableFuture<? extends PropertyType> lastResponse();
+    CompletableFuture<? extends PropertyType> getLastResponseNode();
 
     CompletableFuture<Integer> getLastResponse();
 
     CompletableFuture<StatusCode> setLastResponse(Integer value);
 
-
-    CompletableFuture<? extends TwoStateVariableType> enabledState();
+    CompletableFuture<? extends TwoStateVariableType> getEnabledStateNode();
 
     CompletableFuture<LocalizedText> getEnabledState();
 
     CompletableFuture<StatusCode> setEnabledState(LocalizedText value);
 
-    CompletableFuture<? extends TwoStateVariableType> dialogState();
+    CompletableFuture<? extends TwoStateVariableType> getDialogStateNode();
 
     CompletableFuture<LocalizedText> getDialogState();
 
     CompletableFuture<StatusCode> setDialogState(LocalizedText value);
-
 }

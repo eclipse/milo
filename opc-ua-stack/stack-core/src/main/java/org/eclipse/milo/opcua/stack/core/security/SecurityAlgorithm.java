@@ -56,6 +56,13 @@ public enum SecurityAlgorithm {
     RsaSha256("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", "SHA256withRSA"),
 
     /**
+     * Asymmetric Signature; transformation to be used with {@link Signature#getInstance(String)}.
+     * <p>
+     * Requires Bouncy Castle installed as a Security Provider.
+     */
+    RsaSha256Pss("http://opcfoundation.org/UA/security/rsa-pss-sha2-256", "SHA256withRSA/PSS"),
+
+    /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
      */
     Rsa15("http://www.w3.org/2001/04/xmlenc#rsa-1_5", "RSA/ECB/PKCS1Padding"),
@@ -63,7 +70,19 @@ public enum SecurityAlgorithm {
     /**
      * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
      */
-    RsaOaep("http://www.w3.org/2001/04/xmlenc#rsa-oaep", "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
+    RsaOaepSha1("http://www.w3.org/2001/04/xmlenc#rsa-oaep", "RSA/ECB/OAEPWithSHA-1AndMGF1Padding"),
+
+    /**
+     * Asymmetric Encryption; transformation to be used with {@link Cipher#getInstance(String)}.
+     * <p>
+     * Important note: the transformation used is "RSA/ECB/OAEPWithSHA256AndMGF1Padding" as opposed to
+     * "RSA/ECB/OAEPWithSHA-256AndMGF1Padding".
+     * <p>
+     * While similar, the former is provided by Bouncy Castle whereas the latter is provided by SunJCE.
+     * <p>
+     * This is important because the BC version uses SHA256 in the padding while the SunJCE version uses Sha1.
+     */
+    RsaOaepSha256("http://opcfoundation.org/UA/security/rsa-oaep-sha2-256", "RSA/ECB/OAEPWithSHA256AndMGF1Padding"),
 
     /**
      * Asymmetric Key Wrap

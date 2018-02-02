@@ -1,92 +1,80 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.variables;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-
 public interface TransitionVariableType extends BaseDataVariableType {
-
-    Property<Object> ID = new BasicProperty<>(
-        QualifiedName.parse("0:Id"),
+    QualifiedProperty<Object> ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Id",
         NodeId.parse("ns=0;i=24"),
-        -1,
+        ValueRanks.Scalar,
         Object.class
     );
 
-    Property<QualifiedName> NAME = new BasicProperty<>(
-        QualifiedName.parse("0:Name"),
+    QualifiedProperty<QualifiedName> NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Name",
         NodeId.parse("ns=0;i=20"),
-        -1,
+        ValueRanks.Scalar,
         QualifiedName.class
     );
 
-    Property<UInteger> NUMBER = new BasicProperty<>(
-        QualifiedName.parse("0:Number"),
+    QualifiedProperty<UInteger> NUMBER = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Number",
         NodeId.parse("ns=0;i=7"),
-        -1,
+        ValueRanks.Scalar,
         UInteger.class
     );
 
-    Property<DateTime> TRANSITION_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:TransitionTime"),
+    QualifiedProperty<DateTime> TRANSITION_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "TransitionTime",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
 
-    Property<DateTime> EFFECTIVE_TRANSITION_TIME = new BasicProperty<>(
-        QualifiedName.parse("0:EffectiveTransitionTime"),
+    QualifiedProperty<DateTime> EFFECTIVE_TRANSITION_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EffectiveTransitionTime",
         NodeId.parse("ns=0;i=294"),
-        -1,
+        ValueRanks.Scalar,
         DateTime.class
     );
-
-
-    Object getId();
 
     PropertyType getIdNode();
 
-    void setId(Object value);
+    Object getId();
 
-    QualifiedName getName();
+    void setId(Object value);
 
     PropertyType getNameNode();
 
-    void setName(QualifiedName value);
+    QualifiedName getName();
 
-    UInteger getNumber();
+    void setName(QualifiedName value);
 
     PropertyType getNumberNode();
 
-    void setNumber(UInteger value);
+    UInteger getNumber();
 
-    DateTime getTransitionTime();
+    void setNumber(UInteger value);
 
     PropertyType getTransitionTimeNode();
 
-    void setTransitionTime(DateTime value);
+    DateTime getTransitionTime();
 
-    DateTime getEffectiveTransitionTime();
+    void setTransitionTime(DateTime value);
 
     PropertyType getEffectiveTransitionTimeNode();
 
-    void setEffectiveTransitionTime(DateTime value);
+    DateTime getEffectiveTransitionTime();
 
+    void setEffectiveTransitionTime(DateTime value);
 }

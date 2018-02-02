@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,37 +15,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ServiceCounterDataType")
 public class ServiceCounterDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ServiceCounterDataType;
     public static final NodeId BinaryEncodingId = Identifiers.ServiceCounterDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ServiceCounterDataType_Encoding_DefaultXml;
 
-    protected final UInteger _totalCount;
-    protected final UInteger _errorCount;
+    protected final UInteger totalCount;
+    protected final UInteger errorCount;
 
     public ServiceCounterDataType() {
-        this._totalCount = null;
-        this._errorCount = null;
+        this.totalCount = null;
+        this.errorCount = null;
     }
 
-    public ServiceCounterDataType(UInteger _totalCount, UInteger _errorCount) {
-        this._totalCount = _totalCount;
-        this._errorCount = _errorCount;
+    public ServiceCounterDataType(UInteger totalCount, UInteger errorCount) {
+        this.totalCount = totalCount;
+        this.errorCount = errorCount;
     }
 
-    public UInteger getTotalCount() { return _totalCount; }
+    public UInteger getTotalCount() { return totalCount; }
 
-    public UInteger getErrorCount() { return _errorCount; }
+    public UInteger getErrorCount() { return errorCount; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -59,26 +58,31 @@ public class ServiceCounterDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("TotalCount", _totalCount)
-            .add("ErrorCount", _errorCount)
+            .add("TotalCount", totalCount)
+            .add("ErrorCount", errorCount)
             .toString();
     }
 
-    public static void encode(ServiceCounterDataType serviceCounterDataType, UaEncoder encoder) {
-        encoder.encodeUInt32("TotalCount", serviceCounterDataType._totalCount);
-        encoder.encodeUInt32("ErrorCount", serviceCounterDataType._errorCount);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ServiceCounterDataType> {
 
-    public static ServiceCounterDataType decode(UaDecoder decoder) {
-        UInteger _totalCount = decoder.decodeUInt32("TotalCount");
-        UInteger _errorCount = decoder.decodeUInt32("ErrorCount");
+        @Override
+        public Class<ServiceCounterDataType> getType() {
+            return ServiceCounterDataType.class;
+        }
 
-        return new ServiceCounterDataType(_totalCount, _errorCount);
-    }
+        @Override
+        public ServiceCounterDataType decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger totalCount = decoder.readUInt32("TotalCount");
+            UInteger errorCount = decoder.readUInt32("ErrorCount");
 
-    static {
-        DelegateRegistry.registerEncoder(ServiceCounterDataType::encode, ServiceCounterDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ServiceCounterDataType::decode, ServiceCounterDataType.class, BinaryEncodingId, XmlEncodingId);
+            return new ServiceCounterDataType(totalCount, errorCount);
+        }
+
+        @Override
+        public void encode(ServiceCounterDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("TotalCount", value.totalCount);
+            encoder.writeUInt32("ErrorCount", value.errorCount);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,32 +17,31 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("ContentFilter")
 public class ContentFilter implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ContentFilter;
     public static final NodeId BinaryEncodingId = Identifiers.ContentFilter_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ContentFilter_Encoding_DefaultXml;
 
-    protected final ContentFilterElement[] _elements;
+    protected final ContentFilterElement[] elements;
 
     public ContentFilter() {
-        this._elements = null;
+        this.elements = null;
     }
 
-    public ContentFilter(ContentFilterElement[] _elements) {
-        this._elements = _elements;
+    public ContentFilter(ContentFilterElement[] elements) {
+        this.elements = elements;
     }
 
     @Nullable
-    public ContentFilterElement[] getElements() { return _elements; }
+    public ContentFilterElement[] getElements() { return elements; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -56,23 +55,36 @@ public class ContentFilter implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Elements", _elements)
+            .add("Elements", elements)
             .toString();
     }
 
-    public static void encode(ContentFilter contentFilter, UaEncoder encoder) {
-        encoder.encodeArray("Elements", contentFilter._elements, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ContentFilter> {
 
-    public static ContentFilter decode(UaDecoder decoder) {
-        ContentFilterElement[] _elements = decoder.decodeArray("Elements", decoder::decodeSerializable, ContentFilterElement.class);
+        @Override
+        public Class<ContentFilter> getType() {
+            return ContentFilter.class;
+        }
 
-        return new ContentFilter(_elements);
-    }
+        @Override
+        public ContentFilter decode(UaDecoder decoder) throws UaSerializationException {
+            ContentFilterElement[] elements =
+                decoder.readBuiltinStructArray(
+                    "Elements",
+                    ContentFilterElement.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(ContentFilter::encode, ContentFilter.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ContentFilter::decode, ContentFilter.class, BinaryEncodingId, XmlEncodingId);
+            return new ContentFilter(elements);
+        }
+
+        @Override
+        public void encode(ContentFilter value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStructArray(
+                "Elements",
+                value.elements,
+                ContentFilterElement.class
+            );
+        }
     }
 
 }

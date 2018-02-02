@@ -13,6 +13,9 @@
 
 package org.eclipse.milo.opcua.sdk.client.api;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -68,5 +71,38 @@ public interface UaSession {
      * @return the server {@link SignedSoftwareCertificate}s.
      */
     SignedSoftwareCertificate[] getServerSoftwareCertificates();
+
+    /**
+     * Returns the attribute bound to {@code name} in this session, or <code>null</code> if no  attribute is bound
+     * under that name.
+     *
+     * @param name the name the attribute is bound to.
+     * @return the attribute value.
+     */
+    @Nullable
+    Object getAttribute(@Nonnull String name);
+
+    /**
+     * Binds an attribute to this session, using the name specified.
+     * <p>
+     * If an object of the same name is already bound to the session, the object is replaced.
+     *
+     * @param name  the name to bind the attribute to.
+     * @param value the attribute value.
+     * @return the previously bound value, or {@code null} if none exists.
+     */
+    @Nullable
+    Object setAttribute(@Nonnull String name, @Nonnull Object value);
+
+    /**
+     * Removes the attribute bound with the specified name from this session.
+     * <p>
+     * If the session does not have an attribute bound with the specified name, this method does nothing.
+     *
+     * @param name the name the attribute is bound to.
+     * @return the previously bound value, or {@code null} if none exists.
+     */
+    @Nullable
+    Object removeAttribute(@Nonnull String name);
 
 }

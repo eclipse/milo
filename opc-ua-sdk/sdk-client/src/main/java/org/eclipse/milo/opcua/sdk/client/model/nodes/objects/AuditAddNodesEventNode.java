@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,27 +22,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 
-
 public class AuditAddNodesEventNode extends AuditNodeManagementEventNode implements AuditAddNodesEventType {
-
     public AuditAddNodesEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> nodesToAdd() {
-        return getPropertyNode(AuditAddNodesEventType.NODES_TO_ADD.getBrowseName());
+    public CompletableFuture<PropertyNode> getNodesToAddNode() {
+        return getPropertyNode(AuditAddNodesEventType.NODES_TO_ADD);
     }
 
-    @Override
     public CompletableFuture<AddNodesItem[]> getNodesToAdd() {
         return getProperty(AuditAddNodesEventType.NODES_TO_ADD);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setNodesToAdd(AddNodesItem[] value) {
         return setProperty(AuditAddNodesEventType.NODES_TO_ADD, value);
     }
-
-
 }

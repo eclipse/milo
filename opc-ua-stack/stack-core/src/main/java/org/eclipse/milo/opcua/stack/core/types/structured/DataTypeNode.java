@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,36 +15,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("DataTypeNode")
 public class DataTypeNode extends TypeNode {
 
     public static final NodeId TypeId = Identifiers.DataTypeNode;
     public static final NodeId BinaryEncodingId = Identifiers.DataTypeNode_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DataTypeNode_Encoding_DefaultXml;
 
-    protected final Boolean _isAbstract;
+    protected final Boolean isAbstract;
 
     public DataTypeNode() {
         super(null, null, null, null, null, null, null, null);
-        this._isAbstract = null;
+        this.isAbstract = null;
     }
 
-    public DataTypeNode(NodeId _nodeId, NodeClass _nodeClass, QualifiedName _browseName, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, ReferenceNode[] _references, Boolean _isAbstract) {
-        super(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references);
-        this._isAbstract = _isAbstract;
+    public DataTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Boolean isAbstract) {
+        super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
+        this.isAbstract = isAbstract;
     }
 
-    public Boolean getIsAbstract() { return _isAbstract; }
+    public Boolean getIsAbstract() { return isAbstract; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,47 +57,60 @@ public class DataTypeNode extends TypeNode {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("NodeClass", _nodeClass)
-            .add("BrowseName", _browseName)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("References", _references)
-            .add("IsAbstract", _isAbstract)
+            .add("NodeId", nodeId)
+            .add("NodeClass", nodeClass)
+            .add("BrowseName", browseName)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("References", references)
+            .add("IsAbstract", isAbstract)
             .toString();
     }
 
-    public static void encode(DataTypeNode dataTypeNode, UaEncoder encoder) {
-        encoder.encodeNodeId("NodeId", dataTypeNode._nodeId);
-        encoder.encodeEnumeration("NodeClass", dataTypeNode._nodeClass);
-        encoder.encodeQualifiedName("BrowseName", dataTypeNode._browseName);
-        encoder.encodeLocalizedText("DisplayName", dataTypeNode._displayName);
-        encoder.encodeLocalizedText("Description", dataTypeNode._description);
-        encoder.encodeUInt32("WriteMask", dataTypeNode._writeMask);
-        encoder.encodeUInt32("UserWriteMask", dataTypeNode._userWriteMask);
-        encoder.encodeArray("References", dataTypeNode._references, encoder::encodeSerializable);
-        encoder.encodeBoolean("IsAbstract", dataTypeNode._isAbstract);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DataTypeNode> {
 
-    public static DataTypeNode decode(UaDecoder decoder) {
-        NodeId _nodeId = decoder.decodeNodeId("NodeId");
-        NodeClass _nodeClass = decoder.decodeEnumeration("NodeClass", NodeClass.class);
-        QualifiedName _browseName = decoder.decodeQualifiedName("BrowseName");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        ReferenceNode[] _references = decoder.decodeArray("References", decoder::decodeSerializable, ReferenceNode.class);
-        Boolean _isAbstract = decoder.decodeBoolean("IsAbstract");
+        @Override
+        public Class<DataTypeNode> getType() {
+            return DataTypeNode.class;
+        }
 
-        return new DataTypeNode(_nodeId, _nodeClass, _browseName, _displayName, _description, _writeMask, _userWriteMask, _references, _isAbstract);
-    }
+        @Override
+        public DataTypeNode decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId nodeId = decoder.readNodeId("NodeId");
+            NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
+            QualifiedName browseName = decoder.readQualifiedName("BrowseName");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            ReferenceNode[] references =
+                decoder.readBuiltinStructArray(
+                    "References",
+                    ReferenceNode.class
+                );
+            Boolean isAbstract = decoder.readBoolean("IsAbstract");
 
-    static {
-        DelegateRegistry.registerEncoder(DataTypeNode::encode, DataTypeNode.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DataTypeNode::decode, DataTypeNode.class, BinaryEncodingId, XmlEncodingId);
+            return new DataTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, isAbstract);
+        }
+
+        @Override
+        public void encode(DataTypeNode value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("NodeId", value.nodeId);
+            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
+            encoder.writeQualifiedName("BrowseName", value.browseName);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBuiltinStructArray(
+                "References",
+                value.references,
+                ReferenceNode.class
+            );
+            encoder.writeBoolean("IsAbstract", value.isAbstract);
+        }
     }
 
 }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>opc-ua-sdk</artifactId>
-        <version>0.1.6-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>sdk-client</artifactId>
@@ -19,6 +19,11 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.milo</groupId>
+            <artifactId>bsd-parser-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

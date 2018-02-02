@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,29 +15,24 @@ package org.eclipse.milo.opcua.sdk.client.model.types.variables;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
 
-
 public interface YArrayItemType extends ArrayItemType {
-
-    Property<AxisInformation> X_AXIS_DEFINITION = new BasicProperty<>(
-        QualifiedName.parse("0:XAxisDefinition"),
+    QualifiedProperty<AxisInformation> X_AXIS_DEFINITION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "XAxisDefinition",
         NodeId.parse("ns=0;i=12079"),
-        -1,
+        ValueRanks.Scalar,
         AxisInformation.class
     );
 
-
-    CompletableFuture<? extends PropertyType> xAxisDefinition();
+    CompletableFuture<? extends PropertyType> getXAxisDefinitionNode();
 
     CompletableFuture<AxisInformation> getXAxisDefinition();
 
     CompletableFuture<StatusCode> setXAxisDefinition(AxisInformation value);
-
-
 }
