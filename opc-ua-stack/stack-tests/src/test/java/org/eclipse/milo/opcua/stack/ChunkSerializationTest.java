@@ -202,11 +202,11 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
                 @Override
                 public void onMessageDecoded(ByteBuf message, long requestId) {
-                    ReferenceCountUtil.releaseLater(messageBuffer);
-                    ReferenceCountUtil.releaseLater(message);
-
                     messageBuffer.readerIndex(0);
                     assertEquals(message, messageBuffer);
+
+                    ReferenceCountUtil.release(message);
+                    ReferenceCountUtil.release(messageBuffer);
                 }
             });
         }
@@ -307,11 +307,11 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
                         @Override
                         public void onMessageDecoded(ByteBuf message, long requestId) {
-                            ReferenceCountUtil.releaseLater(messageBuffer);
-                            ReferenceCountUtil.releaseLater(message);
-
                             messageBuffer.readerIndex(0);
                             assertEquals(message, messageBuffer);
+
+                            ReferenceCountUtil.release(messageBuffer);
+                            ReferenceCountUtil.release(message);
                         }
                     }
                 );
