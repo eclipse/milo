@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufProcessor;
+import io.netty.util.ByteProcessor;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
@@ -440,7 +440,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     private String readNullTerminatedString(Charset charset) {
-        int indexOfNull = buffer.forEachByte(ByteBufProcessor.FIND_NUL);
+        int indexOfNull = buffer.forEachByte(ByteProcessor.FIND_NUL);
 
         if (indexOfNull == -1) {
             throw new UaSerializationException(
