@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
-import java.nio.ByteOrder;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
@@ -29,7 +27,7 @@ public abstract class BinarySerializationFixture {
 
     @BeforeMethod
     public void setUp() {
-        buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        buffer = Unpooled.buffer();
 
         writer = new OpcUaBinaryStreamEncoder(buffer);
         reader = new OpcUaBinaryStreamDecoder(buffer);

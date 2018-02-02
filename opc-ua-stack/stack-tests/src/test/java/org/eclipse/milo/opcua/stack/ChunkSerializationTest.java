@@ -167,7 +167,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                 messageBytes[i] = (byte) i;
             }
 
-            ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer().writeBytes(messageBytes);
 
             List<ByteBuf> chunkBuffers = new ArrayList<>();
 
@@ -272,7 +272,7 @@ public class ChunkSerializationTest extends SecureChannelFixture {
                     messageBytes[i] = (byte) i;
                 }
 
-                ByteBuf messageBuffer = BufferUtil.buffer().writeBytes(messageBytes);
+                ByteBuf messageBuffer = BufferUtil.pooledBuffer().writeBytes(messageBytes);
 
                 List<ByteBuf> chunkBuffers = new ArrayList<>();
 

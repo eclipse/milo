@@ -130,20 +130,20 @@ public class AcknowledgeMessage {
     }
 
     public static void encode(AcknowledgeMessage message, ByteBuf buffer) {
-        buffer.writeInt((int) message.getProtocolVersion());
-        buffer.writeInt((int) message.getReceiveBufferSize());
-        buffer.writeInt((int) message.getSendBufferSize());
-        buffer.writeInt((int) message.getMaxMessageSize());
-        buffer.writeInt((int) message.getMaxChunkCount());
+        buffer.writeIntLE((int) message.getProtocolVersion());
+        buffer.writeIntLE((int) message.getReceiveBufferSize());
+        buffer.writeIntLE((int) message.getSendBufferSize());
+        buffer.writeIntLE((int) message.getMaxMessageSize());
+        buffer.writeIntLE((int) message.getMaxChunkCount());
     }
 
     public static AcknowledgeMessage decode(ByteBuf buffer) {
         return new AcknowledgeMessage(
-            buffer.readUnsignedInt(), /*    ProtocolVersion     */
-            buffer.readUnsignedInt(), /*    ReceiveBufferSize   */
-            buffer.readUnsignedInt(), /*    SendBufferSize      */
-            buffer.readUnsignedInt(), /*    MaxMessageSize      */
-            buffer.readUnsignedInt()  /*    MaxChunkCount       */
+            buffer.readUnsignedIntLE(), /*    ProtocolVersion     */
+            buffer.readUnsignedIntLE(), /*    ReceiveBufferSize   */
+            buffer.readUnsignedIntLE(), /*    SendBufferSize      */
+            buffer.readUnsignedIntLE(), /*    MaxMessageSize      */
+            buffer.readUnsignedIntLE()  /*    MaxChunkCount       */
         );
     }
 

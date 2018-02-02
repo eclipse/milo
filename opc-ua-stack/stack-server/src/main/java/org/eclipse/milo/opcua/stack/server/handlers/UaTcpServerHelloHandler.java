@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.server.handlers;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -55,13 +54,11 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
-
         while (buffer.readableBytes() >= HEADER_LENGTH &&
             buffer.readableBytes() >= getMessageLength(buffer)) {
 
             int messageLength = getMessageLength(buffer);
-            MessageType messageType = MessageType.fromMediumInt(buffer.getMedium(buffer.readerIndex()));
+            MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
             switch (messageType) {
                 case Hello:

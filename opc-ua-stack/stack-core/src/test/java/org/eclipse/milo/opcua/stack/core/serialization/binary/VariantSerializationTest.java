@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
-import java.nio.ByteOrder;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -101,10 +99,10 @@ public class VariantSerializationTest extends BinarySerializationFixture {
 
     @Test(description = "Test that a Variant containing a null array encoded with a negative array size to indicate a null value decodes properly.")
     public void testNullArrayEncodedWithNegativeArraySize() {
-        ByteBuf buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuf buffer = Unpooled.buffer();
 
         buffer.writeByte(BuiltinDataType.Int16.getTypeId() | (1 << 7));
-        buffer.writeInt(-1);
+        buffer.writeIntLE(-1);
 
         OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(buffer);
 

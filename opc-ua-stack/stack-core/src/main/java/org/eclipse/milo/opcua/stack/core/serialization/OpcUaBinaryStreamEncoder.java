@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
-import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -95,7 +94,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     public <T> void writeArray(T[] values, Consumer<T> write) throws UaSerializationException {
         if (values == null) {
-            buffer.writeInt(-1);
+            buffer.writeIntLE(-1);
         } else {
             if (values.length > maxArrayLength) {
                 throw new UaSerializationException(
@@ -148,65 +147,65 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     public void writeInt16(Short value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeShort(0);
+            buffer.writeShortLE(0);
         } else {
-            buffer.writeShort(value);
+            buffer.writeShortLE(value);
         }
     }
 
     public void writeUInt16(UShort value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeShort(0);
+            buffer.writeShortLE(0);
         } else {
-            buffer.writeShort(value.intValue());
+            buffer.writeShortLE(value.intValue());
         }
     }
 
     public void writeInt32(Integer value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeInt(0);
+            buffer.writeIntLE(0);
         } else {
-            buffer.writeInt(value);
+            buffer.writeIntLE(value);
         }
     }
 
     public void writeUInt32(UInteger value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeInt(0);
+            buffer.writeIntLE(0);
         } else {
-            buffer.writeInt(value.intValue());
+            buffer.writeIntLE(value.intValue());
         }
     }
 
     public void writeInt64(Long value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeLong(0L);
+            buffer.writeLongLE(0L);
         } else {
-            buffer.writeLong(value);
+            buffer.writeLongLE(value);
         }
     }
 
     public void writeUInt64(ULong value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeLong(0L);
+            buffer.writeLongLE(0L);
         } else {
-            buffer.writeLong(value.longValue());
+            buffer.writeLongLE(value.longValue());
         }
     }
 
     public void writeFloat(Float value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeFloat(0f);
+            buffer.writeFloatLE(0f);
         } else {
-            buffer.writeFloat(value);
+            buffer.writeFloatLE(value);
         }
     }
 
     public void writeDouble(Double value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeDouble(0d);
+            buffer.writeDoubleLE(0d);
         } else {
-            buffer.writeDouble(value);
+            buffer.writeDoubleLE(value);
         }
     }
 
@@ -262,21 +261,21 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     public void writeDateTime(DateTime value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeLong(0L);
+            buffer.writeLongLE(0L);
         } else {
-            buffer.writeLong(value.getUtcTime());
+            buffer.writeLongLE(value.getUtcTime());
         }
     }
 
     public void writeByteString(ByteString value) throws UaSerializationException {
         if (value == null || value.isNull()) {
-            buffer.writeInt(-1);
+            buffer.writeIntLE(-1);
         } else {
             byte[] bytes = value.bytes();
 
             assert (bytes != null);
 
-            buffer.writeInt(bytes.length);
+            buffer.writeIntLE(bytes.length);
             buffer.writeBytes(bytes);
         }
     }
@@ -288,11 +287,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             long msb = value.getMostSignificantBits();
             long lsb = value.getLeastSignificantBits();
 
-            buffer.writeInt((int) (msb >>> 32));
-            buffer.writeShort((int) (msb >>> 16) & 0xFFFF);
-            buffer.writeShort((int) (msb) & 0xFFFF);
+            buffer.writeIntLE((int) (msb >>> 32));
+            buffer.writeShortLE((int) (msb >>> 16) & 0xFFFF);
+            buffer.writeShortLE((int) (msb) & 0xFFFF);
 
-            buffer.order(ByteOrder.BIG_ENDIAN).writeLong(lsb);
+            buffer.writeLong(lsb); // intentionally Big Endian
         }
     }
 
@@ -300,7 +299,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     public void writeXmlElement(XmlElement value) throws UaSerializationException {
         if (value == null || value.isNull()) {
-            buffer.writeInt(-1);
+            buffer.writeIntLE(-1);
         } else {
             try {
                 writeByteString(new ByteString(value.getFragment().getBytes("UTF-8")));
@@ -433,30 +432,30 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 /* Four-byte format */
                 buffer.writeByte(0x01 | flags);
                 buffer.writeByte(namespaceIndex);
-                buffer.writeShort((int) idv);
+                buffer.writeShortLE((int) idv);
             } else {
                 /* Numeric format */
                 buffer.writeByte(0x02 | flags);
-                buffer.writeShort(namespaceIndex);
-                buffer.writeInt((int) idv);
+                buffer.writeShortLE(namespaceIndex);
+                buffer.writeIntLE((int) idv);
             }
         } else if (value.getType() == IdType.String) {
             String identifier = (String) value.getIdentifier();
 
             buffer.writeByte(0x03 | flags);
-            buffer.writeShort(namespaceIndex);
+            buffer.writeShortLE(namespaceIndex);
             writeString(identifier);
         } else if (value.getType() == IdType.Guid) {
             UUID identifier = (UUID) value.getIdentifier();
 
             buffer.writeByte(0x04 | flags);
-            buffer.writeShort(namespaceIndex);
+            buffer.writeShortLE(namespaceIndex);
             writeGuid(identifier);
         } else if (value.getType() == IdType.Opaque) {
             ByteString identifier = (ByteString) value.getIdentifier();
 
             buffer.writeByte(0x05 | flags);
-            buffer.writeShort(namespaceIndex);
+            buffer.writeShortLE(namespaceIndex);
             writeByteString(identifier);
         } else {
             throw new UaSerializationException(
@@ -549,30 +548,30 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 /* Four-byte format */
                 buffer.writeByte(0x01);
                 buffer.writeByte(namespaceIndex);
-                buffer.writeShort((int) idv);
+                buffer.writeShortLE((int) idv);
             } else {
                 /* Numeric format */
                 buffer.writeByte(0x02);
-                buffer.writeShort(namespaceIndex);
-                buffer.writeInt((int) idv);
+                buffer.writeShortLE(namespaceIndex);
+                buffer.writeIntLE((int) idv);
             }
         } else if (value.getType() == IdType.String) {
             String identifier = (String) value.getIdentifier();
 
             buffer.writeByte(0x03);
-            buffer.writeShort(namespaceIndex);
+            buffer.writeShortLE(namespaceIndex);
             writeString(identifier);
         } else if (value.getType() == IdType.Guid) {
             UUID identifier = (UUID) value.getIdentifier();
 
             buffer.writeByte(0x04);
-            buffer.writeShort(namespaceIndex);
+            buffer.writeShortLE(namespaceIndex);
             writeGuid(identifier);
         } else if (value.getType() == IdType.Opaque) {
             ByteString identifier = (ByteString) value.getIdentifier();
 
             buffer.writeByte(0x05);
-            buffer.writeShort(namespaceIndex);
+            buffer.writeShortLE(namespaceIndex);
             writeByteString(identifier);
         } else {
             throw new UaSerializationException(
@@ -590,7 +589,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     public void writeString(String value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeInt(-1);
+            buffer.writeIntLE(-1);
         } else {
             writeLengthPrefixedString(value, CHARSET_UTF8);
         }
@@ -598,9 +597,9 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     public void writeStatusCode(StatusCode value) throws UaSerializationException {
         if (value == null) {
-            buffer.writeInt(0);
+            buffer.writeIntLE(0);
         } else {
-            buffer.writeInt((int) value.getValue());
+            buffer.writeIntLE((int) value.getValue());
         }
     }
 
@@ -636,7 +635,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                     buffer.writeByte(typeId | 0x80);
 
                     int length = Array.getLength(value);
-                    buffer.writeInt(length);
+                    buffer.writeIntLE(length);
 
                     for (int i = 0; i < length; i++) {
                         Object o = Array.get(value, i);
@@ -648,7 +647,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
                     Object flattened = ArrayUtil.flatten(value);
                     int length = Array.getLength(flattened);
-                    buffer.writeInt(length);
+                    buffer.writeIntLE(length);
 
                     for (int i = 0; i < length; i++) {
                         Object o = Array.get(flattened, i);
@@ -918,7 +917,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException {
 
         if (values == null) {
-            buffer.writeInt(-1);
+            buffer.writeIntLE(-1);
         } else {
             if (values.length > maxArrayLength) {
                 throw new UaSerializationException(

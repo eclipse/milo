@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.client.handlers;
 
-import java.nio.ByteOrder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -111,13 +110,11 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
-
         while (buffer.readableBytes() >= HEADER_LENGTH &&
             buffer.readableBytes() >= getMessageLength(buffer)) {
 
             int messageLength = getMessageLength(buffer);
-            MessageType messageType = MessageType.fromMediumInt(buffer.getMedium(buffer.readerIndex()));
+            MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
             switch (messageType) {
                 case Acknowledge:

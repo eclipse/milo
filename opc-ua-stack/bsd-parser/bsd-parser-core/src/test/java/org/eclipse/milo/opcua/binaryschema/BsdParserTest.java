@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.binaryschema;
 
-import java.nio.ByteOrder;
-
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import io.netty.buffer.ByteBuf;
@@ -112,7 +110,7 @@ public abstract class BsdParserTest {
         System.out.printf("--- assertRoundTrip Type: %s ---\n", type);
 
         System.out.println("originalValue:\t" + originalValue);
-        ByteBuf buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuf buffer = Unpooled.buffer();
         codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(buffer));
 
         ByteBuf encodedValue = buffer.copy();

@@ -32,7 +32,7 @@ public interface HeaderDecoder {
      * @return The message length, which includes the size of the header.
      */
     default int getMessageLength(ByteBuf buffer) {
-        return Ints.checkedCast(buffer.getUnsignedInt(buffer.readerIndex() + HEADER_LENGTH_INDEX));
+        return Ints.checkedCast(buffer.getUnsignedIntLE(buffer.readerIndex() + HEADER_LENGTH_INDEX));
     }
 
 }

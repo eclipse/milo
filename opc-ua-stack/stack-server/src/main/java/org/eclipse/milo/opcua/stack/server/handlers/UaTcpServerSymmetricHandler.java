@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.server.handlers;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +99,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
     @Override
     protected void encode(ChannelHandlerContext ctx, ServiceResponse serviceResponse, ByteBuf out) throws Exception {
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
-            ByteBuf messageBuffer = BufferUtil.buffer();
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
@@ -189,13 +188,11 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
-
         while (buffer.readableBytes() >= HEADER_LENGTH &&
             buffer.readableBytes() >= getMessageLength(buffer)) {
 
             int messageLength = getMessageLength(buffer);
-            MessageType messageType = MessageType.fromMediumInt(buffer.getMedium(buffer.readerIndex()));
+            MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
             switch (messageType) {
                 case SecureMessage:
@@ -219,7 +216,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
         } else {
             buffer.skipBytes(4); // Skip messageSize
 
-            long secureChannelId = buffer.readUnsignedInt();
+            long secureChannelId = buffer.readUnsignedIntLE();
             if (secureChannelId != secureChannel.getChannelId()) {
                 throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid,
                     "invalid secure channel id: " + secureChannelId);
@@ -321,7 +318,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
 
         for (ByteBuf chunkBuffer : chunkBuffers) {
             // tokenId starts after messageType + chunkType + messageSize + secureChannelId
-            long tokenId = chunkBuffer.getUnsignedInt(3 + 1 + 4 + 4);
+            long tokenId = chunkBuffer.getUnsignedIntLE(3 + 1 + 4 + 4);
 
             if (tokenId != currentTokenId && tokenId != previousTokenId) {
                 String message = String.format(

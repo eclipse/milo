@@ -34,7 +34,7 @@ public class DataValueSerializationTest {
 
     @Test(dataProvider = "getValues")
     public void testDataValueRoundTrip(DataValue value) {
-        ByteBuf buffer = BufferUtil.buffer();
+        ByteBuf buffer = BufferUtil.pooledBuffer();
         encoder.setBuffer(buffer);
         encoder.writeDataValue(value);
 

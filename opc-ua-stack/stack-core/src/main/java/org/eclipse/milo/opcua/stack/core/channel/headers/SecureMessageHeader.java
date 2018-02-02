@@ -59,18 +59,18 @@ public final class SecureMessageHeader {
     }
 
     public static void encode(SecureMessageHeader header, ByteBuf buffer) throws UaException {
-        buffer.writeMedium(MessageType.toMediumInt(header.getMessageType()));
+        buffer.writeMediumLE(MessageType.toMediumInt(header.getMessageType()));
         buffer.writeByte(header.getChunkType());
-        buffer.writeInt((int) header.getMessageSize());
-        buffer.writeInt((int) header.getSecureChannelId());
+        buffer.writeIntLE((int) header.getMessageSize());
+        buffer.writeIntLE((int) header.getSecureChannelId());
     }
 
     public static SecureMessageHeader decode(ByteBuf buffer) throws UaException {
         return new SecureMessageHeader(
-            MessageType.fromMediumInt(buffer.readMedium()),
+            MessageType.fromMediumInt(buffer.readMediumLE()),
             (char) buffer.readByte(),
-            buffer.readUnsignedInt(),
-            buffer.readUnsignedInt()
+            buffer.readUnsignedIntLE(),
+            buffer.readUnsignedIntLE()
         );
     }
 

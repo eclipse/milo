@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.binary;
 
-import java.nio.ByteOrder;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
@@ -30,7 +28,7 @@ public class OpcUaBinaryStreamEncoderTest {
 
     @BeforeTest
     public void initializeTest() {
-        buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        buffer = Unpooled.buffer();
         writer = new OpcUaBinaryStreamEncoder(buffer);
     }
 
