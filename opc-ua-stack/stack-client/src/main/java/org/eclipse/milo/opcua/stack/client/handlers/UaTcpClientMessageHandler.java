@@ -127,7 +127,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                     UaTcpClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).get();
 
                 if (awaitingHandshake != null) {
-                    channel.attr(UaTcpClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).remove();
+                    channel.attr(UaTcpClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).set(null);
 
                     logger.debug(
                         "{} message(s) queued before handshake completed; sending now.",
