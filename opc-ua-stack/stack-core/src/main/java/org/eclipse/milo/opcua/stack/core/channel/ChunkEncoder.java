@@ -149,7 +149,7 @@ public final class ChunkEncoder {
 
                 assert (chunkSize <= maxChunkSize);
 
-                ByteBuf chunkBuffer = BufferUtil.buffer(chunkSize);
+                ByteBuf chunkBuffer = BufferUtil.pooledBuffer(chunkSize);
 
                 chunks.add(chunkBuffer);
 
@@ -242,7 +242,7 @@ public final class ChunkEncoder {
 
         private void writePadding(int cipherTextBlockSize, int paddingSize, ByteBuf buffer) {
             if (cipherTextBlockSize > 256) {
-                buffer.writeShort(paddingSize);
+                buffer.writeShortLE(paddingSize);
             } else {
                 buffer.writeByte(paddingSize);
             }

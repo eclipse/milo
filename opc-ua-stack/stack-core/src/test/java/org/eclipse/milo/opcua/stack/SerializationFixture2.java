@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack;
 
-import java.nio.ByteOrder;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -28,7 +27,7 @@ public class SerializationFixture2 {
                                           BiFunction<T, ByteBuf, ByteBuf> encoder,
                                           Function<ByteBuf, T> decoder) {
 
-        ByteBuf buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuf buffer = Unpooled.buffer();
 
         T decoded = decoder.apply(encoder.apply(encoded, buffer));
 

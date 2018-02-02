@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.stack.core.types;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.ByteOrder;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -54,7 +53,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
                     "no codec registered for encodingTypeId=" + encodingTypeId);
             }
 
-            ByteBuf buffer = allocator.buffer().order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuf buffer = allocator.buffer();
 
             OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(buffer);
 
@@ -117,9 +116,7 @@ public class OpcUaDataTypeEncoding implements DataTypeEncoding {
             byte[] bs = encoded.bytes();
             if (bs == null) bs = new byte[0];
 
-            ByteBuf buffer = Unpooled
-                .wrappedBuffer(bs)
-                .order(ByteOrder.LITTLE_ENDIAN);
+            ByteBuf buffer = Unpooled.wrappedBuffer(bs);
 
             OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(buffer);
 

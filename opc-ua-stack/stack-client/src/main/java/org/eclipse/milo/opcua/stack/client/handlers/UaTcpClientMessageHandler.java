@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.client.handlers;
 
-import java.nio.ByteOrder;
 import java.security.cert.X509Certificate;
 import java.util.LinkedList;
 import java.util.List;
@@ -209,7 +208,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         );
 
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
-            ByteBuf messageBuffer = BufferUtil.buffer();
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
@@ -285,7 +284,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
     private void sendCloseSecureChannelRequest(ChannelHandlerContext ctx, CloseSecureChannelRequest request) {
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
-            ByteBuf messageBuffer = BufferUtil.buffer();
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
@@ -333,7 +332,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     @Override
     protected void encode(ChannelHandlerContext ctx, UaRequestFuture request, ByteBuf buffer) throws Exception {
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
-            ByteBuf messageBuffer = BufferUtil.buffer();
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
             try {
                 binaryEncoder.setBuffer(messageBuffer);
@@ -386,8 +385,6 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
         if (buffer.readableBytes() >= HEADER_LENGTH) {
-            buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
-
             if (buffer.readableBytes() >= getMessageLength(buffer)) {
                 decodeMessage(ctx, buffer);
             }
@@ -396,7 +393,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
     private void decodeMessage(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
         int messageLength = getMessageLength(buffer);
-        MessageType messageType = MessageType.fromMediumInt(buffer.getMedium(buffer.readerIndex()));
+        MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
         switch (messageType) {
             case OpenSecureChannel:
@@ -606,7 +603,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     private void onSecureMessage(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
         buffer.skipBytes(3 + 1 + 4); // skip messageType, chunkType, messageSize
 
-        long secureChannelId = buffer.readUnsignedInt();
+        long secureChannelId = buffer.readUnsignedIntLE();
         if (secureChannelId != secureChannel.getChannelId()) {
             throw new UaException(StatusCodes.Bad_SecureChannelIdInvalid,
                 "invalid secure channel id: " + secureChannelId);
@@ -692,7 +689,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
         for (ByteBuf chunkBuffer : chunkBuffers) {
             // tokenId starts after messageType + chunkType + messageSize + secureChannelId
-            long tokenId = chunkBuffer.getUnsignedInt(3 + 1 + 4 + 4);
+            long tokenId = chunkBuffer.getUnsignedIntLE(3 + 1 + 4 + 4);
 
             if (tokenId != currentTokenId && tokenId != previousTokenId) {
                 String message = String.format(

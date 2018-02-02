@@ -58,13 +58,13 @@ public class SymmetricSecurityHeader {
     }
 
     public static ByteBuf encode(SymmetricSecurityHeader header, ByteBuf buffer) {
-        buffer.writeInt((int) header.getTokenId());
+        buffer.writeIntLE((int) header.getTokenId());
 
         return buffer;
     }
 
     public static SymmetricSecurityHeader decode(ByteBuf buffer) {
-        return new SymmetricSecurityHeader(buffer.readUnsignedInt());
+        return new SymmetricSecurityHeader(buffer.readUnsignedIntLE());
     }
 
 }

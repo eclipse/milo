@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -181,19 +180,17 @@ public final class ChunkDecoder {
                 composite.writerIndex(composite.writerIndex() + bodyBuffer.readableBytes());
             }
 
-            ByteBuf message = composite.order(ByteOrder.LITTLE_ENDIAN);
-
             if (parameters.getLocalMaxMessageSize() > 0 &&
-                message.readableBytes() > parameters.getLocalMaxMessageSize()) {
+                composite.readableBytes() > parameters.getLocalMaxMessageSize()) {
 
                 String errorMessage = String.format(
                     "message size exceeds configured limit: %s > %s",
-                    message.readableBytes(), parameters.getLocalMaxMessageSize());
+                    composite.readableBytes(), parameters.getLocalMaxMessageSize());
 
                 throw new UaException(StatusCodes.Bad_TcpMessageTooLarge, errorMessage);
             }
 
-            callback.onMessageDecoded(message, requestId);
+            callback.onMessageDecoded(composite, requestId);
         }
 
         private void decryptChunk(SecureChannel channel, ByteBuf chunkBuffer) throws UaException {
@@ -202,7 +199,7 @@ public final class ChunkDecoder {
 
             int plainTextBufferSize = cipherTextBlockSize * blockCount;
 
-            ByteBuf plainTextBuffer = BufferUtil.buffer(plainTextBufferSize);
+            ByteBuf plainTextBuffer = BufferUtil.pooledBuffer(plainTextBufferSize);
 
             ByteBuffer plainTextNioBuffer = plainTextBuffer
                 .writerIndex(plainTextBufferSize)
@@ -242,7 +239,7 @@ public final class ChunkDecoder {
 
             return cipherTextBlockSize <= 256 ?
                 buffer.getUnsignedByte(lastPaddingByteOffset) + 1 :
-                buffer.getUnsignedShort(lastPaddingByteOffset - 1) + 2;
+                buffer.getUnsignedShortLE(lastPaddingByteOffset - 1) + 2;
         }
 
         protected abstract void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) throws UaException;

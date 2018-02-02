@@ -98,29 +98,29 @@ public class AsymmetricSecurityHeader {
 
     public static void encode(AsymmetricSecurityHeader header, ByteBuf buffer) {
         String securityPolicy = header.getSecurityPolicyUri();
-        buffer.writeInt(securityPolicy.length());
+        buffer.writeIntLE(securityPolicy.length());
         buffer.writeBytes(securityPolicy.getBytes(Charset.forName("UTF-8")));
 
         ByteString senderCertificate = header.getSenderCertificate();
         if (senderCertificate.isNull()) {
-            buffer.writeInt(-1);
+            buffer.writeIntLE(-1);
         } else {
-            buffer.writeInt(senderCertificate.length());
+            buffer.writeIntLE(senderCertificate.length());
             buffer.writeBytes(senderCertificate.bytes());
         }
 
         ByteString receiverThumbprint = header.getReceiverThumbprint();
         if (receiverThumbprint.isNull()) {
-            buffer.writeInt(-1);
+            buffer.writeIntLE(-1);
         } else {
-            buffer.writeInt(receiverThumbprint.length());
+            buffer.writeIntLE(receiverThumbprint.length());
             buffer.writeBytes(receiverThumbprint.bytes());
         }
     }
 
     public static AsymmetricSecurityHeader decode(ByteBuf buffer) {
         /* SecurityPolicyUri */
-        int securityPolicyUriLength = buffer.readInt();
+        int securityPolicyUriLength = buffer.readIntLE();
         byte[] securityPolicyUriBytes = new byte[securityPolicyUriLength];
         buffer.readBytes(securityPolicyUriBytes);
 
@@ -130,7 +130,7 @@ public class AsymmetricSecurityHeader {
         );
 
         /* SenderCertificate */
-        int senderCertificateLength = buffer.readInt();
+        int senderCertificateLength = buffer.readIntLE();
         byte[] senderCertificate = null;
         if (senderCertificateLength >= 0) {
             senderCertificate = new byte[senderCertificateLength];
@@ -138,7 +138,7 @@ public class AsymmetricSecurityHeader {
         }
 
         /* ReceiverCertificateThumbprint */
-        int thumbprintLength = buffer.readInt();
+        int thumbprintLength = buffer.readIntLE();
         byte[] receiverCertificateThumbprint = null;
         if (thumbprintLength >= 0) {
             receiverCertificateThumbprint = new byte[thumbprintLength];

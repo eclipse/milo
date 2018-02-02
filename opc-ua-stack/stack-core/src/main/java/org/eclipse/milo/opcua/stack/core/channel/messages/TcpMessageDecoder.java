@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 public class TcpMessageDecoder {
 
     public static HelloMessage decodeHello(ByteBuf buffer) throws UaException {
-        MessageType messageType = MessageType.fromMediumInt(buffer.readMedium());
+        MessageType messageType = MessageType.fromMediumInt(buffer.readMediumLE());
         char chunkType = (char) buffer.readByte();
         buffer.skipBytes(4); // length
 
@@ -29,7 +29,7 @@ public class TcpMessageDecoder {
     }
 
     public static AcknowledgeMessage decodeAcknowledge(ByteBuf buffer) throws UaException {
-        MessageType messageType = MessageType.fromMediumInt(buffer.readMedium());
+        MessageType messageType = MessageType.fromMediumInt(buffer.readMediumLE());
         char chunkType = (char) buffer.readByte();
         buffer.skipBytes(4); // length
 
@@ -39,7 +39,7 @@ public class TcpMessageDecoder {
     }
 
     public static ErrorMessage decodeError(ByteBuf buffer) throws UaException {
-        MessageType messageType = MessageType.fromMediumInt(buffer.readMedium());
+        MessageType messageType = MessageType.fromMediumInt(buffer.readMediumLE());
         char chunkType = (char) buffer.readByte();
         buffer.skipBytes(4); // length
 

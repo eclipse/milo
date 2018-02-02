@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
-import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.function.Function;
@@ -48,7 +47,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 
@@ -167,39 +165,39 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     public Short readInt16() throws UaSerializationException {
-        return buffer.readShort();
+        return buffer.readShortLE();
     }
 
     public UShort readUInt16() throws UaSerializationException {
-        return ushort(buffer.readUnsignedShort());
+        return ushort(buffer.readUnsignedShortLE());
     }
 
     public Integer readInt32() throws UaSerializationException {
-        return buffer.readInt();
+        return buffer.readIntLE();
     }
 
     public UInteger readUInt32() throws UaSerializationException {
-        return uint(buffer.readUnsignedInt());
+        return uint(buffer.readUnsignedIntLE());
     }
 
     public Long readInt64() throws UaSerializationException {
-        return buffer.readLong();
+        return buffer.readLongLE();
     }
 
     public ULong readUInt64() throws UaSerializationException {
-        return ulong(buffer.readLong());
+        return ulong(buffer.readLongLE());
     }
 
     public Float readFloat() throws UaSerializationException {
-        return buffer.readFloat();
+        return buffer.readFloatLE();
     }
 
     public Double readDouble() throws UaSerializationException {
-        return buffer.readDouble();
+        return buffer.readDoubleLE();
     }
 
     public DateTime readDateTime() throws UaSerializationException {
-        return new DateTime(buffer.readLong());
+        return new DateTime(buffer.readLongLE());
     }
 
     public ByteString readByteString() throws UaSerializationException {
@@ -215,10 +213,10 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     public UUID readGuid() throws UaSerializationException {
-        long part1 = buffer.readUnsignedInt();
-        long part2 = buffer.readUnsignedShort();
-        long part3 = buffer.readUnsignedShort();
-        long part4 = buffer.order(ByteOrder.BIG_ENDIAN).readLong();
+        long part1 = buffer.readUnsignedIntLE();
+        long part2 = buffer.readUnsignedShortLE();
+        long part3 = buffer.readUnsignedShortLE();
+        long part4 = buffer.readLong(); // intentionally Big Endian
 
         long msb = (part1 << 32) | (part2 << 16) | part3;
 
@@ -342,22 +340,22 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
         if (format == 0x00) {
             /* Two-byte format */
-            return new NodeId(Unsigned.ushort(0), Unsigned.uint(buffer.readUnsignedByte()));
+            return new NodeId(UShort.MIN, uint(buffer.readUnsignedByte()));
         } else if (format == 0x01) {
             /* Four-byte format */
-            return new NodeId(Unsigned.ushort(buffer.readUnsignedByte()), Unsigned.uint(buffer.readUnsignedShort()));
+            return new NodeId(ushort(buffer.readUnsignedByte()), uint(buffer.readUnsignedShortLE()));
         } else if (format == 0x02) {
             /* Numeric format */
-            return new NodeId(Unsigned.ushort(buffer.readUnsignedShort()), Unsigned.uint(buffer.readUnsignedInt()));
+            return new NodeId(readUInt16(), readUInt32());
         } else if (format == 0x03) {
             /* String format */
-            return new NodeId(Unsigned.ushort(buffer.readUnsignedShort()), readString());
+            return new NodeId(readUInt16(), readString());
         } else if (format == 0x04) {
             /* Guid format */
-            return new NodeId(Unsigned.ushort(buffer.readUnsignedShort()), readGuid());
+            return new NodeId(readUInt16(), readGuid());
         } else if (format == 0x05) {
             /* Opaque format */
-            return new NodeId(Unsigned.ushort(buffer.readUnsignedShort()), readByteString());
+            return new NodeId(readUInt16(), readByteString());
         } else {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, "invalid NodeId format: " + format);
         }

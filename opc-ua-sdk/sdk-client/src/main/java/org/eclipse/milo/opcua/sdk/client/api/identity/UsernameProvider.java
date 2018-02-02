@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.client.api.identity;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -85,12 +84,12 @@ public class UsernameProvider implements IdentityProvider {
         byte[] passwordBytes = password.getBytes("UTF-8");
         byte[] nonceBytes = Optional.ofNullable(serverNonce.bytes()).orElse(new byte[0]);
 
-        ByteBuf buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuf buffer = Unpooled.buffer();
 
         if (securityPolicy == SecurityPolicy.None) {
             buffer.writeBytes(passwordBytes);
         } else {
-            buffer.writeInt(passwordBytes.length + nonceBytes.length);
+            buffer.writeIntLE(passwordBytes.length + nonceBytes.length);
             buffer.writeBytes(passwordBytes);
             buffer.writeBytes(nonceBytes);
 
@@ -110,7 +109,6 @@ public class UsernameProvider implements IdentityProvider {
 
             ByteBuffer plainTextNioBuffer = buffer.nioBuffer();
             ByteBuffer cipherTextNioBuffer = Unpooled.buffer(cipherTextBlockSize * blockCount)
-                .order(ByteOrder.LITTLE_ENDIAN)
                 .nioBuffer(0, cipherTextBlockSize * blockCount);
 
             for (int blockNumber = 0; blockNumber < blockCount; blockNumber++) {

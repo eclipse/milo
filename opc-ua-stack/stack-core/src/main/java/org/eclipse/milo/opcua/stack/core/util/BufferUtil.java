@@ -24,16 +24,51 @@ public class BufferUtil {
 
     private static final ByteBufAllocator allocator = PooledByteBufAllocator.DEFAULT;
 
+    /**
+     * Get a pooled {@link ByteBuf} in <b>LITTLE ENDIAN</b> byte order.
+     * <p>
+     * This is now deprecated in netty in favor of using ByteBuf#getFooLE() methods.
+     *
+     * @return a pooled {@link ByteBuf} in <b>LITTLE ENDIAN</b> byte order.
+     */
+    @Deprecated
     public static ByteBuf buffer() {
         return allocator.buffer().order(ByteOrder.LITTLE_ENDIAN);
     }
 
+    /**
+     * Get a pooled {@link ByteBuf} in <b>LITTLE ENDIAN</b> byte order, with an initial capacity of
+     * {@code initialCapacity}.
+     * <p>
+     * This is now deprecated in netty in favor of using ByteBuf#getFooLE() methods.
+     *
+     * @return a pooled {@link ByteBuf} in <b>LITTLE ENDIAN</b> byte order.
+     */
+    @Deprecated
     public static ByteBuf buffer(int initialCapacity) {
         return allocator.buffer(initialCapacity).order(ByteOrder.LITTLE_ENDIAN);
     }
 
+    /**
+     * @return a pooled {@link CompositeByteBuf}.
+     */
     public static CompositeByteBuf compositeBuffer() {
         return allocator.compositeBuffer();
+    }
+
+    /**
+     * @return a pooled {@link ByteBuf} in <b>BIG ENDIAN</b> byte order.
+     */
+    public static ByteBuf pooledBuffer() {
+        return allocator.buffer();
+    }
+
+    /**
+     * @return a pooled {@link ByteBuf} in <b>BIG ENDIAN</b> byte order, with an initial capacity of
+     * {@code initialCapacity}.
+     */
+    public static ByteBuf pooledBuffer(int initialCapacity) {
+        return allocator.buffer(initialCapacity);
     }
 
 }

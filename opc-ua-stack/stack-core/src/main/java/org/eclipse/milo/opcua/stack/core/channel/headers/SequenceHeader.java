@@ -79,16 +79,16 @@ public class SequenceHeader {
     }
 
     public static ByteBuf encode(SequenceHeader header, ByteBuf buffer) {
-        buffer.writeInt((int) header.getSequenceNumber());
-        buffer.writeInt((int) header.getRequestId());
+        buffer.writeIntLE((int) header.getSequenceNumber());
+        buffer.writeIntLE((int) header.getRequestId());
 
         return buffer;
     }
 
     public static SequenceHeader decode(ByteBuf buffer) {
         return new SequenceHeader(
-            buffer.readUnsignedInt(), /*    SequenceNumber  */
-            buffer.readUnsignedInt()  /*    RequestId       */
+            buffer.readUnsignedIntLE(), /*    SequenceNumber  */
+            buffer.readUnsignedIntLE()  /*    RequestId       */
         );
     }
 

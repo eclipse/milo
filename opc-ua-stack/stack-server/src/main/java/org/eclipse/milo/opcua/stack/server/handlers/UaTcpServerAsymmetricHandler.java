@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.server.handlers;
 
 import java.io.IOException;
-import java.nio.ByteOrder;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -95,13 +94,11 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        buffer = buffer.order(ByteOrder.LITTLE_ENDIAN);
-
         while (buffer.readableBytes() >= HEADER_LENGTH &&
             buffer.readableBytes() >= getMessageLength(buffer)) {
 
             int messageLength = getMessageLength(buffer);
-            MessageType messageType = MessageType.fromMediumInt(buffer.getMedium(buffer.readerIndex()));
+            MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
             switch (messageType) {
                 case OpenSecureChannel:
@@ -135,7 +132,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         } else {
             buffer.skipBytes(4); // Skip messageSize
 
-            long secureChannelId = buffer.readUnsignedInt();
+            long secureChannelId = buffer.readUnsignedIntLE();
             AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(buffer);
 
             if (secureChannelId == 0) {
@@ -380,7 +377,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         OpenSecureChannelResponse response) {
 
         serializationQueue.encode((writer, chunkEncoder) -> {
-            ByteBuf messageBuffer = BufferUtil.buffer();
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
             try {
                 writer.setBuffer(messageBuffer);

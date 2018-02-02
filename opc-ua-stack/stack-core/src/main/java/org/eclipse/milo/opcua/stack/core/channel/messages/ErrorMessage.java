@@ -47,13 +47,13 @@ public class ErrorMessage {
     }
 
     public static void encode(ErrorMessage message, ByteBuf buffer) {
-        buffer.writeInt((int) message.getError().getValue());
+        buffer.writeIntLE((int) message.getError().getValue());
         encodeString(message.getReason(), buffer);
     }
 
     public static ErrorMessage decode(ByteBuf buffer) {
         return new ErrorMessage(
-            buffer.readUnsignedInt(),
+            buffer.readUnsignedIntLE(),
             decodeString(buffer));
     }
 

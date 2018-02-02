@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
-import java.nio.ByteOrder;
 import java.util.function.Consumer;
 
 import io.netty.buffer.ByteBuf;
@@ -26,7 +25,7 @@ public class TcpMessageEncoder {
         return encode(
             MessageType.Hello,
             (b) -> HelloMessage.encode(helloMessage, b),
-            Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN)
+            Unpooled.buffer()
         );
     }
 
@@ -34,7 +33,7 @@ public class TcpMessageEncoder {
         return encode(
             MessageType.Acknowledge,
             b -> AcknowledgeMessage.encode(acknowledgeMessage, b),
-            Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN)
+            Unpooled.buffer()
         );
     }
 
@@ -42,7 +41,7 @@ public class TcpMessageEncoder {
         return encode(
             MessageType.Error,
             (b) -> ErrorMessage.encode(errorMessage, b),
-            Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN)
+            Unpooled.buffer()
         );
     }
 
@@ -58,11 +57,11 @@ public class TcpMessageEncoder {
         Consumer<ByteBuf> messageEncoder,
         ByteBuf buffer) throws UaException {
 
-        buffer.writeMedium(MessageType.toMediumInt(messageType));
+        buffer.writeMediumLE(MessageType.toMediumInt(messageType));
         buffer.writeByte('F');
 
         int lengthIndex = buffer.writerIndex();
-        buffer.writeInt(0);
+        buffer.writeIntLE(0);
 
         int indexBefore = buffer.writerIndex();
         messageEncoder.accept(buffer);
@@ -70,7 +69,7 @@ public class TcpMessageEncoder {
         int bytesWritten = indexAfter - indexBefore;
 
         buffer.writerIndex(lengthIndex);
-        buffer.writeInt(8 + bytesWritten);
+        buffer.writeIntLE(8 + bytesWritten);
         buffer.writerIndex(indexAfter);
 
         return buffer;
