@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -38,7 +38,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SecureClientStandalone implements ClientExample {
+public class SecureClientStandalone {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private SecurityPolicy securityPolicy = SecurityPolicy.Basic256Sha256;
@@ -88,12 +88,10 @@ public class SecureClientStandalone implements ClientExample {
         }
     }
 
-    @Override
     public SecurityPolicy getSecurityPolicy() {
         return securityPolicy;
     }
 
-    @Override
     public IdentityProvider getIdentityProvider() {
         return identityProvider;
     }
@@ -106,9 +104,7 @@ public class SecureClientStandalone implements ClientExample {
         return keyPair;
     }
 
-    @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-
         // synchronous connect
         client.connect().get();
 

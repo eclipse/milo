@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_ANONYMOUS;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_USERNAME;
 import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USER_TOKEN_POLICY_X509;
 
@@ -62,8 +61,6 @@ public class SecureServerStandalone {
             logger.error("Concurrency problems encountered during startup", e);
         }
 
-
-
         final CompletableFuture<Void> future = new CompletableFuture<>();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> future.complete(null)));
@@ -89,7 +86,7 @@ public class SecureServerStandalone {
         try {
             loader = loader.load(securityTempDir);
         } catch (Exception e) {
-            logger.error("Could not aquire KeyStoreLoader.", e);
+            logger.error("Could not acquire KeyStoreLoader.", e);
         }
 
         DefaultCertificateManager certificateManager = new DefaultCertificateManager(
