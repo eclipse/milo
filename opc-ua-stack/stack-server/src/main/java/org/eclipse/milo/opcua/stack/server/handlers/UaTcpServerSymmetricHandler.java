@@ -90,7 +90,7 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (secureChannel != null) {
-            secureChannel.attr(UaTcpStackServer.BoundChannelKey).remove();
+            secureChannel.attr(UaTcpStackServer.BoundChannelKey).set(null);
         }
 
         super.channelInactive(ctx);
