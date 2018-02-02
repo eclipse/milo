@@ -91,6 +91,17 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         0
     );
 
+    private ChannelParameters unlimitedMessageSizeParameters = new ChannelParameters(
+        0,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        0,
+        0,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        0
+    );
+
 
     @DataProvider
     public Object[][] getAsymmetricSecurityParameters() {
@@ -132,7 +143,8 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         ChannelParameters[] channelParameters = {
             smallParameters,
             defaultParameters,
-            unlimitedChunkCountParameters
+            unlimitedChunkCountParameters,
+            unlimitedMessageSizeParameters
         };
 
         for (ChannelParameters parameters : channelParameters) {
@@ -230,7 +242,8 @@ public class ChunkSerializationTest extends SecureChannelFixture {
         ChannelParameters[] channelParameters = {
             smallParameters,
             defaultParameters,
-            unlimitedChunkCountParameters
+            unlimitedChunkCountParameters,
+            unlimitedMessageSizeParameters
         };
 
         for (ChannelParameters parameters : channelParameters) {

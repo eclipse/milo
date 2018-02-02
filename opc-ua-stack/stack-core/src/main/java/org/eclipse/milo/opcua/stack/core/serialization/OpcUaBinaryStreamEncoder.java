@@ -316,17 +316,65 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         } else {
             int mask = 0x00;
 
-            if (value.getValue() != null && value.getValue().isNotNull()) mask |= 0x01;
-            if (!StatusCode.GOOD.equals(value.getStatusCode())) mask |= 0x02;
-            if (!DateTime.MIN_VALUE.equals(value.getSourceTime())) mask |= 0x04;
-            if (!DateTime.MIN_VALUE.equals(value.getServerTime())) mask |= 0x08;
+            if (value.getValue() != null && value.getValue().isNotNull()) {
+                mask |= 0x01;
+            }
+
+            if (!StatusCode.GOOD.equals(value.getStatusCode())) {
+                mask |= 0x02;
+            }
+
+            if (value.getSourceTime() != null &&
+                !DateTime.MIN_VALUE.equals(value.getSourceTime())) {
+
+                mask |= 0x04;
+            }
+
+            if (value.getServerTime() != null &&
+                !DateTime.MIN_VALUE.equals(value.getServerTime())) {
+
+                mask |= 0x08;
+            }
+
+            if (value.getSourcePicoseconds() != null &&
+                value.getSourcePicoseconds().intValue() != 0) {
+
+                mask |= 0x10;
+            }
+
+            if (value.getServerPicoseconds() != null &&
+                value.getServerPicoseconds().intValue() != 0) {
+
+                mask |= 0x20;
+            }
 
             buffer.writeByte(mask);
 
-            if ((mask & 0x01) == 0x01) writeVariant(value.getValue());
-            if ((mask & 0x02) == 0x02) writeStatusCode(value.getStatusCode());
-            if ((mask & 0x04) == 0x04) writeDateTime(value.getSourceTime());
-            if ((mask & 0x08) == 0x08) writeDateTime(value.getServerTime());
+            // Value
+            if ((mask & 0x01) == 0x01) {
+                writeVariant(value.getValue());
+            }
+
+            // StatusCode
+            if ((mask & 0x02) == 0x02) {
+                writeStatusCode(value.getStatusCode());
+            }
+
+            // SourceTimestamp and SourcePicoseconds
+            if ((mask & 0x04) == 0x04) {
+                writeDateTime(value.getSourceTime());
+            }
+            if ((mask & 0x10) == 0x10) {
+                writeUInt16(value.getSourcePicoseconds());
+            }
+
+            // ServerTimestamp and ServerPicoseconds
+            if ((mask & 0x08) == 0x08) {
+                writeDateTime(value.getServerTime());
+            }
+            if ((mask & 0x20) == 0x20) {
+                writeUInt16(value.getServerPicoseconds());
+            }
         }
     }
 

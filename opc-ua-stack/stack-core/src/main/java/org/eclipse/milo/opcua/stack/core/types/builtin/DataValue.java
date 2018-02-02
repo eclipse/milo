@@ -112,13 +112,21 @@ public final class DataValue {
     @Override
     public String toString() {
         ToStringHelper helper = MoreObjects.toStringHelper(this);
+
         helper.add("value", value);
         helper.add("status", status);
+
         if (sourceTime != null) {
             helper.add("sourceTime", sourceTime);
         }
+        if (sourcePicoseconds != null) {
+            helper.add("sourcePicoseconds", sourcePicoseconds);
+        }
         if (serverTime != null) {
             helper.add("serverTime", serverTime);
+        }
+        if (serverPicoseconds != null) {
+            helper.add("serverPicoseconds", serverPicoseconds);
         }
 
         return helper.toString();
