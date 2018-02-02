@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,80 +27,58 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AcknowledgeableConditionType")
 public class AcknowledgeableConditionNode extends ConditionNode implements AcknowledgeableConditionType {
+    public AcknowledgeableConditionNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AcknowledgeableConditionNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AcknowledgeableConditionNode(ServerNodeMap nodeMap, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
+    public TwoStateVariableNode getEnabledStateNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "EnabledState");
+        return component.map(node -> (TwoStateVariableNode) node).orElse(null);
+    }
+
     public LocalizedText getEnabledState() {
         Optional<VariableNode> component = getVariableComponent("EnabledState");
-
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
-    @Override
-    public TwoStateVariableNode getEnabledStateNode() {
-        Optional<VariableNode> component = getVariableComponent("EnabledState");
+    public void setEnabledState(LocalizedText value) {
+        getVariableComponent("EnabledState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    }
 
+    public TwoStateVariableNode getAckedStateNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "AckedState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
-    @Override
-    public void setEnabledState(LocalizedText value) {
-        getVariableComponent("EnabledState")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
-    }
-
-    @Override
     public LocalizedText getAckedState() {
         Optional<VariableNode> component = getVariableComponent("AckedState");
-
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
-    @Override
-    public TwoStateVariableNode getAckedStateNode() {
-        Optional<VariableNode> component = getVariableComponent("AckedState");
+    public void setAckedState(LocalizedText value) {
+        getVariableComponent("AckedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    }
 
+    public TwoStateVariableNode getConfirmedStateNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ConfirmedState");
         return component.map(node -> (TwoStateVariableNode) node).orElse(null);
     }
 
-    @Override
-    public void setAckedState(LocalizedText value) {
-        getVariableComponent("AckedState")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
-    }
-
-    @Override
     public LocalizedText getConfirmedState() {
         Optional<VariableNode> component = getVariableComponent("ConfirmedState");
-
         return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
     }
 
-    @Override
-    public TwoStateVariableNode getConfirmedStateNode() {
-        Optional<VariableNode> component = getVariableComponent("ConfirmedState");
-
-        return component.map(node -> (TwoStateVariableNode) node).orElse(null);
-    }
-
-    @Override
     public void setConfirmedState(LocalizedText value) {
-        getVariableComponent("ConfirmedState")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("ConfirmedState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
-
 }

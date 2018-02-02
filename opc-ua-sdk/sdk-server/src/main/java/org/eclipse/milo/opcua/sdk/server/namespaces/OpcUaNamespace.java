@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.opcua.sdk.core.NamespaceTable;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
@@ -46,6 +45,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -97,7 +97,7 @@ public class OpcUaNamespace implements Namespace {
 
     @Override
     public String getNamespaceUri() {
-        return NamespaceTable.OpcUaNamespace;
+        return NamespaceTable.OPC_UA_NAMESPACE;
     }
 
     @Override
@@ -130,7 +130,8 @@ public class OpcUaNamespace implements Namespace {
                     new AttributeContext(context),
                     id.getAttributeId(),
                     timestamps,
-                    id.getIndexRange()
+                    id.getIndexRange(),
+                    id.getDataEncoding()
                 );
             } else {
                 value = new DataValue(new StatusCode(StatusCodes.Bad_NodeIdUnknown));

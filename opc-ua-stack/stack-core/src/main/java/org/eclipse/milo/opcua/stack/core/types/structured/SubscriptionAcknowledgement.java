@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,37 +15,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("SubscriptionAcknowledgement")
 public class SubscriptionAcknowledgement implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SubscriptionAcknowledgement;
     public static final NodeId BinaryEncodingId = Identifiers.SubscriptionAcknowledgement_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SubscriptionAcknowledgement_Encoding_DefaultXml;
 
-    protected final UInteger _subscriptionId;
-    protected final UInteger _sequenceNumber;
+    protected final UInteger subscriptionId;
+    protected final UInteger sequenceNumber;
 
     public SubscriptionAcknowledgement() {
-        this._subscriptionId = null;
-        this._sequenceNumber = null;
+        this.subscriptionId = null;
+        this.sequenceNumber = null;
     }
 
-    public SubscriptionAcknowledgement(UInteger _subscriptionId, UInteger _sequenceNumber) {
-        this._subscriptionId = _subscriptionId;
-        this._sequenceNumber = _sequenceNumber;
+    public SubscriptionAcknowledgement(UInteger subscriptionId, UInteger sequenceNumber) {
+        this.subscriptionId = subscriptionId;
+        this.sequenceNumber = sequenceNumber;
     }
 
-    public UInteger getSubscriptionId() { return _subscriptionId; }
+    public UInteger getSubscriptionId() { return subscriptionId; }
 
-    public UInteger getSequenceNumber() { return _sequenceNumber; }
+    public UInteger getSequenceNumber() { return sequenceNumber; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -59,26 +58,31 @@ public class SubscriptionAcknowledgement implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SubscriptionId", _subscriptionId)
-            .add("SequenceNumber", _sequenceNumber)
+            .add("SubscriptionId", subscriptionId)
+            .add("SequenceNumber", sequenceNumber)
             .toString();
     }
 
-    public static void encode(SubscriptionAcknowledgement subscriptionAcknowledgement, UaEncoder encoder) {
-        encoder.encodeUInt32("SubscriptionId", subscriptionAcknowledgement._subscriptionId);
-        encoder.encodeUInt32("SequenceNumber", subscriptionAcknowledgement._sequenceNumber);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SubscriptionAcknowledgement> {
 
-    public static SubscriptionAcknowledgement decode(UaDecoder decoder) {
-        UInteger _subscriptionId = decoder.decodeUInt32("SubscriptionId");
-        UInteger _sequenceNumber = decoder.decodeUInt32("SequenceNumber");
+        @Override
+        public Class<SubscriptionAcknowledgement> getType() {
+            return SubscriptionAcknowledgement.class;
+        }
 
-        return new SubscriptionAcknowledgement(_subscriptionId, _sequenceNumber);
-    }
+        @Override
+        public SubscriptionAcknowledgement decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
+            UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
 
-    static {
-        DelegateRegistry.registerEncoder(SubscriptionAcknowledgement::encode, SubscriptionAcknowledgement.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SubscriptionAcknowledgement::decode, SubscriptionAcknowledgement.class, BinaryEncodingId, XmlEncodingId);
+            return new SubscriptionAcknowledgement(subscriptionId, sequenceNumber);
+        }
+
+        @Override
+        public void encode(SubscriptionAcknowledgement value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
+            encoder.writeUInt32("SequenceNumber", value.sequenceNumber);
+        }
     }
 
 }

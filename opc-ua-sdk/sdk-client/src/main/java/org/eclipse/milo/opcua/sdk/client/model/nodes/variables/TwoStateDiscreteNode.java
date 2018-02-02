@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,42 +21,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class TwoStateDiscreteNode extends DiscreteItemNode implements TwoStateDiscreteType {
-
     public TwoStateDiscreteNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> falseState() {
-        return getPropertyNode(TwoStateDiscreteType.FALSE_STATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getFalseStateNode() {
+        return getPropertyNode(TwoStateDiscreteType.FALSE_STATE);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getFalseState() {
         return getProperty(TwoStateDiscreteType.FALSE_STATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setFalseState(LocalizedText value) {
         return setProperty(TwoStateDiscreteType.FALSE_STATE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> trueState() {
-        return getPropertyNode(TwoStateDiscreteType.TRUE_STATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getTrueStateNode() {
+        return getPropertyNode(TwoStateDiscreteType.TRUE_STATE);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getTrueState() {
         return getProperty(TwoStateDiscreteType.TRUE_STATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTrueState(LocalizedText value) {
         return setProperty(TwoStateDiscreteType.TRUE_STATE, value);
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,39 +26,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:ModellingRuleType")
 public class ModellingRuleNode extends BaseObjectNode implements ModellingRuleType {
+    public ModellingRuleNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                             UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public ModellingRuleNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public ModellingRuleNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                             UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public NamingRuleType getNamingRule() {
-        Optional<NamingRuleType> property = getProperty(ModellingRuleType.NAMING_RULE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getNamingRuleNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ModellingRuleType.NAMING_RULE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ModellingRuleType.NAMING_RULE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public NamingRuleType getNamingRule() {
+        Optional<NamingRuleType> propertyValue = getProperty(ModellingRuleType.NAMING_RULE);
+        return propertyValue.orElse(null);
+    }
+
     public void setNamingRule(NamingRuleType value) {
         setProperty(ModellingRuleType.NAMING_RULE, value);
     }
-
 }

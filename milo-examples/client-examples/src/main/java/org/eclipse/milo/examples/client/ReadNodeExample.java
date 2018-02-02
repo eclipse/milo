@@ -62,7 +62,7 @@ public class ReadNodeExample implements ClientExample {
 
         // Get a typed reference to the ServerStatus variable
         // component and read value attributes individually
-        ServerStatusNode serverStatusNode = serverNode.serverStatus().get();
+        ServerStatusNode serverStatusNode = serverNode.getServerStatusNode().get();
         BuildInfo buildInfo = serverStatusNode.getBuildInfo().get();
         DateTime startTime = serverStatusNode.getStartTime().get();
         DateTime currentTime = serverStatusNode.getCurrentTime().get();

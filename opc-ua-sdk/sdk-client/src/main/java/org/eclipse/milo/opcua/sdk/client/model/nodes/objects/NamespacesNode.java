@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,20 +18,13 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.model.types.objects.NamespacesType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-
 
 public class NamespacesNode extends BaseObjectNode implements NamespacesType {
-
     public NamespacesNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<AddressSpaceFileNode> addressSpaceFile() {
-        return getObjectComponent(QualifiedName.parse("0:AddressSpaceFile"))
-            .thenApply(AddressSpaceFileNode.class::cast);
+    public CompletableFuture<AddressSpaceFileNode> getAddressSpaceFileNode() {
+        return getObjectComponent("http://opcfoundation.org/UA/", "AddressSpaceFile").thenApply(AddressSpaceFileNode.class::cast);
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,37 +17,36 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RegisterNodesResponse")
 public class RegisterNodesResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterNodesResponse;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterNodesResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterNodesResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final NodeId[] _registeredNodeIds;
+    protected final ResponseHeader responseHeader;
+    protected final NodeId[] registeredNodeIds;
 
     public RegisterNodesResponse() {
-        this._responseHeader = null;
-        this._registeredNodeIds = null;
+        this.responseHeader = null;
+        this.registeredNodeIds = null;
     }
 
-    public RegisterNodesResponse(ResponseHeader _responseHeader, NodeId[] _registeredNodeIds) {
-        this._responseHeader = _responseHeader;
-        this._registeredNodeIds = _registeredNodeIds;
+    public RegisterNodesResponse(ResponseHeader responseHeader, NodeId[] registeredNodeIds) {
+        this.responseHeader = responseHeader;
+        this.registeredNodeIds = registeredNodeIds;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public NodeId[] getRegisteredNodeIds() { return _registeredNodeIds; }
+    public NodeId[] getRegisteredNodeIds() { return registeredNodeIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,31 @@ public class RegisterNodesResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("RegisteredNodeIds", _registeredNodeIds)
+            .add("ResponseHeader", responseHeader)
+            .add("RegisteredNodeIds", registeredNodeIds)
             .toString();
     }
 
-    public static void encode(RegisterNodesResponse registerNodesResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", registerNodesResponse._responseHeader != null ? registerNodesResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("RegisteredNodeIds", registerNodesResponse._registeredNodeIds, encoder::encodeNodeId);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<RegisterNodesResponse> {
 
-    public static RegisterNodesResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        NodeId[] _registeredNodeIds = decoder.decodeArray("RegisteredNodeIds", decoder::decodeNodeId, NodeId.class);
+        @Override
+        public Class<RegisterNodesResponse> getType() {
+            return RegisterNodesResponse.class;
+        }
 
-        return new RegisterNodesResponse(_responseHeader, _registeredNodeIds);
-    }
+        @Override
+        public RegisterNodesResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            NodeId[] registeredNodeIds = decoder.readArray("RegisteredNodeIds", decoder::readNodeId, NodeId.class);
 
-    static {
-        DelegateRegistry.registerEncoder(RegisterNodesResponse::encode, RegisterNodesResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RegisterNodesResponse::decode, RegisterNodesResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new RegisterNodesResponse(responseHeader, registeredNodeIds);
+        }
+
+        @Override
+        public void encode(RegisterNodesResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeArray("RegisteredNodeIds", value.registeredNodeIds, encoder::writeNodeId);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -25,39 +25,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:OffNormalAlarmType")
 public class OffNormalAlarmNode extends DiscreteAlarmNode implements OffNormalAlarmType {
+    public OffNormalAlarmNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                              UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public OffNormalAlarmNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public OffNormalAlarmNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                              UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public NodeId getNormalState() {
-        Optional<NodeId> property = getProperty(OffNormalAlarmType.NORMAL_STATE);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getNormalStateNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(OffNormalAlarmType.NORMAL_STATE.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(OffNormalAlarmType.NORMAL_STATE);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public NodeId getNormalState() {
+        Optional<NodeId> propertyValue = getProperty(OffNormalAlarmType.NORMAL_STATE);
+        return propertyValue.orElse(null);
+    }
+
     public void setNormalState(NodeId value) {
         setProperty(OffNormalAlarmType.NORMAL_STATE, value);
     }
-
 }

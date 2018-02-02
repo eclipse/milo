@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -18,45 +18,40 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public interface BuildInfoType extends BaseDataVariableType {
-
-
-    CompletableFuture<? extends BaseDataVariableType> productUri();
+    CompletableFuture<? extends BaseDataVariableType> getProductUriNode();
 
     CompletableFuture<String> getProductUri();
 
     CompletableFuture<StatusCode> setProductUri(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> manufacturerName();
+    CompletableFuture<? extends BaseDataVariableType> getManufacturerNameNode();
 
     CompletableFuture<String> getManufacturerName();
 
     CompletableFuture<StatusCode> setManufacturerName(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> productName();
+    CompletableFuture<? extends BaseDataVariableType> getProductNameNode();
 
     CompletableFuture<String> getProductName();
 
     CompletableFuture<StatusCode> setProductName(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> softwareVersion();
+    CompletableFuture<? extends BaseDataVariableType> getSoftwareVersionNode();
 
     CompletableFuture<String> getSoftwareVersion();
 
     CompletableFuture<StatusCode> setSoftwareVersion(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> buildNumber();
+    CompletableFuture<? extends BaseDataVariableType> getBuildNumberNode();
 
     CompletableFuture<String> getBuildNumber();
 
     CompletableFuture<StatusCode> setBuildNumber(String value);
 
-    CompletableFuture<? extends BaseDataVariableType> buildDate();
+    CompletableFuture<? extends BaseDataVariableType> getBuildDateNode();
 
     CompletableFuture<DateTime> getBuildDate();
 
     CompletableFuture<StatusCode> setBuildDate(DateTime value);
-
-
 }

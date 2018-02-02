@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,44 +17,43 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("TranslateBrowsePathsToNodeIdsResponse")
 public class TranslateBrowsePathsToNodeIdsResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.TranslateBrowsePathsToNodeIdsResponse;
     public static final NodeId BinaryEncodingId = Identifiers.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.TranslateBrowsePathsToNodeIdsResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final BrowsePathResult[] _results;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final BrowsePathResult[] results;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public TranslateBrowsePathsToNodeIdsResponse() {
-        this._responseHeader = null;
-        this._results = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.results = null;
+        this.diagnosticInfos = null;
     }
 
-    public TranslateBrowsePathsToNodeIdsResponse(ResponseHeader _responseHeader, BrowsePathResult[] _results, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._results = _results;
-        this._diagnosticInfos = _diagnosticInfos;
+    public TranslateBrowsePathsToNodeIdsResponse(ResponseHeader responseHeader, BrowsePathResult[] results, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.results = results;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public BrowsePathResult[] getResults() { return _results; }
+    public BrowsePathResult[] getResults() { return results; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,29 +67,42 @@ public class TranslateBrowsePathsToNodeIdsResponse implements UaResponseMessage 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("Results", _results)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("Results", results)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static void encode(TranslateBrowsePathsToNodeIdsResponse translateBrowsePathsToNodeIdsResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", translateBrowsePathsToNodeIdsResponse._responseHeader != null ? translateBrowsePathsToNodeIdsResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Results", translateBrowsePathsToNodeIdsResponse._results, encoder::encodeSerializable);
-        encoder.encodeArray("DiagnosticInfos", translateBrowsePathsToNodeIdsResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<TranslateBrowsePathsToNodeIdsResponse> {
 
-    public static TranslateBrowsePathsToNodeIdsResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        BrowsePathResult[] _results = decoder.decodeArray("Results", decoder::decodeSerializable, BrowsePathResult.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+        @Override
+        public Class<TranslateBrowsePathsToNodeIdsResponse> getType() {
+            return TranslateBrowsePathsToNodeIdsResponse.class;
+        }
 
-        return new TranslateBrowsePathsToNodeIdsResponse(_responseHeader, _results, _diagnosticInfos);
-    }
+        @Override
+        public TranslateBrowsePathsToNodeIdsResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            BrowsePathResult[] results =
+                decoder.readBuiltinStructArray(
+                    "Results",
+                    BrowsePathResult.class
+                );
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    static {
-        DelegateRegistry.registerEncoder(TranslateBrowsePathsToNodeIdsResponse::encode, TranslateBrowsePathsToNodeIdsResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(TranslateBrowsePathsToNodeIdsResponse::decode, TranslateBrowsePathsToNodeIdsResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new TranslateBrowsePathsToNodeIdsResponse(responseHeader, results, diagnosticInfos);
+        }
+
+        @Override
+        public void encode(TranslateBrowsePathsToNodeIdsResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStructArray(
+                "Results",
+                value.results,
+                BrowsePathResult.class
+            );
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        }
     }
 
 }

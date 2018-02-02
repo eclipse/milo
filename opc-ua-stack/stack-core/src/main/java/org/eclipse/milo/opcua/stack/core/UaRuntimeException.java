@@ -15,7 +15,7 @@ package org.eclipse.milo.opcua.stack.core;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class UaRuntimeException extends RuntimeException {
+public class UaRuntimeException extends RuntimeException implements UaExceptionStatus {
 
     private final StatusCode statusCode;
 
@@ -40,7 +40,8 @@ public class UaRuntimeException extends RuntimeException {
 
         this.statusCode = new StatusCode(statusCode);
     }
-
+    
+    @Override
     public StatusCode getStatusCode() {
         return statusCode;
     }

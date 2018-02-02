@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -24,41 +24,31 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:CertificateGroupFolderType")
 public class CertificateGroupFolderNode extends FolderNode implements CertificateGroupFolderType {
+    public CertificateGroupFolderNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public CertificateGroupFolderNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public CertificateGroupFolderNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
     public CertificateGroupNode getDefaultApplicationGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("DefaultApplicationGroup");
-
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultApplicationGroup");
         return component.map(node -> (CertificateGroupNode) node).orElse(null);
     }
 
-    @Override
     public CertificateGroupNode getDefaultHttpsGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("DefaultHttpsGroup");
-
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultHttpsGroup");
         return component.map(node -> (CertificateGroupNode) node).orElse(null);
     }
 
-    @Override
     public CertificateGroupNode getDefaultUserTokenGroupNode() {
-        Optional<ObjectNode> component = getObjectComponent("DefaultUserTokenGroup");
-
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "DefaultUserTokenGroup");
         return component.map(node -> (CertificateGroupNode) node).orElse(null);
     }
-
 }

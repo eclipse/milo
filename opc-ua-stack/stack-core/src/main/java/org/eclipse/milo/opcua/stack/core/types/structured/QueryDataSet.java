@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,44 +17,43 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-@UaDataType("QueryDataSet")
 public class QueryDataSet implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.QueryDataSet;
     public static final NodeId BinaryEncodingId = Identifiers.QueryDataSet_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.QueryDataSet_Encoding_DefaultXml;
 
-    protected final ExpandedNodeId _nodeId;
-    protected final ExpandedNodeId _typeDefinitionNode;
-    protected final Variant[] _values;
+    protected final ExpandedNodeId nodeId;
+    protected final ExpandedNodeId typeDefinitionNode;
+    protected final Variant[] values;
 
     public QueryDataSet() {
-        this._nodeId = null;
-        this._typeDefinitionNode = null;
-        this._values = null;
+        this.nodeId = null;
+        this.typeDefinitionNode = null;
+        this.values = null;
     }
 
-    public QueryDataSet(ExpandedNodeId _nodeId, ExpandedNodeId _typeDefinitionNode, Variant[] _values) {
-        this._nodeId = _nodeId;
-        this._typeDefinitionNode = _typeDefinitionNode;
-        this._values = _values;
+    public QueryDataSet(ExpandedNodeId nodeId, ExpandedNodeId typeDefinitionNode, Variant[] values) {
+        this.nodeId = nodeId;
+        this.typeDefinitionNode = typeDefinitionNode;
+        this.values = values;
     }
 
-    public ExpandedNodeId getNodeId() { return _nodeId; }
+    public ExpandedNodeId getNodeId() { return nodeId; }
 
-    public ExpandedNodeId getTypeDefinitionNode() { return _typeDefinitionNode; }
+    public ExpandedNodeId getTypeDefinitionNode() { return typeDefinitionNode; }
 
     @Nullable
-    public Variant[] getValues() { return _values; }
+    public Variant[] getValues() { return values; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,29 +67,34 @@ public class QueryDataSet implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("NodeId", _nodeId)
-            .add("TypeDefinitionNode", _typeDefinitionNode)
-            .add("Values", _values)
+            .add("NodeId", nodeId)
+            .add("TypeDefinitionNode", typeDefinitionNode)
+            .add("Values", values)
             .toString();
     }
 
-    public static void encode(QueryDataSet queryDataSet, UaEncoder encoder) {
-        encoder.encodeExpandedNodeId("NodeId", queryDataSet._nodeId);
-        encoder.encodeExpandedNodeId("TypeDefinitionNode", queryDataSet._typeDefinitionNode);
-        encoder.encodeArray("Values", queryDataSet._values, encoder::encodeVariant);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<QueryDataSet> {
 
-    public static QueryDataSet decode(UaDecoder decoder) {
-        ExpandedNodeId _nodeId = decoder.decodeExpandedNodeId("NodeId");
-        ExpandedNodeId _typeDefinitionNode = decoder.decodeExpandedNodeId("TypeDefinitionNode");
-        Variant[] _values = decoder.decodeArray("Values", decoder::decodeVariant, Variant.class);
+        @Override
+        public Class<QueryDataSet> getType() {
+            return QueryDataSet.class;
+        }
 
-        return new QueryDataSet(_nodeId, _typeDefinitionNode, _values);
-    }
+        @Override
+        public QueryDataSet decode(UaDecoder decoder) throws UaSerializationException {
+            ExpandedNodeId nodeId = decoder.readExpandedNodeId("NodeId");
+            ExpandedNodeId typeDefinitionNode = decoder.readExpandedNodeId("TypeDefinitionNode");
+            Variant[] values = decoder.readArray("Values", decoder::readVariant, Variant.class);
 
-    static {
-        DelegateRegistry.registerEncoder(QueryDataSet::encode, QueryDataSet.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryDataSet::decode, QueryDataSet.class, BinaryEncodingId, XmlEncodingId);
+            return new QueryDataSet(nodeId, typeDefinitionNode, values);
+        }
+
+        @Override
+        public void encode(QueryDataSet value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeExpandedNodeId("NodeId", value.nodeId);
+            encoder.writeExpandedNodeId("TypeDefinitionNode", value.typeDefinitionNode);
+            encoder.writeArray("Values", value.values, encoder::writeVariant);
+        }
     }
 
 }

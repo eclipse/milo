@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,38 +15,37 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("StatusResult")
 public class StatusResult implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.StatusResult;
     public static final NodeId BinaryEncodingId = Identifiers.StatusResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.StatusResult_Encoding_DefaultXml;
 
-    protected final StatusCode _statusCode;
-    protected final DiagnosticInfo _diagnosticInfo;
+    protected final StatusCode statusCode;
+    protected final DiagnosticInfo diagnosticInfo;
 
     public StatusResult() {
-        this._statusCode = null;
-        this._diagnosticInfo = null;
+        this.statusCode = null;
+        this.diagnosticInfo = null;
     }
 
-    public StatusResult(StatusCode _statusCode, DiagnosticInfo _diagnosticInfo) {
-        this._statusCode = _statusCode;
-        this._diagnosticInfo = _diagnosticInfo;
+    public StatusResult(StatusCode statusCode, DiagnosticInfo diagnosticInfo) {
+        this.statusCode = statusCode;
+        this.diagnosticInfo = diagnosticInfo;
     }
 
-    public StatusCode getStatusCode() { return _statusCode; }
+    public StatusCode getStatusCode() { return statusCode; }
 
-    public DiagnosticInfo getDiagnosticInfo() { return _diagnosticInfo; }
+    public DiagnosticInfo getDiagnosticInfo() { return diagnosticInfo; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -60,26 +59,31 @@ public class StatusResult implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("StatusCode", _statusCode)
-            .add("DiagnosticInfo", _diagnosticInfo)
+            .add("StatusCode", statusCode)
+            .add("DiagnosticInfo", diagnosticInfo)
             .toString();
     }
 
-    public static void encode(StatusResult statusResult, UaEncoder encoder) {
-        encoder.encodeStatusCode("StatusCode", statusResult._statusCode);
-        encoder.encodeDiagnosticInfo("DiagnosticInfo", statusResult._diagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<StatusResult> {
 
-    public static StatusResult decode(UaDecoder decoder) {
-        StatusCode _statusCode = decoder.decodeStatusCode("StatusCode");
-        DiagnosticInfo _diagnosticInfo = decoder.decodeDiagnosticInfo("DiagnosticInfo");
+        @Override
+        public Class<StatusResult> getType() {
+            return StatusResult.class;
+        }
 
-        return new StatusResult(_statusCode, _diagnosticInfo);
-    }
+        @Override
+        public StatusResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode statusCode = decoder.readStatusCode("StatusCode");
+            DiagnosticInfo diagnosticInfo = decoder.readDiagnosticInfo("DiagnosticInfo");
 
-    static {
-        DelegateRegistry.registerEncoder(StatusResult::encode, StatusResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(StatusResult::decode, StatusResult.class, BinaryEncodingId, XmlEncodingId);
+            return new StatusResult(statusCode, diagnosticInfo);
+        }
+
+        @Override
+        public void encode(StatusResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeStatusCode("StatusCode", value.statusCode);
+            encoder.writeDiagnosticInfo("DiagnosticInfo", value.diagnosticInfo);
+        }
     }
 
 }

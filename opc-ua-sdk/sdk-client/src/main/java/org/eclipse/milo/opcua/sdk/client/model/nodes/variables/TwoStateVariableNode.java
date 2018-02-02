@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,87 +22,68 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class TwoStateVariableNode extends StateVariableNode implements TwoStateVariableType {
-
     public TwoStateVariableNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> id() {
-        return getPropertyNode(TwoStateVariableType.ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getIdNode() {
+        return getPropertyNode(TwoStateVariableType.ID);
     }
 
-    @Override
     public CompletableFuture<Boolean> getId() {
         return getProperty(TwoStateVariableType.ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setId(Boolean value) {
         return setProperty(TwoStateVariableType.ID, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> transitionTime() {
-        return getPropertyNode(TwoStateVariableType.TRANSITION_TIME.getBrowseName());
+    public CompletableFuture<PropertyNode> getTransitionTimeNode() {
+        return getPropertyNode(TwoStateVariableType.TRANSITION_TIME);
     }
 
-    @Override
     public CompletableFuture<DateTime> getTransitionTime() {
         return getProperty(TwoStateVariableType.TRANSITION_TIME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTransitionTime(DateTime value) {
         return setProperty(TwoStateVariableType.TRANSITION_TIME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> effectiveTransitionTime() {
-        return getPropertyNode(TwoStateVariableType.EFFECTIVE_TRANSITION_TIME.getBrowseName());
+    public CompletableFuture<PropertyNode> getEffectiveTransitionTimeNode() {
+        return getPropertyNode(TwoStateVariableType.EFFECTIVE_TRANSITION_TIME);
     }
 
-    @Override
     public CompletableFuture<DateTime> getEffectiveTransitionTime() {
         return getProperty(TwoStateVariableType.EFFECTIVE_TRANSITION_TIME);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEffectiveTransitionTime(DateTime value) {
         return setProperty(TwoStateVariableType.EFFECTIVE_TRANSITION_TIME, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> trueState() {
-        return getPropertyNode(TwoStateVariableType.TRUE_STATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getTrueStateNode() {
+        return getPropertyNode(TwoStateVariableType.TRUE_STATE);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getTrueState() {
         return getProperty(TwoStateVariableType.TRUE_STATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setTrueState(LocalizedText value) {
         return setProperty(TwoStateVariableType.TRUE_STATE, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> falseState() {
-        return getPropertyNode(TwoStateVariableType.FALSE_STATE.getBrowseName());
+    public CompletableFuture<PropertyNode> getFalseStateNode() {
+        return getPropertyNode(TwoStateVariableType.FALSE_STATE);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getFalseState() {
         return getProperty(TwoStateVariableType.FALSE_STATE);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setFalseState(LocalizedText value) {
         return setProperty(TwoStateVariableType.FALSE_STATE, value);
     }
-
-
 }

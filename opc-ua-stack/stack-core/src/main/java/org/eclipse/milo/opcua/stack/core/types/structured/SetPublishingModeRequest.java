@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,43 +17,42 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("SetPublishingModeRequest")
 public class SetPublishingModeRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.SetPublishingModeRequest;
     public static final NodeId BinaryEncodingId = Identifiers.SetPublishingModeRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SetPublishingModeRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final Boolean _publishingEnabled;
-    protected final UInteger[] _subscriptionIds;
+    protected final RequestHeader requestHeader;
+    protected final Boolean publishingEnabled;
+    protected final UInteger[] subscriptionIds;
 
     public SetPublishingModeRequest() {
-        this._requestHeader = null;
-        this._publishingEnabled = null;
-        this._subscriptionIds = null;
+        this.requestHeader = null;
+        this.publishingEnabled = null;
+        this.subscriptionIds = null;
     }
 
-    public SetPublishingModeRequest(RequestHeader _requestHeader, Boolean _publishingEnabled, UInteger[] _subscriptionIds) {
-        this._requestHeader = _requestHeader;
-        this._publishingEnabled = _publishingEnabled;
-        this._subscriptionIds = _subscriptionIds;
+    public SetPublishingModeRequest(RequestHeader requestHeader, Boolean publishingEnabled, UInteger[] subscriptionIds) {
+        this.requestHeader = requestHeader;
+        this.publishingEnabled = publishingEnabled;
+        this.subscriptionIds = subscriptionIds;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public Boolean getPublishingEnabled() { return _publishingEnabled; }
+    public Boolean getPublishingEnabled() { return publishingEnabled; }
 
     @Nullable
-    public UInteger[] getSubscriptionIds() { return _subscriptionIds; }
+    public UInteger[] getSubscriptionIds() { return subscriptionIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -67,29 +66,34 @@ public class SetPublishingModeRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("PublishingEnabled", _publishingEnabled)
-            .add("SubscriptionIds", _subscriptionIds)
+            .add("RequestHeader", requestHeader)
+            .add("PublishingEnabled", publishingEnabled)
+            .add("SubscriptionIds", subscriptionIds)
             .toString();
     }
 
-    public static void encode(SetPublishingModeRequest setPublishingModeRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", setPublishingModeRequest._requestHeader != null ? setPublishingModeRequest._requestHeader : new RequestHeader());
-        encoder.encodeBoolean("PublishingEnabled", setPublishingModeRequest._publishingEnabled);
-        encoder.encodeArray("SubscriptionIds", setPublishingModeRequest._subscriptionIds, encoder::encodeUInt32);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SetPublishingModeRequest> {
 
-    public static SetPublishingModeRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        Boolean _publishingEnabled = decoder.decodeBoolean("PublishingEnabled");
-        UInteger[] _subscriptionIds = decoder.decodeArray("SubscriptionIds", decoder::decodeUInt32, UInteger.class);
+        @Override
+        public Class<SetPublishingModeRequest> getType() {
+            return SetPublishingModeRequest.class;
+        }
 
-        return new SetPublishingModeRequest(_requestHeader, _publishingEnabled, _subscriptionIds);
-    }
+        @Override
+        public SetPublishingModeRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            Boolean publishingEnabled = decoder.readBoolean("PublishingEnabled");
+            UInteger[] subscriptionIds = decoder.readArray("SubscriptionIds", decoder::readUInt32, UInteger.class);
 
-    static {
-        DelegateRegistry.registerEncoder(SetPublishingModeRequest::encode, SetPublishingModeRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SetPublishingModeRequest::decode, SetPublishingModeRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new SetPublishingModeRequest(requestHeader, publishingEnabled, subscriptionIds);
+        }
+
+        @Override
+        public void encode(SetPublishingModeRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBoolean("PublishingEnabled", value.publishingEnabled);
+            encoder.writeArray("SubscriptionIds", value.subscriptionIds, encoder::writeUInt32);
+        }
     }
 
 }

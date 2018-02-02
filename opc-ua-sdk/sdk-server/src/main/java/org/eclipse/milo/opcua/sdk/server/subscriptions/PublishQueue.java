@@ -75,7 +75,11 @@ public class PublishQueue {
                 logger.debug("Delivering PublishRequest to Subscription [id={}]",
                     subscription.getSubscription().getId());
 
-                subscription.subscription.onPublish(service);
+                final WaitingSubscription ws = subscription;
+
+                service.getServer().getExecutorService().execute(
+                    () -> ws.subscription.onPublish(service)
+                );
             } else {
                 serviceQueue.add(service);
             }
@@ -97,7 +101,11 @@ public class PublishQueue {
      */
     public synchronized void addSubscription(Subscription subscription) {
         if (waitList.isEmpty() && !serviceQueue.isEmpty()) {
-            subscription.onPublish(serviceQueue.poll());
+            ServiceRequest<PublishRequest, PublishResponse> request = serviceQueue.poll();
+
+            request.getServer().getExecutorService().execute(
+                () -> subscription.onPublish(request)
+            );
         } else {
             waitList.putIfAbsent(subscription.getId(), new WaitingSubscription(subscription));
         }

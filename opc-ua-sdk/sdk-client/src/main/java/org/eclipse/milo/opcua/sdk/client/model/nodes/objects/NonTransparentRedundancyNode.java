@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,27 +21,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.NonTransparentRedun
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class NonTransparentRedundancyNode extends ServerRedundancyNode implements NonTransparentRedundancyType {
-
     public NonTransparentRedundancyNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> serverUriArray() {
-        return getPropertyNode(NonTransparentRedundancyType.SERVER_URI_ARRAY.getBrowseName());
+    public CompletableFuture<PropertyNode> getServerUriArrayNode() {
+        return getPropertyNode(NonTransparentRedundancyType.SERVER_URI_ARRAY);
     }
 
-    @Override
     public CompletableFuture<String[]> getServerUriArray() {
         return getProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setServerUriArray(String[] value) {
         return setProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY, value);
     }
-
-
 }

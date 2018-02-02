@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -82,7 +83,7 @@ public interface ServerNode extends Node {
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(AttributeContext context, UInteger attribute) {
-        return readAttribute(context, attribute, null, null);
+        return readAttribute(context, attribute, null, null, null);
     }
 
     /**
@@ -91,19 +92,21 @@ public interface ServerNode extends Node {
      * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
      * will be returned.
      *
-     * @param attribute  the id of the attribute to read.
-     * @param timestamps the {@link TimestampsToReturn}.
-     * @param indexRange the index range to read. Must be a parseable by {@link NumericRange}.
+     * @param attribute    the id of the attribute to read.
+     * @param timestamps   the {@link TimestampsToReturn}.
+     * @param indexRange   the index range to read. Must be a parseable by {@link NumericRange}.
+     * @param dataEncoding the requested data encoding.
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(
         AttributeContext context,
         UInteger attribute,
         @Nullable TimestampsToReturn timestamps,
-        @Nullable String indexRange) {
+        @Nullable String indexRange,
+        @Nullable QualifiedName dataEncoding) {
 
         return AttributeId.from(attribute)
-            .map(attributeId -> readAttribute(context, attributeId, timestamps, indexRange))
+            .map(attributeId -> readAttribute(context, attributeId, timestamps, indexRange, dataEncoding))
             .orElse(new DataValue(StatusCodes.Bad_AttributeIdInvalid));
     }
 
@@ -113,18 +116,20 @@ public interface ServerNode extends Node {
      * If the attribute is not specified on this node, a value with status {@link StatusCodes#Bad_AttributeIdInvalid}
      * will be returned.
      *
-     * @param attributeId the id of the attribute to read.
-     * @param timestamps  the {@link TimestampsToReturn}.
-     * @param indexRange  the index range to read. Must be a parseable by {@link NumericRange}.
+     * @param attributeId  the id of the attribute to read.
+     * @param timestamps   the {@link TimestampsToReturn}.
+     * @param indexRange   the index range to read. Must be a parseable by {@link NumericRange}.
+     * @param dataEncoding the requested data encoding.
      * @return the value of the specified attribute.
      */
     default DataValue readAttribute(
         AttributeContext context,
         AttributeId attributeId,
         @Nullable TimestampsToReturn timestamps,
-        @Nullable String indexRange) {
+        @Nullable String indexRange,
+        @Nullable QualifiedName dataEncoding) {
 
-        return AttributeReader.readAttribute(context, this, attributeId, timestamps, indexRange);
+        return AttributeReader.readAttribute(context, this, attributeId, timestamps, indexRange, dataEncoding);
     }
 
     /**

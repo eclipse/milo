@@ -29,14 +29,19 @@ public interface MethodInvocationHandler {
      * <p>
      * Under no circumstances should the future be completed exceptionally.
      *
-     * @param request the {@link CallMethodRequest}.
-     * @param future  the {@link CompletableFuture} to complete.
+     * @param accessContext the {@link AccessContext}.
+     * @param request       the {@link CallMethodRequest}.
+     * @param future        the {@link CompletableFuture} to complete.
      */
-    void invoke(CallMethodRequest request, CompletableFuture<CallMethodResult> future);
+    void invoke(AccessContext accessContext, CallMethodRequest request, CompletableFuture<CallMethodResult> future);
 
     final class NodeIdUnknownHandler implements MethodInvocationHandler {
         @Override
-        public void invoke(CallMethodRequest request, CompletableFuture<CallMethodResult> future) {
+        public void invoke(
+            AccessContext accessContext,
+            CallMethodRequest request,
+            CompletableFuture<CallMethodResult> future) {
+
             CallMethodResult nodeIdUnknown = new CallMethodResult(
                 new StatusCode(StatusCodes.Bad_NodeIdUnknown),
                 new StatusCode[0],
@@ -49,7 +54,11 @@ public interface MethodInvocationHandler {
 
     final class NotImplementedHandler implements MethodInvocationHandler {
         @Override
-        public void invoke(CallMethodRequest request, CompletableFuture<CallMethodResult> future) {
+        public void invoke(
+            AccessContext accessContext,
+            CallMethodRequest request,
+            CompletableFuture<CallMethodResult> future) {
+            
             CallMethodResult nodeIdUnknown = new CallMethodResult(
                 new StatusCode(StatusCodes.Bad_NotImplemented),
                 new StatusCode[0],

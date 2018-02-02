@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,37 +15,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("MonitoredItemModifyRequest")
 public class MonitoredItemModifyRequest implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.MonitoredItemModifyRequest;
     public static final NodeId BinaryEncodingId = Identifiers.MonitoredItemModifyRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.MonitoredItemModifyRequest_Encoding_DefaultXml;
 
-    protected final UInteger _monitoredItemId;
-    protected final MonitoringParameters _requestedParameters;
+    protected final UInteger monitoredItemId;
+    protected final MonitoringParameters requestedParameters;
 
     public MonitoredItemModifyRequest() {
-        this._monitoredItemId = null;
-        this._requestedParameters = null;
+        this.monitoredItemId = null;
+        this.requestedParameters = null;
     }
 
-    public MonitoredItemModifyRequest(UInteger _monitoredItemId, MonitoringParameters _requestedParameters) {
-        this._monitoredItemId = _monitoredItemId;
-        this._requestedParameters = _requestedParameters;
+    public MonitoredItemModifyRequest(UInteger monitoredItemId, MonitoringParameters requestedParameters) {
+        this.monitoredItemId = monitoredItemId;
+        this.requestedParameters = requestedParameters;
     }
 
-    public UInteger getMonitoredItemId() { return _monitoredItemId; }
+    public UInteger getMonitoredItemId() { return monitoredItemId; }
 
-    public MonitoringParameters getRequestedParameters() { return _requestedParameters; }
+    public MonitoringParameters getRequestedParameters() { return requestedParameters; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -59,26 +58,31 @@ public class MonitoredItemModifyRequest implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("MonitoredItemId", _monitoredItemId)
-            .add("RequestedParameters", _requestedParameters)
+            .add("MonitoredItemId", monitoredItemId)
+            .add("RequestedParameters", requestedParameters)
             .toString();
     }
 
-    public static void encode(MonitoredItemModifyRequest monitoredItemModifyRequest, UaEncoder encoder) {
-        encoder.encodeUInt32("MonitoredItemId", monitoredItemModifyRequest._monitoredItemId);
-        encoder.encodeSerializable("RequestedParameters", monitoredItemModifyRequest._requestedParameters != null ? monitoredItemModifyRequest._requestedParameters : new MonitoringParameters());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<MonitoredItemModifyRequest> {
 
-    public static MonitoredItemModifyRequest decode(UaDecoder decoder) {
-        UInteger _monitoredItemId = decoder.decodeUInt32("MonitoredItemId");
-        MonitoringParameters _requestedParameters = decoder.decodeSerializable("RequestedParameters", MonitoringParameters.class);
+        @Override
+        public Class<MonitoredItemModifyRequest> getType() {
+            return MonitoredItemModifyRequest.class;
+        }
 
-        return new MonitoredItemModifyRequest(_monitoredItemId, _requestedParameters);
-    }
+        @Override
+        public MonitoredItemModifyRequest decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger monitoredItemId = decoder.readUInt32("MonitoredItemId");
+            MonitoringParameters requestedParameters = (MonitoringParameters) decoder.readBuiltinStruct("RequestedParameters", MonitoringParameters.class);
 
-    static {
-        DelegateRegistry.registerEncoder(MonitoredItemModifyRequest::encode, MonitoredItemModifyRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(MonitoredItemModifyRequest::decode, MonitoredItemModifyRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new MonitoredItemModifyRequest(monitoredItemId, requestedParameters);
+        }
+
+        @Override
+        public void encode(MonitoredItemModifyRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("MonitoredItemId", value.monitoredItemId);
+            encoder.writeBuiltinStruct("RequestedParameters", value.requestedParameters, MonitoringParameters.class);
+        }
     }
 
 }

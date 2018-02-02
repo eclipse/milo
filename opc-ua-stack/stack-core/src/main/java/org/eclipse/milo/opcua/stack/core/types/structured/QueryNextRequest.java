@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,42 +15,41 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("QueryNextRequest")
 public class QueryNextRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.QueryNextRequest;
     public static final NodeId BinaryEncodingId = Identifiers.QueryNextRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.QueryNextRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final Boolean _releaseContinuationPoint;
-    protected final ByteString _continuationPoint;
+    protected final RequestHeader requestHeader;
+    protected final Boolean releaseContinuationPoint;
+    protected final ByteString continuationPoint;
 
     public QueryNextRequest() {
-        this._requestHeader = null;
-        this._releaseContinuationPoint = null;
-        this._continuationPoint = null;
+        this.requestHeader = null;
+        this.releaseContinuationPoint = null;
+        this.continuationPoint = null;
     }
 
-    public QueryNextRequest(RequestHeader _requestHeader, Boolean _releaseContinuationPoint, ByteString _continuationPoint) {
-        this._requestHeader = _requestHeader;
-        this._releaseContinuationPoint = _releaseContinuationPoint;
-        this._continuationPoint = _continuationPoint;
+    public QueryNextRequest(RequestHeader requestHeader, Boolean releaseContinuationPoint, ByteString continuationPoint) {
+        this.requestHeader = requestHeader;
+        this.releaseContinuationPoint = releaseContinuationPoint;
+        this.continuationPoint = continuationPoint;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public Boolean getReleaseContinuationPoint() { return _releaseContinuationPoint; }
+    public Boolean getReleaseContinuationPoint() { return releaseContinuationPoint; }
 
-    public ByteString getContinuationPoint() { return _continuationPoint; }
+    public ByteString getContinuationPoint() { return continuationPoint; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,29 +63,34 @@ public class QueryNextRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("ReleaseContinuationPoint", _releaseContinuationPoint)
-            .add("ContinuationPoint", _continuationPoint)
+            .add("RequestHeader", requestHeader)
+            .add("ReleaseContinuationPoint", releaseContinuationPoint)
+            .add("ContinuationPoint", continuationPoint)
             .toString();
     }
 
-    public static void encode(QueryNextRequest queryNextRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", queryNextRequest._requestHeader != null ? queryNextRequest._requestHeader : new RequestHeader());
-        encoder.encodeBoolean("ReleaseContinuationPoint", queryNextRequest._releaseContinuationPoint);
-        encoder.encodeByteString("ContinuationPoint", queryNextRequest._continuationPoint);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<QueryNextRequest> {
 
-    public static QueryNextRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        Boolean _releaseContinuationPoint = decoder.decodeBoolean("ReleaseContinuationPoint");
-        ByteString _continuationPoint = decoder.decodeByteString("ContinuationPoint");
+        @Override
+        public Class<QueryNextRequest> getType() {
+            return QueryNextRequest.class;
+        }
 
-        return new QueryNextRequest(_requestHeader, _releaseContinuationPoint, _continuationPoint);
-    }
+        @Override
+        public QueryNextRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            Boolean releaseContinuationPoint = decoder.readBoolean("ReleaseContinuationPoint");
+            ByteString continuationPoint = decoder.readByteString("ContinuationPoint");
 
-    static {
-        DelegateRegistry.registerEncoder(QueryNextRequest::encode, QueryNextRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(QueryNextRequest::decode, QueryNextRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new QueryNextRequest(requestHeader, releaseContinuationPoint, continuationPoint);
+        }
+
+        @Override
+        public void encode(QueryNextRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBoolean("ReleaseContinuationPoint", value.releaseContinuationPoint);
+            encoder.writeByteString("ContinuationPoint", value.continuationPoint);
+        }
     }
 
 }

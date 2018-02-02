@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,37 +15,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("OptionSet")
 public class OptionSet implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.OptionSet;
     public static final NodeId BinaryEncodingId = Identifiers.OptionSet_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.OptionSet_Encoding_DefaultXml;
 
-    protected final ByteString _value;
-    protected final ByteString _validBits;
+    protected final ByteString value;
+    protected final ByteString validBits;
 
     public OptionSet() {
-        this._value = null;
-        this._validBits = null;
+        this.value = null;
+        this.validBits = null;
     }
 
-    public OptionSet(ByteString _value, ByteString _validBits) {
-        this._value = _value;
-        this._validBits = _validBits;
+    public OptionSet(ByteString value, ByteString validBits) {
+        this.value = value;
+        this.validBits = validBits;
     }
 
-    public ByteString getValue() { return _value; }
+    public ByteString getValue() { return value; }
 
-    public ByteString getValidBits() { return _validBits; }
+    public ByteString getValidBits() { return validBits; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -59,26 +58,31 @@ public class OptionSet implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Value", _value)
-            .add("ValidBits", _validBits)
+            .add("Value", value)
+            .add("ValidBits", validBits)
             .toString();
     }
 
-    public static void encode(OptionSet optionSet, UaEncoder encoder) {
-        encoder.encodeByteString("Value", optionSet._value);
-        encoder.encodeByteString("ValidBits", optionSet._validBits);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<OptionSet> {
 
-    public static OptionSet decode(UaDecoder decoder) {
-        ByteString _value = decoder.decodeByteString("Value");
-        ByteString _validBits = decoder.decodeByteString("ValidBits");
+        @Override
+        public Class<OptionSet> getType() {
+            return OptionSet.class;
+        }
 
-        return new OptionSet(_value, _validBits);
-    }
+        @Override
+        public OptionSet decode(UaDecoder decoder) throws UaSerializationException {
+            ByteString value = decoder.readByteString("Value");
+            ByteString validBits = decoder.readByteString("ValidBits");
 
-    static {
-        DelegateRegistry.registerEncoder(OptionSet::encode, OptionSet.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(OptionSet::decode, OptionSet.class, BinaryEncodingId, XmlEncodingId);
+            return new OptionSet(value, validBits);
+        }
+
+        @Override
+        public void encode(OptionSet value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeByteString("Value", value.value);
+            encoder.writeByteString("ValidBits", value.validBits);
+        }
     }
 
 }

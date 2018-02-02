@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,40 +17,39 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("DataChangeNotification")
 public class DataChangeNotification extends NotificationData {
 
     public static final NodeId TypeId = Identifiers.DataChangeNotification;
     public static final NodeId BinaryEncodingId = Identifiers.DataChangeNotification_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DataChangeNotification_Encoding_DefaultXml;
 
-    protected final MonitoredItemNotification[] _monitoredItems;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final MonitoredItemNotification[] monitoredItems;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public DataChangeNotification() {
         super();
-        this._monitoredItems = null;
-        this._diagnosticInfos = null;
+        this.monitoredItems = null;
+        this.diagnosticInfos = null;
     }
 
-    public DataChangeNotification(MonitoredItemNotification[] _monitoredItems, DiagnosticInfo[] _diagnosticInfos) {
+    public DataChangeNotification(MonitoredItemNotification[] monitoredItems, DiagnosticInfo[] diagnosticInfos) {
         super();
-        this._monitoredItems = _monitoredItems;
-        this._diagnosticInfos = _diagnosticInfos;
+        this.monitoredItems = monitoredItems;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
     @Nullable
-    public MonitoredItemNotification[] getMonitoredItems() { return _monitoredItems; }
+    public MonitoredItemNotification[] getMonitoredItems() { return monitoredItems; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,26 +63,39 @@ public class DataChangeNotification extends NotificationData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("MonitoredItems", _monitoredItems)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("MonitoredItems", monitoredItems)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static void encode(DataChangeNotification dataChangeNotification, UaEncoder encoder) {
-        encoder.encodeArray("MonitoredItems", dataChangeNotification._monitoredItems, encoder::encodeSerializable);
-        encoder.encodeArray("DiagnosticInfos", dataChangeNotification._diagnosticInfos, encoder::encodeDiagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DataChangeNotification> {
 
-    public static DataChangeNotification decode(UaDecoder decoder) {
-        MonitoredItemNotification[] _monitoredItems = decoder.decodeArray("MonitoredItems", decoder::decodeSerializable, MonitoredItemNotification.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+        @Override
+        public Class<DataChangeNotification> getType() {
+            return DataChangeNotification.class;
+        }
 
-        return new DataChangeNotification(_monitoredItems, _diagnosticInfos);
-    }
+        @Override
+        public DataChangeNotification decode(UaDecoder decoder) throws UaSerializationException {
+            MonitoredItemNotification[] monitoredItems =
+                decoder.readBuiltinStructArray(
+                    "MonitoredItems",
+                    MonitoredItemNotification.class
+                );
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    static {
-        DelegateRegistry.registerEncoder(DataChangeNotification::encode, DataChangeNotification.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DataChangeNotification::decode, DataChangeNotification.class, BinaryEncodingId, XmlEncodingId);
+            return new DataChangeNotification(monitoredItems, diagnosticInfos);
+        }
+
+        @Override
+        public void encode(DataChangeNotification value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStructArray(
+                "MonitoredItems",
+                value.monitoredItems,
+                MonitoredItemNotification.class
+            );
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        }
     }
 
 }

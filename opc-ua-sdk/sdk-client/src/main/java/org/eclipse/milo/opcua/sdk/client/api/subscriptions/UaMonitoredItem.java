@@ -16,6 +16,8 @@ package org.eclipse.milo.opcua.sdk.client.api.subscriptions;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -124,6 +126,15 @@ public interface UaMonitoredItem {
     void setValueConsumer(BiConsumer<UaMonitoredItem, DataValue> valueConsumer);
 
     /**
+     * Set a {@link ValueConsumer} that will receive values as they arrive from the server.
+     * <p>
+     * The {@link UaMonitoredItem} in the consumer will be this item.
+     *
+     * @param valueConsumer the {@link ValueConsumer} that will receive values as they arrive from the server.
+     */
+    void setValueConsumer(ValueConsumer valueConsumer);
+
+    /**
      * Set the {@link Consumer} that will receive events as they arrive from the server.
      *
      * @param eventConsumer the {@link Consumer} that will receive events as they arrive from the server.
@@ -138,5 +149,38 @@ public interface UaMonitoredItem {
      * @param eventConsumer the {@link BiConsumer} that will receive events as they arrive from the server.
      */
     void setEventConsumer(BiConsumer<UaMonitoredItem, Variant[]> eventConsumer);
+
+    /**
+     * Set the {@link EventConsumer} that will receive events as they arrive from the server.
+     *
+     * @param eventConsumer the {@link EventConsumer} that will receive events as they arrive from the server.
+     */
+    void setEventConsumer(EventConsumer eventConsumer);
+
+    interface ValueConsumer {
+
+        /**
+         * A new value has arrived for the {@link UaMonitoredItem} {@code item}.
+         *
+         * @param dataTypeManager the {@link DataTypeManager} from {@link OpcUaClient#getDataTypeManager()}.
+         * @param item            the {@link UaMonitoredItem} this value is for.
+         * @param value           the new {@link DataValue}.
+         */
+        void onValueArrived(DataTypeManager dataTypeManager, UaMonitoredItem item, DataValue value);
+
+    }
+
+    interface EventConsumer {
+
+        /**
+         * A new event has arrived for the {@link UaMonitoredItem} {@code item}.
+         *
+         * @param dataTypeManager the {@link DataTypeManager} from {@link OpcUaClient#getDataTypeManager()}.
+         * @param item            the {@link UaMonitoredItem} this event is for.
+         * @param eventValues     the event values.
+         */
+        void onEventArrived(DataTypeManager dataTypeManager, UaMonitoredItem item, Variant[] eventValues);
+
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,58 +15,57 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-@UaDataType("AddReferencesItem")
 public class AddReferencesItem implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.AddReferencesItem;
     public static final NodeId BinaryEncodingId = Identifiers.AddReferencesItem_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.AddReferencesItem_Encoding_DefaultXml;
 
-    protected final NodeId _sourceNodeId;
-    protected final NodeId _referenceTypeId;
-    protected final Boolean _isForward;
-    protected final String _targetServerUri;
-    protected final ExpandedNodeId _targetNodeId;
-    protected final NodeClass _targetNodeClass;
+    protected final NodeId sourceNodeId;
+    protected final NodeId referenceTypeId;
+    protected final Boolean isForward;
+    protected final String targetServerUri;
+    protected final ExpandedNodeId targetNodeId;
+    protected final NodeClass targetNodeClass;
 
     public AddReferencesItem() {
-        this._sourceNodeId = null;
-        this._referenceTypeId = null;
-        this._isForward = null;
-        this._targetServerUri = null;
-        this._targetNodeId = null;
-        this._targetNodeClass = null;
+        this.sourceNodeId = null;
+        this.referenceTypeId = null;
+        this.isForward = null;
+        this.targetServerUri = null;
+        this.targetNodeId = null;
+        this.targetNodeClass = null;
     }
 
-    public AddReferencesItem(NodeId _sourceNodeId, NodeId _referenceTypeId, Boolean _isForward, String _targetServerUri, ExpandedNodeId _targetNodeId, NodeClass _targetNodeClass) {
-        this._sourceNodeId = _sourceNodeId;
-        this._referenceTypeId = _referenceTypeId;
-        this._isForward = _isForward;
-        this._targetServerUri = _targetServerUri;
-        this._targetNodeId = _targetNodeId;
-        this._targetNodeClass = _targetNodeClass;
+    public AddReferencesItem(NodeId sourceNodeId, NodeId referenceTypeId, Boolean isForward, String targetServerUri, ExpandedNodeId targetNodeId, NodeClass targetNodeClass) {
+        this.sourceNodeId = sourceNodeId;
+        this.referenceTypeId = referenceTypeId;
+        this.isForward = isForward;
+        this.targetServerUri = targetServerUri;
+        this.targetNodeId = targetNodeId;
+        this.targetNodeClass = targetNodeClass;
     }
 
-    public NodeId getSourceNodeId() { return _sourceNodeId; }
+    public NodeId getSourceNodeId() { return sourceNodeId; }
 
-    public NodeId getReferenceTypeId() { return _referenceTypeId; }
+    public NodeId getReferenceTypeId() { return referenceTypeId; }
 
-    public Boolean getIsForward() { return _isForward; }
+    public Boolean getIsForward() { return isForward; }
 
-    public String getTargetServerUri() { return _targetServerUri; }
+    public String getTargetServerUri() { return targetServerUri; }
 
-    public ExpandedNodeId getTargetNodeId() { return _targetNodeId; }
+    public ExpandedNodeId getTargetNodeId() { return targetNodeId; }
 
-    public NodeClass getTargetNodeClass() { return _targetNodeClass; }
+    public NodeClass getTargetNodeClass() { return targetNodeClass; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -80,38 +79,43 @@ public class AddReferencesItem implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SourceNodeId", _sourceNodeId)
-            .add("ReferenceTypeId", _referenceTypeId)
-            .add("IsForward", _isForward)
-            .add("TargetServerUri", _targetServerUri)
-            .add("TargetNodeId", _targetNodeId)
-            .add("TargetNodeClass", _targetNodeClass)
+            .add("SourceNodeId", sourceNodeId)
+            .add("ReferenceTypeId", referenceTypeId)
+            .add("IsForward", isForward)
+            .add("TargetServerUri", targetServerUri)
+            .add("TargetNodeId", targetNodeId)
+            .add("TargetNodeClass", targetNodeClass)
             .toString();
     }
 
-    public static void encode(AddReferencesItem addReferencesItem, UaEncoder encoder) {
-        encoder.encodeNodeId("SourceNodeId", addReferencesItem._sourceNodeId);
-        encoder.encodeNodeId("ReferenceTypeId", addReferencesItem._referenceTypeId);
-        encoder.encodeBoolean("IsForward", addReferencesItem._isForward);
-        encoder.encodeString("TargetServerUri", addReferencesItem._targetServerUri);
-        encoder.encodeExpandedNodeId("TargetNodeId", addReferencesItem._targetNodeId);
-        encoder.encodeEnumeration("TargetNodeClass", addReferencesItem._targetNodeClass);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<AddReferencesItem> {
 
-    public static AddReferencesItem decode(UaDecoder decoder) {
-        NodeId _sourceNodeId = decoder.decodeNodeId("SourceNodeId");
-        NodeId _referenceTypeId = decoder.decodeNodeId("ReferenceTypeId");
-        Boolean _isForward = decoder.decodeBoolean("IsForward");
-        String _targetServerUri = decoder.decodeString("TargetServerUri");
-        ExpandedNodeId _targetNodeId = decoder.decodeExpandedNodeId("TargetNodeId");
-        NodeClass _targetNodeClass = decoder.decodeEnumeration("TargetNodeClass", NodeClass.class);
+        @Override
+        public Class<AddReferencesItem> getType() {
+            return AddReferencesItem.class;
+        }
 
-        return new AddReferencesItem(_sourceNodeId, _referenceTypeId, _isForward, _targetServerUri, _targetNodeId, _targetNodeClass);
-    }
+        @Override
+        public AddReferencesItem decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId sourceNodeId = decoder.readNodeId("SourceNodeId");
+            NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
+            Boolean isForward = decoder.readBoolean("IsForward");
+            String targetServerUri = decoder.readString("TargetServerUri");
+            ExpandedNodeId targetNodeId = decoder.readExpandedNodeId("TargetNodeId");
+            NodeClass targetNodeClass = NodeClass.from(decoder.readInt32("TargetNodeClass"));
 
-    static {
-        DelegateRegistry.registerEncoder(AddReferencesItem::encode, AddReferencesItem.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(AddReferencesItem::decode, AddReferencesItem.class, BinaryEncodingId, XmlEncodingId);
+            return new AddReferencesItem(sourceNodeId, referenceTypeId, isForward, targetServerUri, targetNodeId, targetNodeClass);
+        }
+
+        @Override
+        public void encode(AddReferencesItem value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("SourceNodeId", value.sourceNodeId);
+            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
+            encoder.writeBoolean("IsForward", value.isForward);
+            encoder.writeString("TargetServerUri", value.targetServerUri);
+            encoder.writeExpandedNodeId("TargetNodeId", value.targetNodeId);
+            encoder.writeInt32("TargetNodeClass", value.targetNodeClass != null ? value.targetNodeClass.getValue() : 0);
+        }
     }
 
 }

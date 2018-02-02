@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,37 +17,36 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RegisterNodesRequest")
 public class RegisterNodesRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterNodesRequest;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterNodesRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterNodesRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final NodeId[] _nodesToRegister;
+    protected final RequestHeader requestHeader;
+    protected final NodeId[] nodesToRegister;
 
     public RegisterNodesRequest() {
-        this._requestHeader = null;
-        this._nodesToRegister = null;
+        this.requestHeader = null;
+        this.nodesToRegister = null;
     }
 
-    public RegisterNodesRequest(RequestHeader _requestHeader, NodeId[] _nodesToRegister) {
-        this._requestHeader = _requestHeader;
-        this._nodesToRegister = _nodesToRegister;
+    public RegisterNodesRequest(RequestHeader requestHeader, NodeId[] nodesToRegister) {
+        this.requestHeader = requestHeader;
+        this.nodesToRegister = nodesToRegister;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public NodeId[] getNodesToRegister() { return _nodesToRegister; }
+    public NodeId[] getNodesToRegister() { return nodesToRegister; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,31 @@ public class RegisterNodesRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("NodesToRegister", _nodesToRegister)
+            .add("RequestHeader", requestHeader)
+            .add("NodesToRegister", nodesToRegister)
             .toString();
     }
 
-    public static void encode(RegisterNodesRequest registerNodesRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", registerNodesRequest._requestHeader != null ? registerNodesRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("NodesToRegister", registerNodesRequest._nodesToRegister, encoder::encodeNodeId);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<RegisterNodesRequest> {
 
-    public static RegisterNodesRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        NodeId[] _nodesToRegister = decoder.decodeArray("NodesToRegister", decoder::decodeNodeId, NodeId.class);
+        @Override
+        public Class<RegisterNodesRequest> getType() {
+            return RegisterNodesRequest.class;
+        }
 
-        return new RegisterNodesRequest(_requestHeader, _nodesToRegister);
-    }
+        @Override
+        public RegisterNodesRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            NodeId[] nodesToRegister = decoder.readArray("NodesToRegister", decoder::readNodeId, NodeId.class);
 
-    static {
-        DelegateRegistry.registerEncoder(RegisterNodesRequest::encode, RegisterNodesRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RegisterNodesRequest::decode, RegisterNodesRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new RegisterNodesRequest(requestHeader, nodesToRegister);
+        }
+
+        @Override
+        public void encode(RegisterNodesRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeArray("NodesToRegister", value.nodesToRegister, encoder::writeNodeId);
+        }
     }
 
 }

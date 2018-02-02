@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -23,57 +23,44 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 
-
 public class AuditActivateSessionEventNode extends AuditSessionEventNode implements AuditActivateSessionEventType {
-
     public AuditActivateSessionEventNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> clientSoftwareCertificates() {
-        return getPropertyNode(AuditActivateSessionEventType.CLIENT_SOFTWARE_CERTIFICATES.getBrowseName());
+    public CompletableFuture<PropertyNode> getClientSoftwareCertificatesNode() {
+        return getPropertyNode(AuditActivateSessionEventType.CLIENT_SOFTWARE_CERTIFICATES);
     }
 
-    @Override
     public CompletableFuture<SignedSoftwareCertificate[]> getClientSoftwareCertificates() {
         return getProperty(AuditActivateSessionEventType.CLIENT_SOFTWARE_CERTIFICATES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setClientSoftwareCertificates(SignedSoftwareCertificate[] value) {
         return setProperty(AuditActivateSessionEventType.CLIENT_SOFTWARE_CERTIFICATES, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> userIdentityToken() {
-        return getPropertyNode(AuditActivateSessionEventType.USER_IDENTITY_TOKEN.getBrowseName());
+    public CompletableFuture<PropertyNode> getUserIdentityTokenNode() {
+        return getPropertyNode(AuditActivateSessionEventType.USER_IDENTITY_TOKEN);
     }
 
-    @Override
     public CompletableFuture<UserIdentityToken> getUserIdentityToken() {
         return getProperty(AuditActivateSessionEventType.USER_IDENTITY_TOKEN);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setUserIdentityToken(UserIdentityToken value) {
         return setProperty(AuditActivateSessionEventType.USER_IDENTITY_TOKEN, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> secureChannelId() {
-        return getPropertyNode(AuditActivateSessionEventType.SECURE_CHANNEL_ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getSecureChannelIdNode() {
+        return getPropertyNode(AuditActivateSessionEventType.SECURE_CHANNEL_ID);
     }
 
-    @Override
     public CompletableFuture<String> getSecureChannelId() {
         return getProperty(AuditActivateSessionEventType.SECURE_CHANNEL_ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecureChannelId(String value) {
         return setProperty(AuditActivateSessionEventType.SECURE_CHANNEL_ID, value);
     }
-
-
 }

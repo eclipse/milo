@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -34,106 +34,77 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SamplingIntervalDiagno
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerDiagnosticsSummaryDataType;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionDiagnosticsDataType;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:ServerDiagnosticsType")
 public class ServerDiagnosticsNode extends BaseObjectNode implements ServerDiagnosticsType {
+    public ServerDiagnosticsNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                 UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public ServerDiagnosticsNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public ServerDiagnosticsNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                 UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public Boolean getEnabledFlag() {
-        Optional<Boolean> property = getProperty(ServerDiagnosticsType.ENABLED_FLAG);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getEnabledFlagNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(ServerDiagnosticsType.ENABLED_FLAG.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerDiagnosticsType.ENABLED_FLAG);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public Boolean getEnabledFlag() {
+        Optional<Boolean> propertyValue = getProperty(ServerDiagnosticsType.ENABLED_FLAG);
+        return propertyValue.orElse(null);
+    }
+
     public void setEnabledFlag(Boolean value) {
         setProperty(ServerDiagnosticsType.ENABLED_FLAG, value);
     }
 
-    @Override
-    public SessionsDiagnosticsSummaryNode getSessionsDiagnosticsSummaryNode() {
-        Optional<ObjectNode> component = getObjectComponent("SessionsDiagnosticsSummary");
-
-        return component.map(node -> (SessionsDiagnosticsSummaryNode) node).orElse(null);
-    }
-
-    @Override
-    public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummary() {
-        Optional<VariableNode> component = getVariableComponent("ServerDiagnosticsSummary");
-
-        return component.map(node -> (ServerDiagnosticsSummaryDataType) node.getValue().getValue().getValue()).orElse(null);
-    }
-
-    @Override
     public ServerDiagnosticsSummaryNode getServerDiagnosticsSummaryNode() {
-        Optional<VariableNode> component = getVariableComponent("ServerDiagnosticsSummary");
-
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ServerDiagnosticsSummary");
         return component.map(node -> (ServerDiagnosticsSummaryNode) node).orElse(null);
     }
 
-    @Override
+    public ServerDiagnosticsSummaryDataType getServerDiagnosticsSummary() {
+        Optional<VariableNode> component = getVariableComponent("ServerDiagnosticsSummary");
+        return component.map(node -> (ServerDiagnosticsSummaryDataType) node.getValue().getValue().getValue()).orElse(null);
+    }
+
     public void setServerDiagnosticsSummary(ServerDiagnosticsSummaryDataType value) {
-        getVariableComponent("ServerDiagnosticsSummary")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("ServerDiagnosticsSummary").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
-    @Override
-    public SamplingIntervalDiagnosticsDataType[] getSamplingIntervalDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SamplingIntervalDiagnosticsArray");
-
-        return component.map(node -> (SamplingIntervalDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
-    }
-
-    @Override
     public SamplingIntervalDiagnosticsArrayNode getSamplingIntervalDiagnosticsArrayNode() {
-        Optional<VariableNode> component = getVariableComponent("SamplingIntervalDiagnosticsArray");
-
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SamplingIntervalDiagnosticsArray");
         return component.map(node -> (SamplingIntervalDiagnosticsArrayNode) node).orElse(null);
     }
 
-    @Override
+    public SamplingIntervalDiagnosticsDataType[] getSamplingIntervalDiagnosticsArray() {
+        Optional<VariableNode> component = getVariableComponent("SamplingIntervalDiagnosticsArray");
+        return component.map(node -> (SamplingIntervalDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
+    }
+
     public void setSamplingIntervalDiagnosticsArray(SamplingIntervalDiagnosticsDataType[] value) {
-        getVariableComponent("SamplingIntervalDiagnosticsArray")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+        getVariableComponent("SamplingIntervalDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
     }
 
-    @Override
-    public SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
-
-        return component.map(node -> (SubscriptionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
-    }
-
-    @Override
     public SubscriptionDiagnosticsArrayNode getSubscriptionDiagnosticsArrayNode() {
-        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
-
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SubscriptionDiagnosticsArray");
         return component.map(node -> (SubscriptionDiagnosticsArrayNode) node).orElse(null);
     }
 
-    @Override
-    public void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) {
-        getVariableComponent("SubscriptionDiagnosticsArray")
-            .ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    public SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray() {
+        Optional<VariableNode> component = getVariableComponent("SubscriptionDiagnosticsArray");
+        return component.map(node -> (SubscriptionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
     }
 
+    public void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value) {
+        getVariableComponent("SubscriptionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    }
+
+    public SessionsDiagnosticsSummaryNode getSessionsDiagnosticsSummaryNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "SessionsDiagnosticsSummary");
+        return component.map(node -> (SessionsDiagnosticsSummaryNode) node).orElse(null);
+    }
 }

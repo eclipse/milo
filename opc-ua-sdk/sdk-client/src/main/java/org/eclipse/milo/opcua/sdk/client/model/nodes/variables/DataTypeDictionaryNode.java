@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,42 +20,32 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.DataTypeDictionar
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class DataTypeDictionaryNode extends BaseDataVariableNode implements DataTypeDictionaryType {
-
     public DataTypeDictionaryNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> dataTypeVersion() {
-        return getPropertyNode(DataTypeDictionaryType.DATA_TYPE_VERSION.getBrowseName());
+    public CompletableFuture<PropertyNode> getDataTypeVersionNode() {
+        return getPropertyNode(DataTypeDictionaryType.DATA_TYPE_VERSION);
     }
 
-    @Override
     public CompletableFuture<String> getDataTypeVersion() {
         return getProperty(DataTypeDictionaryType.DATA_TYPE_VERSION);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setDataTypeVersion(String value) {
         return setProperty(DataTypeDictionaryType.DATA_TYPE_VERSION, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> namespaceUri() {
-        return getPropertyNode(DataTypeDictionaryType.NAMESPACE_URI.getBrowseName());
+    public CompletableFuture<PropertyNode> getNamespaceUriNode() {
+        return getPropertyNode(DataTypeDictionaryType.NAMESPACE_URI);
     }
 
-    @Override
     public CompletableFuture<String> getNamespaceUri() {
         return getProperty(DataTypeDictionaryType.NAMESPACE_URI);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setNamespaceUri(String value) {
         return setProperty(DataTypeDictionaryType.NAMESPACE_URI, value);
     }
-
-
 }

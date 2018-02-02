@@ -13,7 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.concurrent.ExecutorService;
 
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class ExecutionQueue {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private final Object queueLock = new Object();
-    private final LinkedList<Runnable> queue = new LinkedList<>();
+    private final ArrayDeque<Runnable> queue = new ArrayDeque<>();
 
     private volatile boolean pollSubmitted = false;
     private volatile boolean paused = false;

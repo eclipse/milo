@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,40 +15,39 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ViewAttributes")
 public class ViewAttributes extends NodeAttributes {
 
     public static final NodeId TypeId = Identifiers.ViewAttributes;
     public static final NodeId BinaryEncodingId = Identifiers.ViewAttributes_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ViewAttributes_Encoding_DefaultXml;
 
-    protected final Boolean _containsNoLoops;
-    protected final UByte _eventNotifier;
+    protected final Boolean containsNoLoops;
+    protected final UByte eventNotifier;
 
     public ViewAttributes() {
         super(null, null, null, null, null);
-        this._containsNoLoops = null;
-        this._eventNotifier = null;
+        this.containsNoLoops = null;
+        this.eventNotifier = null;
     }
 
-    public ViewAttributes(UInteger _specifiedAttributes, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, Boolean _containsNoLoops, UByte _eventNotifier) {
-        super(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask);
-        this._containsNoLoops = _containsNoLoops;
-        this._eventNotifier = _eventNotifier;
+    public ViewAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, Boolean containsNoLoops, UByte eventNotifier) {
+        super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
+        this.containsNoLoops = containsNoLoops;
+        this.eventNotifier = eventNotifier;
     }
 
-    public Boolean getContainsNoLoops() { return _containsNoLoops; }
+    public Boolean getContainsNoLoops() { return containsNoLoops; }
 
-    public UByte getEventNotifier() { return _eventNotifier; }
+    public UByte getEventNotifier() { return eventNotifier; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -62,41 +61,46 @@ public class ViewAttributes extends NodeAttributes {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", _specifiedAttributes)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("ContainsNoLoops", _containsNoLoops)
-            .add("EventNotifier", _eventNotifier)
+            .add("SpecifiedAttributes", specifiedAttributes)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("ContainsNoLoops", containsNoLoops)
+            .add("EventNotifier", eventNotifier)
             .toString();
     }
 
-    public static void encode(ViewAttributes viewAttributes, UaEncoder encoder) {
-        encoder.encodeUInt32("SpecifiedAttributes", viewAttributes._specifiedAttributes);
-        encoder.encodeLocalizedText("DisplayName", viewAttributes._displayName);
-        encoder.encodeLocalizedText("Description", viewAttributes._description);
-        encoder.encodeUInt32("WriteMask", viewAttributes._writeMask);
-        encoder.encodeUInt32("UserWriteMask", viewAttributes._userWriteMask);
-        encoder.encodeBoolean("ContainsNoLoops", viewAttributes._containsNoLoops);
-        encoder.encodeByte("EventNotifier", viewAttributes._eventNotifier);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ViewAttributes> {
 
-    public static ViewAttributes decode(UaDecoder decoder) {
-        UInteger _specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        Boolean _containsNoLoops = decoder.decodeBoolean("ContainsNoLoops");
-        UByte _eventNotifier = decoder.decodeByte("EventNotifier");
+        @Override
+        public Class<ViewAttributes> getType() {
+            return ViewAttributes.class;
+        }
 
-        return new ViewAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _containsNoLoops, _eventNotifier);
-    }
+        @Override
+        public ViewAttributes decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            Boolean containsNoLoops = decoder.readBoolean("ContainsNoLoops");
+            UByte eventNotifier = decoder.readByte("EventNotifier");
 
-    static {
-        DelegateRegistry.registerEncoder(ViewAttributes::encode, ViewAttributes.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ViewAttributes::decode, ViewAttributes.class, BinaryEncodingId, XmlEncodingId);
+            return new ViewAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, containsNoLoops, eventNotifier);
+        }
+
+        @Override
+        public void encode(ViewAttributes value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBoolean("ContainsNoLoops", value.containsNoLoops);
+            encoder.writeByte("EventNotifier", value.eventNotifier);
+        }
     }
 
 }

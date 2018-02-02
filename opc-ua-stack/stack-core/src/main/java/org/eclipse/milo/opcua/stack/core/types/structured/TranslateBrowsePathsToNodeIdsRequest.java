@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,37 +17,36 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("TranslateBrowsePathsToNodeIdsRequest")
 public class TranslateBrowsePathsToNodeIdsRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.TranslateBrowsePathsToNodeIdsRequest;
     public static final NodeId BinaryEncodingId = Identifiers.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.TranslateBrowsePathsToNodeIdsRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final BrowsePath[] _browsePaths;
+    protected final RequestHeader requestHeader;
+    protected final BrowsePath[] browsePaths;
 
     public TranslateBrowsePathsToNodeIdsRequest() {
-        this._requestHeader = null;
-        this._browsePaths = null;
+        this.requestHeader = null;
+        this.browsePaths = null;
     }
 
-    public TranslateBrowsePathsToNodeIdsRequest(RequestHeader _requestHeader, BrowsePath[] _browsePaths) {
-        this._requestHeader = _requestHeader;
-        this._browsePaths = _browsePaths;
+    public TranslateBrowsePathsToNodeIdsRequest(RequestHeader requestHeader, BrowsePath[] browsePaths) {
+        this.requestHeader = requestHeader;
+        this.browsePaths = browsePaths;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public BrowsePath[] getBrowsePaths() { return _browsePaths; }
+    public BrowsePath[] getBrowsePaths() { return browsePaths; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -61,26 +60,39 @@ public class TranslateBrowsePathsToNodeIdsRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("BrowsePaths", _browsePaths)
+            .add("RequestHeader", requestHeader)
+            .add("BrowsePaths", browsePaths)
             .toString();
     }
 
-    public static void encode(TranslateBrowsePathsToNodeIdsRequest translateBrowsePathsToNodeIdsRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", translateBrowsePathsToNodeIdsRequest._requestHeader != null ? translateBrowsePathsToNodeIdsRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("BrowsePaths", translateBrowsePathsToNodeIdsRequest._browsePaths, encoder::encodeSerializable);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<TranslateBrowsePathsToNodeIdsRequest> {
 
-    public static TranslateBrowsePathsToNodeIdsRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        BrowsePath[] _browsePaths = decoder.decodeArray("BrowsePaths", decoder::decodeSerializable, BrowsePath.class);
+        @Override
+        public Class<TranslateBrowsePathsToNodeIdsRequest> getType() {
+            return TranslateBrowsePathsToNodeIdsRequest.class;
+        }
 
-        return new TranslateBrowsePathsToNodeIdsRequest(_requestHeader, _browsePaths);
-    }
+        @Override
+        public TranslateBrowsePathsToNodeIdsRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            BrowsePath[] browsePaths =
+                decoder.readBuiltinStructArray(
+                    "BrowsePaths",
+                    BrowsePath.class
+                );
 
-    static {
-        DelegateRegistry.registerEncoder(TranslateBrowsePathsToNodeIdsRequest::encode, TranslateBrowsePathsToNodeIdsRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(TranslateBrowsePathsToNodeIdsRequest::decode, TranslateBrowsePathsToNodeIdsRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new TranslateBrowsePathsToNodeIdsRequest(requestHeader, browsePaths);
+        }
+
+        @Override
+        public void encode(TranslateBrowsePathsToNodeIdsRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStructArray(
+                "BrowsePaths",
+                value.browsePaths,
+                BrowsePath.class
+            );
+        }
     }
 
 }

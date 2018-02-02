@@ -23,20 +23,24 @@ public class ChannelConfig {
     public static final ChannelConfig DEFAULT = new ChannelConfig();
 
     /**
+     * The default maximum size of a message; 2MB by default.
+     */
+    public static final int DEFAULT_MAX_MESSAGE_SIZE = 2 * 1024 * 1024;
+
+    /**
      * The default maximum size of a single chunk.
      */
     public static final int DEFAULT_MAX_CHUNK_SIZE = 65535;
 
     /**
      * The default maximum number of chunks that a message can break down into.
+     * <p>
+     * More than chunks than constitute {@link #DEFAULT_MAX_MESSAGE_SIZE} are needed because of overhead
+     * when constructing chunks; not all of the chunk size is dedicated to message bytes.
      */
-    public static final int DEFAULT_MAX_CHUNK_COUNT = 32;
+    public static final int DEFAULT_MAX_CHUNK_COUNT =
+        (DEFAULT_MAX_MESSAGE_SIZE / DEFAULT_MAX_CHUNK_SIZE) * 2;
 
-    /**
-     * The default maximum size of a message after all chunks have been assembled. Given the default chunk size and
-     * count this works out to 2mb.
-     */
-    public static final int DEFAULT_MAX_MESSAGE_SIZE = DEFAULT_MAX_CHUNK_COUNT * DEFAULT_MAX_CHUNK_SIZE;
 
     public static final int DEFAULT_MAX_ARRAY_LENGTH = 65535;
     public static final int DEFAULT_MAX_STRING_LENGTH = 65535;
@@ -50,11 +54,11 @@ public class ChannelConfig {
     /**
      * Create a {@link ChannelConfig} using the default parameters.
      *
-     * @see {@link ChannelConfig#DEFAULT_MAX_CHUNK_SIZE}
-     * @see {@link ChannelConfig#DEFAULT_MAX_CHUNK_COUNT}
-     * @see {@link ChannelConfig#DEFAULT_MAX_MESSAGE_SIZE}
-     * @see {@link ChannelConfig#DEFAULT_MAX_ARRAY_LENGTH}
-     * @see {@link ChannelConfig#DEFAULT_MAX_STRING_LENGTH}
+     * @see ChannelConfig#DEFAULT_MAX_CHUNK_SIZE
+     * @see ChannelConfig#DEFAULT_MAX_CHUNK_COUNT
+     * @see ChannelConfig#DEFAULT_MAX_MESSAGE_SIZE
+     * @see ChannelConfig#DEFAULT_MAX_ARRAY_LENGTH
+     * @see ChannelConfig#DEFAULT_MAX_STRING_LENGTH
      */
     public ChannelConfig() {
         this(DEFAULT_MAX_CHUNK_SIZE,

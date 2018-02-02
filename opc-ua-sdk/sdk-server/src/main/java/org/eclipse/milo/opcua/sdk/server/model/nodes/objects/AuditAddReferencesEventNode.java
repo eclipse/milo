@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,39 +26,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:AuditAddReferencesEventType")
 public class AuditAddReferencesEventNode extends AuditNodeManagementEventNode implements AuditAddReferencesEventType {
+    public AuditAddReferencesEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public AuditAddReferencesEventNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public AuditAddReferencesEventNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public AddReferencesItem[] getReferencesToAdd() {
-        Optional<AddReferencesItem[]> property = getProperty(AuditAddReferencesEventType.REFERENCES_TO_ADD);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getReferencesToAddNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(AuditAddReferencesEventType.REFERENCES_TO_ADD.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditAddReferencesEventType.REFERENCES_TO_ADD);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public AddReferencesItem[] getReferencesToAdd() {
+        Optional<AddReferencesItem[]> propertyValue = getProperty(AuditAddReferencesEventType.REFERENCES_TO_ADD);
+        return propertyValue.orElse(null);
+    }
+
     public void setReferencesToAdd(AddReferencesItem[] value) {
         setProperty(AuditAddReferencesEventType.REFERENCES_TO_ADD, value);
     }
-
 }

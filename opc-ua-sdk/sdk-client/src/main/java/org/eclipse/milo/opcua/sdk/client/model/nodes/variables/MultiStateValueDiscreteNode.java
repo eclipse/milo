@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,42 +22,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EnumValueType;
 
-
 public class MultiStateValueDiscreteNode extends DiscreteItemNode implements MultiStateValueDiscreteType {
-
     public MultiStateValueDiscreteNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> enumValues() {
-        return getPropertyNode(MultiStateValueDiscreteType.ENUM_VALUES.getBrowseName());
+    public CompletableFuture<PropertyNode> getEnumValuesNode() {
+        return getPropertyNode(MultiStateValueDiscreteType.ENUM_VALUES);
     }
 
-    @Override
     public CompletableFuture<EnumValueType[]> getEnumValues() {
         return getProperty(MultiStateValueDiscreteType.ENUM_VALUES);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setEnumValues(EnumValueType[] value) {
         return setProperty(MultiStateValueDiscreteType.ENUM_VALUES, value);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> valueAsText() {
-        return getPropertyNode(MultiStateValueDiscreteType.VALUE_AS_TEXT.getBrowseName());
+    public CompletableFuture<PropertyNode> getValueAsTextNode() {
+        return getPropertyNode(MultiStateValueDiscreteType.VALUE_AS_TEXT);
     }
 
-    @Override
     public CompletableFuture<LocalizedText> getValueAsText() {
         return getProperty(MultiStateValueDiscreteType.VALUE_AS_TEXT);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setValueAsText(LocalizedText value) {
         return setProperty(MultiStateValueDiscreteType.VALUE_AS_TEXT, value);
     }
-
-
 }

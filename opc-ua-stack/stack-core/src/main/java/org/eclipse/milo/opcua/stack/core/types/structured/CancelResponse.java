@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,37 +15,36 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("CancelResponse")
 public class CancelResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.CancelResponse;
     public static final NodeId BinaryEncodingId = Identifiers.CancelResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.CancelResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final UInteger _cancelCount;
+    protected final ResponseHeader responseHeader;
+    protected final UInteger cancelCount;
 
     public CancelResponse() {
-        this._responseHeader = null;
-        this._cancelCount = null;
+        this.responseHeader = null;
+        this.cancelCount = null;
     }
 
-    public CancelResponse(ResponseHeader _responseHeader, UInteger _cancelCount) {
-        this._responseHeader = _responseHeader;
-        this._cancelCount = _cancelCount;
+    public CancelResponse(ResponseHeader responseHeader, UInteger cancelCount) {
+        this.responseHeader = responseHeader;
+        this.cancelCount = cancelCount;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
-    public UInteger getCancelCount() { return _cancelCount; }
+    public UInteger getCancelCount() { return cancelCount; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -59,26 +58,31 @@ public class CancelResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("CancelCount", _cancelCount)
+            .add("ResponseHeader", responseHeader)
+            .add("CancelCount", cancelCount)
             .toString();
     }
 
-    public static void encode(CancelResponse cancelResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", cancelResponse._responseHeader != null ? cancelResponse._responseHeader : new ResponseHeader());
-        encoder.encodeUInt32("CancelCount", cancelResponse._cancelCount);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<CancelResponse> {
 
-    public static CancelResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        UInteger _cancelCount = decoder.decodeUInt32("CancelCount");
+        @Override
+        public Class<CancelResponse> getType() {
+            return CancelResponse.class;
+        }
 
-        return new CancelResponse(_responseHeader, _cancelCount);
-    }
+        @Override
+        public CancelResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            UInteger cancelCount = decoder.readUInt32("CancelCount");
 
-    static {
-        DelegateRegistry.registerEncoder(CancelResponse::encode, CancelResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(CancelResponse::decode, CancelResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new CancelResponse(responseHeader, cancelCount);
+        }
+
+        @Override
+        public void encode(CancelResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeUInt32("CancelCount", value.cancelCount);
+        }
     }
 
 }

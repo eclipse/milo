@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,14 +15,13 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("NotificationData")
 public class NotificationData implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.NotificationData;
@@ -48,17 +47,22 @@ public class NotificationData implements UaStructure {
             .toString();
     }
 
-    public static void encode(NotificationData notificationData, UaEncoder encoder) {
-    }
+    public static class Codec extends BuiltinDataTypeCodec<NotificationData> {
 
-    public static NotificationData decode(UaDecoder decoder) {
+        @Override
+        public Class<NotificationData> getType() {
+            return NotificationData.class;
+        }
 
-        return new NotificationData();
-    }
+        @Override
+        public NotificationData decode(UaDecoder decoder) throws UaSerializationException {
 
-    static {
-        DelegateRegistry.registerEncoder(NotificationData::encode, NotificationData.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(NotificationData::decode, NotificationData.class, BinaryEncodingId, XmlEncodingId);
+            return new NotificationData();
+        }
+
+        @Override
+        public void encode(NotificationData value, UaEncoder encoder) throws UaSerializationException {
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,126 +21,85 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 
-
 public class ServerStatusNode extends BaseDataVariableNode implements ServerStatusType {
-
     public ServerStatusNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<BaseDataVariableNode> startTime() {
-        return getComponent(QualifiedName.parse("0:StartTime"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getStartTimeNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "StartTime").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getStartTime() {
-        return startTime()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, DateTime.class));
+        return getStartTimeNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, DateTime.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setStartTime(DateTime value) {
-        return startTime()
-            .thenCompose(node -> node.setValue(value));
+        return getStartTimeNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> currentTime() {
-        return getComponent(QualifiedName.parse("0:CurrentTime"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getCurrentTimeNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentTime").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<DateTime> getCurrentTime() {
-        return currentTime()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, DateTime.class));
+        return getCurrentTimeNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, DateTime.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentTime(DateTime value) {
-        return currentTime()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentTimeNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> state() {
-        return getComponent(QualifiedName.parse("0:State"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getStateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "State").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<ServerState> getState() {
-        return state()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, ServerState.class));
+        return getStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, ServerState.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setState(ServerState value) {
-        return state()
-            .thenCompose(node -> node.setValue(value));
+        return getStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BuildInfoNode> buildInfo() {
-        return getComponent(QualifiedName.parse("0:BuildInfo"))
-            .thenApply(BuildInfoNode.class::cast);
+    public CompletableFuture<BuildInfoNode> getBuildInfoNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "BuildInfo").thenApply(BuildInfoNode.class::cast);
     }
 
     public CompletableFuture<BuildInfo> getBuildInfo() {
-        return buildInfo()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, BuildInfo.class));
+        return getBuildInfoNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, BuildInfo.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setBuildInfo(BuildInfo value) {
-        return buildInfo()
-            .thenCompose(node -> node.setValue(value));
+        return getBuildInfoNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> secondsTillShutdown() {
-        return getComponent(QualifiedName.parse("0:SecondsTillShutdown"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getSecondsTillShutdownNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "SecondsTillShutdown").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<UInteger> getSecondsTillShutdown() {
-        return secondsTillShutdown()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, UInteger.class));
+        return getSecondsTillShutdownNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, UInteger.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setSecondsTillShutdown(UInteger value) {
-        return secondsTillShutdown()
-            .thenCompose(node -> node.setValue(value));
+        return getSecondsTillShutdownNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<BaseDataVariableNode> shutdownReason() {
-        return getComponent(QualifiedName.parse("0:ShutdownReason"))
-            .thenApply(BaseDataVariableNode.class::cast);
+    public CompletableFuture<BaseDataVariableNode> getShutdownReasonNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "ShutdownReason").thenApply(BaseDataVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getShutdownReason() {
-        return shutdownReason()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getShutdownReasonNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setShutdownReason(LocalizedText value) {
-        return shutdownReason()
-            .thenCompose(node -> node.setValue(value));
+        return getShutdownReasonNode().thenCompose(node -> node.setValue(value));
     }
-
 }

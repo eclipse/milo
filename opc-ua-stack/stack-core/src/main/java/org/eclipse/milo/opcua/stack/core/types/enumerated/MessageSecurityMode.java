@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
@@ -54,18 +53,13 @@ public enum MessageSecurityMode implements UaEnumeration {
     }
 
     public static void encode(MessageSecurityMode messageSecurityMode, UaEncoder encoder) {
-        encoder.encodeInt32(null, messageSecurityMode.getValue());
+        encoder.writeInt32(null, messageSecurityMode.getValue());
     }
 
     public static MessageSecurityMode decode(UaDecoder decoder) {
-        int value = decoder.decodeInt32(null);
+        int value = decoder.readInt32(null);
 
         return VALUES.getOrDefault(value, null);
-    }
-
-    static {
-        DelegateRegistry.registerEncoder(MessageSecurityMode::encode, MessageSecurityMode.class);
-        DelegateRegistry.registerDecoder(MessageSecurityMode::decode, MessageSecurityMode.class);
     }
 
 }

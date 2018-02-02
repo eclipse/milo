@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,42 +15,41 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
-@UaDataType("ModelChangeStructureDataType")
 public class ModelChangeStructureDataType implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ModelChangeStructureDataType;
     public static final NodeId BinaryEncodingId = Identifiers.ModelChangeStructureDataType_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ModelChangeStructureDataType_Encoding_DefaultXml;
 
-    protected final NodeId _affected;
-    protected final NodeId _affectedType;
-    protected final UByte _verb;
+    protected final NodeId affected;
+    protected final NodeId affectedType;
+    protected final UByte verb;
 
     public ModelChangeStructureDataType() {
-        this._affected = null;
-        this._affectedType = null;
-        this._verb = null;
+        this.affected = null;
+        this.affectedType = null;
+        this.verb = null;
     }
 
-    public ModelChangeStructureDataType(NodeId _affected, NodeId _affectedType, UByte _verb) {
-        this._affected = _affected;
-        this._affectedType = _affectedType;
-        this._verb = _verb;
+    public ModelChangeStructureDataType(NodeId affected, NodeId affectedType, UByte verb) {
+        this.affected = affected;
+        this.affectedType = affectedType;
+        this.verb = verb;
     }
 
-    public NodeId getAffected() { return _affected; }
+    public NodeId getAffected() { return affected; }
 
-    public NodeId getAffectedType() { return _affectedType; }
+    public NodeId getAffectedType() { return affectedType; }
 
-    public UByte getVerb() { return _verb; }
+    public UByte getVerb() { return verb; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -64,29 +63,34 @@ public class ModelChangeStructureDataType implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Affected", _affected)
-            .add("AffectedType", _affectedType)
-            .add("Verb", _verb)
+            .add("Affected", affected)
+            .add("AffectedType", affectedType)
+            .add("Verb", verb)
             .toString();
     }
 
-    public static void encode(ModelChangeStructureDataType modelChangeStructureDataType, UaEncoder encoder) {
-        encoder.encodeNodeId("Affected", modelChangeStructureDataType._affected);
-        encoder.encodeNodeId("AffectedType", modelChangeStructureDataType._affectedType);
-        encoder.encodeByte("Verb", modelChangeStructureDataType._verb);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ModelChangeStructureDataType> {
 
-    public static ModelChangeStructureDataType decode(UaDecoder decoder) {
-        NodeId _affected = decoder.decodeNodeId("Affected");
-        NodeId _affectedType = decoder.decodeNodeId("AffectedType");
-        UByte _verb = decoder.decodeByte("Verb");
+        @Override
+        public Class<ModelChangeStructureDataType> getType() {
+            return ModelChangeStructureDataType.class;
+        }
 
-        return new ModelChangeStructureDataType(_affected, _affectedType, _verb);
-    }
+        @Override
+        public ModelChangeStructureDataType decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId affected = decoder.readNodeId("Affected");
+            NodeId affectedType = decoder.readNodeId("AffectedType");
+            UByte verb = decoder.readByte("Verb");
 
-    static {
-        DelegateRegistry.registerEncoder(ModelChangeStructureDataType::encode, ModelChangeStructureDataType.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ModelChangeStructureDataType::decode, ModelChangeStructureDataType.class, BinaryEncodingId, XmlEncodingId);
+            return new ModelChangeStructureDataType(affected, affectedType, verb);
+        }
+
+        @Override
+        public void encode(ModelChangeStructureDataType value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("Affected", value.affected);
+            encoder.writeNodeId("AffectedType", value.affectedType);
+            encoder.writeByte("Verb", value.verb);
+        }
     }
 
 }

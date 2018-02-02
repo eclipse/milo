@@ -13,13 +13,18 @@
 
 package org.eclipse.milo.opcua.sdk.client;
 
+import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.sdk.client.api.UaSession;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 
-public class OpcUaSession implements UaSession {
+public class OpcUaSession extends ConcurrentHashMap<String, Object> implements UaSession {
 
     private volatile ByteString serverNonce = ByteString.NULL_VALUE;
 
@@ -90,6 +95,31 @@ public class OpcUaSession implements UaSession {
 
     public void setServerNonce(ByteString serverNonce) {
         this.serverNonce = serverNonce;
+    }
+
+    @Nullable
+    @Override
+    public Object getAttribute(@Nonnull String name) {
+        return get(name);
+    }
+
+    @Nullable
+    @Override
+    public Object setAttribute(@Nonnull String name, @Nonnull Object value) {
+        return put(name, value);
+    }
+
+    @Override
+    public Object removeAttribute(@Nonnull String name) {
+        return remove(name);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("sessionId", sessionId)
+            .add("sessionName", sessionName)
+            .toString();
     }
 
 }

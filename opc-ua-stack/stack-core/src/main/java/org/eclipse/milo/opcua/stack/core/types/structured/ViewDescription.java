@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,43 +15,42 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("ViewDescription")
 public class ViewDescription implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ViewDescription;
     public static final NodeId BinaryEncodingId = Identifiers.ViewDescription_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ViewDescription_Encoding_DefaultXml;
 
-    protected final NodeId _viewId;
-    protected final DateTime _timestamp;
-    protected final UInteger _viewVersion;
+    protected final NodeId viewId;
+    protected final DateTime timestamp;
+    protected final UInteger viewVersion;
 
     public ViewDescription() {
-        this._viewId = null;
-        this._timestamp = null;
-        this._viewVersion = null;
+        this.viewId = null;
+        this.timestamp = null;
+        this.viewVersion = null;
     }
 
-    public ViewDescription(NodeId _viewId, DateTime _timestamp, UInteger _viewVersion) {
-        this._viewId = _viewId;
-        this._timestamp = _timestamp;
-        this._viewVersion = _viewVersion;
+    public ViewDescription(NodeId viewId, DateTime timestamp, UInteger viewVersion) {
+        this.viewId = viewId;
+        this.timestamp = timestamp;
+        this.viewVersion = viewVersion;
     }
 
-    public NodeId getViewId() { return _viewId; }
+    public NodeId getViewId() { return viewId; }
 
-    public DateTime getTimestamp() { return _timestamp; }
+    public DateTime getTimestamp() { return timestamp; }
 
-    public UInteger getViewVersion() { return _viewVersion; }
+    public UInteger getViewVersion() { return viewVersion; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -65,29 +64,34 @@ public class ViewDescription implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ViewId", _viewId)
-            .add("Timestamp", _timestamp)
-            .add("ViewVersion", _viewVersion)
+            .add("ViewId", viewId)
+            .add("Timestamp", timestamp)
+            .add("ViewVersion", viewVersion)
             .toString();
     }
 
-    public static void encode(ViewDescription viewDescription, UaEncoder encoder) {
-        encoder.encodeNodeId("ViewId", viewDescription._viewId);
-        encoder.encodeDateTime("Timestamp", viewDescription._timestamp);
-        encoder.encodeUInt32("ViewVersion", viewDescription._viewVersion);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ViewDescription> {
 
-    public static ViewDescription decode(UaDecoder decoder) {
-        NodeId _viewId = decoder.decodeNodeId("ViewId");
-        DateTime _timestamp = decoder.decodeDateTime("Timestamp");
-        UInteger _viewVersion = decoder.decodeUInt32("ViewVersion");
+        @Override
+        public Class<ViewDescription> getType() {
+            return ViewDescription.class;
+        }
 
-        return new ViewDescription(_viewId, _timestamp, _viewVersion);
-    }
+        @Override
+        public ViewDescription decode(UaDecoder decoder) throws UaSerializationException {
+            NodeId viewId = decoder.readNodeId("ViewId");
+            DateTime timestamp = decoder.readDateTime("Timestamp");
+            UInteger viewVersion = decoder.readUInt32("ViewVersion");
 
-    static {
-        DelegateRegistry.registerEncoder(ViewDescription::encode, ViewDescription.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ViewDescription::decode, ViewDescription.class, BinaryEncodingId, XmlEncodingId);
+            return new ViewDescription(viewId, timestamp, viewVersion);
+        }
+
+        @Override
+        public void encode(ViewDescription value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeNodeId("ViewId", value.viewId);
+            encoder.writeDateTime("Timestamp", value.timestamp);
+            encoder.writeUInt32("ViewVersion", value.viewVersion);
+        }
     }
 
 }

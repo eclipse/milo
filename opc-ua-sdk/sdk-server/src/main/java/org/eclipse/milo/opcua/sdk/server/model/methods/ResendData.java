@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
@@ -21,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler.InvocationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class ResendData {
@@ -39,17 +39,21 @@ public class ResendData {
         @UaInputArgument(name = "subscriptionId")
             UInteger subscriptionId) throws UaException {
 
+        Session session = context.getSession().orElse(null);
 
-        Subscription subscription = server.getSubscriptions().get(subscriptionId);
+        if (session != null) {
+            Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
 
-        if (subscription == null) {
-            context.setFailure(new UaException(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid)));
+            if (subscription == null) {
+                context.setFailure(new UaException(StatusCodes.Bad_SubscriptionIdInvalid));
+            } else {
+                subscription.getMonitoredItems().values().stream()
+                    .filter(item -> item instanceof MonitoredDataItem)
+                    .map(item -> (MonitoredDataItem) item)
+                    .forEach(MonitoredDataItem::clearLastValue);
+            }
         } else {
-
-            subscription.getMonitoredItems().values().stream()
-                .filter(item -> item instanceof MonitoredDataItem)
-                .map(item -> (MonitoredDataItem) item)
-                .forEach(MonitoredDataItem::clearLastValue);
+            context.setFailure(new UaException(StatusCodes.Bad_UserAccessDenied));
         }
     }
 

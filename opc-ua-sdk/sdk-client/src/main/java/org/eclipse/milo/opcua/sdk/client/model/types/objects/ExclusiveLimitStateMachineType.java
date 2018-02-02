@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,25 +15,20 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 
 import java.util.concurrent.CompletableFuture;
 
-
 public interface ExclusiveLimitStateMachineType extends FiniteStateMachineType {
+    CompletableFuture<? extends StateType> getHighHighNode();
 
+    CompletableFuture<? extends StateType> getHighNode();
 
-    CompletableFuture<? extends StateType> highHigh();
+    CompletableFuture<? extends StateType> getLowNode();
 
-    CompletableFuture<? extends StateType> high();
+    CompletableFuture<? extends StateType> getLowLowNode();
 
-    CompletableFuture<? extends StateType> low();
+    CompletableFuture<? extends TransitionType> getLowLowToLowNode();
 
-    CompletableFuture<? extends StateType> lowLow();
+    CompletableFuture<? extends TransitionType> getLowToLowLowNode();
 
-    CompletableFuture<? extends TransitionType> lowLowToLow();
+    CompletableFuture<? extends TransitionType> getHighHighToHighNode();
 
-    CompletableFuture<? extends TransitionType> lowToLowLow();
-
-    CompletableFuture<? extends TransitionType> highHighToHigh();
-
-    CompletableFuture<? extends TransitionType> highToHighHigh();
-
-
+    CompletableFuture<? extends TransitionType> getHighToHighHighNode();
 }

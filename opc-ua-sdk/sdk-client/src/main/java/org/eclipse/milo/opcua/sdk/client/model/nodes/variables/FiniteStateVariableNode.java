@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,27 +20,20 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteStateVariab
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class FiniteStateVariableNode extends StateVariableNode implements FiniteStateVariableType {
-
     public FiniteStateVariableNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-    @Override
-    public CompletableFuture<PropertyNode> id() {
-        return getPropertyNode(FiniteStateVariableType.ID.getBrowseName());
+    public CompletableFuture<PropertyNode> getIdNode() {
+        return getPropertyNode(FiniteStateVariableType.ID);
     }
 
-    @Override
     public CompletableFuture<NodeId> getId() {
         return getProperty(FiniteStateVariableType.ID);
     }
 
-    @Override
     public CompletableFuture<StatusCode> setId(NodeId value) {
         return setProperty(FiniteStateVariableType.ID, value);
     }
-
-
 }

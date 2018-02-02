@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,45 +17,44 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("NotificationMessage")
 public class NotificationMessage implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.NotificationMessage;
     public static final NodeId BinaryEncodingId = Identifiers.NotificationMessage_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.NotificationMessage_Encoding_DefaultXml;
 
-    protected final UInteger _sequenceNumber;
-    protected final DateTime _publishTime;
-    protected final ExtensionObject[] _notificationData;
+    protected final UInteger sequenceNumber;
+    protected final DateTime publishTime;
+    protected final ExtensionObject[] notificationData;
 
     public NotificationMessage() {
-        this._sequenceNumber = null;
-        this._publishTime = null;
-        this._notificationData = null;
+        this.sequenceNumber = null;
+        this.publishTime = null;
+        this.notificationData = null;
     }
 
-    public NotificationMessage(UInteger _sequenceNumber, DateTime _publishTime, ExtensionObject[] _notificationData) {
-        this._sequenceNumber = _sequenceNumber;
-        this._publishTime = _publishTime;
-        this._notificationData = _notificationData;
+    public NotificationMessage(UInteger sequenceNumber, DateTime publishTime, ExtensionObject[] notificationData) {
+        this.sequenceNumber = sequenceNumber;
+        this.publishTime = publishTime;
+        this.notificationData = notificationData;
     }
 
-    public UInteger getSequenceNumber() { return _sequenceNumber; }
+    public UInteger getSequenceNumber() { return sequenceNumber; }
 
-    public DateTime getPublishTime() { return _publishTime; }
+    public DateTime getPublishTime() { return publishTime; }
 
     @Nullable
-    public ExtensionObject[] getNotificationData() { return _notificationData; }
+    public ExtensionObject[] getNotificationData() { return notificationData; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -69,29 +68,34 @@ public class NotificationMessage implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SequenceNumber", _sequenceNumber)
-            .add("PublishTime", _publishTime)
-            .add("NotificationData", _notificationData)
+            .add("SequenceNumber", sequenceNumber)
+            .add("PublishTime", publishTime)
+            .add("NotificationData", notificationData)
             .toString();
     }
 
-    public static void encode(NotificationMessage notificationMessage, UaEncoder encoder) {
-        encoder.encodeUInt32("SequenceNumber", notificationMessage._sequenceNumber);
-        encoder.encodeDateTime("PublishTime", notificationMessage._publishTime);
-        encoder.encodeArray("NotificationData", notificationMessage._notificationData, encoder::encodeExtensionObject);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<NotificationMessage> {
 
-    public static NotificationMessage decode(UaDecoder decoder) {
-        UInteger _sequenceNumber = decoder.decodeUInt32("SequenceNumber");
-        DateTime _publishTime = decoder.decodeDateTime("PublishTime");
-        ExtensionObject[] _notificationData = decoder.decodeArray("NotificationData", decoder::decodeExtensionObject, ExtensionObject.class);
+        @Override
+        public Class<NotificationMessage> getType() {
+            return NotificationMessage.class;
+        }
 
-        return new NotificationMessage(_sequenceNumber, _publishTime, _notificationData);
-    }
+        @Override
+        public NotificationMessage decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
+            DateTime publishTime = decoder.readDateTime("PublishTime");
+            ExtensionObject[] notificationData = decoder.readArray("NotificationData", decoder::readExtensionObject, ExtensionObject.class);
 
-    static {
-        DelegateRegistry.registerEncoder(NotificationMessage::encode, NotificationMessage.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(NotificationMessage::decode, NotificationMessage.class, BinaryEncodingId, XmlEncodingId);
+            return new NotificationMessage(sequenceNumber, publishTime, notificationData);
+        }
+
+        @Override
+        public void encode(NotificationMessage value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SequenceNumber", value.sequenceNumber);
+            encoder.writeDateTime("PublishTime", value.publishTime);
+            encoder.writeArray("NotificationData", value.notificationData, encoder::writeExtensionObject);
+        }
     }
 
 }

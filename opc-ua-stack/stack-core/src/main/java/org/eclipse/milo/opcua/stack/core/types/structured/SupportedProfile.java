@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,59 +17,58 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ComplianceLevel;
 
-@UaDataType("SupportedProfile")
 public class SupportedProfile implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.SupportedProfile;
     public static final NodeId BinaryEncodingId = Identifiers.SupportedProfile_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.SupportedProfile_Encoding_DefaultXml;
 
-    protected final String _organizationUri;
-    protected final String _profileId;
-    protected final String _complianceTool;
-    protected final DateTime _complianceDate;
-    protected final ComplianceLevel _complianceLevel;
-    protected final String[] _unsupportedUnitIds;
+    protected final String organizationUri;
+    protected final String profileId;
+    protected final String complianceTool;
+    protected final DateTime complianceDate;
+    protected final ComplianceLevel complianceLevel;
+    protected final String[] unsupportedUnitIds;
 
     public SupportedProfile() {
-        this._organizationUri = null;
-        this._profileId = null;
-        this._complianceTool = null;
-        this._complianceDate = null;
-        this._complianceLevel = null;
-        this._unsupportedUnitIds = null;
+        this.organizationUri = null;
+        this.profileId = null;
+        this.complianceTool = null;
+        this.complianceDate = null;
+        this.complianceLevel = null;
+        this.unsupportedUnitIds = null;
     }
 
-    public SupportedProfile(String _organizationUri, String _profileId, String _complianceTool, DateTime _complianceDate, ComplianceLevel _complianceLevel, String[] _unsupportedUnitIds) {
-        this._organizationUri = _organizationUri;
-        this._profileId = _profileId;
-        this._complianceTool = _complianceTool;
-        this._complianceDate = _complianceDate;
-        this._complianceLevel = _complianceLevel;
-        this._unsupportedUnitIds = _unsupportedUnitIds;
+    public SupportedProfile(String organizationUri, String profileId, String complianceTool, DateTime complianceDate, ComplianceLevel complianceLevel, String[] unsupportedUnitIds) {
+        this.organizationUri = organizationUri;
+        this.profileId = profileId;
+        this.complianceTool = complianceTool;
+        this.complianceDate = complianceDate;
+        this.complianceLevel = complianceLevel;
+        this.unsupportedUnitIds = unsupportedUnitIds;
     }
 
-    public String getOrganizationUri() { return _organizationUri; }
+    public String getOrganizationUri() { return organizationUri; }
 
-    public String getProfileId() { return _profileId; }
+    public String getProfileId() { return profileId; }
 
-    public String getComplianceTool() { return _complianceTool; }
+    public String getComplianceTool() { return complianceTool; }
 
-    public DateTime getComplianceDate() { return _complianceDate; }
+    public DateTime getComplianceDate() { return complianceDate; }
 
-    public ComplianceLevel getComplianceLevel() { return _complianceLevel; }
+    public ComplianceLevel getComplianceLevel() { return complianceLevel; }
 
     @Nullable
-    public String[] getUnsupportedUnitIds() { return _unsupportedUnitIds; }
+    public String[] getUnsupportedUnitIds() { return unsupportedUnitIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -83,38 +82,43 @@ public class SupportedProfile implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("OrganizationUri", _organizationUri)
-            .add("ProfileId", _profileId)
-            .add("ComplianceTool", _complianceTool)
-            .add("ComplianceDate", _complianceDate)
-            .add("ComplianceLevel", _complianceLevel)
-            .add("UnsupportedUnitIds", _unsupportedUnitIds)
+            .add("OrganizationUri", organizationUri)
+            .add("ProfileId", profileId)
+            .add("ComplianceTool", complianceTool)
+            .add("ComplianceDate", complianceDate)
+            .add("ComplianceLevel", complianceLevel)
+            .add("UnsupportedUnitIds", unsupportedUnitIds)
             .toString();
     }
 
-    public static void encode(SupportedProfile supportedProfile, UaEncoder encoder) {
-        encoder.encodeString("OrganizationUri", supportedProfile._organizationUri);
-        encoder.encodeString("ProfileId", supportedProfile._profileId);
-        encoder.encodeString("ComplianceTool", supportedProfile._complianceTool);
-        encoder.encodeDateTime("ComplianceDate", supportedProfile._complianceDate);
-        encoder.encodeEnumeration("ComplianceLevel", supportedProfile._complianceLevel);
-        encoder.encodeArray("UnsupportedUnitIds", supportedProfile._unsupportedUnitIds, encoder::encodeString);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<SupportedProfile> {
 
-    public static SupportedProfile decode(UaDecoder decoder) {
-        String _organizationUri = decoder.decodeString("OrganizationUri");
-        String _profileId = decoder.decodeString("ProfileId");
-        String _complianceTool = decoder.decodeString("ComplianceTool");
-        DateTime _complianceDate = decoder.decodeDateTime("ComplianceDate");
-        ComplianceLevel _complianceLevel = decoder.decodeEnumeration("ComplianceLevel", ComplianceLevel.class);
-        String[] _unsupportedUnitIds = decoder.decodeArray("UnsupportedUnitIds", decoder::decodeString, String.class);
+        @Override
+        public Class<SupportedProfile> getType() {
+            return SupportedProfile.class;
+        }
 
-        return new SupportedProfile(_organizationUri, _profileId, _complianceTool, _complianceDate, _complianceLevel, _unsupportedUnitIds);
-    }
+        @Override
+        public SupportedProfile decode(UaDecoder decoder) throws UaSerializationException {
+            String organizationUri = decoder.readString("OrganizationUri");
+            String profileId = decoder.readString("ProfileId");
+            String complianceTool = decoder.readString("ComplianceTool");
+            DateTime complianceDate = decoder.readDateTime("ComplianceDate");
+            ComplianceLevel complianceLevel = ComplianceLevel.from(decoder.readInt32("ComplianceLevel"));
+            String[] unsupportedUnitIds = decoder.readArray("UnsupportedUnitIds", decoder::readString, String.class);
 
-    static {
-        DelegateRegistry.registerEncoder(SupportedProfile::encode, SupportedProfile.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(SupportedProfile::decode, SupportedProfile.class, BinaryEncodingId, XmlEncodingId);
+            return new SupportedProfile(organizationUri, profileId, complianceTool, complianceDate, complianceLevel, unsupportedUnitIds);
+        }
+
+        @Override
+        public void encode(SupportedProfile value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("OrganizationUri", value.organizationUri);
+            encoder.writeString("ProfileId", value.profileId);
+            encoder.writeString("ComplianceTool", value.complianceTool);
+            encoder.writeDateTime("ComplianceDate", value.complianceDate);
+            encoder.writeInt32("ComplianceLevel", value.complianceLevel != null ? value.complianceLevel.getValue() : 0);
+            encoder.writeArray("UnsupportedUnitIds", value.unsupportedUnitIds, encoder::writeString);
+        }
     }
 
 }

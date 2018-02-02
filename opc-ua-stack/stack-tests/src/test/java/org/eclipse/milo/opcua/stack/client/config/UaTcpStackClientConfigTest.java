@@ -14,10 +14,13 @@
 package org.eclipse.milo.opcua.stack.client.config;
 
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.SecurityFixture;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.testng.annotations.Test;
@@ -27,13 +30,24 @@ import static org.testng.Assert.assertEquals;
 
 public class UaTcpStackClientConfigTest extends SecurityFixture {
 
+    private final CertificateValidator validator = new CertificateValidator() {
+        @Override
+        public void validate(X509Certificate certificate) throws UaException {}
+
+        @Override
+        public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {}
+    };
+
     @Test
     public void testCopy() {
+
+
         UaTcpStackClientConfig original = UaTcpStackClientConfig.builder()
             .setEndpointUrl("test")
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
             .setCertificateChain(new X509Certificate[]{clientCertificate})
+            .setCertificateValidator(validator)
             .setApplicationName(LocalizedText.english("testName"))
             .setApplicationUri("testApplicationUri")
             .setProductUri("testProductUri")
@@ -42,7 +56,6 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setExecutor(Stack.sharedExecutor())
             .setEventLoop(Stack.sharedEventLoop())
             .setWheelTimer(Stack.sharedWheelTimer())
-            .setSecureChannelReauthenticationEnabled(true)
             .build();
 
         UaTcpStackClientConfig copy = UaTcpStackClientConfig.copy(original).build();
@@ -51,6 +64,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getKeyPair(), original.getKeyPair());
         assertEquals(copy.getCertificate(), original.getCertificate());
         assertEquals(copy.getCertificateChain(), original.getCertificateChain());
+        assertEquals(copy.getCertificateValidator(), original.getCertificateValidator());
         assertEquals(copy.getApplicationName(), original.getApplicationName());
         assertEquals(copy.getApplicationUri(), original.getApplicationUri());
         assertEquals(copy.getProductUri(), original.getProductUri());
@@ -59,9 +73,6 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getExecutor(), original.getExecutor());
         assertEquals(copy.getEventLoop(), original.getEventLoop());
         assertEquals(copy.getWheelTimer(), original.getWheelTimer());
-        assertEquals(
-            copy.isSecureChannelReauthenticationEnabled(),
-            original.isSecureChannelReauthenticationEnabled());
     }
 
     @Test
@@ -70,6 +81,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setEndpointUrl("test")
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
+            .setCertificateValidator(validator)
             .setApplicationName(LocalizedText.english("testName"))
             .setApplicationUri("testApplicationUri")
             .setProductUri("testProductUri")
@@ -78,7 +90,6 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setExecutor(Stack.sharedExecutor())
             .setEventLoop(Stack.sharedEventLoop())
             .setWheelTimer(Stack.sharedWheelTimer())
-            .setSecureChannelReauthenticationEnabled(true)
             .build();
 
         UaTcpStackClientConfig copy = UaTcpStackClientConfig.copy(original,
@@ -86,6 +97,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
                 .setKeyPair(null)
                 .setCertificate(null)
                 .setCertificateChain(null)
+                .setCertificateValidator(null)
                 .setApplicationName(LocalizedText.english("fooName"))
                 .setApplicationUri("fooApplicationUri")
                 .setProductUri("fooProductUri")
@@ -97,6 +109,7 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getKeyPair(), Optional.empty());
         assertEquals(copy.getCertificate(), Optional.empty());
         assertEquals(copy.getCertificateChain(), Optional.empty());
+        assertEquals(copy.getCertificateValidator(), null);
         assertEquals(copy.getApplicationName(), LocalizedText.english("fooName"));
         assertEquals(copy.getApplicationUri(), "fooApplicationUri");
         assertEquals(copy.getProductUri(), "fooProductUri");

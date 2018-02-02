@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,46 +17,45 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-@UaDataType("EventFilterResult")
 public class EventFilterResult extends MonitoringFilterResult {
 
     public static final NodeId TypeId = Identifiers.EventFilterResult;
     public static final NodeId BinaryEncodingId = Identifiers.EventFilterResult_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.EventFilterResult_Encoding_DefaultXml;
 
-    protected final StatusCode[] _selectClauseResults;
-    protected final DiagnosticInfo[] _selectClauseDiagnosticInfos;
-    protected final ContentFilterResult _whereClauseResult;
+    protected final StatusCode[] selectClauseResults;
+    protected final DiagnosticInfo[] selectClauseDiagnosticInfos;
+    protected final ContentFilterResult whereClauseResult;
 
     public EventFilterResult() {
         super();
-        this._selectClauseResults = null;
-        this._selectClauseDiagnosticInfos = null;
-        this._whereClauseResult = null;
+        this.selectClauseResults = null;
+        this.selectClauseDiagnosticInfos = null;
+        this.whereClauseResult = null;
     }
 
-    public EventFilterResult(StatusCode[] _selectClauseResults, DiagnosticInfo[] _selectClauseDiagnosticInfos, ContentFilterResult _whereClauseResult) {
+    public EventFilterResult(StatusCode[] selectClauseResults, DiagnosticInfo[] selectClauseDiagnosticInfos, ContentFilterResult whereClauseResult) {
         super();
-        this._selectClauseResults = _selectClauseResults;
-        this._selectClauseDiagnosticInfos = _selectClauseDiagnosticInfos;
-        this._whereClauseResult = _whereClauseResult;
+        this.selectClauseResults = selectClauseResults;
+        this.selectClauseDiagnosticInfos = selectClauseDiagnosticInfos;
+        this.whereClauseResult = whereClauseResult;
     }
 
     @Nullable
-    public StatusCode[] getSelectClauseResults() { return _selectClauseResults; }
+    public StatusCode[] getSelectClauseResults() { return selectClauseResults; }
 
     @Nullable
-    public DiagnosticInfo[] getSelectClauseDiagnosticInfos() { return _selectClauseDiagnosticInfos; }
+    public DiagnosticInfo[] getSelectClauseDiagnosticInfos() { return selectClauseDiagnosticInfos; }
 
-    public ContentFilterResult getWhereClauseResult() { return _whereClauseResult; }
+    public ContentFilterResult getWhereClauseResult() { return whereClauseResult; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -70,29 +69,34 @@ public class EventFilterResult extends MonitoringFilterResult {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SelectClauseResults", _selectClauseResults)
-            .add("SelectClauseDiagnosticInfos", _selectClauseDiagnosticInfos)
-            .add("WhereClauseResult", _whereClauseResult)
+            .add("SelectClauseResults", selectClauseResults)
+            .add("SelectClauseDiagnosticInfos", selectClauseDiagnosticInfos)
+            .add("WhereClauseResult", whereClauseResult)
             .toString();
     }
 
-    public static void encode(EventFilterResult eventFilterResult, UaEncoder encoder) {
-        encoder.encodeArray("SelectClauseResults", eventFilterResult._selectClauseResults, encoder::encodeStatusCode);
-        encoder.encodeArray("SelectClauseDiagnosticInfos", eventFilterResult._selectClauseDiagnosticInfos, encoder::encodeDiagnosticInfo);
-        encoder.encodeSerializable("WhereClauseResult", eventFilterResult._whereClauseResult != null ? eventFilterResult._whereClauseResult : new ContentFilterResult());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<EventFilterResult> {
 
-    public static EventFilterResult decode(UaDecoder decoder) {
-        StatusCode[] _selectClauseResults = decoder.decodeArray("SelectClauseResults", decoder::decodeStatusCode, StatusCode.class);
-        DiagnosticInfo[] _selectClauseDiagnosticInfos = decoder.decodeArray("SelectClauseDiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
-        ContentFilterResult _whereClauseResult = decoder.decodeSerializable("WhereClauseResult", ContentFilterResult.class);
+        @Override
+        public Class<EventFilterResult> getType() {
+            return EventFilterResult.class;
+        }
 
-        return new EventFilterResult(_selectClauseResults, _selectClauseDiagnosticInfos, _whereClauseResult);
-    }
+        @Override
+        public EventFilterResult decode(UaDecoder decoder) throws UaSerializationException {
+            StatusCode[] selectClauseResults = decoder.readArray("SelectClauseResults", decoder::readStatusCode, StatusCode.class);
+            DiagnosticInfo[] selectClauseDiagnosticInfos = decoder.readArray("SelectClauseDiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
+            ContentFilterResult whereClauseResult = (ContentFilterResult) decoder.readBuiltinStruct("WhereClauseResult", ContentFilterResult.class);
 
-    static {
-        DelegateRegistry.registerEncoder(EventFilterResult::encode, EventFilterResult.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(EventFilterResult::decode, EventFilterResult.class, BinaryEncodingId, XmlEncodingId);
+            return new EventFilterResult(selectClauseResults, selectClauseDiagnosticInfos, whereClauseResult);
+        }
+
+        @Override
+        public void encode(EventFilterResult value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeArray("SelectClauseResults", value.selectClauseResults, encoder::writeStatusCode);
+            encoder.writeArray("SelectClauseDiagnosticInfos", value.selectClauseDiagnosticInfos, encoder::writeDiagnosticInfo);
+            encoder.writeBuiltinStruct("WhereClauseResult", value.whereClauseResult, ContentFilterResult.class);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -22,52 +22,34 @@ import org.eclipse.milo.opcua.sdk.client.model.types.objects.StateMachineType;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-
 public class StateMachineNode extends BaseObjectNode implements StateMachineType {
-
     public StateMachineNode(OpcUaClient client, NodeId nodeId) {
         super(client, nodeId);
     }
 
-
-    @Override
-    public CompletableFuture<? extends StateVariableNode> currentState() {
-        return getVariableComponent(QualifiedName.parse("0:CurrentState"))
-            .thenApply(StateVariableNode.class::cast);
+    public CompletableFuture<? extends StateVariableNode> getCurrentStateNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "CurrentState").thenApply(StateVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getCurrentState() {
-        return currentState()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getCurrentStateNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setCurrentState(LocalizedText value) {
-        return currentState()
-            .thenCompose(node -> node.setValue(value));
+        return getCurrentStateNode().thenCompose(node -> node.setValue(value));
     }
 
-    @Override
-    public CompletableFuture<? extends TransitionVariableNode> lastTransition() {
-        return getVariableComponent(QualifiedName.parse("0:LastTransition"))
-            .thenApply(TransitionVariableNode.class::cast);
+    public CompletableFuture<? extends TransitionVariableNode> getLastTransitionNode() {
+        return getVariableComponent("http://opcfoundation.org/UA/", "LastTransition").thenApply(TransitionVariableNode.class::cast);
     }
 
     public CompletableFuture<LocalizedText> getLastTransition() {
-        return lastTransition()
-            .thenCompose(UaVariableNode::getValue)
-            .thenApply(o -> cast(o, LocalizedText.class));
+        return getLastTransitionNode().thenCompose(UaVariableNode::getValue).thenApply(o -> cast(o, LocalizedText.class));
     }
 
-    @Override
     public CompletableFuture<StatusCode> setLastTransition(LocalizedText value) {
-        return lastTransition()
-            .thenCompose(node -> node.setValue(value));
+        return getLastTransitionNode().thenCompose(node -> node.setValue(value));
     }
-
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,34 +15,33 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("DataTypeAttributes")
 public class DataTypeAttributes extends NodeAttributes {
 
     public static final NodeId TypeId = Identifiers.DataTypeAttributes;
     public static final NodeId BinaryEncodingId = Identifiers.DataTypeAttributes_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DataTypeAttributes_Encoding_DefaultXml;
 
-    protected final Boolean _isAbstract;
+    protected final Boolean isAbstract;
 
     public DataTypeAttributes() {
         super(null, null, null, null, null);
-        this._isAbstract = null;
+        this.isAbstract = null;
     }
 
-    public DataTypeAttributes(UInteger _specifiedAttributes, LocalizedText _displayName, LocalizedText _description, UInteger _writeMask, UInteger _userWriteMask, Boolean _isAbstract) {
-        super(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask);
-        this._isAbstract = _isAbstract;
+    public DataTypeAttributes(UInteger specifiedAttributes, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, Boolean isAbstract) {
+        super(specifiedAttributes, displayName, description, writeMask, userWriteMask);
+        this.isAbstract = isAbstract;
     }
 
-    public Boolean getIsAbstract() { return _isAbstract; }
+    public Boolean getIsAbstract() { return isAbstract; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -56,38 +55,43 @@ public class DataTypeAttributes extends NodeAttributes {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("SpecifiedAttributes", _specifiedAttributes)
-            .add("DisplayName", _displayName)
-            .add("Description", _description)
-            .add("WriteMask", _writeMask)
-            .add("UserWriteMask", _userWriteMask)
-            .add("IsAbstract", _isAbstract)
+            .add("SpecifiedAttributes", specifiedAttributes)
+            .add("DisplayName", displayName)
+            .add("Description", description)
+            .add("WriteMask", writeMask)
+            .add("UserWriteMask", userWriteMask)
+            .add("IsAbstract", isAbstract)
             .toString();
     }
 
-    public static void encode(DataTypeAttributes dataTypeAttributes, UaEncoder encoder) {
-        encoder.encodeUInt32("SpecifiedAttributes", dataTypeAttributes._specifiedAttributes);
-        encoder.encodeLocalizedText("DisplayName", dataTypeAttributes._displayName);
-        encoder.encodeLocalizedText("Description", dataTypeAttributes._description);
-        encoder.encodeUInt32("WriteMask", dataTypeAttributes._writeMask);
-        encoder.encodeUInt32("UserWriteMask", dataTypeAttributes._userWriteMask);
-        encoder.encodeBoolean("IsAbstract", dataTypeAttributes._isAbstract);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DataTypeAttributes> {
 
-    public static DataTypeAttributes decode(UaDecoder decoder) {
-        UInteger _specifiedAttributes = decoder.decodeUInt32("SpecifiedAttributes");
-        LocalizedText _displayName = decoder.decodeLocalizedText("DisplayName");
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
-        UInteger _writeMask = decoder.decodeUInt32("WriteMask");
-        UInteger _userWriteMask = decoder.decodeUInt32("UserWriteMask");
-        Boolean _isAbstract = decoder.decodeBoolean("IsAbstract");
+        @Override
+        public Class<DataTypeAttributes> getType() {
+            return DataTypeAttributes.class;
+        }
 
-        return new DataTypeAttributes(_specifiedAttributes, _displayName, _description, _writeMask, _userWriteMask, _isAbstract);
-    }
+        @Override
+        public DataTypeAttributes decode(UaDecoder decoder) throws UaSerializationException {
+            UInteger specifiedAttributes = decoder.readUInt32("SpecifiedAttributes");
+            LocalizedText displayName = decoder.readLocalizedText("DisplayName");
+            LocalizedText description = decoder.readLocalizedText("Description");
+            UInteger writeMask = decoder.readUInt32("WriteMask");
+            UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
+            Boolean isAbstract = decoder.readBoolean("IsAbstract");
 
-    static {
-        DelegateRegistry.registerEncoder(DataTypeAttributes::encode, DataTypeAttributes.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DataTypeAttributes::decode, DataTypeAttributes.class, BinaryEncodingId, XmlEncodingId);
+            return new DataTypeAttributes(specifiedAttributes, displayName, description, writeMask, userWriteMask, isAbstract);
+        }
+
+        @Override
+        public void encode(DataTypeAttributes value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeUInt32("SpecifiedAttributes", value.specifiedAttributes);
+            encoder.writeLocalizedText("DisplayName", value.displayName);
+            encoder.writeLocalizedText("Description", value.description);
+            encoder.writeUInt32("WriteMask", value.writeMask);
+            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
+            encoder.writeBoolean("IsAbstract", value.isAbstract);
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,38 +17,37 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("DeleteSubscriptionsRequest")
 public class DeleteSubscriptionsRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.DeleteSubscriptionsRequest;
     public static final NodeId BinaryEncodingId = Identifiers.DeleteSubscriptionsRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.DeleteSubscriptionsRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final UInteger[] _subscriptionIds;
+    protected final RequestHeader requestHeader;
+    protected final UInteger[] subscriptionIds;
 
     public DeleteSubscriptionsRequest() {
-        this._requestHeader = null;
-        this._subscriptionIds = null;
+        this.requestHeader = null;
+        this.subscriptionIds = null;
     }
 
-    public DeleteSubscriptionsRequest(RequestHeader _requestHeader, UInteger[] _subscriptionIds) {
-        this._requestHeader = _requestHeader;
-        this._subscriptionIds = _subscriptionIds;
+    public DeleteSubscriptionsRequest(RequestHeader requestHeader, UInteger[] subscriptionIds) {
+        this.requestHeader = requestHeader;
+        this.subscriptionIds = subscriptionIds;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
     @Nullable
-    public UInteger[] getSubscriptionIds() { return _subscriptionIds; }
+    public UInteger[] getSubscriptionIds() { return subscriptionIds; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -62,26 +61,31 @@ public class DeleteSubscriptionsRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("SubscriptionIds", _subscriptionIds)
+            .add("RequestHeader", requestHeader)
+            .add("SubscriptionIds", subscriptionIds)
             .toString();
     }
 
-    public static void encode(DeleteSubscriptionsRequest deleteSubscriptionsRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", deleteSubscriptionsRequest._requestHeader != null ? deleteSubscriptionsRequest._requestHeader : new RequestHeader());
-        encoder.encodeArray("SubscriptionIds", deleteSubscriptionsRequest._subscriptionIds, encoder::encodeUInt32);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<DeleteSubscriptionsRequest> {
 
-    public static DeleteSubscriptionsRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        UInteger[] _subscriptionIds = decoder.decodeArray("SubscriptionIds", decoder::decodeUInt32, UInteger.class);
+        @Override
+        public Class<DeleteSubscriptionsRequest> getType() {
+            return DeleteSubscriptionsRequest.class;
+        }
 
-        return new DeleteSubscriptionsRequest(_requestHeader, _subscriptionIds);
-    }
+        @Override
+        public DeleteSubscriptionsRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            UInteger[] subscriptionIds = decoder.readArray("SubscriptionIds", decoder::readUInt32, UInteger.class);
 
-    static {
-        DelegateRegistry.registerEncoder(DeleteSubscriptionsRequest::encode, DeleteSubscriptionsRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(DeleteSubscriptionsRequest::decode, DeleteSubscriptionsRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new DeleteSubscriptionsRequest(requestHeader, subscriptionIds);
+        }
+
+        @Override
+        public void encode(DeleteSubscriptionsRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeArray("SubscriptionIds", value.subscriptionIds, encoder::writeUInt32);
+        }
     }
 
 }

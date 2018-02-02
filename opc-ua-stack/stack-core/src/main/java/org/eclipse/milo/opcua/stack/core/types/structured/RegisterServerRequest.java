@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,36 +15,35 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("RegisterServerRequest")
 public class RegisterServerRequest implements UaRequestMessage {
 
     public static final NodeId TypeId = Identifiers.RegisterServerRequest;
     public static final NodeId BinaryEncodingId = Identifiers.RegisterServerRequest_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.RegisterServerRequest_Encoding_DefaultXml;
 
-    protected final RequestHeader _requestHeader;
-    protected final RegisteredServer _server;
+    protected final RequestHeader requestHeader;
+    protected final RegisteredServer server;
 
     public RegisterServerRequest() {
-        this._requestHeader = null;
-        this._server = null;
+        this.requestHeader = null;
+        this.server = null;
     }
 
-    public RegisterServerRequest(RequestHeader _requestHeader, RegisteredServer _server) {
-        this._requestHeader = _requestHeader;
-        this._server = _server;
+    public RegisterServerRequest(RequestHeader requestHeader, RegisteredServer server) {
+        this.requestHeader = requestHeader;
+        this.server = server;
     }
 
-    public RequestHeader getRequestHeader() { return _requestHeader; }
+    public RequestHeader getRequestHeader() { return requestHeader; }
 
-    public RegisteredServer getServer() { return _server; }
+    public RegisteredServer getServer() { return server; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -58,26 +57,31 @@ public class RegisterServerRequest implements UaRequestMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", _requestHeader)
-            .add("Server", _server)
+            .add("RequestHeader", requestHeader)
+            .add("Server", server)
             .toString();
     }
 
-    public static void encode(RegisterServerRequest registerServerRequest, UaEncoder encoder) {
-        encoder.encodeSerializable("RequestHeader", registerServerRequest._requestHeader != null ? registerServerRequest._requestHeader : new RequestHeader());
-        encoder.encodeSerializable("Server", registerServerRequest._server != null ? registerServerRequest._server : new RegisteredServer());
-    }
+    public static class Codec extends BuiltinDataTypeCodec<RegisterServerRequest> {
 
-    public static RegisterServerRequest decode(UaDecoder decoder) {
-        RequestHeader _requestHeader = decoder.decodeSerializable("RequestHeader", RequestHeader.class);
-        RegisteredServer _server = decoder.decodeSerializable("Server", RegisteredServer.class);
+        @Override
+        public Class<RegisterServerRequest> getType() {
+            return RegisterServerRequest.class;
+        }
 
-        return new RegisterServerRequest(_requestHeader, _server);
-    }
+        @Override
+        public RegisterServerRequest decode(UaDecoder decoder) throws UaSerializationException {
+            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+            RegisteredServer server = (RegisteredServer) decoder.readBuiltinStruct("Server", RegisteredServer.class);
 
-    static {
-        DelegateRegistry.registerEncoder(RegisterServerRequest::encode, RegisterServerRequest.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(RegisterServerRequest::decode, RegisterServerRequest.class, BinaryEncodingId, XmlEncodingId);
+            return new RegisterServerRequest(requestHeader, server);
+        }
+
+        @Override
+        public void encode(RegisterServerRequest value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
+            encoder.writeBuiltinStruct("Server", value.server, RegisteredServer.class);
+        }
     }
 
 }

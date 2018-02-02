@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,82 +16,81 @@ package org.eclipse.milo.opcua.sdk.client.model.types.objects;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-
 public interface FileType extends BaseObjectType {
-
-    Property<ULong> SIZE = new BasicProperty<>(
-        QualifiedName.parse("0:Size"),
+    QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Size",
         NodeId.parse("ns=0;i=9"),
-        -1,
+        ValueRanks.Scalar,
         ULong.class
     );
 
-    Property<Boolean> WRITABLE = new BasicProperty<>(
-        QualifiedName.parse("0:Writable"),
+    QualifiedProperty<Boolean> WRITABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Writable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> USER_WRITABLE = new BasicProperty<>(
-        QualifiedName.parse("0:UserWritable"),
+    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UserWritable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<UShort> OPEN_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:OpenCount"),
+    QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OpenCount",
         NodeId.parse("ns=0;i=5"),
-        -1,
+        ValueRanks.Scalar,
         UShort.class
     );
 
-    Property<String> MIME_TYPE = new BasicProperty<>(
-        QualifiedName.parse("0:MimeType"),
+    QualifiedProperty<String> MIME_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MimeType",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-
-    CompletableFuture<? extends PropertyType> size();
+    CompletableFuture<? extends PropertyType> getSizeNode();
 
     CompletableFuture<ULong> getSize();
 
     CompletableFuture<StatusCode> setSize(ULong value);
 
-    CompletableFuture<? extends PropertyType> writable();
+    CompletableFuture<? extends PropertyType> getWritableNode();
 
     CompletableFuture<Boolean> getWritable();
 
     CompletableFuture<StatusCode> setWritable(Boolean value);
 
-    CompletableFuture<? extends PropertyType> userWritable();
+    CompletableFuture<? extends PropertyType> getUserWritableNode();
 
     CompletableFuture<Boolean> getUserWritable();
 
     CompletableFuture<StatusCode> setUserWritable(Boolean value);
 
-    CompletableFuture<? extends PropertyType> openCount();
+    CompletableFuture<? extends PropertyType> getOpenCountNode();
 
     CompletableFuture<UShort> getOpenCount();
 
     CompletableFuture<StatusCode> setOpenCount(UShort value);
 
-    CompletableFuture<? extends PropertyType> mimeType();
+    CompletableFuture<? extends PropertyType> getMimeTypeNode();
 
     CompletableFuture<String> getMimeType();
 
     CompletableFuture<StatusCode> setMimeType(String value);
-
-
 }

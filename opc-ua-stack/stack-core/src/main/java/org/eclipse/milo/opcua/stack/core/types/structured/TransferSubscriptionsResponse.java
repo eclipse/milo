@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,44 +17,43 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-@UaDataType("TransferSubscriptionsResponse")
 public class TransferSubscriptionsResponse implements UaResponseMessage {
 
     public static final NodeId TypeId = Identifiers.TransferSubscriptionsResponse;
     public static final NodeId BinaryEncodingId = Identifiers.TransferSubscriptionsResponse_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.TransferSubscriptionsResponse_Encoding_DefaultXml;
 
-    protected final ResponseHeader _responseHeader;
-    protected final TransferResult[] _results;
-    protected final DiagnosticInfo[] _diagnosticInfos;
+    protected final ResponseHeader responseHeader;
+    protected final TransferResult[] results;
+    protected final DiagnosticInfo[] diagnosticInfos;
 
     public TransferSubscriptionsResponse() {
-        this._responseHeader = null;
-        this._results = null;
-        this._diagnosticInfos = null;
+        this.responseHeader = null;
+        this.results = null;
+        this.diagnosticInfos = null;
     }
 
-    public TransferSubscriptionsResponse(ResponseHeader _responseHeader, TransferResult[] _results, DiagnosticInfo[] _diagnosticInfos) {
-        this._responseHeader = _responseHeader;
-        this._results = _results;
-        this._diagnosticInfos = _diagnosticInfos;
+    public TransferSubscriptionsResponse(ResponseHeader responseHeader, TransferResult[] results, DiagnosticInfo[] diagnosticInfos) {
+        this.responseHeader = responseHeader;
+        this.results = results;
+        this.diagnosticInfos = diagnosticInfos;
     }
 
-    public ResponseHeader getResponseHeader() { return _responseHeader; }
+    public ResponseHeader getResponseHeader() { return responseHeader; }
 
     @Nullable
-    public TransferResult[] getResults() { return _results; }
+    public TransferResult[] getResults() { return results; }
 
     @Nullable
-    public DiagnosticInfo[] getDiagnosticInfos() { return _diagnosticInfos; }
+    public DiagnosticInfo[] getDiagnosticInfos() { return diagnosticInfos; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -68,29 +67,42 @@ public class TransferSubscriptionsResponse implements UaResponseMessage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", _responseHeader)
-            .add("Results", _results)
-            .add("DiagnosticInfos", _diagnosticInfos)
+            .add("ResponseHeader", responseHeader)
+            .add("Results", results)
+            .add("DiagnosticInfos", diagnosticInfos)
             .toString();
     }
 
-    public static void encode(TransferSubscriptionsResponse transferSubscriptionsResponse, UaEncoder encoder) {
-        encoder.encodeSerializable("ResponseHeader", transferSubscriptionsResponse._responseHeader != null ? transferSubscriptionsResponse._responseHeader : new ResponseHeader());
-        encoder.encodeArray("Results", transferSubscriptionsResponse._results, encoder::encodeSerializable);
-        encoder.encodeArray("DiagnosticInfos", transferSubscriptionsResponse._diagnosticInfos, encoder::encodeDiagnosticInfo);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<TransferSubscriptionsResponse> {
 
-    public static TransferSubscriptionsResponse decode(UaDecoder decoder) {
-        ResponseHeader _responseHeader = decoder.decodeSerializable("ResponseHeader", ResponseHeader.class);
-        TransferResult[] _results = decoder.decodeArray("Results", decoder::decodeSerializable, TransferResult.class);
-        DiagnosticInfo[] _diagnosticInfos = decoder.decodeArray("DiagnosticInfos", decoder::decodeDiagnosticInfo, DiagnosticInfo.class);
+        @Override
+        public Class<TransferSubscriptionsResponse> getType() {
+            return TransferSubscriptionsResponse.class;
+        }
 
-        return new TransferSubscriptionsResponse(_responseHeader, _results, _diagnosticInfos);
-    }
+        @Override
+        public TransferSubscriptionsResponse decode(UaDecoder decoder) throws UaSerializationException {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+            TransferResult[] results =
+                decoder.readBuiltinStructArray(
+                    "Results",
+                    TransferResult.class
+                );
+            DiagnosticInfo[] diagnosticInfos = decoder.readArray("DiagnosticInfos", decoder::readDiagnosticInfo, DiagnosticInfo.class);
 
-    static {
-        DelegateRegistry.registerEncoder(TransferSubscriptionsResponse::encode, TransferSubscriptionsResponse.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(TransferSubscriptionsResponse::decode, TransferSubscriptionsResponse.class, BinaryEncodingId, XmlEncodingId);
+            return new TransferSubscriptionsResponse(responseHeader, results, diagnosticInfos);
+        }
+
+        @Override
+        public void encode(TransferSubscriptionsResponse value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
+            encoder.writeBuiltinStructArray(
+                "Results",
+                value.results,
+                TransferResult.class
+            );
+            encoder.writeArray("DiagnosticInfos", value.diagnosticInfos, encoder::writeDiagnosticInfo);
+        }
     }
 
 }

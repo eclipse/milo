@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,43 +15,42 @@ package org.eclipse.milo.opcua.stack.core.types.structured;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.HistoryUpdateType;
 
-@UaDataType("ModificationInfo")
 public class ModificationInfo implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.ModificationInfo;
     public static final NodeId BinaryEncodingId = Identifiers.ModificationInfo_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.ModificationInfo_Encoding_DefaultXml;
 
-    protected final DateTime _modificationTime;
-    protected final HistoryUpdateType _updateType;
-    protected final String _userName;
+    protected final DateTime modificationTime;
+    protected final HistoryUpdateType updateType;
+    protected final String userName;
 
     public ModificationInfo() {
-        this._modificationTime = null;
-        this._updateType = null;
-        this._userName = null;
+        this.modificationTime = null;
+        this.updateType = null;
+        this.userName = null;
     }
 
-    public ModificationInfo(DateTime _modificationTime, HistoryUpdateType _updateType, String _userName) {
-        this._modificationTime = _modificationTime;
-        this._updateType = _updateType;
-        this._userName = _userName;
+    public ModificationInfo(DateTime modificationTime, HistoryUpdateType updateType, String userName) {
+        this.modificationTime = modificationTime;
+        this.updateType = updateType;
+        this.userName = userName;
     }
 
-    public DateTime getModificationTime() { return _modificationTime; }
+    public DateTime getModificationTime() { return modificationTime; }
 
-    public HistoryUpdateType getUpdateType() { return _updateType; }
+    public HistoryUpdateType getUpdateType() { return updateType; }
 
-    public String getUserName() { return _userName; }
+    public String getUserName() { return userName; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -65,29 +64,34 @@ public class ModificationInfo implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("ModificationTime", _modificationTime)
-            .add("UpdateType", _updateType)
-            .add("UserName", _userName)
+            .add("ModificationTime", modificationTime)
+            .add("UpdateType", updateType)
+            .add("UserName", userName)
             .toString();
     }
 
-    public static void encode(ModificationInfo modificationInfo, UaEncoder encoder) {
-        encoder.encodeDateTime("ModificationTime", modificationInfo._modificationTime);
-        encoder.encodeEnumeration("UpdateType", modificationInfo._updateType);
-        encoder.encodeString("UserName", modificationInfo._userName);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<ModificationInfo> {
 
-    public static ModificationInfo decode(UaDecoder decoder) {
-        DateTime _modificationTime = decoder.decodeDateTime("ModificationTime");
-        HistoryUpdateType _updateType = decoder.decodeEnumeration("UpdateType", HistoryUpdateType.class);
-        String _userName = decoder.decodeString("UserName");
+        @Override
+        public Class<ModificationInfo> getType() {
+            return ModificationInfo.class;
+        }
 
-        return new ModificationInfo(_modificationTime, _updateType, _userName);
-    }
+        @Override
+        public ModificationInfo decode(UaDecoder decoder) throws UaSerializationException {
+            DateTime modificationTime = decoder.readDateTime("ModificationTime");
+            HistoryUpdateType updateType = HistoryUpdateType.from(decoder.readInt32("UpdateType"));
+            String userName = decoder.readString("UserName");
 
-    static {
-        DelegateRegistry.registerEncoder(ModificationInfo::encode, ModificationInfo.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(ModificationInfo::decode, ModificationInfo.class, BinaryEncodingId, XmlEncodingId);
+            return new ModificationInfo(modificationTime, updateType, userName);
+        }
+
+        @Override
+        public void encode(ModificationInfo value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeDateTime("ModificationTime", value.modificationTime);
+            encoder.writeInt32("UpdateType", value.updateType != null ? value.updateType.getValue() : 0);
+            encoder.writeString("UserName", value.userName);
+        }
     }
 
 }

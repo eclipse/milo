@@ -1,90 +1,80 @@
-/*
- * Copyright (c) 2016 Kevin Herron
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * and Eclipse Distribution License v1.0 which accompany this distribution.
- *
- * The Eclipse Public License is available at
- *   http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
- *   http://www.eclipse.org/org/documents/edl-v10.html.
- */
-
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface FileType extends BaseObjectType {
-
-    Property<ULong> SIZE = new BasicProperty<>(
-        QualifiedName.parse("0:Size"),
+    QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Size",
         NodeId.parse("ns=0;i=9"),
-        -1,
+        ValueRanks.Scalar,
         ULong.class
     );
 
-    Property<Boolean> WRITABLE = new BasicProperty<>(
-        QualifiedName.parse("0:Writable"),
+    QualifiedProperty<Boolean> WRITABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Writable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<Boolean> USER_WRITABLE = new BasicProperty<>(
-        QualifiedName.parse("0:UserWritable"),
+    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UserWritable",
         NodeId.parse("ns=0;i=1"),
-        -1,
+        ValueRanks.Scalar,
         Boolean.class
     );
 
-    Property<UShort> OPEN_COUNT = new BasicProperty<>(
-        QualifiedName.parse("0:OpenCount"),
+    QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OpenCount",
         NodeId.parse("ns=0;i=5"),
-        -1,
+        ValueRanks.Scalar,
         UShort.class
     );
 
-    Property<String> MIME_TYPE = new BasicProperty<>(
-        QualifiedName.parse("0:MimeType"),
+    QualifiedProperty<String> MIME_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MimeType",
         NodeId.parse("ns=0;i=12"),
-        -1,
+        ValueRanks.Scalar,
         String.class
     );
 
-    ULong getSize();
-
     PropertyType getSizeNode();
+
+    ULong getSize();
 
     void setSize(ULong value);
 
-    Boolean getWritable();
-
     PropertyType getWritableNode();
+
+    Boolean getWritable();
 
     void setWritable(Boolean value);
 
-    Boolean getUserWritable();
-
     PropertyType getUserWritableNode();
+
+    Boolean getUserWritable();
 
     void setUserWritable(Boolean value);
 
-    UShort getOpenCount();
-
     PropertyType getOpenCountNode();
+
+    UShort getOpenCount();
 
     void setOpenCount(UShort value);
 
-    String getMimeType();
-
     PropertyType getMimeTypeNode();
+
+    String getMimeType();
 
     void setMimeType(String value);
 }

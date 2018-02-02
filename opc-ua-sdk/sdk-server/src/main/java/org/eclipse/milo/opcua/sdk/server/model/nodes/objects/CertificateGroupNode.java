@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,46 +26,35 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@org.eclipse.milo.opcua.sdk.core.annotations.UaObjectNode(typeName = "0:CertificateGroupType")
 public class CertificateGroupNode extends BaseObjectNode implements CertificateGroupType {
+    public CertificateGroupNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                UInteger userWriteMask) {
+        super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-    public CertificateGroupNode(
-        ServerNodeMap nodeMap,
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        LocalizedText description,
-        UInteger writeMask,
-        UInteger userWriteMask,
-        UByte eventNotifier) {
-
+    public CertificateGroupNode(ServerNodeMap nodeMap, NodeId nodeId, QualifiedName browseName,
+                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                UInteger userWriteMask, UByte eventNotifier) {
         super(nodeMap, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
     }
 
-    @Override
-    public NodeId[] getCertificateTypes() {
-        Optional<NodeId[]> property = getProperty(CertificateGroupType.CERTIFICATE_TYPES);
-
-        return property.orElse(null);
-    }
-
-    @Override
     public PropertyNode getCertificateTypesNode() {
-        Optional<VariableNode> propertyNode = getPropertyNode(CertificateGroupType.CERTIFICATE_TYPES.getBrowseName());
-
-        return propertyNode.map(n -> (PropertyNode) n).orElse(null);
+        Optional<VariableNode> propertyNode = getPropertyNode(CertificateGroupType.CERTIFICATE_TYPES);
+        return (PropertyNode) propertyNode.orElse(null);
     }
 
-    @Override
+    public NodeId[] getCertificateTypes() {
+        Optional<NodeId[]> propertyValue = getProperty(CertificateGroupType.CERTIFICATE_TYPES);
+        return propertyValue.orElse(null);
+    }
+
     public void setCertificateTypes(NodeId[] value) {
         setProperty(CertificateGroupType.CERTIFICATE_TYPES, value);
     }
 
-    @Override
     public TrustListNode getTrustListNode() {
-        Optional<ObjectNode> component = getObjectComponent("TrustList");
-
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "TrustList");
         return component.map(node -> (TrustListNode) node).orElse(null);
     }
-
 }

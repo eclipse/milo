@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -17,54 +17,53 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.serialization.DelegateRegistry;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.types.UaDataType;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-@UaDataType("Argument")
 public class Argument implements UaStructure {
 
     public static final NodeId TypeId = Identifiers.Argument;
     public static final NodeId BinaryEncodingId = Identifiers.Argument_Encoding_DefaultBinary;
     public static final NodeId XmlEncodingId = Identifiers.Argument_Encoding_DefaultXml;
 
-    protected final String _name;
-    protected final NodeId _dataType;
-    protected final Integer _valueRank;
-    protected final UInteger[] _arrayDimensions;
-    protected final LocalizedText _description;
+    protected final String name;
+    protected final NodeId dataType;
+    protected final Integer valueRank;
+    protected final UInteger[] arrayDimensions;
+    protected final LocalizedText description;
 
     public Argument() {
-        this._name = null;
-        this._dataType = null;
-        this._valueRank = null;
-        this._arrayDimensions = null;
-        this._description = null;
+        this.name = null;
+        this.dataType = null;
+        this.valueRank = null;
+        this.arrayDimensions = null;
+        this.description = null;
     }
 
-    public Argument(String _name, NodeId _dataType, Integer _valueRank, UInteger[] _arrayDimensions, LocalizedText _description) {
-        this._name = _name;
-        this._dataType = _dataType;
-        this._valueRank = _valueRank;
-        this._arrayDimensions = _arrayDimensions;
-        this._description = _description;
+    public Argument(String name, NodeId dataType, Integer valueRank, UInteger[] arrayDimensions, LocalizedText description) {
+        this.name = name;
+        this.dataType = dataType;
+        this.valueRank = valueRank;
+        this.arrayDimensions = arrayDimensions;
+        this.description = description;
     }
 
-    public String getName() { return _name; }
+    public String getName() { return name; }
 
-    public NodeId getDataType() { return _dataType; }
+    public NodeId getDataType() { return dataType; }
 
-    public Integer getValueRank() { return _valueRank; }
+    public Integer getValueRank() { return valueRank; }
 
     @Nullable
-    public UInteger[] getArrayDimensions() { return _arrayDimensions; }
+    public UInteger[] getArrayDimensions() { return arrayDimensions; }
 
-    public LocalizedText getDescription() { return _description; }
+    public LocalizedText getDescription() { return description; }
 
     @Override
     public NodeId getTypeId() { return TypeId; }
@@ -78,35 +77,40 @@ public class Argument implements UaStructure {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("Name", _name)
-            .add("DataType", _dataType)
-            .add("ValueRank", _valueRank)
-            .add("ArrayDimensions", _arrayDimensions)
-            .add("Description", _description)
+            .add("Name", name)
+            .add("DataType", dataType)
+            .add("ValueRank", valueRank)
+            .add("ArrayDimensions", arrayDimensions)
+            .add("Description", description)
             .toString();
     }
 
-    public static void encode(Argument argument, UaEncoder encoder) {
-        encoder.encodeString("Name", argument._name);
-        encoder.encodeNodeId("DataType", argument._dataType);
-        encoder.encodeInt32("ValueRank", argument._valueRank);
-        encoder.encodeArray("ArrayDimensions", argument._arrayDimensions, encoder::encodeUInt32);
-        encoder.encodeLocalizedText("Description", argument._description);
-    }
+    public static class Codec extends BuiltinDataTypeCodec<Argument> {
 
-    public static Argument decode(UaDecoder decoder) {
-        String _name = decoder.decodeString("Name");
-        NodeId _dataType = decoder.decodeNodeId("DataType");
-        Integer _valueRank = decoder.decodeInt32("ValueRank");
-        UInteger[] _arrayDimensions = decoder.decodeArray("ArrayDimensions", decoder::decodeUInt32, UInteger.class);
-        LocalizedText _description = decoder.decodeLocalizedText("Description");
+        @Override
+        public Class<Argument> getType() {
+            return Argument.class;
+        }
 
-        return new Argument(_name, _dataType, _valueRank, _arrayDimensions, _description);
-    }
+        @Override
+        public Argument decode(UaDecoder decoder) throws UaSerializationException {
+            String name = decoder.readString("Name");
+            NodeId dataType = decoder.readNodeId("DataType");
+            Integer valueRank = decoder.readInt32("ValueRank");
+            UInteger[] arrayDimensions = decoder.readArray("ArrayDimensions", decoder::readUInt32, UInteger.class);
+            LocalizedText description = decoder.readLocalizedText("Description");
 
-    static {
-        DelegateRegistry.registerEncoder(Argument::encode, Argument.class, BinaryEncodingId, XmlEncodingId);
-        DelegateRegistry.registerDecoder(Argument::decode, Argument.class, BinaryEncodingId, XmlEncodingId);
+            return new Argument(name, dataType, valueRank, arrayDimensions, description);
+        }
+
+        @Override
+        public void encode(Argument value, UaEncoder encoder) throws UaSerializationException {
+            encoder.writeString("Name", value.name);
+            encoder.writeNodeId("DataType", value.dataType);
+            encoder.writeInt32("ValueRank", value.valueRank);
+            encoder.writeArray("ArrayDimensions", value.arrayDimensions, encoder::writeUInt32);
+            encoder.writeLocalizedText("Description", value.description);
+        }
     }
 
 }
