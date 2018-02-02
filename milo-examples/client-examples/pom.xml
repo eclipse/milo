@@ -65,6 +65,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>1.58</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>server-examples</artifactId>
             <version>0.2.1-SNAPSHOT</version>
