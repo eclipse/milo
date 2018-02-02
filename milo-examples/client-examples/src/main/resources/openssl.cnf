@@ -1,0 +1,165 @@
+#
+# OpenSSL example configuration file.
+# This is mostly being used for generation of certificate requests.
+#
+
+# This definition stops the following lines choking if HOME isn't
+# defined.
+HOME			= .
+RANDFILE		= $ENV::HOME/.rnd
+
+####################################################################
+[ ca ]
+default_ca	= CA_default		# The default ca section
+
+####################################################################
+[ CA_default ]
+
+dir		= ./myOPCUAcerts		# Where everything is kept
+certs		= $dir/certs		# Where the issued certs are kept
+database	= $dir/index.txt	# database index file.
+new_certs_dir	= $dir/newcerts		# default place for new certs.
+
+certificate	= $dir/cacert.pem 	# The CA certificate
+serial		= $dir/serial 		# The current serial number
+crl		= $dir/crl.pem 		# The current CRL
+private_key	= $dir/private/cakey.pem# The private key
+RANDFILE	= $dir/private/.rand	# private random number file
+
+x509_extensions	= usr_cert		# The extentions to add to the cert
+
+# Comment out the following two lines for the "traditional"
+# (and highly broken) format.
+name_opt 	= ca_default		# Subject Name options
+cert_opt 	= ca_default		# Certificate field options
+
+# Extension copying option: use with caution.
+copy_extensions = copy
+
+default_days= 365			# how long to certify for
+default_md	= sha1			# which md to use.
+preserve	= no			# keep passed DN ordering
+policy		= policy_match
+
+# For the CA policy
+###################################################################
+[ policy_match ]
+countryName		= match
+stateOrProvinceName	= match
+organizationName	= match
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+####################################################################
+[ req ]
+ default_bits           = 2048
+ distinguished_name     = req_distinguished_name
+ req_extensions         = v3_req
+ x509_extensions        = v3_ca
+ 
+ string_mask = nombstr
+
+
+#####################################################################
+[ req_distinguished_name ]
+
+countryName			    = Country Name (2 letter code)
+countryName_min			= 2
+countryName_max			= 2
+
+stateOrProvinceName		= State or Province Name (full name)
+
+localityName			= Locality Name (eg, city)
+
+organizationName		= Organization Name (eg, company)
+
+organizationalUnitName		= Organizational Unit Name (eg, section)
+
+commonName			= Common Name (eg, YOUR name)
+commonName_max		= 64
+
+emailAddress			= Email Address
+emailAddress_max		= 64
+
+###################################################################
+[ usr_cert ]
+
+# These extensions are added when 'ca' signs a request.
+
+# This will be displayed in Netscape's comment listbox.
+nsComment			= "OpenSSL Generated Certificate"
+
+# PKIX recommendations harmless if included in all certificates.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid,issuer
+
+# This stuff is for subjectAltName and issuerAltname.
+# Produce certificates that aren't deprecated according to PKIX.
+subjectAltName=email:move
+
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+
+###################################################################
+[ v3_req ]
+
+# Extensions to add to a certificate request
+
+basicConstraints = CA:FALSE
+
+###################################################################
+[ v3_ca ]
+
+#
+# Extensions to add to a CA certificate
+#
+
+# This will be displayed in Netscape's comment listbox.
+nsComment			= "OpenSSL Generated Certificate"
+
+# PKIX recommendation.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer:always
+
+# This is what PKIX recommends but some broken software chokes on critical
+# extensions.
+#basicConstraints = critical,CA:true
+# So we do this instead.
+basicConstraints = CA:true
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment, keyCertSign, cRLSign
+
+
+# Include email address in subject alt name: another PKIX recommendation
+# subjectAltName=email:copy
+# Copy issuer details
+# issuerAltName=issuer:copy
+
+###################################################################
+[ v3_self_signed ]
+
+# Extensions to add to a certificate request for a self-signed certificate
+
+# This will be displayed in Netscape's comment listbox.
+nsComment			= "OpenSSL Generated Certificate"
+
+# PKIX recommendation.
+subjectKeyIdentifier=hash
+authorityKeyIdentifier=keyid:always,issuer:always
+
+basicConstraints = CA:FALSE
+
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment, keyCertSign, cRLSign
+extendedKeyUsage = serverAuth, clientAuth
+
+subjectAltName = @alternate_names
+
+[ alternate_names ]
+URI          = urn:eclipse:milo:examples:secureclient
+
+###################################################################
+[ v3_proxy ]
+proxyCertInfo=critical,language:id-ppl-inheritAll
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth, clientAuth
+
