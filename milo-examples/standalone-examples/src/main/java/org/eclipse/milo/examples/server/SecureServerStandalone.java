@@ -14,14 +14,19 @@
 package org.eclipse.milo.examples.server;
 
 import java.io.File;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
+import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -29,6 +34,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +50,10 @@ public class SecureServerStandalone {
 
     private static final String APPLICATION_URI = "urn:eclipse:milo:examples:server";
 
-    private String ip = "localhost";
+    private static final Pattern IP_ADDR_PATTERN = Pattern.compile(
+            "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+
+    private static final String ip = "localhost";
 
     private static final Logger logger = LoggerFactory.getLogger(SecureServerStandalone.class);
 
@@ -82,16 +92,46 @@ public class SecureServerStandalone {
 
         logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
-        KeyStoreLoader loader = new KeyStoreLoader();
+        //Generate self-signed certificate
+        KeyPair keyPair = null;
         try {
-            loader = loader.load(securityTempDir);
+            keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+        } catch (NoSuchAlgorithmException n) {
+            logger.error("Could not generate RSA Key Pair.", n);
+            System.exit(1);
+        }
+
+        SelfSignedCertificateBuilder builder = new SelfSignedCertificateBuilder(keyPair)
+                .setCommonName("Eclipse Milo Example Client")
+                .setOrganization("digitalpetri")
+                .setOrganizationalUnit("dev")
+                .setLocalityName("Folsom")
+                .setStateName("CA")
+                .setCountryCode("US")
+                .setApplicationUri("urn:eclipse:milo:examples:client")
+                .addDnsName("localhost")
+                .addIpAddress("127.0.0.1");
+
+        // Get as many hostnames and IP addresses as we can listed in the certificate.
+        for (String hostname : HostnameUtil.getHostnames("0.0.0.0")) {
+            if (IP_ADDR_PATTERN.matcher(hostname).matches()) {
+                builder.addIpAddress(hostname);
+            } else {
+                builder.addDnsName(hostname);
+            }
+        }
+
+        X509Certificate certificate = null;
+        try {
+            certificate = builder.build();
         } catch (Exception e) {
-            logger.error("Could not acquire KeyStoreLoader.", e);
+            logger.error("Could not build certificate.", e);
+            System.exit(1);
         }
 
         DefaultCertificateManager certificateManager = new DefaultCertificateManager(
-            loader.getServerKeyPair(),
-            loader.getServerCertificate()
+            keyPair,
+            certificate
         );
 
         DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(securityTempDir);
