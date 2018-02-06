@@ -4,8 +4,10 @@ The purpose of these examples is to generate standalone jar files encapsulating 
 
 The client authenticates using a certificate that must be trusted and verified by the server.
 
+Certificates can be generated using openssl or using the SelfSignedCertificateBuilder. The example client demonstrates
+how to access an existing certificate in a keystore and the server demonstrates using the SelfSignedCertificateBuilder.
 
-## How to generate a self-signed OPC UA compliant certificate and load it into a Java keystore:
+## How to generate a self-signed OPC UA compliant certificate using openssl and load it into a Java keystore:
 
 1. Generate openssl command using the config:
     `openssl req -x509 -sha256 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt -extensions v3_self_signed
