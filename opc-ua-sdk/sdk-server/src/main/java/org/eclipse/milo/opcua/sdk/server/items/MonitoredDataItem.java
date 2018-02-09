@@ -155,7 +155,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
 
                     if (deadbandType == DeadbandType.Percent) {
                         // Percent deadband is not currently implemented
-                        throw new UaException(StatusCodes.Bad_FilterNotAllowed);
+                        throw new UaException(StatusCodes.Bad_MonitoredItemFilterUnsupported);
                     }
 
                     if (deadbandType == DeadbandType.Absolute &&

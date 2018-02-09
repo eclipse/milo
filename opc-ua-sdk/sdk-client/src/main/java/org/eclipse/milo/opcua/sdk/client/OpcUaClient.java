@@ -34,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -144,7 +143,7 @@ public class OpcUaClient implements UaClient {
     private final AddressSpace addressSpace;
     private final NodeCache nodeCache = new DefaultNodeCache();
 
-    private final DataTypeManager dataTypeManager;
+    private final DataTypeManager dataTypeManager = new ClientDataTypeManager();
     private final TypeRegistry typeRegistry = new TypeRegistry();
 
     private final OpcUaSubscriptionManager subscriptionManager;
@@ -227,8 +226,6 @@ public class OpcUaClient implements UaClient {
 
         addressSpace = new DefaultAddressSpace(this);
         subscriptionManager = new OpcUaSubscriptionManager(this);
-
-        dataTypeManager = OpcUaDataTypeManager.getInstance();
 
         TypeRegistryInitializer.initialize(typeRegistry);
     }
