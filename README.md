@@ -14,9 +14,15 @@ Mailing list: https://dev.eclipse.org/mailman/listinfo/milo-dev
 
 ## Maven
 
+### Building Milo
+
+From the project root, run `mvn clean install`.
+
+### Releases
+
 Releases are published to Maven Central. 
 
-### OPC UA Client SDK
+#### OPC UA Client SDK
 
 ```xml
 <dependency>
@@ -26,7 +32,7 @@ Releases are published to Maven Central.
 </dependency>
 ```
 
-### OPC UA Server SDK
+#### OPC UA Server SDK
 
 ```xml
 <dependency>
@@ -36,7 +42,7 @@ Releases are published to Maven Central.
 </dependency>
 ```
 
-### OPC UA Stack
+#### OPC UA Stack
 
 ```xml
 <dependency>
