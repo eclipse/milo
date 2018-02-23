@@ -19,10 +19,10 @@ import java.security.Security;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
@@ -53,7 +53,7 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 
 public class ExampleServerWithPasswordDatabase {
 
-    private File securityTempDir = new File(System.getProperty(JAVA_IO_TMPDIR), SECURITY);
+
     private File baseDbDir;
     private File trustedDbDir;
     private File rejectedDbDir;
@@ -106,8 +106,8 @@ public class ExampleServerWithPasswordDatabase {
     private static final String SQL_STATEMENT = "SQL Statement: ";
 
     // LOGGER OPC UA SECURITY ERRORS
-    private static final String CERTIFICATE_IS_MISSING_THE_APPLICATION_URI = "certificate is missing "
-            + "the application URI";
+    private static final String CERTIFICATE_IS_MISSING_THE_APPLICATION_URI = "certificate is missing " + 
+            "the application URI";
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -190,13 +190,15 @@ public class ExampleServerWithPasswordDatabase {
         DirectoryCertificateValidator certificateValidator = new DirectoryCertificateValidator(pkiDir);
         logger.info(PKI_DIR_LOG, pkiDir.getAbsolutePath());
 
+        // Build the predicate to check login data
         Predicate<UsernameIdentityValidator.AuthenticationChallenge> authPredicate = authenticationChallenge -> {
 
+            // Check if the user database exists in the security directory
             if (!securityTempDir.exists()) {
                 logger.debug(NO_SECURITY_TEMP_DIR + securityTempDir);
                 return false;
             }
-
+            // Check if the user database exists in the security directory
             if (!trustedUserDatabase.exists()) {
                 logger.debug(NO_USER_DATABASE + trustedUserDatabase);
                 return false;
@@ -220,11 +222,13 @@ public class ExampleServerWithPasswordDatabase {
 
                 // https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
                 // Prepared Statements (with Parameterized Queries)
-                String sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE "
-                        + DATABASE_USER_COLUMN + "=?";
+                String sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE "  + 
+                       DATABASE_USER_COLUMN + "=?";
                 String custname = authenticationChallenge.getUsername();
                 pstmt = trustedConnnection.prepareStatement(sql);
                 pstmt.setString(1, custname);
+
+                // Execute query looking for the user specified in the authenticationChallenge
                 ResultSet rs = pstmt.executeQuery();
                 logger.info(SQL_STATEMENT + sql);
 
@@ -241,16 +245,16 @@ public class ExampleServerWithPasswordDatabase {
                         }
 
                         // CREATE TABLE ONLY IF IT DOES NOT EXIST
-                        sql = "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + " ( " + DATABASE_USER_COLUMN
-                                + " TEXT not NULL, " + DATABASE_PASSWORD_COLUMN + " TEXT not NULL, " + " PRIMARY KEY ('"
-                                + DATABASE_USER_COLUMN + "'))";
+                        sql = "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + " ( " + DATABASE_USER_COLUMN +
+                                " TEXT not NULL, " + DATABASE_PASSWORD_COLUMN + " TEXT not NULL, " +  
+                                " PRIMARY KEY ('" + DATABASE_USER_COLUMN + "'))";
                         stmt = rejectedConnnection.createStatement();
                         stmt.executeUpdate(sql);
                         logger.info("Successfully created table");
 
                         // INSERT USERNAME AND HASHED PASSWORD INTO REJECTED DATABASE
-                        sql = "INSERT INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + ","
-                                + DATABASE_PASSWORD_COLUMN + ")" + "VALUES (?,?)";
+                        sql = "INSERT INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + "," + 
+                                DATABASE_PASSWORD_COLUMN + ")" + "VALUES (?,?)";
                         pstmt = rejectedConnnection.prepareStatement(sql);
                         pstmt.setString(1, custname);
                         pstmt.setString(2, argon2.hash(2, 65536, 1, authenticationChallenge.getPassword()));
@@ -265,6 +269,7 @@ public class ExampleServerWithPasswordDatabase {
                     logger.info(FOUND_USER_IN_DATABASE);
                 }
 
+                // Password is stored in the database in hashed form, so verify the password against the hash
                 // verify hashes the password and compare it to the hashed password from the database
                 // The hash includes the salt. The verify method extracts the salt from the hash and uses that.
                 // (https://github.com/phxql/argon2-jvm/issues/19)
@@ -324,7 +329,7 @@ public class ExampleServerWithPasswordDatabase {
         server = new OpcUaServer(serverConfig);
 
         server.getNamespaceManager().registerAndAdd(ExampleNamespace.NAMESPACE_URI,
-                idx -> new ExampleNamespace(server, idx));
+            idx -> new ExampleNamespace(server, idx));
     }
 
     public OpcUaServer getServer() {
