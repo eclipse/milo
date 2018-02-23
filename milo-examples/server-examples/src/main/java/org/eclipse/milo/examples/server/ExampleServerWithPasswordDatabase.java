@@ -176,10 +176,7 @@ public class ExampleServerWithPasswordDatabase {
 
         }
         trustedUserDatabase = trustedDbDir.toPath().resolve(USERS_DB).toFile();
-        if (!trustedUserDatabase.exists()) {
-            logger.debug(NO_USER_DATABASE + trustedUserDatabase);
-            throw new IOException("unable to find user database at " + trustedUserDatabase.getAbsolutePath());
-        }
+
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
@@ -198,13 +195,6 @@ public class ExampleServerWithPasswordDatabase {
                 logger.debug(NO_SECURITY_TEMP_DIR + securityTempDir);
                 return false;
             }
-            // Check if the user database exists in the security directory
-            if (!trustedUserDatabase.exists()) {
-                logger.debug(NO_USER_DATABASE + trustedUserDatabase);
-                return false;
-            }
-            logger.info(DATABASE_FOUND, trustedUserDatabase.getAbsolutePath());
-
             logger.info(DB_DIR_LOG, baseDbDir.getAbsolutePath());
 
             Connection trustedConnnection = null;
@@ -218,11 +208,28 @@ public class ExampleServerWithPasswordDatabase {
                 Argon2 argon2 = Argon2Factory.create();
                 String trustedDatabaseUrl = JDBC_SQLITE + trustedUserDatabase.getAbsolutePath();
                 trustedConnnection = DriverManager.getConnection(trustedDatabaseUrl);
+
+                logger.info(CONNECTED_TO_USER_DATABASE);
+                if (trustedConnnection != null) {
+                    DatabaseMetaData meta = trustedConnnection.getMetaData();
+                    logger.info("Successfully created database:" + meta.getDriverName());
+                } else {
+                    return false;
+                }
+
+                // CREATE TABLE ONLY IF IT DOES NOT EXIST
+                String sql = "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + " ( " + DATABASE_USER_COLUMN +
+                        " TEXT not NULL, " + DATABASE_PASSWORD_COLUMN + " TEXT not NULL, " +  
+                        " PRIMARY KEY ('" + DATABASE_USER_COLUMN + "'))";
+                stmt = trustedConnnection.createStatement();
+                stmt.executeUpdate(sql);
+                logger.info("Successfully created table");
+                
                 logger.info(CONNECTED_TO_USER_DATABASE);
 
                 // https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
                 // Prepared Statements (with Parameterized Queries)
-                String sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE "  + 
+                sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE "  + 
                        DATABASE_USER_COLUMN + "=?";
                 String custname = authenticationChallenge.getUsername();
                 pstmt = trustedConnnection.prepareStatement(sql);
@@ -231,8 +238,10 @@ public class ExampleServerWithPasswordDatabase {
                 // Execute query looking for the user specified in the authenticationChallenge
                 ResultSet rs = pstmt.executeQuery();
                 logger.info(SQL_STATEMENT + sql);
+                String hashedPW = null;
+                hashedPW = rs.getString(DATABASE_PASSWORD_COLUMN);
 
-                if (!rs.next()) {
+                if (hashedPW==null) {
                     try {
                         String rejectedDatabaseUrl = JDBC_SQLITE + rejectedUserDatabase.getAbsolutePath();
                         rejectedConnnection = DriverManager.getConnection(rejectedDatabaseUrl);
@@ -252,8 +261,8 @@ public class ExampleServerWithPasswordDatabase {
                         stmt.executeUpdate(sql);
                         logger.info("Successfully created table");
 
-                        // INSERT USERNAME AND HASHED PASSWORD INTO REJECTED DATABASE
-                        sql = "INSERT INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + "," + 
+                        // INSERT OR REPLACE USERNAME AND HASHED PASSWORD INTO REJECTED DATABASE
+                        sql = "REPLACE INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + "," + 
                                 DATABASE_PASSWORD_COLUMN + ")" + "VALUES (?,?)";
                         pstmt = rejectedConnnection.prepareStatement(sql);
                         pstmt.setString(1, custname);
