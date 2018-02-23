@@ -143,12 +143,15 @@ public class ExampleServerWithPasswordDatabase {
         DirectoryCertificateValidator certificateValidator = new DirectoryCertificateValidator(pkiDir);
         logger.info(PKI_DIR, pkiDir.getAbsolutePath());
 
+        //Build the predicate to check login data
         Predicate<UsernameIdentityValidator.AuthenticationChallenge> authPredicate = authenticationChallenge -> {
+            //Check access to the security directory
             File securityTempDir1 = new File(System.getProperty(JAVA_IO_TMPDIR), SECURITY);
             if (!securityTempDir1.exists()) {
                 logger.debug(NO_SECURITY_TEMP_DIR + securityTempDir1);
                 return false;
             }
+            //Check if the user database exists in the security directory
             File userDatabase = securityTempDir.toPath().resolve(USERS_DB).toFile();
             if (!userDatabase.exists()) {
                 logger.debug(NO_USER_DATABASE + userDatabase);
@@ -156,6 +159,7 @@ public class ExampleServerWithPasswordDatabase {
             }
             logger.info(DATABASE_FOUND, userDatabase.getAbsolutePath());
 
+            //There is a database, try to connect to it
             Connection conn = null;
             try {
                 String databaseUrl = JDBC_SQLITE + userDatabase.getAbsolutePath();
@@ -169,6 +173,8 @@ public class ExampleServerWithPasswordDatabase {
                 String custname = authenticationChallenge.getUsername();
                 PreparedStatement pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, custname);
+
+                //Execute query looking for the user specified in the authenticationChallenge
                 ResultSet rs = pstmt.executeQuery();
                 logger.info(SQL_STATEMENT + sql);
 
@@ -178,11 +184,12 @@ public class ExampleServerWithPasswordDatabase {
                     logger.info(FOUND_USER_IN_DATABASE);
                 }
 
+                //Password is stored in the database in hashed form, so verify the password against the hash
 
                 //Argon2, the password-hashing function that won the Password Hashing Competition (PHC).
                 //Source: https://github.com/phxql/argon2-jvm
                 Argon2 argon2 = Argon2Factory.create();
-                //verify hashes  the password and compare it to the hashed password from the database
+                //verify hashes the password and compare it to the hashed password from the database
                 //The hash includes the salt. The verify method extracts the salt from the hash and uses that.
                 // (https://github.com/phxql/argon2-jvm/issues/19)
                 if (argon2. verify(rs.getString(DATABASE_PASSWORD_COLUMN), authenticationChallenge.getPassword())) {
