@@ -238,10 +238,10 @@ public class ExampleServerWithPasswordDatabase {
                 // Execute query looking for the user specified in the authenticationChallenge
                 ResultSet rs = pstmt.executeQuery();
                 logger.info(SQL_STATEMENT + sql);
-                String hashedPW = null;
-                hashedPW = rs.getString(DATABASE_PASSWORD_COLUMN);
+                String hashedPw = null;
+                hashedPw = rs.getString(DATABASE_PASSWORD_COLUMN);
 
-                if (hashedPW==null) {
+                if (hashedPw == null) {
                     try {
                         String rejectedDatabaseUrl = JDBC_SQLITE + rejectedUserDatabase.getAbsolutePath();
                         rejectedConnnection = DriverManager.getConnection(rejectedDatabaseUrl);
