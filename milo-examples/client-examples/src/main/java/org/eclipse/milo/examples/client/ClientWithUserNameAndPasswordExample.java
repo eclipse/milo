@@ -31,13 +31,15 @@ import org.slf4j.LoggerFactory;
 
 public class ClientWithUserNameAndPasswordExample implements ClientExample {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String EXAMPLE_USERNAME = "User";
+    private static final String EXAMPLE_PASSWORD = "userpassword";
+
     public static void main(String[] args) throws Exception {
         ClientWithUserNameAndPasswordExample example = new ClientWithUserNameAndPasswordExample();
 
         new ClientExampleRunner(example, false).run();
     }
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
@@ -72,6 +74,6 @@ public class ClientWithUserNameAndPasswordExample implements ClientExample {
 
     @Override
     public IdentityProvider getIdentityProvider() {
-        return new UsernameProvider("User", "userpassword");
+        return new UsernameProvider(EXAMPLE_USERNAME, EXAMPLE_PASSWORD);
     }
 }
