@@ -53,12 +53,12 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 
 public class ExampleServerWithPasswordDatabase {
 
-
     private File baseDbDir;
     private File trustedDbDir;
     private File rejectedDbDir;
     private File trustedUserDatabase;
     private File rejectedUserDatabase;
+    private File securityTempDir;
 
     // FOLDER NAMES
     private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
@@ -89,15 +89,18 @@ public class ExampleServerWithPasswordDatabase {
     private static final String FOUND_USER_IN_DATABASE = "Found user in database.";
 
     // LOGGER DATABASE STATUS
+    private static final String SUCCESSFULLY_INSERTED_USER_INTO_REJECTED_TABLE = 
+            "Successfully inserted user into rejected table";
+    private static final String SUCCESSFULLY_CREATED_TABLE = "Successfully created table";
+    private static final String NOT_SUCCESSFULLY_CREATED_TABLE = "Not successfully created table";
+    private static final String SUCCESSFULLY_CREATED_DATABASE = "Successfully created database:";
     private static final String PROBLEM_CLOSING_USER_DATABASE = "Problem closing user database";
     private static final String PROBLEM_ACCESSING_USER_DATABASE = "Problem accessing user database";
     private static final String CONNECTED_TO_USER_DATABASE = "Connected to user database";
-    private static final String DATABASE_FOUND = "Database found {}";
 
     // LOGGER FOLDER AND FILE STATUS
     private static final String PKI_DIR_LOG = "pki dir: {}";
     private static final String DB_DIR_LOG = "db dir: {}";
-    private static final String NO_USER_DATABASE = "No database file: ";
     private static final String UNABLE_TO_CREATE_SECURITY_TEMP_DIR = "unable to create security temp dir: ";
     private static final String NO_SECURITY_TEMP_DIR = "No security temp dir: ";
     private static final String SECURITY_TEMP_DIR = "security temp dir: {}";
@@ -106,7 +109,7 @@ public class ExampleServerWithPasswordDatabase {
     private static final String SQL_STATEMENT = "SQL Statement: ";
 
     // LOGGER OPC UA SECURITY ERRORS
-    private static final String CERTIFICATE_IS_MISSING_THE_APPLICATION_URI = "certificate is missing " + 
+    private static final String CERTIFICATE_IS_MISSING_THE_APPLICATION_URI = "certificate is missing " +
             "the application URI";
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -144,8 +147,22 @@ public class ExampleServerWithPasswordDatabase {
 
     private final OpcUaServer server;
 
-    public ExampleServerWithPasswordDatabase() throws Exception {
-        File securityTempDir = new File(System.getProperty(JAVA_IO_TMPDIR), SECURITY);
+    private void createTable(Connection connection) {
+        // CREATE TABLE ONLY IF IT DOES NOT EXIST
+        String sql = "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + " ( " + DATABASE_USER_COLUMN + " TEXT not NULL, " +
+                DATABASE_PASSWORD_COLUMN + " TEXT not NULL, " + " PRIMARY KEY ('" + DATABASE_USER_COLUMN + "'))";
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.executeUpdate(sql);
+            logger.info(SUCCESSFULLY_CREATED_TABLE);
+        } catch (SQLException e) {
+            logger.info(NOT_SUCCESSFULLY_CREATED_TABLE);
+            e.printStackTrace();
+        }
+    }
+
+    private void createDatabaseDirectories() throws Exception {
+        securityTempDir = new File(System.getProperty(JAVA_IO_TMPDIR), SECURITY);
         if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
             throw new Exception(UNABLE_TO_CREATE_SECURITY_TEMP_DIR + securityTempDir.getAbsolutePath());
         }
@@ -176,7 +193,11 @@ public class ExampleServerWithPasswordDatabase {
 
         }
         trustedUserDatabase = trustedDbDir.toPath().resolve(USERS_DB).toFile();
+    }
 
+    public ExampleServerWithPasswordDatabase() throws Exception {
+
+        createDatabaseDirectories();
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
@@ -197,43 +218,36 @@ public class ExampleServerWithPasswordDatabase {
             }
             logger.info(DB_DIR_LOG, baseDbDir.getAbsolutePath());
 
-            Connection trustedConnnection = null;
+            Connection trustedConnection = null;
             Connection rejectedConnnection = null;
-            PreparedStatement pstmt = null;
-            Statement stmt = null;
-
+           
             try {
                 // Argon2, the password-hashing function that won the Password Hashing Competition (PHC).
                 // Source: https://github.com/phxql/argon2-jvm
                 Argon2 argon2 = Argon2Factory.create();
                 String trustedDatabaseUrl = JDBC_SQLITE + trustedUserDatabase.getAbsolutePath();
-                trustedConnnection = DriverManager.getConnection(trustedDatabaseUrl);
+                trustedConnection = DriverManager.getConnection(trustedDatabaseUrl);
 
                 logger.info(CONNECTED_TO_USER_DATABASE);
-                if (trustedConnnection != null) {
-                    DatabaseMetaData meta = trustedConnnection.getMetaData();
-                    logger.info("Successfully created database:" + meta.getDriverName());
+                if (trustedConnection != null) {
+                    DatabaseMetaData meta = trustedConnection.getMetaData();
+                    logger.info(SUCCESSFULLY_CREATED_DATABASE + meta.getDriverName());
                 } else {
                     return false;
                 }
 
-                // CREATE TABLE ONLY IF IT DOES NOT EXIST
-                String sql = "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + " ( " + DATABASE_USER_COLUMN +
-                        " TEXT not NULL, " + DATABASE_PASSWORD_COLUMN + " TEXT not NULL, " +  
-                        " PRIMARY KEY ('" + DATABASE_USER_COLUMN + "'))";
-                stmt = trustedConnnection.createStatement();
-                stmt.executeUpdate(sql);
-                logger.info("Successfully created table");
-                
+                createTable(trustedConnection);
                 logger.info(CONNECTED_TO_USER_DATABASE);
 
                 // https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
                 // Prepared Statements (with Parameterized Queries)
-                sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE "  + 
-                       DATABASE_USER_COLUMN + "=?";
+                String sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE " +
+                        DATABASE_USER_COLUMN + "=?";
                 String custname = authenticationChallenge.getUsername();
-                pstmt = trustedConnnection.prepareStatement(sql);
+                PreparedStatement pstmt = null;
+                pstmt = trustedConnection.prepareStatement(sql);
                 pstmt.setString(1, custname);
+                
 
                 // Execute query looking for the user specified in the authenticationChallenge
                 ResultSet rs = pstmt.executeQuery();
@@ -248,27 +262,21 @@ public class ExampleServerWithPasswordDatabase {
                         logger.info(CONNECTED_TO_USER_DATABASE);
                         if (rejectedConnnection != null) {
                             DatabaseMetaData meta = rejectedConnnection.getMetaData();
-                            logger.info("Successfully created database:" + meta.getDriverName());
+                            logger.info(SUCCESSFULLY_CREATED_DATABASE + meta.getDriverName());
                         } else {
                             return false;
                         }
 
-                        // CREATE TABLE ONLY IF IT DOES NOT EXIST
-                        sql = "CREATE TABLE IF NOT EXISTS " + DATABASE_NAME + " ( " + DATABASE_USER_COLUMN +
-                                " TEXT not NULL, " + DATABASE_PASSWORD_COLUMN + " TEXT not NULL, " +  
-                                " PRIMARY KEY ('" + DATABASE_USER_COLUMN + "'))";
-                        stmt = rejectedConnnection.createStatement();
-                        stmt.executeUpdate(sql);
-                        logger.info("Successfully created table");
+                        createTable(rejectedConnnection);
 
                         // INSERT OR REPLACE USERNAME AND HASHED PASSWORD INTO REJECTED DATABASE
-                        sql = "REPLACE INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + "," + 
+                        sql = "REPLACE INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + "," +
                                 DATABASE_PASSWORD_COLUMN + ")" + "VALUES (?,?)";
                         pstmt = rejectedConnnection.prepareStatement(sql);
                         pstmt.setString(1, custname);
                         pstmt.setString(2, argon2.hash(2, 65536, 1, authenticationChallenge.getPassword()));
                         pstmt.executeUpdate();
-                        logger.info("Successfully inserted user into rejected table");
+                        logger.info(SUCCESSFULLY_INSERTED_USER_INTO_REJECTED_TABLE);
 
                     } catch (SQLException se) {
                         se.printStackTrace();
@@ -293,8 +301,8 @@ public class ExampleServerWithPasswordDatabase {
 
             } finally {
                 try {
-                    if (trustedConnnection != null) {
-                        trustedConnnection.close();
+                    if (trustedConnection != null) {
+                        trustedConnection.close();
                     }
                     if (rejectedConnnection != null) {
                         rejectedConnnection.close();
@@ -331,8 +339,8 @@ public class ExampleServerWithPasswordDatabase {
                 .setCertificateManager(certificateManager).setCertificateValidator(certificateValidator)
                 .setIdentityValidator(identityValidator).setProductUri(PRODUCT_URI).setServerName(EXAMPLE)
                 .setSecurityPolicies(EnumSet.of(SecurityPolicy.None, SecurityPolicy.Basic128Rsa15,
-                        SecurityPolicy.Basic256, SecurityPolicy.Basic256Sha256, SecurityPolicy.Aes128_Sha256_RsaOaep,
-                        SecurityPolicy.Aes256_Sha256_RsaPss))
+                    SecurityPolicy.Basic256, SecurityPolicy.Basic256Sha256, SecurityPolicy.Aes128_Sha256_RsaOaep,
+                    SecurityPolicy.Aes256_Sha256_RsaPss))
                 .setUserTokenPolicies(ImmutableList.of(USER_TOKEN_POLICY_USERNAME)).build();
 
         server = new OpcUaServer(serverConfig);
