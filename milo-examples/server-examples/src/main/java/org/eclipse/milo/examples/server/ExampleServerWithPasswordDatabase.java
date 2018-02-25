@@ -89,7 +89,7 @@ public class ExampleServerWithPasswordDatabase {
     private static final String FOUND_USER_IN_DATABASE = "Found user in database.";
 
     // LOGGER DATABASE STATUS
-    private static final String SUCCESSFULLY_INSERTED_USER_INTO_REJECTED_TABLE = 
+    private static final String SUCCESSFULLY_INSERTED_USER_INTO_REJECTED_TABLE =
             "Successfully inserted user into rejected table";
     private static final String SUCCESSFULLY_CREATED_TABLE = "Successfully created table";
     private static final String NOT_SUCCESSFULLY_CREATED_TABLE = "Not successfully created table";
@@ -220,7 +220,7 @@ public class ExampleServerWithPasswordDatabase {
 
             Connection trustedConnection = null;
             Connection rejectedConnnection = null;
-           
+
             try {
                 // Argon2, the password-hashing function that won the Password Hashing Competition (PHC).
                 // Source: https://github.com/phxql/argon2-jvm
@@ -247,15 +247,13 @@ public class ExampleServerWithPasswordDatabase {
                 PreparedStatement pstmt = null;
                 pstmt = trustedConnection.prepareStatement(sql);
                 pstmt.setString(1, custname);
-                
 
                 // Execute query looking for the user specified in the authenticationChallenge
                 ResultSet rs = pstmt.executeQuery();
                 logger.info(SQL_STATEMENT + sql);
-                String hashedPw = null;
-                hashedPw = rs.getString(DATABASE_PASSWORD_COLUMN);
 
-                if (hashedPw == null) {
+                if (rs.isClosed() || !rs.next()) {
+
                     try {
                         String rejectedDatabaseUrl = JDBC_SQLITE + rejectedUserDatabase.getAbsolutePath();
                         rejectedConnnection = DriverManager.getConnection(rejectedDatabaseUrl);
