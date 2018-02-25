@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo-examples</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>client-examples</artifactId>
+    <artifactId>standalone-examples</artifactId>
 
     <profiles>
         <profile>
-            <id>standalone-client</id>
+            <id>standalone</id>
             <build>
                 <plugins>
                     <plugin>
@@ -24,13 +25,33 @@
                                 <configuration>
                                     <archive>
                                         <manifest>
-                                            <mainClass>org.eclipse.milo.examples.client.SecureClientStandalone</mainClass>
+                                            <mainClass>org.eclipse.milo.examples.client.SecureClientStandalone
+                                            </mainClass>
                                         </manifest>
                                     </archive>
                                     <descriptorRefs>
                                         <descriptorRef>jar-with-dependencies</descriptorRef>
                                     </descriptorRefs>
                                     <finalName>milo-opcua-client</finalName>
+                                </configuration>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>build-server</id>
+                                <configuration>
+                                    <archive>
+                                        <manifest>
+                                            <mainClass>org.eclipse.milo.examples.server.SecureServerStandalone
+                                            </mainClass>
+                                        </manifest>
+                                    </archive>
+                                    <descriptorRefs>
+                                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                                    </descriptorRefs>
+                                    <finalName>milo-opcua-server</finalName>
                                 </configuration>
                                 <phase>package</phase>
                                 <goals>
@@ -48,7 +69,17 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-client</artifactId>
-            <version>0.2.2-SNAPSHOT</version>
+            <version>0.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.milo</groupId>
+            <artifactId>sdk-server</artifactId>
+            <version>0.2.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.milo</groupId>
+            <artifactId>server-examples</artifactId>
+            <version>0.2.1-SNAPSHOT</version>
         </dependency>
 
         <!-- Redeclare our dependency on Bouncy Castle
@@ -65,14 +96,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.milo</groupId>
-            <artifactId>server-examples</artifactId>
-            <version>0.2.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.1.7</version>
         </dependency>
     </dependencies>
+
 </project>
