@@ -60,6 +60,10 @@ public class ExampleServerWithPasswordDatabase {
     private File rejectedUserDatabase;
     private File securityTempDir;
 
+    // Argon2, the password-hashing function that won the Password Hashing Competition (PHC).
+    // Source: https://github.com/phxql/argon2-jvm
+    private Argon2 argon2 = Argon2Factory.create();
+
     // FOLDER NAMES
     private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
     private static final String SECURITY = "security";
@@ -89,8 +93,7 @@ public class ExampleServerWithPasswordDatabase {
     private static final String FOUND_USER_IN_DATABASE = "Found user in database.";
 
     // LOGGER DATABASE STATUS
-    private static final String SUCCESSFULLY_INSERTED_USER_INTO_REJECTED_TABLE =
-            "Successfully inserted user into rejected table";
+    private static final String SUCCESSFULLY_INSERTED_USER_INTO_TABLE = "Successfully inserted user into table";
     private static final String SUCCESSFULLY_CREATED_TABLE = "Successfully created table";
     private static final String NOT_SUCCESSFULLY_CREATED_TABLE = "Not successfully created table";
     private static final String SUCCESSFULLY_CREATED_DATABASE = "Successfully created database:";
@@ -112,7 +115,7 @@ public class ExampleServerWithPasswordDatabase {
     private static final String CERTIFICATE_IS_MISSING_THE_APPLICATION_URI = "certificate is missing " +
             "the application URI";
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     static {
         CryptoRestrictions.remove();
@@ -161,6 +164,69 @@ public class ExampleServerWithPasswordDatabase {
         }
     }
 
+    private void insertUserIntoDatabase(Connection connection, String username, String password,
+            boolean isPasswordHashed) {
+        try {
+            // INSERT OR REPLACE USERNAME AND HASHED PASSWORD INTO REJECTED DATABASE
+            String sql = "REPLACE INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + "," +
+                    DATABASE_PASSWORD_COLUMN + ")" + "VALUES (?,?)";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, username);
+            if (isPasswordHashed) {
+                pstmt.setString(2, password);
+            } else {
+                pstmt.setString(2, argon2.hash(2, 65536, 1, password));
+            }
+
+            pstmt.executeUpdate();
+            logger.info(SUCCESSFULLY_INSERTED_USER_INTO_TABLE);
+        } catch (SQLException e) {
+            logger.info(NOT_SUCCESSFULLY_CREATED_TABLE);
+            e.printStackTrace();
+        }
+    }
+
+    private ResultSet selectUserFromDatabase(Connection connection, String username) {
+        ResultSet result = null;
+        try {
+            // https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
+            // Prepared Statements (with Parameterized Queries)
+            String sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE " +
+                    DATABASE_USER_COLUMN + "=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, username);
+
+            // Execute query looking for the user specified in the authenticationChallenge
+            result = pstmt.executeQuery();
+            logger.info(SQL_STATEMENT + sql);
+            if (result.isClosed() || !result.next()) {
+                result = null;
+                logger.info("user not found");
+            }
+        } catch (SQLException e) {
+            logger.info("problem when searching for user");
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    private void deleteUserFromDatabase(Connection connection, String username) {
+        try {
+            // https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
+            // Prepared Statements (with Parameterized Queries)
+            String sql = "DELETE FROM " + DATABASE_NAME + " WHERE " + DATABASE_USER_COLUMN + "=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+            pstmt.setString(1, username);
+
+            // Execute query looking for the user
+            pstmt.executeUpdate();
+            logger.info(SQL_STATEMENT + sql);
+        } catch (SQLException e) {
+            logger.info("not successfull deletion");
+            e.printStackTrace();
+        }
+    }
+
     private void createDatabaseDirectories() throws Exception {
         securityTempDir = new File(System.getProperty(JAVA_IO_TMPDIR), SECURITY);
         if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
@@ -195,9 +261,51 @@ public class ExampleServerWithPasswordDatabase {
         trustedUserDatabase = trustedDbDir.toPath().resolve(USERS_DB).toFile();
     }
 
-    public ExampleServerWithPasswordDatabase() throws Exception {
+    private void moveUsersFromRejectedDbToTrustedDb(List<String> usernames) {
+        usernames.forEach(user -> {
+            try {
+                moveUserFromRejectedDbToTrustedDb(user);
+            } catch (SQLException e) {
+                logger.info(e.toString());
+            }
+        });
 
+    }
+
+    private void moveUserFromRejectedDbToTrustedDb(String username) throws SQLException {
+        Connection trustedConnection = null;
+        Connection rejectedConnnection = null;
+
+        String trustedDatabaseUrl = JDBC_SQLITE + trustedUserDatabase.getAbsolutePath();
+        String rejectedDatabaseUrl = JDBC_SQLITE + rejectedUserDatabase.getAbsolutePath();
+        trustedConnection = DriverManager.getConnection(trustedDatabaseUrl);
+        rejectedConnnection = DriverManager.getConnection(rejectedDatabaseUrl);
+
+        ResultSet rs = selectUserFromDatabase(rejectedConnnection, username);
+
+        if (rs == null) {
+            return;
+        }
+
+        String hashedPassword = rs.getString(DATABASE_PASSWORD_COLUMN);
+        insertUserIntoDatabase(trustedConnection, username, hashedPassword, true);
+        deleteUserFromDatabase(rejectedConnnection, username);
+
+    }
+
+    /**
+     * OPC UA Server with local Trusted and Rejected User Database
+     * Rejected users are stored within the Rejected Database if the Client login attempt fails 
+     * The operation moveUsersFromRejectedDbToTrustedDb(...) 
+     * allows to move users from the rejected db to the trusted db.  
+     */
+    public ExampleServerWithPasswordDatabase() throws Exception { 
+       
         createDatabaseDirectories();
+        
+        
+        // List<String> trustfulUsersFromRejectedDb = Arrays.asList("User1", "User2");
+        // moveUsersFromRejectedDbToTrustedDb(trustfulUsersFromRejectedDb);
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
@@ -222,9 +330,7 @@ public class ExampleServerWithPasswordDatabase {
             Connection rejectedConnnection = null;
 
             try {
-                // Argon2, the password-hashing function that won the Password Hashing Competition (PHC).
-                // Source: https://github.com/phxql/argon2-jvm
-                Argon2 argon2 = Argon2Factory.create();
+
                 String trustedDatabaseUrl = JDBC_SQLITE + trustedUserDatabase.getAbsolutePath();
                 trustedConnection = DriverManager.getConnection(trustedDatabaseUrl);
 
@@ -239,18 +345,7 @@ public class ExampleServerWithPasswordDatabase {
                 createTable(trustedConnection);
                 logger.info(CONNECTED_TO_USER_DATABASE);
 
-                // https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
-                // Prepared Statements (with Parameterized Queries)
-                String sql = "SELECT " + DATABASE_PASSWORD_COLUMN + " FROM " + DATABASE_NAME + " WHERE " +
-                        DATABASE_USER_COLUMN + "=?";
-                String custname = authenticationChallenge.getUsername();
-                PreparedStatement pstmt = null;
-                pstmt = trustedConnection.prepareStatement(sql);
-                pstmt.setString(1, custname);
-
-                // Execute query looking for the user specified in the authenticationChallenge
-                ResultSet rs = pstmt.executeQuery();
-                logger.info(SQL_STATEMENT + sql);
+                ResultSet rs = selectUserFromDatabase(trustedConnection, authenticationChallenge.getUsername());
 
                 if (rs.isClosed() || !rs.next()) {
 
@@ -266,15 +361,8 @@ public class ExampleServerWithPasswordDatabase {
                         }
 
                         createTable(rejectedConnnection);
-
-                        // INSERT OR REPLACE USERNAME AND HASHED PASSWORD INTO REJECTED DATABASE
-                        sql = "REPLACE INTO " + DATABASE_NAME + " (" + DATABASE_USER_COLUMN + "," +
-                                DATABASE_PASSWORD_COLUMN + ")" + "VALUES (?,?)";
-                        pstmt = rejectedConnnection.prepareStatement(sql);
-                        pstmt.setString(1, custname);
-                        pstmt.setString(2, argon2.hash(2, 65536, 1, authenticationChallenge.getPassword()));
-                        pstmt.executeUpdate();
-                        logger.info(SUCCESSFULLY_INSERTED_USER_INTO_REJECTED_TABLE);
+                        insertUserIntoDatabase(rejectedConnnection, authenticationChallenge.getUsername(),
+                            authenticationChallenge.getPassword(), false);
 
                     } catch (SQLException se) {
                         se.printStackTrace();
