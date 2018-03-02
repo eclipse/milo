@@ -223,8 +223,8 @@ public class ExampleNamespace implements Namespace {
             String name = (String) os[0];
             NodeId typeId = (NodeId) os[1];
             Object value = os[2];
-            Object array = Array.newInstance(value.getClass(), 4);
-            for (int i = 0; i < 4; i++) {
+            Object array = Array.newInstance(value.getClass(), 5);
+            for (int i = 0; i < 5; i++) {
                 Array.set(array, i, value);
             }
             Variant variant = new Variant(array);
