@@ -206,6 +206,7 @@ public class ExampleNamespace implements Namespace {
         addAdminWritableNodes(rootNode);
         addDynamicNodes(rootNode);
         addDataAccessNodes(rootNode);
+        addWriteOnlyNodes(rootNode);
     }
 
     private void addArrayNodes(UaFolderNode rootNode) {
@@ -283,6 +284,34 @@ public class ExampleNamespace implements Namespace {
             server.getNodeMap().addNode(node);
             scalarTypesFolder.addOrganizes(node);
         }
+    }
+
+    private void addWriteOnlyNodes(UaFolderNode rootNode) {
+        UaFolderNode writeOnlyFolder = new UaFolderNode(
+            server.getNodeMap(),
+            new NodeId(namespaceIndex, "HelloWorld/WriteOnly"),
+            new QualifiedName(namespaceIndex, "WriteOnly"),
+            LocalizedText.english("WriteOnly")
+        );
+
+        server.getNodeMap().addNode(writeOnlyFolder);
+        rootNode.addOrganizes(writeOnlyFolder);
+
+        String name = "String";
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/WriteOnly/" + name))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
+            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
+            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setDisplayName(LocalizedText.english(name))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        node.setValue(new DataValue(new Variant("can't read this")));
+
+        server.getNodeMap().addNode(node);
+        writeOnlyFolder.addOrganizes(node);
     }
 
     private void addAdminReadableNodes(UaFolderNode rootNode) {

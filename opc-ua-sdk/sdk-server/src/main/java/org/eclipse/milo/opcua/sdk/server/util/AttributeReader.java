@@ -60,7 +60,7 @@ public class AttributeReader {
             if (attributeId == AttributeId.Value && nodeClass == NodeClass.Variable) {
                 Set<AccessLevel> accessLevels = getAccessLevels(node, internalContext);
                 if (!accessLevels.contains(AccessLevel.CurrentRead)) {
-                    throw new UaException(StatusCodes.Bad_NotWritable);
+                    throw new UaException(StatusCodes.Bad_NotReadable);
                 }
 
                 Set<AccessLevel> userAccessLevels = getUserAccessLevels(node, context);
