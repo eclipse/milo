@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -53,13 +52,7 @@ public class SecureClientStandalone {
 
     private SecureClientStandalone() {
         /* Get keystore password */
-        Console console = System.console();
-        if (console == null) {
-            logger.error("Couldn't get Console instance");
-            System.exit(0);
-        }
-        char[] keystorePasswordArray = console.readPassword("Enter your keystore password: ");
-        char[] keyPasswordArray = console.readPassword("Enter your key password: ");
+        char[] keystorePasswordArray = System.getenv("KEYSTOREPSWD").toCharArray();
 
         try {
             String keystorepath = "secrets/opcua.keystore";
@@ -71,6 +64,7 @@ public class SecureClientStandalone {
             is.close();
 
             /*Get key from keystore */
+            char[] keyPasswordArray = System.getenv("KEYPSWD").toCharArray();
             PrivateKey key = (PrivateKey) keystore.getKey("opcua", keyPasswordArray);
 
             /* Get certificate of public key */
