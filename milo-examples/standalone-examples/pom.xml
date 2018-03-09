@@ -13,7 +13,7 @@
 
     <profiles>
         <profile>
-            <id>standalone</id>
+            <id>certificate-example</id>
             <build>
                 <plugins>
                     <plugin>
