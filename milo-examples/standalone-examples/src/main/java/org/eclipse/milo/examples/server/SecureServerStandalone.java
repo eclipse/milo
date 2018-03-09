@@ -53,7 +53,7 @@ public class SecureServerStandalone {
     private static final Pattern IP_ADDR_PATTERN = Pattern.compile(
             "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
 
-    private static final String ip = "localhost";
+    private static final String ip = System.getenv("OPCUA_SERVER_IP");
 
     private static final Logger logger = LoggerFactory.getLogger(SecureServerStandalone.class);
 
@@ -88,7 +88,7 @@ public class SecureServerStandalone {
     private SecureServerStandalone() {
         CryptoRestrictions.remove();
 
-        File securityTempDir = new File("security");
+        File securityTempDir = new File(System.getenv("OPCUA_CERT_DIR"), "security");
 
         logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
 
@@ -172,16 +172,7 @@ public class SecureServerStandalone {
             idx -> new ExampleNamespace(server, idx));
     }
 
-    public OpcUaServer getServer() {
-        return server;
-    }
-
     private CompletableFuture<OpcUaServer> startup() {
         return server.startup();
     }
-
-    public CompletableFuture<OpcUaServer> shutdown() {
-        return server.shutdown();
-    }
-
 }

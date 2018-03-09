@@ -47,8 +47,8 @@ public class SecureClientStandaloneRunner {
         this.clientExample = clientExample;
     }
 
-    private OpcUaClient createClient() throws Exception {
-        String discoveryUrl = "opc.tcp://localhost:4840" + "/discovery";
+    private OpcUaClient createClient(String url) throws Exception {
+        String discoveryUrl = url + "/discovery";
         logger.info("URL of discovery endpoint = {}", discoveryUrl);
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(discoveryUrl).get();
@@ -108,7 +108,7 @@ public class SecureClientStandaloneRunner {
         }
     }
 
-    public void run() {
+    public void run(String url) {
         future.whenComplete((client, ex) -> {
             if (client != null) {
                 try {
@@ -132,7 +132,7 @@ public class SecureClientStandaloneRunner {
         });
 
         try {
-            OpcUaClient client = createClient();
+            OpcUaClient client = createClient(url);
 
             try {
                 clientExample.run(client, future);
