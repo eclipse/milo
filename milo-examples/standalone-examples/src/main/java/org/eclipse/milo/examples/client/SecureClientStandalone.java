@@ -39,15 +39,18 @@ import org.slf4j.LoggerFactory;
 
 public class SecureClientStandalone {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final String ENDPOINT_URL = System.getenv("ENDPOINT_URL");
+
     private SecurityPolicy securityPolicy = SecurityPolicy.Basic256Sha256;
     private IdentityProvider identityProvider;
     private X509Certificate cert;
     private KeyPair keyPair;
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     public static void main(String[] args) {
         SecureClientStandalone example = new SecureClientStandalone();
-        new SecureClientStandaloneRunner(example).run();
+        new SecureClientStandaloneRunner(example).run(ENDPOINT_URL);
     }
 
     private SecureClientStandalone() {
