@@ -2,6 +2,7 @@
 <opc:TypeDictionary DefaultByteOrder="LittleEndian"
                     TargetNamespace="https://github.com/eclipse/milo"
                     xmlns:opc="http://opcfoundation.org/BinarySchema/"
+                    xmlns:ua="http://opcfoundation.org/UA/"
                     xmlns:tns="https://github.com/eclipse/milo">
 
     <opc:StructuredType Name="Foo">
@@ -32,6 +33,16 @@
         <opc:Field Name="Foo" TypeName="tns:Foo"/>
         <opc:Field Name="Int" TypeName="opc:Int32"/>
         <opc:Field Name="Str" TypeName="opc:String"/>
+    </opc:StructuredType>
+
+    <opc:StructuredType Name="ProfilePointStruct">
+        <opc:Field TypeName="opc:Bit" Name="rangeXSpecified"/>
+        <opc:Field TypeName="opc:Bit" Name="rangeYSpecified"/>
+        <opc:Field Length="30" TypeName="opc:Bit" Name="Reserved1"/>
+        <opc:Field TypeName="opc:Double" Name="x"/>
+        <opc:Field TypeName="opc:Double" Name="y"/>
+        <opc:Field SwitchField="rangeXSpecified" TypeName="ua:Range" Name="rangeX"/>
+        <opc:Field SwitchField="rangeYSpecified" TypeName="ua:Range" Name="rangeY"/>
     </opc:StructuredType>
 
 </opc:TypeDictionary>
