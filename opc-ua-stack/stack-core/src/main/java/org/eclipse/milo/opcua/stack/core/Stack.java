@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -41,7 +42,7 @@ public final class Stack {
 
     private static NioEventLoopGroup EVENT_LOOP;
     private static ExecutorService EXECUTOR_SERVICE;
-    private static ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE;
+    private static ScheduledThreadPoolExecutor SCHEDULED_EXECUTOR_SERVICE;
     private static HashedWheelTimer WHEEL_TIMER;
     private static ClassLoader CUSTOM_CLASS_LOADER;
 
@@ -105,7 +106,12 @@ public final class Stack {
                 }
             };
 
-            SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor(threadFactory);
+            SCHEDULED_EXECUTOR_SERVICE = new ScheduledThreadPoolExecutor(
+                Runtime.getRuntime().availableProcessors(),
+                threadFactory
+            );
+
+            SCHEDULED_EXECUTOR_SERVICE.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
         }
 
         return SCHEDULED_EXECUTOR_SERVICE;
