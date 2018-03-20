@@ -17,9 +17,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
+import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
@@ -41,6 +43,13 @@ public class Inactive extends AbstractSessionState implements SessionState {
             createSessionAsync(fsm, sessionFuture);
 
             return new Creating();
+        } else if (event instanceof CloseSessionEvent) {
+            CompletableFuture<Unit> closeFuture =
+                ((CloseSessionEvent) event).getCloseFuture();
+
+            closeFuture.complete(Unit.VALUE);
+
+            return this;
         } else {
             return this;
         }
