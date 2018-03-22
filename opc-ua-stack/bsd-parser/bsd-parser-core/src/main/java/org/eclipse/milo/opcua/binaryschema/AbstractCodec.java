@@ -193,8 +193,8 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
             }
 
             boolean typeNamespaceIsUa =
-                Namespaces.OPC_UA.equals(typeNamespace)
-                    || Namespaces.OPC_UA_BSD.equals(typeNamespace);
+                Namespaces.OPC_UA.equals(typeNamespace) ||
+                    Namespaces.OPC_UA_BSD.equals(typeNamespace);
 
             if (fieldIsScalar(field)) {
                 if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
@@ -274,8 +274,8 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
             MemberT member = members.get(field.getName());
 
             boolean typeNamespaceIsUa =
-                Namespaces.OPC_UA.equals(typeNamespace)
-                    || Namespaces.OPC_UA_BSD.equals(typeNamespace);
+                Namespaces.OPC_UA.equals(typeNamespace) ||
+                    Namespaces.OPC_UA_BSD.equals(typeNamespace);
 
             if (fieldIsScalar(field)) {
                 Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
