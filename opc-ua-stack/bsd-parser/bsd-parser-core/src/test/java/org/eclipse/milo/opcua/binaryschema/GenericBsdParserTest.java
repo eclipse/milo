@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.binaryschema;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.testng.annotations.Test;
 
 public class GenericBsdParserTest extends BsdParserTest {
@@ -91,6 +92,22 @@ public class GenericBsdParserTest extends BsdParserTest {
         OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ArrayContainer");
 
         assertRoundTrip("ArrayContainer", arrayContainer, codec);
+    }
+
+    @Test
+    public void testNestedUaStruct() {
+        Struct profilePoint = Struct.builder("ProfilePointStruct")
+            .addMember("rangeXSpecified", 1)
+            .addMember("rangeYSpecified", 0)
+            .addMember("Reserved1", 0)
+            .addMember("x", 1.0)
+            .addMember("y", 2.0)
+            .addMember("rangeX", new Range(3.0, 4.0))
+            .build();
+
+        OpcUaBinaryDataTypeCodec<Object> codec = getCodec("ProfilePointStruct");
+
+        assertRoundTripUsingToString("ProfilePointStruct", profilePoint, codec);
     }
 
 }
