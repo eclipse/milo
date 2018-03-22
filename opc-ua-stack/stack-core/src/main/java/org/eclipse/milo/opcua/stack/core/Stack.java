@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -105,7 +106,14 @@ public final class Stack {
                 }
             };
 
-            SCHEDULED_EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor(threadFactory);
+            ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
+                Runtime.getRuntime().availableProcessors(),
+                threadFactory
+            );
+
+            executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+
+            SCHEDULED_EXECUTOR_SERVICE = executor;
         }
 
         return SCHEDULED_EXECUTOR_SERVICE;
