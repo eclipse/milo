@@ -42,7 +42,7 @@ public final class Stack {
 
     private static NioEventLoopGroup EVENT_LOOP;
     private static ExecutorService EXECUTOR_SERVICE;
-    private static ScheduledThreadPoolExecutor SCHEDULED_EXECUTOR_SERVICE;
+    private static ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE;
     private static HashedWheelTimer WHEEL_TIMER;
     private static ClassLoader CUSTOM_CLASS_LOADER;
 
@@ -106,12 +106,14 @@ public final class Stack {
                 }
             };
 
-            SCHEDULED_EXECUTOR_SERVICE = new ScheduledThreadPoolExecutor(
+            ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(
                 Runtime.getRuntime().availableProcessors(),
                 threadFactory
             );
 
-            SCHEDULED_EXECUTOR_SERVICE.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+            executor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+
+            SCHEDULED_EXECUTOR_SERVICE = executor;
         }
 
         return SCHEDULED_EXECUTOR_SERVICE;
