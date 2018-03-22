@@ -95,6 +95,14 @@ public class UsernameProvider implements IdentityProvider {
             buffer.writeBytes(nonceBytes);
 
             ByteString bs = endpoint.getServerCertificate();
+
+            if (bs == null || bs.isNull()) {
+                throw new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "UserTokenPolicy requires encryption but " +
+                        "server did not provide a certificate in endpoint");
+            }
+
             X509Certificate certificate = CertificateUtil.decodeCertificate(bs.bytes());
 
             int plainTextBlockSize = SecureChannel.getAsymmetricPlainTextBlockSize(
