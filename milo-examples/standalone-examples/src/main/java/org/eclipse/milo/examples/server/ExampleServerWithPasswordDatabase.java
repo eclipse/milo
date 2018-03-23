@@ -302,10 +302,6 @@ public class ExampleServerWithPasswordDatabase {
     public ExampleServerWithPasswordDatabase() throws Exception { 
        
         createDatabaseDirectories();
-        
-        
-        // List<String> trustfulUsersFromRejectedDb = Arrays.asList("User1", "User2");
-        // moveUsersFromRejectedDbToTrustedDb(trustfulUsersFromRejectedDb);
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
