@@ -29,7 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClientWithUserNameAndPasswordExample implements SecureClientExample {
+public class ClientWithUserNameAndPasswordExample extends SecureClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String EXAMPLE_USERNAME = "User";

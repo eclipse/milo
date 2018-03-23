@@ -37,7 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SecureClientStandalone implements SecureClientExample {
+public class SecureClientStandalone extends SecureClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IdentityProvider identityProvider;
