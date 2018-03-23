@@ -32,8 +32,8 @@ import org.slf4j.LoggerFactory;
 public class ClientWithUserNameAndPasswordExample extends SecureClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String EXAMPLE_USERNAME = "User";
-    private static final String EXAMPLE_PASSWORD = "userpassword";
+    private static final String EXAMPLE_USERNAME = "user";
+    private static final String EXAMPLE_PASSWORD = "password1";
 
     public static void main(String[] args) {
         ClientWithUserNameAndPasswordExample example = new ClientWithUserNameAndPasswordExample();
