@@ -83,6 +83,7 @@ public class SecureClientStandaloneRunner {
     private EndpointDescription chooseEndpoint(EndpointDescription[] endpoints, SecurityPolicy minSecurityPolicy,
                                                MessageSecurityMode minMessageSecurityMode) {
         EndpointDescription bestFound = null;
+        SecurityPolicy bestFoundSecurityPolicy = null;
         for (EndpointDescription endpoint : endpoints) {
             SecurityPolicy endpointSecurityPolicy;
             try {
@@ -95,11 +96,12 @@ public class SecureClientStandaloneRunner {
                     //Found endpoint which fulfills minimum requirements
                     if (bestFound == null) {
                         bestFound = endpoint;
+                        bestFoundSecurityPolicy = endpointSecurityPolicy;
                     } else {
-                        if (SecurityPolicy.valueOf(bestFound.getSecurityPolicyUri()).compareTo(
-                                SecurityPolicy.valueOf(endpoint.getSecurityPolicyUri())) < 0) {
+                        if (bestFoundSecurityPolicy.compareTo(endpointSecurityPolicy) < 0) {
                             //Found endpoint that has higher security than previously found one
                             bestFound = endpoint;
+                            bestFoundSecurityPolicy = endpointSecurityPolicy;
                         }
                     }
                 }
