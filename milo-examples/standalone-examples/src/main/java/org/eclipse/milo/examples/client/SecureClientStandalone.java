@@ -30,7 +30,6 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -38,10 +37,9 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SecureClientStandalone {
+public class SecureClientStandalone implements SecureClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private SecurityPolicy securityPolicy = SecurityPolicy.Basic256Sha256;
     private IdentityProvider identityProvider;
     private X509Certificate cert;
     private KeyPair keyPair;
@@ -88,19 +86,17 @@ public class SecureClientStandalone {
         }
     }
 
-    public SecurityPolicy getSecurityPolicy() {
-        return securityPolicy;
-    }
-
     public IdentityProvider getIdentityProvider() {
         return identityProvider;
     }
 
-    X509Certificate getClientCertificate() {
+    @Override
+    public X509Certificate getClientCertificate() {
         return cert;
     }
 
-    KeyPair getKeyPair() {
+    @Override
+    public KeyPair getKeyPair() {
         return keyPair;
     }
 

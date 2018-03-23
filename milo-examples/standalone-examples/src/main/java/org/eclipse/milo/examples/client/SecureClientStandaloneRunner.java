@@ -19,6 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
+import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;
+import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
+import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -41,14 +44,14 @@ public class SecureClientStandaloneRunner {
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
 
-    private final SecureClientStandalone clientExample;
+    private final SecureClientExample clientExample;
 
-    SecureClientStandaloneRunner(SecureClientStandalone clientExample) {
+    SecureClientStandaloneRunner(SecureClientExample clientExample) {
         this.clientExample = clientExample;
     }
 
     private OpcUaClient createClient() throws Exception {
-        String discoveryUrl = "opc.tcp://localhost:4840" + "/discovery";
+        String discoveryUrl = clientExample.getDiscoveryEndpointUrl();
         logger.info("URL of discovery endpoint = {}", discoveryUrl);
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(discoveryUrl).get();
@@ -58,20 +61,22 @@ public class SecureClientStandaloneRunner {
             logger.info(endpointDescription.getEndpointUrl() + " " + endpointDescription.getSecurityPolicyUri());
         }
         EndpointDescription endpoint = chooseEndpoint(endpoints, clientExample.getSecurityPolicy(),
-                MessageSecurityMode.SignAndEncrypt);
+                clientExample.getMessageSecurityMode());
 
         logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), endpoint.getSecurityPolicyUri(),
                 endpoint.getSecurityMode());
 
-        OpcUaClientConfig config = OpcUaClientConfig.builder()
+        OpcUaClientConfigBuilder configbuilder = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english(APPLICATION_NAME))
             .setApplicationUri(APPLICATION_URI)
-            .setCertificate(clientExample.getClientCertificate())
-            .setKeyPair(clientExample.getKeyPair())
             .setEndpoint(endpoint)
             .setIdentityProvider(clientExample.getIdentityProvider())
-            .setRequestTimeout(uint(5000))
-            .build();
+            .setRequestTimeout(uint(5000));
+        if (clientExample.getIdentityProvider() instanceof X509IdentityProvider) {
+            configbuilder.setCertificate(clientExample.getClientCertificate());
+            configbuilder.setKeyPair(clientExample.getKeyPair());
+        }
+        OpcUaClientConfig config = configbuilder.build();
 
         return new OpcUaClient(config);
     }

@@ -29,16 +29,15 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClientWithUserNameAndPasswordExample implements ClientExample {
+public class ClientWithUserNameAndPasswordExample implements SecureClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String EXAMPLE_USERNAME = "User";
     private static final String EXAMPLE_PASSWORD = "userpassword";
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         ClientWithUserNameAndPasswordExample example = new ClientWithUserNameAndPasswordExample();
-
-        new ClientExampleRunner(example, false).run();
+        new SecureClientStandaloneRunner(example).run();
     }
 
     @Override
