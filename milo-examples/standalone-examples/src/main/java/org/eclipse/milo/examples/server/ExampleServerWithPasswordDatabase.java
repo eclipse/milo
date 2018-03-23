@@ -414,12 +414,12 @@ public class ExampleServerWithPasswordDatabase {
                 .orElse(URN_ECLIPSE_MILO_EXAMPLES_SERVER + UUID.randomUUID());
 
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder().setApplicationUri(applicationUri)
-                .setApplicationName(LocalizedText.english(ECLIPSE_MILO_OPC_UA_EXAMPLE_SERVER)).setBindPort(12686)
+                .setApplicationName(LocalizedText.english(ECLIPSE_MILO_OPC_UA_EXAMPLE_SERVER)).setBindPort(4840)
                 .setBindAddresses(bindAddresses).setEndpointAddresses(endpointAddresses)
                 .setBuildInfo(new BuildInfo(PRODUCT_URI, ECLIPSE, ECLIPSE_MILO_EXAMPLE_SERVER, OpcUaServer.SDK_VERSION,
                         "", DateTime.now()))
                 .setCertificateManager(certificateManager).setCertificateValidator(certificateValidator)
-                .setIdentityValidator(identityValidator).setProductUri(PRODUCT_URI).setServerName(EXAMPLE)
+                .setIdentityValidator(identityValidator).setProductUri(PRODUCT_URI)
                 .setSecurityPolicies(EnumSet.of(SecurityPolicy.None, SecurityPolicy.Basic128Rsa15,
                     SecurityPolicy.Basic256, SecurityPolicy.Basic256Sha256, SecurityPolicy.Aes128_Sha256_RsaOaep,
                     SecurityPolicy.Aes256_Sha256_RsaPss))
