@@ -121,13 +121,13 @@ public class ExampleNamespace implements Namespace {
         {"FloatArray", Identifiers.Float, 3.14f},
         {"DoubleArray", Identifiers.Double, 3.14d},
         {"StringArray", Identifiers.String, "string value"},
-        {"DateTimeArray", Identifiers.DateTime, new Variant(DateTime.now())},
-        {"GuidArray", Identifiers.Guid, new Variant(UUID.randomUUID())},
-        {"ByteStringArray", Identifiers.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
-        {"XmlElementArray", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
-        {"LocalizedTextArray", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
-        {"QualifiedNameArray", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
-        {"NodeIdArray", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))}
+        {"DateTimeArray", Identifiers.DateTime, DateTime.now()},
+        {"GuidArray", Identifiers.Guid, UUID.randomUUID()},
+        {"ByteStringArray", Identifiers.ByteString, new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04})},
+        {"XmlElementArray", Identifiers.XmlElement, new XmlElement("<a>hello</a>")},
+        {"LocalizedTextArray", Identifiers.LocalizedText, LocalizedText.english("localized text")},
+        {"QualifiedNameArray", Identifiers.QualifiedName, new QualifiedName(1234, "defg")},
+        {"NodeIdArray", Identifiers.NodeId, new NodeId(1234, "abcd")}
     };
 
 
