@@ -192,8 +192,12 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                 continue;
             }
 
+            boolean typeNamespaceIsUa =
+                Namespaces.OPC_UA.equals(typeNamespace) ||
+                    Namespaces.OPC_UA_BSD.equals(typeNamespace);
+
             if (fieldIsScalar(field)) {
-                if (Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace)) {
+                if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
                     Object value = READERS.get(typeName).apply(decoder);
 
                     members.put(fieldName, opcUaToMemberTypeScalar(fieldName, value, typeName));
@@ -211,9 +215,7 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
                 int length = fieldLength(field, members);
 
-                if ("Bit".equals(typeName) && (
-                    Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace))) {
-
+                if ("Bit".equals(typeName) && typeNamespaceIsUa) {
                     BigInteger bitAccumulation = BigInteger.valueOf(0L);
 
                     for (int i = 0; i < length; i++) {
@@ -226,7 +228,7 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                 } else {
                     Object[] values = new Object[length];
 
-                    if (Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace)) {
+                    if (typeNamespaceIsUa && READERS.containsKey(typeName)) {
                         for (int i = 0; i < length; i++) {
                             Object value = READERS.get(typeName).apply(decoder);
 
@@ -271,10 +273,14 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
             MemberT member = members.get(field.getName());
 
+            boolean typeNamespaceIsUa =
+                Namespaces.OPC_UA.equals(typeNamespace) ||
+                    Namespaces.OPC_UA_BSD.equals(typeNamespace);
+
             if (fieldIsScalar(field)) {
                 Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
 
-                if (Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace)) {
+                if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
                     WRITERS.get(typeName).accept(encoder, scalarValue);
                 } else {
                     context.encode(typeNamespace, typeName, scalarValue, encoder);
@@ -288,10 +294,7 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
 
                 int length = fieldLength(field, members);
 
-                if ("Bit".equals(typeName) &&
-                    (Namespaces.OPC_UA.equals(typeNamespace) ||
-                        Namespaces.OPC_UA_BSD.equals(typeNamespace))) {
-
+                if ("Bit".equals(typeName) && typeNamespaceIsUa) {
                     Number number = (Number) memberTypeToOpcUaArray(member, typeName);
                     BigInteger bi = BigInteger.valueOf(number.longValue());
 
@@ -302,7 +305,7 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                     Object[] valueArray = (Object[]) memberTypeToOpcUaArray(member, typeName);
 
                     if (valueArray != null) {
-                        if (Namespaces.OPC_UA.equals(typeNamespace) || Namespaces.OPC_UA_BSD.equals(typeNamespace)) {
+                        if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
                             for (int i = 0; i < length; i++) {
                                 Object value = valueArray[i];
 

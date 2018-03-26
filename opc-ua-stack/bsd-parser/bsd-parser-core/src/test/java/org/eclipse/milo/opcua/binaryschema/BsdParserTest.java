@@ -123,4 +123,26 @@ public abstract class BsdParserTest {
         System.out.println("decodedValue:\t" + decodedValue);
     }
 
+    /**
+     * A weaker version of {@link #assertRoundTrip(String, Object, OpcUaBinaryDataTypeCodec)} for values that don't
+     * implement equals and hashcode or values that contain members not implementing equals and  hashcode.
+     * <p>
+     * Relies on toString() values to be implemented at all levels instead... not great, but since the built-in structs
+     * don't implement equals/hashcode it's what we have.
+     */
+    protected void assertRoundTripUsingToString(String type, Object originalValue, OpcUaBinaryDataTypeCodec<Object> codec) {
+        System.out.printf("--- assertRoundTrip Type: %s ---\n", type);
+
+        System.out.println("originalValue:\t" + originalValue);
+        ByteBuf buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(buffer));
+
+        ByteBuf encodedValue = buffer.copy();
+        System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
+
+        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(buffer));
+        assertEquals(decodedValue.toString(), originalValue.toString());
+        System.out.println("decodedValue:\t" + decodedValue);
+    }
+
 }
