@@ -10,40 +10,6 @@
 
     <artifactId>client-examples</artifactId>
 
-    <profiles>
-        <profile>
-            <id>standalone-client</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>build-client</id>
-                                <configuration>
-                                    <archive>
-                                        <manifest>
-                                            <mainClass>org.eclipse.milo.examples.client.SecureClientStandalone</mainClass>
-                                        </manifest>
-                                    </archive>
-                                    <descriptorRefs>
-                                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                                    </descriptorRefs>
-                                    <finalName>milo-opcua-client</finalName>
-                                </configuration>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
