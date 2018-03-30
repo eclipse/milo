@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Kevin Herron
+ * Copyright (c) 2016 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,21 +13,13 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.io.Console;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.security.KeyPair;
-import java.security.KeyStore;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
-import org.eclipse.milo.opcua.sdk.client.api.identity.X509IdentityProvider;
+import org.eclipse.milo.opcua.sdk.client.api.identity.UsernameProvider;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -37,69 +29,18 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SecureClientStandalone extends SecureClientExample {
+public class ClientWithUserNameAndPasswordExample extends SecureClientExample {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private IdentityProvider identityProvider;
-    private X509Certificate cert;
-    private KeyPair keyPair;
+    private static final String EXAMPLE_USERNAME = "user";
+    private static final String EXAMPLE_PASSWORD = "password1";
 
     public static void main(String[] args) {
-        SecureClientStandalone example = new SecureClientStandalone();
+        ClientWithUserNameAndPasswordExample example = new ClientWithUserNameAndPasswordExample();
         new SecureClientStandaloneRunner(example).run();
     }
 
-    private SecureClientStandalone() {
-        /* Get keystore password */
-        Console console = System.console();
-        if (console == null) {
-            logger.error("Couldn't get Console instance");
-            System.exit(0);
-        }
-        char[] keystorePasswordArray = console.readPassword("Enter your keystore password: ");
-        char[] keyPasswordArray = console.readPassword("Enter your key password: ");
-
-        try {
-            String keystorepath = "secrets/opcua.keystore";
-            logger.info("Trying to load keyfile from " + keystorepath);
-            File file = new File(keystorepath);
-            FileInputStream is = new FileInputStream(file);
-            KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keystore.load(is, keystorePasswordArray);
-            is.close();
-
-            /*Get key from keystore */
-            PrivateKey key = (PrivateKey) keystore.getKey("opcua", keyPasswordArray);
-
-            /* Get certificate of public key */
-            cert = (X509Certificate) keystore.getCertificate("opcua");
-
-            keyPair = new KeyPair(cert.getPublicKey(), key);
-
-            identityProvider = new X509IdentityProvider(cert, key);
-        } catch (FileNotFoundException f) {
-            logger.error("Keystore file not found.");
-            System.exit(1);
-        } catch (Exception e) {
-            logger.error("Loading from keystore failed.");
-            System.exit(1);
-        }
-    }
-
-    public IdentityProvider getIdentityProvider() {
-        return identityProvider;
-    }
-
     @Override
-    public X509Certificate getClientCertificate() {
-        return cert;
-    }
-
-    @Override
-    public KeyPair getKeyPair() {
-        return keyPair;
-    }
-
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
         // synchronous connect
         client.connect().get();
@@ -115,7 +56,6 @@ public class SecureClientStandalone extends SecureClientExample {
             DataValue v0 = values.get(0);
             DataValue v1 = values.get(1);
 
-            logger.info("Succeeded in making a connection on a secure channel.");
             logger.info("State={}", ServerState.from((Integer) v0.getValue().getValue()));
             logger.info("CurrentTime={}", v1.getValue().getValue());
 
@@ -131,4 +71,8 @@ public class SecureClientStandalone extends SecureClientExample {
         return client.readValues(0.0, TimestampsToReturn.Both, nodeIds);
     }
 
+    @Override
+    public IdentityProvider getIdentityProvider() {
+        return new UsernameProvider(EXAMPLE_USERNAME, EXAMPLE_PASSWORD);
+    }
 }

@@ -13,10 +13,12 @@
 
 package org.eclipse.milo.examples.client;
 
+import java.security.Security;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
@@ -26,12 +28,20 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class SecureClientStandaloneRunner {
+
+    static {
+        CryptoRestrictions.remove();
+
+        // Required for SecurityPolicy.Aes256_Sha256_RsaPss
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private static final String APPLICATION_NAME = "fraunhofer opc-ua client";
 
@@ -41,14 +51,14 @@ public class SecureClientStandaloneRunner {
 
     private final CompletableFuture<OpcUaClient> future = new CompletableFuture<>();
 
-    private final SecureClientStandalone clientExample;
+    private final SecureClientExample clientExample;
 
-    SecureClientStandaloneRunner(SecureClientStandalone clientExample) {
+    SecureClientStandaloneRunner(SecureClientExample clientExample) {
         this.clientExample = clientExample;
     }
 
     private OpcUaClient createClient() throws Exception {
-        String discoveryUrl = "opc.tcp://localhost:4840" + "/discovery";
+        String discoveryUrl = clientExample.getDiscoveryEndpointUrl();
         logger.info("URL of discovery endpoint = {}", discoveryUrl);
 
         EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(discoveryUrl).get();
@@ -58,7 +68,7 @@ public class SecureClientStandaloneRunner {
             logger.info(endpointDescription.getEndpointUrl() + " " + endpointDescription.getSecurityPolicyUri());
         }
         EndpointDescription endpoint = chooseEndpoint(endpoints, clientExample.getSecurityPolicy(),
-                MessageSecurityMode.SignAndEncrypt);
+                clientExample.getMessageSecurityMode());
 
         logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), endpoint.getSecurityPolicyUri(),
                 endpoint.getSecurityMode());
@@ -66,11 +76,11 @@ public class SecureClientStandaloneRunner {
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english(APPLICATION_NAME))
             .setApplicationUri(APPLICATION_URI)
-            .setCertificate(clientExample.getClientCertificate())
-            .setKeyPair(clientExample.getKeyPair())
             .setEndpoint(endpoint)
             .setIdentityProvider(clientExample.getIdentityProvider())
             .setRequestTimeout(uint(5000))
+            .setCertificate(clientExample.getClientCertificate())
+            .setKeyPair(clientExample.getKeyPair())
             .build();
 
         return new OpcUaClient(config);
@@ -79,6 +89,7 @@ public class SecureClientStandaloneRunner {
     private EndpointDescription chooseEndpoint(EndpointDescription[] endpoints, SecurityPolicy minSecurityPolicy,
                                                MessageSecurityMode minMessageSecurityMode) {
         EndpointDescription bestFound = null;
+        SecurityPolicy bestFoundSecurityPolicy = null;
         for (EndpointDescription endpoint : endpoints) {
             SecurityPolicy endpointSecurityPolicy;
             try {
@@ -91,11 +102,12 @@ public class SecureClientStandaloneRunner {
                     //Found endpoint which fulfills minimum requirements
                     if (bestFound == null) {
                         bestFound = endpoint;
+                        bestFoundSecurityPolicy = endpointSecurityPolicy;
                     } else {
-                        if (SecurityPolicy.valueOf(bestFound.getSecurityPolicyUri()).compareTo(
-                                SecurityPolicy.valueOf(endpoint.getSecurityPolicyUri())) < 0) {
+                        if (bestFoundSecurityPolicy.compareTo(endpointSecurityPolicy) < 0) {
                             //Found endpoint that has higher security than previously found one
                             bestFound = endpoint;
+                            bestFoundSecurityPolicy = endpointSecurityPolicy;
                         }
                     }
                 }
