@@ -16,7 +16,7 @@ Mailing list: https://dev.eclipse.org/mailman/listinfo/milo-dev
 
 ### Building Milo
 
-From the project root, run `mvn clean install`.
+Using JDK 8, run `mvn clean install` from the project root.
 
 ### Releases
 
