@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2017 Ari Suutari
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,29 +16,32 @@ package org.eclipse.milo.opcua.sdk.server.services;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.WriteContext;
+import org.eclipse.milo.opcua.sdk.server.api.AttributeHistoryServices.HistoryReadContext;
+import org.eclipse.milo.opcua.sdk.server.api.AttributeHistoryServices.HistoryUpdateContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
-import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
+import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryRead;
+import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryUpdate;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
@@ -47,23 +50,23 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
-public class AttributeServices implements AttributeServiceSet {
+public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServiceSet {
 
-    private final ServiceMetric readMetric = new ServiceMetric();
-    private final ServiceMetric writeMetric = new ServiceMetric();
+    private final ServiceMetric historyReadMetric = new ServiceMetric();
+    private final ServiceMetric historyUpdateMetric = new ServiceMetric();
 
     @Override
-    public void onRead(ServiceRequest<ReadRequest, ReadResponse> service) {
-        readMetric.record(service);
+    public void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> service) {
+        historyReadMetric.record(service);
 
-        ReadRequest request = service.getRequest();
+        HistoryReadRequest request = service.getRequest();
 
-        DiagnosticsContext<ReadValueId> diagnosticsContext = new DiagnosticsContext<>();
+        DiagnosticsContext<HistoryReadValueId> diagnosticsContext = new DiagnosticsContext<>();
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        List<ReadValueId> nodesToRead = l(request.getNodesToRead());
+        List<HistoryReadValueId> nodesToRead = l(request.getNodesToRead());
 
         if (nodesToRead.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);
@@ -75,22 +78,17 @@ public class AttributeServices implements AttributeServiceSet {
             return;
         }
 
-        if (request.getMaxAge() < 0d) {
-            service.setServiceFault(StatusCodes.Bad_MaxAgeInvalid);
-            return;
-        }
-
         if (request.getTimestampsToReturn() == null) {
             service.setServiceFault(StatusCodes.Bad_TimestampsToReturnInvalid);
             return;
         }
 
 
-        List<PendingRead> pendingReads = newArrayListWithCapacity(nodesToRead.size());
-        List<CompletableFuture<DataValue>> futures = newArrayListWithCapacity(nodesToRead.size());
+        List<PendingHistoryRead> pendingReads = newArrayListWithCapacity(nodesToRead.size());
+        List<CompletableFuture<HistoryReadResult>> futures = newArrayListWithCapacity(nodesToRead.size());
 
-        for (ReadValueId id : nodesToRead) {
-            PendingRead pending = new PendingRead(id);
+        for (HistoryReadValueId id : nodesToRead) {
+            PendingHistoryRead pending = new PendingHistoryRead(id);
 
             pendingReads.add(pending);
             futures.add(pending.getFuture());
@@ -98,27 +96,27 @@ public class AttributeServices implements AttributeServiceSet {
 
         // Group PendingReads by namespace and call read for each.
 
-        Map<UShort, List<PendingRead>> byNamespace = pendingReads.stream()
+        Map<UShort, List<PendingHistoryRead>> byNamespace = pendingReads.stream()
             .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
 
         byNamespace.keySet().forEach(index -> {
-            List<PendingRead> pending = byNamespace.get(index);
+            List<PendingHistoryRead> pending = byNamespace.get(index);
 
-            CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
+            CompletableFuture<List<HistoryReadResult>> future = new CompletableFuture<>();
 
-            ReadContext context = new ReadContext(
+            HistoryReadContext context = new HistoryReadContext(
                 server, session, future, diagnosticsContext);
 
             server.getExecutorService().execute(() -> {
                 Namespace namespace = server.getNamespaceManager().getNamespace(index);
 
-                List<ReadValueId> readValueIds = pending.stream()
-                    .map(PendingRead::getInput)
+                List<HistoryReadValueId> readValueIds = pending.stream()
+                    .map(PendingHistoryRead::getInput)
                     .collect(toList());
 
-                namespace.read(
+                namespace.historyRead(
                     context,
-                    request.getMaxAge(),
+                    (HistoryReadDetails) request.getHistoryReadDetails().decode(),
                     request.getTimestampsToReturn(),
                     readValueIds);
             });
@@ -130,7 +128,7 @@ public class AttributeServices implements AttributeServiceSet {
             });
         });
 
-        // When all PendingReads have been completed send a ReadResponse with the values.
+        // When all PendingReads have been completed send a HistoryReadResponse with the values.
 
         FutureUtils.sequence(futures).thenAcceptAsync(values -> {
             ResponseHeader header = service.createResponseHeader();
@@ -138,65 +136,68 @@ public class AttributeServices implements AttributeServiceSet {
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            ReadResponse response = new ReadResponse(
-                header, a(values, DataValue.class), diagnosticInfos);
+            HistoryReadResponse response = new HistoryReadResponse(
+                header, a(values, HistoryReadResult.class), diagnosticInfos);
 
             service.setResponse(response);
         }, server.getExecutorService());
     }
-
+    
     @Override
-    public void onWrite(ServiceRequest<WriteRequest, WriteResponse> service) {
-        writeMetric.record(service);
+    public void onHistoryUpdate(ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service)
+            throws UaException {
+        historyUpdateMetric.record(service);
 
-        WriteRequest request = service.getRequest();
+        HistoryUpdateRequest request = service.getRequest();
 
-        DiagnosticsContext<WriteValue> diagnosticsContext = new DiagnosticsContext<>();
+        DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext = new DiagnosticsContext<>();
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        List<WriteValue> nodesToWrite = l(request.getNodesToWrite());
+        List<HistoryUpdateDetails> nodesToUpdate = l(request.getHistoryUpdateDetails())
+                .stream().map(e -> (HistoryUpdateDetails) e.decode())
+                .collect(Collectors.toList());
 
-        if (nodesToWrite.isEmpty()) {
+        if (nodesToUpdate.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);
             return;
         }
 
-        if (nodesToWrite.size() > server.getConfig().getLimits().getMaxNodesPerWrite().intValue()) {
+        if (nodesToUpdate.size() > server.getConfig().getLimits().getMaxNodesPerWrite().intValue()) {
             service.setServiceFault(StatusCodes.Bad_TooManyOperations);
             return;
         }
 
-        List<PendingWrite> pendingWrites = newArrayListWithCapacity(nodesToWrite.size());
-        List<CompletableFuture<StatusCode>> futures = newArrayListWithCapacity(nodesToWrite.size());
+        List<PendingHistoryUpdate> pendingUpdates = newArrayListWithCapacity(nodesToUpdate.size());
+        List<CompletableFuture<HistoryUpdateResult>> futures = newArrayListWithCapacity(nodesToUpdate.size());
 
-        for (WriteValue value : nodesToWrite) {
-            PendingWrite pending = new PendingWrite(value);
+        for (HistoryUpdateDetails details : nodesToUpdate) {
+            PendingHistoryUpdate pending = new PendingHistoryUpdate(details);
 
-            pendingWrites.add(pending);
+            pendingUpdates.add(pending);
             futures.add(pending.getFuture());
         }
 
-        Map<UShort, List<PendingWrite>> byNamespace = pendingWrites.stream()
+        Map<UShort, List<PendingHistoryUpdate>> byNamespace = pendingUpdates.stream()
             .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
 
         byNamespace.keySet().forEach(index -> {
-            List<PendingWrite> pending = byNamespace.get(index);
+            List<PendingHistoryUpdate> pending = byNamespace.get(index);
 
-            CompletableFuture<List<StatusCode>> future = new CompletableFuture<>();
+            CompletableFuture<List<HistoryUpdateResult>> future = new CompletableFuture<>();
 
-            WriteContext context = new WriteContext(
+            HistoryUpdateContext context = new HistoryUpdateContext(
                 server, session, future, diagnosticsContext);
 
             server.getExecutorService().execute(() -> {
                 Namespace namespace = server.getNamespaceManager().getNamespace(index);
 
-                List<WriteValue> writeValues = pending.stream()
-                    .map(PendingWrite::getInput)
+                List<HistoryUpdateDetails> updateDetails = pending.stream()
+                    .map(PendingHistoryUpdate::getInput)
                     .collect(toList());
 
-                namespace.write(context, writeValues);
+                namespace.historyUpdate(context, updateDetails);
             });
 
             future.thenAccept(statusCodes -> {
@@ -210,13 +211,13 @@ public class AttributeServices implements AttributeServiceSet {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToWrite);
+                diagnosticsContext.getDiagnosticInfos(nodesToUpdate);
 
-            WriteResponse response = new WriteResponse(
-                header, a(values, StatusCode.class), diagnosticInfos);
+            HistoryUpdateResponse response = new HistoryUpdateResponse(
+                header, a(values, HistoryUpdateResult.class), diagnosticInfos);
 
             service.setResponse(response);
         }, server.getExecutorService());
-    }
 
+    }
 }

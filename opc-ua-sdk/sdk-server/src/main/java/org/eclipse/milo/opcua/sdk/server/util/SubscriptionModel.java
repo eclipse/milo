@@ -30,8 +30,8 @@ import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeManager;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeManager.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.api.AttributeServices;
+import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -52,9 +52,9 @@ public class SubscriptionModel {
     private final ExecutionQueue executionQueue;
 
     private final OpcUaServer server;
-    private final AttributeManager attributeServices;
+    private final AttributeServices attributeServices;
 
-    public SubscriptionModel(OpcUaServer server, AttributeManager attributeServices) {
+    public SubscriptionModel(OpcUaServer server, AttributeServices attributeServices) {
         this.server = server;
 
         this.attributeServices = attributeServices;

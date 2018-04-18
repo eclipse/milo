@@ -31,7 +31,7 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 
 import static java.util.stream.Collectors.toList;
 
-public interface ViewManager {
+public interface ViewServices {
 
     default void browse(BrowseContext context,
                         ViewDescription view,

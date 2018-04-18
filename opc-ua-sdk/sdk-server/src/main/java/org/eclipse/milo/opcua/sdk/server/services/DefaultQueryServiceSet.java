@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
 
 import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ServiceUnsupported;
 
-public class QueryServices implements QueryServiceSet {
+public class DefaultQueryServiceSet implements QueryServiceSet {
 
     private final ServiceMetric queryFirstMetric = new ServiceMetric();
     private final ServiceMetric queryNextMetric = new ServiceMetric();

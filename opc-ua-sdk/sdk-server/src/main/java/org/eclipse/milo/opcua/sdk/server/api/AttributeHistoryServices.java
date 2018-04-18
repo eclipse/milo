@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
-
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -31,10 +30,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
 
-public interface AttributeHistoryManager {
+public interface AttributeHistoryServices {
 
     /**
-     * Read history values from nodes belonging to this {@link AttributeHistoryManager}.
+     * Read history values from nodes belonging to this {@link AttributeHistoryServices}.
      * <p>
      * Complete the operation with {@link HistoryReadContext#complete(List)}.
      *
@@ -58,7 +57,7 @@ public interface AttributeHistoryManager {
     }
 
     /**
-     * Update history values in nodes belonging to this {@link AttributeHistoryManager}.
+     * Update history values in nodes belonging to this {@link AttributeHistoryServices}.
      * <p>
      * Complete the operation with {@link HistoryUpdateContext#complete(List)}.
      *

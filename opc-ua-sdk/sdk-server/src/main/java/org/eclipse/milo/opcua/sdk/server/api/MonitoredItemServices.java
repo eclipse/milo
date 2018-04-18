@@ -17,10 +17,10 @@ import java.util.List;
 
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 
-public interface MonitoredItemManager {
+public interface MonitoredItemServices {
 
     /**
-     * {@link DataItem}s have been created for nodes belonging to this {@link NodeManager}.
+     * {@link DataItem}s have been created for nodes belonging to this {@link NodeManagementServices}.
      * <p>
      * If sampling is enabled for this item, it is expected that a best-effort will be made to update the item's value
      * at the sampling rate.
@@ -30,7 +30,7 @@ public interface MonitoredItemManager {
     void onDataItemsCreated(List<DataItem> dataItems);
 
     /**
-     * {@link DataItem}s have been modified for nodes belonging to this {@link NodeManager}.
+     * {@link DataItem}s have been modified for nodes belonging to this {@link NodeManagementServices}.
      * <p>
      * Check to see if the sampling rate has changed or if sampling has been enabled or disabled.
      *
@@ -39,7 +39,7 @@ public interface MonitoredItemManager {
     void onDataItemsModified(List<DataItem> dataItems);
 
     /**
-     * {@link DataItem}s have been deleted for nodes belonging to this {@link NodeManager}.
+     * {@link DataItem}s have been deleted for nodes belonging to this {@link NodeManagementServices}.
      * <p>
      * Updates to this item should cease and any references to it should be removed.
      *
@@ -48,28 +48,25 @@ public interface MonitoredItemManager {
     void onDataItemsDeleted(List<DataItem> dataItems);
 
     /**
-     * {@link EventItem}s have been created for nodes belonging to this {@link NodeManager}.
+     * {@link EventItem}s have been created for nodes belonging to this {@link NodeManagementServices}.
      *
      * @param eventItems the {@link EventItem}s that were created.
      */
-    default void onEventItemsCreated(List<EventItem> eventItems) {
-    }
+    default void onEventItemsCreated(List<EventItem> eventItems) {}
 
     /**
-     * {@link EventItem}s have been modified for nodes belonging to this {@link NodeManager}.
+     * {@link EventItem}s have been modified for nodes belonging to this {@link NodeManagementServices}.
      *
      * @param eventItems the {@link EventItem}s that were modified.
      */
-    default void onEventItemsModified(List<EventItem> eventItems) {
-    }
+    default void onEventItemsModified(List<EventItem> eventItems) {}
 
     /**
-     * {@link EventItem}s have been deleted for nodes belonging to this {@link NodeManager}.
+     * {@link EventItem}s have been deleted for nodes belonging to this {@link NodeManagementServices}.
      *
      * @param eventItems the {@link EventItem}s that were deleted.
      */
-    default void onEventItemsDeleted(List<EventItem> eventItems) {
-    }
+    default void onEventItemsDeleted(List<EventItem> eventItems) {}
 
     /**
      * {@link MonitoredItem}s have had their {@link MonitoringMode} modified by a client.

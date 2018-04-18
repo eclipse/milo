@@ -38,7 +38,7 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
-public class MethodServices implements MethodServiceSet {
+public class DefaultMethodServiceSet implements MethodServiceSet {
 
     private final ServiceMetric callCounter = new ServiceMetric();
 

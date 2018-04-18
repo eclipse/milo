@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.api.ViewManager.BrowseContext;
+import org.eclipse.milo.opcua.sdk.server.api.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.sdk.server.util.PendingBrowse;
@@ -56,7 +56,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
-public class ViewServices implements ViewServiceSet {
+public class DefaultViewServiceSet implements ViewServiceSet {
 
     private final ServiceMetric browseCounter = new ServiceMetric();
     private final ServiceMetric browseNextCounter = new ServiceMetric();

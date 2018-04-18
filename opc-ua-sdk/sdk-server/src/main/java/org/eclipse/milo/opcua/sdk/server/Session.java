@@ -20,14 +20,14 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
-import org.eclipse.milo.opcua.sdk.server.services.AttributeHistoryServices;
-import org.eclipse.milo.opcua.sdk.server.services.AttributeServices;
-import org.eclipse.milo.opcua.sdk.server.services.MethodServices;
-import org.eclipse.milo.opcua.sdk.server.services.MonitoredItemServices;
-import org.eclipse.milo.opcua.sdk.server.services.NodeManagementServices;
-import org.eclipse.milo.opcua.sdk.server.services.QueryServices;
-import org.eclipse.milo.opcua.sdk.server.services.SubscriptionServices;
-import org.eclipse.milo.opcua.sdk.server.services.ViewServices;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeHistoryServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultMethodServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultMonitoredItemServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultNodeManagementServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultQueryServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultSubscriptionServiceSet;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -67,14 +67,14 @@ public class Session implements SessionServiceSet {
     private volatile long lastActivity = System.nanoTime();
     private volatile ScheduledFuture<?> checkTimeoutFuture;
 
-    private final AttributeServices attributeServices;
-    private final AttributeHistoryServices attributeHistoryServices;
-    private final MethodServices methodServices;
-    private final MonitoredItemServices monitoredItemServices;
-    private final NodeManagementServiceSet nodeManagementServices;
-    private final QueryServices queryServices;
-    private final SubscriptionServices subscriptionServices;
-    private final ViewServices viewServices;
+    private final DefaultAttributeServiceSet attributeServiceSet;
+    private final DefaultAttributeHistoryServiceSet attributeHistoryServiceSet;
+    private final DefaultMethodServiceSet methodServiceSet;
+    private final DefaultMonitoredItemServiceSet monitoredItemServiceSet;
+    private final DefaultNodeManagementServiceSet nodeManagementServiceSet;
+    private final DefaultQueryServiceSet queryServiceSet;
+    private final DefaultSubscriptionServiceSet subscriptionServiceSet;
+    private final DefaultViewServiceSet viewServiceSet;
 
     private final OpcUaServer server;
     private final NodeId sessionId;
@@ -95,14 +95,14 @@ public class Session implements SessionServiceSet {
 
         subscriptionManager = new SubscriptionManager(this, server);
 
-        attributeServices = new AttributeServices();
-        attributeHistoryServices = new AttributeHistoryServices();
-        methodServices = new MethodServices();
-        monitoredItemServices = new MonitoredItemServices(subscriptionManager);
-        nodeManagementServices = new NodeManagementServices();
-        queryServices = new QueryServices();
-        subscriptionServices = new SubscriptionServices(subscriptionManager);
-        viewServices = new ViewServices();
+        attributeServiceSet = new DefaultAttributeServiceSet();
+        attributeHistoryServiceSet = new DefaultAttributeHistoryServiceSet();
+        methodServiceSet = new DefaultMethodServiceSet();
+        monitoredItemServiceSet = new DefaultMonitoredItemServiceSet(subscriptionManager);
+        nodeManagementServiceSet = new DefaultNodeManagementServiceSet();
+        queryServiceSet = new DefaultQueryServiceSet();
+        subscriptionServiceSet = new DefaultSubscriptionServiceSet(subscriptionManager);
+        viewServiceSet = new DefaultViewServiceSet();
 
         checkTimeoutFuture = server.getScheduledExecutorService().schedule(
             this::checkTimeout, sessionTimeout.toNanos(), TimeUnit.NANOSECONDS);
@@ -181,36 +181,36 @@ public class Session implements SessionServiceSet {
         return sessionName;
     }
 
-    public AttributeServices getAttributeServices() {
-        return attributeServices;
+    public DefaultAttributeServiceSet getAttributeServiceSet() {
+        return attributeServiceSet;
     }
 
-    public AttributeHistoryServices getAttributeHistoryServices() {
-        return attributeHistoryServices;
+    public DefaultAttributeHistoryServiceSet getAttributeHistoryServiceSet() {
+        return attributeHistoryServiceSet;
     }
 
-    public MethodServices getMethodServices() {
-        return methodServices;
+    public DefaultMethodServiceSet getMethodServiceSet() {
+        return methodServiceSet;
     }
 
-    public MonitoredItemServices getMonitoredItemServices() {
-        return monitoredItemServices;
+    public DefaultMonitoredItemServiceSet getMonitoredItemServiceSet() {
+        return monitoredItemServiceSet;
     }
 
-    public NodeManagementServiceSet getNodeManagementServices() {
-        return nodeManagementServices;
+    public NodeManagementServiceSet getNodeManagementServiceSet() {
+        return nodeManagementServiceSet;
     }
 
-    public QueryServices getQueryServices() {
-        return queryServices;
+    public DefaultQueryServiceSet getQueryServiceSet() {
+        return queryServiceSet;
     }
 
-    public SubscriptionServices getSubscriptionServices() {
-        return subscriptionServices;
+    public DefaultSubscriptionServiceSet getSubscriptionServiceSet() {
+        return subscriptionServiceSet;
     }
 
-    public ViewServices getViewServices() {
-        return viewServices;
+    public DefaultViewServiceSet getViewServiceSet() {
+        return viewServiceSet;
     }
 
     public SubscriptionManager getSubscriptionManager() {

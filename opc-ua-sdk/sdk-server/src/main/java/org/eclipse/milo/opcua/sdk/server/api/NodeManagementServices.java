@@ -29,7 +29,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 
-public interface NodeManager {
+public interface NodeManagementServices {
 
     default void addNode(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
         AddNodesResult result = new AddNodesResult(

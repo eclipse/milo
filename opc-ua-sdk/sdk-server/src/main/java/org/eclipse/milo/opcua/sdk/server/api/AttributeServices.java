@@ -26,10 +26,10 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
-public interface AttributeManager {
+public interface AttributeServices {
 
     /**
-     * Read one or more values from nodes belonging to this {@link AttributeManager}.
+     * Read one or more values from nodes belonging to this {@link AttributeServices}.
      * <p>
      * Complete the operation with {@link ReadContext#complete(List)}.
      *
@@ -44,7 +44,7 @@ public interface AttributeManager {
               List<ReadValueId> readValueIds);
 
     /**
-     * Write one or more values to nodes belonging to this {@link AttributeManager}.
+     * Write one or more values to nodes belonging to this {@link AttributeServices}.
      * <p>
      * Complete the operation with {@link WriteContext#complete(List)}.
      *

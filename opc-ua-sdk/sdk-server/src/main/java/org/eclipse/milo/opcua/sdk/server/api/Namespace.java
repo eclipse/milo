@@ -15,8 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.api;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-public interface Namespace extends AttributeManager, AttributeHistoryManager, 
-                                   MethodServices, MonitoredItemManager, NodeManager, ViewManager {
+public interface Namespace extends NamespaceServices {
 
     /**
      * @return the index of this {@link Namespace} in the server's namespace array.

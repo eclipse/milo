@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRespon
 
 import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ServiceUnsupported;
 
-public class NodeManagementServices implements NodeManagementServiceSet {
+public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
 
     private final ServiceMetric addNodesMetric = new ServiceMetric();
     private final ServiceMetric deleteNodesMetric = new ServiceMetric();

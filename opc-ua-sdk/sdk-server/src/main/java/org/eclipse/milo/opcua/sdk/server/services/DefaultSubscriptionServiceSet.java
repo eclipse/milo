@@ -47,11 +47,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsR
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
-public class SubscriptionServices implements SubscriptionServiceSet {
+public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
 
     private final SubscriptionManager subscriptionManager;
 
-    public SubscriptionServices(SubscriptionManager subscriptionManager) {
+    public DefaultSubscriptionServiceSet(SubscriptionManager subscriptionManager) {
         this.subscriptionManager = subscriptionManager;
     }
 

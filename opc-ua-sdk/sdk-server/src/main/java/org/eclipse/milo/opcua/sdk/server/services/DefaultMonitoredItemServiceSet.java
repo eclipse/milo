@@ -28,7 +28,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 
-public class MonitoredItemServices implements MonitoredItemServiceSet {
+public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
 
     private final ServiceMetric createMonitoredItemsMetric = new ServiceMetric();
     private final ServiceMetric modifyMonitoredItemsMetric = new ServiceMetric();
@@ -38,7 +38,7 @@ public class MonitoredItemServices implements MonitoredItemServiceSet {
 
     private final SubscriptionManager subscriptionManager;
 
-    public MonitoredItemServices(SubscriptionManager subscriptionManager) {
+    public DefaultMonitoredItemServiceSet(SubscriptionManager subscriptionManager) {
         this.subscriptionManager = subscriptionManager;
     }
 

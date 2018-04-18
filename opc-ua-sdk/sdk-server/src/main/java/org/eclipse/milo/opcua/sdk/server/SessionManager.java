@@ -634,21 +634,21 @@ public class SessionManager implements
     public void onRead(ServiceRequest<ReadRequest, ReadResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getAttributeServices().onRead(service);
+        session.getAttributeServiceSet().onRead(service);
     }
 
     @Override
     public void onWrite(ServiceRequest<WriteRequest, WriteResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getAttributeServices().onWrite(service);
+        session.getAttributeServiceSet().onWrite(service);
     }
 
     @Override
     public void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getAttributeHistoryServices().onHistoryRead(service);
+        session.getAttributeHistoryServiceSet().onHistoryRead(service);
     }
 
     @Override
@@ -657,7 +657,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getAttributeHistoryServices().onHistoryUpdate(service);
+        session.getAttributeHistoryServiceSet().onHistoryUpdate(service);
     }
     //endregion
 
@@ -666,14 +666,14 @@ public class SessionManager implements
     public void onBrowse(ServiceRequest<BrowseRequest, BrowseResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getViewServices().onBrowse(service);
+        session.getViewServiceSet().onBrowse(service);
     }
 
     @Override
     public void onBrowseNext(ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getViewServices().onBrowseNext(service);
+        session.getViewServiceSet().onBrowseNext(service);
     }
 
     @Override
@@ -683,7 +683,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getViewServices().onTranslateBrowsePaths(service);
+        session.getViewServiceSet().onTranslateBrowsePaths(service);
     }
 
     @Override
@@ -692,7 +692,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getViewServices().onRegisterNodes(service);
+        session.getViewServiceSet().onRegisterNodes(service);
     }
 
     @Override
@@ -701,7 +701,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getViewServices().onUnregisterNodes(service);
+        session.getViewServiceSet().onUnregisterNodes(service);
     }
     //endregion
 
@@ -710,7 +710,7 @@ public class SessionManager implements
     public void onAddNodes(ServiceRequest<AddNodesRequest, AddNodesResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getNodeManagementServices().onAddNodes(service);
+        session.getNodeManagementServiceSet().onAddNodes(service);
     }
 
     @Override
@@ -719,14 +719,14 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getNodeManagementServices().onAddReferences(service);
+        session.getNodeManagementServiceSet().onAddReferences(service);
     }
 
     @Override
     public void onDeleteNodes(ServiceRequest<DeleteNodesRequest, DeleteNodesResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getNodeManagementServices().onDeleteNodes(service);
+        session.getNodeManagementServiceSet().onDeleteNodes(service);
     }
 
     @Override
@@ -735,7 +735,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getNodeManagementServices().onDeleteReferences(service);
+        session.getNodeManagementServiceSet().onDeleteReferences(service);
     }
     //endregion
 
@@ -746,7 +746,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getSubscriptionServices().onCreateSubscription(service);
+        session.getSubscriptionServiceSet().onCreateSubscription(service);
     }
 
     @Override
@@ -755,7 +755,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getSubscriptionServices().onModifySubscription(service);
+        session.getSubscriptionServiceSet().onModifySubscription(service);
     }
 
     @Override
@@ -764,21 +764,21 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getSubscriptionServices().onSetPublishingMode(service);
+        session.getSubscriptionServiceSet().onSetPublishingMode(service);
     }
 
     @Override
     public void onPublish(ServiceRequest<PublishRequest, PublishResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getSubscriptionServices().onPublish(service);
+        session.getSubscriptionServiceSet().onPublish(service);
     }
 
     @Override
     public void onRepublish(ServiceRequest<RepublishRequest, RepublishResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getSubscriptionServices().onRepublish(service);
+        session.getSubscriptionServiceSet().onRepublish(service);
     }
 
     @Override
@@ -787,7 +787,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getSubscriptionServices().onTransferSubscriptions(service);
+        session.getSubscriptionServiceSet().onTransferSubscriptions(service);
     }
 
     @Override
@@ -796,7 +796,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getSubscriptionServices().onDeleteSubscriptions(service);
+        session.getSubscriptionServiceSet().onDeleteSubscriptions(service);
     }
     //endregion
 
@@ -807,7 +807,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getMonitoredItemServices().onCreateMonitoredItems(service);
+        session.getMonitoredItemServiceSet().onCreateMonitoredItems(service);
     }
 
     @Override
@@ -816,7 +816,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getMonitoredItemServices().onModifyMonitoredItems(service);
+        session.getMonitoredItemServiceSet().onModifyMonitoredItems(service);
     }
 
     @Override
@@ -825,7 +825,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getMonitoredItemServices().onSetMonitoringMode(service);
+        session.getMonitoredItemServiceSet().onSetMonitoringMode(service);
     }
 
     @Override
@@ -834,7 +834,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getMonitoredItemServices().onSetTriggering(service);
+        session.getMonitoredItemServiceSet().onSetTriggering(service);
     }
 
     @Override
@@ -843,7 +843,7 @@ public class SessionManager implements
 
         Session session = session(service);
 
-        session.getMonitoredItemServices().onDeleteMonitoredItems(service);
+        session.getMonitoredItemServiceSet().onDeleteMonitoredItems(service);
     }
     //endregion
 
@@ -852,7 +852,7 @@ public class SessionManager implements
     public void onCall(ServiceRequest<CallRequest, CallResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getMethodServices().onCall(service);
+        session.getMethodServiceSet().onCall(service);
     }
     //endregion
 
@@ -861,14 +861,14 @@ public class SessionManager implements
     public void onQueryFirst(ServiceRequest<QueryFirstRequest, QueryFirstResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getQueryServices().onQueryFirst(service);
+        session.getQueryServiceSet().onQueryFirst(service);
     }
 
     @Override
     public void onQueryNext(ServiceRequest<QueryNextRequest, QueryNextResponse> service) throws UaException {
         Session session = session(service);
 
-        session.getQueryServices().onQueryNext(service);
+        session.getQueryServiceSet().onQueryNext(service);
     }
     //endregion
 
