@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -107,6 +108,8 @@ public class UaTcpStackServer implements UaStackServer {
     private final List<Endpoint> endpoints = Lists.newCopyOnWriteArrayList();
     private final Set<String> discoveryUrls = Sets.newConcurrentHashSet();
 
+    private volatile Predicate<EndpointDescription> endpointFilter = endpointDescription -> true;
+
     private final HashedWheelTimer wheelTimer = Stack.sharedWheelTimer();
     private final Map<Long, Timeout> timeouts = Maps.newConcurrentMap();
 
@@ -117,22 +120,14 @@ public class UaTcpStackServer implements UaStackServer {
 
         addServiceSet(new DefaultDiscoveryServiceSet());
 
-        addServiceSet(new AttributeServiceSet() {
-        });
-        addServiceSet(new MethodServiceSet() {
-        });
-        addServiceSet(new MonitoredItemServiceSet() {
-        });
-        addServiceSet(new NodeManagementServiceSet() {
-        });
-        addServiceSet(new QueryServiceSet() {
-        });
-        addServiceSet(new SessionServiceSet() {
-        });
-        addServiceSet(new SubscriptionServiceSet() {
-        });
-        addServiceSet(new ViewServiceSet() {
-        });
+        addServiceSet(new AttributeServiceSet() {});
+        addServiceSet(new MethodServiceSet() {});
+        addServiceSet(new MonitoredItemServiceSet() {});
+        addServiceSet(new NodeManagementServiceSet() {});
+        addServiceSet(new QueryServiceSet() {});
+        addServiceSet(new SessionServiceSet() {});
+        addServiceSet(new SubscriptionServiceSet() {});
+        addServiceSet(new ViewServiceSet() {});
     }
 
     public UaTcpStackServerConfig getConfig() {
@@ -276,7 +271,7 @@ public class UaTcpStackServer implements UaStackServer {
     public SignedSoftwareCertificate[] getSoftwareCertificates() {
         List<SignedSoftwareCertificate> softwareCertificates = config.getSoftwareCertificates();
 
-        return softwareCertificates.toArray(new SignedSoftwareCertificate[softwareCertificates.size()]);
+        return softwareCertificates.toArray(new SignedSoftwareCertificate[0]);
     }
 
     @Override
@@ -418,6 +413,11 @@ public class UaTcpStackServer implements UaStackServer {
         return this;
     }
 
+    public UaTcpStackServer setEndpointFilter(Predicate<EndpointDescription> endpointFilter) {
+        this.endpointFilter = endpointFilter;
+        return this;
+    }
+
     private EndpointDescription mapEndpoint(Endpoint endpoint) {
         List<UserTokenPolicy> userTokenPolicies = config.getUserTokenPolicies();
 
@@ -465,11 +465,12 @@ public class UaTcpStackServer implements UaStackServer {
                         certificateByteString(endpoint.getCertificate()),
                         endpoint.getMessageSecurity(),
                         endpoint.getSecurityPolicy().getSecurityPolicyUri(),
-                        userTokenPolicies.toArray(new UserTokenPolicy[userTokenPolicies.size()]),
+                        userTokenPolicies.toArray(new UserTokenPolicy[0]),
                         Stack.UA_TCP_BINARY_TRANSPORT_URI,
                         ubyte(endpoint.getSecurityLevel())
                     );
                 })
+                .filter(endpointFilter)
                 .filter(ed -> filterProfileUris(ed, profileUris))
                 .collect(toList());
 

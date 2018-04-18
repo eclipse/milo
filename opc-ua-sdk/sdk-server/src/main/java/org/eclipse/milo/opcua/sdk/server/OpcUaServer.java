@@ -191,6 +191,9 @@ public class OpcUaServer {
 
                 discoveryServer.addEndpoint(
                     discoveryUrl, bindAddress, null, SecurityPolicy.None, MessageSecurityMode.None);
+
+                // Don't include the /discovery endpoints in the GetEndpoints service
+                discoveryServer.setEndpointFilter(e -> !e.getEndpointUrl().endsWith("/discovery"));
             }
         }
 
