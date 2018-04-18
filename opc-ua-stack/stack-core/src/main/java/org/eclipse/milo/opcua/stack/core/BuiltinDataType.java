@@ -68,6 +68,10 @@ public enum BuiltinDataType {
         this.backingClass = backingClass;
     }
 
+    public NodeId getNodeId() {
+        return new NodeId(0, typeId);
+    }
+
     public int getTypeId() {
         return typeId;
     }
