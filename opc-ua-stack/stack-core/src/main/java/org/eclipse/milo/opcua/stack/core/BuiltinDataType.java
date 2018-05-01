@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core;
 
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -82,18 +83,22 @@ public enum BuiltinDataType {
 
     private static final BiMap<Integer, Class<?>> BackingClassesById;
     private static final BiMap<NodeId, Class<?>> BackingClassesByNodeId;
+    private static final BiMap<NodeId, BuiltinDataType> DataTypesByNodeId;
 
     static {
-        ImmutableBiMap.Builder<Integer, Class<?>> builder = ImmutableBiMap.<Integer, Class<?>>builder();
-        ImmutableBiMap.Builder<NodeId, Class<?>> builder2 = ImmutableBiMap.<NodeId, Class<?>>builder();
+        ImmutableBiMap.Builder<Integer, Class<?>> builder = ImmutableBiMap.builder();
+        ImmutableBiMap.Builder<NodeId, Class<?>> builder2 = ImmutableBiMap.builder();
+        ImmutableBiMap.Builder<NodeId, BuiltinDataType> builder3 = ImmutableBiMap.builder();
 
         for (BuiltinDataType dataType : values()) {
             builder.put(dataType.getTypeId(), dataType.getBackingClass());
-            builder2.put(new NodeId(0, dataType.getTypeId()), dataType.getBackingClass());
+            builder2.put(dataType.getNodeId(), dataType.getBackingClass());
+            builder3.put(dataType.getNodeId(), dataType);
         }
 
         BackingClassesById = builder.build();
         BackingClassesByNodeId = builder2.build();
+        DataTypesByNodeId = builder3.build();
     }
 
     /**
@@ -126,14 +131,17 @@ public enum BuiltinDataType {
      * @param typeId the id of the builtin type.
      * @return the {@link Class} backing the builtin type.
      */
+    @Nullable
     public static Class<?> getBackingClass(int typeId) {
         return BackingClassesById.get(typeId);
     }
 
+    @Nullable
     public static Class<?> getBackingClass(NodeId typeId) {
         return BackingClassesByNodeId.get(typeId);
     }
 
+    @Nullable
     public static Class<?> getBackingClass(ExpandedNodeId typeId) {
         if (typeId.getNamespaceIndex().intValue() == 0 && typeId.getType() == IdType.Numeric) {
             Number id = (Number) typeId.getIdentifier();
@@ -141,6 +149,18 @@ public enum BuiltinDataType {
         }
 
         return null;
+    }
+
+    @Nullable
+    public static BuiltinDataType fromBackingClass(Class<?> backingClass) {
+        NodeId nodeId = BackingClassesByNodeId.inverse().get(backingClass);
+
+        return nodeId != null ? DataTypesByNodeId.get(nodeId) : null;
+    }
+
+    @Nullable
+    public static BuiltinDataType fromNodeId(NodeId nodeId) {
+        return DataTypesByNodeId.get(nodeId);
     }
 
     public static boolean isBuiltin(int typeId) {
