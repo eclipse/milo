@@ -106,25 +106,7 @@ public enum BuiltinDataType {
      * @return the id of the builtin type backed by {@code backingClass}.
      */
     public static int getBuiltinTypeId(Class<?> backingClass) {
-        if (backingClass.isPrimitive()) {
-            if (backingClass == boolean.class) {
-                backingClass = Boolean.class;
-            } else if (backingClass == byte.class) {
-                backingClass = Byte.class;
-            } else if (backingClass == short.class) {
-                backingClass = Short.class;
-            } else if (backingClass == int.class) {
-                backingClass = Integer.class;
-            } else if (backingClass == long.class) {
-                backingClass = Long.class;
-            } else if (backingClass == float.class) {
-                backingClass = Float.class;
-            } else if (backingClass == double.class) {
-                backingClass = Double.class;
-            }
-        }
-
-        return BackingClassesById.inverse().get(backingClass);
+        return BackingClassesById.inverse().get(maybeBoxPrimitive(backingClass));
     }
 
     /**
@@ -153,7 +135,7 @@ public enum BuiltinDataType {
 
     @Nullable
     public static BuiltinDataType fromBackingClass(Class<?> backingClass) {
-        NodeId nodeId = BackingClassesByNodeId.inverse().get(backingClass);
+        NodeId nodeId = BackingClassesByNodeId.inverse().get(maybeBoxPrimitive(backingClass));
 
         return nodeId != null ? DataTypesByNodeId.get(nodeId) : null;
     }
@@ -173,6 +155,28 @@ public enum BuiltinDataType {
 
     public static boolean isBuiltin(ExpandedNodeId typeId) {
         return typeId.local().map(BackingClassesByNodeId::containsKey).orElse(false);
+    }
+
+    private static Class<?> maybeBoxPrimitive(Class<?> clazz) {
+        if (clazz.isPrimitive()) {
+            if (clazz == boolean.class) {
+                return Boolean.class;
+            } else if (clazz == byte.class) {
+                return Byte.class;
+            } else if (clazz == short.class) {
+                return Short.class;
+            } else if (clazz == int.class) {
+                return Integer.class;
+            } else if (clazz == long.class) {
+                return Long.class;
+            } else if (clazz == float.class) {
+                return Float.class;
+            } else if (clazz == double.class) {
+                return Double.class;
+            }
+        }
+
+        return clazz;
     }
 
 }
