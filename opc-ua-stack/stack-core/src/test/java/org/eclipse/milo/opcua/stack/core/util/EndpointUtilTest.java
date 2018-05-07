@@ -38,4 +38,39 @@ public class EndpointUtilTest {
             "opc.tcp://localhost:4840/no spaces allowed");
     }
 
+    @Test
+    public void testReplaceUrlHostname() {
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840", "localhost2"),
+            "opc.tcp://localhost2:4840");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840/", "localhost2"),
+            "opc.tcp://localhost2:4840/");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840/foo", "localhost2"),
+            "opc.tcp://localhost2:4840/foo");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840/foo/bar", "localhost2"),
+            "opc.tcp://localhost2:4840/foo/bar");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost", "localhost2"),
+            "opc.tcp://localhost2");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost/", "localhost2"),
+            "opc.tcp://localhost2/");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost/foo", "localhost2"),
+            "opc.tcp://localhost2/foo");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://localhost/foo/bar", "localhost2"),
+            "opc.tcp://localhost2/foo/bar");
+    }
+
 }
