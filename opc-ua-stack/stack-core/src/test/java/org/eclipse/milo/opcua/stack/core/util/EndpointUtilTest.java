@@ -43,6 +43,7 @@ public class EndpointUtilTest {
     public void testReplaceUrlHostname() {
         testReplaceUrlHostnameWithScheme("opc.tcp");
         testReplaceUrlHostnameWithScheme("http");
+        testReplaceUrlHostnameWithScheme("https");
     }
 
     private void testReplaceUrlHostnameWithScheme(String scheme) {
