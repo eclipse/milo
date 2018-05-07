@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import org.testng.annotations.Test;
 
+import static org.eclipse.milo.opcua.stack.core.util.EndpointUtil.replaceUrlHostname;
 import static org.testng.Assert.assertEquals;
 
 public class EndpointUtilTest {
@@ -40,85 +41,90 @@ public class EndpointUtilTest {
 
     @Test
     public void testReplaceUrlHostname() {
+        testReplaceUrlHostnameWithScheme("opc.tcp");
+        testReplaceUrlHostnameWithScheme("http");
+    }
+
+    private void testReplaceUrlHostnameWithScheme(String scheme) {
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840", "localhost2"),
-            "opc.tcp://localhost2:4840");
+            replaceUrlHostname(scheme + "://localhost:4840", "localhost2"),
+            scheme + "://localhost2:4840");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840/", "localhost2"),
-            "opc.tcp://localhost2:4840/");
+            replaceUrlHostname(scheme + "://localhost:4840/", "localhost2"),
+            scheme + "://localhost2:4840/");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840/foo", "localhost2"),
-            "opc.tcp://localhost2:4840/foo");
+            replaceUrlHostname(scheme + "://localhost:4840/foo", "localhost2"),
+            scheme + "://localhost2:4840/foo");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost:4840/foo/bar", "localhost2"),
-            "opc.tcp://localhost2:4840/foo/bar");
+            replaceUrlHostname(scheme + "://localhost:4840/foo/bar", "localhost2"),
+            scheme + "://localhost2:4840/foo/bar");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost", "localhost2"),
-            "opc.tcp://localhost2");
+            replaceUrlHostname(scheme + "://localhost", "localhost2"),
+            scheme + "://localhost2");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost/", "localhost2"),
-            "opc.tcp://localhost2/");
+            replaceUrlHostname(scheme + "://localhost/", "localhost2"),
+            scheme + "://localhost2/");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost/foo", "localhost2"),
-            "opc.tcp://localhost2/foo");
+            replaceUrlHostname(scheme + "://localhost/foo", "localhost2"),
+            scheme + "://localhost2/foo");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://localhost/foo/bar", "localhost2"),
-            "opc.tcp://localhost2/foo/bar");
+            replaceUrlHostname(scheme + "://localhost/foo/bar", "localhost2"),
+            scheme + "://localhost2/foo/bar");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://example.com", "example2.com"),
-            "opc.tcp://example2.com");
+            replaceUrlHostname(scheme + "://example.com", "example2.com"),
+            scheme + "://example2.com");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://example.com/", "example2.com"),
-            "opc.tcp://example2.com/");
+            replaceUrlHostname(scheme + "://example.com/", "example2.com"),
+            scheme + "://example2.com/");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://example.com/foo", "example2.com"),
-            "opc.tcp://example2.com/foo");
+            replaceUrlHostname(scheme + "://example.com/foo", "example2.com"),
+            scheme + "://example2.com/foo");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://example.com/foo/bar", "example2.com"),
-            "opc.tcp://example2.com/foo/bar");
+            replaceUrlHostname(scheme + "://example.com/foo/bar", "example2.com"),
+            scheme + "://example2.com/foo/bar");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1", "192.168.0.1"),
-            "opc.tcp://192.168.0.1");
+            replaceUrlHostname(scheme + "://127.0.0.1", "192.168.0.1"),
+            scheme + "://192.168.0.1");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1/", "192.168.0.1"),
-            "opc.tcp://192.168.0.1/");
+            replaceUrlHostname(scheme + "://127.0.0.1/", "192.168.0.1"),
+            scheme + "://192.168.0.1/");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1/foo", "192.168.0.1"),
-            "opc.tcp://192.168.0.1/foo");
+            replaceUrlHostname(scheme + "://127.0.0.1/foo", "192.168.0.1"),
+            scheme + "://192.168.0.1/foo");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1/foo/bar", "192.168.0.1"),
-            "opc.tcp://192.168.0.1/foo/bar");
+            replaceUrlHostname(scheme + "://127.0.0.1/foo/bar", "192.168.0.1"),
+            scheme + "://192.168.0.1/foo/bar");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840", "192.168.0.1"),
-            "opc.tcp://192.168.0.1:4840");
+            replaceUrlHostname(scheme + "://127.0.0.1:4840", "192.168.0.1"),
+            scheme + "://192.168.0.1:4840");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840/", "192.168.0.1"),
-            "opc.tcp://192.168.0.1:4840/");
+            replaceUrlHostname(scheme + "://127.0.0.1:4840/", "192.168.0.1"),
+            scheme + "://192.168.0.1:4840/");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840/foo", "192.168.0.1"),
-            "opc.tcp://192.168.0.1:4840/foo");
+            replaceUrlHostname(scheme + "://127.0.0.1:4840/foo", "192.168.0.1"),
+            scheme + "://192.168.0.1:4840/foo");
 
         assertEquals(
-            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840/foo/bar", "192.168.0.1"),
-            "opc.tcp://192.168.0.1:4840/foo/bar");
+            replaceUrlHostname(scheme + "://127.0.0.1:4840/foo/bar", "192.168.0.1"),
+            scheme + "://192.168.0.1:4840/foo/bar");
     }
 
 }

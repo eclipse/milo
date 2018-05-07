@@ -81,19 +81,21 @@ public class EndpointUtil {
     }
 
     private static final Pattern ENDPOINT_URL_PATTERN =
-        Pattern.compile("opc.tcp://([^:/]+)(:\\d+)?(/.*)?");
+        Pattern.compile("(opc.tcp|http)://([^:/]+)(:\\d+)?(/.*)?");
 
     static String replaceUrlHostname(String endpointUrl, String hostname) {
         Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
         if (matcher.matches()) {
-            String port = matcher.group(2); // e.g. ":4840"
+            String scheme = matcher.group(1);
+
+            String port = matcher.group(3); // e.g. ":4840"
             if (port == null) port = "";
 
-            String path = matcher.group(3); // e.g. "/" or "/foo" or "/foo/bar"
+            String path = matcher.group(4); // e.g. "/" or "/foo" or "/foo/bar"
             if (path == null) path = "";
 
-            return "opc.tcp://" + hostname + port + path;
+            return scheme + "://" + hostname + port + path;
         } else {
             return endpointUrl;
         }
