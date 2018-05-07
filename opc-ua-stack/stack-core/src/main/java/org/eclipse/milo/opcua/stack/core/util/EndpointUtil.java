@@ -80,7 +80,8 @@ public class EndpointUtil {
 
     }
 
-    private static final Pattern ENDPOINT_URL_PATTERN = Pattern.compile("opc.tcp://([\\w&&[^:/]]+)(:\\d+)?(/?.+)?");
+    private static final Pattern ENDPOINT_URL_PATTERN =
+        Pattern.compile("opc.tcp://([[a-zA-Z0-9_\\-.]&&[^:/]]+)(:\\d+)?(/?.+)?");
 
     static String replaceUrlHostname(String endpointUrl, String hostname) {
         Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);

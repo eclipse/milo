@@ -71,6 +71,54 @@ public class EndpointUtilTest {
         assertEquals(
             EndpointUtil.replaceUrlHostname("opc.tcp://localhost/foo/bar", "localhost2"),
             "opc.tcp://localhost2/foo/bar");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://example.com", "example2.com"),
+            "opc.tcp://example2.com");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://example.com/", "example2.com"),
+            "opc.tcp://example2.com/");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://example.com/foo", "example2.com"),
+            "opc.tcp://example2.com/foo");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://example.com/foo/bar", "example2.com"),
+            "opc.tcp://example2.com/foo/bar");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1", "192.168.0.1"),
+            "opc.tcp://192.168.0.1");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1/", "192.168.0.1"),
+            "opc.tcp://192.168.0.1/");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1/foo", "192.168.0.1"),
+            "opc.tcp://192.168.0.1/foo");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1/foo/bar", "192.168.0.1"),
+            "opc.tcp://192.168.0.1/foo/bar");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840", "192.168.0.1"),
+            "opc.tcp://192.168.0.1:4840");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840/", "192.168.0.1"),
+            "opc.tcp://192.168.0.1:4840/");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840/foo", "192.168.0.1"),
+            "opc.tcp://192.168.0.1:4840/foo");
+
+        assertEquals(
+            EndpointUtil.replaceUrlHostname("opc.tcp://127.0.0.1:4840/foo/bar", "192.168.0.1"),
+            "opc.tcp://192.168.0.1:4840/foo/bar");
     }
 
 }
