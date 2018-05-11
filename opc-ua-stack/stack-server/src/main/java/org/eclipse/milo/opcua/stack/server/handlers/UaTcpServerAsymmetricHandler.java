@@ -404,7 +404,8 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                                     new UaTcpServerSymmetricHandler(
                                         server, serializationQueue, secureChannel);
 
-                                ctx.pipeline().addFirst(symmetricHandler);
+                                ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);
+
                                 symmetricHandlerAdded = true;
                             }
 

@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.util.AsyncSemaphore;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.server.handlers.RateLimitingHandler;
 import org.eclipse.milo.opcua.stack.server.handlers.UaTcpServerHelloHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,7 +190,6 @@ public class SocketServers {
         }
 
         static CompletableFuture<SocketServer> bootstrap(InetSocketAddress address) {
-
             final CompletableFuture<SocketServer> serverFuture = new CompletableFuture<>();
 
             final ServerBootstrap bootstrap = new ServerBootstrap();
@@ -205,6 +205,7 @@ public class SocketServers {
                         Function<String, Optional<UaTcpStackServer>> serverLookup =
                             endpointUrl -> getServerByEndpointUrl(address, endpointUrl);
 
+                        channel.pipeline().addLast(RateLimitingHandler.getInstance());
                         channel.pipeline().addLast(new UaTcpServerHelloHandler(serverLookup));
                     }
                 });
