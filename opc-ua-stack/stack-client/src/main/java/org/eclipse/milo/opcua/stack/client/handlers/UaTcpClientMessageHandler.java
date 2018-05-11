@@ -95,6 +95,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     private final ClientSecureChannel secureChannel;
     private final SerializationQueue serializationQueue;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
+    private final int maxChunkCount;
+    private final int maxChunkSize;
 
     public UaTcpClientMessageHandler(
         UaTcpStackClient client,
@@ -137,6 +139,9 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                 }
             });
         });
+
+        maxChunkCount = serializationQueue.getParameters().getLocalMaxChunkCount();
+        maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
     }
 
     @Override
@@ -385,7 +390,14 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
         if (buffer.readableBytes() >= HEADER_LENGTH) {
-            if (buffer.readableBytes() >= getMessageLength(buffer)) {
+            int messageLength = getMessageLength(buffer);
+
+            if (messageLength > maxChunkSize) {
+                throw new UaException(StatusCodes.Bad_TcpMessageTooLarge,
+                    String.format("max chunk size exceeded (%s)", maxChunkSize));
+            }
+
+            if (buffer.readableBytes() >= messageLength) {
                 decodeMessage(ctx, buffer);
             }
         }
@@ -416,9 +428,6 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     }
 
     private boolean accumulateChunk(ByteBuf buffer) throws UaException {
-        int maxChunkCount = serializationQueue.getParameters().getLocalMaxChunkCount();
-        int maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
-
         int chunkSize = buffer.readerIndex(0).readableBytes();
 
         if (chunkSize > maxChunkSize) {

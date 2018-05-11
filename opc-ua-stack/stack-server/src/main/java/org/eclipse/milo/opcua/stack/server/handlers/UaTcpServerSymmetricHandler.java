@@ -188,10 +188,18 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        while (buffer.readableBytes() >= HEADER_LENGTH &&
-            buffer.readableBytes() >= getMessageLength(buffer)) {
-
+        while (buffer.readableBytes() >= HEADER_LENGTH) {
             int messageLength = getMessageLength(buffer);
+
+            if (messageLength > maxChunkSize) {
+                throw new UaException(StatusCodes.Bad_TcpMessageTooLarge,
+                    String.format("max chunk size exceeded (%s)", maxChunkSize));
+            }
+
+            if (buffer.readableBytes() < messageLength) {
+                break;
+            }
+
             MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
             switch (messageType) {
