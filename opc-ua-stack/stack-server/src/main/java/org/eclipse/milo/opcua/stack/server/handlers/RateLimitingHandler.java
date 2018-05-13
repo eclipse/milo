@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -27,9 +27,17 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ipfilter.AbstractRemoteAddressFilter;
+import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A shared, stack-wide, one-per-application-regardless-of-how-many-server-instances-you-have handler that is added to
+ * the beginning of every server pipeline to handle rate limiting and connection limits.
+ * <p>
+ * Any configuration changes must be made before {@link UaTcpStackServer#startup()} is called for the first time,
+ * application-wide. Once the instance has been created further configuration changes will have no effect.
+ */
 @ChannelHandler.Sharable
 public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketAddress> {
 
@@ -52,10 +60,23 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
     public static int RATE_LIMIT_WINDOW_MS = 1000;
 
     /**
+     * The maximum number of connections allowed in total (any remote address, not including localhost).
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static int MAX_CONNECTIONS = 10000;
+
+    /**
+     * The maximum number of connections allowed from any 1 remote address.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static int MAX_CONNECTIONS_PER_ADDRESS = 100;
+
+
+    /**
      * Get the shared {@link RateLimitingHandler} instance.
      * <p>
-     * The values of {@link #ENABLED}, {@link #MAX_ATTEMPTS}, and {@link #RATE_LIMIT_WINDOW_MS} will be locked in
-     * whenever the first invocation of this method occurs.
+     * The values of {@link #ENABLED}, {@link #MAX_ATTEMPTS}, {@link #RATE_LIMIT_WINDOW_MS}, {@link #MAX_CONNECTIONS},
+     * and {@link #MAX_CONNECTIONS_PER_ADDRESS} will be locked in whenever the first invocation of this method occurs.
      *
      * @return the shared {@link RateLimitingHandler} instance.
      */
@@ -65,8 +86,8 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
 
     private static class InstanceHolder {
 
-        private static final RateLimitingHandler INSTANCE =
-            new RateLimitingHandler(ENABLED, MAX_ATTEMPTS, RATE_LIMIT_WINDOW_MS);
+        private static final RateLimitingHandler INSTANCE = new RateLimitingHandler(
+            ENABLED, MAX_ATTEMPTS, RATE_LIMIT_WINDOW_MS, MAX_CONNECTIONS, MAX_CONNECTIONS_PER_ADDRESS);
 
     }
 
@@ -78,13 +99,25 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
     private final boolean enabled;
     private final int maxAttempts;
     private final int rateLimitWindowMs;
+    private final int maxConnections;
+    private final int maxConnectionsPerAddress;
 
-    private RateLimitingHandler(boolean enabled, int maxAttempts, int rateLimitWindowMs) {
+    private RateLimitingHandler(
+        boolean enabled,
+        int maxAttempts,
+        int rateLimitWindowMs,
+        int maxConnections,
+        int maxConnectionsPerAddress) {
+
         this.enabled = enabled;
         this.maxAttempts = maxAttempts;
         this.rateLimitWindowMs = rateLimitWindowMs;
+        this.maxConnections = maxConnections;
+        this.maxConnectionsPerAddress = maxConnectionsPerAddress;
 
-        logger.debug("enabled=" + enabled + " maxAttempts=" + maxAttempts + " rateLimitWindowMs=" + rateLimitWindowMs);
+        logger.debug(
+            "enabled=%s, maxAttempts=%s, rateLimitWindowMs=%s, maxConnections=%s, maxConnectionsPerAddress=%s",
+            enabled, maxAttempts, rateLimitWindowMs, maxConnections, maxConnectionsPerAddress);
     }
 
     @Override
@@ -102,28 +135,35 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
 
             // count the number of previous connections from this address
             // that have occurred within the rate limit window.
-            int count = 0;
+            int attemptsInWindow = 0;
             for (Date d : dates) {
                 if (now - d.getTime() < rateLimitWindowMs) {
-                    count++;
+                    attemptsInWindow++;
                 }
             }
-
-            boolean accept = count < maxAttempts;
 
             dates.addLast(new Date());
             while (dates.size() > maxAttempts) {
                 dates.removeFirst();
             }
 
+            int connectionsTotal = connections.size();
+            int connectionsFromAddress = connections.count(address);
+
+            boolean accept = attemptsInWindow < maxAttempts &&
+                connectionsTotal < maxConnections &&
+                connectionsFromAddress < maxConnectionsPerAddress;
+
             if (accept) {
                 logger.debug(String.format(
-                    "Accepting connection from %s. Number of attempts in last %sms: %s",
-                    isa, rateLimitWindowMs, count));
+                    "Accepting connection from %s. " +
+                        "window=%sms, attemptsInWindow=%s, connectionsTotal=%s, connectionsFromAddress=%s",
+                    isa, rateLimitWindowMs, attemptsInWindow, connectionsTotal, connectionsFromAddress));
             } else {
                 logger.warn(String.format(
-                    "Rejecting connection from %s. Number of attempts exceeds %s per %sms",
-                    isa, maxAttempts, rateLimitWindowMs));
+                    "Rejecting connection from %s. " +
+                        "window=%sms, attemptsInWindow=%s, connectionsTotal=%s, connectionsFromAddress=%s",
+                    isa, rateLimitWindowMs, attemptsInWindow, connectionsTotal, connectionsFromAddress));
             }
 
             return accept;
