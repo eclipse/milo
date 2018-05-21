@@ -46,6 +46,9 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getMaxPendingPublishRequests(), original.getMaxPendingPublishRequests());
         assertEquals(copy.getIdentityProvider(), original.getIdentityProvider());
         assertEquals(copy.getBsdParser(), original.getBsdParser());
+        assertEquals(copy.getKeepAliveFailuresAllowed(), original.getKeepAliveFailuresAllowed());
+        assertEquals(copy.getKeepAliveInterval(), original.getKeepAliveInterval());
+        assertEquals(copy.getKeepAliveTimeout(), original.getKeepAliveTimeout());
     }
 
     @Test
@@ -68,6 +71,9 @@ public class OpcUaClientConfigTest {
                     .setMaxPendingPublishRequests(uint(0))
                     .setIdentityProvider(new AnonymousProvider())
                     .setBsdParser(new GenericBsdParser())
+                    .setKeepAliveFailuresAllowed(uint(2))
+                    .setKeepAliveInterval(uint(10000))
+                    .setKeepAliveTimeout(uint(15000))
         );
 
         assertNotEquals(copy.getSessionName(), original.getSessionName());
@@ -78,6 +84,9 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getRequestTimeout(), uint(0));
         assertEquals(copy.getMaxResponseMessageSize(), uint(0));
         assertEquals(copy.getMaxPendingPublishRequests(), uint(0));
+        assertEquals(copy.getKeepAliveFailuresAllowed(), uint(2));
+        assertEquals(copy.getKeepAliveInterval(), uint(10000));
+        assertEquals(copy.getKeepAliveTimeout(), uint(15000));
     }
 
 }
