@@ -46,6 +46,9 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
     private IdentityProvider identityProvider = new AnonymousProvider();
     private BsdParser bsdParser = new GenericBsdParser();
+    private UInteger keepAliveFailuresAllowed = uint(1);
+    private UInteger keepAliveInterval = uint(5000);
+    private UInteger keepAliveTimeout = uint(5000);
 
     public OpcUaClientConfigBuilder setSessionName(Supplier<String> sessionName) {
         this.sessionName = sessionName;
@@ -79,6 +82,21 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setBsdParser(BsdParser bsdParser) {
         this.bsdParser = bsdParser;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveFailuresAllowed(UInteger keepAliveFailuresAllowed) {
+        this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveInterval(UInteger keepAliveInterval) {
+        this.keepAliveInterval = keepAliveInterval;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveTimeout(UInteger keepAliveTimeout) {
+        this.keepAliveTimeout = keepAliveTimeout;
         return this;
     }
 
@@ -195,7 +213,10 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             maxPendingPublishRequests,
             requestTimeout,
             identityProvider,
-            bsdParser
+            bsdParser,
+            keepAliveFailuresAllowed,
+            keepAliveInterval,
+            keepAliveTimeout
         );
     }
 
@@ -209,15 +230,22 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         private final UInteger requestTimeout;
         private final IdentityProvider identityProvider;
         private final BsdParser bsdParser;
+        private final UInteger keepAliveFailuresAllowed;
+        private final UInteger keepAliveInterval;
+        private final UInteger keepAliveTimeout;
 
-        public OpcUaClientConfigImpl(UaTcpStackClientConfig stackClientConfig,
-                                     Supplier<String> sessionName,
-                                     UInteger sessionTimeout,
-                                     UInteger maxResponseMessageSize,
-                                     UInteger maxPendingPublishRequests,
-                                     UInteger requestTimeout,
-                                     IdentityProvider identityProvider,
-                                     BsdParser bsdParser) {
+        public OpcUaClientConfigImpl(
+            UaTcpStackClientConfig stackClientConfig,
+            Supplier<String> sessionName,
+            UInteger sessionTimeout,
+            UInteger maxResponseMessageSize,
+            UInteger maxPendingPublishRequests,
+            UInteger requestTimeout,
+            IdentityProvider identityProvider,
+            BsdParser bsdParser,
+            UInteger keepAliveFailuresAllowed,
+            UInteger keepAliveInterval,
+            UInteger keepAliveTimeout) {
 
             this.stackClientConfig = stackClientConfig;
             this.sessionName = sessionName;
@@ -227,6 +255,9 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
             this.bsdParser = bsdParser;
+            this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
+            this.keepAliveInterval = keepAliveInterval;
+            this.keepAliveTimeout = keepAliveTimeout;
         }
 
         @Override
@@ -262,6 +293,21 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public BsdParser getBsdParser() {
             return bsdParser;
+        }
+
+        @Override
+        public UInteger getKeepAliveFailuresAllowed() {
+            return keepAliveFailuresAllowed;
+        }
+
+        @Override
+        public UInteger getKeepAliveInterval() {
+            return keepAliveInterval;
+        }
+
+        @Override
+        public UInteger getKeepAliveTimeout() {
+            return keepAliveTimeout;
         }
 
         @Override

@@ -15,7 +15,7 @@ package org.eclipse.milo.opcua.sdk.client.session.states;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
@@ -42,20 +42,15 @@ import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class Active extends AbstractSessionState implements SessionState {
-
-    private static final int KEEP_ALIVE_FAILURES_ALLOWED = 1;
-    private static final int KEEP_ALIVE_INTERVAL_MS = 5000;
-    private static final int KEEP_ALIVE_TIMEOUT_MS = 5000;
 
     private OpcUaSession session;
     private CompletableFuture<OpcUaSession> sessionFuture;
 
     private volatile boolean keepAliveActive = true;
-    private final AtomicInteger keepAliveFailureCount = new AtomicInteger(0);
+    private final AtomicLong keepAliveFailureCount = new AtomicLong(0L);
 
     public OpcUaSession getSession() {
         return session;
@@ -103,11 +98,10 @@ public class Active extends AbstractSessionState implements SessionState {
     }
 
     private void scheduleKeepAlive(Fsm fsm) {
+        long delay = fsm.getClient().getConfig().getKeepAliveInterval().longValue();
+
         Stack.sharedScheduledExecutor().schedule(
-            new KeepAlive(fsm, session),
-            KEEP_ALIVE_INTERVAL_MS,
-            TimeUnit.MILLISECONDS
-        );
+            new KeepAlive(fsm, session), delay, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -144,12 +138,16 @@ public class Active extends AbstractSessionState implements SessionState {
 
         private final Logger logger = LoggerFactory.getLogger(SessionFsm.class);
 
+        private final long keepAliveFailuresAllowed;
+
         private final Fsm fsm;
         private final OpcUaSession session;
 
         KeepAlive(Fsm fsm, OpcUaSession session) {
             this.fsm = fsm;
             this.session = session;
+
+            keepAliveFailuresAllowed = fsm.getClient().getConfig().getKeepAliveFailuresAllowed().longValue();
         }
 
         @Override
@@ -165,10 +163,10 @@ public class Active extends AbstractSessionState implements SessionState {
 
             responseFuture.whenComplete((r, ex) -> {
                 if (ex != null) {
-                    if (keepAliveFailureCount.incrementAndGet() > KEEP_ALIVE_FAILURES_ALLOWED) {
+                    if (keepAliveFailureCount.incrementAndGet() > keepAliveFailuresAllowed) {
                         logger.warn(
                             "Keep Alive failureCount=" + keepAliveFailureCount +
-                                " exceeds failuresAllowed=" + KEEP_ALIVE_FAILURES_ALLOWED);
+                                " exceeds failuresAllowed=" + keepAliveFailuresAllowed);
 
                         maybeFireEvent(new KeepAliveFailureEvent());
                     } else {
@@ -208,7 +206,7 @@ public class Active extends AbstractSessionState implements SessionState {
         private ReadRequest createKeepAliveRequest() {
             RequestHeader requestHeader = fsm.getClient().getStackClient().newRequestHeader(
                 session.getAuthenticationToken(),
-                uint(KEEP_ALIVE_TIMEOUT_MS)
+                fsm.getClient().getConfig().getKeepAliveTimeout()
             );
 
             return new ReadRequest(
