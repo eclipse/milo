@@ -17,13 +17,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
-import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.Event;
@@ -71,14 +67,6 @@ public class Active extends AbstractSessionState implements SessionState {
 
     @Override
     public void onExternalTransition(Fsm fsm, SessionState prev, Event event) {
-        fsm.getClient().getStackClient().getChannelFuture().thenAccept(secureChannel -> {
-            Channel channel = secureChannel.getChannel();
-
-            if (channel.pipeline().get(InactivityHandler.class) == null) {
-                channel.pipeline().addLast(new InactivityHandler(fsm));
-            }
-        });
-
         if (prev instanceof Initializing || prev instanceof Reinitializing) {
             if (event instanceof InitializeSuccessEvent) {
                 InitializeSuccessEvent e = (InitializeSuccessEvent) event;
@@ -133,14 +121,6 @@ public class Active extends AbstractSessionState implements SessionState {
             closeSessionAsync(fsm, session, closeFuture, sessionFuture);
 
             return new Closing();
-        } else if (e instanceof ChannelInactiveEvent) {
-            keepAliveActive = false;
-
-            Reactivating reactivating = new Reactivating();
-
-            reactivateSessionAsync(fsm, session, reactivating.getSessionFuture());
-
-            return reactivating;
         } else if (e instanceof KeepAliveFailureEvent || e instanceof ServiceFaultEvent) {
             keepAliveActive = false;
 
@@ -242,31 +222,6 @@ public class Active extends AbstractSessionState implements SessionState {
                     QualifiedName.NULL_VALUE
                 )}
             );
-        }
-
-    }
-
-    private static class InactivityHandler extends ChannelInboundHandlerAdapter {
-
-        private final Logger logger = LoggerFactory.getLogger(getClass());
-
-        private final Fsm fsm;
-
-        InactivityHandler(Fsm fsm) {
-            this.fsm = fsm;
-        }
-
-        @Override
-        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-            logger.debug(
-                "[local={}, remote={}] channelInactive()",
-                ctx.channel().localAddress(), ctx.channel().remoteAddress());
-
-            fsm.getClient().getConfig().getExecutor().execute(
-                () -> fsm.fireEvent(new ChannelInactiveEvent())
-            );
-
-            super.channelInactive(ctx);
         }
 
     }

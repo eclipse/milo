@@ -250,9 +250,8 @@ abstract class AbstractSessionState implements SessionState {
                     userTokenSignature
                 );
 
-                LOGGER.debug(
-                    "Sending ActivateSessionRequest, secureChannelId={}, channel={}...",
-                    secureChannel.getChannelId(), secureChannel.getChannel());
+                LOGGER.debug("Sending ActivateSessionRequest, " +
+                    "secureChannelId={}", secureChannel.getChannelId());
 
                 return stackClient.sendRequest(request);
             } catch (Exception e) {
@@ -387,9 +386,8 @@ abstract class AbstractSessionState implements SessionState {
                     userTokenSignature
                 );
 
-                LOGGER.debug(
-                    "Sending (re)ActivateSessionRequest, secureChannelId={}, channel={}...",
-                    secureChannel.getChannelId(), secureChannel.getChannel());
+                LOGGER.debug("Sending (re)ActivateSessionRequest, " +
+                    "secureChannelId={}", secureChannel.getChannelId());
 
                 return stackClient.sendRequest(request);
             } catch (Exception e) {
