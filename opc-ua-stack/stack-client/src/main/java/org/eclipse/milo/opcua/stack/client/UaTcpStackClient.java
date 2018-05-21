@@ -139,7 +139,8 @@ public class UaTcpStackClient implements UaStackClient {
                 cf.completeExceptionally(
                     new UaException(StatusCodes.Bad_Disconnect, "client disconnect")))
             )
-            .thenApply(v -> UaTcpStackClient.this);
+            .thenApply(v -> (UaStackClient) UaTcpStackClient.this)
+            .exceptionally(ex -> UaTcpStackClient.this);
     }
 
     /**
