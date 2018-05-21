@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
+import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.session.events.ChannelInactiveEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
@@ -161,7 +162,7 @@ public class Active extends AbstractSessionState implements SessionState {
 
     private class KeepAlive implements Runnable {
 
-        private final Logger logger = LoggerFactory.getLogger(getClass());
+        private final Logger logger = LoggerFactory.getLogger(SessionFsm.class);
 
         private final Fsm fsm;
         private final OpcUaSession session;
