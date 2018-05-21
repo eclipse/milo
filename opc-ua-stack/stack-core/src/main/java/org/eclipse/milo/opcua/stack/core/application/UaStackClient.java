@@ -29,7 +29,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 public interface UaStackClient {
 
-    CompletableFuture<UaStackClient> connect();
+    default CompletableFuture<UaStackClient> connect() {
+        return connect(false);
+    }
+
+    CompletableFuture<UaStackClient> connect(boolean keepTrying);
 
     CompletableFuture<UaStackClient> disconnect();
 

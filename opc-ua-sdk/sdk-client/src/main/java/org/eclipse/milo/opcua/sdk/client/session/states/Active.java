@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
@@ -36,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
@@ -58,6 +58,7 @@ public class Active extends AbstractSessionState implements SessionState {
     private CompletableFuture<OpcUaSession> sessionFuture;
 
     private volatile boolean keepAliveActive = true;
+    private final AtomicInteger keepAliveFailureCount = new AtomicInteger(0);
 
     public OpcUaSession getSession() {
         return session;
@@ -139,51 +140,18 @@ public class Active extends AbstractSessionState implements SessionState {
             reactivateSessionAsync(fsm, session, reactivating.getSessionFuture());
 
             return reactivating;
-        } else if (e instanceof KeepAliveFailureEvent) {
+        } else if (e instanceof KeepAliveFailureEvent || e instanceof ServiceFaultEvent) {
             keepAliveActive = false;
 
-            // TODO reconnect needs to be a first class thing.
-            // TODO disconnect+connect isn't the same because a failure to connect
-            // TODO will leave the channel manager unconnected and not retrying.
-            // TODO Or: add a #connect(boolean) that takes a keepTrying parameter.
             CompletableFuture<CompletableFuture<UaStackClient>> reconnect =
                 fsm.getClient().getStackClient()
                     .disconnect()
-                    .thenApply(UaStackClient::connect);
+                    .thenApply(c -> c.connect(true));
 
             Reactivating reactivating = new Reactivating();
 
             reconnect.whenComplete((c, ex) ->
                 reactivateSessionAsync(fsm, session, reactivating.getSessionFuture()));
-
-            return reactivating;
-        } else if (e instanceof ServiceFaultEvent) {
-            keepAliveActive = false;
-
-            // Try to close the underlying channel and then regardless of the result start reactivating.
-            final CompletableFuture<Unit> disconnected = new CompletableFuture<>();
-
-            fsm.getClient().getStackClient().getChannelFuture().whenComplete((c, ex) -> {
-                if (c != null) {
-                    Channel channel = c.getChannel();
-
-                    channel.pipeline().remove(InactivityHandler.class);
-
-                    channel.close().addListener(
-                        (ChannelFutureListener) future ->
-                            disconnected.complete(Unit.VALUE)
-                    );
-                } else {
-                    disconnected.complete(Unit.VALUE);
-                }
-            });
-
-            Reactivating reactivating = new Reactivating();
-
-            disconnected.whenComplete((u, ex) ->
-                reactivateSessionAsync(
-                    fsm, session, reactivating.getSessionFuture())
-            );
 
             return reactivating;
         } else {
@@ -194,8 +162,6 @@ public class Active extends AbstractSessionState implements SessionState {
     private class KeepAlive implements Runnable {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
-
-        private final AtomicInteger failureCount = new AtomicInteger(0);
 
         private final Fsm fsm;
         private final OpcUaSession session;
@@ -218,28 +184,31 @@ public class Active extends AbstractSessionState implements SessionState {
 
             responseFuture.whenComplete((r, ex) -> {
                 if (ex != null) {
-                    DataValue[] results = r.getResults();
-
-                    if (results != null && results.length > 0) {
-                        logger.debug("ServerState: " +
-                            results[0].getValue().getValue());
-                    }
-
-                    failureCount.set(0);
-
-                    maybeFireEvent(new ScheduleKeepAliveEvent());
-                } else {
-                    if (failureCount.incrementAndGet() > KEEP_ALIVE_FAILURES_ALLOWED) {
+                    if (keepAliveFailureCount.incrementAndGet() > KEEP_ALIVE_FAILURES_ALLOWED) {
                         logger.warn(
-                            "Keep Alive failureCount=" + failureCount +
+                            "Keep Alive failureCount=" + keepAliveFailureCount +
                                 " exceeds failuresAllowed=" + KEEP_ALIVE_FAILURES_ALLOWED);
 
                         maybeFireEvent(new KeepAliveFailureEvent());
                     } else {
-                        logger.debug("Keep Alive failureCount=" + failureCount);
+                        logger.debug("Keep Alive failureCount=" + keepAliveFailureCount);
 
                         maybeFireEvent(new ScheduleKeepAliveEvent());
                     }
+                } else {
+                    DataValue[] results = r.getResults();
+
+                    if (results != null && results.length > 0) {
+                        Object value = results[0].getValue().getValue();
+                        if (value instanceof Integer) {
+                            ServerState state = ServerState.from((Integer) value);
+                            logger.debug("ServerState: " + state);
+                        }
+                    }
+
+                    keepAliveFailureCount.set(0);
+
+                    maybeFireEvent(new ScheduleKeepAliveEvent());
                 }
             });
         }

@@ -55,35 +55,47 @@ class ClientChannelManager {
     }
 
     public CompletableFuture<ClientSecureChannel> connect() {
+        return connect(false);
+    }
+
+    public CompletableFuture<ClientSecureChannel> connect(boolean keepTrying) {
         State currentState = state.get();
 
         logger.debug("connect(), currentState={}",
             currentState.getClass().getSimpleName());
 
         if (currentState instanceof NotConnected) {
-            Connecting nextState = new Connecting();
+            Connecting connectingState = new Connecting();
 
-            if (state.compareAndSet(currentState, nextState)) {
+            if (state.compareAndSet(currentState, connectingState)) {
                 logger.debug("connect() while NotConnected", new Exception());
 
-                CompletableFuture<ClientSecureChannel> connected = nextState.connected;
+                CompletableFuture<ClientSecureChannel> connected = connectingState.connected;
 
                 connect(connected);
 
                 return connected.whenCompleteAsync(
                     (chan, ex) -> {
                         if (chan != null) {
-                            if (state.compareAndSet(nextState, new Connected(connected))) {
+                            if (state.compareAndSet(connectingState, new Connected(connected))) {
                                 chan.getChannel().pipeline().addLast(new InactivityHandler());
                             }
                         } else {
-                            state.compareAndSet(nextState, new NotConnected());
+                            if (keepTrying) {
+                                Reconnecting reconnecting = new Reconnecting();
+
+                                if (state.compareAndSet(connectingState, reconnecting)) {
+                                    reconnect(reconnecting, 0L);
+                                }
+                            } else {
+                                state.compareAndSet(connectingState, new NotConnected());
+                            }
                         }
                     },
                     client.getExecutorService()
                 );
             } else {
-                return connect();
+                return connect(keepTrying);
             }
         } else if (currentState instanceof Connecting) {
             return ((Connecting) currentState).connected;
@@ -97,7 +109,7 @@ class ClientChannelManager {
             CompletableFuture<Unit> disconnectFuture = ((Disconnecting) currentState).disconnectFuture;
 
             disconnectFuture.whenCompleteAsync(
-                (unit, ex) -> connect().whenCompleteAsync(
+                (unit, ex) -> connect(keepTrying).whenCompleteAsync(
                     (chan, ex2) -> {
                         if (chan != null) future.complete(chan);
                         else future.completeExceptionally(ex2);
@@ -270,7 +282,7 @@ class ClientChannelManager {
         }
     }
 
-    private void reconnect(Reconnecting reconnectState, long delaySeconds, ClientSecureChannel previousChannel) {
+    private void reconnect(Reconnecting reconnectState, long delaySeconds) {
         logger.debug("Scheduling reconnect for +{} seconds...", delaySeconds);
 
         try {
@@ -296,7 +308,7 @@ class ClientChannelManager {
 
                             Reconnecting nextState = new Reconnecting();
                             if (state.compareAndSet(reconnectState, nextState)) {
-                                reconnect(nextState, nextDelay(delaySeconds), previousChannel);
+                                reconnect(nextState, nextDelay(delaySeconds));
                             }
                         }
                     },
@@ -354,10 +366,7 @@ class ClientChannelManager {
                 Reconnecting nextState = new Reconnecting();
 
                 if (state.compareAndSet(currentState, nextState)) {
-                    ClientSecureChannel channel =
-                        ((Connected) currentState).connected.get();
-
-                    reconnect(nextState, 0L, channel);
+                    reconnect(nextState, 0L);
                 }
             }
 
