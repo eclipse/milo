@@ -37,6 +37,12 @@ public final class Stack {
     public static final String UA_TCP_BINARY_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary";
 
+    public static final String UA_HTTPS_BINARY_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/https-uabinary";
+
+    public static final String UA_HTTPS_XML_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/https-uasoapxml";
+
     public static final int DEFAULT_PORT = 12685;
 
     private static NioEventLoopGroup EVENT_LOOP;
