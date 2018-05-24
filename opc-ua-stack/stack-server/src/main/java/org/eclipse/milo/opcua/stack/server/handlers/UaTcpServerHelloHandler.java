@@ -53,6 +53,8 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
     @SuppressWarnings("WeakerAccess")
     public static final AtomicLong CUMULATIVE_DEADLINES_MISSED = new AtomicLong(0L);
 
+    private static final int MAX_HELLO_MESSAGE_SIZE = 8 + 20 + 4 + 4096;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private volatile boolean receivedHello = false;
@@ -91,13 +93,7 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
         while (buffer.readableBytes() >= HEADER_LENGTH) {
-            int messageLength = getMessageLength(buffer);
-
-            // We don't actually know the configured max chunk size here, but a Hello message can only be so big...
-            if (messageLength > ChannelConfig.DEFAULT_MAX_CHUNK_SIZE) {
-                throw new UaException(StatusCodes.Bad_TcpMessageTooLarge,
-                    String.format("max chunk size exceeded (%s)", ChannelConfig.DEFAULT_MAX_CHUNK_SIZE));
-            }
+            int messageLength = getMessageLength(buffer, MAX_HELLO_MESSAGE_SIZE);
 
             if (buffer.readableBytes() < messageLength) {
                 break;

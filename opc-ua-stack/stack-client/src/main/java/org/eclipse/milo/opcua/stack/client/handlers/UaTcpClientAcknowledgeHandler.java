@@ -114,12 +114,7 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
         int maxChunkSize = config.getMaxChunkSize();
 
         while (buffer.readableBytes() >= HEADER_LENGTH) {
-            int messageLength = getMessageLength(buffer);
-
-            if (messageLength > maxChunkSize) {
-                throw new UaException(StatusCodes.Bad_TcpMessageTooLarge,
-                    String.format("max chunk size exceeded (%s)", maxChunkSize));
-            }
+            int messageLength = getMessageLength(buffer, maxChunkSize);
 
             if (buffer.readableBytes() < messageLength) {
                 break;

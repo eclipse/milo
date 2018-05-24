@@ -13,8 +13,9 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.headers;
 
-import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
 
 public interface HeaderDecoder {
@@ -31,8 +32,15 @@ public interface HeaderDecoder {
      * @param buffer {@link ByteBuf} to extract from.
      * @return The message length, which includes the size of the header.
      */
-    default int getMessageLength(ByteBuf buffer) {
-        return Ints.checkedCast(buffer.getUnsignedIntLE(buffer.readerIndex() + HEADER_LENGTH_INDEX));
+    default int getMessageLength(ByteBuf buffer, int maxMessageLength) throws UaException {
+        long messageLength = buffer.getUnsignedIntLE(buffer.readerIndex() + HEADER_LENGTH_INDEX);
+
+        if (messageLength <= maxMessageLength) {
+            return (int) messageLength;
+        } else {
+            throw new UaException(StatusCodes.Bad_TcpMessageTooLarge,
+                String.format("max message length exceeded (%s > %s)", messageLength, maxMessageLength));
+        }
     }
 
 }
