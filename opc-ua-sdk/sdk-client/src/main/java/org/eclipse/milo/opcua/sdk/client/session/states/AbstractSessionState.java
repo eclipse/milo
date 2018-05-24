@@ -19,6 +19,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -57,6 +58,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
@@ -149,7 +151,24 @@ abstract class AbstractSessionState implements SessionState {
                             "cannot create session with no endpoint configured")
                     );
 
-                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+                    String endpointUrl = endpoint.getEndpointUrl();
+                    String securityPolicyUri = endpoint.getSecurityPolicyUri();
+                    MessageSecurityMode securityMode = endpoint.getSecurityMode();
+                    String transportProfileUri = endpoint.getTransportProfileUri();
+
+                    boolean verifiedEndpoint = l(response.getServerEndpoints()).stream().anyMatch(e ->
+                        Objects.equals(e.getEndpointUrl(), endpointUrl) &&
+                            Objects.equals(e.getSecurityPolicyUri(), securityPolicyUri) &&
+                            Objects.equals(e.getSecurityMode(), securityMode) &&
+                            Objects.equals(e.getTransportProfileUri(), transportProfileUri)
+                    );
+
+                    if (!verifiedEndpoint) {
+                        throw new UaException(StatusCodes.Bad_ConfigurationError,
+                            "configured EndpointDescription not found in CreateSessionResponse");
+                    }
+
+                    SecurityPolicy securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
 
                     if (securityPolicy != SecurityPolicy.None) {
                         X509Certificate certificateFromResponse = CertificateUtil
