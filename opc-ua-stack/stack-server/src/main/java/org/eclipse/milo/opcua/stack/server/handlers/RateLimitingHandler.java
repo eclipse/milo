@@ -42,6 +42,9 @@ import org.slf4j.LoggerFactory;
 @ChannelHandler.Sharable
 public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketAddress> {
 
+    /**
+     * Cumulative count of all connection rejections for the lifetime of the server.
+     */
     public static final AtomicLong CUMULATIVE_REJECTION_COUNT = new AtomicLong(0L);
 
     /**
