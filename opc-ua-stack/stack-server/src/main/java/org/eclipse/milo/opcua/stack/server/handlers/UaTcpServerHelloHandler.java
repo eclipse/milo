@@ -16,6 +16,8 @@ package org.eclipse.milo.opcua.stack.server.handlers;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 import com.google.common.primitives.Ints;
@@ -23,6 +25,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.AttributeKey;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
@@ -44,12 +47,45 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
 
     public static final AttributeKey<String> ENDPOINT_URL_KEY = AttributeKey.valueOf("endpoint-url");
 
+    /**
+     * Cumulative count of all connection rejections for the lifetime of the server.
+     */
+    @SuppressWarnings("WeakerAccess")
+    public static final AtomicLong CUMULATIVE_DEADLINES_MISSED = new AtomicLong(0L);
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private volatile boolean receivedHello = false;
 
     private final Function<String, Optional<UaTcpStackServer>> serverLookup;
 
     public UaTcpServerHelloHandler(Function<String, Optional<UaTcpStackServer>> serverLookup) {
         this.serverLookup = serverLookup;
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        int helloDeadlineMs = Stack.ConnectionLimits.HELLO_DEADLINE_MS;
+
+        logger.debug("Scheduling Hello deadline for +" + helloDeadlineMs + "ms");
+
+        ctx.executor().schedule(
+            () -> {
+                if (!receivedHello) {
+                    long cumulativeDeadlinesMissed =
+                        CUMULATIVE_DEADLINES_MISSED.incrementAndGet();
+
+                    logger.debug("No Hello received after " +
+                        helloDeadlineMs + "ms; closing channel. " +
+                        "cumulativeDeadlinesMissed=" + cumulativeDeadlinesMissed);
+
+                    ctx.close();
+                }
+            },
+            helloDeadlineMs, TimeUnit.MILLISECONDS
+        );
+
+        super.channelActive(ctx);
     }
 
     @Override
@@ -83,6 +119,8 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
 
     private void onHello(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
         logger.debug("[remote={}] Received Hello message.", ctx.channel().remoteAddress());
+
+        receivedHello = true;
 
         final HelloMessage hello = TcpMessageDecoder.decodeHello(buffer);
 

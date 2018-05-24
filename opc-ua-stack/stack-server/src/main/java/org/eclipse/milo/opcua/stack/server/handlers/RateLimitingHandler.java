@@ -28,6 +28,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ipfilter.AbstractRemoteAddressFilter;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,44 +46,18 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
     /**
      * Cumulative count of all connection rejections for the lifetime of the server.
      */
-    public static final AtomicLong CUMULATIVE_REJECTION_COUNT = new AtomicLong(0L);
-
-    /**
-     * Allows rate limiting to be disabled stack-wide.
-     */
     @SuppressWarnings("WeakerAccess")
-    public static boolean ENABLED = true;
-
-    /**
-     * Maximum number of connect attempts per {@link #RATE_LIMIT_WINDOW_MS}.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static int MAX_ATTEMPTS = 3;
-
-    /**
-     * The window of time over which connect attempts will be counted for rate limiting.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static int RATE_LIMIT_WINDOW_MS = 1000;
-
-    /**
-     * The maximum number of connections allowed in total (any remote address, not including localhost).
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static int MAX_CONNECTIONS = 10000;
-
-    /**
-     * The maximum number of connections allowed from any 1 remote address.
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static int MAX_CONNECTIONS_PER_ADDRESS = 100;
-
+    public static final AtomicLong CUMULATIVE_CONNECTIONS_REJECTED = new AtomicLong(0L);
 
     /**
      * Get the shared {@link RateLimitingHandler} instance.
      * <p>
-     * The values of {@link #ENABLED}, {@link #MAX_ATTEMPTS}, {@link #RATE_LIMIT_WINDOW_MS}, {@link #MAX_CONNECTIONS},
-     * and {@link #MAX_CONNECTIONS_PER_ADDRESS} will be locked in whenever the first invocation of this method occurs.
+     * The values of {@link Stack.ConnectionLimits#RATE_LIMIT_ENABLED},
+     * {@link Stack.ConnectionLimits#RATE_LIMIT_MAX_ATTEMPTS},
+     * {@link Stack.ConnectionLimits#RATE_LIMIT_WINDOW_MS},
+     * {@link Stack.ConnectionLimits#RATE_LIMIT_MAX_CONNECTIONS},
+     * and {@link Stack.ConnectionLimits#RATE_LIMIT_MAX_CONNECTIONS_PER_ADDRESS}
+     * will be locked in whenever the first invocation of this method occurs.
      *
      * @return the shared {@link RateLimitingHandler} instance.
      */
@@ -93,7 +68,12 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
     private static class InstanceHolder {
 
         private static final RateLimitingHandler INSTANCE = new RateLimitingHandler(
-            ENABLED, MAX_ATTEMPTS, RATE_LIMIT_WINDOW_MS, MAX_CONNECTIONS, MAX_CONNECTIONS_PER_ADDRESS);
+            Stack.ConnectionLimits.RATE_LIMIT_ENABLED,
+            Stack.ConnectionLimits.RATE_LIMIT_MAX_ATTEMPTS,
+            Stack.ConnectionLimits.RATE_LIMIT_WINDOW_MS,
+            Stack.ConnectionLimits.RATE_LIMIT_MAX_CONNECTIONS,
+            Stack.ConnectionLimits.RATE_LIMIT_MAX_CONNECTIONS_PER_ADDRESS
+        );
 
     }
 
@@ -171,8 +151,8 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
                         "window=%sms, attemptsInWindow=%s, connectionsTotal=%s, connectionsFromAddress=%s",
                     isa, rateLimitWindowMs, attemptsInWindow, connectionsTotal, connectionsFromAddress));
 
-                long cumulativeRejectionCount = CUMULATIVE_REJECTION_COUNT.incrementAndGet();
-                logger.debug("cumulativeRejectionCount=" + cumulativeRejectionCount);
+                long cumulativeConnectionsRejected = CUMULATIVE_CONNECTIONS_REJECTED.incrementAndGet();
+                logger.debug("cumulativeConnectionsRejected=" + cumulativeConnectionsRejected);
             }
 
             return accept;

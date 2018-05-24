@@ -38,7 +38,6 @@ public final class Stack {
 
     public static final int DEFAULT_PORT = 12685;
 
-
     private static NioEventLoopGroup EVENT_LOOP;
     private static ExecutorService EXECUTOR_SERVICE;
     private static ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE;
@@ -201,6 +200,42 @@ public final class Stack {
             WHEEL_TIMER.stop().forEach(Timeout::cancel);
             WHEEL_TIMER = null;
         }
+    }
+
+    public static final class ConnectionLimits {
+
+        private ConnectionLimits() {}
+
+        /**
+         * Deadline, in milliseconds, that UA Hello message must be received within before the channel is closed.
+         */
+        public static volatile int HELLO_DEADLINE_MS = 10_000;
+
+        /**
+         * Allows rate limiting to be disabled stack-wide.
+         */
+        public static boolean RATE_LIMIT_ENABLED = true;
+
+        /**
+         * Maximum number of connect attempts per {@link #RATE_LIMIT_WINDOW_MS}.
+         */
+        public static int RATE_LIMIT_MAX_ATTEMPTS = 3;
+
+        /**
+         * The window of time over which connect attempts will be counted for rate limiting.
+         */
+        public static int RATE_LIMIT_WINDOW_MS = 1000;
+
+        /**
+         * The maximum number of connections allowed in total (any remote address, not including localhost).
+         */
+        public static int RATE_LIMIT_MAX_CONNECTIONS = 10_000;
+
+        /**
+         * The maximum number of connections allowed from any 1 remote address.
+         */
+        public static int RATE_LIMIT_MAX_CONNECTIONS_PER_ADDRESS = 100;
+
     }
 
 }
