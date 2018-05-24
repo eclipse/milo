@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.common.collect.Maps;
@@ -40,6 +41,8 @@ import org.slf4j.LoggerFactory;
  */
 @ChannelHandler.Sharable
 public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketAddress> {
+
+    public static final AtomicLong CUMULATIVE_REJECTION_COUNT = new AtomicLong(0L);
 
     /**
      * Allows rate limiting to be disabled stack-wide.
@@ -121,7 +124,7 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
     }
 
     @Override
-    protected boolean accept(ChannelHandlerContext ctx, InetSocketAddress isa) {
+    protected synchronized boolean accept(ChannelHandlerContext ctx, InetSocketAddress isa) {
         final InetAddress address = isa.getAddress();
 
         if (!enabled || address.isLoopbackAddress()) {
@@ -160,10 +163,13 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
                         "window=%sms, attemptsInWindow=%s, connectionsTotal=%s, connectionsFromAddress=%s",
                     isa, rateLimitWindowMs, attemptsInWindow, connectionsTotal, connectionsFromAddress));
             } else {
-                logger.warn(String.format(
+                logger.debug(String.format(
                     "Rejecting connection from %s. " +
                         "window=%sms, attemptsInWindow=%s, connectionsTotal=%s, connectionsFromAddress=%s",
                     isa, rateLimitWindowMs, attemptsInWindow, connectionsTotal, connectionsFromAddress));
+
+                long cumulativeRejectionCount = CUMULATIVE_REJECTION_COUNT.incrementAndGet();
+                logger.debug("cumulativeRejectionCount=" + cumulativeRejectionCount);
             }
 
             return accept;
