@@ -28,6 +28,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 
 import com.google.common.collect.ImmutableList;
@@ -710,7 +713,8 @@ public class OpcUaClientIT {
     public void testFailedSubscriptionTransfer() throws Exception {
         CompletableFuture<Void> future = new CompletableFuture<>();
 
-        final Object notificationLock = new Object();
+        final Lock lock = new ReentrantLock();
+        final Condition notificationArrived = lock.newCondition();
 
         UaSubscription.NotificationListener notificationListener = new UaSubscription.NotificationListener() {
             @Override
@@ -725,8 +729,11 @@ public class OpcUaClientIT {
                     logger.info("item={}, value={}", item.getReadValueId().getNodeId(), value);
                 }
 
-                synchronized (notificationLock) {
-                    notificationLock.notifyAll();
+                try {
+                    lock.lock();
+                    notificationArrived.signalAll();
+                } finally {
+                    lock.unlock();
                 }
             }
         };
@@ -736,7 +743,7 @@ public class OpcUaClientIT {
             public void onSubscriptionTransferFailed(UaSubscription subscription, StatusCode statusCode) {
                 Stack.sharedExecutor().execute(() -> {
                     try {
-                        createItemAndWait(notificationListener, notificationLock);
+                        createItemAndWait(notificationListener, lock, notificationArrived);
 
                         future.complete(null);
                     } catch (InterruptedException | ExecutionException e) {
@@ -749,7 +756,7 @@ public class OpcUaClientIT {
         });
 
 
-        createItemAndWait(notificationListener, notificationLock);
+        createItemAndWait(notificationListener, lock, notificationArrived);
 
         stopServer();
         startServer(server.getConfig().getBindPort());
@@ -759,7 +766,8 @@ public class OpcUaClientIT {
 
     private void createItemAndWait(
         UaSubscription.NotificationListener notificationListener,
-        Object notificationLock) throws InterruptedException, ExecutionException {
+        Lock lock,
+        Condition notificationArrived) throws InterruptedException, ExecutionException {
 
         // create a subscription and a monitored item
         UaSubscription subscription = client.getSubscriptionManager().createSubscription(1000.0).get();
@@ -779,9 +787,12 @@ public class OpcUaClientIT {
         MonitoredItemCreateRequest request = new MonitoredItemCreateRequest(
             readValueId, MonitoringMode.Reporting, parameters);
 
-        synchronized (notificationLock) {
+        lock.lock();
+        try {
             subscription.createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
-            notificationLock.wait(5000);
+            notificationArrived.await(5, TimeUnit.SECONDS);
+        } finally {
+            lock.unlock();
         }
     }
 
