@@ -807,13 +807,16 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
         List<Object> values = new ArrayList<>();
         Node listNode = node.getFirstChild();
-        NodeList children = listNode.getChildNodes();
 
-        for (int i = 0; i < children.getLength(); i++) {
-            currentNode = children.item(i);
+        if (listNode != null) {
+            NodeList children = listNode.getChildNodes();
 
-            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                values.add(decoder.apply(currentNode.getLocalName()));
+            for (int i = 0; i < children.getLength(); i++) {
+                currentNode = children.item(i);
+
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    values.add(decoder.apply(currentNode.getLocalName()));
+                }
             }
         }
 
