@@ -456,7 +456,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
                 );
             } else {
                 extensionObject = new ExtensionObject(
-                    nodeToXmlElement(bodyNode),
+                    nodeToXmlElement(bodyNode.getFirstChild()),
                     typeId
                 );
             }
