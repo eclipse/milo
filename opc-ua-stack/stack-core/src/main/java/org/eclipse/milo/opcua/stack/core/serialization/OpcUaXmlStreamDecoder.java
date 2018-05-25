@@ -878,6 +878,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         }
 
         try {
+            currentNode = node.getFirstChild();
             return codec.decode(SERIALIZATION_CONTEXT, this);
         } finally {
             currentNode = node.getNextSibling();
