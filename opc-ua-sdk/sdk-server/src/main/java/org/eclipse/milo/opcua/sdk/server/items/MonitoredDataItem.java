@@ -138,7 +138,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
 
     @Override
     protected void installFilter(ExtensionObject filterXo) throws UaException {
-        if (filterXo == null || filterXo.decode() == null) {
+        if (filterXo == null || filterXo.isNull()) {
             this.filter = DEFAULT_FILTER;
         } else {
             Object filterObject = filterXo.decode();

@@ -473,17 +473,17 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     public void writeExtensionObject(ExtensionObject value) throws UaSerializationException {
-        if (value == null || value.getEncoded() == null) {
+        if (value == null || value.getBody() == null) {
             writeNodeId(NodeId.NULL_VALUE);
             buffer.writeByte(0); // No body is encoded
         } else {
-            Object object = value.getEncoded();
+            Object body = value.getBody();
 
             switch (value.getBodyType()) {
                 case ByteString: {
-                    ByteString byteString = (ByteString) object;
+                    ByteString byteString = (ByteString) body;
 
-                    writeNodeId(value.getEncodingTypeId());
+                    writeNodeId(value.getEncodingId());
                     buffer.writeByte(1); // Body is binary encoded
 
                     writeByteString(byteString);
@@ -491,9 +491,9 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                     break;
                 }
                 case XmlElement: {
-                    XmlElement xmlElement = (XmlElement) object;
+                    XmlElement xmlElement = (XmlElement) body;
 
-                    writeNodeId(value.getEncodingTypeId());
+                    writeNodeId(value.getEncodingId());
                     buffer.writeByte(2);
 
                     writeXmlElement(xmlElement);
@@ -672,7 +672,9 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     private void writeValue(Object value, int typeId, boolean structure, boolean enumeration) {
         if (structure) {
-            ExtensionObject extensionObject = ExtensionObject.encode((UaStructure) value);
+            UaStructure struct = (UaStructure) value;
+
+            ExtensionObject extensionObject = ExtensionObject.encode(struct);
 
             writeBuiltinType(typeId, extensionObject);
         } else if (enumeration) {

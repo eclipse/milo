@@ -27,6 +27,10 @@ public final class XmlElement {
         return fragment;
     }
 
+    public String getFragmentOrEmpty() {
+        return fragment != null ? fragment : "";
+    }
+
     public static XmlElement of(String fragment) {
         return new XmlElement(fragment);
     }

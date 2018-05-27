@@ -65,7 +65,7 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         Variant decoded = reader.readVariant();
 
         ExtensionObject extensionObject = (ExtensionObject) decoded.getValue();
-        ServiceCounterDataType sc2 = extensionObject.decode();
+        ServiceCounterDataType sc2 = (ServiceCounterDataType) extensionObject.decode();
 
         Assert.assertEquals(sc1.getTotalCount(), sc2.getTotalCount());
         Assert.assertEquals(sc1.getErrorCount(), sc2.getErrorCount());

@@ -13,6 +13,9 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -20,6 +23,9 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
+import org.eclipse.milo.opcua.stack.core.util.Lazy;
 
 public final class ExtensionObject {
 
@@ -28,154 +34,187 @@ public final class ExtensionObject {
         XmlElement
     }
 
-    private volatile Object decoded;
+    private final Lazy<Object> decoded = new Lazy<>();
 
     private final BodyType bodyType;
 
-    private final Object encoded;
-    private final NodeId encodingTypeId;
+    private final Object body;
+    private final NodeId encodingId;
 
-    public ExtensionObject(ByteString encoded, NodeId encodingTypeId) {
-        this.encoded = encoded;
-        this.encodingTypeId = encodingTypeId;
+    public ExtensionObject(
+        @Nonnull ByteString body,
+        @Nonnull NodeId encodingId) {
 
-        bodyType = BodyType.ByteString;
+        this((Object) body, encodingId);
     }
 
-    public ExtensionObject(XmlElement encoded, NodeId encodingTypeId) {
-        this.encoded = encoded;
-        this.encodingTypeId = encodingTypeId;
+    public ExtensionObject(
+        @Nonnull XmlElement body,
+        @Nonnull NodeId encodingId) {
 
-        bodyType = BodyType.XmlElement;
+        this((Object) body, encodingId);
     }
 
-    public Object getEncoded() {
-        return encoded;
+    private ExtensionObject(
+        @Nonnull Object body,
+        @Nonnull NodeId encodingId) {
+
+        this.body = body;
+        this.encodingId = encodingId;
+
+        if (body instanceof ByteString) {
+            bodyType = BodyType.ByteString;
+        } else if (body instanceof XmlElement) {
+            bodyType = BodyType.XmlElement;
+        } else {
+            throw new IllegalArgumentException("body: " + body);
+        }
     }
 
-    public NodeId getEncodingTypeId() {
-        return encodingTypeId;
+    public Object getBody() {
+        return body;
     }
 
     public BodyType getBodyType() {
         return bodyType;
     }
 
-    public <T> T decode() throws UaSerializationException {
-        return decode(DataTypeEncoding.OPC_UA);
+    public NodeId getEncodingId() {
+        return encodingId;
     }
 
-    public <T> T decode(DataTypeManager dataTypeManager) throws UaSerializationException {
-        return decode(DataTypeEncoding.OPC_UA, dataTypeManager);
-    }
-
-    public <T> T decode(DataTypeEncoding encoding) throws UaSerializationException {
-        return decode(encoding, OpcUaDataTypeManager.getInstance());
-    }
-
-    public <T> T decode(DataTypeEncoding encoding, DataTypeManager dataTypeManager) throws UaSerializationException {
-        if (decoded != null) return (T) decoded;
-
+    // TODO this call smells like a design issue... probably shouldn't allow a "null-ish" ExtensionObject
+    public boolean isNull() {
         switch (bodyType) {
-            case ByteString: {
-                ByteString bs = (ByteString) encoded;
-                if (bs == null || bs.isNull()) {
-                    return null;
-                } else {
-                    decoded = encoding.decodeFromByteString((ByteString) encoded, encodingTypeId, dataTypeManager);
-                    return (T) decoded;
-                }
-            }
-
-            case XmlElement: {
-                XmlElement e = (XmlElement) encoded;
-                if (e == null || e.isNull()) {
-                    return null;
-                } else {
-                    decoded = encoding.decodeFromXmlElement((XmlElement) encoded, encodingTypeId, dataTypeManager);
-                    return (T) decoded;
-                }
-            }
-
+            case ByteString:
+                return ((ByteString) body).isNull();
+            case XmlElement:
+                return ((XmlElement) body).isNull();
             default:
-                throw new IllegalStateException("unknown body type: " + bodyType);
+                throw new IllegalStateException("BodyType: " + bodyType);
         }
     }
 
-    public static ExtensionObject encode(UaStructure structure) throws UaSerializationException {
-        return encodeAsByteString(structure, structure.getBinaryEncodingId());
+    public Object decode() throws UaSerializationException {
+        switch (bodyType) {
+            case ByteString:
+                return decode(OpcUaDefaultBinaryEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
+            case XmlElement:
+                return decode(OpcUaDefaultXmlEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
+            default:
+                throw new IllegalStateException("BodyType: " + bodyType);
+        }
     }
 
-    public static ExtensionObject encode(UaStructure structure,
-                                         DataTypeManager dataTypeManager) throws UaSerializationException {
-
-        return encodeAsByteString(structure, structure.getBinaryEncodingId(), dataTypeManager);
+    public Object decode(DataTypeManager dataTypeManager) throws UaSerializationException {
+        switch (bodyType) {
+            case ByteString:
+                return decode(OpcUaDefaultBinaryEncoding.getInstance(), dataTypeManager);
+            case XmlElement:
+                return decode(OpcUaDefaultXmlEncoding.getInstance(), dataTypeManager);
+            default:
+                throw new IllegalStateException("BodyType: " + bodyType);
+        }
     }
 
-    public static ExtensionObject encode(Object object,
-                                         NodeId encodingTypeId) throws UaSerializationException {
+    public Object decode(
+        DataTypeEncoding encoding,
+        DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        return encodeAsByteString(object, encodingTypeId);
+        return decoded.getOrCompute(() -> encoding.decode(body, encodingId, dataTypeManager));
     }
 
-    public static ExtensionObject encodeAsByteString(Object object,
-                                                     NodeId encodingTypeId) throws UaSerializationException {
-
-        return encodeAsByteString(object, encodingTypeId, DataTypeEncoding.OPC_UA);
+    @Nullable
+    public Object decodeOrNull() {
+        try {
+            return decode();
+        } catch (UaSerializationException e) {
+            return null;
+        }
     }
 
-    public static ExtensionObject encodeAsByteString(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
-
-        return encodeAsByteString(object, encodingTypeId, DataTypeEncoding.OPC_UA, dataTypeManager);
+    @Nullable
+    public Object decodeOrNull(DataTypeManager dataTypeManager) {
+        try {
+            return decode(dataTypeManager);
+        } catch (UaSerializationException e) {
+            return null;
+        }
     }
 
-    public static ExtensionObject encodeAsByteString(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeEncoding context) throws UaSerializationException {
-
-        return encodeAsByteString(object, encodingTypeId, context, OpcUaDataTypeManager.getInstance());
+    @Nullable
+    public Object decodeOrNull(
+        DataTypeEncoding encoding,
+        DataTypeManager dataTypeManager) {
+        try {
+            return decode(encoding, dataTypeManager);
+        } catch (UaSerializationException e) {
+            return null;
+        }
     }
 
-    public static ExtensionObject encodeAsByteString(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeEncoding encoding,
-                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
+    public ExtensionObject withEncoding(
+        NodeId newEncodingId,
+        DataTypeEncoding newEncoding,
+        DataTypeManager dataTypeManager) {
 
-        ByteString encoded = encoding.encodeToByteString(object, encodingTypeId, dataTypeManager);
+        if (this.encodingId.equals(newEncodingId)) {
+            return this;
+        } else {
+            // The "fast" path: body is a encoded in Default Binary or Default XML.
+            // No need to look up the DataTypeEncoding.
+            Object struct = decodeOrNull();
 
-        return new ExtensionObject(encoded, encodingTypeId);
+            if (struct != null) {
+                Object encoded = newEncoding.encode(struct, newEncodingId, dataTypeManager);
+
+                return new ExtensionObject(encoded, newEncodingId);
+            } else {
+                // TODO look up current DataTypeEncoding via this.encodingId, try decoding again using that.
+                return this;
+            }
+        }
     }
 
-    public static ExtensionObject encodeAsXmlElement(Object object,
-                                                     NodeId encodingTypeId) throws UaSerializationException {
+    public static ExtensionObject encode(UaStructure struct) {
+        NodeId encodingId = struct.getBinaryEncodingId();
 
-        return encodeAsXmlElement(object, encodingTypeId, DataTypeEncoding.OPC_UA);
+        return encodeDefaultBinary(struct, encodingId, OpcUaDataTypeManager.getInstance());
     }
 
-    public static ExtensionObject encodeAsXmlElement(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
+    public static ExtensionObject encodeDefaultBinary(
+        Object object,
+        NodeId encodingId,
+        DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        return encodeAsXmlElement(object, encodingTypeId, DataTypeEncoding.OPC_UA, dataTypeManager);
+        return encode(object, encodingId, OpcUaDefaultBinaryEncoding.getInstance(), dataTypeManager);
     }
 
-    public static ExtensionObject encodeAsXmlElement(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeEncoding context) throws UaSerializationException {
+    public static ExtensionObject encodeDefaultXml(
+        Object object,
+        NodeId encodingId,
+        DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        return encodeAsXmlElement(object, encodingTypeId, context, OpcUaDataTypeManager.getInstance());
+        return encode(object, encodingId, OpcUaDefaultXmlEncoding.getInstance(), dataTypeManager);
     }
 
-    public static ExtensionObject encodeAsXmlElement(Object object,
-                                                     NodeId encodingTypeId,
-                                                     DataTypeEncoding encoding,
-                                                     DataTypeManager dataTypeManager) throws UaSerializationException {
+    public static ExtensionObject encode(
+        Object object,
+        NodeId encodingId,
+        DataTypeEncoding encoding) throws UaSerializationException {
 
-        XmlElement encoded = encoding.encodeToXmlElement(object, encodingTypeId, dataTypeManager);
+        return encode(object, encodingId, encoding, OpcUaDataTypeManager.getInstance());
+    }
 
-        return new ExtensionObject(encoded, encodingTypeId);
+    public static ExtensionObject encode(
+        Object object,
+        NodeId encodingId,
+        DataTypeEncoding encoding,
+        DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        Object body = encoding.encode(object, encodingId, dataTypeManager);
+
+        return new ExtensionObject(body, encodingId);
     }
 
     @Override
@@ -185,20 +224,20 @@ public final class ExtensionObject {
 
         ExtensionObject that = (ExtensionObject) o;
 
-        return Objects.equal(encoded, that.encoded) &&
-            Objects.equal(encodingTypeId, that.encodingTypeId);
+        return Objects.equal(body, that.body) &&
+            Objects.equal(encodingId, that.encodingId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(encoded, encodingTypeId);
+        return Objects.hashCode(body, encodingId);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("encoded", encoded)
-            .add("encodingTypeId", encodingTypeId)
+            .add("encoded", body)
+            .add("encodingId", encodingId)
             .toString();
     }
 
