@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
@@ -127,4 +128,15 @@ public class ArrayUtil {
         return product;
     }
 
+    public static <F, T> Object transformArray(Object o, Function<F, T> transform, Class<T> toType) {
+        int length = Array.getLength(o);
+        Object array = Array.newInstance(toType, length);
+        for (int i = 0; i < length; i++) {
+            @SuppressWarnings("unchecked")
+            Object transformed = transform.apply((F) Array.get(o, i));
+            Array.set(array, i, transformed);
+        }
+        return array;
+    }
+    
 }

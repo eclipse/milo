@@ -117,10 +117,7 @@ public final class ExtensionObject {
         }
     }
 
-    public Object decode(
-        DataTypeEncoding encoding,
-        DataTypeManager dataTypeManager) throws UaSerializationException {
-
+    public Object decode(DataTypeEncoding encoding, DataTypeManager dataTypeManager) throws UaSerializationException {
         return decoded.getOrCompute(() -> encoding.decode(body, encodingId, dataTypeManager));
     }
 
@@ -143,9 +140,7 @@ public final class ExtensionObject {
     }
 
     @Nullable
-    public Object decodeOrNull(
-        DataTypeEncoding encoding,
-        DataTypeManager dataTypeManager) {
+    public Object decodeOrNull(DataTypeEncoding encoding, DataTypeManager dataTypeManager) {
         try {
             return decode(encoding, dataTypeManager);
         } catch (UaSerializationException e) {
@@ -153,7 +148,7 @@ public final class ExtensionObject {
         }
     }
 
-    public ExtensionObject withEncoding(
+    public ExtensionObject transcode(
         NodeId newEncodingId,
         DataTypeEncoding newEncoding,
         DataTypeManager dataTypeManager) {

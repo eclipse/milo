@@ -13,10 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.util;
 
-import java.lang.reflect.Array;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -48,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
+import static org.eclipse.milo.opcua.stack.core.util.ArrayUtil.transformArray;
 
 public class AttributeReader {
 
@@ -97,55 +96,45 @@ public class AttributeReader {
                 }
             }
 
-            DataValue value = node.getAttribute(context, attributeId);
-
-            Object valueObject = value.getValue().getValue();
+            final DataValue.Builder value = node.getAttribute(context, attributeId).modify();
 
             // Maybe transcode the structure...
-            if (valueObject != null) {
+            if (value.value.isNotNull()) {
+                final Object valueObject = value.value.getValue();
+
                 Class<?> valueClazz = valueObject.getClass();
 
                 if (valueClazz.isArray() && ArrayUtil.getType(valueObject) == ExtensionObject.class) {
-                    valueObject = transformArray(
+                    Object newValue = transformArray(
                         valueObject,
-                        (Function<ExtensionObject, ExtensionObject>) xo ->
+                        (ExtensionObject xo) ->
                             transcode(context, node, xo, encodingName),
                         ExtensionObject.class
                     );
+
+                    value.setValue(new Variant(newValue));
                 } else if (valueClazz == ExtensionObject.class) {
                     ExtensionObject xo = (ExtensionObject) valueObject;
 
-                    valueObject = transcode(context, node, xo, encodingName);
-                }
+                    Object newValue = transcode(context, node, xo, encodingName);
 
-                value = new DataValue(
-                    new Variant(valueObject),
-                    value.getStatusCode(),
-                    value.getSourceTime(),
-                    value.getServerTime()
-                );
+                    value.setValue(new Variant(newValue));
+                }
             }
 
             if (indexRange != null) {
                 NumericRange range = NumericRange.parse(indexRange);
 
-                Object valueAtRange = NumericRange.readFromValueAtRange(value.getValue(), range);
+                Object valueAtRange = NumericRange.readFromValueAtRange(value.value, range);
 
-                value = new DataValue(
-                    new Variant(valueAtRange),
-                    value.getStatusCode(),
-                    value.getSourceTime(),
-                    value.getServerTime()
-                );
+                value.setValue(new Variant(valueAtRange));
             }
 
             if (timestamps != null) {
-                value = (attributeId == AttributeId.Value) ?
-                    DataValue.derivedValue(value, timestamps) :
-                    DataValue.derivedNonValue(value, timestamps);
+                value.applyTimestamps(attributeId, timestamps);
             }
 
-            return value;
+            return value.build();
         } catch (UaException e) {
             return new DataValue(e.getStatusCode());
         }
@@ -192,7 +181,7 @@ public class AttributeReader {
             NodeId newEncodingId = getEncodingId(context, node, encodingName);
 
             if (newEncodingId != null) {
-                return xo.withEncoding(
+                return xo.transcode(
                     newEncodingId,
                     encoding,
                     OpcUaDataTypeManager.getInstance()
@@ -227,17 +216,6 @@ public class AttributeReader {
             .map(Node::getNodeId)
             .findFirst()
             .orElse(null);
-    }
-
-    private static <F, T> Object transformArray(Object o, Function<F, T> transform, Class<T> toType) {
-        int length = Array.getLength(o);
-        Object array = Array.newInstance(toType, length);
-        for (int i = 0; i < length; i++) {
-            @SuppressWarnings("unchecked")
-            Object transformed = transform.apply((F) Array.get(o, i));
-            Array.set(array, i, transformed);
-        }
-        return array;
     }
 
 }
