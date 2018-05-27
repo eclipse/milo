@@ -196,6 +196,7 @@ public class AttributeReader {
 
     @Nullable
     private static NodeId getEncodingId(AttributeContext context, UaServerNode node, QualifiedName encodingName) {
+        // TODO avoid dynamic lookup by registering codecs with their associated DataType and Encoding name
         NodeId dataTypeId;
         if (node instanceof VariableNode) {
             dataTypeId = ((VariableNode) node).getDataType();
