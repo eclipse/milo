@@ -143,17 +143,21 @@ public class AttributeReader {
     private static boolean isStructureSubtype(UaNodeManager nodeManager, NodeId dataTypeId) {
         UaNode dataTypeNode = nodeManager.get(dataTypeId);
 
-        Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
-            .filter(r ->
-                r.getReferenceTypeId().equals(Identifiers.HasSubtype) &&
-                    r.isInverse() &&
-                    r.getTargetNodeClass() == NodeClass.DataType)
-            .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
-            .findFirst();
+        if (dataTypeNode != null) {
+            Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
+                .filter(r ->
+                    r.getReferenceTypeId().equals(Identifiers.HasSubtype) &&
+                        r.isInverse() &&
+                        r.getTargetNodeClass() == NodeClass.DataType)
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .findFirst();
 
-        return superTypeId
-            .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeManager, id))
-            .orElse(false);
+            return superTypeId
+                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeManager, id))
+                .orElse(false);
+        } else {
+            return false;
+        }
     }
 
     private static ExtensionObject transcode(
@@ -161,6 +165,10 @@ public class AttributeReader {
         UaServerNode node,
         ExtensionObject xo,
         QualifiedName encodingName) {
+
+        if (xo.isNull()) {
+            return xo;
+        }
 
         if (encodingName == null || encodingName.isNull()) {
             // TODO default encoding should be derived from session/transport
@@ -177,18 +185,14 @@ public class AttributeReader {
             encoding = OpcUaDefaultBinaryEncoding.getInstance();
         }
 
-        if (!xo.isNull()) {
-            NodeId newEncodingId = getEncodingId(context, node, encodingName);
+        NodeId newEncodingId = getEncodingId(context, node, encodingName);
 
-            if (newEncodingId != null) {
-                return xo.transcode(
-                    newEncodingId,
-                    encoding,
-                    OpcUaDataTypeManager.getInstance()
-                );
-            } else {
-                return xo;
-            }
+        if (newEncodingId != null) {
+            return xo.transcode(
+                newEncodingId,
+                encoding,
+                OpcUaDataTypeManager.getInstance()
+            );
         } else {
             return xo;
         }
@@ -208,15 +212,19 @@ public class AttributeReader {
 
         UaNodeManager nodeManager = context.getServer().getNodeManager();
 
-        UaServerNode dataTypeNode = nodeManager.get(dataTypeId);
+        UaNode dataTypeNode = nodeManager.get(dataTypeId);
 
-        return dataTypeNode.getReferences().stream()
-            .filter(r -> r.isForward() && Identifiers.HasEncoding.equals(r.getReferenceTypeId()))
-            .flatMap(r -> opt2stream(nodeManager.getNode(r.getTargetNodeId())))
-            .filter(n -> encodingName.equals(n.getBrowseName()))
-            .map(Node::getNodeId)
-            .findFirst()
-            .orElse(null);
+        if (dataTypeNode != null) {
+            return dataTypeNode.getReferences().stream()
+                .filter(r -> r.isForward() && Identifiers.HasEncoding.equals(r.getReferenceTypeId()))
+                .flatMap(r -> opt2stream(nodeManager.getNode(r.getTargetNodeId())))
+                .filter(n -> encodingName.equals(n.getBrowseName()))
+                .map(Node::getNodeId)
+                .findFirst()
+                .orElse(null);
+        } else {
+            return null;
+        }
     }
 
 }
