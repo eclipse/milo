@@ -128,15 +128,36 @@ public class ArrayUtil {
         return product;
     }
 
-    public static <F, T> Object transformArray(Object o, Function<F, T> transform, Class<T> toType) {
-        int length = Array.getLength(o);
+    /**
+     * Transform the values in an array from one type to another using a transformation function.
+     * <p>
+     * Handles multi-dimensional arrays by flattening before the transformation and un-flattening afterwards.
+     *
+     * @param array     the original array.
+     * @param transform a function that transforms from {@code F} to {@code T}.
+     * @param toType    the destination type.
+     * @return a new array of the same size and dimensions with all elements transformed from {@code F} to {@code T}
+     * using {@code transform}.
+     */
+    public static <F, T> Object transformArray(Object array, Function<F, T> transform, Class<T> toType) {
+        int[] dimensions = ArrayUtil.getDimensions(array);
+
+        Object flatArray = dimensions.length > 1 ? flatten(array) : array;
+
+        Object transformedArray = transformFlatArray(flatArray, transform, toType);
+
+        return dimensions.length > 1 ? unflatten(transformedArray, dimensions) : transformedArray;
+    }
+
+    private static <F, T> Object transformFlatArray(Object flatArray, Function<F, T> transform, Class<T> toType) {
+        int length = Array.getLength(flatArray);
         Object array = Array.newInstance(toType, length);
         for (int i = 0; i < length; i++) {
             @SuppressWarnings("unchecked")
-            Object transformed = transform.apply((F) Array.get(o, i));
+            Object transformed = transform.apply((F) Array.get(flatArray, i));
             Array.set(array, i, transformed);
         }
         return array;
     }
-    
+
 }
