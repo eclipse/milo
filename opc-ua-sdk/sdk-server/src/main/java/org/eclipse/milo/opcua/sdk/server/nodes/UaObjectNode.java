@@ -26,7 +26,6 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
@@ -57,11 +56,11 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     private volatile UByte eventNotifier = ubyte(0);
 
     public UaObjectNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         ObjectTypeNode objectTypeNode) {
 
-        this(nodeMap, nodeId, objectTypeNode.getBrowseName(), objectTypeNode.getDisplayName());
+        this(context, nodeId, objectTypeNode.getBrowseName(), objectTypeNode.getDisplayName());
 
         setDescription(objectTypeNode.getDescription());
         setWriteMask(objectTypeNode.getWriteMask());
@@ -69,16 +68,16 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     public UaObjectNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName) {
 
-        super(nodeMap, nodeId, NodeClass.Object, browseName, displayName);
+        super(context, nodeId, NodeClass.Object, browseName, displayName);
     }
 
     public UaObjectNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -86,11 +85,11 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         UInteger writeMask,
         UInteger userWriteMask) {
 
-        super(nodeMap, nodeId, NodeClass.Object, browseName, displayName, description, writeMask, userWriteMask);
+        super(context, nodeId, NodeClass.Object, browseName, displayName, description, writeMask, userWriteMask);
     }
 
     public UaObjectNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -99,7 +98,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         UInteger userWriteMask,
         UByte eventNotifier) {
 
-        super(nodeMap, nodeId, NodeClass.Object,
+        super(context, nodeId, NodeClass.Object,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.eventNotifier = eventNotifier;
@@ -163,7 +162,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     public Optional<Node> getDescriptionNode() {
-        Optional<ServerNode> node = getReferences().stream()
+        Optional<UaNode> node = getReferences().stream()
             .filter(HAS_DESCRIPTION_PREDICATE)
             .findFirst()
             .flatMap(r -> getNode(r.getTargetNodeId()));
@@ -267,8 +266,8 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         NamingRuleType.class
     );
 
-    public static UaObjectNodeBuilder builder(ServerNodeMap nodeMap) {
-        return new UaObjectNodeBuilder(nodeMap);
+    public static UaObjectNodeBuilder builder(UaNodeContext context) {
+        return new UaObjectNodeBuilder(context);
     }
 
     public static class UaObjectNodeBuilder implements Supplier<UaObjectNode> {
@@ -283,10 +282,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         private UInteger userWriteMask = UInteger.MIN;
         private UByte eventNotifier = ubyte(0);
 
-        private final ServerNodeMap nodeMap;
+        private final UaNodeContext context;
 
-        public UaObjectNodeBuilder(ServerNodeMap nodeMap) {
-            this.nodeMap = nodeMap;
+        public UaObjectNodeBuilder(UaNodeContext context) {
+            this.context = context;
         }
 
         @Override
@@ -320,7 +319,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             // TODO More validation on references.
 
             UaObjectNode node = new UaObjectNode(
-                nodeMap,
+                context,
                 nodeId,
                 browseName,
                 displayName,

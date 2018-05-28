@@ -17,8 +17,8 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Maps;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -59,7 +59,7 @@ public class ObjectTypeManager {
     @FunctionalInterface
     public interface ObjectNodeConstructor {
         UaObjectNode apply(
-            ServerNodeMap nodeMap,
+            UaNodeContext context,
             NodeId nodeId,
             QualifiedName browseName,
             LocalizedText displayName,

@@ -25,18 +25,18 @@ import com.google.common.collect.PeekingIterator;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -70,7 +70,7 @@ public class TestNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final ServerNodeMap nodeManager;
+    private final UaNodeManager nodeManager;
     private final UaFolderNode testFolder;
     private final SubscriptionModel subscriptionModel;
 
@@ -81,30 +81,26 @@ public class TestNamespace implements Namespace {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
 
-        nodeManager = server.getNodeMap();
+        nodeManager = server.getNodeManager();
 
         NodeId testFolderNodeId = new NodeId(namespaceIndex, "Test");
 
         testFolder = new UaFolderNode(
-            nodeManager,
+            server,
             testFolderNodeId,
             new QualifiedName(namespaceIndex, "Test"),
             LocalizedText.english("Test")
         );
 
-        nodeManager.put(testFolderNodeId, testFolder);
+        nodeManager.addNode(testFolder);
 
-        try {
-            server.getUaNamespace().addReference(
-                Identifiers.ObjectsFolder,
-                Identifiers.Organizes,
-                true,
-                testFolderNodeId.expanded(),
-                NodeClass.Object
-            );
-        } catch (UaException e) {
-            logger.error("Error adding reference to Connections folder.", e);
-        }
+        nodeManager.addReference(new Reference(
+            testFolderNodeId,
+            Identifiers.Organizes,
+            Identifiers.ObjectsFolder.expanded(),
+            NodeClass.Object,
+            false
+        ));
 
         subscriptionModel = new SubscriptionModel(server, this);
 
@@ -123,7 +119,7 @@ public class TestNamespace implements Namespace {
 
     @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        ServerNode node = nodeManager.get(nodeId);
+        UaNode node = nodeManager.get(nodeId);
 
         if (node != null) {
             return CompletableFuture.completedFuture(node.getReferences());
@@ -139,7 +135,7 @@ public class TestNamespace implements Namespace {
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId id : readValueIds) {
-            ServerNode node = nodeManager.get(id.getNodeId());
+            UaServerNode node = nodeManager.get(id.getNodeId());
 
             if (node != null) {
                 DataValue value = node.readAttribute(
@@ -172,7 +168,7 @@ public class TestNamespace implements Namespace {
 
         for (WriteValue writeValue : writeValues) {
             try {
-                ServerNode node = nodeManager.getNode(writeValue.getNodeId())
+                UaServerNode node = nodeManager.getNode(writeValue.getNodeId())
                     .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
                 node.writeAttribute(
@@ -220,7 +216,7 @@ public class TestNamespace implements Namespace {
 
     @Override
     public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
-        ServerNode node = nodeManager.get(methodId);
+        UaServerNode node = nodeManager.get(methodId);
 
         if (node instanceof UaMethodNode) {
             return ((UaMethodNode) node).getInvocationHandler();
@@ -261,7 +257,7 @@ public class TestNamespace implements Namespace {
             NodeId typeId = (NodeId) os[1];
             Variant variant = (Variant) os[2];
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(nodeManager)
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
                 .setNodeId(new NodeId(namespaceIndex, "/Static/AllProfiles/Scalar/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
@@ -283,7 +279,7 @@ public class TestNamespace implements Namespace {
 
             logger.debug("Added reference: {} -> {}", folder.getNodeId(), node.getNodeId());
 
-            nodeManager.put(node.getNodeId(), node);
+            nodeManager.addNode(node);
         }
     }
 
@@ -299,10 +295,10 @@ public class TestNamespace implements Namespace {
 
         UaObjectNode firstNode = folderNodes.getFirst();
 
-        if (!nodeManager.containsKey(firstNode.getNodeId())) {
-            nodeManager.put(firstNode.getNodeId(), firstNode);
+        if (!nodeManager.containsNode(firstNode)) {
+            nodeManager.addNode(firstNode);
 
-            nodeManager.get(root.getNodeId()).addReference(new Reference(
+            nodeManager.addReference(new Reference(
                 root.getNodeId(),
                 Identifiers.Organizes,
                 firstNode.getNodeId().expanded(),
@@ -318,15 +314,17 @@ public class TestNamespace implements Namespace {
         while (iterator.hasNext()) {
             UaObjectNode node = iterator.next();
 
-            nodeManager.putIfAbsent(node.getNodeId(), node);
+            if (!nodeManager.containsNode(node)) {
+                nodeManager.addNode(node);
+            }
 
             if (iterator.hasNext()) {
                 UaObjectNode next = iterator.peek();
 
-                if (!nodeManager.containsKey(next.getNodeId())) {
-                    nodeManager.put(next.getNodeId(), next);
+                if (!nodeManager.containsNode(next)) {
+                    nodeManager.addNode(next);
 
-                    nodeManager.get(node.getNodeId()).addReference(new Reference(
+                    nodeManager.addReference(new Reference(
                         node.getNodeId(),
                         Identifiers.Organizes,
                         next.getNodeId().expanded(),
@@ -348,7 +346,7 @@ public class TestNamespace implements Namespace {
             String prefix = String.join("/", path) + "/";
             if (!prefix.startsWith("/")) prefix = "/" + prefix;
 
-            UaObjectNode node = UaObjectNode.builder(nodeManager)
+            UaObjectNode node = UaObjectNode.builder(server)
                 .setNodeId(new NodeId(namespaceIndex, prefix + name))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))
@@ -363,7 +361,7 @@ public class TestNamespace implements Namespace {
             String prefix = String.join("/", path) + "/";
             if (!prefix.startsWith("/")) prefix = "/" + prefix;
 
-            UaObjectNode node = UaObjectNode.builder(nodeManager)
+            UaObjectNode node = UaObjectNode.builder(server)
                 .setNodeId(new NodeId(namespaceIndex, prefix + name))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))

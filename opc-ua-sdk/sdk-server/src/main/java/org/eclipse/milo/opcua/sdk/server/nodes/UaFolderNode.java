@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -24,12 +23,12 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 public class UaFolderNode extends UaObjectNode {
 
     public UaFolderNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName) {
 
-        super(nodeMap, nodeId, browseName, displayName);
+        super(context, nodeId, browseName, displayName);
 
         addReference(new Reference(
             getNodeId(),

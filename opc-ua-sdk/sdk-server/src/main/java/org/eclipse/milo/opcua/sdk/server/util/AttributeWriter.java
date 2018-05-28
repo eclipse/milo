@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -47,7 +47,7 @@ import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getWriteMasks
 public class AttributeWriter {
 
     public static void writeAttribute(AttributeContext context,
-                                      ServerNode node,
+                                      UaServerNode node,
                                       AttributeId attributeId,
                                       DataValue value,
                                       @Nullable String indexRange) throws UaException {

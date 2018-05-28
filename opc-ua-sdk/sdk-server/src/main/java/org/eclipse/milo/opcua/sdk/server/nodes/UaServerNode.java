@@ -34,7 +34,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
-public interface ServerNode extends Node {
+public interface UaServerNode extends Node {
+
+    /**
+     * @return the {@link UaNodeContext} for this {@link UaServerNode}.
+     */
+    UaNodeContext getNodeContext();
 
     /**
      * Add a {@link Reference} to this node.

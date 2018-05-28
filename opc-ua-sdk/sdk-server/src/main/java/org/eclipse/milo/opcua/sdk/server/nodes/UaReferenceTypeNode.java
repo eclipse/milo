@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -34,7 +33,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     private volatile LocalizedText inverseName;
 
     public UaReferenceTypeNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -45,7 +44,7 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
         Boolean symmetric,
         LocalizedText inverseName) {
 
-        super(nodeMap, nodeId, NodeClass.ReferenceType,
+        super(context, nodeId, NodeClass.ReferenceType,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.isAbstract = isAbstract;

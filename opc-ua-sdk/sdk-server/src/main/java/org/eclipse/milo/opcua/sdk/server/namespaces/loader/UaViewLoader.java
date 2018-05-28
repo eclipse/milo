@@ -13,17 +13,16 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 
 public class UaViewLoader {
 
-    private final ServerNodeMap nodeMap;
+    private final OpcUaServer server;
 
-    public UaViewLoader(ServerNodeMap nodeMap) {
-        this.nodeMap = nodeMap;
+    public UaViewLoader(OpcUaServer server) {
+        this.server = server;
     }
 
-    public void buildNodes() {
-    }
+    public void buildNodes() {}
 
 }

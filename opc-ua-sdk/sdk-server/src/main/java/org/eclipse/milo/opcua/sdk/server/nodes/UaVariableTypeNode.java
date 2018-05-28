@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -37,7 +36,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
     private volatile Boolean isAbstract;
 
     public UaVariableTypeNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -50,7 +49,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         UInteger[] arrayDimensions,
         Boolean isAbstract) {
 
-        super(nodeMap, nodeId, NodeClass.VariableType,
+        super(context, nodeId, NodeClass.VariableType,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.value = value;

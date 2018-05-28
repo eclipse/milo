@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.util.StreamUtil;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
@@ -36,18 +36,22 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class NodeFactory {
 
-    private final ServerNodeMap nodeMap;
+    private final UaNodeManager nodeManager;
+
+    private final UaNodeContext context;
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
     public NodeFactory(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         ObjectTypeManager objectTypeManager,
         VariableTypeManager variableTypeManager) {
 
-        this.nodeMap = nodeMap;
+        this.context = context;
         this.objectTypeManager = objectTypeManager;
         this.variableTypeManager = variableTypeManager;
+
+        nodeManager = context.getNodeManager();
     }
 
     public UaObjectNode createObject(
@@ -120,7 +124,7 @@ public class NodeFactory {
                                           NodeId typeDefinitionId,
                                           Class<T> clazz) throws UaRuntimeException {
 
-        UaNode typeDefinitionNode = (UaNode) nodeMap.getNode(typeDefinitionId)
+        UaNode typeDefinitionNode = (UaNode) nodeManager.getNode(typeDefinitionId)
             .orElseThrow(() ->
                 new UaRuntimeException(
                     StatusCodes.Bad_NodeIdUnknown,
@@ -130,10 +134,10 @@ public class NodeFactory {
 
         if (typeDefinitionNode instanceof VariableTypeNode) {
             node = instanceFromTypeDefinition(nodeId, (UaVariableTypeNode) typeDefinitionNode);
-            nodeMap.addNode(node);
+            nodeManager.addNode(node);
         } else if (typeDefinitionNode instanceof ObjectTypeNode) {
             node = instanceFromTypeDefinition(nodeId, (UaObjectTypeNode) typeDefinitionNode);
-            nodeMap.addNode(node);
+            nodeManager.addNode(node);
         } else {
             throw new UaRuntimeException(StatusCodes.Bad_UnexpectedError, "typeDefinitionNode: " + typeDefinitionNode);
         }
@@ -141,7 +145,7 @@ public class NodeFactory {
         List<UaVariableNode> propertyDeclarations = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
             .distinct()
-            .map(r -> nodeMap.getNode(r.getTargetNodeId()))
+            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
             .map(UaVariableNode.class::cast)
             .filter(vn ->
@@ -167,13 +171,13 @@ public class NodeFactory {
             instance.setArrayDimensions(declaration.getArrayDimensions());
 
             node.addProperty(instance);
-            nodeMap.addNode(instance);
+            nodeManager.addNode(instance);
         }
 
         List<UaVariableNode> variableComponents = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
             .filter(reference -> reference.getTargetNodeClass() == NodeClass.Variable)
-            .map(r -> nodeMap.getNode(r.getTargetNodeId()))
+            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
             .map(UaVariableNode.class::cast)
             .collect(Collectors.toList());
@@ -205,14 +209,14 @@ public class NodeFactory {
             instance.setArrayDimensions(declaration.getArrayDimensions());
 
             addComponent(node, instance);
-            nodeMap.addNode(instance);
+            nodeManager.addNode(instance);
         }
 
         if (node instanceof ObjectNode) {
             List<UaObjectNode> objectComponents = typeDefinitionNode.getReferences().stream()
                 .filter(Reference.HAS_COMPONENT_PREDICATE)
                 .filter(reference -> reference.getTargetNodeClass() == NodeClass.Object)
-                .map(r -> nodeMap.getNode(r.getTargetNodeId()))
+                .map(r -> nodeManager.getNode(r.getTargetNodeId()))
                 .flatMap(StreamUtil::opt2stream)
                 .map(UaObjectNode.class::cast)
                 .collect(Collectors.toList());
@@ -241,7 +245,7 @@ public class NodeFactory {
                 instance.setEventNotifier(declaration.getEventNotifier());
 
                 addComponent(node, instance);
-                nodeMap.addNode(instance);
+                nodeManager.addNode(instance);
             }
         }
 
@@ -259,7 +263,7 @@ public class NodeFactory {
             );
 
         UaObjectNode objectNode = ctor.apply(
-            nodeMap,
+            context,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),
@@ -290,7 +294,7 @@ public class NodeFactory {
             );
 
         UaVariableNode variableNode = ctor.apply(
-            nodeMap,
+            context,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),

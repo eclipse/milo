@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
-import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -34,7 +33,7 @@ public class UaViewNode extends UaNode implements ViewNode {
     private volatile UByte eventNotifier;
 
     public UaViewNode(
-        ServerNodeMap nodeMap,
+        UaNodeContext context,
         NodeId nodeId,
         QualifiedName browseName,
         LocalizedText displayName,
@@ -44,7 +43,7 @@ public class UaViewNode extends UaNode implements ViewNode {
         Boolean containsNoLoops,
         UByte eventNotifier) {
 
-        super(nodeMap, nodeId, NodeClass.View,
+        super(context, nodeId, NodeClass.View,
             browseName, displayName, description, writeMask, userWriteMask);
 
         this.containsNoLoops = containsNoLoops;
