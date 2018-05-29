@@ -77,7 +77,7 @@ If you want to reference a `SNAPSHOT` release a reference to the Sonatype snapsh
 
 #### Server
 - Events
-- Instantation of Complex Object and Variable instances (NodeFactory)
+- Instantiation of Complex Object and Variable instances (NodeFactory)
 
 
 ### Version 0.4
@@ -95,6 +95,12 @@ If you want to reference a `SNAPSHOT` release a reference to the Sonatype snapsh
 - Java 9 + Modularization
 
 #### Stack
+- UA 1.04
+
+#### Client
+- UA 1.04
+
+#### Server
 - UA 1.04
 
 
