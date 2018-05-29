@@ -70,3 +70,35 @@ If you want to reference a `SNAPSHOT` release a reference to the Sonatype snapsh
 </repository>
 ```
 
+## High Level Roadmap
+### Version 0.3
+#### Stack
+- HTTPS transport
+
+#### Server
+- Events
+- Instantation of Complex Object and Variable instances (NodeFactory)
+
+
+### Version 0.4
+#### Server
+- Diagnostic Nodes
+
+
+### Version 1.0
+- Auditing Support?
+- ???
+
+
+### Version 2.0
+#### General
+- Java 9 + Modularization
+
+#### Stack
+- UA 1.04
+
+
+### Future
+- Javascript/NodeJS Bindings for GraalVM?
+- Python Bindings for GraalVM?
+- History "Connectors"?
