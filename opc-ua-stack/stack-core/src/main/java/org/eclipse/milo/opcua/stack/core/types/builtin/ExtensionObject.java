@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
@@ -116,8 +117,19 @@ public final class ExtensionObject {
         }
     }
 
-    public Object decode(DataTypeEncoding encoding, DataTypeManager dataTypeManager) throws UaSerializationException {
-        return decoded.getOrCompute(() -> encoding.decode(body, encodingId, dataTypeManager));
+    public Object decode(
+        DataTypeEncoding encoding,
+        DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        return decode(encoding, EncodingLimits.DEFAULT, dataTypeManager);
+    }
+
+    public Object decode(
+        DataTypeEncoding encoding,
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        return decoded.getOrCompute(() -> encoding.decode(body, encodingId, encodingLimits, dataTypeManager));
     }
 
     @Nullable
@@ -150,6 +162,7 @@ public final class ExtensionObject {
     public ExtensionObject transcode(
         NodeId newEncodingId,
         DataTypeEncoding newEncoding,
+        EncodingLimits encodingLimits,
         DataTypeManager dataTypeManager) {
 
         if (this.encodingId.equals(newEncodingId)) {
@@ -160,7 +173,7 @@ public final class ExtensionObject {
             Object struct = decodeOrNull();
 
             if (struct != null) {
-                Object encoded = newEncoding.encode(struct, newEncodingId, dataTypeManager);
+                Object encoded = newEncoding.encode(struct, newEncodingId, encodingLimits, dataTypeManager);
 
                 return new ExtensionObject(encoded, newEncodingId);
             } else {
@@ -181,7 +194,13 @@ public final class ExtensionObject {
         NodeId encodingId,
         DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        return encode(object, encodingId, OpcUaDefaultBinaryEncoding.getInstance(), dataTypeManager);
+        return encode(
+            object,
+            encodingId,
+            OpcUaDefaultBinaryEncoding.getInstance(),
+            EncodingLimits.DEFAULT,
+            dataTypeManager
+        );
     }
 
     public static ExtensionObject encodeDefaultXml(
@@ -189,7 +208,13 @@ public final class ExtensionObject {
         NodeId encodingId,
         DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        return encode(object, encodingId, OpcUaDefaultXmlEncoding.getInstance(), dataTypeManager);
+        return encode(
+            object,
+            encodingId,
+            OpcUaDefaultXmlEncoding.getInstance(),
+            EncodingLimits.DEFAULT,
+            dataTypeManager
+        );
     }
 
     public static ExtensionObject encode(
@@ -197,16 +222,17 @@ public final class ExtensionObject {
         NodeId encodingId,
         DataTypeEncoding encoding) throws UaSerializationException {
 
-        return encode(object, encodingId, encoding, OpcUaDataTypeManager.getInstance());
+        return encode(object, encodingId, encoding, EncodingLimits.DEFAULT, OpcUaDataTypeManager.getInstance());
     }
 
     public static ExtensionObject encode(
         Object object,
         NodeId encodingId,
         DataTypeEncoding encoding,
+        EncodingLimits encodingLimits,
         DataTypeManager dataTypeManager) throws UaSerializationException {
 
-        Object body = encoding.encode(object, encodingId, dataTypeManager);
+        Object body = encoding.encode(object, encodingId, encodingLimits, dataTypeManager);
 
         return new ExtensionObject(body, encodingId);
     }

@@ -19,6 +19,7 @@ import java.io.IOException;
 import com.google.common.base.Charsets;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
@@ -52,7 +53,12 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public Object encode(Object struct, NodeId encodingId, DataTypeManager dataTypeManager) {
+    public Object encode(
+        Object struct,
+        NodeId encodingId,
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager) {
+
         try {
             @SuppressWarnings("unchecked")
             OpcUaXmlDataTypeCodec<Object> codec =
@@ -64,7 +70,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
                     "no codec registered for encodingId=" + encodingId);
             }
 
-            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder();
+            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder(encodingLimits);
 
             codec.encode(() -> dataTypeManager, struct, writer);
 
@@ -75,7 +81,12 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public Object decode(Object body, NodeId encodingId, DataTypeManager dataTypeManager) {
+    public Object decode(
+        Object body,
+        NodeId encodingId,
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager) {
+
         try {
             @SuppressWarnings("unchecked")
             OpcUaXmlDataTypeCodec<Object> codec =
@@ -90,7 +101,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
             XmlElement xmlBody = (XmlElement) body;
             String xml = xmlBody.getFragmentOrEmpty();
 
-            OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder();
+            OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder(encodingLimits);
             reader.setInput(new ByteArrayInputStream(xml.getBytes(Charsets.UTF_8)));
 
             return reader.readStruct(null, encodingId);

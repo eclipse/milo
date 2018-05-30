@@ -18,6 +18,7 @@ import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
@@ -54,7 +55,12 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public Object encode(Object struct, NodeId encodingId, DataTypeManager dataTypeManager) {
+    public Object encode(
+        Object decodedBody,
+        NodeId encodingId,
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager) {
+
         try {
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> codec =
@@ -68,9 +74,9 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
 
             ByteBuf buffer = allocator.buffer();
 
-            OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(buffer);
+            OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(buffer, encodingLimits);
 
-            codec.encode(() -> dataTypeManager, struct, writer);
+            codec.encode(() -> dataTypeManager, decodedBody, writer);
 
             byte[] bs = new byte[buffer.readableBytes()];
             buffer.readBytes(bs);
@@ -83,7 +89,12 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
     }
 
     @Override
-    public Object decode(Object body, NodeId encodingId, DataTypeManager dataTypeManager) {
+    public Object decode(
+        Object encodedBody,
+        NodeId encodingId,
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager) {
+
         try {
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> codec =
@@ -95,12 +106,12 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
                     "no codec registered for encodingId=" + encodingId);
             }
 
-            ByteString binaryBody = (ByteString) body;
+            ByteString binaryBody = (ByteString) encodedBody;
             byte[] bs = binaryBody.bytesOrEmpty();
 
             ByteBuf buffer = Unpooled.wrappedBuffer(bs);
 
-            OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(buffer);
+            OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(buffer, encodingLimits);
 
             return codec.decode(() -> dataTypeManager, reader);
         } catch (ClassCastException e) {

@@ -191,6 +191,7 @@ public class AttributeReader {
             return xo.transcode(
                 newEncodingId,
                 encoding,
+                context.getServer().getConfig().getEncodingLimits(),
                 OpcUaDataTypeManager.getInstance()
             );
         } else {
