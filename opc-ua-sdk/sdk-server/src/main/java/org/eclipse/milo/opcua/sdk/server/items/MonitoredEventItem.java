@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private volatile EventFilter filter;
+    private volatile EventFilterResult filterResult;
 
     private final FilterContext filterContext;
 
@@ -62,9 +64,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
         super(server, session, id, subscriptionId, readValueId, monitoringMode,
             timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
-
-        installFilter(filter);
-
+        
         filterContext = new FilterContext() {
             @Override
             public OpcUaServer getServer() {
@@ -76,6 +76,8 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
                 return Optional.of(session);
             }
         };
+
+        installFilter(filter);
     }
 
     @Override
@@ -125,7 +127,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Override
     public ExtensionObject getFilterResult() {
-        return null;
+        return ExtensionObject.encode(filterResult);
     }
 
     @Override
@@ -136,6 +138,8 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
         if (filterObject instanceof EventFilter) {
             this.filter = (EventFilter) filterObject;
+
+            filterResult = EventContentFilter.validate(filterContext, filter);
         } else {
             throw new UaException(StatusCodes.Bad_MonitoredItemFilterInvalid);
         }

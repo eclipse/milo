@@ -13,7 +13,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.events;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
@@ -36,9 +38,11 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
@@ -47,12 +51,90 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.AttributeOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElement;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElementResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ElementOperand;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.LiteralOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
+import org.jooq.lambda.tuple.Tuple2;
+
+import static java.util.Collections.nCopies;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class EventContentFilter {
+
+    public static EventFilterResult validate(FilterContext context, EventFilter filter) throws UaException {
+        SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
+
+        if (selectClauses == null || selectClauses.length == 0) {
+            // A valid filter has at least one select clause
+            throw new UaException(StatusCodes.Bad_EventFilterInvalid);
+        }
+
+        Tuple2<StatusCode[], DiagnosticInfo[]> selectClauseResults =
+            validateSelectClauses(context, selectClauses);
+
+        ContentFilterResult whereClauseResult = validateWhereClause(context, filter.getWhereClause());
+
+        return new EventFilterResult(
+            selectClauseResults.v1(),
+            selectClauseResults.v2(),
+            whereClauseResult
+        );
+    }
+
+    private static Tuple2<StatusCode[], DiagnosticInfo[]> validateSelectClauses(
+        FilterContext context,
+        SimpleAttributeOperand[] selectClauses) {
+
+        // TODO validate select clauses
+
+        StatusCode[] statusCodes =
+            nCopies(selectClauses.length, StatusCode.GOOD)
+                .toArray(new StatusCode[0]);
+
+        DiagnosticInfo[] diagnosticInfos =
+            nCopies(selectClauses.length, DiagnosticInfo.NULL_VALUE)
+                .toArray(new DiagnosticInfo[0]);
+
+        return new Tuple2<>(statusCodes, diagnosticInfos);
+    }
+
+    private static ContentFilterResult validateWhereClause(
+        FilterContext context,
+        ContentFilter whereClause) {
+
+        // TODO validate where clause
+
+        List<ContentFilterElementResult> results = new ArrayList<>();
+
+        List<ContentFilterElement> elements = l(whereClause.getElements());
+
+        for (ContentFilterElement element : elements) {
+            List<ExtensionObject> filterOperands = l(element.getFilterOperands());
+
+            StatusCode[] operandStatusCodes = nCopies(
+                filterOperands.size(),
+                StatusCode.GOOD
+            ).toArray(new StatusCode[0]);
+
+            ContentFilterElementResult result = new ContentFilterElementResult(
+                StatusCode.GOOD,
+                operandStatusCodes,
+                null
+            );
+
+            results.add(result);
+        }
+
+        return new ContentFilterResult(
+            results.toArray(new ContentFilterElementResult[0]),
+            null
+        );
+    }
 
     public static Variant[] select(
         @Nonnull FilterContext context,
