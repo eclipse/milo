@@ -121,14 +121,10 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
             Ints.saturatedCast(remoteMaxChunkCount)
         );
 
-        int maxArrayLength = config.getMaxArrayLength();
-        int maxStringLength = config.getMaxStringLength();
-
         SerializationQueue serializationQueue = new SerializationQueue(
             server.getConfig().getExecutor(),
             parameters,
-            maxArrayLength,
-            maxStringLength
+            server.getConfig().getEncodingLimits()
         );
 
         ctx.pipeline().addLast(new UaTcpServerAsymmetricHandler(server, serializationQueue));

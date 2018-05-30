@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
@@ -35,6 +36,7 @@ public class UaTcpStackServerConfigBuilder {
     private String productUri = "server product uri not configured";
 
     private ChannelConfig channelConfig = ChannelConfig.DEFAULT;
+    private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
     private boolean strictEndpointUrlsEnabled = true;
 
     private CertificateManager certificateManager;
@@ -95,6 +97,11 @@ public class UaTcpStackServerConfigBuilder {
         return this;
     }
 
+    public UaTcpStackServerConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
+        this.encodingLimits = encodingLimits;
+        return this;
+    }
+
     public UaTcpStackServerConfigBuilder setStrictEndpointUrlsEnabled(boolean strictEndpointUrlsEnabled) {
         this.strictEndpointUrlsEnabled = strictEndpointUrlsEnabled;
         return this;
@@ -114,6 +121,7 @@ public class UaTcpStackServerConfigBuilder {
             applicationUri,
             productUri,
             channelConfig,
+            encodingLimits,
             strictEndpointUrlsEnabled,
             certificateManager,
             certificateValidator,
@@ -131,6 +139,7 @@ public class UaTcpStackServerConfigBuilder {
         private final String productUri;
 
         private final ChannelConfig channelConfig;
+        private final EncodingLimits encodingLimits;
         private final boolean strictEndpointUrlsEnabled;
 
         private final CertificateManager certificateManager;
@@ -145,6 +154,7 @@ public class UaTcpStackServerConfigBuilder {
                                           String applicationUri,
                                           String productUri,
                                           ChannelConfig channelConfig,
+                                          EncodingLimits encodingLimits,
                                           boolean strictEndpointUrlsEnabled,
                                           CertificateManager certificateManager,
                                           CertificateValidator certificateValidator,
@@ -157,6 +167,7 @@ public class UaTcpStackServerConfigBuilder {
             this.applicationUri = applicationUri;
             this.productUri = productUri;
             this.channelConfig = channelConfig;
+            this.encodingLimits = encodingLimits;
             this.strictEndpointUrlsEnabled = strictEndpointUrlsEnabled;
             this.certificateManager = certificateManager;
             this.certificateValidator = certificateValidator;
@@ -188,6 +199,11 @@ public class UaTcpStackServerConfigBuilder {
         @Override
         public ChannelConfig getChannelConfig() {
             return channelConfig;
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return encodingLimits;
         }
 
         @Override

@@ -186,14 +186,10 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
         ctx.channel().attr(KEY_AWAITING_HANDSHAKE).set(awaitingHandshake);
 
         ctx.executor().execute(() -> {
-            int maxArrayLength = client.getChannelConfig().getMaxArrayLength();
-            int maxStringLength = client.getChannelConfig().getMaxStringLength();
-
             SerializationQueue serializationQueue = new SerializationQueue(
                 client.getConfig().getExecutor(),
                 parameters,
-                maxArrayLength,
-                maxStringLength
+                client.getConfig().getEncodingLimits()
             );
 
             UaTcpClientMessageHandler handler = new UaTcpClientMessageHandler(

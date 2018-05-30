@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -299,6 +300,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public ChannelConfig getChannelConfig() {
             return stackClientConfig.getChannelConfig();
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return stackClientConfig.getEncodingLimits();
         }
 
         @Override

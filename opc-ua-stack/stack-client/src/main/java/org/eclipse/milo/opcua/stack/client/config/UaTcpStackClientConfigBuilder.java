@@ -25,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -45,6 +46,7 @@ public class UaTcpStackClientConfigBuilder {
     private String productUri = "client product uri not configured";
 
     private ChannelConfig channelConfig = ChannelConfig.DEFAULT;
+    private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
     private UInteger channelLifetime = uint(60 * 60 * 1000);
     private ExecutorService executor;
     private NioEventLoopGroup eventLoop;
@@ -100,6 +102,11 @@ public class UaTcpStackClientConfigBuilder {
         return this;
     }
 
+    public UaTcpStackClientConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
+        this.encodingLimits = encodingLimits;
+        return this;
+    }
+
     public UaTcpStackClientConfigBuilder setChannelLifetime(UInteger channelLifetime) {
         this.channelLifetime = channelLifetime;
         return this;
@@ -142,6 +149,7 @@ public class UaTcpStackClientConfigBuilder {
             applicationUri,
             productUri,
             channelConfig,
+            encodingLimits,
             channelLifetime,
             executor,
             eventLoop,
@@ -163,6 +171,7 @@ public class UaTcpStackClientConfigBuilder {
         private final String productUri;
 
         private final ChannelConfig channelConfig;
+        private final EncodingLimits encodingLimits;
         private final UInteger channelLifetime;
         private final ExecutorService executor;
         private final NioEventLoopGroup eventLoop;
@@ -179,6 +188,7 @@ public class UaTcpStackClientConfigBuilder {
             String applicationUri,
             String productUri,
             ChannelConfig channelConfig,
+            EncodingLimits encodingLimits,
             UInteger channelLifetime,
             ExecutorService executor,
             NioEventLoopGroup eventLoop,
@@ -194,6 +204,7 @@ public class UaTcpStackClientConfigBuilder {
             this.applicationUri = applicationUri;
             this.productUri = productUri;
             this.channelConfig = channelConfig;
+            this.encodingLimits = encodingLimits;
             this.channelLifetime = channelLifetime;
             this.executor = executor;
             this.eventLoop = eventLoop;
@@ -256,6 +267,11 @@ public class UaTcpStackClientConfigBuilder {
         @Override
         public ChannelConfig getChannelConfig() {
             return channelConfig;
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return encodingLimits;
         }
 
         @Override

@@ -24,6 +24,7 @@ import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -97,6 +98,11 @@ public interface UaTcpStackClientConfig {
      * @return the {@link ChannelConfig} to use when creating secure channels.
      */
     ChannelConfig getChannelConfig();
+
+    /**
+     * @return the configured {@link EncodingLimits}.
+     */
+    EncodingLimits getEncodingLimits();
 
     /**
      * @return the secure channel lifetime to request, in milliseconds.

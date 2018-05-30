@@ -90,8 +90,8 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         this.server = server;
         this.serializationQueue = serializationQueue;
 
-        maxArrayLength = server.getChannelConfig().getMaxArrayLength();
-        maxStringLength = server.getChannelConfig().getMaxStringLength();
+        maxArrayLength = server.getConfig().getEncodingLimits().getMaxArrayLength();
+        maxStringLength = server.getConfig().getEncodingLimits().getMaxStringLength();
         maxChunkCount = serializationQueue.getParameters().getLocalMaxChunkCount();
         maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
     }

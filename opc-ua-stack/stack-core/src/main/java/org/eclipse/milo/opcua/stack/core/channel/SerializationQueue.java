@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.util.concurrent.ExecutorService;
 
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
@@ -28,20 +29,22 @@ public class SerializationQueue {
     private final ExecutionQueue decodingQueue;
 
     private final ChannelParameters parameters;
-    private final int maxArrayLength;
-    private final int maxStringLength;
+    private final EncodingLimits encodingLimits;
 
     public SerializationQueue(ExecutorService executor,
                               ChannelParameters parameters,
-                              int maxArrayLength,
-                              int maxStringLength) {
+                              EncodingLimits encodingLimits) {
 
         this.parameters = parameters;
-        this.maxArrayLength = maxArrayLength;
-        this.maxStringLength = maxStringLength;
+        this.encodingLimits = encodingLimits;
 
         chunkEncoder = new ChunkEncoder(parameters);
-        chunkDecoder = new ChunkDecoder(parameters, maxArrayLength, maxStringLength);
+
+        chunkDecoder = new ChunkDecoder(
+            parameters,
+            encodingLimits.getMaxArrayLength(),
+            encodingLimits.getMaxStringLength()
+        );
 
         encodingQueue = new ExecutionQueue(executor);
         decodingQueue = new ExecutionQueue(executor);
@@ -50,7 +53,7 @@ public class SerializationQueue {
     public void encode(Encoder encoder) {
         encodingQueue.submit(() -> {
             OpcUaBinaryStreamEncoder binaryEncoder =
-                new OpcUaBinaryStreamEncoder(maxArrayLength, maxStringLength);
+                new OpcUaBinaryStreamEncoder(encodingLimits);
 
             encoder.encode(binaryEncoder, chunkEncoder);
         });
@@ -59,7 +62,7 @@ public class SerializationQueue {
     public void decode(Decoder decoder) {
         decodingQueue.submit(() -> {
             OpcUaBinaryStreamDecoder binaryDecoder =
-                new OpcUaBinaryStreamDecoder(maxArrayLength, maxStringLength);
+                new OpcUaBinaryStreamDecoder(encodingLimits);
 
             decoder.decode(binaryDecoder, chunkDecoder);
         });

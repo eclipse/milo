@@ -17,6 +17,7 @@ import javax.annotation.Nonnull;
 
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.util.annotations.UInt32Primitive;
@@ -26,6 +27,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 public class HelloMessage {
 
     private static final int MAX_ENDPOINT_URL_LENGTH = 4096;
+
+    private static final EncodingLimits ENCODING_LIMITS = new EncodingLimits(
+        EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
+        MAX_ENDPOINT_URL_LENGTH,
+        EncodingLimits.DEFAULT_MAX_RECURSION_DEPTH
+    );
 
     @UInt32Primitive
     private final long protocolVersion;
@@ -167,11 +174,11 @@ public class HelloMessage {
     }
 
     private static void encodeString(String s, ByteBuf buffer) {
-        new OpcUaBinaryStreamEncoder(buffer, MAX_ENDPOINT_URL_LENGTH, MAX_ENDPOINT_URL_LENGTH).writeString(s);
+        new OpcUaBinaryStreamEncoder(buffer, ENCODING_LIMITS).writeString(s);
     }
 
     private static String decodeString(ByteBuf buffer) {
-        return new OpcUaBinaryStreamDecoder(buffer, MAX_ENDPOINT_URL_LENGTH, MAX_ENDPOINT_URL_LENGTH).readString();
+        return new OpcUaBinaryStreamDecoder(buffer, ENCODING_LIMITS).readString();
     }
 
 }

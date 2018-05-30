@@ -459,8 +459,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
         AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(
             buffer,
-            client.getChannelConfig().getMaxArrayLength(),
-            client.getChannelConfig().getMaxStringLength()
+            client.getConfig().getEncodingLimits().getMaxArrayLength(),
+            client.getConfig().getEncodingLimits().getMaxStringLength()
         );
 
         if (headerRef.compareAndSet(null, securityHeader)) {

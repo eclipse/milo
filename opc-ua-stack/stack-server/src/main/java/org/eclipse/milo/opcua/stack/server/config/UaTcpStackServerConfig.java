@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
@@ -87,6 +88,11 @@ public interface UaTcpStackServerConfig {
     List<SignedSoftwareCertificate> getSoftwareCertificates();
 
     ChannelConfig getChannelConfig();
+
+    /**
+     * @return the configured {@link EncodingLimits}.
+     */
+    EncodingLimits getEncodingLimits();
 
     /**
      * If {@code true}, when a UA TCP "Hello" message is received, endpoint URL must exactly match a registered server

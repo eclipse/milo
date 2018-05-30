@@ -135,6 +135,7 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
         builder.setUserTokenPolicies(config.getUserTokenPolicies());
         builder.setSoftwareCertificates(config.getSoftwareCertificates());
         builder.setChannelConfig(config.getChannelConfig());
+        builder.setEncodingLimits(config.getEncodingLimits());
         builder.setStrictEndpointUrlsEnabled(config.isStrictEndpointUrlsEnabled());
 
         // OpcUaServerConfig values

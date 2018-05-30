@@ -87,6 +87,7 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
         builder.setChannelConfig(config.getChannelConfig());
+        builder.setEncodingLimits(config.getEncodingLimits());
         builder.setChannelLifetime(config.getChannelLifetime());
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());

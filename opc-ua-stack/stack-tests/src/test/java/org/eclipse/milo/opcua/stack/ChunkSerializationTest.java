@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
@@ -152,8 +153,8 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             ChunkDecoder decoder = new ChunkDecoder(
                 parameters,
-                ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH,
-                ChannelConfig.DEFAULT_MAX_STRING_LENGTH
+                EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
+                EncodingLimits.DEFAULT_MAX_STRING_LENGTH
             );
 
             SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
@@ -262,8 +263,8 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
                 ChunkDecoder decoder = new ChunkDecoder(
                     parameters,
-                    ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH,
-                    ChannelConfig.DEFAULT_MAX_STRING_LENGTH
+                    EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH,
+                    EncodingLimits.DEFAULT_MAX_STRING_LENGTH
                 );
 
                 SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
