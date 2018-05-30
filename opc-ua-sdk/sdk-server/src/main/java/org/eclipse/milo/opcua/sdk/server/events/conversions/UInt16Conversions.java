@@ -16,10 +16,15 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 
 final class UInt16Conversions {
 
@@ -72,11 +77,35 @@ final class UInt16Conversions {
         return us.longValue();
     }
 
-    // TODO
-    // SByte
-    // StatusCode
-    // String
-    // UInt32
-    // UInt64
+    @Nullable
+    static Byte uInt16ToSByte(@Nonnull UShort us) {
+        int i = us.intValue();
+
+        if (i <= Byte.MAX_VALUE) {
+            return (byte) i;
+        } else {
+            return null;
+        }
+    }
+
+    @Nonnull
+    static StatusCode uInt16ToStatusCode(@Nonnull UShort us) {
+        return new StatusCode(us.longValue() << 16);
+    }
+
+    @Nonnull
+    static String uInt16ToString(@Nonnull UShort us) {
+        return us.toString();
+    }
+
+    @Nonnull
+    static UInteger uInt16ToUInt32(@Nonnull UShort us) {
+        return uint(us.intValue());
+    }
+
+    @Nonnull
+    static ULong uInt16ToUInt64(@Nonnull UShort us) {
+        return ulong(us.longValue());
+    }
 
 }
