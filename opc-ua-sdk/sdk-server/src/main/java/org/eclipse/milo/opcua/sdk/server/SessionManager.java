@@ -50,6 +50,7 @@ import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -393,7 +394,11 @@ public class SessionManager implements
                     /*
                      * Identity change
                      */
-                    Object tokenObject = request.getUserIdentityToken().decode();
+                    Object tokenObject = request.getUserIdentityToken().decode(
+                        server.getConfig().getEncodingLimits(),
+                        OpcUaDataTypeManager.getInstance()
+                    );
+
                     Object identityObject = validateIdentityToken(
                         secureChannel,
                         session,
@@ -427,7 +432,11 @@ public class SessionManager implements
                         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
                     }
 
-                    Object tokenObject = request.getUserIdentityToken().decode();
+                    Object tokenObject = request.getUserIdentityToken().decode(
+                        server.getConfig().getEncodingLimits(),
+                        OpcUaDataTypeManager.getInstance()
+                    );
+
                     Object identityObject = validateIdentityToken(
                         secureChannel,
                         session,
@@ -474,7 +483,11 @@ public class SessionManager implements
 
             verifyClientSignature(request, secureChannel, session);
 
-            Object tokenObject = request.getUserIdentityToken().decode();
+            Object tokenObject = request.getUserIdentityToken().decode(
+                server.getConfig().getEncodingLimits(),
+                OpcUaDataTypeManager.getInstance()
+            );
+
             Object identityObject = validateIdentityToken(
                 secureChannel,
                 session,

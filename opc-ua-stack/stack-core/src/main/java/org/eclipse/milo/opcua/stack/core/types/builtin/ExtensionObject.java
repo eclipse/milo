@@ -118,6 +118,20 @@ public final class ExtensionObject {
     }
 
     public Object decode(
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager) throws UaSerializationException {
+
+        switch (bodyType) {
+            case ByteString:
+                return decode(OpcUaDefaultBinaryEncoding.getInstance(), encodingLimits, dataTypeManager);
+            case XmlElement:
+                return decode(OpcUaDefaultXmlEncoding.getInstance(), encodingLimits, dataTypeManager);
+            default:
+                throw new IllegalStateException("BodyType: " + bodyType);
+        }
+    }
+
+    public Object decode(
         DataTypeEncoding encoding,
         DataTypeManager dataTypeManager) throws UaSerializationException {
 
@@ -151,9 +165,9 @@ public final class ExtensionObject {
     }
 
     @Nullable
-    public Object decodeOrNull(DataTypeEncoding encoding, DataTypeManager dataTypeManager) {
+    public Object decodeOrNull(EncodingLimits encodingLimits, DataTypeManager dataTypeManager) {
         try {
-            return decode(encoding, dataTypeManager);
+            return decode(encodingLimits, dataTypeManager);
         } catch (UaSerializationException e) {
             return null;
         }
@@ -170,7 +184,7 @@ public final class ExtensionObject {
         } else {
             // The "fast" path: body is a encoded in Default Binary or Default XML.
             // No need to look up the DataTypeEncoding.
-            Object struct = decodeOrNull();
+            Object struct = decodeOrNull(encodingLimits, dataTypeManager);
 
             if (struct != null) {
                 Object encoded = newEncoding.encode(struct, newEncodingId, encodingLimits, dataTypeManager);

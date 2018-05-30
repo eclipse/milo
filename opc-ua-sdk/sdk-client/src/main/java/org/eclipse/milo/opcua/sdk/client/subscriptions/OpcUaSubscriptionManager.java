@@ -663,7 +663,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
 
                 for (ExtensionObject xo : notificationData) {
-                    Object o = xo.decode();
+                    Object o = xo.decode(client.getConfig().getEncodingLimits(), client.getDataTypeManager());
 
                     if (o instanceof DataChangeNotification) {
                         DataChangeNotification dcn = (DataChangeNotification) o;

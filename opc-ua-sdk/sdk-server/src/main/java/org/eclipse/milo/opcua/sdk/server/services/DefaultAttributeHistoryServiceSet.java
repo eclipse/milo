@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
@@ -116,9 +117,13 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
                 namespace.historyRead(
                     context,
-                    (HistoryReadDetails) request.getHistoryReadDetails().decode(),
+                    (HistoryReadDetails)
+                        request.getHistoryReadDetails().decode(
+                            server.getConfig().getEncodingLimits(),
+                            OpcUaDataTypeManager.getInstance()),
                     request.getTimestampsToReturn(),
-                    readValueIds);
+                    readValueIds
+                );
             });
 
             future.thenAccept(values -> {
@@ -142,10 +147,10 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             service.setResponse(response);
         }, server.getExecutorService());
     }
-    
+
     @Override
     public void onHistoryUpdate(ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service)
-            throws UaException {
+        throws UaException {
         historyUpdateMetric.record(service);
 
         HistoryUpdateRequest request = service.getRequest();
@@ -156,8 +161,11 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
         List<HistoryUpdateDetails> nodesToUpdate = l(request.getHistoryUpdateDetails())
-                .stream().map(e -> (HistoryUpdateDetails) e.decode())
-                .collect(Collectors.toList());
+            .stream().map(e -> (HistoryUpdateDetails) e.decode(
+                server.getConfig().getEncodingLimits(),
+                OpcUaDataTypeManager.getInstance()
+            ))
+            .collect(Collectors.toList());
 
         if (nodesToUpdate.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_NothingToDo);

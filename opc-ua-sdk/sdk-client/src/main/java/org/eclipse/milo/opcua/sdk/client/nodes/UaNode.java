@@ -372,7 +372,10 @@ public abstract class UaNode implements Node {
                 return null;
             }
         } else if (UaStructure.class.isAssignableFrom(clazz) && o instanceof ExtensionObject) {
-            Object decoded = ((ExtensionObject) o).decode(client.getDataTypeManager());
+            Object decoded = ((ExtensionObject) o).decode(
+                client.getConfig().getEncodingLimits(),
+                client.getDataTypeManager()
+            );
             return clazz.cast(decoded);
         } else {
             return clazz.cast(o);
