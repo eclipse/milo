@@ -320,7 +320,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         int encoding = buffer.readByte();
 
         if (encoding == 0) {
-            return new ExtensionObject((ByteString) null, encodingTypeId);
+            return new ExtensionObject(ByteString.NULL_VALUE, encodingTypeId);
         } else if (encoding == 1) {
             ByteString byteString = readByteString();
 

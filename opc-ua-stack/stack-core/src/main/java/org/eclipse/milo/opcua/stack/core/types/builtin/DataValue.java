@@ -14,10 +14,12 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
+import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
@@ -54,8 +56,8 @@ public final class DataValue {
         this(value, status, sourceTime, null, serverTime, null);
     }
 
-    public DataValue(Variant value,
-                     StatusCode status,
+    public DataValue(@Nonnull Variant value,
+                     @Nullable StatusCode status,
                      @Nullable DateTime sourceTime,
                      @Nullable UShort sourcePicoseconds,
                      @Nullable DateTime serverTime,
@@ -73,6 +75,7 @@ public final class DataValue {
         return value;
     }
 
+    @Nullable
     public StatusCode getStatusCode() {
         return status;
     }
@@ -150,6 +153,14 @@ public final class DataValue {
         return Objects.hash(value, status, sourceTime, sourcePicoseconds, serverTime, serverPicoseconds);
     }
 
+    public DataValue.Builder modify() {
+        return new Builder(this);
+    }
+
+    public static DataValue.Builder newValue() {
+        return new Builder();
+    }
+
     /**
      * Derive a new {@link DataValue} from a given {@link DataValue} with a current server timestamp, if applicable.
      *
@@ -197,6 +208,86 @@ public final class DataValue {
      */
     public static DataValue valueOnly(Variant v) {
         return new DataValue(v, null, null, null);
+    }
+
+    public static class Builder {
+
+        public Variant value = Variant.NULL_VALUE;
+        public StatusCode status;
+        public DateTime sourceTime;
+        public UShort sourcePicoseconds;
+        public DateTime serverTime;
+        public UShort serverPicoseconds;
+
+        public Builder() {}
+
+        public Builder(DataValue other) {
+            this.value = other.value;
+            this.status = other.status;
+            this.sourceTime = other.sourceTime;
+            this.sourcePicoseconds = other.sourcePicoseconds;
+            this.serverTime = other.serverTime;
+            this.serverPicoseconds = other.serverPicoseconds;
+        }
+
+        public Builder setValue(Variant value) {
+            this.value = value;
+            return this;
+        }
+
+        public Builder setStatus(StatusCode status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder setSourceTime(DateTime sourceTime) {
+            this.sourceTime = sourceTime;
+            return this;
+        }
+
+        public Builder setSourcePicoseconds(UShort sourcePicoseconds) {
+            this.sourcePicoseconds = sourcePicoseconds;
+            return this;
+        }
+
+        public Builder setServerTime(DateTime serverTime) {
+            this.serverTime = serverTime;
+            return this;
+        }
+
+        public Builder setServerPicoseconds(UShort serverPicoseconds) {
+            this.serverPicoseconds = serverPicoseconds;
+            return this;
+        }
+
+        public Builder applyTimestamps(AttributeId attributeId, TimestampsToReturn timestamps) {
+            boolean includeSource = attributeId == AttributeId.Value &&
+                (timestamps == TimestampsToReturn.Source || timestamps == TimestampsToReturn.Both);
+
+            boolean includeServer = timestamps == TimestampsToReturn.Server || timestamps == TimestampsToReturn.Both;
+
+            if (!includeSource) {
+                setSourceTime(null);
+                setSourcePicoseconds(null);
+            }
+            if (includeServer) {
+                setServerTime(DateTime.now());
+            }
+
+            return this;
+        }
+
+        public DataValue build() {
+            return new DataValue(
+                value,
+                status,
+                sourceTime,
+                sourcePicoseconds,
+                serverTime,
+                serverPicoseconds
+            );
+        }
+
     }
 
 }

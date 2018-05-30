@@ -685,7 +685,8 @@ public class ExampleNamespace implements Namespace {
             true
         );
 
-        ExtensionObject xo = ExtensionObject.encode(value, binaryEncodingId);
+        ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
+            value, binaryEncodingId, OpcUaDataTypeManager.getInstance());
 
         customDataTypeVariable.setValue(new DataValue(new Variant(xo)));
 

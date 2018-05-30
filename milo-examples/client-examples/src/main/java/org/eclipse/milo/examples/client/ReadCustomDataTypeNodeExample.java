@@ -56,7 +56,7 @@ public class ReadCustomDataTypeNodeExample implements ClientExample {
         Variant variant = value.getValue();
         ExtensionObject xo = (ExtensionObject) variant.getValue();
 
-        CustomDataType decoded = xo.decode();
+        CustomDataType decoded = (CustomDataType) xo.decode();
         logger.info("Decoded={}", decoded);
 
         future.complete(client);
