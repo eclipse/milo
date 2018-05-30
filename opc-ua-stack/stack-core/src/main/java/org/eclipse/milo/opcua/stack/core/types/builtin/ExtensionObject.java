@@ -83,7 +83,6 @@ public final class ExtensionObject {
         return encodingId;
     }
 
-    // TODO this call smells like a design issue... probably shouldn't allow a "null-ish" ExtensionObject
     public boolean isNull() {
         switch (bodyType) {
             case ByteString:
