@@ -109,7 +109,8 @@ public class EventContentFilter {
 
         // TODO validate where clause
 
-        List<ContentFilterElementResult> results = new ArrayList<>();
+        List<ContentFilterElementResult> elementResults = new ArrayList<>();
+        List<DiagnosticInfo> elementDiagnosticInfos = new ArrayList<>();
 
         List<ContentFilterElement> elements = l(whereClause.getElements());
 
@@ -127,12 +128,13 @@ public class EventContentFilter {
                 null
             );
 
-            results.add(result);
+            elementResults.add(result);
+            elementDiagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
         }
 
         return new ContentFilterResult(
-            results.toArray(new ContentFilterElementResult[0]),
-            null
+            elementResults.toArray(new ContentFilterElementResult[0]),
+            elementDiagnosticInfos.toArray(new DiagnosticInfo[0])
         );
     }
 
