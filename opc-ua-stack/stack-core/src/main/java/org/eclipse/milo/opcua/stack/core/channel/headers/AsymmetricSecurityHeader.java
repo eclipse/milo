@@ -19,6 +19,8 @@ import javax.annotation.Nonnull;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 public class AsymmetricSecurityHeader {
@@ -118,9 +120,15 @@ public class AsymmetricSecurityHeader {
         }
     }
 
-    public static AsymmetricSecurityHeader decode(ByteBuf buffer) {
+    public static AsymmetricSecurityHeader decode(ByteBuf buffer, int maxArrayLength, int maxStringLength) {
         /* SecurityPolicyUri */
         int securityPolicyUriLength = buffer.readIntLE();
+        if (securityPolicyUriLength > maxStringLength) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                "max array length exceeded");
+        }
+
         byte[] securityPolicyUriBytes = new byte[securityPolicyUriLength];
         buffer.readBytes(securityPolicyUriBytes);
 
@@ -131,6 +139,12 @@ public class AsymmetricSecurityHeader {
 
         /* SenderCertificate */
         int senderCertificateLength = buffer.readIntLE();
+        if (senderCertificateLength > maxArrayLength) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                "max array length exceeded");
+        }
+
         byte[] senderCertificate = null;
         if (senderCertificateLength >= 0) {
             senderCertificate = new byte[senderCertificateLength];
@@ -139,6 +153,12 @@ public class AsymmetricSecurityHeader {
 
         /* ReceiverCertificateThumbprint */
         int thumbprintLength = buffer.readIntLE();
+        if (thumbprintLength > maxArrayLength) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                "max array length exceeded");
+        }
+
         byte[] receiverCertificateThumbprint = null;
         if (thumbprintLength >= 0) {
             receiverCertificateThumbprint = new byte[thumbprintLength];

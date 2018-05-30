@@ -25,6 +25,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 public class HelloMessage {
 
+    private static final int MAX_ENDPOINT_URL_LENGTH = 4096;
+
     @UInt32Primitive
     private final long protocolVersion;
 
@@ -64,7 +66,9 @@ public class HelloMessage {
 
         checkArgument(receiveBufferSize >= 8192, "receiverBufferSize must be at least 8192 bytes");
         checkArgument(sendBufferSize >= 8192, "sendBufferSize must be at least 8192 bytes");
-        checkArgument(endpointUrl.length() <= 4096, "endpointUrl length cannot be greater than 4096 bytes");
+        checkArgument(
+            endpointUrl.length() <= MAX_ENDPOINT_URL_LENGTH,
+            "endpointUrl length cannot be greater than 4096 bytes");
 
         this.protocolVersion = protocolVersion;
         this.receiveBufferSize = receiveBufferSize;
@@ -158,16 +162,16 @@ public class HelloMessage {
             buffer.readUnsignedIntLE(), /*    SendBufferSize     */
             buffer.readUnsignedIntLE(), /*    MaxMessageSize     */
             buffer.readUnsignedIntLE(), /*    MaxChunkCount      */
-            decodeString(buffer)      /*    EndpointUrl        */
+            decodeString(buffer)        /*    EndpointUrl        */
         );
     }
 
     private static void encodeString(String s, ByteBuf buffer) {
-        new OpcUaBinaryStreamEncoder(buffer).writeString(s);
+        new OpcUaBinaryStreamEncoder(buffer, MAX_ENDPOINT_URL_LENGTH, MAX_ENDPOINT_URL_LENGTH).writeString(s);
     }
 
     private static String decodeString(ByteBuf buffer) {
-        return new OpcUaBinaryStreamDecoder(buffer).readString();
+        return new OpcUaBinaryStreamDecoder(buffer, MAX_ENDPOINT_URL_LENGTH, MAX_ENDPOINT_URL_LENGTH).readString();
     }
 
 }

@@ -49,9 +49,13 @@ public final class ChunkDecoder {
     private volatile long lastSequenceNumber = -1L;
 
     private final ChannelParameters parameters;
+    private final int maxArrayLength;
+    private final int maxStringLength;
 
-    public ChunkDecoder(ChannelParameters parameters) {
+    public ChunkDecoder(ChannelParameters parameters, int maxArrayLength, int maxStringLength) {
         this.parameters = parameters;
+        this.maxArrayLength = maxArrayLength;
+        this.maxStringLength = maxStringLength;
     }
 
     public void decodeAsymmetric(
@@ -264,7 +268,7 @@ public final class ChunkDecoder {
 
         @Override
         public void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) {
-            AsymmetricSecurityHeader.decode(chunkBuffer);
+            AsymmetricSecurityHeader.decode(chunkBuffer, maxArrayLength, maxStringLength);
         }
 
         @Override

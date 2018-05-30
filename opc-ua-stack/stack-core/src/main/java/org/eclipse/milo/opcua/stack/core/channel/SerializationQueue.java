@@ -41,7 +41,7 @@ public class SerializationQueue {
         this.maxStringLength = maxStringLength;
 
         chunkEncoder = new ChunkEncoder(parameters);
-        chunkDecoder = new ChunkDecoder(parameters);
+        chunkDecoder = new ChunkDecoder(parameters, maxArrayLength, maxStringLength);
 
         encodingQueue = new ExecutionQueue(executor);
         decodingQueue = new ExecutionQueue(executor);

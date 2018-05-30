@@ -149,7 +149,12 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
         for (ChannelParameters parameters : channelParameters) {
             ChunkEncoder encoder = new ChunkEncoder(parameters);
-            ChunkDecoder decoder = new ChunkDecoder(parameters);
+
+            ChunkDecoder decoder = new ChunkDecoder(
+                parameters,
+                ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH,
+                ChannelConfig.DEFAULT_MAX_STRING_LENGTH
+            );
 
             SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
             ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];
@@ -254,7 +259,12 @@ public class ChunkSerializationTest extends SecureChannelFixture {
 
             for (int messageSize : messageSizes) {
                 ChunkEncoder encoder = new ChunkEncoder(parameters);
-                ChunkDecoder decoder = new ChunkDecoder(parameters);
+
+                ChunkDecoder decoder = new ChunkDecoder(
+                    parameters,
+                    ChannelConfig.DEFAULT_MAX_ARRAY_LENGTH,
+                    ChannelConfig.DEFAULT_MAX_STRING_LENGTH
+                );
 
                 SecureChannel[] channels = generateChannels(securityPolicy, messageSecurity);
                 ClientSecureChannel clientChannel = (ClientSecureChannel) channels[0];

@@ -78,6 +78,8 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
     private final AtomicReference<AsymmetricSecurityHeader> headerRef = new AtomicReference<>();
 
+    private final int maxArrayLength;
+    private final int maxStringLength;
     private final int maxChunkCount;
     private final int maxChunkSize;
 
@@ -88,6 +90,8 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
         this.server = server;
         this.serializationQueue = serializationQueue;
 
+        maxArrayLength = server.getChannelConfig().getMaxArrayLength();
+        maxStringLength = server.getChannelConfig().getMaxStringLength();
         maxChunkCount = serializationQueue.getParameters().getLocalMaxChunkCount();
         maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
     }
@@ -133,7 +137,12 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
             buffer.skipBytes(4); // Skip messageSize
 
             long secureChannelId = buffer.readUnsignedIntLE();
-            AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(buffer);
+
+            AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(
+                buffer,
+                maxArrayLength,
+                maxStringLength
+            );
 
             if (secureChannelId == 0) {
                 // Okay, this is the first OpenSecureChannelRequest... carry on.

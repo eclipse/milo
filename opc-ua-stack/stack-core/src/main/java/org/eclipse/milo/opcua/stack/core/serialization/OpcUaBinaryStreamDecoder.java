@@ -205,6 +205,11 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
         if (length == -1) {
             return ByteString.NULL_VALUE;
+        } else if (length > maxArrayLength) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                String.format("max array length exceeded (length=%s, max=%s)", length, maxArrayLength)
+            );
         } else {
             byte[] bs = new byte[length];
             buffer.readBytes(bs);

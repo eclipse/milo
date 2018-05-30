@@ -457,7 +457,11 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
         buffer.skipBytes(3 + 1 + 4 + 4); // skip messageType, chunkType, messageSize, secureChannelId
 
-        AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(buffer);
+        AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(
+            buffer,
+            client.getChannelConfig().getMaxArrayLength(),
+            client.getChannelConfig().getMaxStringLength()
+        );
 
         if (headerRef.compareAndSet(null, securityHeader)) {
             // first time we've received the header; validate and verify the server certificate
