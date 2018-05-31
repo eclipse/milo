@@ -95,15 +95,6 @@ public interface UaTcpStackServerConfig {
     EncodingLimits getEncodingLimits();
 
     /**
-     * If {@code true}, when a UA TCP "Hello" message is received, endpoint URL must exactly match a registered server
-     * name. If {@code false}, and only one server is registered, that server will be returned even if the path does not
-     * match.
-     *
-     * @return {@code true} if strict endpoint URLs are enabled.
-     */
-    boolean isStrictEndpointUrlsEnabled();
-
-    /**
      * @return a new {@link UaTcpStackServerConfigBuilder}.
      */
     static UaTcpStackServerConfigBuilder builder() {
@@ -131,7 +122,6 @@ public interface UaTcpStackServerConfig {
         builder.setUserTokenPolicies(config.getUserTokenPolicies());
         builder.setSoftwareCertificates(config.getSoftwareCertificates());
         builder.setChannelConfig(config.getChannelConfig());
-        builder.setStrictEndpointUrlsEnabled(config.isStrictEndpointUrlsEnabled());
 
         return builder;
     }

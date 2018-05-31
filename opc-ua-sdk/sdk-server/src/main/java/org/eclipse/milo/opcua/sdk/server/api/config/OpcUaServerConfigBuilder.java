@@ -151,12 +151,6 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         return this;
     }
 
-    @Override
-    public OpcUaServerConfigBuilder setStrictEndpointUrlsEnabled(boolean strictEndpointUrlsEnforced) {
-        super.setStrictEndpointUrlsEnabled(strictEndpointUrlsEnforced);
-        return this;
-    }
-
     public OpcUaServerConfig build() {
         UaTcpStackServerConfig stackServerConfig = super.build();
 
@@ -292,12 +286,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         public EncodingLimits getEncodingLimits() {
             return stackServerConfig.getEncodingLimits();
         }
-
-        @Override
-        public boolean isStrictEndpointUrlsEnabled() {
-            return stackServerConfig.isStrictEndpointUrlsEnabled();
-        }
-
+        
     }
 
 }
