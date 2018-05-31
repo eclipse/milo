@@ -156,17 +156,13 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                         boolean uriMatch = s1.equals(s2);
                         boolean policyMatch = e.getSecurityPolicyUri().equals(securityPolicyUri);
                         return uriMatch && policyMatch;
-                    }).findFirst().orElse(null);
-
-                if (endpointDescription == null && !server.getConfig().isStrictEndpointUrlsEnabled()) {
-                    endpointDescription = Arrays.stream(server.getEndpointDescriptions())
-                        .filter(e -> e.getSecurityPolicyUri().equals(securityPolicyUri))
-                        .findFirst().orElse(null);
-                }
-
-                if (endpointDescription == null) {
-                    throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "SecurityPolicy URI did not match");
-                }
+                    })
+                    .findFirst()
+                    .orElseThrow(() ->
+                        new UaException(
+                            StatusCodes.Bad_SecurityChecksFailed,
+                            "Endpoint URL or SecurityPolicy URI did not match")
+                    );
 
                 secureChannel = server.openSecureChannel();
                 secureChannel.setEndpointDescription(endpointDescription);
