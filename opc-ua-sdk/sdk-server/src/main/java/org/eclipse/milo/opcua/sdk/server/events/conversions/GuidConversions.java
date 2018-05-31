@@ -16,7 +16,9 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 final class GuidConversions {
@@ -37,4 +39,34 @@ final class GuidConversions {
         return uuid.toString();
     }
 
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof UUID) {
+            UUID uuid = (UUID) o;
+
+            return implicit ?
+                implicitConversion(uuid, targetType) :
+                explicitConversion(uuid, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull UUID uuid, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case ByteString:    return guidToByteString(uuid);
+            case String:        return guidToString(uuid);
+            default:            return implicitConversion(uuid, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull UUID uuid, BuiltinDataType targetType) {
+        // no implicit conversions exist
+        return null;
+    }
+    
 }

@@ -44,6 +44,10 @@ public class ImplicitConversions {
             case Boolean:
                 return BooleanConversions
                     .convert(sourceValue, targetType, true);
+            case Byte:
+                return ByteConversions
+                    .convert(sourceValue, targetType, true);
+
             default:
                 return null;
         }

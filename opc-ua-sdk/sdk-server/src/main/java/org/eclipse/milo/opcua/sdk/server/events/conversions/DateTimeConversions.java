@@ -18,7 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 
 final class DateTimeConversions {
@@ -42,5 +44,35 @@ final class DateTimeConversions {
             return ISO_8601_UTC_DATE_FORMAT.format(date);
         }
     }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof DateTime) {
+            DateTime d = (DateTime) o;
+
+            return implicit ?
+                implicitConversion(d, targetType) :
+                explicitConversion(d, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case String:    return dateTimeToString(d);
+            default:        return implicitConversion(d, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull DateTime d, BuiltinDataType targetType) {
+        // no implicit conversions exist
+        return null;
+    }
+
 
 }

@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
@@ -129,6 +130,45 @@ final class DoubleConversions {
         } else {
             return null;
         }
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof Double) {
+            Double d = (Double) o;
+
+            return implicit ?
+                implicitConversion(d, targetType) :
+                explicitConversion(d, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull Double d, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Boolean:   return doubleToBoolean(d);
+            case Byte:      return doubleToByte(d);
+            case Float:     return doubleToFloat(d);
+            case Int16:     return doubleToInt16(d);
+            case Int32:     return doubleToInt32(d);
+            case Int64:     return doubleToInt64(d);
+            case SByte:     return doubleToSByte(d);
+            case String:    return doubleToString(d);
+            case UInt16:    return doubleToUInt16(d);
+            case UInt32:    return doubleToUInt32(d);
+            case UInt64:    return doubleToUInt64(d);
+            default:        return implicitConversion(d, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull Double d, BuiltinDataType targetType) {
+        // no implicit conversions exist
+        return null;
     }
 
 }
