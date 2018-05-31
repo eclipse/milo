@@ -214,22 +214,16 @@ public class AttributeWriter {
 
         Class<?> expected = TypeUtil.getBackingClass(dataType.expanded());
 
-        if (expected == null) {
-            if (isStructureSubtype(nodeMap, dataType)) {
-                expected = ExtensionObject.class;
-            }
+        if (expected == null && isStructureSubtype(nodeMap, dataType)) {
+            expected = ExtensionObject.class;
         }
 
-        Class<?> actual = o.getClass().isArray() ?
-            o.getClass().getComponentType() : o.getClass();
+        if (expected != null) {
+            Class<?> actual = o.getClass().isArray() ?
+                o.getClass().getComponentType() : o.getClass();
 
-        if (expected == null) {
-            throw new UaException(StatusCodes.Bad_TypeMismatch);
-        } else {
             if (!expected.isAssignableFrom(actual)) {
-                /*
-                 * Writing a ByteString to a UByte[] is explicitly allowed by the spec.
-                 */
+                // Writing a ByteString to a UByte[] is explicitly allowed by the spec.
                 if (o instanceof ByteString && expected == UByte.class) {
                     ByteString byteString = (ByteString) o;
 
@@ -237,14 +231,17 @@ public class AttributeWriter {
                         new Variant(byteString.uBytes()),
                         value.getStatusCode(),
                         value.getSourceTime(),
-                        value.getServerTime());
+                        value.getServerTime()
+                    );
                 } else if (expected == Variant.class) {
-                    // allow to write anything to a Variant
+                    // Allow writing anything to a Variant
                     return value;
                 } else {
                     throw new UaException(StatusCodes.Bad_TypeMismatch);
                 }
             }
+        } else {
+            throw new UaException(StatusCodes.Bad_TypeMismatch);
         }
 
         return value;
