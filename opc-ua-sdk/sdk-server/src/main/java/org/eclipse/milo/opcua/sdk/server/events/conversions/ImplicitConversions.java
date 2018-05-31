@@ -13,55 +13,12 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.google.common.collect.ImmutableTable;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public class ImplicitConversions {
-
-    private static final ImmutableTable<BuiltinDataType, BuiltinDataType, Function> IMPLICIT_CONVERSIONS;
-
-    static {
-        IMPLICIT_CONVERSIONS = ImmutableTable.<BuiltinDataType, BuiltinDataType, Function>builder()
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.Byte,
-                (Function<Boolean, UByte>) BooleanConversions::booleanToByte)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.Double,
-                (Function<Boolean, Double>) BooleanConversions::booleanToDouble)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.Float,
-                (Function<Boolean, Float>) BooleanConversions::booleanToFloat)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.Int16,
-                (Function<Boolean, Short>) BooleanConversions::booleanToInt16)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.Int32,
-                (Function<Boolean, Integer>) BooleanConversions::booleanToInt32)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.Int64,
-                (Function<Boolean, Long>) BooleanConversions::booleanToInt64)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.SByte,
-                (Function<Boolean, Byte>) BooleanConversions::booleanToSByte)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.UInt16,
-                (Function<Boolean, UShort>) BooleanConversions::booleanToUInt16)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.UInt32,
-                (Function<Boolean, UInteger>) BooleanConversions::booleanToUInt32)
-            .put(
-                BuiltinDataType.Boolean, BuiltinDataType.UInt64,
-                (Function<Boolean, ULong>) BooleanConversions::booleanToUInt64)
-            .build();
-    }
 
     @Nullable
     public static Object convert(@Nonnull Object sourceValue, @Nonnull BuiltinDataType targetType) {
@@ -71,15 +28,24 @@ public class ImplicitConversions {
             return null;
         }
 
-        Function conversion = IMPLICIT_CONVERSIONS.get(sourceType, targetType);
-
-        if (conversion != null) {
-            @SuppressWarnings("unchecked")
-            Object targetValue = conversion.apply(sourceValue);
-
-            return targetValue;
-        } else {
+        if (!sourceType.getBackingClass().isAssignableFrom(sourceValue.getClass())) {
             return null;
+        }
+
+        return convert(sourceValue, sourceType, targetType);
+    }
+
+    private static Object convert(
+        @Nonnull Object sourceValue,
+        BuiltinDataType sourceType,
+        BuiltinDataType targetType) {
+
+        switch (sourceType) {
+            case Boolean:
+                return BooleanConversions
+                    .convert(sourceValue, targetType, true);
+            default:
+                return null;
         }
     }
 

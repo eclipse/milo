@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.testng.annotations.Test;
 
@@ -27,14 +28,41 @@ import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversio
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversions.byteToUInt16;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversions.byteToUInt32;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversions.byteToUInt64;
+import static org.eclipse.milo.opcua.sdk.server.events.conversions.ByteConversions.explicitConversion;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 
 public class ByteConversionsTest {
+
+    public static final Object[][] CONVERSIONS = new Object[][]{
+        {ubyte(0), Boolean.FALSE},
+        {ubyte(1), Boolean.TRUE},
+
+        {ubyte(0), 0.0d},
+        {ubyte(1), 1.0d},
+
+        {ubyte(0), 0.0f},
+        {ubyte(1), 1.0f}
+    };
+
+    @Test
+    public void testConversions() {
+        for (Object[] conversion : CONVERSIONS) {
+            UByte b = (UByte) conversion[0];
+            Object expected = conversion[1];
+            BuiltinDataType targetType = BuiltinDataType
+                .fromBackingClass(expected.getClass());
+
+            assertNotNull(targetType);
+
+            assertEquals(explicitConversion(b, targetType), expected);
+        }
+    }
 
     @Test
     public void testByteToBoolean() {

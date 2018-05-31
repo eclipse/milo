@@ -14,7 +14,9 @@
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
@@ -65,6 +67,11 @@ final class BooleanConversions {
     }
 
     @Nonnull
+    static String booleanToString(@Nonnull Boolean b) {
+        return b ? "1" : "0";
+    }
+
+    @Nonnull
     static UShort booleanToUInt16(@Nonnull Boolean b) {
         return b ? ushort(1) : ushort(0);
     }
@@ -77,6 +84,48 @@ final class BooleanConversions {
     @Nonnull
     static ULong booleanToUInt64(@Nonnull Boolean b) {
         return b ? ulong(1) : ulong(0);
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof Boolean) {
+            Boolean b = (Boolean) o;
+
+            return implicit ?
+                implicitConversion(b, targetType) :
+                explicitConversion(b, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull Boolean b, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case String:    return booleanToString(b);
+            default:        return implicitConversion(b, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull Boolean b, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Byte:      return booleanToByte(b);
+            case Double:    return booleanToDouble(b);
+            case Float:     return booleanToFloat(b);
+            case Int16:     return booleanToInt16(b);
+            case Int32:     return booleanToInt32(b);
+            case Int64:     return booleanToInt64(b);
+            case SByte:     return booleanToSByte(b);
+            case UInt16:    return booleanToUInt16(b);
+            case UInt32:    return booleanToUInt32(b);
+            case UInt64:    return booleanToUInt64(b);
+            default:        return null;
+        }
+        //@formatter:on
     }
 
 }

@@ -22,6 +22,7 @@ import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConver
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToInt32;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToInt64;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToSByte;
+import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToString;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToUInt16;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToUInt32;
 import static org.eclipse.milo.opcua.sdk.server.events.conversions.BooleanConversions.booleanToUInt64;
@@ -73,6 +74,12 @@ public class BooleanConversionsTest {
     public void testBooleanToSByte() {
         assertEquals((byte) booleanToSByte(false), 0);
         assertEquals((byte) booleanToSByte(true), 1);
+    }
+
+    @Test
+    public void testBooleanToString() {
+        assertEquals(booleanToString(true), "1");
+        assertEquals(booleanToString(false), "0");
     }
 
     @Test
