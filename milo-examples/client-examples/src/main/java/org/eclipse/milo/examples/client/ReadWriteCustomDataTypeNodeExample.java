@@ -23,14 +23,17 @@ import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReadCustomDataTypeNodeExample implements ClientExample {
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+
+public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        ReadCustomDataTypeNodeExample example = new ReadCustomDataTypeNodeExample();
+        ReadWriteCustomDataTypeNodeExample example = new ReadWriteCustomDataTypeNodeExample();
 
         new ClientExampleRunner(example).run();
     }
@@ -50,6 +53,7 @@ public class ReadCustomDataTypeNodeExample implements ClientExample {
 
         logger.info("DataType={}", node.getDataType().get());
 
+        // Read the current value
         DataValue value = node.readValue().get();
         logger.info("Value={}", value);
 
@@ -57,6 +61,31 @@ public class ReadCustomDataTypeNodeExample implements ClientExample {
         ExtensionObject xo = (ExtensionObject) variant.getValue();
 
         CustomDataType decoded = xo.decode();
+        logger.info("Decoded={}", decoded);
+
+        // Write a modified value
+        CustomDataType modified = new CustomDataType(
+            decoded.getFoo() + "bar",
+            uint(decoded.getBar().intValue() + 1),
+            !decoded.isBaz()
+        );
+        ExtensionObject modifiedXo = ExtensionObject.encode(
+            modified,
+            xo.getEncodingTypeId()
+        );
+
+        StatusCode writeStatus = node.writeValue(new DataValue(new Variant(modifiedXo))).get();
+
+        logger.info("writeStatus={}", writeStatus);
+
+        // Read the modified value back
+        value = node.readValue().get();
+        logger.info("Value={}", value);
+
+        variant = value.getValue();
+        xo = (ExtensionObject) variant.getValue();
+
+        decoded = xo.decode();
         logger.info("Decoded={}", decoded);
 
         future.complete(client);

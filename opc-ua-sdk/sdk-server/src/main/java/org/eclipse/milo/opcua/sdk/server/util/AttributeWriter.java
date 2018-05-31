@@ -21,15 +21,17 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
+import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
@@ -38,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 
+import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.extract;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getAccessLevels;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserAccessLevels;
@@ -119,7 +122,7 @@ public class AttributeWriter {
             );
 
             if (dataType != null) {
-                value = validateDataType(dataType.expanded(), value);
+                value = validateDataType(context.getServer().getNodeMap(), dataType, value);
             }
 
             Integer valueRank = extract(
@@ -198,25 +201,29 @@ public class AttributeWriter {
         }
     }
 
-    static DataValue validateDataType(ExpandedNodeId dataType, DataValue value) throws UaException {
+    private static DataValue validateDataType(
+        ServerNodeMap nodeMap,
+        NodeId dataType,
+        DataValue value) throws UaException {
+
         Variant variant = value.getValue();
         if (variant == null) return value;
 
         Object o = variant.getValue();
         if (o == null) throw new UaException(StatusCodes.Bad_TypeMismatch);
 
-        Class<?> expected = TypeUtil.getBackingClass(dataType);
+        Class<?> expected = TypeUtil.getBackingClass(dataType.expanded());
 
-        Class<?> actual = o.getClass().isArray() ?
-            o.getClass().getComponentType() : o.getClass();
+        if (expected == null && isStructureSubtype(nodeMap, dataType)) {
+            expected = ExtensionObject.class;
+        }
 
-        if (expected == null) {
-            throw new UaException(StatusCodes.Bad_TypeMismatch);
-        } else {
+        if (expected != null) {
+            Class<?> actual = o.getClass().isArray() ?
+                o.getClass().getComponentType() : o.getClass();
+
             if (!expected.isAssignableFrom(actual)) {
-                /*
-                 * Writing a ByteString to a UByte[] is explicitly allowed by the spec.
-                 */
+                // Writing a ByteString to a UByte[] is explicitly allowed by the spec.
                 if (o instanceof ByteString && expected == UByte.class) {
                     ByteString byteString = (ByteString) o;
 
@@ -224,20 +231,23 @@ public class AttributeWriter {
                         new Variant(byteString.uBytes()),
                         value.getStatusCode(),
                         value.getSourceTime(),
-                        value.getServerTime());
+                        value.getServerTime()
+                    );
                 } else if (expected == Variant.class) {
-                    // allow to write anything to a Variant
+                    // Allow writing anything to a Variant
                     return value;
                 } else {
                     throw new UaException(StatusCodes.Bad_TypeMismatch);
                 }
             }
+        } else {
+            throw new UaException(StatusCodes.Bad_TypeMismatch);
         }
 
         return value;
     }
 
-    static void validateArrayType(
+    private static void validateArrayType(
         Integer valueRank,
         UInteger[] arrayDimensions,
         DataValue value) throws UaException {
@@ -308,6 +318,26 @@ public class AttributeWriter {
                     }
                 }
                 break;
+        }
+    }
+
+    private static boolean isStructureSubtype(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        ServerNode dataTypeNode = nodeMap.get(dataTypeId);
+
+        if (dataTypeNode != null) {
+            Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
+                .filter(r ->
+                    r.getReferenceTypeId().equals(Identifiers.HasSubtype) &&
+                        r.isInverse() &&
+                        r.getTargetNodeClass() == NodeClass.DataType)
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .findFirst();
+
+            return superTypeId
+                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeMap, id))
+                .orElse(false);
+        } else {
+            return false;
         }
     }
 
