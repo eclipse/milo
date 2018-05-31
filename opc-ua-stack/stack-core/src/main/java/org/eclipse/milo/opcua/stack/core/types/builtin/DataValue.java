@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -153,8 +154,16 @@ public final class DataValue {
         return Objects.hash(value, status, sourceTime, sourcePicoseconds, serverTime, serverPicoseconds);
     }
 
-    public DataValue.Builder modify() {
+    public DataValue.Builder copy() {
         return new Builder(this);
+    }
+
+    public DataValue copy(Consumer<DataValue.Builder> c) {
+        Builder builder = new Builder(this);
+
+        c.accept(builder);
+
+        return builder.build();
     }
 
     public static DataValue.Builder newValue() {

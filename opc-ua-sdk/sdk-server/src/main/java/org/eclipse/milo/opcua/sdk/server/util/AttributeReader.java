@@ -96,7 +96,7 @@ public class AttributeReader {
                 }
             }
 
-            final DataValue.Builder value = node.getAttribute(context, attributeId).modify();
+            final DataValue.Builder value = node.getAttribute(context, attributeId).copy();
 
             // Maybe transcode the structure...
             if (value.value.isNotNull()) {
