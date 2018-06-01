@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -144,6 +145,49 @@ final class UInt64Conversions {
         } else {
             return null;
         }
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof ULong) {
+            ULong ul = (ULong) o;
+
+            return implicit ?
+                implicitConversion(ul, targetType) :
+                explicitConversion(ul, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull ULong ul, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Boolean:       return uInt64ToBoolean(ul);
+            case Byte:          return uInt64ToByte(ul);
+            case Int16:         return uInt64ToInt16(ul);
+            case Int32:         return uInt64ToInt32(ul);
+            case SByte:         return uInt64ToSByte(ul);
+            case StatusCode:    return uInt64ToStatusCode(ul);
+            case String:        return uInt64ToString(ul);
+            case UInt16:        return uInt64ToUInt16(ul);
+            case UInt32:        return uInt64ToUInt32(ul);
+            default:            return implicitConversion(ul, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull ULong ul, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Double:        return uInt64ToDouble(ul);
+            case Float:         return uInt64ToFloat(ul);
+            case Int64:         return uInt64ToInt64(ul);
+            default:            return null;
+        }
+        //@formatter:on
     }
 
 }

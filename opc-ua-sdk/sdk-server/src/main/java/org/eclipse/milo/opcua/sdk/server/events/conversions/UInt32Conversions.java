@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -118,6 +119,49 @@ final class UInt32Conversions {
     @Nonnull
     static ULong uInt32ToUInt64(@Nonnull UInteger ui) {
         return ulong(ui.longValue());
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof UInteger) {
+            UInteger ui = (UInteger) o;
+
+            return implicit ?
+                implicitConversion(ui, targetType) :
+                explicitConversion(ui, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull UInteger ui, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Boolean:       return uInt32ToBoolean(ui);
+            case Byte:          return uInt32ToByte(ui);
+            case Int16:         return uInt32ToInt16(ui);
+            case SByte:         return uInt32ToSByte(ui);
+            case StatusCode:    return uInt32ToStatusCode(ui);
+            case String:        return uInt32ToString(ui);
+            case UInt16:        return uInt32ToUInt16(ui);
+            default:            return implicitConversion(ui, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull UInteger ui, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Double:        return uInt32ToDouble(ui);
+            case Float:         return uInt32ToFloat(ui);
+            case Int32:         return uInt32ToInt32(ui);
+            case Int64:         return uInt32ToInt64(ui);
+            case UInt64:        return uInt32ToUInt64(ui);
+            default:            return null;
+        }
+        //@formatter:on
     }
 
 }
