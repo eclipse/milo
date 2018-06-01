@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 final class LocalizedTextConversions {
@@ -25,6 +26,34 @@ final class LocalizedTextConversions {
     @Nullable
     static String localizedTextToString(@Nonnull LocalizedText text) {
         return text.getText();
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof LocalizedText) {
+            LocalizedText text = (LocalizedText) o;
+
+            return implicit ?
+                implicitConversion(text, targetType) :
+                explicitConversion(text, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull LocalizedText text, BuiltinDataType targetType) {
+        return implicitConversion(text, targetType);
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull LocalizedText text, BuiltinDataType targetType) {
+        //@formatter:off
+        switch(targetType) {
+            case String:    return localizedTextToString(text);
+            default:        return null;
+        }
+        //@formatter:on
     }
 
 }

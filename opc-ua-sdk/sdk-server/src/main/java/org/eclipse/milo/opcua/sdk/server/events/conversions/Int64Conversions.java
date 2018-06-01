@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -117,6 +118,49 @@ final class Int64Conversions {
         } else {
             return null;
         }
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof Long) {
+            Long l = (Long) o;
+
+            return implicit ?
+                implicitConversion(l, targetType) :
+                explicitConversion(l, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull Long l, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Boolean:       return int64ToBoolean(l);
+            case Byte:          return int64ToByte(l);
+            case Int16:         return int64ToInt16(l);
+            case Int32:         return int64ToInt32(l);
+            case SByte:         return int64ToSByte(l);
+            case StatusCode:    return int64ToStatusCode(l);
+            case String:        return int64ToString(l);
+            case UInt16:        return int64ToUInt16(l);
+            case UInt32:        return int64ToUInt32(l);
+            case UInt64:        return int64ToUInt64(l);
+            default:            return implicitConversion(l, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull Long l, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Double:    return int64ToDouble(l);
+            case Float:     return int64ToFloat(l);
+            default:        return null;
+        }
+        //@formatter:on
     }
 
 }

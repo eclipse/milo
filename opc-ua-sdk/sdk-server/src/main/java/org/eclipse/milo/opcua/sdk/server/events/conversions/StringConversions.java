@@ -22,6 +22,7 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -197,6 +198,54 @@ final class StringConversions {
         synchronized (ISO_8601_UTC_DATE_FORMAT) {
             return ISO_8601_UTC_DATE_FORMAT.parse(s);
         }
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof String) {
+            String s = (String) o;
+
+            return implicit ?
+                implicitConversion(s, targetType) :
+                explicitConversion(s, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull String s, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case DateTime:          return stringToDateTime(s);
+            case ExpandedNodeId:    return stringToExpandedNodeId(s);
+            case NodeId:            return stringToNodeId(s);
+            case LocalizedText:     return stringToLocalizedText(s);
+            case QualifiedName:     return stringToQualifiedName(s);
+            default:                return implicitConversion(s, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull String s, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Boolean:   return stringToBoolean(s);
+            case Byte:      return stringToByte(s);
+            case Double:    return stringToDouble(s);
+            case Float:     return stringToFloat(s);
+            case Guid:      return stringToGuid(s);
+            case Int16:     return stringToInt16(s);
+            case Int32:     return stringToInt32(s);
+            case Int64:     return stringToInt64(s);
+            case SByte:     return stringToSByte(s);
+            case UInt16:    return stringToUInt16(s);
+            case UInt32:    return stringToUInt32(s);
+            case UInt64:    return stringToUInt64(s);
+            default:        return null;
+        }
+        //@formatter:on
     }
 
 }

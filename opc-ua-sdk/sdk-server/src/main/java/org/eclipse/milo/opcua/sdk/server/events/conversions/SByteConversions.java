@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.events.conversions;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
@@ -99,6 +100,48 @@ final class SByteConversions {
         } else {
             return null;
         }
+    }
+
+    @Nullable
+    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+        if (o instanceof Byte) {
+            Byte b = (Byte) o;
+
+            return implicit ?
+                implicitConversion(b, targetType) :
+                explicitConversion(b, targetType);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static Object explicitConversion(@Nonnull Byte b, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Boolean:   return sByteToBoolean(b);
+            case Byte:      return sByteToByte(b);
+            case String:    return sByteToString(b);
+            default:        return implicitConversion(b, targetType);
+        }
+        //@formatter:on
+    }
+
+    @Nullable
+    static Object implicitConversion(@Nonnull Byte b, BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Double:    return sByteToDouble(b);
+            case Float:     return sByteToFloat(b);
+            case Int16:     return sByteToInt16(b);
+            case Int32:     return sByteToInt32(b);
+            case Int64:     return sByteToInt64(b);
+            case UInt16:    return sByteToUInt16(b);
+            case UInt32:    return sByteToUInt32(b);
+            case UInt64:    return sByteToUInt64(b);
+            default:        return null;
+        }
+        //@formatter:on
     }
 
 }
