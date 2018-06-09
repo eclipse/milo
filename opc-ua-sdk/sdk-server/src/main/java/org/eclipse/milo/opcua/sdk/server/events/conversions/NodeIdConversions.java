@@ -55,7 +55,7 @@ final class NodeIdConversions {
     @Nullable
     static Object implicitConversion(@Nonnull NodeId nodeId, BuiltinDataType targetType) {
         //@formatter:off
-        switch(targetType) {
+        switch (targetType) {
             case ExpandedNodeId:    return nodeIdToExpandedNodeId(nodeId);
             case String:            return nodeIdToString(nodeId);
             default:                return null;

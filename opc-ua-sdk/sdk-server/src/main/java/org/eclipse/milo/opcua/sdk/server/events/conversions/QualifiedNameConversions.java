@@ -55,7 +55,7 @@ final class QualifiedNameConversions {
     @Nullable
     static Object implicitConversion(@Nonnull QualifiedName name, BuiltinDataType targetType) {
         //@formatter:off
-        switch(targetType) {
+        switch (targetType) {
             case String:        return qualifiedNameToString(name);
             case LocalizedText: return qualifiedNameToLocalizedText(name);
             default:            return null;

@@ -49,7 +49,7 @@ final class LocalizedTextConversions {
     @Nullable
     static Object implicitConversion(@Nonnull LocalizedText text, BuiltinDataType targetType) {
         //@formatter:off
-        switch(targetType) {
+        switch (targetType) {
             case String:    return localizedTextToString(text);
             default:        return null;
         }
