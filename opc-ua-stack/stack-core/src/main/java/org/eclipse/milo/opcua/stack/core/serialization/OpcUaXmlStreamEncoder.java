@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.stack.core.serialization;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -42,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.util.DocumentBuilderUtil;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -50,13 +50,6 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
 
     private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
 
-    private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
-
-    static {
-        FACTORY.setCoalescing(true);
-        FACTORY.setNamespaceAware(true);
-    }
-
     private final DocumentBuilder builder;
 
     private Document document;
@@ -64,7 +57,7 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
 
     public OpcUaXmlStreamEncoder() {
         try {
-            builder = FACTORY.newDocumentBuilder();
+            builder = DocumentBuilderUtil.SHARED_FACTORY.newDocumentBuilder();
 
             document = builder.newDocument();
             currentNode = document;
