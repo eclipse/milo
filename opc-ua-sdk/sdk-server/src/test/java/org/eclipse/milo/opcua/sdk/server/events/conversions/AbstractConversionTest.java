@@ -20,7 +20,9 @@ import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 abstract class AbstractConversionTest<S> {
 
@@ -36,19 +38,32 @@ abstract class AbstractConversionTest<S> {
     public void testAllConversions() {
         for (BuiltinDataType targetType : BuiltinDataType.values()) {
             Conversion[] conversions = getConversions(targetType);
+            ConversionType conversionType = getConversionType(targetType);
+            BuiltinDataType sourceType = BuiltinDataType.fromBackingClass(getSourceClass());
 
-            for (Conversion conversion : conversions) {
-                S fromValue = getSourceClass().cast(conversion.fromValue);
-                Object targetValue = conversion.targetValue;
+            if (conversionType != ConversionType.NONE) {
+                assertNotNull(conversions,
+                    "expected conversions for " + targetType);
 
-                ConversionType conversionType = getConversionType(conversion.targetType);
-                Object convertedValue = convert(fromValue, targetType, conversionType == ConversionType.IMPLICIT);
+                assertTrue(conversions.length > 0,
+                    "expected conversions for " + targetType);
 
-                System.out.println(String.format(
-                    "[%s] fromValue=%s targetType=%s targetValue=%s",
-                    conversionType, fromValue, targetType, targetValue));
+                System.out.println(String.format("%s -> %s [%s]", sourceType, targetType, conversionType));
 
-                assertEquals(convertedValue, targetValue);
+                for (Conversion conversion : conversions) {
+                    assertEquals(targetType, conversion.targetType);
+
+                    S fromValue = getSourceClass().cast(conversion.fromValue);
+                    Object targetValue = conversion.targetValue;
+
+                    Object convertedValue = convert(fromValue, targetType, conversionType == ConversionType.IMPLICIT);
+
+                    System.out.println(String.format("\tfromValue=%s targetValue=%s", fromValue, targetValue));
+
+                    assertEquals(convertedValue, targetValue);
+                }
+            } else {
+                assertEquals(0, conversions.length);
             }
         }
     }
