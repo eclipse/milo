@@ -80,6 +80,11 @@ public class EventSubscriptionExample implements ClientExample {
                     null),
                 new SimpleAttributeOperand(
                     Identifiers.BaseEventType,
+                    new QualifiedName[]{new QualifiedName(0, "EventType")},
+                    AttributeId.Value.uid(),
+                    null),
+                new SimpleAttributeOperand(
+                    Identifiers.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "Severity")},
                     AttributeId.Value.uid(),
                     null),
