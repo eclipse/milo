@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler.NotImplemen
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.methods.GetMonitoredItems;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ResendData;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsNode;
@@ -38,11 +39,10 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.ServerStatusNode;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.DerivedVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -230,29 +230,40 @@ public class OpcUaNamespace implements Namespace {
     private void configureServerObject() {
         ServerNode serverNode = (ServerNode) nodeManager.get(Identifiers.Server);
 
-        replaceServerArrayNode();
-        replaceNamespaceArrayNode();
+        assert serverNode != null;
 
+        serverNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
+            @Override
+            public DataValue getValue(AttributeContext context, VariableNode node) {
+                return new DataValue(new Variant(server.getNamespaceManager().getNamespaceTable().toArray()));
+            }
+        });
+        serverNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {
+            @Override
+            public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                return new DataValue(new Variant(server.getServerTable().toArray()));
+            }
+        });
         serverNode.setAuditing(false);
         serverNode.getServerDiagnosticsNode().setEnabledFlag(false);
         serverNode.setServiceLevel(ubyte(255));
 
         ServerStatusNode serverStatus = serverNode.getServerStatusNode();
+
+        assert serverStatus != null;
+
         serverStatus.setBuildInfo(server.getConfig().getBuildInfo());
         serverStatus.setCurrentTime(DateTime.now());
         serverStatus.setSecondsTillShutdown(uint(0));
         serverStatus.setShutdownReason(LocalizedText.NULL_VALUE);
         serverStatus.setState(ServerState.Running);
         serverStatus.setStartTime(DateTime.now());
-
-        UaVariableNode currentTime = (UaVariableNode) nodeManager.get(Identifiers.Server_ServerStatus_CurrentTime);
-        DerivedVariableNode derivedCurrentTime = new DerivedVariableNode(server, currentTime) {
+        serverStatus.getCurrentTimeNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
-            public DataValue getValue() {
+            public DataValue getValue(AttributeContext context, VariableNode node) {
                 return new DataValue(new Variant(DateTime.now()));
             }
-        };
-        nodeManager.addNode(derivedCurrentTime);
+        });
 
         final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
         ServerCapabilitiesNode serverCapabilities = serverNode.getServerCapabilitiesNode();
@@ -304,32 +315,6 @@ public class OpcUaNamespace implements Namespace {
         } catch (Exception e) {
             logger.error("Error setting up ResendData Method.", e);
         }
-    }
-
-    private void replaceServerArrayNode() {
-        UaVariableNode originalNode = (UaVariableNode) nodeManager.get(Identifiers.Server_ServerArray);
-
-        UaVariableNode derived = new DerivedVariableNode(server, originalNode) {
-            @Override
-            public DataValue getValue() {
-                return new DataValue(new Variant(server.getServerTable().toArray()));
-            }
-        };
-
-        nodeManager.addNode(derived);
-    }
-
-    private void replaceNamespaceArrayNode() {
-        UaVariableNode originalNode = (UaVariableNode) nodeManager.get(Identifiers.Server_NamespaceArray);
-
-        UaVariableNode derived = new DerivedVariableNode(server, originalNode) {
-            @Override
-            public DataValue getValue() {
-                return new DataValue(new Variant(server.getNamespaceManager().getNamespaceTable().toArray()));
-            }
-        };
-
-        nodeManager.addNode(derived);
     }
 
 }

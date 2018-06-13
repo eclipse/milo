@@ -14,7 +14,13 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 
+/**
+ * @see AttributeDelegate
+ * @deprecated use an {@link AttributeDelegate}.
+ */
+@Deprecated
 public abstract class DerivedVariableNode extends UaVariableNode {
 
     public DerivedVariableNode(OpcUaServer server, UaVariableNode variableNode) {
