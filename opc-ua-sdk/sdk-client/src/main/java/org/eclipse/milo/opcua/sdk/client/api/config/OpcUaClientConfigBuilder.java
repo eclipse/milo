@@ -166,6 +166,12 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         return this;
     }
 
+    @Override
+    public OpcUaClientConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
+        super.setEncodingLimits(encodingLimits);
+        return this;
+    }
+
     public OpcUaClientConfig build() {
         UaTcpStackClientConfig stackClientConfig = super.build();
 
