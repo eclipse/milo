@@ -98,10 +98,13 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        while (buffer.readableBytes() >= HEADER_LENGTH &&
-            buffer.readableBytes() >= getMessageLength(buffer)) {
+        while (buffer.readableBytes() >= HEADER_LENGTH) {
+            int messageLength = getMessageLength(buffer, maxChunkSize);
 
-            int messageLength = getMessageLength(buffer);
+            if (buffer.readableBytes() < messageLength) {
+                break;
+            }
+
             MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
             switch (messageType) {
@@ -408,7 +411,8 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                                     new UaTcpServerSymmetricHandler(
                                         server, serializationQueue, secureChannel);
 
-                                ctx.pipeline().addFirst(symmetricHandler);
+                                ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);
+
                                 symmetricHandlerAdded = true;
                             }
 

@@ -110,10 +110,16 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        while (buffer.readableBytes() >= HEADER_LENGTH &&
-            buffer.readableBytes() >= getMessageLength(buffer)) {
+        ChannelConfig config = client.getChannelConfig();
+        int maxChunkSize = config.getMaxChunkSize();
 
-            int messageLength = getMessageLength(buffer);
+        while (buffer.readableBytes() >= HEADER_LENGTH) {
+            int messageLength = getMessageLength(buffer, maxChunkSize);
+
+            if (buffer.readableBytes() < messageLength) {
+                break;
+            }
+
             MessageType messageType = MessageType.fromMediumInt(buffer.getMediumLE(buffer.readerIndex()));
 
             switch (messageType) {
