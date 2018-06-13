@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
 import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
@@ -265,14 +266,21 @@ public class SessionManager implements
         ByteString clientCertificateBytes = request.getClientCertificate();
 
         if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
-            X509Certificate clientCertificate = CertificateUtil
-                .decodeCertificate(clientCertificateBytes.bytes());
+            List<X509Certificate> clientCertificateChain = CertificateUtil
+                .decodeCertificates(clientCertificateBytes.bytes());
+
+            X509Certificate clientCertificate = clientCertificateChain.get(0);
 
             if (!secureChannel.getRemoteCertificate().equals(clientCertificate)) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "certificate used to open secure channel " +
                         "differs from certificate used to create session");
             }
+
+            CertificateValidator certificateValidator = server.getConfig().getCertificateValidator();
+
+            certificateValidator.validate(clientCertificate);
+            certificateValidator.verifyTrustChain(clientCertificateChain);
 
             validateApplicationUri(request.getClientDescription().getApplicationUri(), clientCertificate);
         }
