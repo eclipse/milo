@@ -55,7 +55,15 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     private Document document;
     private Node currentNode;
 
+    private final EncodingLimits encodingLimits;
+
     public OpcUaXmlStreamEncoder() {
+        this(EncodingLimits.DEFAULT);
+    }
+
+    public OpcUaXmlStreamEncoder(EncodingLimits encodingLimits) {
+        this.encodingLimits = encodingLimits;
+
         try {
             builder = DocumentBuilderUtil.SHARED_FACTORY.newDocumentBuilder();
 

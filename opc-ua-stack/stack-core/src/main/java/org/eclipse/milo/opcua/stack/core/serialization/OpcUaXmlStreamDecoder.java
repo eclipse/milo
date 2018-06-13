@@ -82,7 +82,15 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     private Document document;
     private Node currentNode;
 
+    private final EncodingLimits encodingLimits;
+
     public OpcUaXmlStreamDecoder() {
+        this(EncodingLimits.DEFAULT);
+    }
+
+    public OpcUaXmlStreamDecoder(EncodingLimits encodingLimits) {
+        this.encodingLimits = encodingLimits;
+
         try {
             builder = DocumentBuilderUtil.SHARED_FACTORY.newDocumentBuilder();
         } catch (ParserConfigurationException e) {

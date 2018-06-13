@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -23,8 +24,16 @@ public interface DataTypeEncoding {
 
     ExtensionObject.BodyType getBodyType();
 
-    Object encode(Object struct, NodeId encodingId, DataTypeManager dataTypeManager);
+    Object encode(
+        Object decodedBody,
+        NodeId encodingId,
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager);
 
-    Object decode(Object body, NodeId encodingId, DataTypeManager dataTypeManager);
+    Object decode(
+        Object encodedBody,
+        NodeId encodingId,
+        EncodingLimits encodingLimits,
+        DataTypeManager dataTypeManager);
 
 }
