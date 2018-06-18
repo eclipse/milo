@@ -49,7 +49,7 @@ final class DoubleConversions {
 
     @Nullable
     static Float doubleToFloat(@Nonnull Double d) {
-        if (d >= Float.MIN_VALUE && d <= Float.MAX_VALUE) {
+        if (d >= -Float.MAX_VALUE && d <= Float.MAX_VALUE) {
             return d.floatValue();
         } else {
             return null;
@@ -78,9 +78,13 @@ final class DoubleConversions {
         }
     }
 
-    @Nonnull
+    @Nullable
     static Long doubleToInt64(@Nonnull Double d) {
-        return Math.round(d);
+        if (d >= Long.MIN_VALUE && d <= Long.MAX_VALUE) {
+            return Math.round(d);
+        } else {
+            return null;
+        }
     }
 
     @Nullable

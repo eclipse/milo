@@ -20,9 +20,7 @@ import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
 
 abstract class AbstractConversionTest<S> {
 
@@ -42,11 +40,9 @@ abstract class AbstractConversionTest<S> {
             BuiltinDataType sourceType = BuiltinDataType.fromBackingClass(getSourceClass());
 
             if (conversionType != ConversionType.NONE) {
-                assertNotNull(conversions,
-                    "expected conversions for " + targetType);
-
-                assertTrue(conversions.length > 0,
-                    "expected conversions for " + targetType);
+                if (conversions == null || conversions.length == 0) {
+                    throw new RuntimeException("expected conversions for " + targetType);
+                }
 
                 System.out.println(String.format("%s -> %s [%s]", sourceType, targetType, conversionType));
 
@@ -63,7 +59,11 @@ abstract class AbstractConversionTest<S> {
                     assertEquals(convertedValue, targetValue);
                 }
             } else {
-                assertEquals(0, conversions.length);
+                if (conversions.length != 0) {
+                    throw new RuntimeException(String.format(
+                        "conversions defined for %s -> %s " +
+                            "but no ConversionType is defined", sourceType, targetType));
+                }
             }
         }
     }
