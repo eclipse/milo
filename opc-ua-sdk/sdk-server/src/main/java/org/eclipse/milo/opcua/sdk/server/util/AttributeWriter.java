@@ -319,19 +319,22 @@ public class AttributeWriter {
 
     private static Class<?> getBackingClass(ServerNodeMap nodeMap, NodeId dataType) {
         Class<?> expected = TypeUtil.getBackingClass(dataType.expanded());
+
         if (expected == null) {
             if (isSubtypeOf(nodeMap, dataType, Identifiers.Structure)) {
                 expected = ExtensionObject.class;
-
             } else if (isSubtypeOf(nodeMap, dataType, Identifiers.Number)) {
                 expected = Number.class;
-
             }
         }
         return expected;
     }
 
-    private static boolean isSubtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId identifier) {
+    /**
+     * @return {@code true} if the DataType identified by {@code dataTypeId} is a subtype of the DataType identified by
+     * {@code parentTypeId}.
+     */
+    private static boolean isSubtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId parentTypeId) {
         ServerNode dataTypeNode = nodeMap.get(dataTypeId);
 
         if (dataTypeNode != null) {
@@ -344,7 +347,7 @@ public class AttributeWriter {
                 .findFirst();
 
             return superTypeId
-                .map(id -> id.equals(identifier) || isSubtypeOf(nodeMap, id, Identifiers.Structure))
+                .map(id -> id.equals(parentTypeId) || isSubtypeOf(nodeMap, id, parentTypeId))
                 .orElse(false);
         } else {
             return false;
