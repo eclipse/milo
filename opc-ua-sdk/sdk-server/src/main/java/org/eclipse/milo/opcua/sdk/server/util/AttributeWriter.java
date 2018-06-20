@@ -212,11 +212,7 @@ public class AttributeWriter {
         Object o = variant.getValue();
         if (o == null) throw new UaException(StatusCodes.Bad_TypeMismatch);
 
-        Class<?> expected = TypeUtil.getBackingClass(dataType.expanded());
-
-        if (expected == null && isStructureSubtype(nodeMap, dataType)) {
-            expected = ExtensionObject.class;
-        }
+        Class<?> expected = getBackingClass(nodeMap, dataType);
 
         if (expected != null) {
             Class<?> actual = o.getClass().isArray() ?
@@ -321,7 +317,21 @@ public class AttributeWriter {
         }
     }
 
-    private static boolean isStructureSubtype(ServerNodeMap nodeMap, NodeId dataTypeId) {
+    private static Class<?> getBackingClass(ServerNodeMap nodeMap, NodeId dataType) {
+        Class<?> expected = TypeUtil.getBackingClass(dataType.expanded());
+        if (expected == null) {
+            if (isSubtypeOf(nodeMap, dataType, Identifiers.Structure)) {
+                expected = ExtensionObject.class;
+
+            } else if (isSubtypeOf(nodeMap, dataType, Identifiers.Number)) {
+                expected = Number.class;
+
+            }
+        }
+        return expected;
+    }
+
+    private static boolean isSubtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId identifier) {
         ServerNode dataTypeNode = nodeMap.get(dataTypeId);
 
         if (dataTypeNode != null) {
@@ -334,7 +344,7 @@ public class AttributeWriter {
                 .findFirst();
 
             return superTypeId
-                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeMap, id))
+                .map(id -> id.equals(identifier) || isSubtypeOf(nodeMap, id, Identifiers.Structure))
                 .orElse(false);
         } else {
             return false;
