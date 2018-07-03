@@ -137,7 +137,7 @@ final class DoubleConversions {
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof Double) {
             Double d = (Double) o;
 

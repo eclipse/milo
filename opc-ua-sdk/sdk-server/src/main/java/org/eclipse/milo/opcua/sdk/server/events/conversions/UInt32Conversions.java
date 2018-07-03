@@ -122,7 +122,7 @@ final class UInt32Conversions {
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof UInteger) {
             UInteger ui = (UInteger) o;
 

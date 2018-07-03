@@ -110,7 +110,7 @@ final class UInt16Conversions {
     }
 
     @Nullable
-    static Object convert(@Nonnull Object o, BuiltinDataType targetType, boolean implicit) {
+    static Object convert(@Nullable Object o, BuiltinDataType targetType, boolean implicit) {
         if (o instanceof UShort) {
             UShort us = (UShort) o;
 
