@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerIn
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
+import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
@@ -87,6 +88,8 @@ public class OpcUaServer implements UaNodeContext {
     private final NamespaceManager namespaceManager = new NamespaceManager();
     private final SessionManager sessionManager = new SessionManager(this);
     private final ServerTable serverTable = new ServerTable();
+
+    private final NodeFactory nodeFactory;
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
@@ -143,6 +146,8 @@ public class OpcUaServer implements UaNodeContext {
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
             referenceTypes.put(referenceType.getNodeId(), referenceType);
         }
+
+        nodeFactory = new NodeFactory(this, objectTypeManager, variableTypeManager);
 
         for (String bindAddress : config.getBindAddresses()) {
             Set<String> hostnames = Sets.newHashSet(config.getEndpointAddresses());
@@ -254,6 +259,10 @@ public class OpcUaServer implements UaNodeContext {
 
     public ServerTable getServerTable() {
         return serverTable;
+    }
+
+    public NodeFactory getNodeFactory() {
+        return nodeFactory;
     }
 
     public ObjectTypeManager getObjectTypeManager() {

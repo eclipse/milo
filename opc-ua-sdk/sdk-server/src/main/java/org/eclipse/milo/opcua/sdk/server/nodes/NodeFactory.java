@@ -19,12 +19,11 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.util.StreamUtil;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -38,20 +37,20 @@ public class NodeFactory {
 
     private final UaNodeManager nodeManager;
 
-    private final UaNodeContext context;
+    private final OpcUaServer server;
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
     public NodeFactory(
-        UaNodeContext context,
+        OpcUaServer server,
         ObjectTypeManager objectTypeManager,
         VariableTypeManager variableTypeManager) {
 
-        this.context = context;
+        this.server = server;
         this.objectTypeManager = objectTypeManager;
         this.variableTypeManager = variableTypeManager;
 
-        nodeManager = context.getNodeManager();
+        nodeManager = server.getNodeManager();
     }
 
     public UaObjectNode createObject(
@@ -60,22 +59,7 @@ public class NodeFactory {
         LocalizedText displayName,
         NodeId typeDefinitionId) {
 
-        UaObjectNode objectNode = createObject(nodeId, typeDefinitionId);
-
-        objectNode.setBrowseName(browseName);
-        objectNode.setDisplayName(displayName);
-
-        return objectNode;
-    }
-
-    public <T extends ObjectNode> T createObject(
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        NodeId typeDefinitionId,
-        Class<T> clazz) {
-
-        T objectNode = createNode(nodeId, typeDefinitionId, clazz);
+        UaObjectNode objectNode = (UaObjectNode) createNode(nodeId, typeDefinitionId);
 
         objectNode.setBrowseName(browseName);
         objectNode.setDisplayName(displayName);
@@ -89,7 +73,7 @@ public class NodeFactory {
         LocalizedText displayName,
         NodeId typeDefinitionId) {
 
-        UaVariableNode variableNode = createVariable(nodeId, typeDefinitionId);
+        UaVariableNode variableNode = (UaVariableNode) createNode(nodeId, typeDefinitionId);
 
         variableNode.setBrowseName(browseName);
         variableNode.setDisplayName(displayName);
@@ -97,34 +81,10 @@ public class NodeFactory {
         return variableNode;
     }
 
-    public <T extends VariableNode> T createVariable(
-        NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        NodeId typeDefinitionId,
-        Class<T> clazz) {
+    private UaNode createNode(NodeId nodeId,
+                              NodeId typeDefinitionId) throws UaRuntimeException {
 
-        T variableNode = createNode(nodeId, typeDefinitionId, clazz);
-
-        variableNode.setBrowseName(browseName);
-        variableNode.setDisplayName(displayName);
-
-        return variableNode;
-    }
-
-    private UaObjectNode createObject(NodeId nodeId, NodeId typeDefinitionId) throws UaRuntimeException {
-        return createNode(nodeId, typeDefinitionId, UaObjectNode.class);
-    }
-
-    private UaVariableNode createVariable(NodeId nodeId, NodeId typeDefinitionId) throws UaRuntimeException {
-        return createNode(nodeId, typeDefinitionId, UaVariableNode.class);
-    }
-
-    private <T extends Node> T createNode(NodeId nodeId,
-                                          NodeId typeDefinitionId,
-                                          Class<T> clazz) throws UaRuntimeException {
-
-        UaNode typeDefinitionNode = (UaNode) nodeManager.getNode(typeDefinitionId)
+        UaNode typeDefinitionNode = nodeManager.getNode(typeDefinitionId)
             .orElseThrow(() ->
                 new UaRuntimeException(
                     StatusCodes.Bad_NodeIdUnknown,
@@ -159,7 +119,7 @@ public class NodeFactory {
 
             NodeId instanceId = createNodeId(nodeId, declaration.getBrowseName().getName());
 
-            UaVariableNode instance = createVariable(instanceId, typeDefinition.getNodeId());
+            UaVariableNode instance = (UaVariableNode) createNode(instanceId, typeDefinition.getNodeId());
             instance.setBrowseName(declaration.getBrowseName());
             instance.setDisplayName(declaration.getDisplayName());
             instance.setDescription(declaration.getDescription());
@@ -197,7 +157,7 @@ public class NodeFactory {
 
             NodeId instanceId = createNodeId(nodeId, declaration.getBrowseName().getName());
 
-            UaVariableNode instance = createVariable(instanceId, typeDefinition.getNodeId());
+            UaVariableNode instance = (UaVariableNode) createNode(instanceId, typeDefinition.getNodeId());
             instance.setBrowseName(declaration.getBrowseName());
             instance.setDisplayName(declaration.getDisplayName());
             instance.setDescription(declaration.getDescription());
@@ -236,7 +196,7 @@ public class NodeFactory {
 
                 NodeId instanceId = createNodeId(nodeId, declaration.getBrowseName().getName());
 
-                UaObjectNode instance = createObject(instanceId, typeDefinition.getNodeId());
+                UaObjectNode instance = (UaObjectNode) createNode(instanceId, typeDefinition.getNodeId());
                 instance.setBrowseName(declaration.getBrowseName());
                 instance.setDisplayName(declaration.getDisplayName());
                 instance.setDescription(declaration.getDescription());
@@ -249,7 +209,7 @@ public class NodeFactory {
             }
         }
 
-        return clazz.cast(node);
+        return node;
     }
 
     private UaObjectNode instanceFromTypeDefinition(NodeId nodeId, ObjectTypeNode typeDefinitionNode) {
@@ -263,7 +223,7 @@ public class NodeFactory {
             );
 
         UaObjectNode objectNode = ctor.apply(
-            context,
+            server,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),
@@ -294,7 +254,7 @@ public class NodeFactory {
             );
 
         UaVariableNode variableNode = ctor.apply(
-            context,
+            server,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),

@@ -149,11 +149,7 @@ public class ExampleNamespace implements Namespace {
 
         subscriptionModel = new SubscriptionModel(server, this);
 
-        nodeFactory = new NodeFactory(
-            server,
-            server.getObjectTypeManager(),
-            server.getVariableTypeManager()
-        );
+        nodeFactory = server.getNodeFactory();
 
         try {
             // Create a "HelloWorld" folder and add it to the node manager
@@ -480,12 +476,11 @@ public class ExampleNamespace implements Namespace {
         rootNode.addOrganizes(dataAccessFolder);
 
         // AnalogItemType node
-        AnalogItemNode node = nodeFactory.createVariable(
+        AnalogItemNode node = (AnalogItemNode) nodeFactory.createVariable(
             new NodeId(namespaceIndex, "HelloWorld/DataAccess/AnalogValue"),
             new QualifiedName(namespaceIndex, "AnalogValue"),
             LocalizedText.english("AnalogValue"),
-            Identifiers.AnalogItemType,
-            AnalogItemNode.class
+            Identifiers.AnalogItemType
         );
 
         node.setDataType(Identifiers.Double);
