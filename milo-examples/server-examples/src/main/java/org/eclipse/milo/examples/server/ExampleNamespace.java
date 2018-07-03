@@ -17,7 +17,6 @@ import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +28,6 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
@@ -40,12 +38,12 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
@@ -146,6 +144,7 @@ public class ExampleNamespace implements Namespace {
 
     private final SubscriptionModel subscriptionModel;
 
+    private final EventFactory eventFactory;
     private final NodeFactory nodeFactory;
 
     private final OpcUaServer server;
@@ -158,6 +157,12 @@ public class ExampleNamespace implements Namespace {
         subscriptionModel = new SubscriptionModel(server, this);
 
         nodeFactory = server.getNodeFactory();
+
+        eventFactory = new EventFactory(
+            server,
+            server.getObjectTypeManager(),
+            server.getVariableTypeManager()
+        );
 
         try {
             // Create a "HelloWorld" folder and add it to the node manager
@@ -198,17 +203,7 @@ public class ExampleNamespace implements Namespace {
 
             // Post a bogus Event every couple seconds
             server.getScheduledExecutorService().schedule(() -> {
-                // Use a temporary NodeFactory and EventNodeContext with its own UaNodeManager.
-                // Event instances do not exist in the address space, but object instantiation
-                // requires a UaNodeContext and UaNodeManager to store the nodes in.
-                // TODO Make an EventFactory and move EventNodeContext and EventNodeManager inside
-                NodeFactory eventFactory = new NodeFactory(
-                    new EventNodeContext(server),
-                    server.getObjectTypeManager(),
-                    server.getVariableTypeManager()
-                );
-
-                BaseEventNode eventNode = (BaseEventNode) eventFactory.createObject(
+                BaseEventNode eventNode = eventFactory.createEvent(
                     new NodeId(1, UUID.randomUUID()),
                     new QualifiedName(1, "foo"),
                     LocalizedText.english("foo"),
@@ -877,65 +872,6 @@ public class ExampleNamespace implements Namespace {
                 return Optional.empty();
             }
         });
-    }
-
-    private static class EventNodeContext implements UaNodeContext {
-
-        private final EventNodeManager nodeManager;
-
-        private final OpcUaServer server;
-
-        EventNodeContext(OpcUaServer server) {
-            this.server = server;
-
-            nodeManager = new EventNodeManager(server.getNodeManager());
-        }
-
-        @Override
-        public OpcUaServer getServer() {
-            return server;
-        }
-
-        @Override
-        public UaNodeManager getNodeManager() {
-            return nodeManager;
-        }
-
-    }
-
-    private static class EventNodeManager extends UaNodeManager {
-
-        private final UaNodeManager delegate;
-
-        EventNodeManager(UaNodeManager delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public boolean containsNode(NodeId nodeId) {
-            return super.containsNode(nodeId) || delegate.containsNode(nodeId);
-        }
-
-        @Override
-        public Optional<UaNode> getNode(NodeId nodeId) {
-            Optional<UaNode> node = super.getNode(nodeId);
-
-            if (node.isPresent()) {
-                return node;
-            } else {
-                return delegate.getNode(nodeId);
-            }
-        }
-
-        @Override
-        public Set<Reference> getReferences(NodeId nodeId) {
-            if (super.containsNode(nodeId)) {
-                return super.getReferences(nodeId);
-            } else {
-                return delegate.getReferences(nodeId);
-            }
-        }
-
     }
 
 }
