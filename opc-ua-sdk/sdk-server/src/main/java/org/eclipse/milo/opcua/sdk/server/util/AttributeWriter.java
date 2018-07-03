@@ -320,6 +320,7 @@ public class AttributeWriter {
 
     public static Class<?> getExpectedClass(ServerNodeMap nodeMap, NodeId dataTypeId, Class<?> valueClass)
         throws UaException {
+
         if (TypeUtil.isBuiltin(dataTypeId)) {
             return TypeUtil.getBackingClass(dataTypeId);
         } else if (subtypeOf(nodeMap, dataTypeId, Identifiers.Structure)) {
@@ -331,11 +332,9 @@ public class AttributeWriter {
         } else {
             int valueDataTypeId = TypeUtil.getBuiltinTypeId(valueClass);
             if (valueDataTypeId > -1) {
-                ServerNode builtInTypeId = nodeMap.getNode(
-                    new NodeId(nodeMap.getNamespaceTable().getIndex(NamespaceTable.OPC_UA_NAMESPACE),
-                        valueDataTypeId)).get();
-                if (dataTypeId.equals(builtInTypeId.getNodeId()) ||
-                    subtypeOf(nodeMap, builtInTypeId.getNodeId(), dataTypeId)) {
+                NodeId builtInTypeId = new NodeId(0, valueDataTypeId);
+                if (dataTypeId.equals(builtInTypeId) ||
+                    subtypeOf(nodeMap, builtInTypeId, dataTypeId)) {
                     return valueClass;
                 } else {
                     throw new UaException(StatusCodes.Bad_TypeMismatch);
