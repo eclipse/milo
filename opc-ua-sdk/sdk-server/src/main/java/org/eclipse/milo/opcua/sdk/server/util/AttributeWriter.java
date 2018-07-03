@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
@@ -26,6 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -212,12 +214,11 @@ public class AttributeWriter {
         Object o = variant.getValue();
         if (o == null) throw new UaException(StatusCodes.Bad_TypeMismatch);
 
-        Class<?> expected = getBackingClass(nodeMap, dataType);
+        Class<?> actual = o.getClass().isArray() ?
+            o.getClass().getComponentType() : o.getClass();
+        Class expected = getExpectedClass(nodeMap, dataType, actual);
 
         if (expected != null) {
-            Class<?> actual = o.getClass().isArray() ?
-                o.getClass().getComponentType() : o.getClass();
-
             if (!expected.isAssignableFrom(actual)) {
                 // Writing a ByteString to a UByte[] is explicitly allowed by the spec.
                 if (o instanceof ByteString && expected == UByte.class) {
@@ -317,41 +318,73 @@ public class AttributeWriter {
         }
     }
 
-    private static Class<?> getBackingClass(ServerNodeMap nodeMap, NodeId dataType) {
-        Class<?> expected = TypeUtil.getBackingClass(dataType.expanded());
-
-        if (expected == null) {
-            if (isSubtypeOf(nodeMap, dataType, Identifiers.Structure)) {
-                expected = ExtensionObject.class;
-            } else if (isSubtypeOf(nodeMap, dataType, Identifiers.Number)) {
-                expected = Number.class;
+    public static Class<?> getExpectedClass(ServerNodeMap nodeMap, NodeId dataTypeId, Class<?> valueClass)
+        throws UaException {
+        if (TypeUtil.isBuiltin(dataTypeId)) {
+            return TypeUtil.getBackingClass(dataTypeId);
+        } else if (subtypeOf(nodeMap, dataTypeId, Identifiers.Structure)) {
+            return ExtensionObject.class;
+        } else if (subtypeOf(nodeMap, dataTypeId, Identifiers.Enumeration)) {
+            return Integer.class;
+        } else if (hasBuiltInParentType(nodeMap, dataTypeId)) {
+            return TypeUtil.getBackingClass(getBuiltInParent(nodeMap, dataTypeId));
+        } else {
+            int valueDataTypeId = TypeUtil.getBuiltinTypeId(valueClass);
+            if (valueDataTypeId > -1) {
+                ServerNode builtInTypeId = nodeMap.getNode(
+                    new NodeId(nodeMap.getNamespaceTable().getIndex(NamespaceTable.OPC_UA_NAMESPACE),
+                        valueDataTypeId)).get();
+                if (dataTypeId.equals(builtInTypeId.getNodeId()) ||
+                    subtypeOf(nodeMap, builtInTypeId.getNodeId(), dataTypeId)) {
+                    return valueClass;
+                } else {
+                    throw new UaException(StatusCodes.Bad_TypeMismatch);
+                }
+            } else {
+                throw new UaException(StatusCodes.Bad_TypeMismatch);
             }
         }
-        return expected;
     }
 
-    /**
-     * @return {@code true} if the DataType identified by {@code dataTypeId} is a subtype of the DataType identified by
-     * {@code parentTypeId}.
-     */
-    private static boolean isSubtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId parentTypeId) {
+    private static boolean subtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId parentType) {
         ServerNode dataTypeNode = nodeMap.get(dataTypeId);
-
         if (dataTypeNode != null) {
-            Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
-                .filter(r ->
-                    r.getReferenceTypeId().equals(Identifiers.HasSubtype) &&
-                        r.isInverse() &&
-                        r.getTargetNodeClass() == NodeClass.DataType)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
-                .findFirst();
-
-            return superTypeId
-                .map(id -> id.equals(parentTypeId) || isSubtypeOf(nodeMap, id, parentTypeId))
-                .orElse(false);
+            Optional<NodeId> superTypeId = getParentReference(nodeMap, dataTypeId, false);
+            return superTypeId.map(id -> id.equals(parentType) || subtypeOf(nodeMap, id, parentType)).orElse(false);
         } else {
             return false;
         }
     }
 
+    private static NodeId getBuiltInParent(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        ServerNode dataTypeNode = nodeMap.get(dataTypeId);
+        if (dataTypeNode != null) {
+            Optional<NodeId> superTypeId = getParentReference(nodeMap, dataTypeId, true);
+            return getParentReference(nodeMap, dataTypeId, true).isPresent() ? superTypeId.get() : null;
+        }
+        return null;
+    }
+
+    private static Optional<NodeId> getParentReference(ServerNodeMap nodeMap, NodeId dataTypeId, boolean builtinCheck) {
+        ServerNode dataTypeNode = nodeMap.get(dataTypeId);
+        if (dataTypeNode != null) {
+            Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
+                .filter(r -> referenceFilter(r, builtinCheck))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .findFirst();
+            return superTypeId;
+        }
+        return null;
+    }
+
+    private static boolean referenceFilter(Reference r, boolean builtinCheck) {
+        boolean ret = r.getReferenceTypeId().equals(Identifiers.HasSubtype) &&
+            r.getTargetNodeClass() == NodeClass.DataType &&
+            r.isInverse();
+        return builtinCheck ? ret && TypeUtil.isBuiltin(r.getTargetNodeId()) : ret;
+    }
+
+    private static boolean hasBuiltInParentType(ServerNodeMap serverNodeMap, NodeId dataTypeId) {
+        return getBuiltInParent(serverNodeMap, dataTypeId) != null;
+    }
 }
