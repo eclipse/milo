@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
@@ -76,14 +77,6 @@ public class TypeUtil {
             .put(25, DiagnosticInfo.class)
             .build();
 
-    private static int id(NodeId nodeId) {
-        return id(nodeId.expanded());
-    }
-
-    private static int id(ExpandedNodeId nodeId) {
-        return ((UInteger) nodeId.getIdentifier()).intValue();
-    }
-
     /**
      * @param backingType the backing {@link Class} of the builtin type.
      * @return the id of the builtin type backed by {@code backingType}, or -1 if backingType is not builtin.
@@ -98,29 +91,52 @@ public class TypeUtil {
 
     /**
      * @param typeId the id of the builtin type.
-     * @return true if the type is builtin
+     * @return true if the type is builtin.
      */
     public static boolean isBuiltin(NodeId typeId) {
-        return BUILTIN_TYPES.containsKey(id(typeId.expanded()));
-    }
-
-    public static boolean isBuiltin(ExpandedNodeId typeId) {
         return BUILTIN_TYPES.containsKey(id(typeId));
     }
 
     /**
      * @param typeId the id of the builtin type.
-     * @return the {@link Class} backing the builtin type.
+     * @return true if the type is builtin.
      */
-    public static Class<?> getBackingClass(NodeId typeId) {
-        return getBackingClass(id(typeId));
+    public static boolean isBuiltin(ExpandedNodeId typeId) {
+        return BUILTIN_TYPES.containsKey(id(typeId));
     }
 
     /**
      * @param id the id of the builtin type.
      * @return the {@link Class} backing the builtin type.
      */
+    @Nullable
     public static Class<?> getBackingClass(int id) {
         return BUILTIN_TYPES.get(id);
     }
+
+    /**
+     * @param typeId the id of the builtin type.
+     * @return the {@link Class} backing the builtin type.
+     */
+    @Nullable
+    public static Class<?> getBackingClass(NodeId typeId) {
+        return getBackingClass(id(typeId));
+    }
+
+    private static int id(NodeId nodeId) {
+        if (nodeId.getIdentifier() instanceof UInteger) {
+            return ((UInteger) nodeId.getIdentifier()).intValue();
+        } else {
+            return -1;
+        }
+    }
+
+    private static int id(ExpandedNodeId nodeId) {
+        if (nodeId.getIdentifier() instanceof UInteger) {
+            return ((UInteger) nodeId.getIdentifier()).intValue();
+        } else {
+            return -1;
+        }
+    }
+
 }
