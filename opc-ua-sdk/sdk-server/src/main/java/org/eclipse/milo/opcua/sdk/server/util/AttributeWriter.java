@@ -41,6 +41,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.extract;
@@ -50,6 +52,8 @@ import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserWriteM
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getWriteMasks;
 
 public class AttributeWriter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AttributeWriter.class);
 
     public static void writeAttribute(AttributeContext context,
                                       ServerNode node,
@@ -214,13 +218,17 @@ public class AttributeWriter {
         Object o = variant.getValue();
         if (o == null) throw new UaException(StatusCodes.Bad_TypeMismatch);
 
-        Class<?> actualClass = o.getClass().isArray() ?
+        Class<?> valueClass = o.getClass().isArray() ?
             ArrayUtil.getType(o) : o.getClass();
 
-        Class<?> expectedClass = getExpectedClass(nodeMap, dataType, actualClass);
+        Class<?> expectedClass = getExpectedClass(nodeMap, dataType, valueClass);
 
         if (expectedClass != null) {
-            if (!expectedClass.isAssignableFrom(actualClass)) {
+            LOGGER.debug(
+                "dataTypeId={}, valueClass={}, expectedClass={}",
+                dataType, valueClass.getSimpleName(), expectedClass.getSimpleName());
+
+            if (!expectedClass.isAssignableFrom(valueClass)) {
                 // Writing a ByteString to a UByte[] is explicitly allowed by the spec.
                 if (o instanceof ByteString && expectedClass == UByte.class) {
                     ByteString byteString = (ByteString) o;
@@ -319,8 +327,10 @@ public class AttributeWriter {
         }
     }
 
-    private static Class<?> getExpectedClass(ServerNodeMap nodeMap, NodeId dataTypeId, Class<?> valueClass)
-        throws UaException {
+    private static Class<?> getExpectedClass(
+        ServerNodeMap nodeMap,
+        NodeId dataTypeId,
+        Class<?> valueClass) throws UaException {
 
         if (TypeUtil.isBuiltin(dataTypeId)) {
             return TypeUtil.getBackingClass(dataTypeId);
@@ -358,31 +368,48 @@ public class AttributeWriter {
         }
     }
 
-    private static boolean subtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId parentTypeId) {
+    /**
+     * @return {@code true} if {@code dataTypeId} is a subtype of {@code potentialSuperTypeId}.
+     */
+    private static boolean subtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId potentialSuperTypeId) {
         ServerNode dataTypeNode = nodeMap.get(dataTypeId);
 
         if (dataTypeNode != null) {
-            return getSuperTypeId(nodeMap, dataTypeId)
-                .map(superTypeId -> superTypeId.equals(parentTypeId) ||
-                    subtypeOf(nodeMap, superTypeId, parentTypeId))
-                .orElse(false);
+            NodeId superTypeId = getSuperTypeId(nodeMap, dataTypeId);
+
+            if (superTypeId != null) {
+                return superTypeId.equals(potentialSuperTypeId) ||
+                    subtypeOf(nodeMap, superTypeId, potentialSuperTypeId);
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
     }
 
+    /**
+     * Find the first concrete built-in supertype for {@code dataTypeId}, if one exists.
+     *
+     * @return the first concrete built-in supertype for {@code dataTypeId}, if one exists.
+     */
     @Nullable
     private static NodeId findConcreteBuiltInSuperTypeId(ServerNodeMap nodeMap, NodeId dataTypeId) {
         if (TypeUtil.isBuiltin(dataTypeId) && isConcrete(nodeMap, dataTypeId)) {
             return dataTypeId;
         } else {
-            return getSuperTypeId(nodeMap, dataTypeId)
-                .map(superTypeId -> findConcreteBuiltInSuperTypeId(nodeMap, superTypeId))
-                .orElse(null);
+            NodeId superTypeId = getSuperTypeId(nodeMap, dataTypeId);
+
+            if (superTypeId != null) {
+                return findConcreteBuiltInSuperTypeId(nodeMap, superTypeId);
+            } else {
+                return null;
+            }
         }
     }
 
-    private static Optional<NodeId> getSuperTypeId(ServerNodeMap nodeMap, NodeId dataTypeId) {
+    @Nullable
+    private static NodeId getSuperTypeId(ServerNodeMap nodeMap, NodeId dataTypeId) {
         ServerNode dataTypeNode = nodeMap.get(dataTypeId);
 
         if (dataTypeNode != null) {
@@ -390,9 +417,10 @@ public class AttributeWriter {
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
                 .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
-                .findFirst();
+                .findFirst()
+                .orElse(null);
         } else {
-            return Optional.empty();
+            return null;
         }
     }
 
