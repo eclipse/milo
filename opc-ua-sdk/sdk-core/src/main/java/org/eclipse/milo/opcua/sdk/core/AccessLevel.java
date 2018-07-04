@@ -31,6 +31,7 @@ public enum AccessLevel {
 
     public static final ImmutableSet<AccessLevel> NONE = ImmutableSet.of();
     public static final ImmutableSet<AccessLevel> READ_ONLY = ImmutableSet.of(CurrentRead);
+    public static final ImmutableSet<AccessLevel> WRITE_ONLY = ImmutableSet.of(CurrentWrite);
     public static final ImmutableSet<AccessLevel> READ_WRITE = ImmutableSet.of(CurrentRead, CurrentWrite);
     public static final ImmutableSet<AccessLevel> HISTORY_READ_ONLY = ImmutableSet.of(HistoryRead);
     public static final ImmutableSet<AccessLevel> HISTORY_READ_WRITE = ImmutableSet.of(HistoryRead, HistoryWrite);

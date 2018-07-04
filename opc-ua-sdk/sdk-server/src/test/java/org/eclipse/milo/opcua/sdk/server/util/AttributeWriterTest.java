@@ -17,10 +17,13 @@ import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractServerNodeMap;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -31,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.mockito.Mockito;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -66,7 +70,7 @@ public class AttributeWriterTest {
         void run() throws UaException;
     }
 
-    public static void expectFailure(long code, UaOperation operation) {
+    private static void expectFailure(long code, UaOperation operation) {
         try {
             operation.run();
             Assert.fail("Operation is expected to fail with code: " + code);
@@ -102,7 +106,22 @@ public class AttributeWriterTest {
             varNode.setDataType(dataType);
         }
 
-        AttributeWriter.writeAttribute(new AttributeContext(null, null), varNode, AttributeId.Value, value, null);
+        OpcUaServer server = Mockito.mock(OpcUaServer.class);
+
+        Mockito.when(server.getNodeMap()).thenReturn(new AbstractServerNodeMap() {
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return new NamespaceTable();
+            }
+        });
+
+        AttributeWriter.writeAttribute(
+            new AttributeContext(server, null),
+            varNode,
+            AttributeId.Value,
+            value,
+            null
+        );
     }
 
     private UaVariableNode createMockNode(
@@ -116,7 +135,6 @@ public class AttributeWriterTest {
 
         final UaVariableNode node = new UaVariableNode(
             null, nodeId, browseName, displayName);
-
 
         if (nodeCustomizer != null) {
             nodeCustomizer.accept(node);

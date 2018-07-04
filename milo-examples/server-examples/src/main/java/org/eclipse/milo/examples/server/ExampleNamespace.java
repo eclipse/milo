@@ -88,9 +88,11 @@ public class ExampleNamespace implements Namespace {
         {"Boolean", Identifiers.Boolean, new Variant(false)},
         {"Byte", Identifiers.Byte, new Variant(ubyte(0x00))},
         {"SByte", Identifiers.SByte, new Variant((byte) 0x00)},
+        {"Integer", Identifiers.Integer, new Variant(32)},
         {"Int16", Identifiers.Int16, new Variant((short) 16)},
         {"Int32", Identifiers.Int32, new Variant(32)},
         {"Int64", Identifiers.Int64, new Variant(64L)},
+        {"UInteger", Identifiers.UInteger, new Variant(uint(32))},
         {"UInt16", Identifiers.UInt16, new Variant(ushort(16))},
         {"UInt32", Identifiers.UInt32, new Variant(uint(32))},
         {"UInt64", Identifiers.UInt64, new Variant(ulong(64L))},
@@ -122,13 +124,13 @@ public class ExampleNamespace implements Namespace {
         {"FloatArray", Identifiers.Float, 3.14f},
         {"DoubleArray", Identifiers.Double, 3.14d},
         {"StringArray", Identifiers.String, "string value"},
-        {"DateTimeArray", Identifiers.DateTime, new Variant(DateTime.now())},
-        {"GuidArray", Identifiers.Guid, new Variant(UUID.randomUUID())},
-        {"ByteStringArray", Identifiers.ByteString, new Variant(new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04}))},
-        {"XmlElementArray", Identifiers.XmlElement, new Variant(new XmlElement("<a>hello</a>"))},
-        {"LocalizedTextArray", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
-        {"QualifiedNameArray", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
-        {"NodeIdArray", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))}
+        {"DateTimeArray", Identifiers.DateTime, DateTime.now()},
+        {"GuidArray", Identifiers.Guid, UUID.randomUUID()},
+        {"ByteStringArray", Identifiers.ByteString, new ByteString(new byte[]{0x01, 0x02, 0x03, 0x04})},
+        {"XmlElementArray", Identifiers.XmlElement, new XmlElement("<a>hello</a>")},
+        {"LocalizedTextArray", Identifiers.LocalizedText, LocalizedText.english("localized text")},
+        {"QualifiedNameArray", Identifiers.QualifiedName, new QualifiedName(1234, "defg")},
+        {"NodeIdArray", Identifiers.NodeId, new NodeId(1234, "abcd")}
     };
 
 
@@ -203,6 +205,7 @@ public class ExampleNamespace implements Namespace {
         addAdminWritableNodes(rootNode);
         addDynamicNodes(rootNode);
         addDataAccessNodes(rootNode);
+        addWriteOnlyNodes(rootNode);
     }
 
     private void addArrayNodes(UaFolderNode rootNode) {
@@ -220,8 +223,8 @@ public class ExampleNamespace implements Namespace {
             String name = (String) os[0];
             NodeId typeId = (NodeId) os[1];
             Object value = os[2];
-            Object array = Array.newInstance(value.getClass(), 4);
-            for (int i = 0; i < 4; i++) {
+            Object array = Array.newInstance(value.getClass(), 5);
+            for (int i = 0; i < 5; i++) {
                 Array.set(array, i, value);
             }
             Variant variant = new Variant(array);
@@ -280,6 +283,34 @@ public class ExampleNamespace implements Namespace {
             server.getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
         }
+    }
+
+    private void addWriteOnlyNodes(UaFolderNode rootNode) {
+        UaFolderNode writeOnlyFolder = new UaFolderNode(
+            server.getNodeMap(),
+            new NodeId(namespaceIndex, "HelloWorld/WriteOnly"),
+            new QualifiedName(namespaceIndex, "WriteOnly"),
+            LocalizedText.english("WriteOnly")
+        );
+
+        server.getNodeMap().addNode(writeOnlyFolder);
+        rootNode.addOrganizes(writeOnlyFolder);
+
+        String name = "String";
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeMap())
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/WriteOnly/" + name))
+            .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
+            .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
+            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setDisplayName(LocalizedText.english(name))
+            .setDataType(Identifiers.String)
+            .setTypeDefinition(Identifiers.BaseDataVariableType)
+            .build();
+
+        node.setValue(new DataValue(new Variant("can't read this")));
+
+        server.getNodeMap().addNode(node);
+        writeOnlyFolder.addOrganizes(node);
     }
 
     private void addAdminReadableNodes(UaFolderNode rootNode) {

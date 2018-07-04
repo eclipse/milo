@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -64,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.google.common.collect.Lists.newLinkedList;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -81,7 +83,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
     private final ConcurrentMap<NodeId, AtomicLong> pendingCountMap = Maps.newConcurrentMap();
 
-    private final List<SubscriptionAcknowledgement> acknowledgements = newArrayList();
+    private final LinkedList<SubscriptionAcknowledgement> acknowledgements = newLinkedList();
 
     private final ExecutionQueue deliveryQueue;
     private final ExecutionQueue processingQueue;
@@ -441,11 +443,15 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     private void sendPublishRequest(UaSession session, AtomicLong pendingCount) {
         SubscriptionAcknowledgement[] subscriptionAcknowledgements;
 
-        synchronized (acknowledgements) {
-            subscriptionAcknowledgements = acknowledgements.toArray(
-                new SubscriptionAcknowledgement[acknowledgements.size()]);
+        int maxArrayLength = client.getConfig().getChannelConfig().getMaxArrayLength();
 
-            acknowledgements.clear();
+        synchronized (acknowledgements) {
+            List<SubscriptionAcknowledgement> ackSubList = acknowledgements
+                .subList(0, Math.min(acknowledgements.size(), maxArrayLength));
+
+            subscriptionAcknowledgements = ackSubList.toArray(new SubscriptionAcknowledgement[0]);
+
+            ackSubList.clear();
         }
 
         final UInteger requestHandle = client.nextRequestHandle();

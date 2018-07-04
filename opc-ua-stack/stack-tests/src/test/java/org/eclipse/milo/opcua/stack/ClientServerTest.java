@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -70,6 +71,8 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertThrows;
 
 public class ClientServerTest extends SecurityFixture {
+
+    private static final UInteger DEFAULT_TIMEOUT_HINT = uint(60000);
 
     @DataProvider
     public Object[][] getVariants() {
@@ -266,7 +269,7 @@ public class ClientServerTest extends SecurityFixture {
                 uint(i),
                 uint(0),
                 null,
-                uint(60000),
+                DEFAULT_TIMEOUT_HINT,
                 null
             );
 
@@ -300,7 +303,7 @@ public class ClientServerTest extends SecurityFixture {
                 uint(i),
                 uint(0),
                 null,
-                uint(60000),
+                DEFAULT_TIMEOUT_HINT,
                 null
             );
 
@@ -343,7 +346,7 @@ public class ClientServerTest extends SecurityFixture {
             uint(0),
             uint(0),
             null,
-            uint(60000),
+            DEFAULT_TIMEOUT_HINT,
             null
         );
 
@@ -394,7 +397,7 @@ public class ClientServerTest extends SecurityFixture {
             uint(0),
             uint(0),
             null,
-            uint(1000),
+            DEFAULT_TIMEOUT_HINT,
             null
         );
 
@@ -444,7 +447,7 @@ public class ClientServerTest extends SecurityFixture {
             uint(0),
             uint(0),
             null,
-            uint(2000),
+            DEFAULT_TIMEOUT_HINT,
             null
         );
 
@@ -504,7 +507,7 @@ public class ClientServerTest extends SecurityFixture {
             uint(0),
             uint(0),
             null,
-            uint(5000),
+            DEFAULT_TIMEOUT_HINT,
             null
         );
 
@@ -560,7 +563,7 @@ public class ClientServerTest extends SecurityFixture {
                 uint(i),
                 uint(0),
                 null,
-                uint(60000),
+                DEFAULT_TIMEOUT_HINT,
                 null
             );
 

@@ -13,13 +13,11 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableMap;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -36,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.IdType;
 
 public class TypeUtil {
 
@@ -80,23 +77,6 @@ public class TypeUtil {
             .put(25, DiagnosticInfo.class)
             .build();
 
-    private static final Map<Integer, Class<?>> SIMPLE_TYPES =
-        ImmutableMap.<Integer, Class<?>>builder()
-            .put(id(Identifiers.LocaleId), String.class)
-            .put(id(Identifiers.Duration), Double.class)
-            .put(id(Identifiers.ImageBMP), ByteString.class)
-            .put(id(Identifiers.ImageGIF), ByteString.class)
-            .put(id(Identifiers.ImageJPG), ByteString.class)
-            .put(id(Identifiers.ImagePNG), ByteString.class)
-            .put(id(Identifiers.Integer), Number.class)
-            .put(id(Identifiers.Number), Number.class)
-            .put(id(Identifiers.UtcTime), DateTime.class)
-            .build();
-
-    private static int id(NodeId nodeId) {
-        return ((UInteger) nodeId.getIdentifier()).intValue();
-    }
-
     /**
      * @param backingType the backing {@link Class} of the builtin type.
      * @return the id of the builtin type backed by {@code backingType}, or -1 if backingType is not builtin.
@@ -111,21 +91,52 @@ public class TypeUtil {
 
     /**
      * @param typeId the id of the builtin type.
-     * @return the {@link Class} backing the builtin type.
+     * @return true if the type is builtin.
      */
-    public static Class<?> getBackingClass(int typeId) {
-        return BUILTIN_TYPES.get(typeId);
+    public static boolean isBuiltin(NodeId typeId) {
+        return BUILTIN_TYPES.containsKey(id(typeId));
     }
 
-    public static Class<?> getBackingClass(ExpandedNodeId typeId) {
-        if (typeId.getNamespaceIndex().intValue() == 0 && typeId.getType() == IdType.Numeric) {
-            int id = ((Number) typeId.getIdentifier()).intValue();
-            Class<?> c = getBackingClass(id);
+    /**
+     * @param typeId the id of the builtin type.
+     * @return true if the type is builtin.
+     */
+    public static boolean isBuiltin(ExpandedNodeId typeId) {
+        return BUILTIN_TYPES.containsKey(id(typeId));
+    }
 
-            return c != null ? c : SIMPLE_TYPES.get(id);
+    /**
+     * @param id the id of the builtin type.
+     * @return the {@link Class} backing the builtin type.
+     */
+    @Nullable
+    public static Class<?> getBackingClass(int id) {
+        return BUILTIN_TYPES.get(id);
+    }
+
+    /**
+     * @param typeId the id of the builtin type.
+     * @return the {@link Class} backing the builtin type.
+     */
+    @Nullable
+    public static Class<?> getBackingClass(NodeId typeId) {
+        return getBackingClass(id(typeId));
+    }
+
+    private static int id(NodeId nodeId) {
+        if (nodeId.getIdentifier() instanceof UInteger) {
+            return ((UInteger) nodeId.getIdentifier()).intValue();
+        } else {
+            return -1;
         }
+    }
 
-        return null;
+    private static int id(ExpandedNodeId nodeId) {
+        if (nodeId.getIdentifier() instanceof UInteger) {
+            return ((UInteger) nodeId.getIdentifier()).intValue();
+        } else {
+            return -1;
+        }
     }
 
 }

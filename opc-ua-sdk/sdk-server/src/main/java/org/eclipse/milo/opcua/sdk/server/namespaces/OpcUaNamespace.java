@@ -59,6 +59,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.slf4j.Logger;
@@ -250,9 +251,15 @@ public class OpcUaNamespace implements Namespace {
 
         ServerStatusNode serverStatus = serverNode.getServerStatusNode();
 
-        assert serverStatus != null;
+        BuildInfo buildInfo = server.getConfig().getBuildInfo();
+        serverStatus.setBuildInfo(buildInfo);
+        serverStatus.getBuildInfoNode().setBuildDate(buildInfo.getBuildDate());
+        serverStatus.getBuildInfoNode().setBuildNumber(buildInfo.getBuildNumber());
+        serverStatus.getBuildInfoNode().setManufacturerName(buildInfo.getManufacturerName());
+        serverStatus.getBuildInfoNode().setProductName(buildInfo.getProductName());
+        serverStatus.getBuildInfoNode().setProductUri(buildInfo.getProductUri());
+        serverStatus.getBuildInfoNode().setSoftwareVersion(buildInfo.getSoftwareVersion());
 
-        serverStatus.setBuildInfo(server.getConfig().getBuildInfo());
         serverStatus.setCurrentTime(DateTime.now());
         serverStatus.setSecondsTillShutdown(uint(0));
         serverStatus.setShutdownReason(LocalizedText.NULL_VALUE);

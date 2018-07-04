@@ -18,6 +18,8 @@ import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.crypto.Cipher;
 
 import io.netty.buffer.ByteBuf;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 /**
- * An {@link IdentityProvider} that will choose the first available username+password {@link UserTokenPolicy}.
+ * An {@link IdentityProvider} that chooses a {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
  */
 public class UsernameProvider implements IdentityProvider {
 
@@ -49,10 +51,37 @@ public class UsernameProvider implements IdentityProvider {
 
     private final String username;
     private final String password;
+    private final Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser;
 
+    /**
+     * Construct a {@link UsernameProvider} that selects the first available {@link UserTokenPolicy} with
+     * {@link UserTokenType#UserName}.
+     *
+     * @param username the username to authenticate with.
+     * @param password the password to authenticate with.
+     */
     public UsernameProvider(String username, String password) {
+        this(username, password, ps -> ps.get(0));
+    }
+
+    /**
+     * Construct a {@link UsernameProvider} that selects a {@link UserTokenPolicy} using {@code policyChooser}.
+     * <p>
+     * Useful if the server might return more than one {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
+     *
+     * @param username      the username to authenticate with.
+     * @param password      the password to authenticate with.
+     * @param policyChooser a function that selects a {@link UserTokenPolicy} to use. The policy list is guaranteed to
+     *                      be non-null and non-empty.
+     */
+    public UsernameProvider(
+        String username,
+        String password,
+        Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser) {
+
         this.username = username;
         this.password = password;
+        this.policyChooser = policyChooser;
     }
 
     @Override
@@ -61,9 +90,15 @@ public class UsernameProvider implements IdentityProvider {
 
         List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
 
-        UserTokenPolicy tokenPolicy = userIdentityTokens.stream()
+        List<UserTokenPolicy> tokenPolicies = userIdentityTokens.stream()
             .filter(t -> t.getTokenType() == UserTokenType.UserName)
-            .findFirst().orElseThrow(() -> new Exception("no username token policy found"));
+            .collect(Collectors.toList());
+
+        if (tokenPolicies.isEmpty()) {
+            throw new Exception("no UserTokenPolicy with UserTokenType.UserName found");
+        }
+
+        UserTokenPolicy tokenPolicy = policyChooser.apply(tokenPolicies);
 
         String policyId = tokenPolicy.getPolicyId();
 
@@ -94,6 +129,14 @@ public class UsernameProvider implements IdentityProvider {
             buffer.writeBytes(nonceBytes);
 
             ByteString bs = endpoint.getServerCertificate();
+
+            if (bs == null || bs.isNull()) {
+                throw new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "UserTokenPolicy requires encryption but " +
+                        "server did not provide a certificate in endpoint");
+            }
+
             X509Certificate certificate = CertificateUtil.decodeCertificate(bs.bytes());
 
             int plainTextBlockSize = SecureChannel.getAsymmetricPlainTextBlockSize(

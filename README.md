@@ -14,35 +14,41 @@ Mailing list: https://dev.eclipse.org/mailman/listinfo/milo-dev
 
 ## Maven
 
+### Building Milo
+
+**Using JDK 8**, run `mvn clean install` from the project root.
+
+### Releases
+
 Releases are published to Maven Central. 
 
-### OPC UA Client SDK
+#### OPC UA Client SDK
 
 ```xml
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
-### OPC UA Server SDK
+#### OPC UA Server SDK
 
 ```xml
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-server</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
-### OPC UA Stack
+#### OPC UA Stack
 
 ```xml
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-client</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
@@ -50,7 +56,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-server</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
@@ -64,3 +70,41 @@ If you want to reference a `SNAPSHOT` release a reference to the Sonatype snapsh
 </repository>
 ```
 
+## High Level Roadmap
+### Version 0.3
+#### Stack
+- HTTPS transport
+
+#### Server
+- Events
+- Instantiation of Complex Object and Variable instances (NodeFactory)
+
+
+### Version 0.4
+#### Server
+- Diagnostic Nodes
+
+
+### Version 1.0
+- Auditing Support?
+- ???
+
+
+### Version 2.0
+#### General
+- Java 9 + Modularization
+
+#### Stack
+- UA 1.04
+
+#### Client
+- UA 1.04
+
+#### Server
+- UA 1.04
+
+
+### Future
+- Javascript/NodeJS Bindings for GraalVM?
+- Python Bindings for GraalVM?
+- History "Connectors"?
