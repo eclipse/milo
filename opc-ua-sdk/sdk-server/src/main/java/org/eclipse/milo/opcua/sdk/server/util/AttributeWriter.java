@@ -19,9 +19,11 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -39,6 +41,8 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.extract;
@@ -48,6 +52,8 @@ import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getUserWriteM
 import static org.eclipse.milo.opcua.sdk.server.util.AttributeUtil.getWriteMasks;
 
 public class AttributeWriter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AttributeWriter.class);
 
     public static void writeAttribute(AttributeContext context,
                                       ServerNode node,
@@ -212,19 +218,19 @@ public class AttributeWriter {
         Object o = variant.getValue();
         if (o == null) throw new UaException(StatusCodes.Bad_TypeMismatch);
 
-        Class<?> expected = TypeUtil.getBackingClass(dataType.expanded());
+        Class<?> valueClass = o.getClass().isArray() ?
+            ArrayUtil.getType(o) : o.getClass();
 
-        if (expected == null && isStructureSubtype(nodeMap, dataType)) {
-            expected = ExtensionObject.class;
-        }
+        Class<?> expectedClass = getExpectedClass(nodeMap, dataType, valueClass);
 
-        if (expected != null) {
-            Class<?> actual = o.getClass().isArray() ?
-                o.getClass().getComponentType() : o.getClass();
+        if (expectedClass != null) {
+            LOGGER.debug(
+                "dataTypeId={}, valueClass={}, expectedClass={}",
+                dataType, valueClass.getSimpleName(), expectedClass.getSimpleName());
 
-            if (!expected.isAssignableFrom(actual)) {
+            if (!expectedClass.isAssignableFrom(valueClass)) {
                 // Writing a ByteString to a UByte[] is explicitly allowed by the spec.
-                if (o instanceof ByteString && expected == UByte.class) {
+                if (o instanceof ByteString && expectedClass == UByte.class) {
                     ByteString byteString = (ByteString) o;
 
                     return new DataValue(
@@ -233,7 +239,7 @@ public class AttributeWriter {
                         value.getSourceTime(),
                         value.getServerTime()
                     );
-                } else if (expected == Variant.class) {
+                } else if (expectedClass == Variant.class) {
                     // Allow writing anything to a Variant
                     return value;
                 } else {
@@ -321,24 +327,115 @@ public class AttributeWriter {
         }
     }
 
-    private static boolean isStructureSubtype(ServerNodeMap nodeMap, NodeId dataTypeId) {
+    private static Class<?> getExpectedClass(
+        ServerNodeMap nodeMap,
+        NodeId dataTypeId,
+        Class<?> valueClass) throws UaException {
+
+        if (TypeUtil.isBuiltin(dataTypeId)) {
+            return TypeUtil.getBackingClass(dataTypeId);
+        } else if (subtypeOf(nodeMap, dataTypeId, Identifiers.Structure)) {
+            return ExtensionObject.class;
+        } else if (subtypeOf(nodeMap, dataTypeId, Identifiers.Enumeration)) {
+            return Integer.class;
+        } else {
+            NodeId superBuiltInType = findConcreteBuiltInSuperTypeId(nodeMap, dataTypeId);
+
+            if (superBuiltInType != null) {
+                // One of dataTypeId's supertypes is a concrete built-in
+                // type; expect the same Class<?> as that built-in type.
+                return TypeUtil.getBackingClass(superBuiltInType);
+            } else {
+                int valueDataTypeId = TypeUtil.getBuiltinTypeId(valueClass);
+
+                if (valueDataTypeId > -1) {
+                    // The value they sent us maps to a built-in type.
+                    // If dataTypeId is a subtype of that built-in type,
+                    // the expected class is the class of the value they sent.
+                    NodeId builtInTypeId = new NodeId(0, valueDataTypeId);
+
+                    if (dataTypeId.equals(builtInTypeId) ||
+                        subtypeOf(nodeMap, builtInTypeId, dataTypeId)) {
+
+                        return valueClass;
+                    } else {
+                        throw new UaException(StatusCodes.Bad_TypeMismatch);
+                    }
+                } else {
+                    throw new UaException(StatusCodes.Bad_TypeMismatch);
+                }
+            }
+        }
+    }
+
+    /**
+     * @return {@code true} if {@code dataTypeId} is a subtype of {@code potentialSuperTypeId}.
+     */
+    private static boolean subtypeOf(ServerNodeMap nodeMap, NodeId dataTypeId, NodeId potentialSuperTypeId) {
         ServerNode dataTypeNode = nodeMap.get(dataTypeId);
 
         if (dataTypeNode != null) {
-            Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
-                .filter(r ->
-                    r.getReferenceTypeId().equals(Identifiers.HasSubtype) &&
-                        r.isInverse() &&
-                        r.getTargetNodeClass() == NodeClass.DataType)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
-                .findFirst();
+            NodeId superTypeId = getSuperTypeId(nodeMap, dataTypeId);
 
-            return superTypeId
-                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeMap, id))
-                .orElse(false);
+            if (superTypeId != null) {
+                return superTypeId.equals(potentialSuperTypeId) ||
+                    subtypeOf(nodeMap, superTypeId, potentialSuperTypeId);
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
+    }
+
+    /**
+     * Find the first concrete built-in supertype for {@code dataTypeId}, if one exists.
+     *
+     * @return the first concrete built-in supertype for {@code dataTypeId}, if one exists.
+     */
+    @Nullable
+    private static NodeId findConcreteBuiltInSuperTypeId(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        if (TypeUtil.isBuiltin(dataTypeId) && isConcrete(nodeMap, dataTypeId)) {
+            return dataTypeId;
+        } else {
+            NodeId superTypeId = getSuperTypeId(nodeMap, dataTypeId);
+
+            if (superTypeId != null) {
+                return findConcreteBuiltInSuperTypeId(nodeMap, superTypeId);
+            } else {
+                return null;
+            }
+        }
+    }
+
+    @Nullable
+    private static NodeId getSuperTypeId(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        ServerNode dataTypeNode = nodeMap.get(dataTypeId);
+
+        if (dataTypeNode != null) {
+            return dataTypeNode.getReferences()
+                .stream()
+                .filter(Reference.SUBTYPE_OF)
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .findFirst()
+                .orElse(null);
+        } else {
+            return null;
+        }
+    }
+
+    private static boolean isAbstract(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        ServerNode node = nodeMap.get(dataTypeId);
+
+        if (node instanceof DataTypeNode) {
+            return ((DataTypeNode) node).getIsAbstract();
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isConcrete(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        return !isAbstract(nodeMap, dataTypeId);
     }
 
 }

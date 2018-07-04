@@ -147,4 +147,10 @@ public class Reference {
     public static final Predicate<Reference> ALWAYS_GENERATES_EVENT_PREDICATE =
         (reference) -> reference.isForward() && Identifiers.AlwaysGeneratesEvent.equals(reference.getReferenceTypeId());
 
+    public static final Predicate<Reference> HAS_SUBTYPE =
+        (reference) -> reference.isForward() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
+
+    public static final Predicate<Reference> SUBTYPE_OF =
+        (reference) -> reference.isInverse() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
+
 }
