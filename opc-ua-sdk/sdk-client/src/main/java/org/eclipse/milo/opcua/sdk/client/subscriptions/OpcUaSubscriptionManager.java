@@ -443,7 +443,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     private void sendPublishRequest(UaSession session, AtomicLong pendingCount) {
         SubscriptionAcknowledgement[] subscriptionAcknowledgements;
 
-        int maxArrayLength = client.getConfig().getChannelConfig().getMaxArrayLength();
+        int maxArrayLength = client.getConfig().getEncodingLimits().getMaxArrayLength();
 
         synchronized (acknowledgements) {
             List<SubscriptionAcknowledgement> ackSubList = acknowledgements

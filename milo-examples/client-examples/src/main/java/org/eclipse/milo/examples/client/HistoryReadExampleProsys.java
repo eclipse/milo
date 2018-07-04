@@ -76,7 +76,7 @@ public class HistoryReadExampleProsys implements ClientExample {
 
         if (historyReadResults != null) {
             HistoryReadResult historyReadResult = historyReadResults[0];
-            HistoryData historyData = historyReadResult.getHistoryData().decode();
+            HistoryData historyData = (HistoryData) historyReadResult.getHistoryData().decode();
 
             List<DataValue> dataValues = l(historyData.getDataValues());
 

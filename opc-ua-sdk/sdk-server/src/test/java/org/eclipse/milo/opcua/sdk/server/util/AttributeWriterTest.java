@@ -18,12 +18,11 @@ import java.util.function.Consumer;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractServerNodeMap;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -108,12 +107,7 @@ public class AttributeWriterTest {
 
         OpcUaServer server = Mockito.mock(OpcUaServer.class);
 
-        Mockito.when(server.getNodeMap()).thenReturn(new AbstractServerNodeMap() {
-            @Override
-            public NamespaceTable getNamespaceTable() {
-                return new NamespaceTable();
-            }
-        });
+        Mockito.when(server.getNodeManager()).thenReturn(new UaNodeManager());
 
         AttributeWriter.writeAttribute(
             new AttributeContext(server, null),

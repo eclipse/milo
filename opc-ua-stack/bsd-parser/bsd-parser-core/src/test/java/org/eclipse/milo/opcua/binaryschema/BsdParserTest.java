@@ -132,7 +132,7 @@ public abstract class BsdParserTest {
         System.out.printf("--- assertRoundTrip Type: %s ---\n", type);
 
         System.out.println("originalValue:\t" + originalValue);
-        ByteBuf buffer = Unpooled.buffer().order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuf buffer = Unpooled.buffer();
         codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(buffer));
 
         ByteBuf encodedValue = buffer.copy();

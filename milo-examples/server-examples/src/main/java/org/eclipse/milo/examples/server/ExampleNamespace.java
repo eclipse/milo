@@ -287,17 +287,17 @@ public class ExampleNamespace implements Namespace {
 
     private void addWriteOnlyNodes(UaFolderNode rootNode) {
         UaFolderNode writeOnlyFolder = new UaFolderNode(
-            server.getNodeMap(),
+            server,
             new NodeId(namespaceIndex, "HelloWorld/WriteOnly"),
             new QualifiedName(namespaceIndex, "WriteOnly"),
             LocalizedText.english("WriteOnly")
         );
 
-        server.getNodeMap().addNode(writeOnlyFolder);
+        server.getNodeManager().addNode(writeOnlyFolder);
         rootNode.addOrganizes(writeOnlyFolder);
 
         String name = "String";
-        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeMap())
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
             .setNodeId(new NodeId(namespaceIndex, "HelloWorld/WriteOnly/" + name))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
             .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
@@ -309,7 +309,7 @@ public class ExampleNamespace implements Namespace {
 
         node.setValue(new DataValue(new Variant("can't read this")));
 
-        server.getNodeMap().addNode(node);
+        server.getNodeManager().addNode(node);
         writeOnlyFolder.addOrganizes(node);
     }
 

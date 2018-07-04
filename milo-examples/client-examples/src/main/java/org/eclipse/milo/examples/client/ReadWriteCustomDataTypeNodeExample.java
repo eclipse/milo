@@ -18,8 +18,10 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -71,7 +73,8 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         );
         ExtensionObject modifiedXo = ExtensionObject.encode(
             modified,
-            xo.getEncodingTypeId()
+            xo.getEncodingId(),
+            OpcUaDefaultBinaryEncoding.getInstance()
         );
 
         StatusCode writeStatus = node.writeValue(new DataValue(new Variant(modifiedXo))).get();
@@ -85,7 +88,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         variant = value.getValue();
         xo = (ExtensionObject) variant.getValue();
 
-        decoded = xo.decode();
+        decoded = (CustomDataType) xo.decode();
         logger.info("Decoded={}", decoded);
 
         future.complete(client);
