@@ -58,8 +58,8 @@ public class UsernameProvider implements IdentityProvider {
 
 
     /**
-     * Construct a {@link UsernameProvider} that selects the first available {@link UserTokenPolicy} with
-     * {@link UserTokenType#UserName} and does not validate the remote certificate.
+     * Construct a {@link UsernameProvider} that does not validate the remote certificate and selects the first
+     * available {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
      *
      * @param username the username to authenticate with.
      * @param password the password to authenticate with.
@@ -68,12 +68,21 @@ public class UsernameProvider implements IdentityProvider {
         this(username, password, null);
     }
 
+    /**
+     * Construct a {@link UsernameProvider} that validates the remote certificate using {@code certificateValidator}
+     * and selects the first available {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
+     *
+     * @param username             the username to authenticate with.
+     * @param password             the password to authenticate with.
+     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
+     */
     public UsernameProvider(String username, String password, CertificateValidator certificateValidator) {
         this(username, password, certificateValidator, ps -> ps.get(0));
     }
 
     /**
-     * Construct a {@link UsernameProvider} that selects a {@link UserTokenPolicy} using {@code policyChooser}.
+     * Construct a {@link UsernameProvider} that validates the remote certificate using {@code certificateValidator}
+     * and selects ta {@link UserTokenPolicy} using {@code policyChooser}.
      * <p>
      * Useful if the server might return more than one {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
      *
