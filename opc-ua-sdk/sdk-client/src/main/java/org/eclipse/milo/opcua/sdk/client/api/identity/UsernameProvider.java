@@ -89,8 +89,8 @@ public class UsernameProvider implements IdentityProvider {
      * @param username             the username to authenticate with.
      * @param password             the password to authenticate with.
      * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
-     * @param policyChooser        a function that selects a {@link UserTokenPolicy} to use. The policy list is guaranteed to
-     *                             be non-null and non-empty.
+     * @param policyChooser        a function that selects a {@link UserTokenPolicy} to use. The policy list is
+     *                             guaranteed to be non-null and non-empty.
      */
     public UsernameProvider(
         String username,
