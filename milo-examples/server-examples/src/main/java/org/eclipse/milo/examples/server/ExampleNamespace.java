@@ -156,13 +156,8 @@ public class ExampleNamespace implements Namespace {
 
         subscriptionModel = new SubscriptionModel(server, this);
 
+        eventFactory = server.getEventFactory();
         nodeFactory = server.getNodeFactory();
-
-        eventFactory = new EventFactory(
-            server,
-            server.getObjectTypeManager(),
-            server.getVariableTypeManager()
-        );
 
         try {
             // Create a "HelloWorld" folder and add it to the node manager

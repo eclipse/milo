@@ -35,22 +35,22 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class NodeFactory {
 
+    private final OpcUaServer server;
     private final UaNodeManager nodeManager;
 
-    private final OpcUaServer server;
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
     public NodeFactory(
-        OpcUaServer server,
+        UaNodeContext context,
         ObjectTypeManager objectTypeManager,
         VariableTypeManager variableTypeManager) {
 
-        this.server = server;
         this.objectTypeManager = objectTypeManager;
         this.variableTypeManager = variableTypeManager;
 
-        nodeManager = server.getNodeManager();
+        server = context.getServer();
+        nodeManager = context.getNodeManager();
     }
 
     public UaObjectNode createObject(

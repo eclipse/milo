@@ -16,17 +16,19 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 public class EventFactory {
 
     private final OpcUaServer server;
+
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
     public EventFactory(
-        OpcUaServer server,
+        UaNodeContext context,
         ObjectTypeManager objectTypeManager,
         VariableTypeManager variableTypeManager) {
 
-        this.server = server;
         this.objectTypeManager = objectTypeManager;
         this.variableTypeManager = variableTypeManager;
+
+        server = context.getServer();
     }
 
     public BaseEventNode createEvent(
