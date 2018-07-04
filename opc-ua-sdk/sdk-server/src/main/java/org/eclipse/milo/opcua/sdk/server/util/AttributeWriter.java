@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
 import org.eclipse.milo.opcua.sdk.server.api.ServerNodeMap;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.ServerNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -328,11 +329,11 @@ public class AttributeWriter {
         } else if (subtypeOf(nodeMap, dataTypeId, Identifiers.Enumeration)) {
             return Integer.class;
         } else {
-            NodeId superBuiltInType = findSuperBuiltInTypeId(nodeMap, dataTypeId);
+            NodeId superBuiltInType = findConcreteBuiltInSuperTypeId(nodeMap, dataTypeId);
 
             if (superBuiltInType != null) {
-                // One of dataTypeId's supertypes is a built-in type;
-                // we expect the same Class<?> as that built-in type.
+                // One of dataTypeId's supertypes is a concrete built-in
+                // type; expect the same Class<?> as that built-in type.
                 return TypeUtil.getBackingClass(superBuiltInType);
             } else {
                 int valueDataTypeId = TypeUtil.getBuiltinTypeId(valueClass);
@@ -371,12 +372,12 @@ public class AttributeWriter {
     }
 
     @Nullable
-    private static NodeId findSuperBuiltInTypeId(ServerNodeMap nodeMap, NodeId dataTypeId) {
-        if (TypeUtil.isBuiltin(dataTypeId)) {
+    private static NodeId findConcreteBuiltInSuperTypeId(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        if (TypeUtil.isBuiltin(dataTypeId) && isConcrete(nodeMap, dataTypeId)) {
             return dataTypeId;
         } else {
             return getSuperTypeId(nodeMap, dataTypeId)
-                .map(superTypeId -> findSuperBuiltInTypeId(nodeMap, superTypeId))
+                .map(superTypeId -> findConcreteBuiltInSuperTypeId(nodeMap, superTypeId))
                 .orElse(null);
         }
     }
@@ -393,6 +394,20 @@ public class AttributeWriter {
         } else {
             return Optional.empty();
         }
+    }
+
+    private static boolean isAbstract(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        ServerNode node = nodeMap.get(dataTypeId);
+
+        if (node instanceof DataTypeNode) {
+            return ((DataTypeNode) node).getIsAbstract();
+        } else {
+            return false;
+        }
+    }
+
+    private static boolean isConcrete(ServerNodeMap nodeMap, NodeId dataTypeId) {
+        return !isAbstract(nodeMap, dataTypeId);
     }
 
 }
