@@ -197,7 +197,7 @@ public class ExampleNamespace implements Namespace {
             }
 
             // Post a bogus Event every couple seconds
-            server.getScheduledExecutorService().schedule(() -> {
+            server.getScheduledExecutorService().scheduleAtFixedRate(() -> {
                 BaseEventNode eventNode = eventFactory.createEvent(
                     new NodeId(1, UUID.randomUUID()),
                     new QualifiedName(1, "foo"),
@@ -215,7 +215,7 @@ public class ExampleNamespace implements Namespace {
                 eventNode.setSeverity(ushort(2));
 
                 server.getEventBus().post(eventNode);
-            }, 2, TimeUnit.SECONDS);
+            }, 0, 2, TimeUnit.SECONDS);
         } catch (UaException e) {
             logger.error("Error adding nodes: {}", e.getMessage(), e);
         }

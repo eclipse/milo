@@ -13,9 +13,9 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -120,15 +120,22 @@ public class EventSubscriptionExample implements ClientExample {
             .createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
 
         // do something with the value updates
-        UaMonitoredItem item = items.get(0);
+        UaMonitoredItem monitoredItem = items.get(0);
 
-        item.setEventConsumer((i, vs) -> {
-            Arrays.stream(vs).forEach(
-                v -> logger.info("{} variant received: {}",
-                    i.getReadValueId().getNodeId(), v.getValue())
-            );
+        final AtomicInteger eventCount = new AtomicInteger(0);
 
-            future.complete(client);
+        monitoredItem.setEventConsumer((item, vs) -> {
+            logger.info(
+                "Event Received from {}",
+                item.getReadValueId().getNodeId());
+
+            for (int i = 0; i < vs.length; i++) {
+                logger.info("\tvariant[{}]: {}", i, vs[i].getValue());
+            }
+
+            if (eventCount.incrementAndGet() == 3) {
+                future.complete(client);
+            }
         });
     }
 
