@@ -208,6 +208,11 @@ public class OpcUaClient implements UaClient {
                         uriTable.clear();
 
                         for (int i = 0; i < uris.length; i++) {
+                            if (uriTable.containsValue(uris[i])) {
+                                logger.warn("Skipping duplicate namespace URI: {}");
+                                continue;
+                            }
+
                             uriTable.put(ushort(i), uris[i]);
                         }
                     });
