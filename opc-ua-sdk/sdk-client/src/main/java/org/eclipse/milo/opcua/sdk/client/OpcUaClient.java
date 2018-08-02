@@ -203,15 +203,17 @@ public class OpcUaClient implements UaClient {
                 .thenApply(results -> (String[]) results[0].getValue().getValue());
 
             return namespaceArray
-                .thenAccept(uris -> {
-                    namespaceTable.update(uriTable -> {
-                        uriTable.clear();
+                .thenAccept(uris -> namespaceTable.update(uriTable -> {
+                    uriTable.clear();
 
-                        for (int i = 0; i < uris.length; i++) {
-                            uriTable.put(ushort(i), uris[i]);
+                    for (int i = 0; i < uris.length; i++) {
+                        String uri = uris[i];
+
+                        if (uri != null && !uriTable.containsValue(uri)) {
+                            uriTable.put(ushort(i), uri);
                         }
-                    });
-                })
+                    }
+                }))
                 .thenApply(v -> Unit.VALUE)
                 .exceptionally(ex -> {
                     logger.warn("SessionInitializer: NamespaceTable", ex);
