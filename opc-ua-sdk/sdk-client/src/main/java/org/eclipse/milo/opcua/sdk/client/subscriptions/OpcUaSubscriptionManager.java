@@ -391,24 +391,22 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
     }
 
     private UInteger getTimeoutHint() {
-        double minKeepAlive = subscriptions.values().stream()
+        double maxKeepAlive = subscriptions.values().stream()
             .map(s -> s.getRevisedPublishingInterval() * s.getRevisedMaxKeepAliveCount().doubleValue())
-            .min(Comparator.naturalOrder())
+            .max(Comparator.naturalOrder())
             .orElse(client.getConfig().getRequestTimeout().doubleValue());
 
         long maxPendingPublishes = getMaxPendingPublishes();
 
-        double timeoutHint = maxPendingPublishes * minKeepAlive * 1.25;
+        double timeoutHint = maxPendingPublishes * maxKeepAlive * 1.25;
 
-        if (Double.isInfinite(timeoutHint)) {
-            timeoutHint = UInteger.MAX_VALUE;
-        } else if (timeoutHint > UInteger.MAX_VALUE) {
-            timeoutHint = UInteger.MAX_VALUE;
+        if (Double.isInfinite(timeoutHint) || timeoutHint > UInteger.MAX_VALUE) {
+            timeoutHint = 0d;
         }
 
         logger.debug(
-            "getTimeoutHint() minKeepAlive={} maxPendingPublishes={} timeoutHint={}",
-            minKeepAlive, maxPendingPublishes, timeoutHint);
+            "getTimeoutHint() maxKeepAlive={} maxPendingPublishes={} timeoutHint={}",
+            maxKeepAlive, maxPendingPublishes, timeoutHint);
 
         return uint((long) timeoutHint);
     }
