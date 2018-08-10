@@ -92,6 +92,8 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
     }
 
     private Timeout startHelloTimeout(ChannelHandlerContext ctx) {
+        long acknowledgeTimeoutMs = client.getConfig().getAcknowledgeTimeout().longValue();
+
         return client.getConfig().getWheelTimer().newTimeout(
             timeout -> {
                 if (!timeout.isCancelled()) {
@@ -101,7 +103,8 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
                     ctx.close();
                 }
             },
-            5, TimeUnit.SECONDS);
+            acknowledgeTimeoutMs, TimeUnit.MILLISECONDS
+        );
     }
 
     @Override
