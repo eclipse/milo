@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>opc-ua-stack</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>stack-tests</artifactId>
@@ -42,5 +42,17 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
