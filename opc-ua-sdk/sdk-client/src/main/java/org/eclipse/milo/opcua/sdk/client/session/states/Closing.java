@@ -88,7 +88,9 @@ public class Closing extends AbstractSessionState implements SessionState {
         } else if (event instanceof CreateSessionFailureEvent) {
             CreateSessionFailureEvent e = (CreateSessionFailureEvent) event;
 
-            fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, e.getSessionFuture()));
+            fsm.getClient().getConfig().getExecutor().execute(() ->
+                fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, e.getSessionFuture()))
+            );
         } else if (event instanceof ActivateSessionSuccessEvent) {
             ActivateSessionSuccessEvent e = (ActivateSessionSuccessEvent) event;
 
@@ -96,7 +98,9 @@ public class Closing extends AbstractSessionState implements SessionState {
         } else if (event instanceof ActivateSessionFailureEvent) {
             ActivateSessionFailureEvent e = (ActivateSessionFailureEvent) event;
 
-            fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, e.getSessionFuture()));
+            fsm.getClient().getConfig().getExecutor().execute(() ->
+                fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, e.getSessionFuture()))
+            );
         } else if (event instanceof TransferSuccessEvent) {
             TransferSuccessEvent e = (TransferSuccessEvent) event;
 
@@ -112,7 +116,9 @@ public class Closing extends AbstractSessionState implements SessionState {
         } else if (event instanceof ReactivateFailureEvent) {
             ReactivateFailureEvent e = (ReactivateFailureEvent) event;
 
-            fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, e.getSessionFuture()));
+            fsm.getClient().getConfig().getExecutor().execute(() ->
+                fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, e.getSessionFuture()))
+            );
         } else if (event instanceof InitializeSuccessEvent) {
             InitializeSuccessEvent e = (InitializeSuccessEvent) event;
 
