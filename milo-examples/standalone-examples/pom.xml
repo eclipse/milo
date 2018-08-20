@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.eclipse.milo</groupId>
         <artifactId>milo-examples</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.2.3</version>
     </parent>
 
     <artifactId>standalone-examples</artifactId>
@@ -119,17 +119,17 @@
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-client</artifactId>
-            <version>0.2.3-SNAPSHOT</version>
+            <version>0.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>sdk-server</artifactId>
-            <version>0.2.3-SNAPSHOT</version>
+            <version>0.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.milo</groupId>
             <artifactId>server-examples</artifactId>
-            <version>0.2.3-SNAPSHOT</version>
+            <version>0.2.3</version>
         </dependency>
 
         <!-- Redeclare our dependency on Bouncy Castle
