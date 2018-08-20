@@ -158,27 +158,24 @@ public class OpcUaClient implements UaClient {
 
         sessionFsm = new SessionFsm(this);
 
-        sessionFsm.addInitializer(new SessionFsm.SessionInitializer() {
-            @Override
-            public CompletableFuture<Unit> initialize(UaTcpStackClient stackClient, OpcUaSession session) {
-                logger.debug("SessionInitializer: DataTypeDictionary");
+        sessionFsm.addInitializer((stackClient, session) -> {
+            logger.debug("SessionInitializer: DataTypeDictionary");
 
-                DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
-                    stackClient,
-                    session,
-                    config.getBsdParser()
-                );
+            DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
+                stackClient,
+                session,
+                config.getBsdParser()
+            );
 
-                return reader.readDataTypeDictionaries()
-                    .thenAccept(dictionaries ->
-                        dictionaries.forEach(
-                            dataTypeManager::registerTypeDictionary))
-                    .thenApply(v -> Unit.VALUE)
-                    .exceptionally(ex -> {
-                        logger.warn("SessionInitializer: DataTypeDictionary", ex);
-                        return Unit.VALUE;
-                    });
-            }
+            return reader.readDataTypeDictionaries()
+                .thenAccept(dictionaries ->
+                    dictionaries.forEach(
+                        dataTypeManager::registerTypeDictionary))
+                .thenApply(v -> Unit.VALUE)
+                .exceptionally(ex -> {
+                    logger.warn("SessionInitializer: DataTypeDictionary", ex);
+                    return Unit.VALUE;
+                });
         });
 
         sessionFsm.addInitializer((stackClient, session) -> {
