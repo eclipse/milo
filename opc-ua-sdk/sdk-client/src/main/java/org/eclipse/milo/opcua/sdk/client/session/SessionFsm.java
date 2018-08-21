@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.client.session;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
@@ -137,14 +136,10 @@ public class SessionFsm {
         listeners.remove(listener);
     }
 
-    private SessionState fireEvent(Event event) {
+    private void fireEvent(Event event) {
         if (readWriteLock.writeLock().isHeldByCurrentThread()) {
-            try {
-                return client.getConfig().getExecutor()
-                    .submit(() -> fireEvent(event)).get();
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
-            }
+            client.getConfig().getExecutor()
+                .execute(() -> fireEvent(event));
         } else {
             readWriteLock.writeLock().lock();
 
@@ -175,8 +170,6 @@ public class SessionFsm {
                         notifySessionInactive(((Active) prevState).getSession());
                     }
                 }
-
-                return nextState;
             } finally {
                 readWriteLock.writeLock().unlock();
             }

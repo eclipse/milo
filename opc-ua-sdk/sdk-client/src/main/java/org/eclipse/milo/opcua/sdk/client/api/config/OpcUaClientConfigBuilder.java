@@ -172,6 +172,12 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         return this;
     }
 
+    @Override
+    public OpcUaClientConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
+        super.setAcknowledgeTimeout(acknowledgeTimeout);
+        return this;
+    }
+
     public OpcUaClientConfig build() {
         UaTcpStackClientConfig stackClientConfig = super.build();
 
@@ -331,6 +337,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public HashedWheelTimer getWheelTimer() {
             return stackClientConfig.getWheelTimer();
+        }
+
+        @Override
+        public UInteger getAcknowledgeTimeout() {
+            return stackClientConfig.getAcknowledgeTimeout();
         }
 
     }

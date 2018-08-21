@@ -51,6 +51,7 @@ public class UaTcpStackClientConfigBuilder {
     private ExecutorService executor;
     private NioEventLoopGroup eventLoop;
     private HashedWheelTimer wheelTimer;
+    private UInteger acknowledgeTimeout = uint(5 * 1000);
 
     public UaTcpStackClientConfigBuilder setEndpointUrl(String endpointUrl) {
         this.endpointUrl = endpointUrl;
@@ -127,6 +128,11 @@ public class UaTcpStackClientConfigBuilder {
         return this;
     }
 
+    public UaTcpStackClientConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
+        this.acknowledgeTimeout = acknowledgeTimeout;
+        return this;
+    }
+
     public UaTcpStackClientConfig build() {
         if (executor == null) {
             executor = Stack.sharedExecutor();
@@ -153,7 +159,8 @@ public class UaTcpStackClientConfigBuilder {
             channelLifetime,
             executor,
             eventLoop,
-            wheelTimer
+            wheelTimer,
+            acknowledgeTimeout
         );
     }
 
@@ -176,6 +183,7 @@ public class UaTcpStackClientConfigBuilder {
         private final ExecutorService executor;
         private final NioEventLoopGroup eventLoop;
         private final HashedWheelTimer wheelTimer;
+        private final UInteger acknowledgeTimeout;
 
         public UaTcpStackClientConfigImpl(
             @Nullable String endpointUrl,
@@ -192,7 +200,8 @@ public class UaTcpStackClientConfigBuilder {
             UInteger channelLifetime,
             ExecutorService executor,
             NioEventLoopGroup eventLoop,
-            HashedWheelTimer wheelTimer) {
+            HashedWheelTimer wheelTimer,
+            UInteger acknowledgeTimeout) {
 
             this.endpointUrl = endpointUrl;
             this.endpoint = endpoint;
@@ -209,6 +218,7 @@ public class UaTcpStackClientConfigBuilder {
             this.executor = executor;
             this.eventLoop = eventLoop;
             this.wheelTimer = wheelTimer;
+            this.acknowledgeTimeout = acknowledgeTimeout;
         }
 
         @Override
@@ -292,6 +302,11 @@ public class UaTcpStackClientConfigBuilder {
         @Override
         public HashedWheelTimer getWheelTimer() {
             return wheelTimer;
+        }
+
+        @Override
+        public UInteger getAcknowledgeTimeout() {
+            return acknowledgeTimeout;
         }
 
     }

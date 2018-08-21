@@ -87,20 +87,23 @@ public final class ChunkDecoder {
         } catch (MessageAbortedException e) {
             callback.onMessageAborted(e);
 
-            releaseBuffers(composite, chunkBuffers);
+            safeReleaseBuffers(composite, chunkBuffers);
         } catch (UaException e) {
             callback.onDecodingError(e);
 
-            releaseBuffers(composite, chunkBuffers);
+            safeReleaseBuffers(composite, chunkBuffers);
         }
     }
 
-    private static void releaseBuffers(CompositeByteBuf composite, List<ByteBuf> chunkBuffers) {
-        while (composite.numComponents() > 0) {
-            composite.removeComponent(0);
+    private static void safeReleaseBuffers(CompositeByteBuf composite, List<ByteBuf> chunkBuffers) {
+        if (composite.refCnt() > 0) {
+            ReferenceCountUtil.safeRelease(composite);
         }
-        ReferenceCountUtil.safeRelease(composite);
-        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
+        chunkBuffers.forEach(b -> {
+            if (b.refCnt() > 0) {
+                ReferenceCountUtil.safeRelease(b);
+            }
+        });
     }
 
     public interface Callback {
