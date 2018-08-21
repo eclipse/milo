@@ -62,6 +62,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand
 import org.jooq.lambda.tuple.Tuple2;
 
 import static java.util.Collections.nCopies;
+import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class EventContentFilter {
@@ -317,7 +318,7 @@ public class EventContentFilter {
         UaNode node = nodeManager.get(typeId);
 
         if (node instanceof ObjectTypeNode) {
-            return getParentTypeDefinition((ObjectTypeNode) node, nodeManager)
+            return getParentTypeDefinition(node, nodeManager)
                 .map(Node::getNodeId)
                 .map(id -> id.equals(superTypeId) || subtypeOf(id, superTypeId, nodeManager))
                 .orElse(false);
@@ -326,8 +327,13 @@ public class EventContentFilter {
         }
     }
 
-    private static Optional<ObjectTypeNode> getParentTypeDefinition(ObjectTypeNode node, UaNodeManager nodeManager) {
-        return Optional.empty(); // TODO
+    private static Optional<UaNode> getParentTypeDefinition(UaNode node, UaNodeManager nodeManager) {
+        return nodeManager.getReferences(node.getNodeId())
+            .stream()
+            .filter(Reference.SUBTYPE_OF)
+            .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+            .findFirst()
+            .flatMap(nodeManager::getNode);
     }
 
     static class DefaultOperatorContext implements OperatorContext {
