@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.channel;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -221,7 +222,7 @@ public final class ChunkDecoder {
 
                 if (isAsymmetric()) {
                     for (int blockNumber = 0; blockNumber < blockCount; blockNumber++) {
-                        chunkNioBuffer.limit(chunkNioBuffer.position() + cipherTextBlockSize);
+                        ((Buffer) chunkNioBuffer).limit(chunkNioBuffer.position() + cipherTextBlockSize);
 
                         cipher.doFinal(chunkNioBuffer, plainTextNioBuffer);
                     }
@@ -230,7 +231,7 @@ public final class ChunkDecoder {
                 }
 
                 /* Write plainTextBuffer back into the chunk buffer we decrypted from. */
-                plainTextNioBuffer.flip(); // limit = pos, pos = 0
+                ((Buffer) plainTextNioBuffer).flip(); // limit = pos, pos = 0
 
                 chunkBuffer.writerIndex(chunkBuffer.readerIndex());
                 chunkBuffer.writeBytes(plainTextNioBuffer);
@@ -303,7 +304,8 @@ public final class ChunkDecoder {
             int signatureSize = channel.getRemoteAsymmetricSignatureSize();
 
             ByteBuffer chunkNioBuffer = chunkBuffer.nioBuffer(0, chunkBuffer.writerIndex());
-            chunkNioBuffer.position(0).limit(chunkBuffer.writerIndex() - signatureSize);
+            ((Buffer) chunkNioBuffer).position(0);
+            ((Buffer) chunkNioBuffer).limit(chunkBuffer.writerIndex() - signatureSize);
 
             try {
                 Signature signature = Signature.getInstance(transformation);
@@ -312,7 +314,7 @@ public final class ChunkDecoder {
                 signature.update(chunkNioBuffer);
 
                 byte[] signatureBytes = new byte[signatureSize];
-                chunkNioBuffer.limit(chunkNioBuffer.position() + signatureSize);
+                ((Buffer) chunkNioBuffer).limit(chunkNioBuffer.position() + signatureSize);
                 chunkNioBuffer.get(signatureBytes);
 
                 if (!signature.verify(signatureBytes)) {
@@ -424,12 +426,13 @@ public final class ChunkDecoder {
             int signatureSize = channel.getSymmetricSignatureSize();
 
             ByteBuffer chunkNioBuffer = chunkBuffer.nioBuffer(0, chunkBuffer.writerIndex());
-            chunkNioBuffer.position(0).limit(chunkBuffer.writerIndex() - signatureSize);
+            ((Buffer) chunkNioBuffer).position(0);
+            ((Buffer) chunkNioBuffer).limit(chunkBuffer.writerIndex() - signatureSize);
 
             byte[] signature = SignatureUtil.hmac(securityAlgorithm, secretKey, chunkNioBuffer);
 
             byte[] signatureBytes = new byte[signatureSize];
-            chunkNioBuffer.limit(chunkNioBuffer.position() + signatureSize);
+            ((Buffer) chunkNioBuffer).limit(chunkNioBuffer.position() + signatureSize);
             chunkNioBuffer.get(signatureBytes);
 
             if (!Arrays.equals(signature, signatureBytes)) {

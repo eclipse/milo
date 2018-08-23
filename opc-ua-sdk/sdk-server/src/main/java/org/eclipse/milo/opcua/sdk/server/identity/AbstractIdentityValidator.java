@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.identity;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
@@ -201,7 +202,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
             Cipher cipher = getCipher(algorithm, keyPair);
 
             for (int blockNumber = 0; blockNumber < blockCount; blockNumber++) {
-                passwordNioBuffer.limit(passwordNioBuffer.position() + cipherTextBlockSize);
+                ((Buffer) passwordNioBuffer).limit(passwordNioBuffer.position() + cipherTextBlockSize);
 
                 cipher.doFinal(passwordNioBuffer, plainTextNioBuffer);
             }

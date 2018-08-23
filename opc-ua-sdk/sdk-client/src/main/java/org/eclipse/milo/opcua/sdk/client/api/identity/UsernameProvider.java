@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.api.identity;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
@@ -157,12 +158,13 @@ public class UsernameProvider implements IdentityProvider {
             for (int blockNumber = 0; blockNumber < blockCount; blockNumber++) {
                 int position = blockNumber * plainTextBlockSize;
                 int limit = Math.min(buffer.readableBytes(), (blockNumber + 1) * plainTextBlockSize);
-                plainTextNioBuffer.position(position).limit(limit);
+                ((Buffer) plainTextNioBuffer).position(position);
+                ((Buffer) plainTextNioBuffer).limit(limit);
 
                 cipher.doFinal(plainTextNioBuffer, cipherTextNioBuffer);
             }
 
-            cipherTextNioBuffer.flip();
+            ((Buffer) cipherTextNioBuffer).flip();
             buffer = Unpooled.wrappedBuffer(cipherTextNioBuffer);
         }
 
