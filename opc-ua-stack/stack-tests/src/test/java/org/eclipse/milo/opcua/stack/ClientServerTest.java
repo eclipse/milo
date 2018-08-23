@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import com.beust.jcommander.internal.Lists;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -49,7 +51,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
-import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
@@ -71,6 +72,10 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertThrows;
 
 public class ClientServerTest extends SecurityFixture {
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private static final UInteger DEFAULT_TIMEOUT_HINT = uint(60000);
 
@@ -111,8 +116,6 @@ public class ClientServerTest extends SecurityFixture {
     @BeforeSuite
     public void setUpClientServer() throws Exception {
         super.setUp();
-
-        CryptoRestrictions.remove();
 
         UaTcpStackServerConfig config = UaTcpStackServerConfig.builder()
             .setServerName("test")

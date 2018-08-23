@@ -16,6 +16,7 @@ package org.eclipse.milo.examples.server;
 import java.io.File;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.EnumSet;
 import java.util.concurrent.CompletableFuture;
@@ -23,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import com.google.common.collect.ImmutableList;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
@@ -33,7 +35,6 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateBuilder;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.slf4j.Logger;
@@ -45,6 +46,10 @@ import static org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig.USE
 
 
 public class SecureServerStandalone {
+
+    static {
+        Security.addProvider(new BouncyCastleProvider());
+    }
 
     private static final String APPLICATION_NAME = "Eclipse Milo OPC-UA Example Server";
 
@@ -86,8 +91,6 @@ public class SecureServerStandalone {
     }
 
     private SecureServerStandalone() {
-        CryptoRestrictions.remove();
-
         File securityTempDir = new File("security");
 
         logger.info("security temp dir: {}", securityTempDir.getAbsolutePath());
