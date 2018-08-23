@@ -13,13 +13,15 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import java.security.Security;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.util.CryptoRestrictions;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfigBuilder;
 import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
@@ -30,7 +32,7 @@ import org.testng.annotations.BeforeSuite;
 public abstract class StackIntegrationTest extends SecurityFixture {
 
     static {
-        CryptoRestrictions.remove();
+        Security.addProvider(new BouncyCastleProvider());
     }
 
     protected UaTcpStackClient client;
