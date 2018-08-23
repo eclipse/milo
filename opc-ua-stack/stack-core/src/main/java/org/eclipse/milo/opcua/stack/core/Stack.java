@@ -55,7 +55,7 @@ public final class Stack {
 
                 @Override
                 public Thread newThread(@Nonnull Runnable r) {
-                    Thread thread = new Thread(r, "ua-netty-event-loop-" + threadNumber.getAndIncrement());
+                    Thread thread = new Thread(r, "milo-netty-event-loop-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
                     return thread;
                 }
@@ -77,7 +77,7 @@ public final class Stack {
 
                 @Override
                 public Thread newThread(@Nonnull Runnable r) {
-                    Thread thread = new Thread(r, "ua-shared-pool-" + threadNumber.getAndIncrement());
+                    Thread thread = new Thread(r, "milo-shared-thread-pool-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
                     return thread;
                 }
@@ -99,7 +99,7 @@ public final class Stack {
 
                 @Override
                 public Thread newThread(@Nonnull Runnable r) {
-                    Thread thread = new Thread(r, "ua-shared-scheduled-executor-" + threadNumber.getAndIncrement());
+                    Thread thread = new Thread(r, "milo-shared-scheduled-executor-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
                     return thread;
                 }
@@ -124,7 +124,7 @@ public final class Stack {
     public static synchronized HashedWheelTimer sharedWheelTimer() {
         if (WHEEL_TIMER == null) {
             ThreadFactory threadFactory = r -> {
-                Thread thread = new Thread(r, "ua-netty-wheel-timer");
+                Thread thread = new Thread(r, "milo-netty-wheel-timer");
                 thread.setDaemon(true);
                 return thread;
             };
