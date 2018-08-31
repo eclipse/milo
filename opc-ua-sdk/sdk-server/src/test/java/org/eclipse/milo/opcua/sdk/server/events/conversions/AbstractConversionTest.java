@@ -21,6 +21,7 @@ import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.fail;
 
 abstract class AbstractConversionTest<S> {
 
@@ -41,7 +42,7 @@ abstract class AbstractConversionTest<S> {
 
             if (conversionType != ConversionType.NONE) {
                 if (conversions == null || conversions.length == 0) {
-                    throw new RuntimeException("expected conversions for " + targetType);
+                    fail("expected conversions for " + targetType);
                 }
 
                 System.out.println(String.format("%s -> %s [%s]", sourceType, targetType, conversionType));
@@ -60,7 +61,7 @@ abstract class AbstractConversionTest<S> {
                 }
             } else {
                 if (conversions.length != 0) {
-                    throw new RuntimeException(String.format(
+                    fail(String.format(
                         "conversions defined for %s -> %s " +
                             "but no ConversionType is defined", sourceType, targetType));
                 }
