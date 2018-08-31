@@ -13,40 +13,92 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
-import org.testng.annotations.Test;
+import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-import static org.testng.Assert.fail;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class StatusCodeConversionsTest {
+public class StatusCodeConversionsTest extends AbstractConversionTest<StatusCode> {
 
-    @Test
-    public void testStatusCodeToInt16() {
-        fail("not implemented");
+    @Override
+    protected Class<StatusCode> getSourceClass() {
+        return StatusCode.class;
     }
 
-    @Test
-    public void testStatusCodeToInt32() {
-        fail("not implemented");
+    @Override
+    public Conversion[] getConversions(BuiltinDataType targetType) {
+        switch (targetType) {
+            case Int16: {
+                return new Conversion[]{
+                    c(new StatusCode(0), (short) 0),
+                    c(new StatusCode(0x7FFF0000), Short.MAX_VALUE)
+                };
+            }
+
+            case Int32: {
+                return new Conversion[]{
+                    c(new StatusCode(0), 0),
+                    c(new StatusCode(Integer.MAX_VALUE), Integer.MAX_VALUE)
+                };
+            }
+
+            case Int64: {
+                return new Conversion[]{
+                    c(new StatusCode(0), 0L),
+                    c(new StatusCode(0xFFFFFFFF), 0xFFFFFFFFL)
+                };
+            }
+
+            case UInt16: {
+                return new Conversion[]{
+                    c(new StatusCode(0), ushort(0)),
+                    c(new StatusCode(0x7FFF0000), ushort(Short.MAX_VALUE)),
+                    c(new StatusCode(0xFFFF0000), UShort.MAX)
+                };
+            }
+
+            case UInt32: {
+                return new Conversion[]{
+                    c(new StatusCode(0), uint(0)),
+                    c(new StatusCode(0x7FFF0000), uint(0x7FFF0000)),
+                    c(new StatusCode(0xFFFF0000), uint(0xFFFF0000)),
+                    c(new StatusCode(0xFFFFFFFF), uint(0xFFFFFFFF))
+                };
+            }
+
+            case UInt64: {
+                return new Conversion[]{
+                    c(new StatusCode(0), ulong(0)),
+                    c(new StatusCode(0xFFFFFFFF), ulong(0xFFFFFFFFL))
+                };
+            }
+
+            default:
+                return new Conversion[0];
+        }
     }
 
-    @Test
-    public void testStatusCodeToInt64() {
-        fail("not implemented");
+    @Override
+    public ConversionType getConversionType(BuiltinDataType targetType) {
+        //@formatter:off
+        switch (targetType) {
+            case Int16:     return ConversionType.EXPLICIT;
+            case Int32:     return ConversionType.IMPLICIT;
+            case Int64:     return ConversionType.IMPLICIT;
+            case UInt16:    return ConversionType.EXPLICIT;
+            case UInt32:    return ConversionType.IMPLICIT;
+            case UInt64:    return ConversionType.IMPLICIT;
+            default:        return ConversionType.NONE;
+        }
+        //@formatter:on
     }
 
-    @Test
-    public void testStatusCodeToUInt16() {
-        fail("not implemented");
+    @Override
+    protected Object convert(Object fromValue, BuiltinDataType targetType, boolean implicit) {
+        return StatusCodeConversions.convert(fromValue, targetType, implicit);
     }
 
-    @Test
-    public void testStatusCodeToUInt32() {
-        fail("not implemented");
-    }
-
-    @Test
-    public void testStatusCodeToUInt64() {
-        fail("not implemented");
-    }
-    
 }
