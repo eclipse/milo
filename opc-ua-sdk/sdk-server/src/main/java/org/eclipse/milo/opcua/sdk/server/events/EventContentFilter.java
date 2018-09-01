@@ -65,9 +65,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.LiteralOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
 import org.jooq.lambda.tuple.Tuple2;
 
-import static java.util.Collections.nCopies;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class EventContentFilter {
 
@@ -191,72 +189,87 @@ public class EventContentFilter {
         FilterContext context,
         ContentFilter whereClause) {
 
-        // TODO validate where clause
+        ContentFilterElement[] filterElements = whereClause.getElements();
 
-        List<ContentFilterElementResult> elementResults = new ArrayList<>();
-        List<DiagnosticInfo> elementDiagnosticInfos = new ArrayList<>();
+        if (filterElements == null) {
+            return new ContentFilterResult(new ContentFilterElementResult[0], new DiagnosticInfo[0]);
+        }
 
-        List<ContentFilterElement> elements = l(whereClause.getElements());
+        ContentFilterElementResult[] elementResults = Arrays.stream(filterElements)
+            .map(e -> validateFilterElement(context, e))
+            .toArray(ContentFilterElementResult[]::new);
 
-        for (ContentFilterElement element : elements) {
-            FilterOperator filterOperator = element.getFilterOperator();
+        return new ContentFilterResult(elementResults, new DiagnosticInfo[0]);
+    }
 
-            try {
-                ExtensionObject[] xos = element.getFilterOperands();
-                if (xos == null || xos.length == 0) {
-                    throw new ValidationException(StatusCodes.Bad_FilterOperandCountMismatch);
-                }
+    private static ContentFilterElementResult validateFilterElement(
+        @Nonnull FilterContext context,
+        @Nonnull ContentFilterElement filterElement) {
 
-                FilterOperand[] operands = new FilterOperand[xos.length];
+        FilterOperator filterOperator = filterElement.getFilterOperator();
 
-                for (int i = 0; i < xos.length; i++) {
-                    FilterOperand operand = (FilterOperand) xos[i].decodeOrNull();
+        ExtensionObject[] xos = filterElement.getFilterOperands();
 
-                    if (operand != null) {
+        if (xos == null || xos.length == 0) {
+            return new ContentFilterElementResult(
+                new StatusCode(StatusCodes.Bad_FilterOperandCountMismatch),
+                new StatusCode[0],
+                new DiagnosticInfo[0]
+            );
+        }
 
+        FilterOperand[] operands = new FilterOperand[xos.length];
+        StatusCode[] operandStatusCodes = new StatusCode[xos.length];
+
+        for (int i = 0; i < xos.length; i++) {
+            Object operand = xos[i].decodeOrNull();
+
+            if (operand instanceof FilterOperand) {
+                operands[i] = (FilterOperand) operand;
+
+                if (operand instanceof SimpleAttributeOperand) {
+                    try {
+                        validateSimpleOperand(context, (SimpleAttributeOperand) operand);
+
+                        operandStatusCodes[i] = StatusCode.GOOD;
+                    } catch (ValidationException e) {
+                        operandStatusCodes[i] = e.getStatusCode();
                     }
-
-                    operands[i] = operand;
+                } else if (operand instanceof ElementOperand) {
+                    // TODO validate an ElementOperand?
+                    operandStatusCodes[i] = StatusCode.GOOD;
+                } else if (operand instanceof LiteralOperand) {
+                    // TODO validate a LiteralOperand?
+                    operandStatusCodes[i] = StatusCode.GOOD;
+                } else {
+                    // includes AttributeOperand and any unknown/unhandle subclasses
+                    operandStatusCodes[i] = new StatusCode(StatusCodes.Bad_FilterOperandInvalid);
                 }
-
-                Operator<?> operator = getOperator(filterOperator);
-                operator.validate(context, operands);
-
-                StatusCode[] operandStatusCodes = nCopies(
-                    operands.length,
-                    StatusCode.GOOD
-                ).toArray(new StatusCode[0]);
-
-                ContentFilterElementResult result = new ContentFilterElementResult(
-                    StatusCode.GOOD,
-                    operandStatusCodes,
-                    new DiagnosticInfo[0]
-                );
-
-                elementResults.add(result);
-                elementDiagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-            } catch (ValidationException e) {
-                ContentFilterElementResult result = new ContentFilterElementResult(
-                    e.getStatusCode(),
-                    new StatusCode[0],
-                    new DiagnosticInfo[0]
-                );
-
-                elementResults.add(result);
-                elementDiagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+            } else {
+                operandStatusCodes[i] = new StatusCode(StatusCodes.Bad_FilterOperandInvalid);
             }
         }
 
-        return new ContentFilterResult(
-            elementResults.toArray(new ContentFilterElementResult[0]),
-            elementDiagnosticInfos.toArray(new DiagnosticInfo[0])
+        StatusCode operatorStatus = StatusCode.GOOD;
+
+        try {
+            Operator<?> operator = getOperator(filterOperator);
+            operator.validate(context, operands);
+        } catch (ValidationException e) {
+            operatorStatus = e.getStatusCode();
+        }
+
+        return new ContentFilterElementResult(
+            operatorStatus,
+            operandStatusCodes,
+            new DiagnosticInfo[0]
         );
     }
 
     public static Variant[] select(
         @Nonnull FilterContext context,
         @Nonnull SimpleAttributeOperand[] selectClauses,
-        @Nonnull BaseEventNode eventNode) throws UaException {
+        @Nonnull BaseEventNode eventNode) {
 
         return Arrays.stream(selectClauses).map(operand -> {
             try {
@@ -350,7 +363,7 @@ public class EventContentFilter {
         //@formatter:on
     }
 
-
+    @SuppressWarnings("unused")
     private static Object getAttribute(
         @Nonnull FilterContext context,
         @Nonnull AttributeOperand operand,
