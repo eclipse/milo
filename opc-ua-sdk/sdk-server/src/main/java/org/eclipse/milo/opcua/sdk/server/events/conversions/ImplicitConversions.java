@@ -48,6 +48,77 @@ public class ImplicitConversions {
                 return ByteConversions
                     .convert(sourceValue, targetType, true);
 
+            case ByteString:
+                return ByteStringConversions
+                    .convert(sourceValue, targetType, true);
+
+            case DateTime:
+                return DateTimeConversions
+                    .convert(sourceValue, targetType, true);
+
+            case Double:
+                return DoubleConversions
+                    .convert(sourceValue, targetType, true);
+
+            case ExpandedNodeId:
+                return ExpandedNodeIdConversions
+                    .convert(sourceValue, targetType, true);
+
+            case Float:
+                return FloatConversions
+                    .convert(sourceValue, targetType, true);
+            case Guid:
+                return GuidConversions
+                    .convert(sourceValue, targetType, true);
+
+            case Int16:
+                return Int16Conversions
+                    .convert(sourceValue, targetType, true);
+
+            case Int32:
+                return Int32Conversions
+                    .convert(sourceValue, targetType, true);
+
+            case Int64:
+                return Int64Conversions
+                    .convert(sourceValue, targetType, true);
+
+            case NodeId:
+                return NodeIdConversions
+                    .convert(sourceValue, targetType, true);
+
+            case SByte:
+                return SByteConversions
+                    .convert(sourceValue, targetType, true);
+
+            case StatusCode:
+                return StatusCodeConversions
+                    .convert(sourceValue, targetType, true);
+
+            case String:
+                return StringConversions
+                    .convert(sourceValue, targetType, true);
+
+            case LocalizedText:
+                return LocalizedTextConversions
+                    .convert(sourceValue, targetType, true);
+
+            case QualifiedName:
+                return QualifiedNameConversions
+                    .convert(sourceValue, targetType, true);
+
+            case UInt16:
+                return UInt16Conversions
+                    .convert(sourceValue, targetType, true);
+
+            case UInt32:
+                return UInt32Conversions
+                    .convert(sourceValue, targetType, true);
+
+            case UInt64:
+                return UInt64Conversions
+                    .convert(sourceValue, targetType, true);
+
             default:
                 return null;
         }

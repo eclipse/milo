@@ -13,20 +13,36 @@
 
 package org.eclipse.milo.opcua.sdk.server.events.conversions;
 
+import java.nio.ByteBuffer;
+import java.util.UUID;
+
+import io.netty.buffer.ByteBufUtil;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.fail;
+import static org.testng.Assert.assertEquals;
 
 public class ByteStringConversionsTest {
 
     @Test
     public void testByteStringToGuid() {
-        fail("not implemented");
+        long msb = 0xABCDABCDABCDABCDL;
+        long lsb = 0xEFEFEFEFEFEFEFEFL;
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(msb).putLong(lsb);
+        ByteString bs = ByteString.of(bb.array());
+
+        UUID uuid = new UUID(msb, lsb);
+
+        assertEquals(uuid, ByteStringConversions.byteStringToGuid(bs));
     }
 
     @Test
     public void testByteStringToString() {
-        fail("not implemented");
+        ByteString bs = ByteString.of(new byte[]{0x01, 0x02, 0x03});
+
+        assertEquals(ByteBufUtil.hexDump(bs.bytesOrEmpty()),
+            ByteStringConversions.byteStringToString(bs));
     }
 
 }

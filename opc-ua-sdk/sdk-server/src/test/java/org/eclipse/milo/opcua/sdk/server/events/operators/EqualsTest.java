@@ -88,7 +88,7 @@ public class EqualsTest {
             .thenReturn(new int[]{1, 2, 3});
 
         when(context.resolve(op1, eventNode))
-            .thenReturn(new long[]{1L, 2L, 3L});
+            .thenReturn(new Long[]{1L, 2L, 3L});
 
         Boolean result = Operators.EQUALS.apply(
             context,
