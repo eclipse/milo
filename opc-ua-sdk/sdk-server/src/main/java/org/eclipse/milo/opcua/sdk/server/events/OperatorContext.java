@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElement;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 
-public interface OperatorContext extends AccessContext {
+public interface OperatorContext extends AccessContext, FilterContext {
 
     OpcUaServer getServer();
 

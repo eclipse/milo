@@ -15,7 +15,9 @@ package org.eclipse.milo.opcua.sdk.server.events.operators;
 
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
+import org.eclipse.milo.opcua.sdk.server.events.ValidationException;
 import org.eclipse.milo.opcua.sdk.server.events.conversions.ImplicitConversions;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
@@ -30,6 +32,13 @@ public class Cast implements Operator<Object> {
 
     Cast() {}
 
+    @Override
+    public void validate(FilterContext context, FilterOperand[] operands) throws ValidationException {
+        if (operands.length < 2) {
+            throw new ValidationException(StatusCodes.Bad_FilterOperandCountMismatch);
+        }
+    }
+
     @Nullable
     @Override
     public Object apply(
@@ -37,9 +46,7 @@ public class Cast implements Operator<Object> {
         BaseEventNode eventNode,
         FilterOperand[] operands) throws UaException {
 
-        if (operands.length < 2) {
-            throw new UaException(StatusCodes.Bad_FilterOperandCountMismatch);
-        }
+        validate(context, operands);
 
         FilterOperand op0 = operands[0];
         FilterOperand op1 = operands[1];

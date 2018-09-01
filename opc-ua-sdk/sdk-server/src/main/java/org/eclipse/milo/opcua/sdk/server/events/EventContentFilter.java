@@ -199,21 +199,52 @@ public class EventContentFilter {
         List<ContentFilterElement> elements = l(whereClause.getElements());
 
         for (ContentFilterElement element : elements) {
-            List<ExtensionObject> filterOperands = l(element.getFilterOperands());
+            FilterOperator filterOperator = element.getFilterOperator();
 
-            StatusCode[] operandStatusCodes = nCopies(
-                filterOperands.size(),
-                StatusCode.GOOD
-            ).toArray(new StatusCode[0]);
+            try {
+                ExtensionObject[] xos = element.getFilterOperands();
+                if (xos == null || xos.length == 0) {
+                    throw new ValidationException(StatusCodes.Bad_FilterOperandCountMismatch);
+                }
 
-            ContentFilterElementResult result = new ContentFilterElementResult(
-                StatusCode.GOOD,
-                operandStatusCodes,
-                null
-            );
+                FilterOperand[] operands = new FilterOperand[xos.length];
 
-            elementResults.add(result);
-            elementDiagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+                for (int i = 0; i < xos.length; i++) {
+                    FilterOperand operand = (FilterOperand) xos[i].decodeOrNull();
+
+                    if (operand != null) {
+
+                    }
+
+                    operands[i] = operand;
+                }
+
+                Operator<?> operator = getOperator(filterOperator);
+                operator.validate(context, operands);
+
+                StatusCode[] operandStatusCodes = nCopies(
+                    operands.length,
+                    StatusCode.GOOD
+                ).toArray(new StatusCode[0]);
+
+                ContentFilterElementResult result = new ContentFilterElementResult(
+                    StatusCode.GOOD,
+                    operandStatusCodes,
+                    new DiagnosticInfo[0]
+                );
+
+                elementResults.add(result);
+                elementDiagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+            } catch (ValidationException e) {
+                ContentFilterElementResult result = new ContentFilterElementResult(
+                    e.getStatusCode(),
+                    new StatusCode[0],
+                    new DiagnosticInfo[0]
+                );
+
+                elementResults.add(result);
+                elementDiagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+            }
         }
 
         return new ContentFilterResult(
