@@ -160,7 +160,7 @@ public enum AttributeId {
         org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass nodeClass) {
 
         //@formatter:off
-        switch(nodeClass) {
+        switch (nodeClass) {
             case Object:        return OBJECT_NODE_ATTRIBUTES;
             case Variable:      return VARIABLE_NODE_ATTRIBUTES;
             case Method:        return METHOD_NODE_ATTRIBUTES;
