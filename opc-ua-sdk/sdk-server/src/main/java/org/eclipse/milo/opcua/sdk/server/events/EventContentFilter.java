@@ -21,17 +21,21 @@ import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operator;
 import org.eclipse.milo.opcua.sdk.server.events.operators.Operators;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -91,17 +95,92 @@ public class EventContentFilter {
         FilterContext context,
         SimpleAttributeOperand[] selectClauses) {
 
-        // TODO validate select clauses
+        List<StatusCode> statusCodes = new ArrayList<>();
+        List<DiagnosticInfo> diagnosticInfos = new ArrayList<>();
 
-        StatusCode[] statusCodes =
-            nCopies(selectClauses.length, StatusCode.GOOD)
-                .toArray(new StatusCode[0]);
+        for (SimpleAttributeOperand select : selectClauses) {
+            NodeId eventTypeId = select.getTypeDefinitionId();
 
-        DiagnosticInfo[] diagnosticInfos =
-            nCopies(selectClauses.length, DiagnosticInfo.NULL_VALUE)
-                .toArray(new DiagnosticInfo[0]);
+            if (eventTypeId == null || eventTypeId.equals(Identifiers.BaseEventType)) {
+                statusCodes.add(StatusCode.GOOD);
+                diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+            } else {
+                UaNode node = context.getServer().getNodeManager().get(eventTypeId);
 
-        return new Tuple2<>(statusCodes, diagnosticInfos);
+                if (node instanceof UaObjectTypeNode) {
+                    QualifiedName[] browsePath = select.getBrowsePath();
+
+                    if (browsePath != null) {
+                        Node relativeNode = getRelativeNode(context, node, browsePath);
+
+                        if (relativeNode != null) {
+                            UInteger attributeId = select.getAttributeId();
+
+                            ImmutableSet<AttributeId> validAttributes =
+                                AttributeId.getAttributes(node.getNodeClass());
+
+                            boolean validAttribute = AttributeId.from(attributeId)
+                                .map(validAttributes::contains)
+                                .orElse(false);
+
+                            if (validAttribute) {
+                                String indexRange = select.getIndexRange();
+                                int valueRank = ((VariableNode) node).getValueRank();
+
+                                if (valueRank != ValueRanks.Scalar || indexRange == null) {
+                                    statusCodes.add(StatusCode.GOOD);
+                                    diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+                                } else {
+                                    statusCodes.add(new StatusCode(StatusCodes.Bad_IndexRangeInvalid));
+                                    diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+                                }
+                            } else {
+                                statusCodes.add(new StatusCode(StatusCodes.Bad_TypeDefinitionInvalid));
+                                diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+                            }
+                        } else {
+                            statusCodes.add(new StatusCode(StatusCodes.Bad_NodeIdUnknown));
+                            diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+                        }
+                    } else {
+                        statusCodes.add(new StatusCode(StatusCodes.Bad_BrowseNameInvalid));
+                        diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+                    }
+                } else {
+                    statusCodes.add(new StatusCode(StatusCodes.Bad_TypeDefinitionInvalid));
+                    diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
+                }
+            }
+        }
+
+        return new Tuple2<>(
+            statusCodes.toArray(new StatusCode[0]),
+            diagnosticInfos.toArray(new DiagnosticInfo[0]));
+    }
+
+    @Nullable
+    private static Node getRelativeNode(
+        FilterContext context,
+        @Nonnull UaNode startingNode,
+        @Nonnull QualifiedName[] browsePath) {
+
+        UaNode relativeNode = startingNode;
+
+        Predicate<Reference> references = r ->
+            r.isForward() &&
+                r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes()) &&
+                (r.getTargetNodeClass() == NodeClass.Object || r.getTargetNodeClass() == NodeClass.Variable);
+
+        // find the Node relative to eventNode using browsePath.
+        for (QualifiedName targetBrowsePath : browsePath) {
+            relativeNode = relativeNode
+                .findNode(targetBrowsePath, references)
+                .orElse(null);
+
+            if (relativeNode == null) break;
+        }
+
+        return relativeNode;
     }
 
     private static ContentFilterResult validateWhereClause(
@@ -155,15 +234,14 @@ public class EventContentFilter {
 
     public static boolean evaluate(
         @Nonnull FilterContext context,
-        @Nonnull ContentFilter filter,
+        @Nonnull ContentFilter whereClause,
         @Nonnull BaseEventNode eventNode) throws UaException {
 
-        // TODO Is this the right behavior? Seems like what other servers do...
-        if (filter.getElements() == null || filter.getElements().length == 0) {
+        if (whereClause.getElements() == null || whereClause.getElements().length == 0) {
             return true;
         }
 
-        ContentFilterElement[] elements = filter.getElements();
+        ContentFilterElement[] elements = whereClause.getElements();
 
         OperatorContext operatorContext = new DefaultOperatorContext(context, elements);
 
