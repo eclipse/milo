@@ -13,7 +13,12 @@
 
 package org.eclipse.milo.opcua.sdk.server.items;
 
+import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.annotation.Nonnull;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -21,9 +26,16 @@ import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.events.EventContentFilter;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
@@ -38,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements EventItem {
 
@@ -45,6 +58,8 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     private volatile EventFilter filter;
     private volatile EventFilterResult filterResult;
+
+    private final AtomicBoolean eventOverflow = new AtomicBoolean(false);
 
     private final FilterContext filterContext;
 
@@ -92,31 +107,38 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
             );
 
             if (matches) {
-                SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
-
-                if (selectClauses != null) {
-                    Variant[] variants = EventContentFilter.select(
-                        filterContext,
-                        selectClauses,
-                        eventNode
-                    );
-
-                    enqueue(variants);
-                }
+                enqueue(getSelectedFields(eventNode));
             }
         } catch (UaException e) {
             logger.error("Filter evaluation failed: {}", e.getMessage(), e);
         }
     }
 
+
+    @Nonnull
+    private Variant[] getSelectedFields(BaseEventNode eventNode) {
+        SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
+
+        if (selectClauses != null) {
+            return EventContentFilter.select(
+                filterContext,
+                selectClauses,
+                eventNode
+            );
+        } else {
+            return new Variant[0];
+        }
+    }
+
     @Override
-    protected void enqueue(Variant[] value) {
+    protected synchronized void enqueue(Variant[] value) {
         if (queueSize < queue.maxSize()) {
             queue.add(value);
         } else {
             if (getQueueSize() > 1) {
-                // TODO Send an EventQueueOverflowEventType...
+                eventOverflow.set(true);
             }
+
             if (discardOldest) {
                 queue.add(value);
             } else {
@@ -126,14 +148,61 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
     }
 
     @Override
+    public synchronized boolean getNotifications(List<UaStructure> notifications, int max) {
+        if (eventOverflow.compareAndSet(true, false)) {
+            Variant[] eventFields = generateOverflowEventFields();
+
+            if (discardOldest) {
+                // insert overflow event at beginning
+                notifications.add(wrapQueueValue(eventFields));
+
+                return super.getNotifications(notifications, max);
+            } else {
+                // insert overflow event at end
+                boolean more = super.getNotifications(notifications, max);
+                notifications.add(wrapQueueValue(eventFields));
+
+                return more;
+            }
+        } else {
+            return super.getNotifications(notifications, max);
+        }
+    }
+
+    @Nonnull
+    private Variant[] generateOverflowEventFields() {
+        UUID eventId = UUID.randomUUID();
+
+        BaseEventNode overflowEvent = server.getEventFactory().createEvent(
+            new NodeId(1, eventId),
+            new QualifiedName(1, "EventQueueOverflow"),
+            LocalizedText.english("EventQueueOverflow"),
+            Identifiers.EventQueueOverflowEventType
+        );
+
+        ByteBuffer buffer = ByteBuffer.allocate(64);
+        buffer.putLong(eventId.getMostSignificantBits());
+        buffer.putLong(eventId.getLeastSignificantBits());
+
+        overflowEvent.setEventId(ByteString.of(buffer.array()));
+        overflowEvent.setEventType(Identifiers.EventQueueOverflowEventType);
+        overflowEvent.setSourceNode(Identifiers.Server);
+        overflowEvent.setSourceName("Server");
+        overflowEvent.setTime(DateTime.now());
+        overflowEvent.setReceiveTime(DateTime.NULL_VALUE);
+        overflowEvent.setMessage(LocalizedText.english("Event Queue Overflow"));
+        overflowEvent.setSeverity(ushort(0));
+
+        return getSelectedFields(overflowEvent);
+    }
+
+    @Override
     public ExtensionObject getFilterResult() {
         return ExtensionObject.encode(filterResult);
     }
 
     @Override
     protected void installFilter(ExtensionObject filterXo) throws UaException {
-        // TODO Is there a "default" EventFilter like there is for DataChangeFilter?
-
         Object filterObject = filterXo != null ? filterXo.decode() : null;
 
         if (filterObject instanceof EventFilter) {

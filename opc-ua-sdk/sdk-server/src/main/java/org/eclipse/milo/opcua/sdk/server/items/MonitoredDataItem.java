@@ -87,7 +87,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
     }
 
     @Override
-    protected void enqueue(DataValue value) {
+    protected synchronized void enqueue(DataValue value) {
         if (queue.size() < queue.maxSize()) {
             queue.add(value);
         } else {
