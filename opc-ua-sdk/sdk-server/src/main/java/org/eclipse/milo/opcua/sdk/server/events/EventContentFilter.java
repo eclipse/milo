@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.events;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
@@ -35,7 +36,6 @@ import org.eclipse.milo.opcua.sdk.server.events.operators.Operators;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -99,63 +99,67 @@ public class EventContentFilter {
         List<DiagnosticInfo> diagnosticInfos = new ArrayList<>();
 
         for (SimpleAttributeOperand select : selectClauses) {
-            NodeId eventTypeId = select.getTypeDefinitionId();
+            try {
+                validateSimpleOperand(context, select);
 
-            if (eventTypeId == null || eventTypeId.equals(Identifiers.BaseEventType)) {
                 statusCodes.add(StatusCode.GOOD);
                 diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-            } else {
-                UaNode node = context.getServer().getNodeManager().get(eventTypeId);
-
-                if (node instanceof UaObjectTypeNode) {
-                    QualifiedName[] browsePath = select.getBrowsePath();
-
-                    if (browsePath != null) {
-                        Node relativeNode = getRelativeNode(context, node, browsePath);
-
-                        if (relativeNode != null) {
-                            UInteger attributeId = select.getAttributeId();
-
-                            ImmutableSet<AttributeId> validAttributes =
-                                AttributeId.getAttributes(node.getNodeClass());
-
-                            boolean validAttribute = AttributeId.from(attributeId)
-                                .map(validAttributes::contains)
-                                .orElse(false);
-
-                            if (validAttribute) {
-                                String indexRange = select.getIndexRange();
-                                int valueRank = ((VariableNode) node).getValueRank();
-
-                                if (valueRank != ValueRanks.Scalar || indexRange == null) {
-                                    statusCodes.add(StatusCode.GOOD);
-                                    diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-                                } else {
-                                    statusCodes.add(new StatusCode(StatusCodes.Bad_IndexRangeInvalid));
-                                    diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-                                }
-                            } else {
-                                statusCodes.add(new StatusCode(StatusCodes.Bad_TypeDefinitionInvalid));
-                                diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-                            }
-                        } else {
-                            statusCodes.add(new StatusCode(StatusCodes.Bad_NodeIdUnknown));
-                            diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-                        }
-                    } else {
-                        statusCodes.add(new StatusCode(StatusCodes.Bad_BrowseNameInvalid));
-                        diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-                    }
-                } else {
-                    statusCodes.add(new StatusCode(StatusCodes.Bad_TypeDefinitionInvalid));
-                    diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
-                }
+            } catch (ValidationException e) {
+                statusCodes.add(e.getStatusCode());
+                diagnosticInfos.add(e.getDiagnosticInfo());
             }
         }
 
         return new Tuple2<>(
             statusCodes.toArray(new StatusCode[0]),
             diagnosticInfos.toArray(new DiagnosticInfo[0]));
+    }
+
+    private static void validateSimpleOperand(
+        FilterContext context,
+        SimpleAttributeOperand select) throws ValidationException {
+
+        NodeId eventTypeId = select.getTypeDefinitionId();
+
+        if (eventTypeId != null && !eventTypeId.equals(Identifiers.BaseEventType)) {
+            UaNode node = context.getServer().getNodeManager().get(eventTypeId);
+
+            if (node == null || node.getNodeClass() != NodeClass.ObjectType) {
+                throw new ValidationException(StatusCodes.Bad_TypeDefinitionInvalid);
+            }
+
+            QualifiedName[] browsePath = select.getBrowsePath();
+
+            if (browsePath == null || Arrays.stream(browsePath).anyMatch(Objects::isNull)) {
+                throw new ValidationException(StatusCodes.Bad_BrowseNameInvalid);
+            }
+
+            Node relativeNode = getRelativeNode(context, node, browsePath);
+
+            if (relativeNode == null) {
+                throw new ValidationException(StatusCodes.Bad_NodeIdUnknown);
+            }
+
+            UInteger attributeId = select.getAttributeId();
+
+            ImmutableSet<AttributeId> validAttributes =
+                AttributeId.getAttributes(relativeNode.getNodeClass());
+
+            boolean validAttribute = AttributeId.from(attributeId)
+                .map(validAttributes::contains)
+                .orElse(false);
+
+            if (!validAttribute) {
+                throw new ValidationException(StatusCodes.Bad_AttributeIdInvalid);
+            }
+
+            String indexRange = select.getIndexRange();
+            int valueRank = ((VariableNode) relativeNode).getValueRank();
+
+            if (valueRank == ValueRanks.Scalar && indexRange != null) {
+                throw new ValidationException(StatusCodes.Bad_IndexRangeInvalid);
+            }
+        }
     }
 
     @Nullable
