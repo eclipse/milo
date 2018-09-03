@@ -64,10 +64,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.LiteralOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
 import org.jooq.lambda.tuple.Tuple2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class EventContentFilter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventContentFilter.class);
 
     public static EventFilterResult validate(FilterContext context, EventFilter filter) throws UaException {
         SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
@@ -105,6 +109,10 @@ public class EventContentFilter {
             } catch (ValidationException e) {
                 statusCodes.add(e.getStatusCode());
                 diagnosticInfos.add(e.getDiagnosticInfo());
+            } catch (Throwable t) {
+                LOGGER.error("Unexpected error validating operand: {}", select, t);
+                statusCodes.add(new StatusCode(StatusCodes.Bad_InternalError));
+                diagnosticInfos.add(DiagnosticInfo.NULL_VALUE);
             }
         }
 
@@ -152,10 +160,16 @@ public class EventContentFilter {
             }
 
             String indexRange = select.getIndexRange();
-            int valueRank = ((VariableNode) relativeNode).getValueRank();
+            if (indexRange != null) {
+                if (relativeNode instanceof VariableNode) {
+                    int valueRank = ((VariableNode) relativeNode).getValueRank();
 
-            if (valueRank == ValueRanks.Scalar && indexRange != null) {
-                throw new ValidationException(StatusCodes.Bad_IndexRangeInvalid);
+                    if (valueRank == ValueRanks.Scalar) {
+                        throw new ValidationException(StatusCodes.Bad_IndexRangeInvalid);
+                    }
+                } else {
+                    throw new ValidationException(StatusCodes.Bad_IndexRangeInvalid);
+                }
             }
         }
     }
@@ -236,10 +250,8 @@ public class EventContentFilter {
                         operandStatusCodes[i] = e.getStatusCode();
                     }
                 } else if (operand instanceof ElementOperand) {
-                    // TODO validate an ElementOperand?
                     operandStatusCodes[i] = StatusCode.GOOD;
                 } else if (operand instanceof LiteralOperand) {
-                    // TODO validate a LiteralOperand?
                     operandStatusCodes[i] = StatusCode.GOOD;
                 } else {
                     // includes AttributeOperand and any unknown/unhandle subclasses
