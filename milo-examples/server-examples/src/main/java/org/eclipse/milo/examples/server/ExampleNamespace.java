@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.examples.server.methods.GenerateEvent;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -184,7 +185,8 @@ public class ExampleNamespace implements Namespace {
             // Add the rest of the nodes
             addVariableNodes(folderNode);
 
-            addMethodNode(folderNode);
+            addSqrtMethod(folderNode);
+            addGenerateEventMethod(folderNode);
 
             addCustomDataTypeVariable(folderNode);
 
@@ -556,7 +558,7 @@ public class ExampleNamespace implements Namespace {
         dataAccessFolder.addOrganizes(node);
     }
 
-    private void addMethodNode(UaFolderNode folderNode) {
+    private void addSqrtMethod(UaFolderNode folderNode) {
         UaMethodNode methodNode = UaMethodNode.builder(server)
             .setNodeId(new NodeId(namespaceIndex, "HelloWorld/sqrt(x)"))
             .setBrowseName(new QualifiedName(namespaceIndex, "sqrt(x)"))
@@ -593,6 +595,46 @@ public class ExampleNamespace implements Namespace {
             ));
         } catch (Exception e) {
             logger.error("Error creating sqrt() method.", e);
+        }
+    }
+
+    private void addGenerateEventMethod(UaFolderNode folderNode) {
+        UaMethodNode methodNode = UaMethodNode.builder(server)
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/generateEvent(eventTypeId)"))
+            .setBrowseName(new QualifiedName(namespaceIndex, "generateEvent(eventTypeId)"))
+            .setDisplayName(new LocalizedText(null, "generateEvent(eventTypeId)"))
+            .setDescription(
+                LocalizedText.english("Generate an Event with the TypeDefinition indicated by eventTypeId."))
+            .build();
+
+
+        try {
+            AnnotationBasedInvocationHandler invocationHandler =
+                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new GenerateEvent(server));
+
+            methodNode.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+            methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+            methodNode.setInvocationHandler(invocationHandler);
+
+            server.getNodeManager().addNode(methodNode);
+
+            folderNode.addReference(new Reference(
+                folderNode.getNodeId(),
+                Identifiers.HasComponent,
+                methodNode.getNodeId().expanded(),
+                methodNode.getNodeClass(),
+                true
+            ));
+
+            methodNode.addReference(new Reference(
+                methodNode.getNodeId(),
+                Identifiers.HasComponent,
+                folderNode.getNodeId().expanded(),
+                folderNode.getNodeClass(),
+                false
+            ));
+        } catch (Exception e) {
+            logger.error("Error creating generateEvent() method.", e);
         }
     }
 

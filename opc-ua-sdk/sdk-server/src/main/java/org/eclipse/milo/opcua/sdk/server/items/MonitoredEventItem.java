@@ -107,7 +107,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
             );
 
             if (matches) {
-                enqueue(getSelectedFields(eventNode));
+                enqueue(selectEventFields(eventNode));
             }
         } catch (UaException e) {
             logger.error("Filter evaluation failed: {}", e.getMessage(), e);
@@ -116,7 +116,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
 
     @Nonnull
-    private Variant[] getSelectedFields(BaseEventNode eventNode) {
+    private Variant[] selectEventFields(BaseEventNode eventNode) {
         SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
 
         if (selectClauses != null) {
@@ -193,7 +193,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
         overflowEvent.setMessage(LocalizedText.english("Event Queue Overflow"));
         overflowEvent.setSeverity(ushort(0));
 
-        return getSelectedFields(overflowEvent);
+        return selectEventFields(overflowEvent);
     }
 
     @Override
