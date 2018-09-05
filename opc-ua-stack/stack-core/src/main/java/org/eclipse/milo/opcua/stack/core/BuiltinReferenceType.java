@@ -13,9 +13,11 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
@@ -226,6 +228,20 @@ public enum BuiltinReferenceType implements ReferenceType {
     @Override
     public Optional<NodeId> getSuperTypeId() {
         return Optional.ofNullable(superTypeId);
+    }
+
+    private static final ImmutableMap<NodeId, ReferenceType> BUILTIN_REFERENCE_MAP;
+
+    static {
+        ImmutableMap.Builder<NodeId, ReferenceType> builder = ImmutableMap.builder();
+        for (ReferenceType referenceType : BuiltinReferenceType.values()) {
+            builder.put(referenceType.getNodeId(), referenceType);
+        }
+        BUILTIN_REFERENCE_MAP = builder.build();
+    }
+
+    public static Map<NodeId, ReferenceType> getReferenceMap() {
+        return BUILTIN_REFERENCE_MAP;
     }
 
 }

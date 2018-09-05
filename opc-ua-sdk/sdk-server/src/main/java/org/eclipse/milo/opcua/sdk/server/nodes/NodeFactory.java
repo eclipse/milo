@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
+@Deprecated
 public class NodeFactory {
 
     private final UaNodeManager nodeManager;

@@ -13,25 +13,25 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 
 public class UaNodeLoader {
 
-    private final OpcUaServer server;
+    private final UaNodeContext context;
 
-    public UaNodeLoader(OpcUaServer server) {
-        this.server = server;
+    public UaNodeLoader(UaNodeContext context) {
+        this.context = context;
     }
 
     public void loadNodes() throws Exception {
-        new UaDataTypeLoader(server).buildNodes();
-        new UaMethodLoader(server).buildNodes();
-        new UaObjectLoader(server).buildNodes();
-        new UaObjectTypeLoader(server).buildNodes();
-        new UaReferenceTypeLoader(server).buildNodes();
-        new UaVariableLoader(server).buildNodes();
-        new UaVariableTypeLoader(server).buildNodes();
-        new UaViewLoader(server).buildNodes();
+        new UaDataTypeLoader(context).buildNodes();
+        new UaMethodLoader(context).buildNodes();
+        new UaObjectLoader(context).buildNodes();
+        new UaObjectTypeLoader(context).buildNodes();
+        new UaReferenceTypeLoader(context).buildNodes();
+        new UaVariableLoader(context).buildNodes();
+        new UaVariableTypeLoader(context).buildNodes();
+        new UaViewLoader(context).buildNodes();
     }
 
 }
