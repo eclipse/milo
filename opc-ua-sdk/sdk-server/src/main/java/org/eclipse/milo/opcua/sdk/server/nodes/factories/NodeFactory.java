@@ -227,7 +227,7 @@ public class NodeFactory {
 
     private UaObjectNode instanceFromTypeDefinition(
         NodeId nodeId,
-        ObjectTypeNode typeDefinitionNode) throws UaException {
+        ObjectTypeNode typeDefinitionNode) {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
@@ -249,7 +249,7 @@ public class NodeFactory {
 
     private UaVariableNode instanceFromTypeDefinition(
         NodeId nodeId,
-        VariableTypeNode typeDefinitionNode) throws UaException {
+        VariableTypeNode typeDefinitionNode) {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
