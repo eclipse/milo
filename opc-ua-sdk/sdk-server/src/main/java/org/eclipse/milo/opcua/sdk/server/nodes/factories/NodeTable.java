@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2018 Kevin Herron
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ *   http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
+ */
+
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
 import java.util.LinkedHashMap;
@@ -23,21 +36,5 @@ class NodeTable {
 
         return mergedNodeTable;
     }
-
-//        @Override
-//        public String toString() {
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("--- NodeTable ---").append("\n");
-//
-//            rows.sort(Comparator.comparing(row -> row.browsePath.browseName.toParseableString()));
-//
-//            rows.forEach(row -> {
-//                sb.append(String.format("%-25s", row.browsePath));
-//                sb.append(row.nodeId.toParseableString());
-//                sb.append("\n");
-//            });
-//
-//            return sb.toString();
-//        }
 
 }

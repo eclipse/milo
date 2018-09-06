@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2018 Kevin Herron
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ *   http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
+ */
+
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
 import java.util.List;
@@ -77,7 +90,8 @@ public class InstanceDeclarationHierarchy {
                 .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()
                 .flatMap(r -> r.getTargetNodeId().local())
-                .map(parentTypeId -> InstanceDeclarationHierarchy.create(nodeManager, parentTypeId, includeOptionalNodes));
+                .map(parentTypeId -> InstanceDeclarationHierarchy
+                    .create(nodeManager, parentTypeId, includeOptionalNodes));
 
             final InstanceDeclarationHierarchy idh = buildHierarchyForType(typeDefinitionId);
 
@@ -115,7 +129,8 @@ public class InstanceDeclarationHierarchy {
 
                         node.getReferences().stream()
                             .filter(r -> r.subtypeOf(Identifiers.NonHierarchicalReferences))
-                            .forEach(r -> referenceTable.addReference(browsePath, r.getReferenceTypeId(), r.getTargetNodeId()));
+                            .forEach(r -> referenceTable
+                                .addReference(browsePath, r.getReferenceTypeId(), r.getTargetNodeId()));
 
                         addModeledNodes(node.getNodeId(), browsePath);
                     }

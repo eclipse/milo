@@ -1,3 +1,16 @@
+/*
+ * Copyright (c) 2018 Kevin Herron
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ *
+ * The Eclipse Public License is available at
+ *   http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *   http://www.eclipse.org/org/documents/edl-v10.html.
+ */
+
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
 import java.util.ArrayList;
@@ -92,28 +105,5 @@ class ReferenceTable {
             return Objects.hash(targetNodeId, targetPath);
         }
     }
-
-//        @Override
-//        public String toString() {
-//            StringBuilder sb = new StringBuilder();
-//            sb.append("--- ReferenceTable ---").append("\n");
-//
-//            rows.sort(Comparator.comparing(row -> row.sourcePath.browseName.toParseableString()));
-//
-//            rows.forEach(row -> {
-//                sb.append(String.format("%-25s", row.sourcePath));
-//                sb.append(String.format("%-20s", row.referenceTypeId.toParseableString()));
-//
-//                if (row.targetNodeId != null) {
-//                    sb.append(String.format("%s", row.targetNodeId.toParseableString()));
-//                } else {
-//                    sb.append(String.format("%s", row.targetPath));
-//                }
-//
-//                sb.append("\n");
-//            });
-//
-//            return sb.toString();
-//        }
 
 }
