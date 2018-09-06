@@ -231,11 +231,10 @@ public class NodeFactory {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
+        // Use a specialized instance if one is registered, otherwise fallback to UaObjectNode.
         ObjectTypeManager.ObjectNodeConstructor ctor = objectTypeManager
             .getNodeFactory(typeDefinitionId)
-            .orElseThrow(() -> new UaException(
-                StatusCodes.Bad_TypeDefinitionInvalid,
-                "no NodeFactory for type definition: " + typeDefinitionId));
+            .orElse(UaObjectNode::new);
 
         return ctor.apply(
             context,
@@ -254,11 +253,10 @@ public class NodeFactory {
 
         NodeId typeDefinitionId = typeDefinitionNode.getNodeId();
 
+        // Use a specialized instance if one is registered, otherwise fallback to UaVariableNode.
         VariableTypeManager.VariableNodeConstructor ctor = variableTypeManager
             .getNodeFactory(typeDefinitionId)
-            .orElseThrow(() -> new UaException(
-                StatusCodes.Bad_TypeDefinitionInvalid,
-                "no NodeFactory for type definition: " + typeDefinitionId));
+            .orElse(UaVariableNode::new);
 
         return ctor.apply(
             context,
