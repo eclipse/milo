@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
@@ -75,6 +76,45 @@ public final class QualifiedName {
         return !isNull();
     }
 
+    /**
+     * Re-index this {@link QualifiedName} from its current namespace index to the index for {@code namespaceUri}.
+     * <p>
+     * If the target namespace URI is not present in the namespace table this {@link QualifiedName} is returned.
+     *
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @param namespaceUri   the target namespace URI.
+     * @return a new {@link QualifiedName} in the namespace index indicated by {@code namespaceUri}.
+     */
+    public QualifiedName reindex(NamespaceTable namespaceTable, String namespaceUri) {
+        UShort namespaceIndex = namespaceTable.getIndex(namespaceUri);
+
+        if (namespaceIndex != null && !namespaceIndex.equals(getNamespaceIndex())) {
+            return withNamespaceIndex(namespaceIndex);
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * Return a new {@link QualifiedName} with {@code name}.
+     *
+     * @param name the new name.
+     * @return a new {@link QualifiedName} with {@code name}.
+     */
+    public QualifiedName withName(@Nullable String name) {
+        return new QualifiedName(namespaceIndex, name);
+    }
+
+    /**
+     * Return a new {@link QualifiedName} with {@code namespaceIndex}.
+     *
+     * @param namespaceIndex thew new namespace index.
+     * @return a new {@link QualifiedName} with {@code namespaceIndex}.
+     */
+    public QualifiedName withNamespaceIndex(@Nonnull UShort namespaceIndex) {
+        return new QualifiedName(namespaceIndex, name);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -122,5 +162,4 @@ public final class QualifiedName {
 
         return new QualifiedName(ushort(namespaceIndex), name);
     }
-
 }

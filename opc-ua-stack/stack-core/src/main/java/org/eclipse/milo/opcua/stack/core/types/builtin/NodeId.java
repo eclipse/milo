@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 import javax.xml.bind.DatatypeConverter;
 
 import com.google.common.base.MoreObjects;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -143,6 +144,14 @@ public final class NodeId {
         this.identifier = identifier;
     }
 
+    private NodeId(@Nonnull UShort namespaceIndex, @Nonnull Object identifier) {
+        checkNotNull(namespaceIndex);
+        checkNotNull(identifier);
+
+        this.namespaceIndex = namespaceIndex;
+        this.identifier = identifier;
+    }
+
     public UShort getNamespaceIndex() {
         return namespaceIndex;
     }
@@ -177,6 +186,75 @@ public final class NodeId {
 
     public boolean isNotNull() {
         return !isNull();
+    }
+
+    /**
+     * Re-index this {@link NodeId} from its current namespace index to the index for {@code namespaceUri}.
+     * <p>
+     * If the target namespace URI is not present in the namespace table this {@link NodeId} is returned.
+     *
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @param namespaceUri   the target namespace URI.
+     * @return a new {@link NodeId} in the namespace index indicated by {@code namespaceUri}.
+     */
+    public NodeId reindex(NamespaceTable namespaceTable, String namespaceUri) {
+        UShort namespaceIndex = namespaceTable.getIndex(namespaceUri);
+
+        if (namespaceIndex != null && !namespaceIndex.equals(getNamespaceIndex())) {
+            return withNamespaceIndex(namespaceIndex);
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * Return a new {@link NodeId} with {@code id}.
+     *
+     * @param id the new identifier.
+     * @return a new {@link NodeId} with {@code id}.
+     */
+    public NodeId withId(UInteger id) {
+        return new NodeId(namespaceIndex, id);
+    }
+
+    /**
+     * Return a new {@link NodeId} with {@code id}.
+     *
+     * @param id the new identifier.
+     * @return a new {@link NodeId} with {@code id}.
+     */
+    public NodeId withId(String id) {
+        return new NodeId(namespaceIndex, id);
+    }
+
+    /**
+     * Return a new {@link NodeId} with {@code id}.
+     *
+     * @param id the new identifier.
+     * @return a new {@link NodeId} with {@code id}.
+     */
+    public NodeId withId(UUID id) {
+        return new NodeId(namespaceIndex, id);
+    }
+
+    /**
+     * Return a new {@link NodeId} with {@code id}.
+     *
+     * @param id the new identifier.
+     * @return a new {@link NodeId} with {@code id}.
+     */
+    public NodeId withId(ByteString id) {
+        return new NodeId(namespaceIndex, id);
+    }
+
+    /**
+     * Return a new {@link NodeId} with {@code namespaceIndex}.
+     *
+     * @param namespaceIndex the new namespace index.
+     * @return a new {@link NodeId} with {@code namespaceIndex}.
+     */
+    public NodeId withNamespaceIndex(UShort namespaceIndex) {
+        return new NodeId(namespaceIndex, this.identifier);
     }
 
     @Override

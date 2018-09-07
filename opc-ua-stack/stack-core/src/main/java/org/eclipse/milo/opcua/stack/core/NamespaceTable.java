@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -59,6 +60,7 @@ public class NamespaceTable {
      * @param uri the namespace URI to look up.
      * @return the index of the namespace URI, or {@code null} if it is not present.
      */
+    @Nullable
     public synchronized UShort getIndex(String uri) {
         return uriTable.inverse().getOrDefault(uri, null);
     }
