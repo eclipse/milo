@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
@@ -108,8 +109,21 @@ public class NodeFactory {
                 );
 
                 if (node instanceof MethodNode) {
-                    // TODO Make a copy and set the same MethodInvocationHandler the declaration has?
+                    MethodNode declaration = (MethodNode) node;
 
+                    UaMethodNode instance = new UaMethodNode(
+                        context,
+                        instanceNodeId,
+                        declaration.getBrowseName(),
+                        declaration.getDisplayName(),
+                        declaration.getDescription(),
+                        declaration.getWriteMask(),
+                        declaration.getUserWriteMask(),
+                        declaration.isExecutable(),
+                        declaration.isUserExecutable()
+                    );
+
+                    nodes.put(browsePath, instance);
                 } else if (node instanceof ObjectNode) {
                     ObjectNode declaration = (ObjectNode) node;
 
