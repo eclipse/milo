@@ -17,13 +17,40 @@ import java.util.Objects;
 
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
-class BrowsePath {
+public class BrowsePath {
     BrowsePath parent;
     QualifiedName browseName;
 
-    public BrowsePath(BrowsePath parent, QualifiedName browseName) {
+    BrowsePath(BrowsePath parent, QualifiedName browseName) {
         this.parent = parent;
         this.browseName = browseName;
+    }
+
+    /**
+     * Joins the components of this browse path with "/" as the separator.
+     *
+     * @return a String with the components of this browse path joined with "/" as the separator.
+     */
+    public String join() {
+        return join("/");
+    }
+
+    /**
+     * Join the components of this browse path with {@code separator}.
+     *
+     * @param separator the separator to join with.
+     * @return a String with the components of this browse path joined by {@code separator}.
+     */
+    public String join(String separator) {
+        if (parent == null) {
+            return "";
+        } else {
+            String s = parent.join();
+            if (!s.endsWith(separator)) {
+                s += separator;
+            }
+            return s + browseName.getName();
+        }
     }
 
     @Override
@@ -42,12 +69,7 @@ class BrowsePath {
 
     @Override
     public String toString() {
-        if (parent == null) {
-            return "/";
-        } else {
-            String s = parent.toString();
-            if (!s.endsWith("/")) s += "/";
-            return s + browseName.toParseableString();
-        }
+        return join();
     }
+
 }

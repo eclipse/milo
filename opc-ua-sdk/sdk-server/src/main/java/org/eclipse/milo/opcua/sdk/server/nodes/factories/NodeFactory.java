@@ -16,7 +16,6 @@ package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
@@ -69,14 +68,11 @@ public class NodeFactory {
                 "unknown type definition: " + typeDefinitionId);
         }
 
-        InstanceDeclarationHierarchy instanceDeclarationHierarchy =
-            InstanceDeclarationHierarchy.create(nodeManager, typeDefinitionId, includeOptionalNodes);
+        InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy
+            .create(nodeManager, typeDefinitionId, includeOptionalNodes);
 
-        NodeTable nodeTable =
-            instanceDeclarationHierarchy.getNodeTable();
-
-        ReferenceTable referenceTable =
-            instanceDeclarationHierarchy.getReferenceTable();
+        NodeTable nodeTable = idh.getNodeTable();
+        ReferenceTable referenceTable = idh.getReferenceTable();
 
         Map<BrowsePath, UaNode> nodes = new HashMap<>();
 
@@ -102,11 +98,7 @@ public class NodeFactory {
                 }
             } else {
                 // Non-root Nodes are all instance declarations
-                // TODO nodeId + ...
-                NodeId instanceNodeId = new NodeId(
-                    rootNodeId.getNamespaceIndex(),
-                    UUID.randomUUID()
-                );
+                NodeId instanceNodeId = instanceNodeId(rootNodeId, browsePath);
 
                 if (node instanceof MethodNode) {
                     MethodNode declaration = (MethodNode) node;
@@ -127,9 +119,10 @@ public class NodeFactory {
                 } else if (node instanceof ObjectNode) {
                     ObjectNode declaration = (ObjectNode) node;
 
-                    ExpandedNodeId targetNodeId = getTypeDefinition(referenceTable, browsePath);
+                    ExpandedNodeId instanceTypeDefinitionId =
+                        getTypeDefinition(referenceTable, browsePath);
 
-                    UaNode typeDefinitionNode = nodeManager.get(targetNodeId);
+                    UaNode typeDefinitionNode = nodeManager.get(instanceTypeDefinitionId);
 
                     if (typeDefinitionNode instanceof ObjectTypeNode) {
                         UaObjectNode instance = instanceFromTypeDefinition(
@@ -146,14 +139,15 @@ public class NodeFactory {
                     } else {
                         throw new UaException(
                             StatusCodes.Bad_InternalError,
-                            "expected type definition for " + targetNodeId);
+                            "expected type definition for " + instanceTypeDefinitionId);
                     }
                 } else if (node instanceof VariableNode) {
                     VariableNode declaration = (VariableNode) node;
 
-                    ExpandedNodeId targetNodeId = getTypeDefinition(referenceTable, browsePath);
+                    ExpandedNodeId instanceTypeDefinitionId =
+                        getTypeDefinition(referenceTable, browsePath);
 
-                    UaNode typeDefinitionNode = nodeManager.get(targetNodeId);
+                    UaNode typeDefinitionNode = nodeManager.get(instanceTypeDefinitionId);
 
                     if (typeDefinitionNode instanceof VariableTypeNode) {
                         UaVariableNode instance = instanceFromTypeDefinition(
@@ -173,7 +167,7 @@ public class NodeFactory {
                     } else {
                         throw new UaException(
                             StatusCodes.Bad_InternalError,
-                            "expected type definition for " + targetNodeId);
+                            "expected type definition for " + instanceTypeDefinitionId);
                     }
                 } else {
                     throw new UaException(
@@ -229,17 +223,22 @@ public class NodeFactory {
         return nodeManager.get(rootNodeId);
     }
 
-    private static ExpandedNodeId getTypeDefinition(ReferenceTable referenceTable, BrowsePath browsePath) {
-        return referenceTable
-            .getReferences(browsePath)
-            .stream()
-            .filter(t -> t.v2.equals(Identifiers.HasTypeDefinition))
-            .map(t -> t.v3.targetNodeId)
-            .findFirst()
-            .orElse(ExpandedNodeId.NULL_VALUE);
+    /**
+     * Return an appropriate {@link NodeId} for the instance being created.
+     *
+     * @param rootNodeId the root {@link NodeId}.
+     * @param browsePath the relative {@link BrowsePath} to the instance being created.
+     * @return a {@link NodeId} for the instance being created.
+     */
+    protected NodeId instanceNodeId(NodeId rootNodeId, BrowsePath browsePath) {
+        Object rootIdentifier = rootNodeId.getIdentifier();
+
+        String instanceIdentifier = String.format("%s%s", rootIdentifier, browsePath.join());
+
+        return new NodeId(rootNodeId.getNamespaceIndex(), instanceIdentifier);
     }
 
-    private UaObjectNode instanceFromTypeDefinition(
+    protected UaObjectNode instanceFromTypeDefinition(
         NodeId nodeId,
         ObjectTypeNode typeDefinitionNode) {
 
@@ -261,7 +260,7 @@ public class NodeFactory {
         );
     }
 
-    private UaVariableNode instanceFromTypeDefinition(
+    protected UaVariableNode instanceFromTypeDefinition(
         NodeId nodeId,
         VariableTypeNode typeDefinitionNode) {
 
@@ -281,6 +280,16 @@ public class NodeFactory {
             typeDefinitionNode.getWriteMask(),
             typeDefinitionNode.getUserWriteMask()
         );
+    }
+
+    private static ExpandedNodeId getTypeDefinition(ReferenceTable referenceTable, BrowsePath browsePath) {
+        return referenceTable
+            .getReferences(browsePath)
+            .stream()
+            .filter(t -> t.v2.equals(Identifiers.HasTypeDefinition))
+            .map(t -> t.v3.targetNodeId)
+            .findFirst()
+            .orElse(ExpandedNodeId.NULL_VALUE);
     }
 
 }
