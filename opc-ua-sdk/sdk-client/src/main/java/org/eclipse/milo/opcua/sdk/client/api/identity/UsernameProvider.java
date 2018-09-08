@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.client.api.identity;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -28,6 +29,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -65,7 +67,7 @@ public class UsernameProvider implements IdentityProvider {
      * @param password the password to authenticate with.
      */
     public UsernameProvider(String username, String password) {
-        this(username, password, null);
+        this(username, password, new InsecureCertificateValidator());
     }
 
     /**
@@ -136,7 +138,7 @@ public class UsernameProvider implements IdentityProvider {
             logger.warn("Error parsing SecurityPolicy for uri={}, falling back to no security.", securityPolicyUri);
         }
 
-        byte[] passwordBytes = password.getBytes("UTF-8");
+        byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
         byte[] nonceBytes = Optional.ofNullable(serverNonce.bytes()).orElse(new byte[0]);
 
         ByteBuf buffer = Unpooled.buffer();
