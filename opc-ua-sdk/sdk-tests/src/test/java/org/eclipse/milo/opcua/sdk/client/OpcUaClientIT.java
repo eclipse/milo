@@ -55,6 +55,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -451,7 +452,7 @@ public class OpcUaClientIT {
             .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
             .setRequestTimeout(uint(60000))
-            .setIdentityProvider(new UsernameProvider("user", "password"))
+            .setIdentityProvider(new UsernameProvider("user", "password", new InsecureCertificateValidator()))
             .build();
 
         OpcUaClient client = new OpcUaClient(clientConfig);
@@ -490,7 +491,7 @@ public class OpcUaClientIT {
             .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
             .setRequestTimeout(uint(60000))
-            .setIdentityProvider(new UsernameProvider(user, pass))
+            .setIdentityProvider(new UsernameProvider(user, pass, new InsecureCertificateValidator()))
             .build();
 
         OpcUaClient client = new OpcUaClient(clientConfig);
@@ -520,7 +521,7 @@ public class OpcUaClientIT {
             .setKeyPair(loader.getClientKeyPair())
             .setEndpoint(endpoint)
             .setRequestTimeout(uint(60000))
-            .setIdentityProvider(new UsernameProvider("user", "password"))
+            .setIdentityProvider(new UsernameProvider("user", "password", new InsecureCertificateValidator()))
             .build();
 
         OpcUaClient client = new OpcUaClient(clientConfig);

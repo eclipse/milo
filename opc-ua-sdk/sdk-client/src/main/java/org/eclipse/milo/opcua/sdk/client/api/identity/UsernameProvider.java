@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.client.api.identity;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.List;
@@ -25,8 +26,11 @@ import javax.crypto.Cipher;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -52,36 +56,54 @@ public class UsernameProvider implements IdentityProvider {
 
     private final String username;
     private final String password;
+    private final CertificateValidator certificateValidator;
     private final Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser;
 
+
     /**
-     * Construct a {@link UsernameProvider} that selects the first available {@link UserTokenPolicy} with
-     * {@link UserTokenType#UserName}.
+     * Construct a {@link UsernameProvider} that does not validate the remote certificate and selects the first
+     * available {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
      *
      * @param username the username to authenticate with.
      * @param password the password to authenticate with.
      */
     public UsernameProvider(String username, String password) {
-        this(username, password, ps -> ps.get(0));
+        this(username, password, new InsecureCertificateValidator());
     }
 
     /**
-     * Construct a {@link UsernameProvider} that selects a {@link UserTokenPolicy} using {@code policyChooser}.
+     * Construct a {@link UsernameProvider} that validates the remote certificate using {@code certificateValidator}
+     * and selects the first available {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
+     *
+     * @param username             the username to authenticate with.
+     * @param password             the password to authenticate with.
+     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
+     */
+    public UsernameProvider(String username, String password, CertificateValidator certificateValidator) {
+        this(username, password, certificateValidator, ps -> ps.get(0));
+    }
+
+    /**
+     * Construct a {@link UsernameProvider} that validates the remote certificate using {@code certificateValidator}
+     * and selects ta {@link UserTokenPolicy} using {@code policyChooser}.
      * <p>
      * Useful if the server might return more than one {@link UserTokenPolicy} with {@link UserTokenType#UserName}.
      *
-     * @param username      the username to authenticate with.
-     * @param password      the password to authenticate with.
-     * @param policyChooser a function that selects a {@link UserTokenPolicy} to use. The policy list is guaranteed to
-     *                      be non-null and non-empty.
+     * @param username             the username to authenticate with.
+     * @param password             the password to authenticate with.
+     * @param certificateValidator the {@link CertificateValidator} used to validate the remote certificate.
+     * @param policyChooser        a function that selects a {@link UserTokenPolicy} to use. The policy list is
+     *                             guaranteed to be non-null and non-empty.
      */
     public UsernameProvider(
         String username,
         String password,
+        CertificateValidator certificateValidator,
         Function<List<UserTokenPolicy>, UserTokenPolicy> policyChooser) {
 
         this.username = username;
         this.password = password;
+        this.certificateValidator = certificateValidator;
         this.policyChooser = policyChooser;
     }
 
@@ -117,7 +139,7 @@ public class UsernameProvider implements IdentityProvider {
             logger.warn("Error parsing SecurityPolicy for uri={}, falling back to no security.", securityPolicyUri);
         }
 
-        byte[] passwordBytes = password.getBytes("UTF-8");
+        byte[] passwordBytes = password.getBytes(StandardCharsets.UTF_8);
         byte[] nonceBytes = Optional.ofNullable(serverNonce.bytes()).orElse(new byte[0]);
 
         ByteBuf buffer = Unpooled.buffer();
@@ -138,7 +160,18 @@ public class UsernameProvider implements IdentityProvider {
                         "server did not provide a certificate in endpoint");
             }
 
-            X509Certificate certificate = CertificateUtil.decodeCertificate(bs.bytes());
+            List<X509Certificate> certificateChain = CertificateUtil.decodeCertificates(bs.bytes());
+            X509Certificate certificate = certificateChain.get(0);
+
+            if (SecurityPolicy.None.getSecurityPolicyUri().equals(endpoint.getSecurityPolicyUri()) ||
+                !Stack.UA_TCP_BINARY_TRANSPORT_URI.equals(endpoint.getTransportProfileUri())) {
+
+                // If the SecurityPolicy is None or if this is an HTTP(S) connection the certificate used to encrypt
+                // the username and password must be trusted. Otherwise, if it's a secure connection, the certificate
+                // will have already been validated and verified when the secure channel or session was created.
+                certificateValidator.validate(certificate);
+                certificateValidator.verifyTrustChain(certificateChain);
+            }
 
             int plainTextBlockSize = SecureChannel.getAsymmetricPlainTextBlockSize(
                 certificate,
@@ -208,7 +241,8 @@ public class UsernameProvider implements IdentityProvider {
             '}';
     }
 
-    public static UsernameProvider of(String username, String password) {
-        return new UsernameProvider(username, password);
+    public static UsernameProvider of(String username, String password, CertificateValidator certificateValidator) {
+        return new UsernameProvider(username, password, certificateValidator);
     }
+
 }
