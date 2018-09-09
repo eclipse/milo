@@ -219,16 +219,21 @@ public abstract class UaNode implements UaServerNode {
         c.forEach(this::removeReference);
     }
 
-    public <T> Optional<T> getProperty(Property<T> property) {
-        return getProperty(property.getBrowseName());
-    }
-
     public <T> Optional<T> getProperty(QualifiedProperty<T> property) {
-        return getProperty(property.getBrowseName());
-    }
+        String namespaceUri = property.getNamespaceUri();
 
-    public <T> Optional<T> getProperty(String browseName) {
-        return getProperty(new QualifiedName(getNodeId().getNamespaceIndex(), browseName));
+        UShort namespaceIndex = context.getNamespaceManager().getNamespaceTable().getIndex(namespaceUri);
+
+        if (namespaceIndex != null) {
+            QualifiedName browseName = new QualifiedName(
+                namespaceIndex,
+                property.getBrowseName()
+            );
+
+            return getProperty(browseName);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public <T> Optional<T> getProperty(QualifiedName browseName) {

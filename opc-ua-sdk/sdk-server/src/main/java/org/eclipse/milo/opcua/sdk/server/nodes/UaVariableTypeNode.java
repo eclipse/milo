@@ -13,9 +13,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -26,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
 
@@ -119,6 +121,7 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
     }
 
+    @Nullable
     @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
@@ -128,8 +131,9 @@ public class UaVariableTypeNode extends UaNode implements VariableTypeNode {
         setProperty(NodeVersion, nodeVersion);
     }
 
-    public static final Property<String> NodeVersion = new BasicProperty<>(
-        new QualifiedName(0, "NodeVersion"),
+    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "NodeVersion",
         Identifiers.String,
         ValueRanks.Scalar,
         String.class
