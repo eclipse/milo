@@ -62,7 +62,13 @@ public class NodeFactory {
         NodeId typeDefinitionId,
         boolean includeOptionalNodes) throws UaException {
 
-        return createNode(rootNodeId, typeDefinitionId, includeOptionalNodes, new InstanceListener() {});
+        Tree<UaNode> nodeTree = createNodeTree(
+            rootNodeId,
+            typeDefinitionId,
+            includeOptionalNodes
+        );
+
+        return nodeTree.getValue();
     }
 
     public UaNode createNode(
