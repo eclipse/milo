@@ -82,7 +82,6 @@ public class NodeFactoryTest {
         );
     }
 
-
     @Test
     public void testCreateAnalogItemType() throws Exception {
         AnalogItemNode analogItem = (AnalogItemNode) nodeFactory.createNode(

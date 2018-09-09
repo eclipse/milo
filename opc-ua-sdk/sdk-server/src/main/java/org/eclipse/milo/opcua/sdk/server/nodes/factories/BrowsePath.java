@@ -18,6 +18,7 @@ import java.util.Objects;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class BrowsePath {
+
     BrowsePath parent;
     QualifiedName browseName;
 

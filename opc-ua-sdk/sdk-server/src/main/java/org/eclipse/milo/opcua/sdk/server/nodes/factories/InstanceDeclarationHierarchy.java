@@ -31,7 +31,11 @@ public class InstanceDeclarationHierarchy {
     private final NodeTable nodeTable;
     private final ReferenceTable referenceTable;
 
-    private InstanceDeclarationHierarchy(NodeId typeId, NodeTable nodeTable, ReferenceTable referenceTable) {
+    private InstanceDeclarationHierarchy(
+        NodeId typeId,
+        NodeTable nodeTable,
+        ReferenceTable referenceTable) {
+
         this.typeId = typeId;
         this.nodeTable = nodeTable;
         this.referenceTable = referenceTable;
@@ -99,12 +103,15 @@ public class InstanceDeclarationHierarchy {
         }
 
         private InstanceDeclarationHierarchy buildHierarchyForType(NodeId typeDefinitionId) {
-            BrowsePath browsePrefix = new BrowsePath(null, new QualifiedName(0, "/"));
+            BrowsePath browsePath = new BrowsePath(
+                null,
+                new QualifiedName(typeDefinitionId.getNamespaceIndex(), "/")
+            );
 
-            nodeTable.addNode(browsePrefix, typeDefinitionId);
-            referenceTable.addReference(browsePrefix, Identifiers.HasTypeDefinition, typeDefinitionId.expanded());
+            nodeTable.addNode(browsePath, typeDefinitionId);
+            referenceTable.addReference(browsePath, Identifiers.HasTypeDefinition, typeDefinitionId.expanded());
 
-            addModeledNodes(typeDefinitionId, browsePrefix);
+            addModeledNodes(typeDefinitionId, browsePath);
 
             return new InstanceDeclarationHierarchy(typeDefinitionId, nodeTable, referenceTable);
         }

@@ -38,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.Tree;
 import org.jooq.lambda.tuple.Tuple3;
 
 public class NodeFactory {
@@ -69,6 +70,22 @@ public class NodeFactory {
         NodeId typeDefinitionId,
         boolean includeOptionalNodes,
         InstanceListener instanceListener) throws UaException {
+
+        Tree<UaNode> nodeTree = createNodeTree(
+            rootNodeId,
+            typeDefinitionId,
+            includeOptionalNodes
+        );
+
+        notifyInstanceListener(nodeTree, instanceListener);
+
+        return nodeTree.getValue();
+    }
+
+    public Tree<UaNode> createNodeTree(
+        NodeId rootNodeId,
+        NodeId typeDefinitionId,
+        boolean includeOptionalNodes) throws UaException {
 
         UaNodeManager nodeManager = context.getNodeManager();
 
@@ -230,21 +247,11 @@ public class NodeFactory {
             nodeManager.addNode(node);
         });
 
-        notifyInstanceListener(nodes, instanceListener);
-
-        return nodeManager.get(rootNodeId);
+        return nodeTable.getBrowsePathTree().map(nodes::get);
     }
 
-    protected void notifyInstanceListener(Map<BrowsePath, UaNode> nodes, InstanceListener instanceListener) {
-        nodes.forEach((browsePath, node) -> {
-            UaNode parentNode = null;
-
-            BrowsePath parentBrowsePath = browsePath.parent;
-
-            if (parentBrowsePath != null) {
-                parentNode = nodes.get(parentBrowsePath);
-            }
-
+    protected void notifyInstanceListener(Tree<UaNode> nodeTree, InstanceListener instanceListener) {
+        nodeTree.traverse((node, parentNode) -> {
             if (parentNode instanceof UaObjectNode && node instanceof UaMethodNode) {
                 UaMethodNode methodNode = (UaMethodNode) node;
 
