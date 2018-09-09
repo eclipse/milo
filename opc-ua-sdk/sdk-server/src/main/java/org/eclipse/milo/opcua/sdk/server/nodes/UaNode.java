@@ -230,20 +230,20 @@ public abstract class UaNode implements UaServerNode {
                 property.getBrowseName()
             );
 
-            return getProperty(browseName);
+            try {
+                return getProperty(browseName)
+                    .map(property.getJavaType()::cast);
+            } catch (Throwable t) {
+                return Optional.empty();
+            }
         } else {
             return Optional.empty();
         }
     }
 
-    public <T> Optional<T> getProperty(QualifiedName browseName) {
-        Node node = getPropertyNode(browseName).orElse(null);
-
-        try {
-            return Optional.ofNullable((T) ((VariableNode) node).getValue().getValue().getValue());
-        } catch (Throwable t) {
-            return Optional.empty();
-        }
+    public Optional<Object> getProperty(QualifiedName browseName) {
+        return getPropertyNode(browseName)
+            .map(node -> node.getValue().getValue().getValue());
     }
 
     public <T> void setProperty(Property<T> property, T value) {
