@@ -19,9 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
@@ -46,18 +44,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public abstract class UaNode implements UaServerNode {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UaNode.class);
-
     private static final AttributeDelegate DEFAULT_ATTRIBUTE_DELEGATE = AttributeDelegate.DEFAULT;
-
-    private final AtomicInteger refCount = new AtomicInteger(0);
 
     private final AtomicReference<AttributeDelegate> attributeDelegate =
         new AtomicReference<>(DEFAULT_ATTRIBUTE_DELEGATE);
@@ -213,15 +205,6 @@ public abstract class UaNode implements UaServerNode {
 
     public synchronized void addReference(Reference reference) {
         getNodeManager().addReference(reference);
-
-        if (reference.isInverse()) {
-            int count = refCount.incrementAndGet();
-            LOGGER.trace("{} refCount={}", getNodeId(), count);
-
-            if (count == 1) {
-                getNodeManager().addNode(this);
-            }
-        }
     }
 
     public synchronized void addReferences(Collection<Reference> c) {
@@ -230,41 +213,10 @@ public abstract class UaNode implements UaServerNode {
 
     public synchronized void removeReference(Reference reference) {
         getNodeManager().removeReference(reference);
-
-        if (reference.isInverse()) {
-            int count = refCount.decrementAndGet();
-            LOGGER.trace("{} refCount={}", getNodeId(), count);
-
-            if (count == 0) {
-                deallocate();
-            }
-        }
     }
 
     public synchronized void removeReferences(Collection<Reference> c) {
         c.forEach(this::removeReference);
-    }
-
-    protected synchronized void deallocate() {
-        LOGGER.trace("{} deallocate()", getNodeId());
-
-        ExpandedNodeId expanded = getNodeId().expanded();
-
-        List<UaServerNode> referencedNodes = getReferences().stream()
-            .filter(Reference::isForward)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
-            .collect(Collectors.toList());
-
-        for (UaServerNode node : referencedNodes) {
-            List<Reference> inverseReferences = node.getReferences().stream()
-                .filter(Reference::isInverse)
-                .filter(r -> r.getTargetNodeId().equals(expanded))
-                .collect(Collectors.toList());
-
-            node.removeReferences(inverseReferences);
-        }
-
-        getNodeManager().removeNode(getNodeId());
     }
 
     public <T> Optional<T> getProperty(Property<T> property) {
