@@ -15,13 +15,13 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.List;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -32,6 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
@@ -113,25 +114,29 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         ));
     }
 
+    @Nullable
     @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
+    @Nullable
     @UaOptional("Icon")
     public ByteString getIcon() {
         return getProperty(Icon).orElse(null);
     }
 
-    public static final Property<String> NodeVersion = new BasicProperty<>(
-        new QualifiedName(0, "NodeVersion"),
+    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "NodeVersion",
         Identifiers.String,
         ValueRanks.Scalar,
         String.class
     );
 
-    public static final Property<ByteString> Icon = new BasicProperty<>(
-        new QualifiedName(0, "Icon"),
+    public static final QualifiedProperty<ByteString> Icon = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "Icon",
         Identifiers.Image,
         ValueRanks.Scalar,
         ByteString.class
