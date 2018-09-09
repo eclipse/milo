@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
@@ -59,6 +60,15 @@ public class NodeFactory {
         NodeId rootNodeId,
         NodeId typeDefinitionId,
         boolean includeOptionalNodes) throws UaException {
+
+        return createNode(rootNodeId, typeDefinitionId, includeOptionalNodes, new InstanceListener() {});
+    }
+
+    public UaNode createNode(
+        NodeId rootNodeId,
+        NodeId typeDefinitionId,
+        boolean includeOptionalNodes,
+        InstanceListener instanceListener) throws UaException {
 
         UaNodeManager nodeManager = context.getNodeManager();
 
@@ -220,7 +230,37 @@ public class NodeFactory {
             nodeManager.addNode(node);
         });
 
+        notifyInstanceListener(nodes, instanceListener);
+
         return nodeManager.get(rootNodeId);
+    }
+
+    protected void notifyInstanceListener(Map<BrowsePath, UaNode> nodes, InstanceListener instanceListener) {
+        nodes.forEach((browsePath, node) -> {
+            UaNode parentNode = null;
+
+            BrowsePath parentBrowsePath = browsePath.parent;
+
+            if (parentBrowsePath != null) {
+                parentNode = nodes.get(parentBrowsePath);
+            }
+
+            if (parentNode instanceof UaObjectNode && node instanceof UaMethodNode) {
+                UaMethodNode methodNode = (UaMethodNode) node;
+
+                instanceListener.onMethodAdded((UaObjectNode) parentNode, methodNode);
+            } else if (parentNode instanceof UaObjectNode && node instanceof UaObjectNode) {
+                UaObjectNode objectNode = (UaObjectNode) node;
+                ObjectTypeNode objectTypeNode = objectNode.getTypeDefinitionNode();
+
+                instanceListener.onObjectAdded((UaObjectNode) parentNode, objectNode, objectTypeNode.getNodeId());
+            } else if (node instanceof UaVariableNode) {
+                UaVariableNode variableNode = (UaVariableNode) node;
+                VariableTypeNode variableTypeNode = variableNode.getTypeDefinitionNode();
+
+                instanceListener.onVariableAdded(parentNode, variableNode, variableTypeNode.getNodeId());
+            }
+        });
     }
 
     /**
@@ -290,6 +330,39 @@ public class NodeFactory {
             .map(t -> t.v3.targetNodeId)
             .findFirst()
             .orElse(ExpandedNodeId.NULL_VALUE);
+    }
+
+    interface InstanceListener {
+
+        /**
+         * Called when a {@link UaMethodNode} has been added to a {@link UaObjectNode} somewhere in the instance
+         * hierarchy.
+         *
+         * @param parent   the {@link UaObjectNode} the method was added to.
+         * @param instance the {@link UaMethodNode} instance.
+         */
+        default void onMethodAdded(@Nullable UaObjectNode parent, UaMethodNode instance) {}
+
+        /**
+         * Called when a {@link UaObjectNode} has been added to a parent {@link UaObjectNode} by a hierarchical
+         * reference somewhere in the instance hierarchy.
+         *
+         * @param parent           the parent {@link UaObjectNode}
+         * @param instance         the {@link UaObjectNode} instance.
+         * @param typeDefinitionId the {@link NodeId} of the ObjectTypeDefinition.
+         */
+        default void onObjectAdded(@Nullable UaObjectNode parent, UaObjectNode instance, NodeId typeDefinitionId) {}
+
+        /**
+         * Called when a {@link UaVariableNode} has been added to a parent {@link UaNode} by a hierarchical
+         * reference somewhere in the instance hierarchy.
+         *
+         * @param parent           the parent {@link UaVariableNode}
+         * @param instance         the {@link UaVariableNode} instance.
+         * @param typeDefinitionId the {@link NodeId} of the VariableTypeDefinition.
+         */
+        default void onVariableAdded(@Nullable UaNode parent, UaVariableNode instance, NodeId typeDefinitionId) {}
+
     }
 
 }
