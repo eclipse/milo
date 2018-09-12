@@ -153,7 +153,9 @@ public class Active extends AbstractSessionState implements SessionState {
             ReadRequest keepAliveRequest = createKeepAliveRequest();
 
             CompletableFuture<ReadResponse> responseFuture =
-                fsm.getClient().getStackClient().sendRequest(keepAliveRequest);
+                fsm.getClient().getStackClient()
+                    .sendRequest(keepAliveRequest)
+                    .thenApply(ReadResponse.class::cast);
 
             responseFuture.whenComplete((r, ex) -> {
                 if (ex != null) {

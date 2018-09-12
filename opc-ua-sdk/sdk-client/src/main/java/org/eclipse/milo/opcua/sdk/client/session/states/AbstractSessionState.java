@@ -377,7 +377,8 @@ abstract class AbstractSessionState implements SessionState {
 
             LOGGER.debug("Sending (re)ActivateSessionRequest...");
 
-            stackClient.sendRequest(request)
+            stackClient.connect()
+                .thenCompose(c -> c.sendRequest(request))
                 .thenApply(ActivateSessionResponse.class::cast)
                 .whenCompleteAsync((asr, ex) -> {
                     if (asr != null) {
