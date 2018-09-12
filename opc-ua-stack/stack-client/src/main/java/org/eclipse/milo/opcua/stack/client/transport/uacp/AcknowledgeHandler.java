@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.handlers;
+package org.eclipse.milo.opcua.stack.client.transport.uacp;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +24,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.AttributeKey;
 import io.netty.util.Timeout;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
@@ -42,27 +43,28 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestFuture> implements HeaderDecoder {
+public class AcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
 
-    public static final AttributeKey<List<UaRequestFuture>> KEY_AWAITING_HANDSHAKE =
+    public static final AttributeKey<List<UaTransportRequest>> KEY_AWAITING_HANDSHAKE =
         AttributeKey.valueOf("awaiting-handshake");
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<UaRequestFuture> awaitingHandshake = new CopyOnWriteArrayList<>();
+    private final List<UaTransportRequest> awaitingHandshake = new CopyOnWriteArrayList<>();
 
-    private volatile Timeout helloTimeout;
+    private Timeout helloTimeout;
 
 
-    private final UaTcpStackClient client;
+    private final UaStackClientConfig config;
     private final ClientSecureChannel secureChannel;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
-    public UaTcpClientAcknowledgeHandler(UaTcpStackClient client,
-                                         ClientSecureChannel secureChannel,
-                                         CompletableFuture<ClientSecureChannel> handshakeFuture) {
+    public AcknowledgeHandler(
+        UaStackClientConfig config,
+        ClientSecureChannel secureChannel,
+        CompletableFuture<ClientSecureChannel> handshakeFuture) {
 
-        this.client = client;
+        this.config = config;
         this.secureChannel = secureChannel;
         this.handshakeFuture = handshakeFuture;
     }
@@ -73,13 +75,16 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
 
         secureChannel.setChannel(ctx.channel());
 
+        String endpointUrl = config.getEndpoint().getEndpointUrl();
+
         HelloMessage hello = new HelloMessage(
             PROTOCOL_VERSION,
-            client.getChannelConfig().getMaxChunkSize(),
-            client.getChannelConfig().getMaxChunkSize(),
-            client.getChannelConfig().getMaxMessageSize(),
-            client.getChannelConfig().getMaxChunkCount(),
-            client.getEndpointUrl());
+            config.getChannelConfig().getMaxChunkSize(),
+            config.getChannelConfig().getMaxChunkSize(),
+            config.getChannelConfig().getMaxMessageSize(),
+            config.getChannelConfig().getMaxChunkCount(),
+            endpointUrl
+        );
 
         ByteBuf messageBuffer = TcpMessageEncoder.encode(hello);
 
@@ -91,9 +96,9 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
     }
 
     private Timeout startHelloTimeout(ChannelHandlerContext ctx) {
-        long acknowledgeTimeoutMs = client.getConfig().getAcknowledgeTimeout().longValue();
+        long acknowledgeTimeoutMs = config.getAcknowledgeTimeout().longValue();
 
-        return client.getConfig().getWheelTimer().newTimeout(
+        return config.getWheelTimer().newTimeout(
             timeout -> {
                 if (!timeout.isCancelled()) {
                     handshakeFuture.completeExceptionally(
@@ -107,14 +112,13 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, UaRequestFuture message, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, UaTransportRequest message, ByteBuf out) {
         awaitingHandshake.add(message);
     }
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws Exception {
-        ChannelConfig config = client.getChannelConfig();
-        int maxChunkSize = config.getMaxChunkSize();
+        int maxChunkSize = config.getChannelConfig().getMaxChunkSize();
 
         while (buffer.readableBytes() >= HEADER_LENGTH) {
             int messageLength = getMessageLength(buffer, maxChunkSize);
@@ -167,19 +171,19 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
                 PROTOCOL_VERSION, remoteProtocolVersion);
         }
 
-        ChannelConfig config = client.getChannelConfig();
+        ChannelConfig channelConfig = config.getChannelConfig();
 
         /* Our receive buffer size is determined by the remote send buffer size. */
-        long localReceiveBufferSize = Math.min(remoteSendBufferSize, config.getMaxChunkSize());
+        long localReceiveBufferSize = Math.min(remoteSendBufferSize, channelConfig.getMaxChunkSize());
 
         /* Our send buffer size is determined by the remote receive buffer size. */
-        long localSendBufferSize = Math.min(remoteReceiveBufferSize, config.getMaxChunkSize());
+        long localSendBufferSize = Math.min(remoteReceiveBufferSize, channelConfig.getMaxChunkSize());
 
         /* Max message size the remote can send us; not influenced by remote configuration. */
-        long localMaxMessageSize = config.getMaxMessageSize();
+        long localMaxMessageSize = channelConfig.getMaxMessageSize();
 
         /* Max chunk count the remote can send us; not influenced by remote configuration. */
-        long localMaxChunkCount = config.getMaxChunkCount();
+        long localMaxChunkCount = channelConfig.getMaxChunkCount();
 
         ChannelParameters parameters = new ChannelParameters(
             Ints.saturatedCast(localMaxMessageSize),
@@ -196,13 +200,13 @@ public class UaTcpClientAcknowledgeHandler extends ByteToMessageCodec<UaRequestF
 
         ctx.executor().execute(() -> {
             SerializationQueue serializationQueue = new SerializationQueue(
-                client.getConfig().getExecutor(),
+                config.getExecutor(),
                 parameters,
-                client.getConfig().getEncodingLimits()
+                config.getEncodingLimits()
             );
 
-            UaTcpClientMessageHandler handler = new UaTcpClientMessageHandler(
-                client,
+            SecureMessageHandler handler = new SecureMessageHandler(
+                config,
                 secureChannel,
                 serializationQueue,
                 handshakeFuture

@@ -34,14 +34,23 @@ public final class Stack {
     public static final String VERSION =
         ManifestUtil.read("X-Stack-Version").orElse("dev");
 
-    public static final String UA_TCP_BINARY_TRANSPORT_URI =
+    public static final String UATCP_UASC_UABINARY_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary";
 
-    public static final String UA_HTTPS_BINARY_TRANSPORT_URI =
+    public static final String HTTPS_UABINARY_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/https-uabinary";
 
-    public static final String UA_HTTPS_XML_TRANSPORT_URI =
+    public static final String HTTPS_UAXML_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/https-uasoapxml";
+
+    public static final String HTTPS_UAJSON_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/https-uajson";
+
+    public static final String WSS_UASC_UABINARY_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/wss-uasc-uabinary";
+
+    public static final String WSS_UAJSON_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/wss-uajson";
 
     public static final int DEFAULT_PORT = 12685;
 

@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.sdk.client.session.states;
 
 import java.util.concurrent.CompletableFuture;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -49,9 +48,7 @@ public class Active extends AbstractSessionState implements SessionState {
 
     @Override
     public void onExternalTransition(Fsm fsm, SessionState prev, Event event) {
-        fsm.getClient().getStackClient().getChannelFuture().thenAccept(secureChannel -> {
-            Channel channel = secureChannel.getChannel();
-
+        fsm.getClient().getStackClient().channel().thenAccept(channel -> {
             if (channel.pipeline().get(InactivityHandler.class) == null) {
                 channel.pipeline().addLast(new InactivityHandler(fsm));
             }
@@ -108,10 +105,8 @@ public class Active extends AbstractSessionState implements SessionState {
 
             final CompletableFuture<Unit> disconnected = new CompletableFuture<>();
 
-            fsm.getClient().getStackClient().getChannelFuture().whenComplete((c, ex) -> {
-                if (c != null) {
-                    Channel channel = c.getChannel();
-
+            fsm.getClient().getStackClient().channel().whenComplete((channel, ex) -> {
+                if (channel != null) {
                     channel.pipeline().remove(InactivityHandler.class);
 
                     channel.close().addListener(

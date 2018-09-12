@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,10 +11,10 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.handlers;
+package org.eclipse.milo.opcua.stack.client.transport.uacp;
 
 import java.security.cert.X509Certificate;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -32,7 +32,8 @@ import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.Timeout;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -72,39 +73,38 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFuture> implements HeaderDecoder {
+public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
 
-    public static final AttributeKey<Map<Long, UaRequestFuture>> KEY_PENDING_REQUEST_FUTURES =
+    public static final AttributeKey<Map<Long, UaTransportRequest>> KEY_PENDING_REQUEST_FUTURES =
         AttributeKey.valueOf("pending-request-futures");
 
     public static final int SECURE_CHANNEL_TIMEOUT_SECONDS = 10;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private List<ByteBuf> chunkBuffers = new LinkedList<>();
+    private List<ByteBuf> chunkBuffers = new ArrayList<>();
 
     private final AtomicReference<AsymmetricSecurityHeader> headerRef = new AtomicReference<>();
 
+    private final Map<Long, UaTransportRequest> pending;
     private ScheduledFuture renewFuture;
-    private Timeout secureChannelTimeout;
-
-    private final Map<Long, UaRequestFuture> pending;
     private final LongSequence requestIdSequence;
-
-    private final UaTcpStackClient client;
-    private final ClientSecureChannel secureChannel;
-    private final SerializationQueue serializationQueue;
-    private final CompletableFuture<ClientSecureChannel> handshakeFuture;
+    private Timeout secureChannelTimeout;
     private final int maxChunkCount;
     private final int maxChunkSize;
 
-    public UaTcpClientMessageHandler(
-        UaTcpStackClient client,
+    private final UaStackClientConfig config;
+    private final ClientSecureChannel secureChannel;
+    private final SerializationQueue serializationQueue;
+    private final CompletableFuture<ClientSecureChannel> handshakeFuture;
+
+    public SecureMessageHandler(
+        UaStackClientConfig config,
         ClientSecureChannel secureChannel,
         SerializationQueue serializationQueue,
         CompletableFuture<ClientSecureChannel> handshakeFuture) {
 
-        this.client = client;
+        this.config = config;
         this.secureChannel = secureChannel;
         this.serializationQueue = serializationQueue;
         this.handshakeFuture = handshakeFuture;
@@ -113,23 +113,27 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
             .attr(KEY_PENDING_REQUEST_FUTURES)
             .setIfAbsent(Maps.newConcurrentMap());
 
-        pending = secureChannel.attr(KEY_PENDING_REQUEST_FUTURES).get();
+        pending = secureChannel
+            .attr(KEY_PENDING_REQUEST_FUTURES)
+            .get();
 
         secureChannel
             .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
             .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
 
-        requestIdSequence = secureChannel.attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE).get();
+        requestIdSequence = secureChannel
+            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
+            .get();
 
         handshakeFuture.thenAccept(sc -> {
             Channel channel = sc.getChannel();
 
             channel.eventLoop().execute(() -> {
-                List<UaRequestFuture> awaitingHandshake = channel.attr(
-                    UaTcpClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).get();
+                List<UaTransportRequest> awaitingHandshake = channel.attr(
+                    AcknowledgeHandler.KEY_AWAITING_HANDSHAKE).get();
 
                 if (awaitingHandshake != null) {
-                    channel.attr(UaTcpClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).set(null);
+                    channel.attr(AcknowledgeHandler.KEY_AWAITING_HANDSHAKE).set(null);
 
                     logger.debug(
                         "{} message(s) queued before handshake completed; sending now.",
@@ -149,7 +153,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         SecurityTokenRequestType requestType = secureChannel.getChannelId() == 0 ?
             SecurityTokenRequestType.Issue : SecurityTokenRequestType.Renew;
 
-        secureChannelTimeout = client.getConfig().getWheelTimer().newTimeout(
+        secureChannelTimeout = config.getWheelTimer().newTimeout(
             timeout -> {
                 if (!timeout.isCancelled()) {
                     handshakeFuture.completeExceptionally(
@@ -209,7 +213,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
             requestType,
             secureChannel.getMessageSecurityMode(),
             secureChannel.getLocalNonce(),
-            client.getChannelLifetime()
+            config.getChannelLifetime()
         );
 
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
@@ -335,7 +339,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, UaRequestFuture request, ByteBuf buffer) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, UaTransportRequest request, ByteBuf buffer) throws Exception {
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
@@ -366,6 +370,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                             // No matter how we complete, make sure the entry in pending is removed.
                             // This covers the case where the request fails due to a timeout in the
                             // upper layers as well as normal completion.
+                            // TODO nothing in the upper layer calls complete() on this future
                             request.getFuture().whenComplete((r, x) -> pending.remove(requestId));
 
                             CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
@@ -463,13 +468,13 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
         AsymmetricSecurityHeader securityHeader = AsymmetricSecurityHeader.decode(
             buffer,
-            client.getConfig().getEncodingLimits().getMaxArrayLength(),
-            client.getConfig().getEncodingLimits().getMaxStringLength()
+            config.getEncodingLimits().getMaxArrayLength(),
+            config.getEncodingLimits().getMaxStringLength()
         );
 
         if (headerRef.compareAndSet(null, securityHeader)) {
             // first time we've received the header; validate and verify the server certificate
-            CertificateValidator certificateValidator = client.getConfig().getCertificateValidator();
+            CertificateValidator certificateValidator = config.getCertificateValidator();
 
             SecurityPolicy securityPolicy = SecurityPolicy.fromUri(securityHeader.getSecurityPolicyUri());
 
@@ -490,8 +495,9 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         }
 
         if (accumulateChunk(buffer)) {
+            // TODO does this really need to be a copy?
             final List<ByteBuf> buffersToDecode = ImmutableList.copyOf(chunkBuffers);
-            chunkBuffers = new LinkedList<>();
+            chunkBuffers = new ArrayList<>(maxChunkCount);
 
             serializationQueue.decode((binaryDecoder, chunkDecoder) ->
                 chunkDecoder.decodeAsymmetric(secureChannel, buffersToDecode, new ChunkDecoder.Callback() {
@@ -591,8 +597,8 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
         ctx.executor().execute(() -> {
             // SecureChannel is ready; remove the acknowledge handler.
-            if (ctx.pipeline().get(UaTcpClientAcknowledgeHandler.class) != null) {
-                ctx.pipeline().remove(UaTcpClientAcknowledgeHandler.class);
+            if (ctx.pipeline().get(AcknowledgeHandler.class) != null) {
+                ctx.pipeline().remove(AcknowledgeHandler.class);
             }
         });
 
@@ -618,8 +624,9 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
         }
 
         if (accumulateChunk(buffer)) {
+            // TODO does this really need to be a copy?
             final List<ByteBuf> buffersToDecode = ImmutableList.copyOf(chunkBuffers);
-            chunkBuffers = new LinkedList<>();
+            chunkBuffers = new ArrayList<>(maxChunkCount);
 
             serializationQueue.decode((decoder, chunkDecoder) -> {
                 try {
@@ -648,12 +655,10 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
                             ex.getStatusCode(), ex.getMessage());
 
                         long requestId = ex.getRequestId();
-                        UaRequestFuture request = pending.remove(requestId);
+                        UaTransportRequest request = pending.remove(requestId);
 
                         if (request != null) {
-                            client.getExecutorService().execute(
-                                () -> request.getFuture().completeExceptionally(ex)
-                            );
+                            request.getFuture().completeExceptionally(ex);
                         } else {
                             logger.warn("No UaRequestFuture for requestId={}", requestId);
                         }
@@ -661,7 +666,7 @@ public class UaTcpClientMessageHandler extends ByteToMessageCodec<UaRequestFutur
 
                     @Override
                     public void onMessageDecoded(ByteBuf message, long requestId) {
-                        UaRequestFuture request = pending.remove(requestId);
+                        UaTransportRequest request = pending.remove(requestId);
 
                         try {
                             if (request != null) {

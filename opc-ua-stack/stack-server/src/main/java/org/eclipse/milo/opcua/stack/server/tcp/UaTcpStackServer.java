@@ -428,7 +428,7 @@ public class UaTcpStackServer implements UaStackServer {
             endpoint.getMessageSecurity(),
             endpoint.getSecurityPolicy().getSecurityPolicyUri(),
             userTokenPolicies.toArray(new UserTokenPolicy[userTokenPolicies.size()]),
-            Stack.UA_TCP_BINARY_TRANSPORT_URI,
+            Stack.UATCP_UASC_UABINARY_TRANSPORT_URI,
             ubyte(endpoint.getSecurityLevel())
         );
     }
@@ -466,7 +466,7 @@ public class UaTcpStackServer implements UaStackServer {
                         endpoint.getMessageSecurity(),
                         endpoint.getSecurityPolicy().getSecurityPolicyUri(),
                         userTokenPolicies.toArray(new UserTokenPolicy[0]),
-                        Stack.UA_TCP_BINARY_TRANSPORT_URI,
+                        Stack.UATCP_UASC_UABINARY_TRANSPORT_URI,
                         ubyte(endpoint.getSecurityLevel())
                     );
                 })

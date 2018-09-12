@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -38,7 +38,7 @@ import static org.testng.Assert.assertEquals;
 
 public class DataTypeDictionaryReaderTest {
 
-    private final UaTcpStackClient stackClient = Mockito.mock(UaTcpStackClient.class);
+    private final UaStackClient stackClient = Mockito.mock(UaStackClient.class);
     private final OpcUaSession session = Mockito.mock(OpcUaSession.class);
     private final BsdParser bsdParser = Mockito.mock(BsdParser.class);
 
@@ -69,7 +69,7 @@ public class DataTypeDictionaryReaderTest {
 
     private void testReadDataTypeDictionaryBytes(ByteString dictionary, int fragmentSize) throws Exception {
         Mockito
-            .when(stackClient.<ReadResponse>sendRequest(any(ReadRequest.class)))
+            .when(stackClient.sendRequest(any(ReadRequest.class)))
             .then(invocationOnMock -> {
                 ReadRequest readRequest = invocationOnMock.getArgument(0);
 

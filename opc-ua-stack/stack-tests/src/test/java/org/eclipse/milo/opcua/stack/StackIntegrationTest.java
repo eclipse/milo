@@ -14,11 +14,13 @@
 package org.eclipse.milo.opcua.stack;
 
 import java.security.Security;
+import java.util.List;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -35,7 +37,7 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    protected UaTcpStackClient client;
+    protected UaStackClient client;
     protected UaTcpStackServer server;
 
     @BeforeSuite
@@ -61,18 +63,18 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         server.startup().get();
 
         EndpointDescription endpoint = selectEndpoint(
-            UaTcpStackClient.getEndpoints(
+            DiscoveryClient.getEndpoints(
                 "opc.tcp://localhost:12685/test").get()
         );
 
-        UaTcpStackClientConfig clientConfig = configureClient(
-            UaTcpStackClientConfig.builder()
+        UaStackClientConfig clientConfig = configureClient(
+            UaStackClientConfig.builder()
                 .setEndpoint(endpoint)
                 .setKeyPair(clientKeyPair)
                 .setCertificate(clientCertificate)
         ).build();
 
-        client = new UaTcpStackClient(clientConfig);
+        client = UaStackClient.create(clientConfig);
         client.connect().get();
     }
 
@@ -83,11 +85,11 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         SocketServers.shutdownAll().get();
     }
 
-    protected EndpointDescription selectEndpoint(EndpointDescription[] endpoints) {
-        return endpoints[0];
+    protected EndpointDescription selectEndpoint(List<EndpointDescription> endpoints) {
+        return endpoints.get(0);
     }
 
-    protected UaTcpStackClientConfigBuilder configureClient(UaTcpStackClientConfigBuilder builder) {
+    protected UaStackClientConfigBuilder configureClient(UaStackClientConfigBuilder builder) {
         return builder;
     }
 

@@ -452,17 +452,13 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             ackSubList.clear();
         }
 
-        final UInteger requestHandle = client.nextRequestHandle();
 
-        RequestHeader requestHeader = new RequestHeader(
+        RequestHeader requestHeader = client.getStackClient().newRequestHeader(
             session.getAuthenticationToken(),
-            DateTime.now(),
-            requestHandle,
-            uint(0),
-            null,
-            getTimeoutHint(),
-            null
+            getTimeoutHint()
         );
+
+        UInteger requestHandle = requestHeader.getRequestHandle();
 
         PublishRequest request = new PublishRequest(
             requestHeader,
@@ -587,7 +583,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                 maybeSendPublishRequests();
             },
-            client.getStackClient().getExecutorService()
+            client.getConfig().getExecutor()
         );
     }
 

@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.milo.opcua.stack.SecurityFixture;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
-import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -40,17 +40,11 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
 
     @Test
     public void testCopy() {
-
-
-        UaTcpStackClientConfig original = UaTcpStackClientConfig.builder()
-            .setEndpointUrl("test")
+        UaStackClientConfig original = UaStackClientConfig.builder()
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
             .setCertificateChain(new X509Certificate[]{clientCertificate})
             .setCertificateValidator(validator)
-            .setApplicationName(LocalizedText.english("testName"))
-            .setApplicationUri("testApplicationUri")
-            .setProductUri("testProductUri")
             .setChannelConfig(ChannelConfig.DEFAULT)
             .setChannelLifetime(uint(1234))
             .setExecutor(Stack.sharedExecutor())
@@ -59,16 +53,12 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setAcknowledgeTimeout(uint(12345))
             .build();
 
-        UaTcpStackClientConfig copy = UaTcpStackClientConfig.copy(original).build();
+        UaStackClientConfig copy = UaStackClientConfig.copy(original).build();
 
-        assertEquals(copy.getEndpointUrl(), original.getEndpointUrl());
         assertEquals(copy.getKeyPair(), original.getKeyPair());
         assertEquals(copy.getCertificate(), original.getCertificate());
         assertEquals(copy.getCertificateChain(), original.getCertificateChain());
         assertEquals(copy.getCertificateValidator(), original.getCertificateValidator());
-        assertEquals(copy.getApplicationName(), original.getApplicationName());
-        assertEquals(copy.getApplicationUri(), original.getApplicationUri());
-        assertEquals(copy.getProductUri(), original.getProductUri());
         assertEquals(copy.getChannelConfig(), original.getChannelConfig());
         assertEquals(copy.getChannelLifetime(), original.getChannelLifetime());
         assertEquals(copy.getExecutor(), original.getExecutor());
@@ -79,14 +69,10 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
 
     @Test
     public void testCopyAndModify() {
-        UaTcpStackClientConfig original = UaTcpStackClientConfig.builder()
-            .setEndpointUrl("test")
+        UaStackClientConfig original = UaStackClientConfig.builder()
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
             .setCertificateValidator(validator)
-            .setApplicationName(LocalizedText.english("testName"))
-            .setApplicationUri("testApplicationUri")
-            .setProductUri("testProductUri")
             .setChannelConfig(ChannelConfig.DEFAULT)
             .setChannelLifetime(uint(1234))
             .setExecutor(Stack.sharedExecutor())
@@ -94,28 +80,23 @@ public class UaTcpStackClientConfigTest extends SecurityFixture {
             .setWheelTimer(Stack.sharedWheelTimer())
             .build();
 
-        UaTcpStackClientConfig copy = UaTcpStackClientConfig.copy(original,
-            builder -> builder.setEndpointUrl("foo")
-                .setKeyPair(null)
-                .setCertificate(null)
-                .setCertificateChain(null)
-                .setCertificateValidator(null)
-                .setApplicationName(LocalizedText.english("fooName"))
-                .setApplicationUri("fooApplicationUri")
-                .setProductUri("fooProductUri")
-                .setChannelConfig(null)
-                .setChannelLifetime(uint(0))
-                .setAcknowledgeTimeout(uint(12345))
+        UaStackClientConfig copy = UaStackClientConfig.copy(
+            original,
+            builder ->
+                builder
+                    .setKeyPair(null)
+                    .setCertificate(null)
+                    .setCertificateChain(null)
+                    .setCertificateValidator(null)
+                    .setChannelConfig(null)
+                    .setChannelLifetime(uint(0))
+                    .setAcknowledgeTimeout(uint(12345))
         );
 
-        assertEquals(copy.getEndpointUrl(), Optional.of("foo"));
         assertEquals(copy.getKeyPair(), Optional.empty());
         assertEquals(copy.getCertificate(), Optional.empty());
         assertEquals(copy.getCertificateChain(), Optional.empty());
         assertEquals(copy.getCertificateValidator(), null);
-        assertEquals(copy.getApplicationName(), LocalizedText.english("fooName"));
-        assertEquals(copy.getApplicationUri(), "fooApplicationUri");
-        assertEquals(copy.getProductUri(), "fooProductUri");
         assertEquals(copy.getChannelConfig(), null);
         assertEquals(copy.getChannelLifetime(), uint(0));
         assertEquals(copy.getAcknowledgeTimeout(), uint(12345));

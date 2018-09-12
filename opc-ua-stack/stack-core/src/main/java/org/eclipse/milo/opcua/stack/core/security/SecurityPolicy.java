@@ -120,6 +120,7 @@ public enum SecurityPolicy {
         this.certificateSignatureAlgorithm = certificateSignatureAlgorithm;
     }
 
+    // TODO rename this to getUri()
     public String getSecurityPolicyUri() {
         return securityPolicyUri;
     }

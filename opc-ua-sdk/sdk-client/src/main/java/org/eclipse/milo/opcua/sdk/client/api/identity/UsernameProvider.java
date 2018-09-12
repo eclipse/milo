@@ -164,7 +164,7 @@ public class UsernameProvider implements IdentityProvider {
             X509Certificate certificate = certificateChain.get(0);
 
             if (SecurityPolicy.None.getSecurityPolicyUri().equals(endpoint.getSecurityPolicyUri()) ||
-                !Stack.UA_TCP_BINARY_TRANSPORT_URI.equals(endpoint.getTransportProfileUri())) {
+                !Stack.UATCP_UASC_UABINARY_TRANSPORT_URI.equals(endpoint.getTransportProfileUri())) {
 
                 // If the SecurityPolicy is None or if this is an HTTP(S) connection the certificate used to encrypt
                 // the username and password must be trusted. Otherwise, if it's a secure connection, the certificate

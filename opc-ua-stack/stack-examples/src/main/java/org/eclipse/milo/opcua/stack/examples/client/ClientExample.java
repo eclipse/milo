@@ -15,17 +15,15 @@ package org.eclipse.milo.opcua.stack.examples.client;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
-import org.eclipse.milo.opcua.stack.core.application.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -40,26 +38,25 @@ public class ClientExample {
 
     private final AtomicLong requestHandle = new AtomicLong(1L);
 
-    private final UaTcpStackClient client;
+    private final UaStackClient client;
 
     public ClientExample(X509Certificate certificate, KeyPair keyPair) throws Exception {
         // Query endpoints and select highest security level.
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints("opc.tcp://localhost:12685/example").get();
+        List<EndpointDescription> endpoints = DiscoveryClient
+            .getEndpoints("opc.tcp://localhost:12685/example").get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .sorted((e1, e2) -> e2.getSecurityLevel().intValue() - e1.getSecurityLevel().intValue())
             .findFirst()
             .orElseThrow(() -> new Exception("no endpoints returned"));
 
-        UaTcpStackClientConfig config = UaTcpStackClientConfig.builder()
-            .setApplicationName(LocalizedText.english("Stack Example Client"))
-            .setApplicationUri(String.format("urn:example-client:%s", UUID.randomUUID()))
+        UaStackClientConfig config = UaStackClientConfig.builder()
             .setCertificate(certificate)
             .setKeyPair(keyPair)
             .setEndpoint(endpoint)
             .build();
 
-        client = new UaTcpStackClient(config);
+        client = UaStackClient.create(config);
     }
 
     public CompletableFuture<ReadResponse> testStack(NodeId nodeId) {
@@ -86,7 +83,8 @@ public class ClientExample {
             }
         );
 
-        return client.sendRequest(request);
+        return client.sendRequest(request)
+            .thenApply(ReadResponse.class::cast);
     }
 
     public CompletableFuture<UaStackClient> disconnect() {

@@ -48,7 +48,8 @@ import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -119,10 +120,10 @@ public class OpcUaClientIT {
     private void startClient() throws Exception {
         int port = server.getConfig().getBindPort();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
+        List<EndpointDescription> endpoints = DiscoveryClient
             .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
@@ -137,7 +138,9 @@ public class OpcUaClientIT {
             .setRequestTimeout(uint(60000))
             .build();
 
-        client = new OpcUaClient(clientConfig);
+        UaStackClient stackClient = UaStackClient.create(clientConfig);
+
+        client = new OpcUaClient(clientConfig, stackClient);
         client.connect().get();
     }
 
@@ -436,10 +439,10 @@ public class OpcUaClientIT {
 
         int port = server.getConfig().getBindPort();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
+        List<EndpointDescription> endpoints = DiscoveryClient
             .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
@@ -455,7 +458,9 @@ public class OpcUaClientIT {
             .setIdentityProvider(new UsernameProvider("user", "password", new InsecureCertificateValidator()))
             .build();
 
-        OpcUaClient client = new OpcUaClient(clientConfig);
+        UaStackClient stackClient = UaStackClient.create(clientConfig);
+
+        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
 
         client.connect().get();
     }
@@ -469,10 +474,10 @@ public class OpcUaClientIT {
 
         int port = server.getConfig().getBindPort();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
+        List<EndpointDescription> endpoints = DiscoveryClient
             .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
@@ -494,7 +499,9 @@ public class OpcUaClientIT {
             .setIdentityProvider(new UsernameProvider(user, pass, new InsecureCertificateValidator()))
             .build();
 
-        OpcUaClient client = new OpcUaClient(clientConfig);
+        UaStackClient stackClient = UaStackClient.create(clientConfig);
+
+        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
 
         client.connect().get();
     }
@@ -505,10 +512,10 @@ public class OpcUaClientIT {
 
         int port = server.getConfig().getBindPort();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
+        List<EndpointDescription> endpoints = DiscoveryClient
             .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.Aes256_Sha256_RsaPss.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
@@ -524,7 +531,9 @@ public class OpcUaClientIT {
             .setIdentityProvider(new UsernameProvider("user", "password", new InsecureCertificateValidator()))
             .build();
 
-        OpcUaClient client = new OpcUaClient(clientConfig);
+        UaStackClient stackClient = UaStackClient.create(clientConfig);
+
+        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
 
         client.connect().get();
     }
@@ -544,10 +553,10 @@ public class OpcUaClientIT {
 
         int port = server.getConfig().getBindPort();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
+        List<EndpointDescription> endpoints = DiscoveryClient
             .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
@@ -571,7 +580,9 @@ public class OpcUaClientIT {
             .setIdentityProvider(new X509IdentityProvider(identityCertificate, identityPrivateKey))
             .build();
 
-        OpcUaClient client = new OpcUaClient(clientConfig);
+        UaStackClient stackClient = UaStackClient.create(clientConfig);
+
+        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
 
         client.connect().get();
     }
@@ -582,17 +593,17 @@ public class OpcUaClientIT {
 
         int port = server.getConfig().getBindPort();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
+        List<EndpointDescription> endpoints = DiscoveryClient
             .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         class ConnectDisconnect implements Runnable {
             private final int threadNumber;
 
-            private ConnectDisconnect(int threadNumber) {
+            private ConnectDisconnect(int threadNumber) throws UaException {
                 this.threadNumber = threadNumber;
             }
 
@@ -603,7 +614,9 @@ public class OpcUaClientIT {
                 .setRequestTimeout(uint(10000))
                 .build();
 
-            private OpcUaClient client = new OpcUaClient(clientConfig);
+            private UaStackClient stackClient = UaStackClient.create(clientConfig);
+
+            private OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
 
             @Override
             public void run() {
@@ -648,10 +661,10 @@ public class OpcUaClientIT {
 
         int port = server.getConfig().getBindPort();
 
-        EndpointDescription[] endpoints = UaTcpStackClient
+        List<EndpointDescription> endpoints = DiscoveryClient
             .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
+        EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
@@ -662,7 +675,10 @@ public class OpcUaClientIT {
             .setRequestTimeout(uint(10000))
             .build();
 
-        OpcUaClient client = new OpcUaClient(clientConfig);
+        UaStackClient stackClient = UaStackClient.create(clientConfig);
+
+        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
+
         client.connect().get();
 
         VariableNode currentTimeNode = client.getAddressSpace()

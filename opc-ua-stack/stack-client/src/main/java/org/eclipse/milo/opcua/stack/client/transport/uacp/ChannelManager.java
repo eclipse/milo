@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,8 +11,14 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client;
+package org.eclipse.milo.opcua.stack.client.transport.uacp;
 
+import java.net.ConnectException;
+import java.net.URI;
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,16 +26,28 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ConnectTimeoutException;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +55,7 @@ import org.slf4j.LoggerFactory;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-class ClientChannelManager {
+public class ChannelManager {
 
     private static final int MAX_RECONNECT_DELAY_SECONDS = 16;
 
@@ -48,10 +66,10 @@ class ClientChannelManager {
     private final AtomicReference<State> state = new AtomicReference<>(new NotConnected());
     private final AtomicReference<ScheduledFuture<?>> reconnectFuture = new AtomicReference<>();
 
-    private final UaTcpStackClient client;
+    private final UaStackClientConfig config;
 
-    ClientChannelManager(UaTcpStackClient client) {
-        this.client = client;
+    public ChannelManager(UaStackClientConfig config) {
+        this.config = config;
     }
 
     public CompletableFuture<ClientSecureChannel> connect() {
@@ -80,7 +98,7 @@ class ClientChannelManager {
                             state.compareAndSet(nextState, new NotConnected());
                         }
                     },
-                    client.getExecutorService()
+                    config.getExecutor()
                 );
             } else {
                 return connect();
@@ -102,9 +120,9 @@ class ClientChannelManager {
                         if (chan != null) future.complete(chan);
                         else future.completeExceptionally(ex2);
                     },
-                    client.getExecutorService()
+                    config.getExecutor()
                 ),
-                client.getExecutorService()
+                config.getExecutor()
             );
 
             return future;
@@ -141,7 +159,7 @@ class ClientChannelManager {
                             }
                         });
                     },
-                    client.getExecutorService()
+                    config.getExecutor()
                 );
 
                 return disconnecting.disconnectFuture;
@@ -166,7 +184,7 @@ class ClientChannelManager {
                             }
                         });
                     },
-                    client.getExecutorService()
+                    config.getExecutor()
                 );
 
                 return disconnecting.disconnectFuture;
@@ -201,7 +219,7 @@ class ClientChannelManager {
                                 }
                             });
                         },
-                        client.getExecutorService()
+                        config.getExecutor()
                     );
                 }
 
@@ -216,7 +234,7 @@ class ClientChannelManager {
         }
     }
 
-    CompletableFuture<ClientSecureChannel> getChannel() {
+    public CompletableFuture<ClientSecureChannel> getChannel() {
         State currentState = state.get();
 
         logger.trace("getChannel(), currentState={}",
@@ -238,7 +256,7 @@ class ClientChannelManager {
             // we're at; maybe someone called connect() after disconnect()?
             return disconnectFuture
                 .exceptionally(ex -> Unit.VALUE)
-                .thenComposeAsync(u -> getChannel(), client.getExecutorService());
+                .thenComposeAsync(u -> getChannel(), config.getExecutor());
         } else {
             throw new IllegalStateException(currentState.getClass().getSimpleName());
         }
@@ -246,10 +264,7 @@ class ClientChannelManager {
 
     private void connect(CompletableFuture<ClientSecureChannel> future) {
         try {
-            CompletableFuture<ClientSecureChannel> bootstrap =
-                UaTcpStackClient.bootstrap(client);
-
-            bootstrap.whenCompleteAsync(
+            bootstrap(config).whenCompleteAsync(
                 (chan, ex) -> {
                     if (chan != null) {
                         logger.debug(
@@ -263,7 +278,7 @@ class ClientChannelManager {
                         future.completeExceptionally(ex);
                     }
                 },
-                client.getExecutorService()
+                config.getExecutor()
             );
         } catch (Throwable t) {
             future.completeExceptionally(t);
@@ -300,7 +315,7 @@ class ClientChannelManager {
                             }
                         }
                     },
-                    client.getExecutorService()
+                    config.getExecutor()
                 );
             }, delaySeconds, TimeUnit.SECONDS);
 
@@ -330,7 +345,7 @@ class ClientChannelManager {
         CloseSecureChannelRequest request = new CloseSecureChannelRequest(requestHeader);
         secureChannel.getChannel().pipeline().fireUserEventTriggered(request);
 
-        client.getConfig().getWheelTimer().newTimeout(
+        config.getWheelTimer().newTimeout(
             timeout -> disconnected.completeExceptionally(new UaException(StatusCodes.Bad_Timeout)),
             5,
             TimeUnit.SECONDS
@@ -391,5 +406,110 @@ class ClientChannelManager {
     private static class Disconnecting implements State {
         final CompletableFuture<Unit> disconnectFuture = new CompletableFuture<>();
     }
+
+    public static CompletableFuture<ClientSecureChannel> bootstrap(UaStackClientConfig config) {
+        CompletableFuture<ClientSecureChannel> handshake = new CompletableFuture<>();
+
+        ChannelInitializer<SocketChannel> initializer = new ChannelInitializer<SocketChannel>() {
+            @Override
+            protected void initChannel(SocketChannel channel) throws Exception {
+                ClientSecureChannel secureChannel;
+
+                EndpointDescription endpoint = config.getEndpoint();
+
+                SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+
+                if (securityPolicy == SecurityPolicy.None) {
+                    secureChannel = new ClientSecureChannel(
+                        securityPolicy,
+                        endpoint.getSecurityMode()
+                    );
+                } else {
+                    KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                        new UaException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no KeyPair configured")
+                    );
+
+                    X509Certificate certificate = config.getCertificate().orElseThrow(() ->
+                        new UaException(
+                            StatusCodes.Bad_ConfigurationError,
+                            "no certificate configured")
+                    );
+
+                    List<X509Certificate> certificateChain = Arrays.asList(
+                        config.getCertificateChain().orElseThrow(() ->
+                            new UaException(
+                                StatusCodes.Bad_ConfigurationError,
+                                "no certificate chain configured"))
+                    );
+
+                    X509Certificate remoteCertificate = CertificateUtil
+                        .decodeCertificate(endpoint.getServerCertificate().bytes());
+
+                    List<X509Certificate> remoteCertificateChain = CertificateUtil
+                        .decodeCertificates(endpoint.getServerCertificate().bytes());
+
+                    secureChannel = new ClientSecureChannel(
+                        keyPair,
+                        certificate,
+                        certificateChain,
+                        remoteCertificate,
+                        remoteCertificateChain,
+                        securityPolicy,
+                        endpoint.getSecurityMode()
+                    );
+                }
+
+                AcknowledgeHandler acknowledgeHandler = new AcknowledgeHandler(
+                    config,
+                    secureChannel,
+                    handshake
+                );
+
+                channel.pipeline().addLast(acknowledgeHandler);
+            }
+        };
+
+        Bootstrap bootstrap = new Bootstrap();
+
+        bootstrap.group(config.getEventLoop())
+            .channel(NioSocketChannel.class)
+            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // TODO GH254 make this configurable
+            .option(ChannelOption.TCP_NODELAY, true)
+            .handler(initializer);
+
+        try {
+            String endpointUrl = config.getEndpoint().getEndpointUrl();
+
+            // TODO EndpointUtil should handle this instead of using URI
+            URI uri = new URI(endpointUrl).parseServerAuthority();
+
+            bootstrap.connect(uri.getHost(), uri.getPort()).addListener((ChannelFuture f) -> {
+                if (!f.isSuccess()) {
+                    Throwable cause = f.cause();
+
+                    if (cause instanceof ConnectTimeoutException) {
+                        handshake.completeExceptionally(
+                            new UaException(StatusCodes.Bad_Timeout, f.cause()));
+                    } else if (cause instanceof ConnectException) {
+                        handshake.completeExceptionally(
+                            new UaException(StatusCodes.Bad_ConnectionRejected, f.cause()));
+                    } else {
+                        handshake.completeExceptionally(cause);
+                    }
+                }
+            });
+        } catch (Throwable e) {
+            UaException failure = new UaException(
+                StatusCodes.Bad_TcpEndpointUrlInvalid, e);
+
+            handshake.completeExceptionally(failure);
+        }
+
+        return handshake;
+    }
+
 
 }

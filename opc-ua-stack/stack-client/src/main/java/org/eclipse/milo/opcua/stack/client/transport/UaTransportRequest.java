@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,23 +11,23 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.handlers;
+package org.eclipse.milo.opcua.stack.client.transport;
 
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 
-public class UaRequestFuture {
+public class UaTransportRequest {
 
     private final UaRequestMessage request;
     private final CompletableFuture<UaResponseMessage> future;
 
-    public UaRequestFuture(UaRequestMessage request) {
+    public UaTransportRequest(UaRequestMessage request) {
         this(request, new CompletableFuture<>());
     }
 
-    public UaRequestFuture(UaRequestMessage request, CompletableFuture<UaResponseMessage> future) {
+    public UaTransportRequest(UaRequestMessage request, CompletableFuture<UaResponseMessage> future) {
         this.request = request;
         this.future = future;
     }

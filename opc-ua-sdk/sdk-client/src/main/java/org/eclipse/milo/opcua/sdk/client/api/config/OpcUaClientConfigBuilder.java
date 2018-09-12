@@ -25,8 +25,8 @@ import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
@@ -36,16 +36,37 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
+public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
+
+    private LocalizedText applicationName = LocalizedText.english("client application name not configured");
+    private String applicationUri = "client application uri not configured";
+    private String productUri = "client product uri not configured";
 
     private Supplier<String> sessionName;
-
     private UInteger sessionTimeout = uint(120000);
-    private UInteger maxResponseMessageSize = uint(0);
-    private UInteger requestTimeout = uint(60000);
-    private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
     private IdentityProvider identityProvider = new AnonymousProvider();
+
+    private UInteger maxResponseMessageSize = uint(0);
+    private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
+    private UInteger requestTimeout = uint(60000);
+
     private BsdParser bsdParser = new GenericBsdParser();
+
+
+    public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
+        this.applicationName = applicationName;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setApplicationUri(String applicationUri) {
+        this.applicationUri = applicationUri;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setProductUri(String productUri) {
+        this.productUri = productUri;
+        return this;
+    }
 
     public OpcUaClientConfigBuilder setSessionName(Supplier<String> sessionName) {
         this.sessionName = sessionName;
@@ -83,12 +104,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     }
 
     @Override
-    public OpcUaClientConfigBuilder setEndpointUrl(String endpointUrl) {
-        super.setEndpointUrl(endpointUrl);
-        return this;
-    }
-
-    @Override
     public OpcUaClientConfigBuilder setEndpoint(EndpointDescription endpoint) {
         super.setEndpoint(endpoint);
         return this;
@@ -115,24 +130,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     @Override
     public OpcUaClientConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
         super.setCertificateValidator(certificateValidator);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
-        super.setApplicationName(applicationName);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setApplicationUri(String applicationUri) {
-        super.setApplicationUri(applicationUri);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setProductUri(String productUri) {
-        super.setProductUri(productUri);
         return this;
     }
 
@@ -179,16 +176,20 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     }
 
     public OpcUaClientConfig build() {
-        UaTcpStackClientConfig stackClientConfig = super.build();
+        UaStackClientConfig stackClientConfig = super.build();
 
         if (sessionName == null) {
             sessionName = () -> String.format("UaSession:%s:%s",
-                stackClientConfig.getApplicationName().getText(),
-                System.currentTimeMillis());
+                applicationName.getText(),
+                System.currentTimeMillis()
+            );
         }
 
         return new OpcUaClientConfigImpl(
             stackClientConfig,
+            applicationName,
+            applicationUri,
+            productUri,
             sessionName,
             sessionTimeout,
             maxResponseMessageSize,
@@ -199,9 +200,12 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         );
     }
 
-    public static class OpcUaClientConfigImpl implements OpcUaClientConfig {
+    static class OpcUaClientConfigImpl implements OpcUaClientConfig {
 
-        private final UaTcpStackClientConfig stackClientConfig;
+        private final UaStackClientConfig stackClientConfig;
+        private final LocalizedText applicationName;
+        private final String applicationUri;
+        private final String productUri;
         private final Supplier<String> sessionName;
         private final UInteger sessionTimeout;
         private final UInteger maxResponseMessageSize;
@@ -210,16 +214,23 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         private final IdentityProvider identityProvider;
         private final BsdParser bsdParser;
 
-        public OpcUaClientConfigImpl(UaTcpStackClientConfig stackClientConfig,
-                                     Supplier<String> sessionName,
-                                     UInteger sessionTimeout,
-                                     UInteger maxResponseMessageSize,
-                                     UInteger maxPendingPublishRequests,
-                                     UInteger requestTimeout,
-                                     IdentityProvider identityProvider,
-                                     BsdParser bsdParser) {
+        OpcUaClientConfigImpl(
+            UaStackClientConfig stackClientConfig,
+            LocalizedText applicationName,
+            String applicationUri,
+            String productUri,
+            Supplier<String> sessionName,
+            UInteger sessionTimeout,
+            UInteger maxResponseMessageSize,
+            UInteger maxPendingPublishRequests,
+            UInteger requestTimeout,
+            IdentityProvider identityProvider,
+            BsdParser bsdParser) {
 
             this.stackClientConfig = stackClientConfig;
+            this.applicationName = applicationName;
+            this.applicationUri = applicationUri;
+            this.productUri = productUri;
             this.sessionName = sessionName;
             this.sessionTimeout = sessionTimeout;
             this.maxResponseMessageSize = maxResponseMessageSize;
@@ -227,6 +238,21 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
             this.bsdParser = bsdParser;
+        }
+
+        @Override
+        public LocalizedText getApplicationName() {
+            return applicationName;
+        }
+
+        @Override
+        public String getApplicationUri() {
+            return applicationUri;
+        }
+
+        @Override
+        public String getProductUri() {
+            return productUri;
         }
 
         @Override
@@ -265,12 +291,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         }
 
         @Override
-        public Optional<String> getEndpointUrl() {
-            return stackClientConfig.getEndpointUrl();
-        }
-
-        @Override
-        public Optional<EndpointDescription> getEndpoint() {
+        public EndpointDescription getEndpoint() {
             return stackClientConfig.getEndpoint();
         }
 
@@ -292,21 +313,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public CertificateValidator getCertificateValidator() {
             return stackClientConfig.getCertificateValidator();
-        }
-
-        @Override
-        public LocalizedText getApplicationName() {
-            return stackClientConfig.getApplicationName();
-        }
-
-        @Override
-        public String getApplicationUri() {
-            return stackClientConfig.getApplicationUri();
-        }
-
-        @Override
-        public String getProductUri() {
-            return stackClientConfig.getProductUri();
         }
 
         @Override

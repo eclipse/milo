@@ -25,7 +25,7 @@ import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -148,21 +148,22 @@ public class OpcUaClient implements UaClient {
 
     private final OpcUaSubscriptionManager subscriptionManager;
 
-    private final UaTcpStackClient stackClient;
     private final SessionFsm sessionFsm;
 
     private final OpcUaClientConfig config;
+    private final UaStackClient stackClient;
 
-    public OpcUaClient(OpcUaClientConfig config) {
+    public OpcUaClient(OpcUaClientConfig config, UaStackClient stackClient) {
         this.config = config;
+        this.stackClient = stackClient;
 
         sessionFsm = new SessionFsm(this);
 
-        sessionFsm.addInitializer((stackClient, session) -> {
+        sessionFsm.addInitializer((client, session) -> {
             logger.debug("SessionInitializer: DataTypeDictionary");
 
             DataTypeDictionaryReader reader = new DataTypeDictionaryReader(
-                stackClient,
+                client,
                 session,
                 config.getBsdParser()
             );
@@ -178,7 +179,7 @@ public class OpcUaClient implements UaClient {
                 });
         });
 
-        sessionFsm.addInitializer((stackClient, session) -> {
+        sessionFsm.addInitializer((client, session) -> {
             logger.debug("SessionInitializer: NamespaceTable");
             RequestHeader requestHeader = newRequestHeader(session.getAuthenticationToken());
 
@@ -195,7 +196,8 @@ public class OpcUaClient implements UaClient {
                 }
             );
 
-            CompletableFuture<String[]> namespaceArray = stackClient.<ReadResponse>sendRequest(readRequest)
+            CompletableFuture<String[]> namespaceArray = client.sendRequest(readRequest)
+                .thenApply(ReadResponse.class::cast)
                 .thenApply(response -> Objects.requireNonNull(response.getResults()))
                 .thenApply(results -> (String[]) results[0].getValue().getValue());
 
@@ -219,8 +221,6 @@ public class OpcUaClient implements UaClient {
         });
 
 
-        stackClient = new UaTcpStackClient(config);
-
         faultNotificationQueue = new ExecutionQueue(config.getExecutor());
 
         addressSpace = new DefaultAddressSpace(this);
@@ -234,7 +234,7 @@ public class OpcUaClient implements UaClient {
         return config;
     }
 
-    public UaTcpStackClient getStackClient() {
+    public UaStackClient getStackClient() {
         return stackClient;
     }
 
@@ -270,16 +270,6 @@ public class OpcUaClient implements UaClient {
     }
 
     /**
-     * Build a new {@link RequestHeader} using a null authentication token and a custom {@code requestTimeout}.
-     *
-     * @param requestTimeout the custom request timeout to use.
-     * @return a new {@link RequestHeader} with a null authentication token and a custom request timeout.
-     */
-    public RequestHeader newRequestHeader(UInteger requestTimeout) {
-        return newRequestHeader(NodeId.NULL_VALUE, requestTimeout);
-    }
-
-    /**
      * Build a new {@link RequestHeader} using {@code authToken}.
      *
      * @param authToken the authentication token (from the session) to use.
@@ -287,6 +277,16 @@ public class OpcUaClient implements UaClient {
      */
     public RequestHeader newRequestHeader(NodeId authToken) {
         return newRequestHeader(authToken, config.getRequestTimeout());
+    }
+
+    /**
+     * Build a new {@link RequestHeader} using a null authentication token and a custom {@code requestTimeout}.
+     *
+     * @param requestTimeout the custom request timeout to use.
+     * @return a new {@link RequestHeader} with a null authentication token and a custom request timeout.
+     */
+    public RequestHeader newRequestHeader(UInteger requestTimeout) {
+        return newRequestHeader(NodeId.NULL_VALUE, requestTimeout);
     }
 
     /**
@@ -298,13 +298,6 @@ public class OpcUaClient implements UaClient {
      */
     public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
         return getStackClient().newRequestHeader(authToken, requestTimeout);
-    }
-
-    /**
-     * @return the next {@link UInteger} to use as a request handle.
-     */
-    public UInteger nextRequestHandle() {
-        return getStackClient().nextRequestHandle();
     }
 
     @Override
@@ -711,28 +704,15 @@ public class OpcUaClient implements UaClient {
 
     @Override
     public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {
-        CompletableFuture<T> f = getStackClient().sendRequest(request);
+        CompletableFuture<UaResponseMessage> f = getStackClient().sendRequest(request);
 
         if (faultListeners.size() > 0) {
             f.whenComplete(this::maybeHandleServiceFault);
         }
 
-        return f;
+        return f.thenApply(r -> (T) r);
     }
 
-    /**
-     * Send multiple {@link UaRequestMessage}s.
-     *
-     * @param requests the requests to send.
-     * @param futures  the {@link CompletableFuture}s to complete when responses arrive.
-     */
-    public void sendRequests(List<? extends UaRequestMessage> requests,
-                             List<CompletableFuture<? extends UaResponseMessage>> futures) {
-
-        futures.forEach(f -> f.whenComplete(this::maybeHandleServiceFault));
-
-        getStackClient().sendRequests(requests, futures);
-    }
 
     private void maybeHandleServiceFault(UaResponseMessage response, Throwable ex) {
         if (faultListeners.isEmpty()) return;

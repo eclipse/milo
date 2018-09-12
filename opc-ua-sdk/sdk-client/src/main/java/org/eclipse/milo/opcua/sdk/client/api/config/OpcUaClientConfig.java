@@ -18,11 +18,28 @@ import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 
-public interface OpcUaClientConfig extends UaTcpStackClientConfig {
+public interface OpcUaClientConfig extends UaStackClientConfig {
+
+    /**
+     * @return the name of the client application, as a {@link LocalizedText}.
+     */
+    LocalizedText getApplicationName();
+
+    /**
+     * @return a URI for the client's application instance. This should be the same as the URI in the client
+     * certificate, if present.
+     */
+    String getApplicationUri();
+
+    /**
+     * @return the URI for the client's application product.
+     */
+    String getProductUri();
 
     /**
      * @return a {@link Supplier} for the session name.
@@ -77,9 +94,8 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
     static OpcUaClientConfigBuilder copy(OpcUaClientConfig config) {
         OpcUaClientConfigBuilder builder = new OpcUaClientConfigBuilder();
 
-        // UaTcpStackClientConfig values
-        config.getEndpointUrl().ifPresent(builder::setEndpointUrl);
-        config.getEndpoint().ifPresent(builder::setEndpoint);
+        // UaStackClientConfig values
+        builder.setEndpoint(config.getEndpoint());
         config.getKeyPair().ifPresent(builder::setKeyPair);
         config.getCertificate().ifPresent(builder::setCertificate);
         config.getCertificateChain().ifPresent(builder::setCertificateChain);
