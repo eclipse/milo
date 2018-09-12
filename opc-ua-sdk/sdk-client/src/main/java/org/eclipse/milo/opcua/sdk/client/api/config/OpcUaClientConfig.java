@@ -77,6 +77,22 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
     BsdParser getBsdParser();
 
     /**
+     * @return the number of consecutive keep-alive request failures allowed before a connection is determined to be in
+     * error state.
+     */
+    UInteger getKeepAliveFailuresAllowed();
+
+    /**
+     * @return the interval, in milliseconds, between consecutive keep-alive requests.
+     */
+    UInteger getKeepAliveInterval();
+
+    /**
+     * @return the amount of time to wait, in milliseconds, for a keep-alive request before timing out.
+     */
+    UInteger getKeepAliveTimeout();
+
+    /**
      * @return a new {@link OpcUaClientConfigBuilder}.
      */
     static OpcUaClientConfigBuilder builder() {
@@ -117,6 +133,9 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
         builder.setMaxPendingPublishRequests(config.getMaxPendingPublishRequests());
         builder.setIdentityProvider(config.getIdentityProvider());
         builder.setBsdParser(config.getBsdParser());
+        builder.setKeepAliveFailuresAllowed(config.getKeepAliveFailuresAllowed());
+        builder.setKeepAliveInterval(config.getKeepAliveInterval());
+        builder.setKeepAliveTimeout(config.getKeepAliveTimeout());
 
         return builder;
     }

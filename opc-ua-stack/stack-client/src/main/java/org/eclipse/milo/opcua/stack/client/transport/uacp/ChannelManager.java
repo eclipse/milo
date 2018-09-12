@@ -79,23 +79,23 @@ public class ChannelManager {
             currentState.getClass().getSimpleName());
 
         if (currentState instanceof NotConnected) {
-            Connecting nextState = new Connecting();
+            Connecting connectingState = new Connecting();
 
-            if (state.compareAndSet(currentState, nextState)) {
+            if (state.compareAndSet(currentState, connectingState)) {
                 logger.debug("connect() while NotConnected", new Exception());
 
-                CompletableFuture<ClientSecureChannel> connected = nextState.connected;
+                CompletableFuture<ClientSecureChannel> connected = connectingState.connected;
 
                 connect(connected);
 
                 return connected.whenCompleteAsync(
                     (chan, ex) -> {
                         if (chan != null) {
-                            if (state.compareAndSet(nextState, new Connected(connected))) {
+                            if (state.compareAndSet(connectingState, new Connected(connected))) {
                                 chan.getChannel().pipeline().addLast(new InactivityHandler());
                             }
                         } else {
-                            state.compareAndSet(nextState, new NotConnected());
+                            state.compareAndSet(connectingState, new NotConnected());
                         }
                     },
                     config.getExecutor()
@@ -285,7 +285,7 @@ public class ChannelManager {
         }
     }
 
-    private void reconnect(Reconnecting reconnectState, long delaySeconds, ClientSecureChannel previousChannel) {
+    private void reconnect(Reconnecting reconnectState, long delaySeconds) {
         logger.debug("Scheduling reconnect for +{} seconds...", delaySeconds);
 
         try {
@@ -311,7 +311,7 @@ public class ChannelManager {
 
                             Reconnecting nextState = new Reconnecting();
                             if (state.compareAndSet(reconnectState, nextState)) {
-                                reconnect(nextState, nextDelay(delaySeconds), previousChannel);
+                                reconnect(nextState, nextDelay(delaySeconds));
                             }
                         }
                     },
@@ -369,10 +369,7 @@ public class ChannelManager {
                 Reconnecting nextState = new Reconnecting();
 
                 if (state.compareAndSet(currentState, nextState)) {
-                    ClientSecureChannel channel =
-                        ((Connected) currentState).connected.get();
-
-                    reconnect(nextState, 0L, channel);
+                    reconnect(nextState, 0L);
                 }
             }
 

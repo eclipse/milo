@@ -51,6 +51,9 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     private UInteger requestTimeout = uint(60000);
 
     private BsdParser bsdParser = new GenericBsdParser();
+    private UInteger keepAliveFailuresAllowed = uint(1);
+    private UInteger keepAliveInterval = uint(5000);
+    private UInteger keepAliveTimeout = uint(5000);
 
 
     public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
@@ -100,6 +103,21 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setBsdParser(BsdParser bsdParser) {
         this.bsdParser = bsdParser;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveFailuresAllowed(UInteger keepAliveFailuresAllowed) {
+        this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveInterval(UInteger keepAliveInterval) {
+        this.keepAliveInterval = keepAliveInterval;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveTimeout(UInteger keepAliveTimeout) {
+        this.keepAliveTimeout = keepAliveTimeout;
         return this;
     }
 
@@ -196,7 +214,10 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             maxPendingPublishRequests,
             requestTimeout,
             identityProvider,
-            bsdParser
+            bsdParser,
+            keepAliveFailuresAllowed,
+            keepAliveInterval,
+            keepAliveTimeout
         );
     }
 
@@ -213,6 +234,9 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         private final UInteger requestTimeout;
         private final IdentityProvider identityProvider;
         private final BsdParser bsdParser;
+        private final UInteger keepAliveFailuresAllowed;
+        private final UInteger keepAliveInterval;
+        private final UInteger keepAliveTimeout;
 
         OpcUaClientConfigImpl(
             UaStackClientConfig stackClientConfig,
@@ -225,7 +249,10 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             UInteger maxPendingPublishRequests,
             UInteger requestTimeout,
             IdentityProvider identityProvider,
-            BsdParser bsdParser) {
+            BsdParser bsdParser,
+            UInteger keepAliveFailuresAllowed,
+            UInteger keepAliveInterval,
+            UInteger keepAliveTimeout) {
 
             this.stackClientConfig = stackClientConfig;
             this.applicationName = applicationName;
@@ -238,6 +265,9 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
             this.bsdParser = bsdParser;
+            this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
+            this.keepAliveInterval = keepAliveInterval;
+            this.keepAliveTimeout = keepAliveTimeout;
         }
 
         @Override
@@ -288,6 +318,21 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public BsdParser getBsdParser() {
             return bsdParser;
+        }
+
+        @Override
+        public UInteger getKeepAliveFailuresAllowed() {
+            return keepAliveFailuresAllowed;
+        }
+
+        @Override
+        public UInteger getKeepAliveInterval() {
+            return keepAliveInterval;
+        }
+
+        @Override
+        public UInteger getKeepAliveTimeout() {
+            return keepAliveTimeout;
         }
 
         @Override
