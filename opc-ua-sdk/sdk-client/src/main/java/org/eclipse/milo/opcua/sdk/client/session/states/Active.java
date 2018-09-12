@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.application.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -118,14 +117,9 @@ public class Active extends AbstractSessionState implements SessionState {
         } else if (e instanceof KeepAliveFailureEvent || e instanceof ServiceFaultEvent) {
             keepAliveActive = false;
 
-            CompletableFuture<CompletableFuture<UaStackClient>> reconnect =
-                fsm.getClient().getStackClient()
-                    .disconnect()
-                    .thenApply(c -> c.connect(true));
-
             Reactivating reactivating = new Reactivating();
 
-            reconnect.whenComplete((c, ex) ->
+            fsm.getClient().getStackClient().disconnect().whenComplete((c, ex) ->
                 reactivateSessionAsync(fsm, session, reactivating.getSessionFuture()));
 
             return reactivating;

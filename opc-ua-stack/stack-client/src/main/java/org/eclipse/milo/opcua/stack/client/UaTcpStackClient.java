@@ -121,10 +121,10 @@ public class UaTcpStackClient implements UaStackClient {
     }
 
     @Override
-    public CompletableFuture<UaStackClient> connect(boolean keepTrying) {
+    public CompletableFuture<UaStackClient> connect() {
         CompletableFuture<UaStackClient> future = new CompletableFuture<>();
 
-        channelManager.connect(keepTrying).whenComplete((ch, ex) -> {
+        channelManager.connect().whenComplete((ch, ex) -> {
             if (ch != null) future.complete(this);
             else future.completeExceptionally(ex);
         });

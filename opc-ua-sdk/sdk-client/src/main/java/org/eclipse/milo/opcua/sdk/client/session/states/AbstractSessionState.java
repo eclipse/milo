@@ -395,19 +395,25 @@ abstract class AbstractSessionState implements SessionState {
             }
         };
 
-        stackClient.getChannelFuture().thenCompose(activate).whenCompleteAsync((asr, ex) -> {
-            if (asr != null) {
-                LOGGER.debug("Session reactivated: {}", session);
+        // Begin reactivation with an explicit jconnect() because if a keep alive failure
+        // just occurred the underlying stack client may not be connected any more.
 
-                session.setServerNonce(asr.getServerNonce());
+        stackClient.connect()
+            .thenCompose(sc -> stackClient.getChannelFuture())
+            .thenCompose(activate)
+            .whenCompleteAsync((asr, ex) -> {
+                if (asr != null) {
+                    LOGGER.debug("Session reactivated: {}", session);
 
-                fsm.fireEvent(new ReactivateSuccessEvent(session, sessionFuture));
-            } else {
-                LOGGER.debug("(re)ActivateSession failed: {}", session, ex);
+                    session.setServerNonce(asr.getServerNonce());
 
-                fsm.fireEvent(new ReactivateFailureEvent(ex, session, sessionFuture));
-            }
-        }, stackClient.getExecutorService());
+                    fsm.fireEvent(new ReactivateSuccessEvent(session, sessionFuture));
+                } else {
+                    LOGGER.debug("(re)ActivateSession failed: {}", session, ex);
+
+                    fsm.fireEvent(new ReactivateFailureEvent(ex, session, sessionFuture));
+                }
+            }, stackClient.getExecutorService());
     }
     // </editor-fold>
 
