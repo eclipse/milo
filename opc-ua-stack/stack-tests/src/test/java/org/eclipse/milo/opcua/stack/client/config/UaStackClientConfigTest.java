@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.testng.Assert.assertEquals;
 
-public class UaTcpStackClientConfigTest extends SecurityFixture {
+public class UaStackClientConfigTest extends SecurityFixture {
 
     private final CertificateValidator validator = new CertificateValidator() {
         @Override

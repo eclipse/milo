@@ -63,6 +63,7 @@ public class EndpointUtil {
                     return Integer.valueOf(group);
                 }
             } catch (NumberFormatException ignored) {
+                // ignored
             }
         }
 

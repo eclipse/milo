@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -37,20 +36,6 @@ public class ReadExample implements ClientExample {
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Override
-    public String getEndpointUrl() {
-//        return "https://172.16.8.131:62540/Quickstarts/ReferenceServer/";
-//        return "https://172.16.8.131:48011";
-//        return "https://kevins-mbp.lan:53443/OPCUA/SimulationServer";
-        return "https://localhost:51212/UA/SampleServer/";
-//        return "https://localhost:8443/UAExample";
-    }
-
-    @Override
-    public SecurityPolicy getSecurityPolicy() {
-        return SecurityPolicy.Basic256Sha256;
-    }
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
