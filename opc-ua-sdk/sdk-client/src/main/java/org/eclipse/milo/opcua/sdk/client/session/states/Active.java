@@ -29,8 +29,11 @@ import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
@@ -168,9 +171,23 @@ public class Active extends AbstractSessionState implements SessionState {
 
                         maybeFireEvent(new KeepAliveFailureEvent());
                     } else {
-                        logger.debug("Keep Alive failureCount=" + keepAliveFailureCount);
+                        logger.debug("Keep Alive failureCount=" + keepAliveFailureCount, ex);
 
-                        maybeFireEvent(new ScheduleKeepAliveEvent());
+                        StatusCode statusCode = UaException.extract(ex)
+                            .map(UaException::getStatusCode)
+                            .orElse(StatusCode.BAD);
+
+                        // TODO
+                        // This check wouldn't be necessary if the stack could notify use there was a reconnect or
+                        // establishment of a new secure channel that allowed us to be proactive in reactivation.
+                        if (statusCode.getValue() == StatusCodes.Bad_SessionClosed ||
+                            statusCode.getValue() == StatusCodes.Bad_SessionIdInvalid ||
+                            statusCode.getValue() == StatusCodes.Bad_SessionNotActivated) {
+
+                            maybeFireEvent(new KeepAliveFailureEvent());
+                        } else {
+                            maybeFireEvent(new ScheduleKeepAliveEvent());
+                        }
                     }
                 } else {
                     DataValue[] results = r.getResults();
