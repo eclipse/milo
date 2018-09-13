@@ -115,13 +115,15 @@ public class ChannelManager {
             CompletableFuture<Unit> disconnectFuture = ((Disconnecting) currentState).disconnectFuture;
 
             disconnectFuture.whenCompleteAsync(
-                (unit, ex) -> connect().whenCompleteAsync(
-                    (chan, ex2) -> {
-                        if (chan != null) future.complete(chan);
-                        else future.completeExceptionally(ex2);
-                    },
-                    config.getExecutor()
-                ),
+                (unit, ex) -> {
+                    connect().whenCompleteAsync(
+                        (chan, ex2) -> {
+                            if (chan != null) future.complete(chan);
+                            else future.completeExceptionally(ex2);
+                        },
+                        config.getExecutor()
+                    );
+                },
                 config.getExecutor()
             );
 
@@ -155,7 +157,9 @@ public class ChannelManager {
 
                         disconnecting.disconnectFuture.whenComplete((unit, ex2) -> {
                             if (state.compareAndSet(disconnecting, new NotConnected())) {
-                                logger.debug("disconnect complete, state set to Idle");
+                                logger.debug("disconnect complete, state set to NotConnected");
+                            } else {
+                                logger.debug("disconnect complete, currentState=" + state.get());
                             }
                         });
                     },
@@ -180,7 +184,9 @@ public class ChannelManager {
 
                         disconnecting.disconnectFuture.whenComplete((unit, ex2) -> {
                             if (state.compareAndSet(disconnecting, new NotConnected())) {
-                                logger.debug("disconnect complete, state set to Idle");
+                                logger.debug("disconnect complete, state set to NotConnected");
+                            } else {
+                                logger.debug("disconnect complete, currentState=" + state.get());
                             }
                         });
                     },
@@ -212,16 +218,22 @@ public class ChannelManager {
                             } else {
                                 disconnecting.disconnectFuture.complete(Unit.VALUE);
                             }
-
-                            disconnecting.disconnectFuture.whenComplete((unit, ex2) -> {
-                                if (state.compareAndSet(disconnecting, new NotConnected())) {
-                                    logger.debug("disconnect complete, state set to Idle");
-                                }
-                            });
                         },
                         config.getExecutor()
                     );
                 }
+
+                disconnecting.disconnectFuture.whenComplete((unit, ex2) -> {
+                    NotConnected notConnected = new NotConnected();
+
+                    if (state.compareAndSet(reconnecting, notConnected) ||
+                        state.compareAndSet(disconnecting, notConnected)) {
+
+                        logger.debug("disconnect complete, state set to Idle");
+                    } else {
+                        logger.debug("disconnect complete, currentState=" + state.get());
+                    }
+                });
 
                 return disconnecting.disconnectFuture;
             } else {
