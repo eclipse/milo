@@ -24,12 +24,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.pool.AbstractChannelPoolHandler;
 import io.netty.channel.pool.ChannelPool;
 import io.netty.channel.pool.SimpleChannelPool;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.MessageToMessageEncoder;
+import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -66,11 +65,7 @@ import org.slf4j.LoggerFactory;
 
 public class OpcUaHttpsTransport implements UaTransport {
 
-    public static final AttributeKey<UaTransportRequest> KEY_PENDING_REQUEST =
-        AttributeKey.newInstance("pendingRequest");
-
-    private static final Logger LOGGER =
-        LoggerFactory.getLogger(OpcUaHttpsTransport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpcUaHttpsTransport.class);
 
     private ChannelPool channelPool = null;
 
@@ -122,16 +117,13 @@ public class OpcUaHttpsTransport implements UaTransport {
                     LOGGER.debug("Channel closed; retrying...");
 
                     config.getExecutor().execute(() ->
-                        acquireChannel().thenAccept(ch ->
-                            sendRequest(request, ch, false)
-                                .whenComplete((r, ex) -> {
-                                    if (r != null) {
-                                        requestFuture.getFuture().complete(r);
-                                    } else {
-                                        requestFuture.getFuture().completeExceptionally(ex);
-                                    }
-                                })
-                        )
+                        acquireChannel().whenComplete((ch, ex) -> {
+                            if (ch != null) {
+                                sendRequest(request, ch, false);
+                            } else {
+                                requestFuture.getFuture().completeExceptionally(ex);
+                            }
+                        })
                     );
                 } else {
                     requestFuture.getFuture().completeExceptionally(cause);
@@ -211,38 +203,42 @@ public class OpcUaHttpsTransport implements UaTransport {
                     channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());
                     channel.pipeline().addLast(new HttpObjectAggregator(maxMessageSize));
-                    channel.pipeline().addLast(new OpcHttpRequestEncoder(config));
-                    channel.pipeline().addLast(new OpcHttpResponseDecoder(config));
+                    channel.pipeline().addLast(new OpcHttpCodec(config));
 
                     LOGGER.debug("channelCreated(): " + channel);
                 }
 
                 @Override
-                public void channelAcquired(Channel channel) throws Exception {
+                public void channelAcquired(Channel channel) {
                     LOGGER.debug("channelAcquired(): " + channel);
                 }
 
                 @Override
-                public void channelReleased(Channel channel) throws Exception {
+                public void channelReleased(Channel channel) {
                     LOGGER.debug("channelReleased(): " + channel);
                 }
             }
         );
     }
 
-    private static class OpcHttpRequestEncoder extends MessageToMessageEncoder<UaTransportRequest> {
+    private static class OpcHttpCodec extends MessageToMessageCodec<HttpResponse, UaTransportRequest> {
+
+        private static final AttributeKey<UaTransportRequest> KEY_PENDING_REQUEST =
+            AttributeKey.newInstance("pendingRequest");
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
 
         private final UaStackClientConfig config;
 
-        OpcHttpRequestEncoder(UaStackClientConfig config) {
+        OpcHttpCodec(UaStackClientConfig config) {
             this.config = config;
         }
 
         @Override
         protected void encode(
-            ChannelHandlerContext ctx, UaTransportRequest transportRequest, List<Object> encoded) throws Exception {
+            ChannelHandlerContext ctx,
+            UaTransportRequest transportRequest,
+            List<Object> out) throws Exception {
 
             logger.debug("encoding: " + transportRequest.getRequest());
 
@@ -289,24 +285,14 @@ public class OpcUaHttpsTransport implements UaTransport {
             httpRequest.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
             httpRequest.headers().set("OPCUA-SecurityPolicy", config.getEndpoint().getSecurityPolicyUri());
 
-            encoded.add(httpRequest);
-        }
-
-    }
-
-    private static class OpcHttpResponseDecoder extends SimpleChannelInboundHandler<HttpResponse> {
-
-        private final Logger logger = LoggerFactory.getLogger(getClass());
-
-        private final UaStackClientConfig config;
-
-        OpcHttpResponseDecoder(UaStackClientConfig config) {
-            this.config = config;
+            out.add(httpRequest);
         }
 
         @Override
-        protected void channelRead0(
-            ChannelHandlerContext ctx, HttpResponse httpResponse) {
+        protected void decode(
+            ChannelHandlerContext ctx,
+            HttpResponse httpResponse,
+            List<Object> out) {
 
             logger.trace("channelRead0: " + httpResponse);
 

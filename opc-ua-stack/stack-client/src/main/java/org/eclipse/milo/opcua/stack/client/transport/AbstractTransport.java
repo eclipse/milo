@@ -59,9 +59,9 @@ public abstract class AbstractTransport implements UaTransport {
                     logger.debug("Channel closed; retrying...");
 
                     config.getExecutor().execute(() ->
-                        sendRequest(request).whenComplete((r, ex) -> {
-                            if (r != null) {
-                                requestFuture.getFuture().complete(r);
+                        channel().whenComplete((ch, ex) -> {
+                            if (ch != null) {
+                                sendRequest(request, ch);
                             } else {
                                 requestFuture.getFuture().completeExceptionally(ex);
                             }
