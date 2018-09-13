@@ -52,6 +52,23 @@ public class EndpointUtil {
         return null;
     }
 
+    public static int getPort(@Nonnull String endpointUrl) {
+        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+
+        if (matcher.matches()) {
+            try {
+                String group = matcher.group(3);
+                if (group != null && group.startsWith(":")) {
+                    group = group.substring(1);
+                    return Integer.valueOf(group);
+                }
+            } catch (NumberFormatException ignored) {
+            }
+        }
+
+        return 4843;
+    }
+
     /**
      * Get the path component from an endpoint URL.
      * <p>

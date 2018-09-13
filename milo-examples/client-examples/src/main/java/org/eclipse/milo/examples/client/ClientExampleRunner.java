@@ -25,7 +25,6 @@ import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -104,9 +103,7 @@ public class ClientExampleRunner {
             .setRequestTimeout(uint(5000))
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(config);
-
-        return new OpcUaClient(config, stackClient);
+        return OpcUaClient.create(config);
     }
 
     public void run() {

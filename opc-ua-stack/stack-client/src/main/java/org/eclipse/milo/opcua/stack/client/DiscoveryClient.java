@@ -35,18 +35,18 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
 public class DiscoveryClient {
 
-    private final UaStackClient client;
+    private final UaStackClient stackClient;
 
-    public DiscoveryClient(UaStackClient client) {
-        this.client = client;
+    public DiscoveryClient(UaStackClient stackClient) {
+        this.stackClient = stackClient;
     }
 
     public CompletableFuture<DiscoveryClient> connect() {
-        return client.connect().thenApply(c -> DiscoveryClient.this);
+        return stackClient.connect().thenApply(c -> DiscoveryClient.this);
     }
 
     public CompletableFuture<DiscoveryClient> disconnect() {
-        return client.disconnect().thenApply(c -> DiscoveryClient.this);
+        return stackClient.disconnect().thenApply(c -> DiscoveryClient.this);
     }
 
     public CompletableFuture<GetEndpointsResponse> getEndpoints(
@@ -54,7 +54,7 @@ public class DiscoveryClient {
         String[] localeIds,
         String[] profileUris) {
 
-        RequestHeader header = client.newRequestHeader(
+        RequestHeader header = stackClient.newRequestHeader(
             NodeId.NULL_VALUE,
             uint(10000) // TODO
         );
@@ -66,7 +66,7 @@ public class DiscoveryClient {
             profileUris
         );
 
-        return client.sendRequest(request)
+        return stackClient.sendRequest(request)
             .thenApply(GetEndpointsResponse.class::cast);
     }
 
@@ -105,14 +105,13 @@ public class DiscoveryClient {
             .build();
 
         try {
-            UaStackClient client = UaStackClient.create(config);
+            UaStackClient stackClient = UaStackClient.create(config);
 
-            DiscoveryClient discoveryClient = new DiscoveryClient(client);
+            DiscoveryClient discoveryClient = new DiscoveryClient(stackClient);
 
             return discoveryClient
                 .connect()
-                .thenCompose(dc ->
-                    dc.getEndpoints(endpointUrl, new String[0], new String[0]))
+                .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[0]))
                 .whenComplete((e, ex) -> discoveryClient.disconnect())
                 .thenApply(response -> l(response.getEndpoints()));
         } catch (UaException e) {

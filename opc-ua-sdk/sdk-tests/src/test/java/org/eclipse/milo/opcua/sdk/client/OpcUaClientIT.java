@@ -49,7 +49,6 @@ import org.eclipse.milo.opcua.sdk.server.identity.CompositeValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.UsernameIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -138,9 +137,8 @@ public class OpcUaClientIT {
             .setRequestTimeout(uint(60000))
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(clientConfig);
+        client = OpcUaClient.create(clientConfig);
 
-        client = new OpcUaClient(clientConfig, stackClient);
         client.connect().get();
     }
 
@@ -458,9 +456,7 @@ public class OpcUaClientIT {
             .setIdentityProvider(new UsernameProvider("user", "password", new InsecureCertificateValidator()))
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(clientConfig);
-
-        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
+        OpcUaClient client = OpcUaClient.create(clientConfig);
 
         client.connect().get();
     }
@@ -499,9 +495,7 @@ public class OpcUaClientIT {
             .setIdentityProvider(new UsernameProvider(user, pass, new InsecureCertificateValidator()))
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(clientConfig);
-
-        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
+        OpcUaClient client = OpcUaClient.create(clientConfig);
 
         client.connect().get();
     }
@@ -531,9 +525,7 @@ public class OpcUaClientIT {
             .setIdentityProvider(new UsernameProvider("user", "password", new InsecureCertificateValidator()))
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(clientConfig);
-
-        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
+        OpcUaClient client = OpcUaClient.create(clientConfig);
 
         client.connect().get();
     }
@@ -580,9 +572,7 @@ public class OpcUaClientIT {
             .setIdentityProvider(new X509IdentityProvider(identityCertificate, identityPrivateKey))
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(clientConfig);
-
-        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
+        OpcUaClient client = OpcUaClient.create(clientConfig);
 
         client.connect().get();
     }
@@ -614,9 +604,7 @@ public class OpcUaClientIT {
                 .setRequestTimeout(uint(10000))
                 .build();
 
-            private UaStackClient stackClient = UaStackClient.create(clientConfig);
-
-            private OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
+            private OpcUaClient client = OpcUaClient.create(clientConfig);
 
             @Override
             public void run() {
@@ -675,9 +663,7 @@ public class OpcUaClientIT {
             .setRequestTimeout(uint(10000))
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(clientConfig);
-
-        OpcUaClient client = new OpcUaClient(clientConfig, stackClient);
+        OpcUaClient client = OpcUaClient.create(clientConfig);
 
         client.connect().get();
 

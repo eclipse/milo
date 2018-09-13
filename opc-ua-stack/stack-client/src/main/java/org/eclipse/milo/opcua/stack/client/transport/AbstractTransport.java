@@ -68,7 +68,7 @@ public abstract class AbstractTransport implements UaTransport {
                         })
                     );
                 } else {
-                    requestFuture.getFuture().completeExceptionally(f.cause());
+                    requestFuture.getFuture().completeExceptionally(cause);
 
                     logger.debug(
                         "Write failed, request={}, requestHandle={}",

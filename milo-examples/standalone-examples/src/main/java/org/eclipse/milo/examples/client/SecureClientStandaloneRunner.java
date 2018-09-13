@@ -23,7 +23,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
-import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -86,9 +85,7 @@ public class SecureClientStandaloneRunner {
             .setKeyPair(clientExample.getKeyPair())
             .build();
 
-        UaStackClient stackClient = UaStackClient.create(config);
-
-        return new OpcUaClient(config, stackClient);
+        return OpcUaClient.create(config);
     }
 
     private EndpointDescription chooseEndpoint(

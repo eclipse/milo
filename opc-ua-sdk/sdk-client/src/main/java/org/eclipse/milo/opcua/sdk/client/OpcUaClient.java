@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
@@ -131,6 +132,12 @@ public class OpcUaClient implements UaClient {
         Logger logger = LoggerFactory.getLogger(OpcUaClient.class);
         logger.info("Eclipse Milo OPC UA Stack version: {}", Stack.VERSION);
         logger.info("Eclipse Milo OPC UA Client SDK version: {}", SDK_VERSION);
+    }
+
+    public static OpcUaClient create(OpcUaClientConfig config) throws UaException {
+        UaStackClient stackClient = UaStackClient.create(config);
+
+        return new OpcUaClient(config, stackClient);
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

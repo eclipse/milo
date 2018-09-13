@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.stack.client.transport;
 
 import java.util.concurrent.CompletableFuture;
 
-import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 
@@ -24,9 +23,6 @@ public interface UaTransport {
     CompletableFuture<UaTransport> connect();
 
     CompletableFuture<UaTransport> disconnect();
-
-    // TODO remove this
-    CompletableFuture<Channel> channel();
 
     /**
      * Send a {@link UaRequestMessage}, returning a {@link CompletableFuture} representing the result of the operation.

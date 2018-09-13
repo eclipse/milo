@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Maps;
-import io.netty.channel.Channel;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.transport.TransportProfile;
@@ -69,10 +68,6 @@ public class UaStackClient {
 
     public UaStackClientConfig getConfig() {
         return config;
-    }
-
-    public CompletableFuture<Channel> channel() {
-        return transport.channel();
     }
 
     public CompletableFuture<UaStackClient> connect() {
