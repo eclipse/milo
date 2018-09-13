@@ -39,6 +39,7 @@ import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
@@ -81,11 +82,11 @@ public class OpcUaHttpsTransport implements UaTransport {
 
     @Override
     public synchronized CompletableFuture<UaTransport> connect() {
-        return acquireChannel().thenApply(ch -> {
-            releaseChannel(ch);
+        if (channelPool == null) {
+            channelPool = createChannelPool(config);
+        }
 
-            return OpcUaHttpsTransport.this;
-        });
+        return CompletableFuture.completedFuture(OpcUaHttpsTransport.this);
     }
 
     @Override
@@ -118,7 +119,7 @@ public class OpcUaHttpsTransport implements UaTransport {
                 Throwable cause = f.cause();
 
                 if (cause instanceof ClosedChannelException && firstAttempt) {
-                    LOGGER.info("Channel closed; retrying...");
+                    LOGGER.debug("Channel closed; retrying...");
 
                     config.getExecutor().execute(() ->
                         acquireChannel().thenAccept(ch ->
@@ -143,7 +144,7 @@ public class OpcUaHttpsTransport implements UaTransport {
             } else {
                 if (LOGGER.isTraceEnabled()) {
                     LOGGER.trace(
-                        "writeAndFlush succeeded for request={}, requestHandle={}",
+                        "Write succeeded, request={}, requestHandle={}",
                         request.getClass().getSimpleName(),
                         request.getRequestHeader().getRequestHandle());
                 }
@@ -207,7 +208,7 @@ public class OpcUaHttpsTransport implements UaTransport {
 
                     int maxMessageSize = config.getChannelConfig().getMaxMessageSize();
 
-                    channel.pipeline().addLast(new LoggingHandler(LogLevel.DEBUG));
+                    channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());
                     channel.pipeline().addLast(new HttpObjectAggregator(maxMessageSize));
                     channel.pipeline().addLast(new OpcHttpRequestEncoder(config));
@@ -309,6 +310,10 @@ public class OpcUaHttpsTransport implements UaTransport {
 
             logger.trace("channelRead0: " + httpResponse);
 
+            UaTransportRequest transportRequest = ctx.channel()
+                .attr(KEY_PENDING_REQUEST)
+                .getAndSet(null);
+
             if (httpResponse instanceof FullHttpResponse) {
                 FullHttpResponse fullHttpResponse = (FullHttpResponse) httpResponse;
 
@@ -318,13 +323,21 @@ public class OpcUaHttpsTransport implements UaTransport {
 
                 UaResponseMessage responseMessage = (UaResponseMessage) decoder.readMessage(null);
 
-                UaTransportRequest transportRequest = ctx.channel()
-                    .attr(KEY_PENDING_REQUEST)
-                    .getAndSet(null);
 
                 logger.debug("decoded: " + responseMessage);
 
                 transportRequest.getFuture().complete(responseMessage);
+            } else {
+                HttpResponseStatus status = httpResponse.status();
+
+                if (status.equals(HttpResponseStatus.REQUEST_ENTITY_TOO_LARGE)) {
+                    transportRequest.getFuture().completeExceptionally(
+                        new UaException(StatusCodes.Bad_ResponseTooLarge));
+                } else {
+                    transportRequest.getFuture().completeExceptionally(
+                        new UaException(StatusCodes.Bad_UnexpectedError,
+                            String.format("%s: %s", status.code(), status.reasonPhrase())));
+                }
             }
         }
 

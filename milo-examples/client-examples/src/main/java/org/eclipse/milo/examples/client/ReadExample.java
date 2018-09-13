@@ -42,7 +42,7 @@ public class ReadExample implements ClientExample {
     public String getEndpointUrl() {
 //        return "https://172.16.8.131:62540/Quickstarts/ReferenceServer/";
 //        return "https://172.16.8.131:48011";
-//        return "https://kevins-MacBook-Pro.local:53443/OPCUA/SimulationServer";
+//        return "https://kevins-mbp.lan:53443/OPCUA/SimulationServer";
         return "https://localhost:51212/UA/SampleServer/";
 //        return "https://localhost:8443/UAExample";
     }
