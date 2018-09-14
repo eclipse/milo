@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.collect.Maps;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
-import org.eclipse.milo.opcua.stack.client.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.client.transport.https.OpcUaHttpsTransport;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcUaTcpTransport;
@@ -29,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -199,17 +199,17 @@ public class UaStackClient {
         UaTransport transport;
 
         switch (transportProfile) {
-            case UATCP_UASC_UABINARY:
+            case OPC_TCP_UASC_UABINARY:
                 transport = new OpcUaTcpTransport(config);
                 break;
-            case HTTPS_UABINARY:
+            case OPC_HTTPS_UABINARY:
                 transport = new OpcUaHttpsTransport(config);
                 break;
 
-            case HTTPS_UAXML:
-            case HTTPS_UAJSON:
-            case WSS_UASC_UABINARY:
-            case WSS_UAJSON:
+            case OPC_HTTPS_UAXML:
+            case OPC_HTTPS_UAJSON:
+            case OPC_WSS_UASC_UABINARY:
+            case OPC_WSS_UAJSON:
             default:
                 throw new UaException(
                     StatusCodes.Bad_InternalError,

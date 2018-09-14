@@ -38,7 +38,7 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
-    private int bindPort = Stack.DEFAULT_PORT;
+    private int bindPort = Stack.DEFAULT_TCP_PORT;
     private List<String> bindAddresses = newArrayList("0.0.0.0");
     private List<String> endpointAddresses = newArrayList(HostnameUtil.getHostname());
     private EnumSet<SecurityPolicy> securityPolicies = EnumSet.of(SecurityPolicy.None);

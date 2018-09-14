@@ -15,8 +15,8 @@ package org.eclipse.milo.opcua.sdk.client.session;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.stack.client.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -37,7 +37,7 @@ public class SessionFsmTest {
                 MessageSecurityMode.None,
                 SecurityPolicy.None.getSecurityPolicyUri(),
                 null,
-                TransportProfile.UATCP_UASC_UABINARY.getUri(),
+                TransportProfile.OPC_TCP_UASC_UABINARY.getUri(),
                 null
             ))
             .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))

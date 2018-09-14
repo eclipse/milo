@@ -48,7 +48,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.FutureListener;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
-import org.eclipse.milo.opcua.stack.client.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -58,6 +57,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
@@ -254,13 +254,13 @@ public class OpcUaHttpsTransport implements UaTransport {
                 TransportProfile.fromUri(transportProfileUri);
 
             switch (transportProfile) {
-                case HTTPS_UABINARY: {
+                case OPC_HTTPS_UABINARY: {
                     OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(content);
                     encoder.writeMessage(null, transportRequest.getRequest());
                     break;
                 }
 
-                case HTTPS_UAXML: {
+                case OPC_HTTPS_UAXML: {
                     OpcUaXmlStreamEncoder encoder = new OpcUaXmlStreamEncoder();
                     encoder.writeMessage(null, transportRequest.getRequest());
                     content.writeBytes(encoder.getDocumentXml().getBytes(StandardCharsets.UTF_8));

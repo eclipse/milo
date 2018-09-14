@@ -15,8 +15,13 @@ package org.eclipse.milo.examples.server;
 
 import java.io.File;
 import java.security.Security;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -33,8 +38,10 @@ import org.eclipse.milo.opcua.stack.core.application.DirectoryCertificateValidat
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -96,16 +103,52 @@ public class ExampleServer {
 
         X509IdentityValidator x509IdentityValidator = new X509IdentityValidator(c -> true);
 
+        // If you need to use multiple certificates you'll have to be smarter than this.
+        Optional<X509Certificate> firstCertificate = certificateManager.getCertificates().stream().findFirst();
+
         List<String> bindAddresses = newArrayList();
         bindAddresses.add("0.0.0.0");
 
-        List<String> endpointAddresses = newArrayList();
-        endpointAddresses.add(HostnameUtil.getHostname());
-        endpointAddresses.addAll(HostnameUtil.getHostnames("0.0.0.0"));
+        List<String> hostnames = newArrayList();
+        hostnames.add(HostnameUtil.getHostname());
+        hostnames.addAll(HostnameUtil.getHostnames("0.0.0.0"));
+
+        Set<EndpointConfiguration> endpointConfigurations = new LinkedHashSet<>();
+
+        for (String bindAddress : bindAddresses) {
+            for (String hostname : hostnames) {
+                EndpointConfiguration.Builder base = EndpointConfiguration.newBuilder()
+                    .setBindAddress(bindAddress)
+                    .setBindPort(12686)
+                    .setHostname(hostname)
+                    .setCertificate(firstCertificate.orElseThrow(
+                        () -> new IllegalArgumentException("certificate")))
+                    .addTokenPolicies(
+                        USER_TOKEN_POLICY_ANONYMOUS,
+                        USER_TOKEN_POLICY_USERNAME,
+                        USER_TOKEN_POLICY_X509);
+
+                Arrays.asList(SecurityPolicy.None, SecurityPolicy.Basic256Sha256).forEach(securityPolicy -> {
+                    EndpointConfiguration.Builder copy = base.copy()
+                        .setSecurityPolicy(securityPolicy);
+
+                    switch (securityPolicy) {
+                        case Basic256Sha256:
+                            copy.setSecurityMode(MessageSecurityMode.SignAndEncrypt);
+                            break;
+                        default:
+                            copy.setSecurityMode(MessageSecurityMode.None);
+                    }
+
+                    endpointConfigurations.add(copy.build());
+                });
+            }
+        }
+
+        endpointConfigurations.forEach(System.out::println);
 
         // The configured application URI must match the one in the certificate(s)
-        String applicationUri = certificateManager.getCertificates().stream()
-            .findFirst()
+        String applicationUri = firstCertificate
             .map(certificate ->
                 CertificateUtil.getSubjectAltNameField(certificate, CertificateUtil.SUBJECT_ALT_NAME_URI)
                     .map(Object::toString)
@@ -117,7 +160,7 @@ public class ExampleServer {
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC UA Example Server"))
             .setBindPort(12686)
             .setBindAddresses(bindAddresses)
-            .setEndpointAddresses(endpointAddresses)
+            .setEndpointAddresses(hostnames)
             .setBuildInfo(
                 new BuildInfo(
                     "urn:eclipse:milo:example-server",
