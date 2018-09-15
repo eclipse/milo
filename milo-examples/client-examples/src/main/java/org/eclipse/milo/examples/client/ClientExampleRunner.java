@@ -82,7 +82,14 @@ public class ClientExampleRunner {
             endpoints = DiscoveryClient.getEndpoints(clientExample.getEndpointUrl()).get();
         } catch (Throwable ex) {
             // try the explicit discovery endpoint as well
-            String discoveryUrl = clientExample.getEndpointUrl() + "/discovery";
+            String discoveryUrl = clientExample.getEndpointUrl();
+
+            if (discoveryUrl.endsWith("/")) {
+                discoveryUrl += "discovery";
+            } else {
+                discoveryUrl += "/discovery";
+            }
+            
             logger.info("Trying explicit discovery URL: {}", discoveryUrl);
             endpoints = DiscoveryClient.getEndpoints(discoveryUrl).get();
         }

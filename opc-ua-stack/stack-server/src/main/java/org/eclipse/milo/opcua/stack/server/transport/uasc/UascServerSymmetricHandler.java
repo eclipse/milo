@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.server.handlers;
+package org.eclipse.milo.opcua.stack.server.transport.uasc;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceResponse> implements HeaderDecoder {
+public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceResponse> implements HeaderDecoder {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -64,9 +64,9 @@ public class UaTcpServerSymmetricHandler extends ByteToMessageCodec<ServiceRespo
     private final SerializationQueue serializationQueue;
     private final ServerSecureChannel secureChannel;
 
-    public UaTcpServerSymmetricHandler(UaTcpStackServer server,
-                                       SerializationQueue serializationQueue,
-                                       ServerSecureChannel secureChannel) {
+    public UascServerSymmetricHandler(UaTcpStackServer server,
+                                      SerializationQueue serializationQueue,
+                                      ServerSecureChannel secureChannel) {
 
         this.server = server;
         this.serializationQueue = serializationQueue;

@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.transport.uacp;
+package org.eclipse.milo.opcua.stack.client.transport.uasc;
 
 import java.net.ConnectException;
 import java.net.URI;
@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,18 +37,37 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ConnectTimeoutException;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.handler.codec.http.DefaultHttpHeaders;
+import io.netty.handler.codec.http.HttpClientCodec;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
+import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler.ClientHandshakeStateEvent;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrameAggregator;
+import io.netty.handler.codec.http.websocketx.WebSocketVersion;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -416,74 +436,25 @@ public class ChannelManager {
         final CompletableFuture<Unit> disconnectFuture = new CompletableFuture<>();
     }
 
+    // TODO pass initializer in instead? Seems weird ChannelManager has to know about these 2 initializers
     public static CompletableFuture<ClientSecureChannel> bootstrap(UaStackClientConfig config) {
         CompletableFuture<ClientSecureChannel> handshake = new CompletableFuture<>();
 
-        ChannelInitializer<SocketChannel> initializer = new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(SocketChannel channel) throws Exception {
-                ClientSecureChannel secureChannel;
+        String transportProfileUri = config.getEndpoint().getTransportProfileUri();
+        TransportProfile transportProfile = TransportProfile.fromUri(transportProfileUri);
 
-                EndpointDescription endpoint = config.getEndpoint();
+        ChannelInitializer<SocketChannel> initializer;
 
-                SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
-
-                if (securityPolicy == SecurityPolicy.None) {
-                    secureChannel = new ClientSecureChannel(
-                        securityPolicy,
-                        endpoint.getSecurityMode()
-                    );
-                } else {
-                    KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
-                        new UaException(
-                            StatusCodes.Bad_ConfigurationError,
-                            "no KeyPair configured")
-                    );
-
-                    X509Certificate certificate = config.getCertificate().orElseThrow(() ->
-                        new UaException(
-                            StatusCodes.Bad_ConfigurationError,
-                            "no certificate configured")
-                    );
-
-                    List<X509Certificate> certificateChain = Arrays.asList(
-                        config.getCertificateChain().orElseThrow(() ->
-                            new UaException(
-                                StatusCodes.Bad_ConfigurationError,
-                                "no certificate chain configured"))
-                    );
-
-                    X509Certificate remoteCertificate = CertificateUtil
-                        .decodeCertificate(endpoint.getServerCertificate().bytes());
-
-                    List<X509Certificate> remoteCertificateChain = CertificateUtil
-                        .decodeCertificates(endpoint.getServerCertificate().bytes());
-
-                    secureChannel = new ClientSecureChannel(
-                        keyPair,
-                        certificate,
-                        certificateChain,
-                        remoteCertificate,
-                        remoteCertificateChain,
-                        securityPolicy,
-                        endpoint.getSecurityMode()
-                    );
-                }
-
-                AcknowledgeHandler acknowledgeHandler = new AcknowledgeHandler(
-                    config,
-                    secureChannel,
-                    handshake
-                );
-
-                channel.pipeline().addLast(acknowledgeHandler);
-            }
-        };
+        if (transportProfile == TransportProfile.TCP_UASC_UABINARY) {
+            initializer = new OpcTcpChannelInitializer(config, handshake);
+        } else {
+            initializer = new OpcWebSocketChannelInitializer(config, handshake);
+        }
 
         Bootstrap bootstrap = new Bootstrap();
 
         bootstrap.group(config.getEventLoop())
-            .channel(NioSocketChannel.class)
+            .channelFactory(NioSocketChannel::new)
             .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, config.getConnectTimeout().intValue())
             .option(ChannelOption.TCP_NODELAY, true)
@@ -520,5 +491,185 @@ public class ChannelManager {
         return handshake;
     }
 
+    private static ClientSecureChannel createSecureChannel(UaStackClientConfig config) throws UaException {
+        EndpointDescription endpoint = config.getEndpoint();
+
+        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+
+        if (securityPolicy == SecurityPolicy.None) {
+            return new ClientSecureChannel(
+                securityPolicy,
+                endpoint.getSecurityMode()
+            );
+        } else {
+            KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "no KeyPair configured")
+            );
+
+            X509Certificate certificate = config.getCertificate().orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "no certificate configured")
+            );
+
+            List<X509Certificate> certificateChain = Arrays.asList(
+                config.getCertificateChain().orElseThrow(() ->
+                    new UaException(
+                        StatusCodes.Bad_ConfigurationError,
+                        "no certificate chain configured"))
+            );
+
+            X509Certificate remoteCertificate = CertificateUtil
+                .decodeCertificate(endpoint.getServerCertificate().bytes());
+
+            List<X509Certificate> remoteCertificateChain = CertificateUtil
+                .decodeCertificates(endpoint.getServerCertificate().bytes());
+
+            return new ClientSecureChannel(
+                keyPair,
+                certificate,
+                certificateChain,
+                remoteCertificate,
+                remoteCertificateChain,
+                securityPolicy,
+                endpoint.getSecurityMode()
+            );
+        }
+    }
+
+    private static class OpcTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
+
+        private final UaStackClientConfig config;
+        private final CompletableFuture<ClientSecureChannel> handshake;
+
+        public OpcTcpChannelInitializer(
+            UaStackClientConfig config,
+            CompletableFuture<ClientSecureChannel> handshake) {
+
+            this.config = config;
+            this.handshake = handshake;
+        }
+
+        @Override
+        protected void initChannel(SocketChannel channel) throws Exception {
+            ClientSecureChannel secureChannel;
+
+            secureChannel = createSecureChannel(config);
+
+            UascClientAcknowledgeHandler acknowledgeHandler = new UascClientAcknowledgeHandler(
+                config,
+                secureChannel,
+                handshake
+            );
+
+            channel.pipeline().addLast(acknowledgeHandler);
+        }
+
+    }
+
+    private static class OpcWebSocketChannelInitializer extends ChannelInitializer<SocketChannel> {
+
+        private final UaStackClientConfig config;
+        private final CompletableFuture<ClientSecureChannel> handshake;
+
+        public OpcWebSocketChannelInitializer(
+            UaStackClientConfig config,
+            CompletableFuture<ClientSecureChannel> handshake) {
+
+            this.config = config;
+            this.handshake = handshake;
+        }
+
+        @Override
+        protected void initChannel(SocketChannel channel) throws Exception {
+            String endpointUrl = config.getEndpoint().getEndpointUrl();
+            String scheme = EndpointUtil.getScheme(endpointUrl);
+
+            if ("opc.wss".equalsIgnoreCase(scheme)) {
+                SslContext sslContext = SslContextBuilder.forClient()
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .build();
+
+                channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
+            }
+
+            int maxMessageSize = config.getChannelConfig().getMaxMessageSize();
+
+            channel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
+            channel.pipeline().addLast(new HttpClientCodec());
+            channel.pipeline().addLast(new HttpObjectAggregator(maxMessageSize));
+
+            channel.pipeline().addLast(
+                new WebSocketClientProtocolHandler(
+                    WebSocketClientHandshakerFactory.newHandshaker(
+                        new URI(endpointUrl),
+                        WebSocketVersion.V13,
+                        "opcua+uajson",
+                        true,
+                        new DefaultHttpHeaders(),
+                        config.getChannelConfig().getMaxChunkSize()
+                    )
+                )
+            );
+
+            channel.pipeline().addLast(new WebSocketFrameAggregator(config.getChannelConfig().getMaxMessageSize()));
+
+            // OpcClientWebSocketFrameCodec adds UascClientAcknowledgeHandler when the WS upgrade is done.
+            channel.pipeline().addLast(new OpcClientWebSocketFrameCodec(config, handshake));
+        }
+
+    }
+
+    private static class OpcClientWebSocketFrameCodec extends MessageToMessageCodec<WebSocketFrame, ByteBuf> {
+
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private final UaStackClientConfig config;
+        private final CompletableFuture<ClientSecureChannel> handshake;
+
+        public OpcClientWebSocketFrameCodec(
+            UaStackClientConfig config,
+            CompletableFuture<ClientSecureChannel> handshake) {
+
+            this.config = config;
+            this.handshake = handshake;
+        }
+
+        @Override
+        public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
+            if (event instanceof ClientHandshakeStateEvent) {
+                logger.info("WebSocket handshake event: " + event);
+
+                if (event == ClientHandshakeStateEvent.HANDSHAKE_COMPLETE) {
+                    ctx.pipeline().addLast(
+                        new UascClientAcknowledgeHandler(
+                            config,
+                            createSecureChannel(config),
+                            handshake
+                        )
+                    );
+                }
+            }
+        }
+
+        @Override
+        protected void encode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
+            out.add(new BinaryWebSocketFrame(msg.retain()));
+        }
+
+        @Override
+        protected void decode(ChannelHandlerContext ctx, WebSocketFrame msg, List<Object> out) throws Exception {
+            if (msg instanceof BinaryWebSocketFrame) {
+                out.add(msg.content().retain());
+            } else if (msg instanceof TextWebSocketFrame) {
+                TextWebSocketFrame textFrame = (TextWebSocketFrame) msg;
+
+                logger.info("Received WebSocket frame:\n" + textFrame.text());
+            }
+        }
+
+    }
 
 }

@@ -64,15 +64,15 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcUaHttpsTransport implements UaTransport {
+public class OpcHttpsTransport implements UaTransport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpcUaHttpsTransport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpcHttpsTransport.class);
 
     private ChannelPool channelPool = null;
 
     private final UaStackClientConfig config;
 
-    public OpcUaHttpsTransport(UaStackClientConfig config) {
+    public OpcHttpsTransport(UaStackClientConfig config) {
         this.config = config;
     }
 
@@ -82,7 +82,7 @@ public class OpcUaHttpsTransport implements UaTransport {
             channelPool = createChannelPool(config);
         }
 
-        return CompletableFuture.completedFuture(OpcUaHttpsTransport.this);
+        return CompletableFuture.completedFuture(OpcHttpsTransport.this);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class OpcUaHttpsTransport implements UaTransport {
             channelPool = null;
         }
 
-        return CompletableFuture.completedFuture(OpcUaHttpsTransport.this);
+        return CompletableFuture.completedFuture(OpcHttpsTransport.this);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class OpcUaHttpsTransport implements UaTransport {
         int port = EndpointUtil.getPort(endpointUrl);
 
         Bootstrap bootstrap = new Bootstrap()
-            .channel(NioSocketChannel.class)
+            .channelFactory(NioSocketChannel::new)
             .group(config.getEventLoop())
             .remoteAddress(host, port);
 

@@ -28,7 +28,7 @@ public class EndpointUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(EndpointUtil.class);
 
     private static final Pattern ENDPOINT_URL_PATTERN =
-        Pattern.compile("(opc.tcp|http|https)://([^:/]+)(:\\d+)?(/.*)?");
+        Pattern.compile("(opc.tcp|http|https|opc.http|opc.https|opc.ws|opc.wss)://([^:/]+)(:\\d+)?(/.*)?");
 
     @Nullable
     public static String getScheme(@Nonnull String endpointUrl) {

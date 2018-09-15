@@ -203,6 +203,8 @@ public class UaTcpStackServer implements UaStackServer {
             long requestId = serviceRequest.getRequestId();
             UaRequestMessage request = serviceRequest.getRequest();
 
+            // TODO check timeout in header?
+
             ServiceResponse serviceResponse = response != null ?
                 new ServiceResponse(request, requestId, response) :
                 new ServiceResponse(request, requestId, serviceRequest.createServiceFault(throwable));

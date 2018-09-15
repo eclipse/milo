@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.transport.uacp;
+package org.eclipse.milo.opcua.stack.client.transport.uasc;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
+public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
 
     public static final AttributeKey<Map<Long, UaTransportRequest>> KEY_PENDING_REQUEST_FUTURES =
         AttributeKey.valueOf("pending-request-futures");
@@ -96,7 +96,7 @@ public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest>
     private final SerializationQueue serializationQueue;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
-    public SecureMessageHandler(
+    public UascClientMessageHandler(
         UaStackClientConfig config,
         ClientSecureChannel secureChannel,
         SerializationQueue serializationQueue,
@@ -128,10 +128,10 @@ public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest>
 
             channel.eventLoop().execute(() -> {
                 List<UaTransportRequest> awaitingHandshake = channel.attr(
-                    AcknowledgeHandler.KEY_AWAITING_HANDSHAKE).get();
+                    UascClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).get();
 
                 if (awaitingHandshake != null) {
-                    channel.attr(AcknowledgeHandler.KEY_AWAITING_HANDSHAKE).set(null);
+                    channel.attr(UascClientAcknowledgeHandler.KEY_AWAITING_HANDSHAKE).set(null);
 
                     logger.debug(
                         "{} message(s) queued before handshake completed; sending now.",
@@ -605,8 +605,9 @@ public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest>
 
         ctx.executor().execute(() -> {
             // SecureChannel is ready; remove the acknowledge handler.
-            if (ctx.pipeline().get(AcknowledgeHandler.class) != null) {
-                ctx.pipeline().remove(AcknowledgeHandler.class);
+            // TODO can this be removed earlier?
+            if (ctx.pipeline().get(UascClientAcknowledgeHandler.class) != null) {
+                ctx.pipeline().remove(UascClientAcknowledgeHandler.class);
             }
         });
 

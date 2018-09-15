@@ -25,8 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
@@ -145,18 +143,6 @@ public class ExampleServer {
                 );
             }
         }
-
-        Set<List<Object>> tuples = Sets.cartesianProduct(
-            ImmutableSet.of(1, 2),
-            ImmutableSet.of("foo", "bar")
-        );
-
-        tuples.forEach(tuple -> {
-            int i = (int) tuple.get(0);
-            String s = (String) tuple.get(1);
-        });
-
-        endpointConfigurations.forEach(System.out::println);
 
         // The configured application URI must match the one in the certificate(s)
         String applicationUri = firstCertificate

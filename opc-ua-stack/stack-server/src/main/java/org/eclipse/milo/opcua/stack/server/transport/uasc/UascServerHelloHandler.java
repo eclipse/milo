@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.server.handlers;
+package org.eclipse.milo.opcua.stack.server.transport.uasc;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +43,7 @@ import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements HeaderDecoder {
+public class UascServerHelloHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
     public static final AttributeKey<String> ENDPOINT_URL_KEY = AttributeKey.valueOf("endpoint-url");
 
@@ -61,7 +61,7 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
 
     private final Function<String, Optional<UaTcpStackServer>> serverLookup;
 
-    public UaTcpServerHelloHandler(Function<String, Optional<UaTcpStackServer>> serverLookup) {
+    public UascServerHelloHandler(Function<String, Optional<UaTcpStackServer>> serverLookup) {
         this.serverLookup = serverLookup;
     }
 
@@ -170,7 +170,7 @@ public class UaTcpServerHelloHandler extends ByteToMessageDecoder implements Hea
             server.getConfig().getEncodingLimits()
         );
 
-        ctx.pipeline().addLast(new UaTcpServerAsymmetricHandler(server, serializationQueue));
+        ctx.pipeline().addLast(new UascServerAsymmetricHandler(server, serializationQueue));
         ctx.pipeline().remove(this);
 
         logger.debug("[remote={}] Removed HelloHandler, added AsymmetricHandler.", ctx.channel().remoteAddress());

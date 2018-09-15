@@ -11,20 +11,15 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.server.web;
+package org.eclipse.milo.opcua.stack.server.transport;
 
-import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Objects;
 
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -35,7 +30,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
@@ -45,59 +40,40 @@ import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
-import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
-import org.eclipse.milo.opcua.stack.server.UaStackServer;
-import org.eclipse.milo.opcua.stack.server.handlers.RateLimitingHandler;
 
 import static io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler.HandshakeComplete;
 
-public class WebServer {
+public class OpcHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    public static void bind(EndpointConfiguration endpoint, UaStackServer server) {
+    private static final String WS_PROTOCOL_BINARY = "opcua+uacp";
+    private static final String WS_PROTOCOL_JSON = "opcua+uajson";
 
+    @Override
+    protected void initChannel(SocketChannel channel) throws Exception {
+        // TODO how is the certificate for HTTPS configured/provided?
+        // TODO configure private key and certificate
+        SslContext sslContext = SslContextBuilder.forServer(null)
+            .clientAuth(ClientAuth.NONE)
+            .trustManager(InsecureTrustManagerFactory.INSTANCE)
+            .build();
+
+        channel.pipeline().addLast(RateLimitingHandler.getInstance());
+        channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
+        channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
+        channel.pipeline().addLast(new HttpServerCodec());
+
+        channel.pipeline().addLast(new OpcTransportInitializer());
     }
 
-
-    static void bootstrap(InetSocketAddress address) {
-        ServerBootstrap bootstrap = new ServerBootstrap();
-
-        bootstrap.group(Stack.sharedEventLoop())
-            .channelFactory(NioServerSocketChannel::new)
-            .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .childOption(ChannelOption.TCP_NODELAY, true)
-            .childHandler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel channel) throws Exception {
-                    // TODO configure private key and certificate
-                    SslContext sslContext = SslContextBuilder.forServer(null)
-                        .clientAuth(ClientAuth.NONE)
-                        .trustManager(InsecureTrustManagerFactory.INSTANCE)
-                        .build();
-
-                    channel.pipeline().addLast(RateLimitingHandler.getInstance());
-                    channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
-                    channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
-                    channel.pipeline().addLast(new HttpServerCodec());
-
-                    channel.pipeline().addLast(new TransportInterceptor());
-                }
-            });
-
-        bootstrap.bind(address).addListener((ChannelFutureListener) future -> {
-           if (future.isSuccess()) {
-               // TODO
-           } else {
-               // TODO
-           }
-        });
-    }
-
-    private static class TransportInterceptor extends SimpleChannelInboundHandler<HttpRequest> {
+    private static class OpcTransportInitializer extends SimpleChannelInboundHandler<HttpRequest> {
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception {
-            if (msg.method() == HttpMethod.GET &&
+            // TODO server lookup might have to be by path instead of full endpoint URL?
+            String uri = msg.uri();
+
+
+            if (Objects.equals(msg.method(), HttpMethod.GET) &&
                 "websocket".equalsIgnoreCase(msg.headers().get(HttpHeaderValues.UPGRADE))) {
 
                 ctx.channel().pipeline().remove(this);
@@ -107,7 +83,7 @@ public class WebServer {
                 // TODO configure webSocketPath based on path component of endpoint URL?
                 ctx.channel().pipeline().addLast(new WebSocketServerProtocolHandler(
                     "/ws",
-                    "opcua+uacp",
+                    String.format("%s, %s", WS_PROTOCOL_BINARY, WS_PROTOCOL_JSON),
                     true
                 ));
 
@@ -116,7 +92,7 @@ public class WebServer {
                 // TODO add UascServerHelloHandler
 
                 ctx.fireChannelRead(msg);
-            } else if (msg.method() == HttpMethod.POST) {
+            } else if (Objects.equals(msg.method(), HttpMethod.POST)) {
                 ctx.channel().pipeline().remove(this);
 
                 // TODO configure maxContentLength based on MaxRequestSize?
@@ -153,36 +129,38 @@ public class WebServer {
 
     private static class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
-        String subprotocol = "opcua+cp";
+
+        String subprotocol;
         boolean uaScInitiated = false;
 
         @Override
-        public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-            if (evt instanceof HandshakeComplete) {
-                HandshakeComplete handshake = (HandshakeComplete) evt;
+        public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
+            if (event instanceof HandshakeComplete) {
+                HandshakeComplete handshake = (HandshakeComplete) event;
+
                 handshake.requestUri();
                 handshake.requestHeaders();
 
                 subprotocol = handshake.selectedSubprotocol();
             }
 
-            super.userEventTriggered(ctx, evt);
+            super.userEventTriggered(ctx, event);
         }
 
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
-            if ("opcua+cp".equalsIgnoreCase(subprotocol)) {
+            if (WS_PROTOCOL_BINARY.equalsIgnoreCase(subprotocol)) {
+                // Pass the binary contents to the UA Secure Conversation handlers
+
                 if (!uaScInitiated) {
                     // TODO add UaScHelloHandler
                 }
 
-                assert msg instanceof BinaryWebSocketFrame;
-
                 ctx.fireChannelRead(msg.content());
-            } else if ("opcua+uajson".equalsIgnoreCase(subprotocol)) {
-                // TODO decode and deliver once OpcUaJsonStreamDecoder exists?
-                // String text = ((TextWebSocketFrame) msg).text();
+            } else if (WS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
+                // End of the pipeline; decode and deliver
 
+                String text = ((TextWebSocketFrame) msg).text();
                 ctx.close();
             } else {
                 ctx.close();
@@ -190,5 +168,4 @@ public class WebServer {
         }
 
     }
-
 }

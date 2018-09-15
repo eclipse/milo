@@ -16,11 +16,9 @@ package org.eclipse.milo.opcua.stack.server;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
-import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
-import org.eclipse.milo.opcua.stack.server.tcp.TcpServer;
-import org.eclipse.milo.opcua.stack.server.web.WebServer;
+import org.eclipse.milo.opcua.stack.server.transport.SocketServerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,24 +39,10 @@ public class UaStackServer {
     }
 
     public CompletableFuture<UaStackServer> startup() {
-        config.getEndpointConfigurations().forEach(endpoint -> {
-            TransportProfile transportProfile = endpoint.getTransportProfile();
-
-            // TODO how is the certificate for HTTPS configured/provided?
-
-            switch (transportProfile) {
-                case TCP_UASC_UABINARY:
-                    TcpServer.bind(endpoint, this);
-                    break;
-
-                case HTTPS_UAXML:
-                    WebServer.bind(endpoint, this);
-                    break;
-
-                default:
-                    logger.warn("Ignoring endpoint for unsupported transport: {}", endpoint);
-            }
-        });
+        config.getEndpointConfigurations().forEach(endpoint ->
+            SocketServerManager.get()
+                .bind(endpoint, UaStackServer.this)
+        );
 
         return CompletableFuture.completedFuture(this); // TODO
     }

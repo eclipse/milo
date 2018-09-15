@@ -21,8 +21,9 @@ import com.google.common.collect.Maps;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
-import org.eclipse.milo.opcua.stack.client.transport.https.OpcUaHttpsTransport;
-import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcUaTcpTransport;
+import org.eclipse.milo.opcua.stack.client.transport.https.OpcHttpsTransport;
+import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
+import org.eclipse.milo.opcua.stack.client.transport.websocket.OpcWebSocketTransport;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
@@ -208,15 +209,19 @@ public class UaStackClient {
 
         switch (transportProfile) {
             case TCP_UASC_UABINARY:
-                transport = new OpcUaTcpTransport(config);
+                transport = new OpcTcpTransport(config);
                 break;
+                
             case HTTPS_UABINARY:
-                transport = new OpcUaHttpsTransport(config);
+                transport = new OpcHttpsTransport(config);
+                break;
+
+            case WSS_UASC_UABINARY:
+                transport = new OpcWebSocketTransport(config);
                 break;
 
             case HTTPS_UAXML:
             case HTTPS_UAJSON:
-            case WSS_UASC_UABINARY:
             case WSS_UAJSON:
             default:
                 throw new UaException(

@@ -11,12 +11,13 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.transport.uacp;
+package org.eclipse.milo.opcua.stack.client.transport.uasc;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
@@ -43,7 +44,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
+public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
 
     public static final AttributeKey<List<UaTransportRequest>> KEY_AWAITING_HANDSHAKE =
         AttributeKey.valueOf("awaiting-handshake");
@@ -52,14 +53,14 @@ public class AcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> i
 
     private final List<UaTransportRequest> awaitingHandshake = new CopyOnWriteArrayList<>();
 
+    private final AtomicBoolean helloSent = new AtomicBoolean(false);
     private Timeout helloTimeout;
-
 
     private final UaStackClientConfig config;
     private final ClientSecureChannel secureChannel;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
-    public AcknowledgeHandler(
+    public UascClientAcknowledgeHandler(
         UaStackClientConfig config,
         ClientSecureChannel secureChannel,
         CompletableFuture<ClientSecureChannel> handshakeFuture) {
@@ -69,8 +70,39 @@ public class AcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> i
         this.handshakeFuture = handshakeFuture;
     }
 
+    /*
+     * Sending the Hello message can be triggered from two locations.
+     *
+     * When using TCP transport the handler is added to the pipeline during
+     * initialization and Hello can't be sent until channelActive().
+     *
+     * When using WebSocket transport the channel is already activated by
+     * the time this handler is added to the pipeline and Hello needs to be
+     * sent in handlerAdded().
+     *
+     * We also check to see if the channel is active in handlerAdded() to ensure
+     * the Hello isn't immediately sent when this handler is added to a TCP pipeline.
+     */
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        if (helloSent.compareAndSet(false, true)) {
+            sendHello(ctx);
+        }
+
+        super.channelActive(ctx);
+    }
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        if (ctx.channel().isActive() && helloSent.compareAndSet(false, true)) {
+            sendHello(ctx);
+        }
+
+        super.handlerAdded(ctx);
+    }
+
+    private void sendHello(ChannelHandlerContext ctx) throws UaException {
         helloTimeout = startHelloTimeout(ctx);
 
         secureChannel.setChannel(ctx.channel());
@@ -91,8 +123,6 @@ public class AcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> i
         ctx.writeAndFlush(messageBuffer, ctx.voidPromise());
 
         logger.debug("Sent Hello message on channel={}.", ctx.channel());
-
-        super.channelActive(ctx);
     }
 
     private Timeout startHelloTimeout(ChannelHandlerContext ctx) {
@@ -205,14 +235,14 @@ public class AcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> i
                 config.getEncodingLimits()
             );
 
-            SecureMessageHandler handler = new SecureMessageHandler(
+            UascClientMessageHandler handler = new UascClientMessageHandler(
                 config,
                 secureChannel,
                 serializationQueue,
                 handshakeFuture
             );
 
-            ctx.pipeline().addFirst(handler);
+            ctx.pipeline().addLast(handler);
         });
     }
 

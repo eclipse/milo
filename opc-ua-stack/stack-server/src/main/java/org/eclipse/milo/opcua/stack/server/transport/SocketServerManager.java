@@ -11,15 +11,18 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.server.web;
+package org.eclipse.milo.opcua.stack.server.transport;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.collect.Maps;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -36,7 +39,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 
 public class SocketServerManager {
 
-    public static SocketServerManager getInstance() {
+    public static SocketServerManager get() {
         return InstanceHolder.INSTANCE;
     }
 
@@ -48,9 +51,7 @@ public class SocketServerManager {
 
     private SocketServerManager() {}
 
-    public CompletableFuture<Unit> bind(UaStackServer server, EndpointConfiguration endpoint) {
-        CompletableFuture<Unit> future = new CompletableFuture<>();
-
+    public CompletableFuture<Unit> bind(EndpointConfiguration endpoint, UaStackServer server) {
         InetSocketAddress isa = new InetSocketAddress(
             endpoint.getBindAddress(),
             endpoint.getBindPort()
@@ -58,47 +59,69 @@ public class SocketServerManager {
 
         if (socketServers.containsKey(isa)) {
             SocketServer socketServer = socketServers.get(isa);
-            socketServer.addServer(server, endpoint);
+            socketServer.addServer(endpoint, server);
             return completedFuture(Unit.VALUE);
         } else {
             return SocketServer
                 .bootstrap(isa, endpoint.getTransportProfile())
                 .thenApply(socketServer -> {
                     socketServers.putIfAbsent(isa, socketServer);
-                    socketServer.addServer(server, endpoint);
+                    socketServer.addServer(endpoint, server);
                     return Unit.VALUE;
                 });
         }
     }
 
-    public CompletableFuture<Unit> unbind(UaStackServer server, EndpointConfiguration endpoint) {
+    public CompletableFuture<Unit> unbind(EndpointConfiguration endpoint, UaStackServer stackServer) {
+        InetSocketAddress isa = new InetSocketAddress(
+            endpoint.getBindAddress(),
+            endpoint.getBindPort()
+        );
+
+        if (socketServers.containsKey(isa)) {
+            SocketServer socketServer = socketServers.get(isa);
+            socketServer.removeServer(endpoint, stackServer);
+
+            if (socketServer.isEmpty()) {
+                socketServers.remove(isa);
+                socketServer.shutdown();
+            }
+        }
+
         return completedFuture(Unit.VALUE);
-    }
-
-    public static class OpcTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
-        @Override
-        protected void initChannel(SocketChannel ch) throws Exception {
-
-        }
-    }
-
-    public static class OpcHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
-        @Override
-        protected void initChannel(SocketChannel ch) throws Exception {
-
-        }
     }
 
     private static class SocketServer {
 
+        private AtomicReference<Channel> channel = new AtomicReference<>();
+
         private final Map<String, UaStackServer> stackServers = Maps.newConcurrentMap();
 
-        public void addServer(UaStackServer stackServer, EndpointConfiguration endpoint) {
+        void addServer(EndpointConfiguration endpoint, UaStackServer stackServer) {
             stackServers.put(endpoint.getEndpointUrl(), stackServer);
         }
 
-        public void removeServer(UaStackServer server, EndpointConfiguration endpoint) {
-            stackServers.remove(endpoint.getEndpointUrl(), server);
+        void removeServer(EndpointConfiguration endpoint, UaStackServer stackServer) {
+            stackServers.remove(endpoint.getEndpointUrl(), stackServer);
+        }
+
+        Optional<UaStackServer> getServer(String endpointUrl) {
+            return Optional.ofNullable(stackServers.get(endpointUrl));
+        }
+
+        boolean isEmpty() {
+            return stackServers.isEmpty();
+        }
+
+        void setChannel(Channel channel) {
+            this.channel.set(channel);
+        }
+
+        void shutdown() {
+            Channel ch = channel.getAndSet(null);
+            if (ch != null) {
+                ch.close();
+            }
         }
 
         public static CompletableFuture<SocketServer> bootstrap(
@@ -109,7 +132,7 @@ public class SocketServerManager {
             ChannelInitializer<SocketChannel> initializer;
 
             if (transportProfile == TransportProfile.TCP_UASC_UABINARY) {
-                initializer = new OpcTcpChannelInitializer();
+                initializer = new OpcTcpChannelInitializer(socketServer::getServer);
             } else {
                 initializer = new OpcHttpChannelInitializer();
             }
@@ -127,6 +150,8 @@ public class SocketServerManager {
 
             bootstrap.bind(address).addListener((ChannelFutureListener) future -> {
                 if (future.isSuccess()) {
+                    socketServer.setChannel(future.channel());
+
                     serverFuture.complete(socketServer);
                 } else {
                     serverFuture.completeExceptionally(future.cause());

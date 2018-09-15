@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.server.handlers;
+package org.eclipse.milo.opcua.stack.server.transport.uasc;
 
 import java.io.IOException;
 import java.security.KeyPair;
@@ -64,7 +64,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.generateNonce;
 import static org.eclipse.milo.opcua.stack.core.util.NonceUtil.getNonceLength;
 
-public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implements HeaderDecoder {
+public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
     private static final long SecureChannelLifetimeMin = 60000L * 60;
     private static final long SecureChannelLifetimeMax = 60000L * 60 * 24;
@@ -86,7 +86,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
     private final UaTcpStackServer server;
     private final SerializationQueue serializationQueue;
 
-    public UaTcpServerAsymmetricHandler(UaTcpStackServer server, SerializationQueue serializationQueue) {
+    public UascServerAsymmetricHandler(UaTcpStackServer server, SerializationQueue serializationQueue) {
         this.server = server;
         this.serializationQueue = serializationQueue;
 
@@ -149,7 +149,7 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
 
             if (secureChannelId == 0) {
                 // Okay, this is the first OpenSecureChannelRequest... carry on.
-                String endpointUrl = ctx.channel().attr(UaTcpServerHelloHandler.ENDPOINT_URL_KEY).get();
+                String endpointUrl = ctx.channel().attr(UascServerHelloHandler.ENDPOINT_URL_KEY).get();
                 String securityPolicyUri = securityHeader.getSecurityPolicyUri();
 
                 EndpointDescription endpointDescription = Arrays.stream(server.getEndpointDescriptions())
@@ -407,8 +407,8 @@ public class UaTcpServerAsymmetricHandler extends ByteToMessageDecoder implement
                         @Override
                         public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
                             if (!symmetricHandlerAdded) {
-                                UaTcpServerSymmetricHandler symmetricHandler =
-                                    new UaTcpServerSymmetricHandler(
+                                UascServerSymmetricHandler symmetricHandler =
+                                    new UascServerSymmetricHandler(
                                         server, serializationQueue, secureChannel);
 
                                 ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);

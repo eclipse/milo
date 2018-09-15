@@ -78,8 +78,9 @@ public class DiscoveryClient {
             profileUri = Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
         } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme) ||
             "opc.http".equalsIgnoreCase(scheme) || "opc.https".equalsIgnoreCase(scheme)) {
-
             profileUri = Stack.HTTPS_UABINARY_TRANSPORT_URI;
+        } else if ("opc.ws".equalsIgnoreCase(scheme) || "opc.wss".equalsIgnoreCase(scheme)) {
+            profileUri = Stack.WSS_UASC_UABINARY_TRANSPORT_URI;
         } else {
             return failedFuture(
                 new UaException(

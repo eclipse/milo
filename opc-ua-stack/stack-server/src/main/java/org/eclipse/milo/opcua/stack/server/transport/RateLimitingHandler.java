@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.server.handlers;
+package org.eclipse.milo.opcua.stack.server.transport;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
