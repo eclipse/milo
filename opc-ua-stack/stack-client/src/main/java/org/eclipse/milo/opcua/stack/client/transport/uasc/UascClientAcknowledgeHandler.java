@@ -31,7 +31,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
-import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.AcknowledgeMessage;
@@ -56,18 +55,19 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
     private final AtomicBoolean helloSent = new AtomicBoolean(false);
     private Timeout helloTimeout;
 
-    private final UaStackClientConfig config;
     private final ClientSecureChannel secureChannel;
+
+    private final UaStackClientConfig config;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
     public UascClientAcknowledgeHandler(
         UaStackClientConfig config,
-        ClientSecureChannel secureChannel,
-        CompletableFuture<ClientSecureChannel> handshakeFuture) {
+        CompletableFuture<ClientSecureChannel> handshakeFuture) throws UaException {
 
         this.config = config;
-        this.secureChannel = secureChannel;
         this.handshakeFuture = handshakeFuture;
+
+        secureChannel = ClientSecureChannel.fromConfig(config);
     }
 
     /*

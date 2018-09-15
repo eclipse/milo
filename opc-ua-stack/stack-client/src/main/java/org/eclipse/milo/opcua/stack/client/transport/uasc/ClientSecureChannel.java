@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,19 +11,27 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.channel;
+package org.eclipse.milo.opcua.stack.client.transport.uasc;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.common.base.MoreObjects;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import io.netty.util.DefaultAttributeMap;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
+import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.LongSequence;
 
 public class ClientSecureChannel extends DefaultAttributeMap implements SecureChannel {
@@ -161,6 +169,54 @@ public class ClientSecureChannel extends DefaultAttributeMap implements SecureCh
             .add("channelId", channelId)
             .add("securityPolicy", securityPolicy)
             .toString();
+    }
+
+    public static ClientSecureChannel fromConfig(UaStackClientConfig config) throws UaException {
+        EndpointDescription endpoint = config.getEndpoint();
+
+        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+
+        if (securityPolicy == SecurityPolicy.None) {
+            return new ClientSecureChannel(
+                securityPolicy,
+                endpoint.getSecurityMode()
+            );
+        } else {
+            KeyPair keyPair = config.getKeyPair().orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "no KeyPair configured")
+            );
+
+            X509Certificate certificate = config.getCertificate().orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_ConfigurationError,
+                    "no certificate configured")
+            );
+
+            List<X509Certificate> certificateChain = Arrays.asList(
+                config.getCertificateChain().orElseThrow(() ->
+                    new UaException(
+                        StatusCodes.Bad_ConfigurationError,
+                        "no certificate chain configured"))
+            );
+
+            X509Certificate remoteCertificate = CertificateUtil
+                .decodeCertificate(endpoint.getServerCertificate().bytes());
+
+            List<X509Certificate> remoteCertificateChain = CertificateUtil
+                .decodeCertificates(endpoint.getServerCertificate().bytes());
+
+            return new ClientSecureChannel(
+                keyPair,
+                certificate,
+                certificateChain,
+                remoteCertificate,
+                remoteCertificateChain,
+                securityPolicy,
+                endpoint.getSecurityMode()
+            );
+        }
     }
 
 }

@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ChannelManager;
-import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
+import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 
 public class OpcWebSocketTransport extends AbstractTransport {
 
