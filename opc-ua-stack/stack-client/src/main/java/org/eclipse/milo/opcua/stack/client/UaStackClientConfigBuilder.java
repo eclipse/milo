@@ -44,7 +44,9 @@ public class UaStackClientConfigBuilder {
     private HashedWheelTimer wheelTimer;
 
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
-    private UInteger acknowledgeTimeout = uint(5 * 1000);
+    private UInteger connectTimeout = uint(5_000);
+    private UInteger acknowledgeTimeout = uint(5_000);
+    private UInteger requestTimeout = uint(60_000);
     private ChannelConfig channelConfig = ChannelConfig.DEFAULT;
     private UInteger channelLifetime = uint(60 * 60 * 1000);
 
@@ -93,8 +95,18 @@ public class UaStackClientConfigBuilder {
         return this;
     }
 
+    public UaStackClientConfigBuilder setConnectTimeout(UInteger connectTimeout) {
+        this.connectTimeout = connectTimeout;
+        return this;
+    }
+
     public UaStackClientConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
         this.acknowledgeTimeout = acknowledgeTimeout;
+        return this;
+    }
+
+    public UaStackClientConfigBuilder setRequestTimeout(UInteger requestTimeout) {
+        this.requestTimeout = requestTimeout;
         return this;
     }
 
@@ -118,7 +130,7 @@ public class UaStackClientConfigBuilder {
         if (wheelTimer == null) {
             wheelTimer = Stack.sharedWheelTimer();
         }
-        
+
         return new UaStackClientConfigImpl(
             endpoint,
             keyPair,
@@ -129,7 +141,9 @@ public class UaStackClientConfigBuilder {
             executor,
             eventLoop,
             wheelTimer,
+            connectTimeout,
             acknowledgeTimeout,
+            requestTimeout,
             channelConfig,
             channelLifetime
         );
@@ -147,7 +161,9 @@ public class UaStackClientConfigBuilder {
         private final ExecutorService executor;
         private final NioEventLoopGroup eventLoop;
         private final HashedWheelTimer wheelTimer;
+        private final UInteger connectTimeout;
         private final UInteger acknowledgeTimeout;
+        private final UInteger requestTimeout;
         private final ChannelConfig channelConfig;
         private final UInteger channelLifetime;
 
@@ -161,7 +177,9 @@ public class UaStackClientConfigBuilder {
             ExecutorService executor,
             NioEventLoopGroup eventLoop,
             HashedWheelTimer wheelTimer,
+            UInteger connectTimeout,
             UInteger acknowledgeTimeout,
+            UInteger requestTimeout,
             ChannelConfig channelConfig,
             UInteger channelLifetime) {
 
@@ -174,7 +192,9 @@ public class UaStackClientConfigBuilder {
             this.executor = executor;
             this.eventLoop = eventLoop;
             this.wheelTimer = wheelTimer;
+            this.connectTimeout = connectTimeout;
             this.acknowledgeTimeout = acknowledgeTimeout;
+            this.requestTimeout = requestTimeout;
             this.channelConfig = channelConfig;
             this.channelLifetime = channelLifetime;
         }
@@ -243,8 +263,18 @@ public class UaStackClientConfigBuilder {
         }
 
         @Override
+        public UInteger getConnectTimeout() {
+            return connectTimeout;
+        }
+
+        @Override
         public UInteger getAcknowledgeTimeout() {
             return acknowledgeTimeout;
+        }
+
+        @Override
+        public UInteger getRequestTimeout() {
+            return requestTimeout;
         }
 
     }

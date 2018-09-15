@@ -78,8 +78,6 @@ public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest>
     public static final AttributeKey<Map<Long, UaTransportRequest>> KEY_PENDING_REQUEST_FUTURES =
         AttributeKey.valueOf("pending-request-futures");
 
-    public static final int SECURE_CHANNEL_TIMEOUT_SECONDS = 10;
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private List<ByteBuf> chunkBuffers = new ArrayList<>();
@@ -163,10 +161,10 @@ public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest>
                     ctx.close();
                 }
             },
-            SECURE_CHANNEL_TIMEOUT_SECONDS, TimeUnit.SECONDS
+            config.getRequestTimeout().longValue(), TimeUnit.MILLISECONDS
         );
 
-        logger.debug("OpenSecureChannel timeout scheduled for +5s");
+        logger.debug("OpenSecureChannel timeout scheduled for +{}ms", config.getRequestTimeout());
 
         sendOpenSecureChannelRequest(ctx, requestType);
     }
@@ -207,8 +205,18 @@ public class SecureMessageHandler extends ByteToMessageCodec<UaTransportRequest>
 
         secureChannel.setLocalNonce(clientNonce);
 
+        RequestHeader header = new RequestHeader(
+            null,
+            DateTime.now(),
+            uint(0),
+            uint(0),
+            null,
+            config.getRequestTimeout(),
+            null
+        );
+
         OpenSecureChannelRequest request = new OpenSecureChannelRequest(
-            new RequestHeader(null, DateTime.now(), uint(0), uint(0), null, uint(0), null),
+            header,
             uint(PROTOCOL_VERSION),
             requestType,
             secureChannel.getMessageSecurityMode(),

@@ -485,7 +485,7 @@ public class ChannelManager {
         bootstrap.group(config.getEventLoop())
             .channel(NioSocketChannel.class)
             .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000) // TODO GH254 make this configurable
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, config.getConnectTimeout().intValue())
             .option(ChannelOption.TCP_NODELAY, true)
             .handler(initializer);
 

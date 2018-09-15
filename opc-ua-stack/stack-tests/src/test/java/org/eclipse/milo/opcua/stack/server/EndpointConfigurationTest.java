@@ -75,7 +75,7 @@ public class EndpointConfigurationTest {
             IllegalStateException.class,
             () ->
                 EndpointConfiguration.newBuilder()
-                    .setTransportProfile(TransportProfile.OPC_HTTPS_UAXML)
+                    .setTransportProfile(TransportProfile.HTTPS_UAXML)
                     .build()
         );
 
@@ -83,7 +83,7 @@ public class EndpointConfigurationTest {
             IllegalStateException.class,
             () ->
                 EndpointConfiguration.newBuilder()
-                    .setTransportProfile(TransportProfile.OPC_HTTPS_UAJSON)
+                    .setTransportProfile(TransportProfile.HTTPS_UAJSON)
                     .build()
         );
 
@@ -91,7 +91,7 @@ public class EndpointConfigurationTest {
             IllegalStateException.class,
             () ->
                 EndpointConfiguration.newBuilder()
-                    .setTransportProfile(TransportProfile.OPC_WSS_UAJSON)
+                    .setTransportProfile(TransportProfile.WSS_UAJSON)
                     .build()
         );
 
@@ -99,7 +99,7 @@ public class EndpointConfigurationTest {
             IllegalStateException.class,
             () ->
                 EndpointConfiguration.newBuilder()
-                    .setTransportProfile(TransportProfile.OPC_WSS_UASC_UABINARY)
+                    .setTransportProfile(TransportProfile.WSS_UASC_UABINARY)
                     .build()
         );
     }

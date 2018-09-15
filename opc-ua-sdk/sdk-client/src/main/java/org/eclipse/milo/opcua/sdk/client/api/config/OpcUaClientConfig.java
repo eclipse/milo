@@ -52,11 +52,6 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
     UInteger getSessionTimeout();
 
     /**
-     * @return the timeout, in milliseconds, before failing a request due to timeout.
-     */
-    UInteger getRequestTimeout();
-
-    /**
      * @return the maximum size for a response from the server.
      */
     UInteger getMaxResponseMessageSize();
@@ -124,6 +119,9 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
+        builder.setConnectTimeout(config.getConnectTimeout());
+        builder.setAcknowledgeTimeout(config.getAcknowledgeTimeout());
+        builder.setRequestTimeout(config.getRequestTimeout());
 
         // OpcUaClientConfig values
         builder.setSessionName(config.getSessionName());

@@ -90,6 +90,14 @@ public class UaStackClient {
             .thenApply(t -> UaStackClient.this);
     }
 
+    public RequestHeader newRequestHeader() {
+        return newRequestHeader(NodeId.NULL_VALUE);
+    }
+
+    public RequestHeader newRequestHeader(NodeId authToken) {
+        return newRequestHeader(authToken, config.getRequestTimeout());
+    }
+
     public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
         return new RequestHeader(
             authToken,
@@ -199,17 +207,17 @@ public class UaStackClient {
         UaTransport transport;
 
         switch (transportProfile) {
-            case OPC_TCP_UASC_UABINARY:
+            case TCP_UASC_UABINARY:
                 transport = new OpcUaTcpTransport(config);
                 break;
-            case OPC_HTTPS_UABINARY:
+            case HTTPS_UABINARY:
                 transport = new OpcUaHttpsTransport(config);
                 break;
 
-            case OPC_HTTPS_UAXML:
-            case OPC_HTTPS_UAJSON:
-            case OPC_WSS_UASC_UABINARY:
-            case OPC_WSS_UAJSON:
+            case HTTPS_UAXML:
+            case HTTPS_UAJSON:
+            case WSS_UASC_UABINARY:
+            case WSS_UAJSON:
             default:
                 throw new UaException(
                     StatusCodes.Bad_InternalError,

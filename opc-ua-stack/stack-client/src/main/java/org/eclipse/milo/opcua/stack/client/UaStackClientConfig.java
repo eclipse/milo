@@ -84,10 +84,20 @@ public interface UaStackClientConfig {
     HashedWheelTimer getWheelTimer();
 
     /**
-     * @return the maximum amount of time, in milliseconds, to wait for an Acknowledge message in response to the
-     * client's Hello message.
+     * @return the timeout, in milliseconds, when opening a socket connection to a remote host.
+     */
+    UInteger getConnectTimeout();
+
+    /**
+     * @return the timeout, in milliseconds, to wait for an Acknowledge message in response to the client's
+     * Hello message.
      */
     UInteger getAcknowledgeTimeout();
+
+    /**
+     * @return the timeout, in milliseconds, before failing a request due to timeout.
+     */
+    UInteger getRequestTimeout();
 
     /**
      * @return the {@link ChannelConfig} to use when creating secure channels.
@@ -124,7 +134,9 @@ public interface UaStackClientConfig {
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
+        builder.setConnectTimeout(config.getConnectTimeout());
         builder.setAcknowledgeTimeout(config.getAcknowledgeTimeout());
+        builder.setRequestTimeout(config.getRequestTimeout());
 
         return builder;
     }
@@ -147,5 +159,5 @@ public interface UaStackClientConfig {
 
         return builder.build();
     }
-    
+
 }

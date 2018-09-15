@@ -16,7 +16,6 @@ package org.eclipse.milo.examples.server;
 import java.io.File;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -26,6 +25,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
@@ -128,22 +129,32 @@ public class ExampleServer {
                         USER_TOKEN_POLICY_USERNAME,
                         USER_TOKEN_POLICY_X509);
 
-                Arrays.asList(SecurityPolicy.None, SecurityPolicy.Basic256Sha256).forEach(securityPolicy -> {
-                    EndpointConfiguration.Builder copy = base.copy()
-                        .setSecurityPolicy(securityPolicy);
 
-                    switch (securityPolicy) {
-                        case Basic256Sha256:
-                            copy.setSecurityMode(MessageSecurityMode.SignAndEncrypt);
-                            break;
-                        default:
-                            copy.setSecurityMode(MessageSecurityMode.None);
-                    }
+                endpointConfigurations.add(
+                    base.copy()
+                        .setSecurityPolicy(SecurityPolicy.None)
+                        .setSecurityMode(MessageSecurityMode.None)
+                        .build()
+                );
 
-                    endpointConfigurations.add(copy.build());
-                });
+                endpointConfigurations.add(
+                    base.copy()
+                        .setSecurityPolicy(SecurityPolicy.Basic256Sha256)
+                        .setSecurityMode(MessageSecurityMode.SignAndEncrypt)
+                        .build()
+                );
             }
         }
+
+        Set<List<Object>> tuples = Sets.cartesianProduct(
+            ImmutableSet.of(1, 2),
+            ImmutableSet.of("foo", "bar")
+        );
+
+        tuples.forEach(tuple -> {
+            int i = (int) tuple.get(0);
+            String s = (String) tuple.get(1);
+        });
 
         endpointConfigurations.forEach(System.out::println);
 

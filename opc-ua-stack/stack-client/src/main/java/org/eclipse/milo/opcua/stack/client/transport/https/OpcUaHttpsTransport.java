@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.client.transport.https;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.channels.ClosedChannelException;
 import java.nio.charset.StandardCharsets;
@@ -203,7 +204,7 @@ public class OpcUaHttpsTransport implements UaTransport {
                     channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());
                     channel.pipeline().addLast(new HttpObjectAggregator(maxMessageSize));
-                    channel.pipeline().addLast(new OpcHttpCodec(config));
+                    channel.pipeline().addLast(new OpcClientHttpCodec(config));
 
                     LOGGER.debug("channelCreated(): " + channel);
                 }
@@ -221,17 +222,28 @@ public class OpcUaHttpsTransport implements UaTransport {
         );
     }
 
-    private static class OpcHttpCodec extends MessageToMessageCodec<HttpResponse, UaTransportRequest> {
+    private static class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTransportRequest> {
 
         private static final AttributeKey<UaTransportRequest> KEY_PENDING_REQUEST =
             AttributeKey.newInstance("pendingRequest");
 
+        private static final String UABINARY_CONTENT_TYPE =
+            HttpHeaderValues.APPLICATION_OCTET_STREAM.toString();
+
         private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private final EndpointDescription endpoint;
+        private final URL endpointUrl;
+        private final TransportProfile transportProfile;
 
         private final UaStackClientConfig config;
 
-        OpcHttpCodec(UaStackClientConfig config) {
+        OpcClientHttpCodec(UaStackClientConfig config) throws MalformedURLException {
             this.config = config;
+
+            endpoint = config.getEndpoint();
+            endpointUrl = new URL(endpoint.getEndpointUrl());
+            transportProfile = TransportProfile.fromUri(endpoint.getTransportProfileUri());
         }
 
         @Override
@@ -246,21 +258,14 @@ public class OpcUaHttpsTransport implements UaTransport {
 
             ByteBuf content = Unpooled.buffer();
 
-            EndpointDescription endpoint = config.getEndpoint();
-            URL endpointUrl = new URL(endpoint.getEndpointUrl());
-            String transportProfileUri = endpoint.getTransportProfileUri();
-
-            TransportProfile transportProfile =
-                TransportProfile.fromUri(transportProfileUri);
-
             switch (transportProfile) {
-                case OPC_HTTPS_UABINARY: {
+                case HTTPS_UABINARY: {
                     OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(content);
                     encoder.writeMessage(null, transportRequest.getRequest());
                     break;
                 }
 
-                case OPC_HTTPS_UAXML: {
+                case HTTPS_UAXML: {
                     OpcUaXmlStreamEncoder encoder = new OpcUaXmlStreamEncoder();
                     encoder.writeMessage(null, transportRequest.getRequest());
                     content.writeBytes(encoder.getDocumentXml().getBytes(StandardCharsets.UTF_8));
@@ -269,7 +274,7 @@ public class OpcUaHttpsTransport implements UaTransport {
 
                 default:
                     throw new UaException(StatusCodes.Bad_InternalError,
-                        "no encoder for transport: " + transportProfileUri);
+                        "no encoder for transport: " + transportProfile);
             }
 
             FullHttpRequest httpRequest = new DefaultFullHttpRequest(
@@ -281,7 +286,7 @@ public class OpcUaHttpsTransport implements UaTransport {
 
             httpRequest.headers().set(HttpHeaderNames.HOST, endpointUrl.getHost());
             httpRequest.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-            httpRequest.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_OCTET_STREAM);
+            httpRequest.headers().set(HttpHeaderNames.CONTENT_TYPE, UABINARY_CONTENT_TYPE);
             httpRequest.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());
             httpRequest.headers().set("OPCUA-SecurityPolicy", config.getEndpoint().getSecurityPolicyUri());
 
@@ -292,7 +297,7 @@ public class OpcUaHttpsTransport implements UaTransport {
         protected void decode(
             ChannelHandlerContext ctx,
             HttpResponse httpResponse,
-            List<Object> out) {
+            List<Object> out) throws Exception {
 
             logger.trace("channelRead0: " + httpResponse);
 
@@ -301,16 +306,29 @@ public class OpcUaHttpsTransport implements UaTransport {
                 .getAndSet(null);
 
             if (httpResponse instanceof FullHttpResponse) {
-                FullHttpResponse fullHttpResponse = (FullHttpResponse) httpResponse;
+                String contentType = httpResponse.headers().get(HttpHeaderNames.CONTENT_TYPE);
 
+                FullHttpResponse fullHttpResponse = (FullHttpResponse) httpResponse;
                 ByteBuf content = fullHttpResponse.content();
 
-                OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(content);
+                UaResponseMessage responseMessage;
 
-                UaResponseMessage responseMessage = (UaResponseMessage) decoder.readMessage(null);
+                switch (transportProfile) {
+                    case HTTPS_UABINARY: {
+                        if (!UABINARY_CONTENT_TYPE.equalsIgnoreCase(contentType)) {
+                            throw new UaException(StatusCodes.Bad_DecodingError,
+                                "unexpected content-type: " + contentType);
+                        }
 
+                        OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(content);
+                        responseMessage = (UaResponseMessage) decoder.readMessage(null);
+                        break;
+                    }
 
-                logger.debug("decoded: " + responseMessage);
+                    default:
+                        throw new UaException(StatusCodes.Bad_InternalError,
+                            "no decoder for transport: " + transportProfile);
+                }
 
                 transportRequest.getFuture().complete(responseMessage);
             } else {

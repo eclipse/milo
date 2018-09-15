@@ -32,7 +32,7 @@ public class ReadExample implements ClientExample {
     public static void main(String[] args) throws Exception {
         ReadExample example = new ReadExample();
 
-        new ClientExampleRunner(example, false).run();
+        new ClientExampleRunner(example, true).run();
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

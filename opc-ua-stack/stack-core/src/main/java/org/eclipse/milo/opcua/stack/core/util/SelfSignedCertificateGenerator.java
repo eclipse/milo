@@ -23,6 +23,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
@@ -78,30 +79,42 @@ public class SelfSignedCertificateGenerator {
         KeyPair keyPair,
         Date notBefore,
         Date notAfter,
-        String commonName,
-        String organization,
-        String organizationalUnit,
-        String localityName,
-        String stateName,
-        String countryCode,
-        String applicationUri,
+        @Nullable String commonName,
+        @Nullable String organization,
+        @Nullable String organizationalUnit,
+        @Nullable String localityName,
+        @Nullable String stateName,
+        @Nullable String countryCode,
+        @Nullable String applicationUri,
         List<String> dnsNames,
         List<String> ipAddresses,
         String signatureAlgorithm) throws Exception {
 
         X500NameBuilder nameBuilder = new X500NameBuilder();
-        nameBuilder.addRDN(BCStyle.CN, commonName);
-        nameBuilder.addRDN(BCStyle.O, organization);
-        nameBuilder.addRDN(BCStyle.OU, organizationalUnit);
-        nameBuilder.addRDN(BCStyle.L, localityName);
-        nameBuilder.addRDN(BCStyle.ST, stateName);
-        nameBuilder.addRDN(BCStyle.C, countryCode);
+
+        if (commonName != null) {
+            nameBuilder.addRDN(BCStyle.CN, commonName);
+        }
+        if (organization != null) {
+            nameBuilder.addRDN(BCStyle.O, organization);
+        }
+        if (organizationalUnit != null) {
+            nameBuilder.addRDN(BCStyle.OU, organizationalUnit);
+        }
+        if (localityName != null) {
+            nameBuilder.addRDN(BCStyle.L, localityName);
+        }
+        if (stateName != null) {
+            nameBuilder.addRDN(BCStyle.ST, stateName);
+        }
+        if (countryCode != null) {
+            nameBuilder.addRDN(BCStyle.C, countryCode);
+        }
 
         X500Name name = nameBuilder.build();
 
         // Using the current timestamp as the certificate serial number
         BigInteger certSerialNumber = new BigInteger(Long.toString(System.currentTimeMillis()));
-
 
         SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(
             keyPair.getPublic().getEncoded()
@@ -145,13 +158,15 @@ public class SelfSignedCertificateGenerator {
     protected void addSubjectAlternativeNames(
         X509v3CertificateBuilder certificateBuilder,
         KeyPair keyPair,
-        String applicationUri,
+        @Nullable String applicationUri,
         List<String> dnsNames,
         List<String> ipAddresses) throws CertIOException, NoSuchAlgorithmException {
 
         List<GeneralName> generalNames = new ArrayList<>();
 
-        generalNames.add(new GeneralName(GeneralName.uniformResourceIdentifier, applicationUri));
+        if (applicationUri != null) {
+            generalNames.add(new GeneralName(GeneralName.uniformResourceIdentifier, applicationUri));
+        }
 
         dnsNames.stream()
             .distinct()

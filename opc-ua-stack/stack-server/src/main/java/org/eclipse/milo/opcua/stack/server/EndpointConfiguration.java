@@ -34,6 +34,7 @@ public class EndpointConfiguration {
     private final String bindAddress;
     private final int bindPort;
     private final String hostname;
+    private final String path;
     private final X509Certificate certificate;
     private final SecurityPolicy securityPolicy;
     private final MessageSecurityMode securityMode;
@@ -44,6 +45,7 @@ public class EndpointConfiguration {
         String bindAddress,
         int bindPort,
         String hostname,
+        String path,
         @Nullable X509Certificate certificate,
         SecurityPolicy securityPolicy,
         MessageSecurityMode securityMode,
@@ -53,6 +55,7 @@ public class EndpointConfiguration {
         this.bindAddress = bindAddress;
         this.bindPort = bindPort;
         this.hostname = hostname;
+        this.path = path;
         this.certificate = certificate;
         this.securityPolicy = securityPolicy;
         this.securityMode = securityMode;
@@ -75,6 +78,10 @@ public class EndpointConfiguration {
         return hostname;
     }
 
+    public String getPath() {
+        return path;
+    }
+
     @Nullable
     public X509Certificate getCertificate() {
         return certificate;
@@ -90,6 +97,13 @@ public class EndpointConfiguration {
 
     public ImmutableList<UserTokenPolicy> getTokenPolicies() {
         return tokenPolicies;
+    }
+
+    public String getEndpointUrl() {
+        String scheme = transportProfile.getScheme();
+        String p = path.startsWith("/") ? path : "/" + path;
+
+        return String.format("%s://%s:%s%s", scheme, hostname, bindPort, p);
     }
 
     @Override
@@ -133,10 +147,11 @@ public class EndpointConfiguration {
 
     public static class Builder {
 
-        TransportProfile transportProfile = TransportProfile.OPC_TCP_UASC_UABINARY;
+        TransportProfile transportProfile = TransportProfile.TCP_UASC_UABINARY;
         String bindAddress = "localhost";
         int bindPort = Stack.DEFAULT_TCP_PORT;
         String hostname = "localhost";
+        String path = "";
         X509Certificate certificate = null;
         SecurityPolicy securityPolicy = SecurityPolicy.None;
         MessageSecurityMode securityMode = MessageSecurityMode.None;
@@ -159,6 +174,11 @@ public class EndpointConfiguration {
 
         public Builder setHostname(String hostname) {
             this.hostname = hostname;
+            return this;
+        }
+
+        public Builder setPath(String path) {
+            this.path = path;
             return this;
         }
 
@@ -198,6 +218,7 @@ public class EndpointConfiguration {
                 .setBindAddress(bindAddress)
                 .setBindPort(bindPort)
                 .setHostname(hostname)
+                .setPath(path)
                 .setCertificate(certificate)
                 .setSecurityPolicy(securityPolicy)
                 .setSecurityMode(securityMode)
@@ -224,12 +245,15 @@ public class EndpointConfiguration {
             }
 
             switch (transportProfile) {
-                case OPC_HTTPS_UAXML:
-                case OPC_HTTPS_UAJSON:
-                case OPC_WSS_UASC_UABINARY:
-                case OPC_WSS_UAJSON:
+                case HTTPS_UAXML:
+                case HTTPS_UAJSON:
+                case WSS_UASC_UABINARY:
+                case WSS_UAJSON:
                     throw new IllegalArgumentException(
                         "unsupported transport: " + transportProfile);
+
+                default:
+                    break;
             }
 
             return new EndpointConfiguration(
@@ -237,6 +261,7 @@ public class EndpointConfiguration {
                 bindAddress,
                 bindPort,
                 hostname,
+                path,
                 certificate,
                 securityPolicy,
                 securityMode,

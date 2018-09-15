@@ -48,7 +48,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     private UInteger maxResponseMessageSize = uint(0);
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
-    private UInteger requestTimeout = uint(60000);
 
     private BsdParser bsdParser = new GenericBsdParser();
     private UInteger keepAliveFailuresAllowed = uint(1);
@@ -88,11 +87,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setMaxPendingPublishRequests(UInteger maxPendingPublishRequests) {
         this.maxPendingPublishRequests = maxPendingPublishRequests;
-        return this;
-    }
-
-    public OpcUaClientConfigBuilder setRequestTimeout(UInteger requestTimeout) {
-        this.requestTimeout = requestTimeout;
         return this;
     }
 
@@ -188,8 +182,20 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     }
 
     @Override
+    public OpcUaClientConfigBuilder setConnectTimeout(UInteger connectTimeout) {
+        super.setConnectTimeout(connectTimeout);
+        return this;
+    }
+
+    @Override
     public OpcUaClientConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
         super.setAcknowledgeTimeout(acknowledgeTimeout);
+        return this;
+    }
+
+    @Override
+    public OpcUaClientConfigBuilder setRequestTimeout(UInteger requestTimeout) {
+        super.setRequestTimeout(requestTimeout);
         return this;
     }
 
@@ -212,7 +218,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             sessionTimeout,
             maxResponseMessageSize,
             maxPendingPublishRequests,
-            requestTimeout,
             identityProvider,
             bsdParser,
             keepAliveFailuresAllowed,
@@ -231,7 +236,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         private final UInteger sessionTimeout;
         private final UInteger maxResponseMessageSize;
         private final UInteger maxPendingPublishRequests;
-        private final UInteger requestTimeout;
         private final IdentityProvider identityProvider;
         private final BsdParser bsdParser;
         private final UInteger keepAliveFailuresAllowed;
@@ -247,7 +251,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             UInteger sessionTimeout,
             UInteger maxResponseMessageSize,
             UInteger maxPendingPublishRequests,
-            UInteger requestTimeout,
             IdentityProvider identityProvider,
             BsdParser bsdParser,
             UInteger keepAliveFailuresAllowed,
@@ -262,7 +265,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             this.sessionTimeout = sessionTimeout;
             this.maxResponseMessageSize = maxResponseMessageSize;
             this.maxPendingPublishRequests = maxPendingPublishRequests;
-            this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
             this.bsdParser = bsdParser;
             this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
@@ -303,11 +305,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public UInteger getMaxPendingPublishRequests() {
             return maxPendingPublishRequests;
-        }
-
-        @Override
-        public UInteger getRequestTimeout() {
-            return requestTimeout;
         }
 
         @Override
@@ -391,8 +388,18 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         }
 
         @Override
+        public UInteger getConnectTimeout() {
+            return stackClientConfig.getConnectTimeout();
+        }
+
+        @Override
         public UInteger getAcknowledgeTimeout() {
             return stackClientConfig.getAcknowledgeTimeout();
+        }
+
+        @Override
+        public UInteger getRequestTimeout() {
+            return stackClientConfig.getRequestTimeout();
         }
 
     }

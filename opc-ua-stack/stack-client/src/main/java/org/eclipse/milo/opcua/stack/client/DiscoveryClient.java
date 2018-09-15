@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
@@ -56,7 +55,7 @@ public class DiscoveryClient {
 
         RequestHeader header = stackClient.newRequestHeader(
             NodeId.NULL_VALUE,
-            uint(10000) // TODO
+            stackClient.getConfig().getRequestTimeout()
         );
 
         GetEndpointsRequest request = new GetEndpointsRequest(
@@ -74,9 +73,12 @@ public class DiscoveryClient {
         String scheme = EndpointUtil.getScheme(endpointUrl);
 
         String profileUri;
+
         if ("opc.tcp".equalsIgnoreCase(scheme)) {
-            profileUri = Stack.UATCP_UASC_UABINARY_TRANSPORT_URI;
-        } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
+            profileUri = Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
+        } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme) ||
+            "opc.http".equalsIgnoreCase(scheme) || "opc.https".equalsIgnoreCase(scheme)) {
+
             profileUri = Stack.HTTPS_UABINARY_TRANSPORT_URI;
         } else {
             return failedFuture(

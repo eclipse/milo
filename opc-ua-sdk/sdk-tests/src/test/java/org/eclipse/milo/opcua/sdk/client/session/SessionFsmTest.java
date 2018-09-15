@@ -37,7 +37,7 @@ public class SessionFsmTest {
                 MessageSecurityMode.None,
                 SecurityPolicy.None.getSecurityPolicyUri(),
                 null,
-                TransportProfile.OPC_TCP_UASC_UABINARY.getUri(),
+                TransportProfile.TCP_UASC_UABINARY.getUri(),
                 null
             ))
             .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))

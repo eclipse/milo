@@ -34,7 +34,7 @@ public final class Stack {
     public static final String VERSION =
         ManifestUtil.read("X-Stack-Version").orElse("dev");
 
-    public static final String UATCP_UASC_UABINARY_TRANSPORT_URI =
+    public static final String TCP_UASC_UABINARY_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary";
 
     public static final String HTTPS_UABINARY_TRANSPORT_URI =
