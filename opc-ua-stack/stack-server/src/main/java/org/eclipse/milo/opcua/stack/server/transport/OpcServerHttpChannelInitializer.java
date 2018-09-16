@@ -13,15 +13,18 @@
 
 package org.eclipse.milo.opcua.stack.server.transport;
 
-import java.util.List;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
 import java.util.Objects;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.handler.codec.MessageToMessageCodec;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -40,20 +43,43 @@ import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler.HandshakeComplete;
+import static org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
 
-public class OpcHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private static final String WS_PROTOCOL_BINARY = "opcua+uacp";
     private static final String WS_PROTOCOL_JSON = "opcua+uajson";
+
+
+    private final ServerLookup serverLookup;
+
+    OpcServerHttpChannelInitializer(ServerLookup serverLookup) {
+        this.serverLookup = serverLookup;
+    }
 
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
         // TODO how is the certificate for HTTPS configured/provided?
         // TODO configure private key and certificate
-        SslContext sslContext = SslContextBuilder.forServer(null)
+        KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+
+        X509Certificate serverHttpsCertificate = new SelfSignedHttpsCertificateBuilder(keyPair)
+            .setCommonName("localhost")
+            .build();
+
+        PrivateKey privateKey = keyPair.getPrivate();
+
+        SslContext sslContext = SslContextBuilder
+            .forServer(privateKey, serverHttpsCertificate)
             .clientAuth(ClientAuth.NONE)
             .trustManager(InsecureTrustManagerFactory.INSTANCE)
             .build();
@@ -63,18 +89,40 @@ public class OpcHttpChannelInitializer extends ChannelInitializer<SocketChannel>
         channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
         channel.pipeline().addLast(new HttpServerCodec());
 
-        channel.pipeline().addLast(new OpcTransportInitializer());
+        channel.pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
+        channel.pipeline().addLast(new OpcHttpTransportInterceptor(serverLookup));
     }
 
-    private static class OpcTransportInitializer extends SimpleChannelInboundHandler<HttpRequest> {
+    private static class OpcHttpTransportInterceptor extends SimpleChannelInboundHandler<HttpRequest> {
+
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        private final ServerLookup serverLookup;
+
+        public OpcHttpTransportInterceptor(ServerLookup serverLookup) {
+            this.serverLookup = serverLookup;
+        }
+
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception {
             // TODO server lookup might have to be by path instead of full endpoint URL?
-            String uri = msg.uri();
+            FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
 
+            String host = fullHttpRequest.headers().get(HttpHeaderNames.HOST);
+            String uri = fullHttpRequest.uri();
 
-            if (Objects.equals(msg.method(), HttpMethod.GET) &&
+            logger.info("host={} uri={}", host, uri);
+
+            UaStackServer stackServer = serverLookup.getServer(uri).orElseThrow(
+                () -> new UaException(
+                    StatusCodes.Bad_TcpEndpointUrlInvalid,
+                    "unrecognized endpoint uri: " + uri)
+            );
+
+            if (Objects.equals(fullHttpRequest.method(), HttpMethod.GET) &&
                 "websocket".equalsIgnoreCase(msg.headers().get(HttpHeaderValues.UPGRADE))) {
+
+                logger.info("intercepted WebSocket upgrade");
 
                 ctx.channel().pipeline().remove(this);
 
@@ -91,16 +139,18 @@ public class OpcHttpChannelInitializer extends ChannelInitializer<SocketChannel>
 
                 // TODO add UascServerHelloHandler
 
-                ctx.fireChannelRead(msg);
+                fullHttpRequest.retain();
+                ctx.executor().execute(() -> ctx.fireChannelRead(fullHttpRequest));
             } else if (Objects.equals(msg.method(), HttpMethod.POST)) {
+                logger.info("intercepted HTTP POST");
+
                 ctx.channel().pipeline().remove(this);
 
                 // TODO configure maxContentLength based on MaxRequestSize?
-                ctx.channel().pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
+                ctx.channel().pipeline().addLast(new OpcServerHttpCodec(stackServer));
 
-                ctx.channel().pipeline().addLast(new OpcServerHttpCodec());
-
-                ctx.fireChannelRead(msg);
+                fullHttpRequest.retain();
+                ctx.executor().execute(() -> ctx.pipeline().fireChannelRead(fullHttpRequest));
             } else {
                 HttpResponse response = new DefaultFullHttpResponse(
                     HttpVersion.HTTP_1_1,
@@ -111,20 +161,6 @@ public class OpcHttpChannelInitializer extends ChannelInitializer<SocketChannel>
                     .addListener(future -> ctx.close());
             }
         }
-    }
-
-    private static class OpcServerHttpCodec extends MessageToMessageCodec<HttpRequest, ServiceResponse> {
-
-        @Override
-        protected void encode(ChannelHandlerContext ctx, ServiceResponse msg, List<Object> out) throws Exception {
-
-        }
-
-        @Override
-        protected void decode(ChannelHandlerContext ctx, HttpRequest msg, List<Object> out) throws Exception {
-
-        }
-
     }
 
     private static class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {

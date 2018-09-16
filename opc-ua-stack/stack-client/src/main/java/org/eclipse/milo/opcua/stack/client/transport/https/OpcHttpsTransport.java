@@ -154,6 +154,8 @@ public class OpcHttpsTransport implements UaTransport {
 
         int port = EndpointUtil.getPort(endpointUrl);
 
+        LOGGER.info("bootstrap host={} port={}", host, port);
+
         Bootstrap bootstrap = new Bootstrap()
             .channelFactory(NioSocketChannel::new)
             .group(config.getEventLoop())
@@ -166,7 +168,7 @@ public class OpcHttpsTransport implements UaTransport {
                 public void channelCreated(Channel channel) throws Exception {
                     String scheme = EndpointUtil.getScheme(endpointUrl);
 
-                    if ("https".equalsIgnoreCase(scheme)) {
+                    if ("https".equalsIgnoreCase(scheme) || "opc.https".equalsIgnoreCase(scheme)) {
                         SslContext sslContext = SslContextBuilder.forClient()
                             .trustManager(InsecureTrustManagerFactory.INSTANCE)
                             .build();

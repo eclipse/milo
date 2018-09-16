@@ -27,7 +27,7 @@ public enum TransportProfile {
     public static TransportProfile fromUri(String uri) {
         //@formatter:off
         switch (uri) {
-            case Stack.TCP_UASC_UABINARY_TRANSPORT_URI:   return TCP_UASC_UABINARY;
+            case Stack.TCP_UASC_UABINARY_TRANSPORT_URI:     return TCP_UASC_UABINARY;
             case Stack.HTTPS_UABINARY_TRANSPORT_URI:        return HTTPS_UABINARY;
             case Stack.HTTPS_UAXML_TRANSPORT_URI:           return HTTPS_UAXML;
             case Stack.HTTPS_UAJSON_TRANSPORT_URI:          return HTTPS_UAJSON;

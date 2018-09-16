@@ -39,7 +39,8 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.HelloMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
-import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,9 +60,9 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
     private volatile boolean receivedHello = false;
 
-    private final Function<String, Optional<UaTcpStackServer>> serverLookup;
+    private final Function<String, Optional<UaStackServer>> serverLookup;
 
-    public UascServerHelloHandler(Function<String, Optional<UaTcpStackServer>> serverLookup) {
+    public UascServerHelloHandler(Function<String, Optional<UaStackServer>> serverLookup) {
         this.serverLookup = serverLookup;
     }
 
@@ -120,13 +121,16 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
         final HelloMessage hello = TcpMessageDecoder.decodeHello(buffer);
 
-        UaTcpStackServer server = serverLookup.apply(hello.getEndpointUrl()).orElseThrow(
+        String endpointUrl = hello.getEndpointUrl();
+        String path = EndpointUtil.getPath(endpointUrl);
+
+        UaStackServer server = serverLookup.apply(path).orElseThrow(
             () -> new UaException(
                 StatusCodes.Bad_TcpEndpointUrlInvalid,
-                "unrecognized endpoint url: " + hello.getEndpointUrl())
+                "unrecognized endpoint url: " + endpointUrl)
         );
 
-        ctx.channel().attr(ENDPOINT_URL_KEY).set(hello.getEndpointUrl());
+        ctx.channel().attr(ENDPOINT_URL_KEY).set(endpointUrl);
 
         long remoteProtocolVersion = hello.getProtocolVersion();
         long remoteReceiveBufferSize = hello.getReceiveBufferSize();
@@ -139,7 +143,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
                 "unsupported protocol version: " + remoteProtocolVersion);
         }
 
-        ChannelConfig config = server.getChannelConfig();
+        ChannelConfig config = server.getConfig().getChannelConfig();
 
         /* Our receive buffer size is determined by the remote send buffer size. */
         long localReceiveBufferSize = Math.min(remoteSendBufferSize, config.getMaxChunkSize());

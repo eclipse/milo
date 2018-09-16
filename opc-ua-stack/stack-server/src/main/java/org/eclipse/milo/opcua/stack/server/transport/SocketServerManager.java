@@ -31,6 +31,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
@@ -91,22 +92,24 @@ public class SocketServerManager {
         return completedFuture(Unit.VALUE);
     }
 
-    private static class SocketServer {
+    public static class SocketServer {
 
         private AtomicReference<Channel> channel = new AtomicReference<>();
 
         private final Map<String, UaStackServer> stackServers = Maps.newConcurrentMap();
 
         void addServer(EndpointConfiguration endpoint, UaStackServer stackServer) {
-            stackServers.put(endpoint.getEndpointUrl(), stackServer);
+            String path = EndpointUtil.getPath(endpoint.getEndpointUrl());
+            stackServers.put(path, stackServer);
         }
 
         void removeServer(EndpointConfiguration endpoint, UaStackServer stackServer) {
-            stackServers.remove(endpoint.getEndpointUrl(), stackServer);
+            String path = EndpointUtil.getPath(endpoint.getEndpointUrl());
+            stackServers.remove(path, stackServer);
         }
 
-        Optional<UaStackServer> getServer(String endpointUrl) {
-            return Optional.ofNullable(stackServers.get(endpointUrl));
+        Optional<UaStackServer> getServer(String path) {
+            return Optional.ofNullable(stackServers.get(path));
         }
 
         boolean isEmpty() {
@@ -132,9 +135,9 @@ public class SocketServerManager {
             ChannelInitializer<SocketChannel> initializer;
 
             if (transportProfile == TransportProfile.TCP_UASC_UABINARY) {
-                initializer = new OpcTcpChannelInitializer(socketServer::getServer);
+                initializer = new OpcServerTcpChannelInitializer(socketServer::getServer);
             } else {
-                initializer = new OpcHttpChannelInitializer();
+                initializer = new OpcServerHttpChannelInitializer(socketServer::getServer);
             }
 
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -159,6 +162,12 @@ public class SocketServerManager {
             });
 
             return serverFuture;
+        }
+
+        public interface ServerLookup {
+
+            Optional<UaStackServer> getServer(String path);
+
         }
 
     }

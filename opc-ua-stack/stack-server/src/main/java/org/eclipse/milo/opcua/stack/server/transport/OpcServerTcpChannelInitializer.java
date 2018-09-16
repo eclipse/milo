@@ -19,19 +19,20 @@ import java.util.function.Function;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
 
-public class OpcTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class OpcServerTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     private final Function<String, Optional<UaStackServer>> serverLookup;
 
-    OpcTcpChannelInitializer(Function<String, Optional<UaStackServer>> serverLookup) {
+    OpcServerTcpChannelInitializer(Function<String, Optional<UaStackServer>> serverLookup) {
         this.serverLookup = serverLookup;
     }
 
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
         channel.pipeline().addLast(RateLimitingHandler.getInstance());
-        // TODO channel.pipeline().addLast(new UascServerHelloHandler(serverLookup));
+        channel.pipeline().addLast(new UascServerHelloHandler(serverLookup));
     }
 
 }

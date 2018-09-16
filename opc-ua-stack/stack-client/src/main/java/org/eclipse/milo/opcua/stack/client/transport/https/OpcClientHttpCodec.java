@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.client.transport.https;
 
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -42,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,6 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final EndpointDescription endpoint;
-    private final URL endpointUrl;
     private final TransportProfile transportProfile;
 
     private final UaStackClientConfig config;
@@ -65,7 +64,6 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
         this.config = config;
 
         endpoint = config.getEndpoint();
-        endpointUrl = new URL(endpoint.getEndpointUrl());
         transportProfile = TransportProfile.fromUri(endpoint.getTransportProfileUri());
     }
 
@@ -100,14 +98,16 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                     "no encoder for transport: " + transportProfile);
         }
 
+        String endpointUrl = endpoint.getEndpointUrl();
+
         FullHttpRequest httpRequest = new DefaultFullHttpRequest(
             HttpVersion.HTTP_1_1,
             HttpMethod.POST,
-            endpointUrl.getPath(),
+            EndpointUtil.getPath(endpointUrl),
             content
         );
 
-        httpRequest.headers().set(HttpHeaderNames.HOST, endpointUrl.getHost());
+        httpRequest.headers().set(HttpHeaderNames.HOST, EndpointUtil.getHost(endpointUrl));
         httpRequest.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         httpRequest.headers().set(HttpHeaderNames.CONTENT_TYPE, UABINARY_CONTENT_TYPE);
         httpRequest.headers().set(HttpHeaderNames.CONTENT_LENGTH, content.readableBytes());

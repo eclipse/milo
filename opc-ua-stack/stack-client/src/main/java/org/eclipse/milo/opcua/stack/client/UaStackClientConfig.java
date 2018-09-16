@@ -29,6 +29,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 public interface UaStackClientConfig {
 
+    /**
+     * Get the endpoint to connect to.
+     *
+     * @return the {@link EndpointDescription} to connect to.
+     */
     EndpointDescription getEndpoint();
 
     /**

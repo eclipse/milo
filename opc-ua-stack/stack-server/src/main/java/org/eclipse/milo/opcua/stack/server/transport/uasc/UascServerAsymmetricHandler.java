@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -56,6 +55,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,15 +83,15 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     private final int maxChunkCount;
     private final int maxChunkSize;
 
-    private final UaTcpStackServer server;
+    private final UaStackServer stackServer;
     private final SerializationQueue serializationQueue;
 
-    public UascServerAsymmetricHandler(UaTcpStackServer server, SerializationQueue serializationQueue) {
-        this.server = server;
+    public UascServerAsymmetricHandler(UaStackServer stackServer, SerializationQueue serializationQueue) {
+        this.stackServer = stackServer;
         this.serializationQueue = serializationQueue;
 
-        maxArrayLength = server.getConfig().getEncodingLimits().getMaxArrayLength();
-        maxStringLength = server.getConfig().getEncodingLimits().getMaxStringLength();
+        maxArrayLength = stackServer.getConfig().getEncodingLimits().getMaxArrayLength();
+        maxStringLength = stackServer.getConfig().getEncodingLimits().getMaxStringLength();
         maxChunkCount = serializationQueue.getParameters().getLocalMaxChunkCount();
         maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
     }
@@ -115,7 +115,8 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 case CloseSecureChannel:
                     logger.debug("Received CloseSecureChannelRequest");
                     if (secureChannel != null) {
-                        server.closeSecureChannel(secureChannel);
+                        // TODO SecureChanel
+                        // server.closeSecureChannel(secureChannel);
                     }
                     buffer.skipBytes(messageLength);
                     break;
@@ -152,7 +153,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 String endpointUrl = ctx.channel().attr(UascServerHelloHandler.ENDPOINT_URL_KEY).get();
                 String securityPolicyUri = securityHeader.getSecurityPolicyUri();
 
-                EndpointDescription endpointDescription = Arrays.stream(server.getEndpointDescriptions())
+                EndpointDescription endpointDescription = stackServer.getEndpointDescriptions().stream()
                     .filter(e -> {
                         String s1 = EndpointUtil.getPath(endpointUrl);
                         String s2 = EndpointUtil.getPath(e.getEndpointUrl());
@@ -167,12 +168,21 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                             "Endpoint URL or SecurityPolicy URI did not match")
                     );
 
-                secureChannel = server.openSecureChannel();
+                // TODO SecureChanel
+                // secureChannel = server.openSecureChannel();
+                secureChannel = new ServerSecureChannel();
+                secureChannel.setChannelId(stackServer.getNextTokenId());
                 secureChannel.setEndpointDescription(endpointDescription);
             } else {
-                secureChannel = server.getSecureChannel(secureChannelId);
+                // TODO SecureChanel
+                // secureChannel = server.getSecureChannel(secureChannelId);
 
                 if (secureChannel == null) {
+                    throw new UaException(StatusCodes.Bad_TcpSecureChannelUnknown,
+                        "unknown secure channel id: " + secureChannelId);
+                }
+
+                if (secureChannelId != secureChannel.getChannelId()) {
                     throw new UaException(StatusCodes.Bad_TcpSecureChannelUnknown,
                         "unknown secure channel id: " + secureChannelId);
                 }
@@ -202,12 +212,12 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             if (securityPolicy != SecurityPolicy.None) {
                 secureChannel.setRemoteCertificate(securityHeader.getSenderCertificate().bytesOrEmpty());
 
-                CertificateValidator certificateValidator = server.getCertificateValidator();
+                CertificateValidator certificateValidator = stackServer.getConfig().getCertificateValidator();
 
                 certificateValidator.validate(secureChannel.getRemoteCertificate());
                 certificateValidator.verifyTrustChain(secureChannel.getRemoteCertificateChain());
 
-                CertificateManager certificateManager = server.getCertificateManager();
+                CertificateManager certificateManager = stackServer.getConfig().getCertificateManager();
 
                 Optional<X509Certificate[]> localCertificateChain = certificateManager
                     .getCertificateChain(securityHeader.getReceiverThumbprint());
@@ -315,7 +325,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
         ChannelSecurityToken newToken = new ChannelSecurityToken(
             uint(secureChannel.getChannelId()),
-            uint(server.nextTokenId()),
+            uint(stackServer.getNextTokenId()),
             DateTime.now(),
             uint(channelLifetime)
         );
@@ -407,9 +417,12 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         @Override
                         public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
                             if (!symmetricHandlerAdded) {
-                                UascServerSymmetricHandler symmetricHandler =
-                                    new UascServerSymmetricHandler(
-                                        server, serializationQueue, secureChannel);
+                                UascServerSymmetricHandler2 symmetricHandler =
+                                    new UascServerSymmetricHandler2(
+                                        stackServer,
+                                        serializationQueue,
+                                        secureChannel
+                                    );
 
                                 ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);
 
@@ -426,7 +439,9 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                             ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
 
                             long lifetime = response.getSecurityToken().getRevisedLifetime().longValue();
-                            server.secureChannelIssuedOrRenewed(secureChannel, lifetime);
+
+                            // TODO SecureChanel
+                            // server.secureChannelIssuedOrRenewed(secureChannel, lifetime);
 
                             logger.debug("Sent OpenSecureChannelResponse.");
                         }

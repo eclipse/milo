@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import com.google.common.base.Preconditions;
 
+// TODO refactor/rename: MessageLimits?
 public class ChannelConfig {
 
     /**

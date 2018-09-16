@@ -13,10 +13,99 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
-import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.function.Consumer;
+
+import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 
 public interface UaStackServerConfig {
 
-    List<EndpointConfiguration> getEndpointConfigurations();
+    /**
+     * @return the {@link EndpointConfiguration}s for this server.
+     */
+    Set<EndpointConfiguration> getEndpoints();
+
+    /**
+     * Get the application name for the server.
+     * <p/>
+     * This will be used in the {@link ApplicationDescription} returned to clients.
+     *
+     * @return the application name for the server.
+     */
+    LocalizedText getApplicationName();
+
+    /**
+     * Get the application uri for the server.
+     * <p/>
+     * This will be used in the {@link ApplicationDescription} returned to clients.
+     * <p/>
+     * <b>The application uri must match the application uri used on the server's application instance certificate.</b>
+     *
+     * @return the application uri for the server.
+     */
+    String getApplicationUri();
+
+    /**
+     * Get the product uri for the server.
+     * <p/>
+     * This will be used in the {@link ApplicationDescription} returned to clients.
+     *
+     * @return the product uri for the server.
+     */
+    String getProductUri();
+
+    /**
+     * @return the {@link ChannelConfig}.
+     */
+    ChannelConfig getChannelConfig();
+
+    /**
+     * @return the configured {@link EncodingLimits}.
+     */
+    EncodingLimits getEncodingLimits();
+
+    /**
+     * @return the {@link CertificateManager} for this server.
+     */
+    CertificateManager getCertificateManager();
+
+    /**
+     * @return the {@link CertificateValidator} for this server.
+     */
+    CertificateValidator getCertificateValidator();
+
+    /**
+     * @return the {@link ExecutorService} for this server.
+     */
+    ExecutorService getExecutor();
+
+    static UaStackServerConfigBuilder builder() {
+        return new UaStackServerConfigBuilder();
+    }
+
+    static UaStackServerConfigBuilder copy(UaStackServerConfig config) {
+        UaStackServerConfigBuilder builder = builder();
+
+        // TODO
+
+        return builder;
+    }
+
+    static UaStackServerConfig copy(
+        UaStackServerConfig config,
+        Consumer<UaStackServerConfigBuilder> consumer) {
+
+        UaStackServerConfigBuilder builder = copy(config);
+
+        consumer.accept(builder);
+
+        return builder.build();
+    }
 
 }
