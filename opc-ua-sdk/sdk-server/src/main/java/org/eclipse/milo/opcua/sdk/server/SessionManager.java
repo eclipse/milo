@@ -38,16 +38,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.QueryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -128,6 +118,16 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
+import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.QueryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -229,7 +229,7 @@ public class SessionManager implements
 
         ByteString serverNonce = NonceUtil.generateNonce(32);
         NodeId authenticationToken = new NodeId(0, NonceUtil.generateNonce(32));
-        long maxRequestMessageSize = serviceRequest.getServer().getChannelConfig().getMaxMessageSize();
+        long maxRequestMessageSize = serviceRequest.getServer().getConfig().getChannelConfig().getMaxMessageSize();
         double revisedSessionTimeout = Math.max(
             5000,
             Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout())
@@ -239,7 +239,7 @@ public class SessionManager implements
         SecurityPolicy securityPolicy = secureChannel.getSecurityPolicy();
 
         ByteString serverCertificate = serviceRequest
-            .getSecureChannel().getEndpointDescription().getServerCertificate();
+            .getSecureChannel().getLocalCertificateBytes();
 
         SignedSoftwareCertificate[] serverSoftwareCertificates = server.getSoftwareCertificates();
 
@@ -271,6 +271,15 @@ public class SessionManager implements
 
             X509Certificate clientCertificate = clientCertificateChain.get(0);
 
+            // Clients connecting via HTTPS will not have had
+            // a chance to provide a certificate until now.
+            if (secureChannel.getRemoteCertificate() == null) {
+                secureChannel.setRemoteCertificate(
+                    clientCertificateBytes.bytesOrEmpty());
+            }
+
+            // This check is redundant on HTTPS since we just set the
+            // certificate, but it's still required for UASC.
             if (!secureChannel.getRemoteCertificate().equals(clientCertificate)) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "certificate used to open secure channel " +

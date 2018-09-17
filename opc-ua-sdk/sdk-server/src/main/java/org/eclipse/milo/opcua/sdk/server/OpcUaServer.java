@@ -40,15 +40,6 @@ import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.application.UaStackServer;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -61,7 +52,16 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
-import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
+import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
+import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaStackServer;
+import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +94,8 @@ public class OpcUaServer implements UaNodeContext {
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
 
-    private final UaTcpStackServer discoveryServer;
-    private final UaTcpStackServer stackServer;
+    private final LegacyUaTcpStackServer discoveryServer;
+    private final LegacyUaTcpStackServer stackServer;
     private final EventBus eventBus;
 
     private final OpcUaNamespace uaNamespace;
@@ -106,7 +106,7 @@ public class OpcUaServer implements UaNodeContext {
     public OpcUaServer(OpcUaServerConfig config) {
         this.config = config;
 
-        discoveryServer = new UaTcpStackServer(OpcUaServerConfig.copy(config, b -> {
+        discoveryServer = new LegacyUaTcpStackServer(OpcUaServerConfig.copy(config, b -> {
             String serverName = config.getServerName();
 
             String discoveryServerName = "discovery";
@@ -122,7 +122,7 @@ public class OpcUaServer implements UaNodeContext {
             b.setServerName(discoveryServerName);
         }));
 
-        stackServer = new UaTcpStackServer(config);
+        stackServer = new LegacyUaTcpStackServer(config);
         stackServer.addServiceSet((AttributeServiceSet) sessionManager);
         stackServer.addServiceSet((AttributeHistoryServiceSet) sessionManager);
         stackServer.addServiceSet((MethodServiceSet) sessionManager);
@@ -325,7 +325,7 @@ public class OpcUaServer implements UaNodeContext {
         stackServer.closeSecureChannel(secureChannel);
     }
 
-    public UaStackServer getStackServer() {
+    public LegacyUaStackServer getStackServer() {
         return stackServer;
     }
 

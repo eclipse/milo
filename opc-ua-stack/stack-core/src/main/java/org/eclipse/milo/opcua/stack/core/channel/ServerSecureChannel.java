@@ -86,6 +86,11 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
         this.messageSecurityMode = messageSecurityMode;
     }
 
+    // TODO EndpointDescription is only used to get the desired Server Certificate
+    // for UASC this can be figured out from the ReceiverThumbprint in AsymSecHeader
+    // for HTTPS... not possible?
+
+    /*
     public void setEndpointDescription(EndpointDescription endpointDescription) {
         this.endpointDescription = endpointDescription;
     }
@@ -93,6 +98,7 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
     public EndpointDescription getEndpointDescription() {
         return endpointDescription;
     }
+    */
 
     @Override
     public KeyPair getKeyPair() {

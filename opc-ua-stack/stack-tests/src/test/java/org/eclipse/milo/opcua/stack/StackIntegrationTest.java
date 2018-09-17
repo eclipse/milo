@@ -210,4 +210,5 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         public void test() {}
 
     }
+
 }

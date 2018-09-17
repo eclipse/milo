@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.server.transport;
+package org.eclipse.milo.opcua.stack.server.transport.http;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +59,10 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
 
     private static final String WS_PROTOCOL_BINARY = "opcua+uacp";
     private static final String WS_PROTOCOL_JSON = "opcua+uajson";
-
-
+    
     private final ServerLookup serverLookup;
 
-    OpcServerHttpChannelInitializer(ServerLookup serverLookup) {
+    public OpcServerHttpChannelInitializer(ServerLookup serverLookup) {
         this.serverLookup = serverLookup;
     }
 
@@ -147,7 +147,7 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
                 ctx.channel().pipeline().remove(this);
 
                 // TODO configure maxContentLength based on MaxRequestSize?
-                ctx.channel().pipeline().addLast(new OpcServerHttpCodec(stackServer));
+                ctx.channel().pipeline().addLast(new OpcServerHttpRequestHandler(stackServer));
 
                 fullHttpRequest.retain();
                 ctx.executor().execute(() -> ctx.pipeline().fireChannelRead(fullHttpRequest));

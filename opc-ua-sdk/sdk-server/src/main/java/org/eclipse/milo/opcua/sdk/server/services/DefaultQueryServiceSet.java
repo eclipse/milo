@@ -14,12 +14,12 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.QueryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
+import org.eclipse.milo.opcua.stack.server.services.QueryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ServiceUnsupported;
 

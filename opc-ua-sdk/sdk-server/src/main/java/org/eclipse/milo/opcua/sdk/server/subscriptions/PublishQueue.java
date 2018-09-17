@@ -19,10 +19,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public class PublishQueue {
 
                 final WaitingSubscription ws = subscription;
 
-                service.getServer().getExecutorService().execute(
+                service.getServer().getConfig().getExecutor().execute(
                     () -> ws.subscription.onPublish(service)
                 );
             } else {
@@ -103,7 +103,7 @@ public class PublishQueue {
         if (waitList.isEmpty() && !serviceQueue.isEmpty()) {
             ServiceRequest<PublishRequest, PublishResponse> request = serviceQueue.poll();
 
-            request.getServer().getExecutorService().execute(
+            request.getServer().getConfig().getExecutor().execute(
                 () -> subscription.onPublish(request)
             );
         } else {

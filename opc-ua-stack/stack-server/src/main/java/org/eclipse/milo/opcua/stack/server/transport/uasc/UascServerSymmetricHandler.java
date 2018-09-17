@@ -26,8 +26,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaExceptionStatus;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
@@ -45,7 +43,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
-import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.ServiceResponse;
+import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,11 +60,11 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
     private final int maxChunkCount;
     private final int maxChunkSize;
 
-    private final UaTcpStackServer server;
+    private final LegacyUaTcpStackServer server;
     private final SerializationQueue serializationQueue;
     private final ServerSecureChannel secureChannel;
 
-    public UascServerSymmetricHandler(UaTcpStackServer server,
+    public UascServerSymmetricHandler(LegacyUaTcpStackServer server,
                                       SerializationQueue serializationQueue,
                                       ServerSecureChannel secureChannel) {
 
@@ -81,7 +81,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
         if (secureChannel != null) {
-            secureChannel.attr(UaTcpStackServer.BoundChannelKey).set(ctx.channel());
+            secureChannel.attr(LegacyUaTcpStackServer.BoundChannelKey).set(ctx.channel());
         }
 
         super.channelActive(ctx);
@@ -90,7 +90,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (secureChannel != null) {
-            secureChannel.attr(UaTcpStackServer.BoundChannelKey).set(null);
+            secureChannel.attr(LegacyUaTcpStackServer.BoundChannelKey).set(null);
         }
 
         super.channelInactive(ctx);
@@ -280,7 +280,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
                                     server.receiveRequest(new ServiceRequest<>(
                                         request,
                                         requestId,
-                                        server,
+                                        null, // TODO
                                         secureChannel
                                     ));
                                 } catch (Throwable t) {

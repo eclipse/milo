@@ -36,14 +36,14 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
-import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
+import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class ServerExample {
 
-    private final UaTcpStackServer server;
+    private final LegacyUaTcpStackServer server;
 
     public ServerExample(X509Certificate certificate, KeyPair keyPair) throws Exception {
         File securityDir = new File("./security/");
@@ -63,7 +63,7 @@ public class ServerExample {
             .setCertificateValidator(certificateValidator)
             .build();
 
-        server = new UaTcpStackServer(config);
+        server = new LegacyUaTcpStackServer(config);
 
         server.addEndpoint(
             "opc.tcp://localhost:12685/example",

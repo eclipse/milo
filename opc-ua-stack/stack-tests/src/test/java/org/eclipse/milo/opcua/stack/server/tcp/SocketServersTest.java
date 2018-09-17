@@ -39,7 +39,7 @@ public class SocketServersTest extends SecurityFixture {
             .setCertificateValidator(serverCertificateValidator)
             .build();
 
-        UaTcpStackServer server = new UaTcpStackServer(config);
+        LegacyUaTcpStackServer server = new LegacyUaTcpStackServer(config);
 
         server.addEndpoint("opc.tcp://localhost:12685/test", null);
 

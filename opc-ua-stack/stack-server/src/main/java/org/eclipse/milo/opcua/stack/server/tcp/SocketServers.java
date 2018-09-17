@@ -50,14 +50,14 @@ public class SocketServers {
     static final ConcurrentMap<InetSocketAddress, SocketServer> SERVERS = Maps.newConcurrentMap();
 
 
-    public static CompletableFuture<Unit> bindServer(UaTcpStackServer stackServer, String address, int port) {
+    public static CompletableFuture<Unit> bindServer(LegacyUaTcpStackServer stackServer, String address, int port) {
         return SEMAPHORE.acquire().thenCompose(permit ->
             doBindServer(stackServer, address, port)
                 .whenComplete((u, ex) -> permit.release())
         );
     }
 
-    private static CompletableFuture<Unit> doBindServer(UaTcpStackServer stackServer, String address, int port) {
+    private static CompletableFuture<Unit> doBindServer(LegacyUaTcpStackServer stackServer, String address, int port) {
         InetSocketAddress isa = isa(address, port);
 
         if (SERVERS.containsKey(isa)) {
@@ -74,14 +74,14 @@ public class SocketServers {
         }
     }
 
-    public static CompletableFuture<Unit> unbindServer(UaTcpStackServer stackServer, String address, int port) {
+    public static CompletableFuture<Unit> unbindServer(LegacyUaTcpStackServer stackServer, String address, int port) {
         return SEMAPHORE.acquire().thenCompose(permit ->
             doUnbindServer(stackServer, address, port)
                 .whenComplete((u, ex) -> permit.release())
         );
     }
 
-    private static CompletableFuture<Unit> doUnbindServer(UaTcpStackServer stackServer, String address, int port) {
+    private static CompletableFuture<Unit> doUnbindServer(LegacyUaTcpStackServer stackServer, String address, int port) {
         InetSocketAddress isa = isa(address, port);
 
         if (SERVERS.containsKey(isa)) {
@@ -125,7 +125,7 @@ public class SocketServers {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
 
-        private final Map<String, UaTcpStackServer> boundServers = Maps.newConcurrentMap();
+        private final Map<String, LegacyUaTcpStackServer> boundServers = Maps.newConcurrentMap();
 
         private final InetSocketAddress address;
         private final Channel channel;
@@ -135,13 +135,13 @@ public class SocketServers {
             this.channel = channel;
         }
 
-        private UaTcpStackServer getServer(String endpointUrl) {
+        private LegacyUaTcpStackServer getServer(String endpointUrl) {
             String path = EndpointUtil.getPath(endpointUrl);
 
             return boundServers.get(path);
         }
 
-        private void addServer(UaTcpStackServer server) {
+        private void addServer(LegacyUaTcpStackServer server) {
             Stream<String> endpointUrls = server.getEndpointUrls().stream();
             Stream<String> discoveryUrls = server.getDiscoveryUrls().stream();
 
@@ -161,7 +161,7 @@ public class SocketServers {
             });
         }
 
-        private void removeServer(UaTcpStackServer server) {
+        private void removeServer(LegacyUaTcpStackServer server) {
             Stream<String> endpointUrls = server.getEndpointUrls().stream();
             Stream<String> discoveryUrls = server.getDiscoveryUrls().stream();
 
@@ -201,7 +201,7 @@ public class SocketServers {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel channel) throws Exception {
-                        Function<String, Optional<UaTcpStackServer>> serverLookup =
+                        Function<String, Optional<LegacyUaTcpStackServer>> serverLookup =
                             endpointUrl -> getServerByEndpointUrl(address, endpointUrl);
 
                         channel.pipeline().addLast(RateLimitingHandler.getInstance());
@@ -221,7 +221,7 @@ public class SocketServers {
             return serverFuture;
         }
 
-        static Optional<UaTcpStackServer> getServerByEndpointUrl(InetSocketAddress address, String endpointUrl) {
+        static Optional<LegacyUaTcpStackServer> getServerByEndpointUrl(InetSocketAddress address, String endpointUrl) {
             SocketServer socketServer = SocketServers.SERVERS.get(address);
 
             if (socketServer != null) {

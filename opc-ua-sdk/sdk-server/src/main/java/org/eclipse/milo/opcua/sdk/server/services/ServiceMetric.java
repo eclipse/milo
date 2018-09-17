@@ -15,8 +15,8 @@ package org.eclipse.milo.opcua.sdk.server.services;
 
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Timer;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 

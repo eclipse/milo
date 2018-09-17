@@ -15,8 +15,6 @@ package org.eclipse.milo.opcua.sdk.server.services;
 
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
@@ -27,6 +25,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeReque
 import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
+import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
 

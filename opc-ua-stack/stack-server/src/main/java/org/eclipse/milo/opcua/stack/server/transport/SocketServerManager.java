@@ -35,6 +35,8 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.eclipse.milo.opcua.stack.server.transport.http.OpcServerHttpChannelInitializer;
+import org.eclipse.milo.opcua.stack.server.transport.tcp.OpcServerTcpChannelInitializer;
 
 import static java.util.concurrent.CompletableFuture.completedFuture;
 

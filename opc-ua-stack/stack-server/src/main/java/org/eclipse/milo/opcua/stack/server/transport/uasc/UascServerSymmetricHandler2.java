@@ -23,10 +23,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.UaExceptionStatus;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
@@ -44,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,7 +177,9 @@ public class UascServerSymmetricHandler2 extends SimpleChannelInboundHandler<Byt
                                         if (response != null) {
                                             sendServiceResponse(ctx, requestId, request, response);
                                         } else {
-                                            sendServiceFault(ctx, requestId, request, fault);
+                                            UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+
+                                            sendServiceFault(ctx, requestId, requestHandle, fault);
                                         }
                                     });
 
@@ -187,20 +187,7 @@ public class UascServerSymmetricHandler2 extends SimpleChannelInboundHandler<Byt
                                 } catch (Throwable t) {
                                     logger.error("Error decoding UaRequestMessage", t);
 
-                                    StatusCode statusCode = UaExceptionStatus.extract(t)
-                                        .map(UaExceptionStatus::getStatusCode)
-                                        .orElse(StatusCode.BAD);
-
-                                    ServiceFault serviceFault = new ServiceFault(
-                                        new ResponseHeader(
-                                            DateTime.now(),
-                                            uint(0),
-                                            statusCode,
-                                            null, null, null
-                                        )
-                                    );
-
-                                    ctx.writeAndFlush(new ServiceResponse(null, requestId, serviceFault));
+                                    sendServiceFault(ctx, requestId, uint(0), t);
                                 } finally {
                                     message.release();
                                     buffersToDecode.clear();
@@ -239,9 +226,9 @@ public class UascServerSymmetricHandler2 extends SimpleChannelInboundHandler<Byt
                             logger.error("Error encoding {}: {}",
                                 response, ex.getMessage(), ex);
 
-                            if (!(response instanceof ServiceFault)) {
-                                sendServiceFault(ctx, requestId, request, ex);
-                            }
+                            UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+
+                            sendServiceFault(ctx, requestId, requestHandle, ex);
                         }
 
                         @Override
@@ -260,7 +247,72 @@ public class UascServerSymmetricHandler2 extends SimpleChannelInboundHandler<Byt
             } catch (UaSerializationException ex) {
                 logger.error("Error encoding response: {}", ex.getStatusCode(), ex);
 
-                sendServiceFault(ctx, requestId, request, ex);
+                UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+
+                sendServiceFault(ctx, requestId, requestHandle, ex);
+            } finally {
+                messageBuffer.release();
+            }
+        });
+    }
+
+    private void sendServiceFault(
+        ChannelHandlerContext ctx,
+        long requestId,
+        UInteger requestHandle,
+        Throwable fault) {
+
+        StatusCode statusCode = UaException.extract(fault)
+            .map(UaException::getStatusCode)
+            .orElse(StatusCode.BAD);
+
+        ServiceFault serviceFault = new ServiceFault(
+            new ResponseHeader(
+                DateTime.now(),
+                requestHandle,
+                statusCode,
+                null,
+                null,
+                null
+            )
+        );
+
+        serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
+
+            try {
+                binaryEncoder.setBuffer(messageBuffer);
+                binaryEncoder.writeMessage(null, serviceFault);
+
+                checkMessageSize(messageBuffer);
+
+                chunkEncoder.encodeSymmetric(
+                    secureChannel,
+                    requestId,
+                    messageBuffer,
+                    MessageType.SecureMessage,
+                    new ChunkEncoder.Callback() {
+                        @Override
+                        public void onEncodingError(UaException ex) {
+                            logger.error("Error encoding {}: {}",
+                                serviceFault, ex.getMessage(), ex);
+                        }
+
+                        @Override
+                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                            for (ByteBuf chunk : messageChunks) {
+                                chunkComposite.addComponent(chunk);
+                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                            }
+
+                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+                        }
+                    }
+                );
+            } catch (UaSerializationException ex) {
+                logger.error("Error encoding ServiceFault: {}", ex.getStatusCode(), ex);
             } finally {
                 messageBuffer.release();
             }
@@ -300,32 +352,6 @@ public class UascServerSymmetricHandler2 extends SimpleChannelInboundHandler<Byt
                 throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown, message);
             }
         }
-    }
-
-    private void sendServiceFault(
-        ChannelHandlerContext ctx,
-        long requestId,
-        UaRequestMessage request,
-        Throwable fault) {
-
-        StatusCode statusCode = UaException.extract(fault)
-            .map(UaException::getStatusCode)
-            .orElse(StatusCode.BAD);
-
-        UInteger requestHandle = request.getRequestHeader().getRequestHandle();
-
-        ServiceFault serviceFault = new ServiceFault(
-            new ResponseHeader(
-                DateTime.now(),
-                requestHandle,
-                statusCode,
-                null,
-                null,
-                null
-            )
-        );
-
-        sendServiceResponse(ctx, requestId, request, serviceFault);
     }
 
 }

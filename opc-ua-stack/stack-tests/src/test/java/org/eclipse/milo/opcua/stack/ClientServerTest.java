@@ -53,8 +53,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
+import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
 import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
-import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterSuite;
@@ -111,7 +111,7 @@ public class ClientServerTest extends SecurityFixture {
 
     private EndpointDescription[] endpoints;
 
-    private UaTcpStackServer server;
+    private LegacyUaTcpStackServer server;
 
     @BeforeSuite
     public void setUpClientServer() throws Exception {
@@ -123,7 +123,7 @@ public class ClientServerTest extends SecurityFixture {
             .setCertificateValidator(serverCertificateValidator)
             .build();
 
-        server = new UaTcpStackServer(config);
+        server = new LegacyUaTcpStackServer(config);
 
         server.addEndpoint("opc.tcp://localhost:12685/test", null)
             .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign)

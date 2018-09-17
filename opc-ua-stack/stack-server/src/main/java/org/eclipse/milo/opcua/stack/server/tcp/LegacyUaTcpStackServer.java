@@ -44,19 +44,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.application.UaStackServer;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.QueryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHandler;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceResponse;
-import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -77,6 +64,18 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.eclipse.milo.opcua.stack.server.Endpoint;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
+import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.DiscoveryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.QueryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequestHandler;
+import org.eclipse.milo.opcua.stack.server.services.ServiceResponse;
+import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
-public class UaTcpStackServer implements UaStackServer {
+public class LegacyUaTcpStackServer implements LegacyUaStackServer {
 
     /**
      * The {@link AttributeKey} that maps to the {@link Channel} bound to a {@link ServerSecureChannel}.
@@ -115,7 +114,7 @@ public class UaTcpStackServer implements UaStackServer {
 
     private final UaTcpStackServerConfig config;
 
-    public UaTcpStackServer(UaTcpStackServerConfig config) {
+    public LegacyUaTcpStackServer(UaTcpStackServerConfig config) {
         this.config = config;
 
         addServiceSet(new DefaultDiscoveryServiceSet());
@@ -135,7 +134,7 @@ public class UaTcpStackServer implements UaStackServer {
     }
 
     @Override
-    public CompletableFuture<UaTcpStackServer> startup() {
+    public CompletableFuture<LegacyUaTcpStackServer> startup() {
         Stream<CompletableFuture<Unit>> stream = endpoints.stream().map(endpoint -> {
             URI endpointUri = endpoint.getEndpointUri();
             String bindAddress = endpoint.getBindAddress().orElse(endpointUri.getHost());
@@ -154,7 +153,7 @@ public class UaTcpStackServer implements UaStackServer {
             return future;
         });
 
-        return FutureUtils.sequence(stream).thenApply(v -> UaTcpStackServer.this);
+        return FutureUtils.sequence(stream).thenApply(v -> LegacyUaTcpStackServer.this);
     }
 
     private void addDiscoveryUrl(URI endpointUri) {
@@ -175,7 +174,7 @@ public class UaTcpStackServer implements UaStackServer {
     }
 
     @Override
-    public CompletableFuture<UaTcpStackServer> shutdown() {
+    public CompletableFuture<LegacyUaTcpStackServer> shutdown() {
         Stream<CompletableFuture<Unit>> stream = endpoints.stream().map(endpoint -> {
             URI endpointUri = endpoint.getEndpointUri();
             String bindAddress = endpoint.getBindAddress().orElse(endpointUri.getHost());
@@ -193,14 +192,15 @@ public class UaTcpStackServer implements UaStackServer {
 
                 return FutureUtils.sequence(futures);
             })
-            .thenApply(ignored -> UaTcpStackServer.this);
+            .thenApply(ignored -> LegacyUaTcpStackServer.this);
     }
 
     public void receiveRequest(ServiceRequest<UaRequestMessage, UaResponseMessage> serviceRequest) {
         logger.trace("Received {} on {}.", serviceRequest, serviceRequest.getSecureChannel());
 
         serviceRequest.getFuture().whenComplete((response, throwable) -> {
-            long requestId = serviceRequest.getRequestId();
+            // TODO long requestId = serviceRequest.getRequestId();
+            long requestId = 0;
             UaRequestMessage request = serviceRequest.getRequest();
 
             // TODO check timeout in header?
@@ -390,11 +390,11 @@ public class UaTcpStackServer implements UaStackServer {
     }
 
     @Override
-    public UaTcpStackServer addEndpoint(String endpointUri,
-                                        String bindAddress,
-                                        X509Certificate certificate,
-                                        SecurityPolicy securityPolicy,
-                                        MessageSecurityMode messageSecurity) {
+    public LegacyUaTcpStackServer addEndpoint(String endpointUri,
+                                              String bindAddress,
+                                              X509Certificate certificate,
+                                              SecurityPolicy securityPolicy,
+                                              MessageSecurityMode messageSecurity) {
 
         boolean invalidConfiguration = messageSecurity == MessageSecurityMode.Invalid ||
             (securityPolicy == SecurityPolicy.None && messageSecurity != MessageSecurityMode.None) ||
@@ -415,7 +415,7 @@ public class UaTcpStackServer implements UaStackServer {
         return this;
     }
 
-    public UaTcpStackServer setEndpointFilter(Predicate<EndpointDescription> endpointFilter) {
+    public LegacyUaTcpStackServer setEndpointFilter(Predicate<EndpointDescription> endpointFilter) {
         this.endpointFilter = endpointFilter;
         return this;
     }

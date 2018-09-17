@@ -178,9 +178,7 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
                                       byte[] dataBytes) throws UaException {
 
         X509Certificate certificate = CertificateUtil.decodeCertificate(
-            channel.getEndpointDescription()
-                .getServerCertificate()
-                .bytesOrEmpty()
+            channel.getLocalCertificateBytes().bytesOrEmpty()
         );
 
         int cipherTextBlockSize = SecureChannel.getAsymmetricCipherTextBlockSize(certificate, algorithm);

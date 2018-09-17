@@ -56,7 +56,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
-import org.eclipse.milo.opcua.stack.server.tcp.UaTcpStackServer;
+import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +172,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 // secureChannel = server.openSecureChannel();
                 secureChannel = new ServerSecureChannel();
                 secureChannel.setChannelId(stackServer.getNextTokenId());
-                secureChannel.setEndpointDescription(endpointDescription);
+                // secureChannel.setEndpointDescription(endpointDescription);
             } else {
                 // TODO SecureChanel
                 // secureChannel = server.getSecureChannel(secureChannelId);
@@ -192,7 +192,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         "certificate requesting renewal did not match existing certificate.");
                 }
 
-                Channel boundChannel = secureChannel.attr(UaTcpStackServer.BoundChannelKey).get();
+                Channel boundChannel = secureChannel.attr(LegacyUaTcpStackServer.BoundChannelKey).get();
                 if (boundChannel != null && boundChannel != ctx.channel()) {
                     throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                         "received a renewal request from channel other than the bound channel.");

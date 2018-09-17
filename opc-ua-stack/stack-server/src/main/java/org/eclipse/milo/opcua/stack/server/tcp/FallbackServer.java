@@ -23,8 +23,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHandler;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -34,6 +32,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequestHandler;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -42,10 +42,10 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
  */
 public class FallbackServer {
 
-    private final Set<UaTcpStackServer> registered = Sets.newConcurrentHashSet();
-    private final Map<String, UaTcpStackServer> servers = Maps.newConcurrentMap();
+    private final Set<LegacyUaTcpStackServer> registered = Sets.newConcurrentHashSet();
+    private final Map<String, LegacyUaTcpStackServer> servers = Maps.newConcurrentMap();
 
-    private final UaTcpStackServer server;
+    private final LegacyUaTcpStackServer server;
 
     public FallbackServer() {
         UaTcpStackServerConfig config = UaTcpStackServerConfig.builder()
@@ -54,24 +54,24 @@ public class FallbackServer {
             .setProductUri("https://projects.eclipse.org/projects/iot.milo")
             .build();
 
-        server = new UaTcpStackServer(config);
+        server = new LegacyUaTcpStackServer(config);
         server.addRequestHandler(FindServersRequest.class, new FindServersHandler());
         server.addRequestHandler(GetEndpointsRequest.class, new GetEndpointsHandler());
     }
 
-    public void registerServer(UaTcpStackServer server) {
+    public void registerServer(LegacyUaTcpStackServer server) {
         if (registered.add(server)) {
             server.getDiscoveryUrls().forEach(url -> servers.put(url, server));
         }
     }
 
-    public void unregisterServer(UaTcpStackServer server) {
+    public void unregisterServer(LegacyUaTcpStackServer server) {
         if (registered.remove(server)) {
             server.getDiscoveryUrls().forEach(servers::remove);
         }
     }
 
-    public UaTcpStackServer getServer() {
+    public LegacyUaTcpStackServer getServer() {
         return server;
     }
 
@@ -84,7 +84,7 @@ public class FallbackServer {
             String endpointUrl = request.getEndpointUrl();
             if (endpointUrl == null) endpointUrl = "";
 
-            UaTcpStackServer server = servers.get(endpointUrl);
+            LegacyUaTcpStackServer server = servers.get(endpointUrl);
 
             EndpointDescription[] endpoints = (server != null) ?
                 server.getEndpointDescriptions() :
@@ -124,7 +124,7 @@ public class FallbackServer {
             List<ApplicationDescription> servers = new ArrayList<>();
             List<String> serverUris = l(request.getServerUris());
 
-            for (UaTcpStackServer server : registered) {
+            for (LegacyUaTcpStackServer server : registered) {
                 ApplicationDescription description = server.getApplicationDescription();
 
                 if (serverUris.isEmpty()) {

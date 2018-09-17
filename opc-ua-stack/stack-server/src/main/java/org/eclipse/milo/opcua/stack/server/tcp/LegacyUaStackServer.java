@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,24 +11,15 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.core.application;
+package org.eclipse.milo.opcua.stack.server.tcp;
 
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.DiscoveryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.QueryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequestHandler;
-import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
+import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -75,12 +66,23 @@ import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
+import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.DiscoveryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.QueryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequestHandler;
+import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 
-public interface UaStackServer {
+public interface LegacyUaStackServer {
 
-    CompletableFuture<? extends UaStackServer> startup();
+    CompletableFuture<? extends LegacyUaStackServer> startup();
 
-    CompletableFuture<? extends UaStackServer> shutdown();
+    CompletableFuture<? extends LegacyUaStackServer> shutdown();
 
     CertificateManager getCertificateManager();
 
@@ -113,22 +115,22 @@ public interface UaStackServer {
      * @param certificate     the {@link X509Certificate} for this endpoint.
      * @param securityPolicy  the {@link SecurityPolicy} for this endpoint.
      * @param messageSecurity the {@link MessageSecurityMode} for this endpoint.
-     * @return this {@link UaStackServer}.
+     * @return this {@link LegacyUaStackServer}.
      */
-    UaStackServer addEndpoint(String endpointUri,
-                              String bindAddress,
-                              X509Certificate certificate,
-                              SecurityPolicy securityPolicy,
-                              MessageSecurityMode messageSecurity);
+    LegacyUaStackServer addEndpoint(String endpointUri,
+                                    String bindAddress,
+                                    X509Certificate certificate,
+                                    SecurityPolicy securityPolicy,
+                                    MessageSecurityMode messageSecurity);
 
     /**
      * Add an endpoint with no certificate or security.
      *
      * @param endpointUri the endpoint URL.
      * @param bindAddress the address to bind to.
-     * @return this {@link UaStackServer}.
+     * @return this {@link LegacyUaStackServer}.
      */
-    default UaStackServer addEndpoint(String endpointUri, String bindAddress) {
+    default LegacyUaStackServer addEndpoint(String endpointUri, String bindAddress) {
         return addEndpoint(
             endpointUri, bindAddress, null,
             SecurityPolicy.None, MessageSecurityMode.None);
