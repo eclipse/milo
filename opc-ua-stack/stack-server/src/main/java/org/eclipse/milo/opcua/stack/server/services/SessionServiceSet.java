@@ -15,36 +15,24 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 
 public interface SessionServiceSet {
 
-    default void onCreateSession(
-        ServiceRequest<CreateSessionRequest, CreateSessionResponse> serviceRequest) throws UaException {
+    default void onCreateSession(ServiceRequest serviceRequest) throws UaException {
+        serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
+    }
+
+    default void onActivateSession(ServiceRequest serviceRequest) throws UaException {
 
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onActivateSession(
-        ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> serviceRequest) throws UaException {
+    default void onCloseSession(ServiceRequest serviceRequest) throws UaException {
 
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onCloseSession(
-        ServiceRequest<CloseSessionRequest, CloseSessionResponse> serviceRequest) throws UaException {
-
-        serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
-    }
-
-    default void onCancel(ServiceRequest<CancelRequest, CancelResponse> serviceRequest) throws UaException {
+    default void onCancel(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

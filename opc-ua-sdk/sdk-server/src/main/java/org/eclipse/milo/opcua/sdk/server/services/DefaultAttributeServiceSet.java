@@ -53,10 +53,10 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
     private final ServiceMetric writeMetric = new ServiceMetric();
 
     @Override
-    public void onRead(ServiceRequest<ReadRequest, ReadResponse> service) {
+    public void onRead(ServiceRequest service) {
         readMetric.record(service);
 
-        ReadRequest request = service.getRequest();
+        ReadRequest request = (ReadRequest) service.getRequest();
 
         DiagnosticsContext<ReadValueId> diagnosticsContext = new DiagnosticsContext<>();
 
@@ -146,10 +146,10 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
     }
 
     @Override
-    public void onWrite(ServiceRequest<WriteRequest, WriteResponse> service) {
+    public void onWrite(ServiceRequest service) {
         writeMetric.record(service);
 
-        WriteRequest request = service.getRequest();
+        WriteRequest request = (WriteRequest) service.getRequest();
 
         DiagnosticsContext<WriteValue> diagnosticsContext = new DiagnosticsContext<>();
 

@@ -69,12 +69,12 @@ public class BrowsePathsHelper {
         this.namespaceManager = namespaceManager;
     }
 
-    public void onTranslateBrowsePaths(
-        ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> service) {
+    public void onTranslateBrowsePaths(ServiceRequest service) {
+        TranslateBrowsePathsToNodeIdsRequest request = (TranslateBrowsePathsToNodeIdsRequest) service.getRequest();
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
 
-        List<BrowsePath> browsePaths = l(service.getRequest().getBrowsePaths());
+        List<BrowsePath> browsePaths = l(request.getBrowsePaths());
 
         if (browsePaths.size() >
             server.getConfig().getLimits().getMaxNodesPerTranslateBrowsePathsToNodeIds().intValue()) {

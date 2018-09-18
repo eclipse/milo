@@ -73,10 +73,10 @@ public class BrowseHelper {
         new StatusCode(StatusCodes.Bad_NodeIdUnknown),
         ByteString.NULL_VALUE, new ReferenceDescription[0]);
 
-    public void browseNext(ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) {
+    public void browseNext(ServiceRequest service) {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
 
-        BrowseNextRequest request = service.getRequest();
+        BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
 
         List<ByteString> continuationPoints = l(request.getContinuationPoints());
 
@@ -314,10 +314,9 @@ public class BrowseHelper {
     private static class BrowseNext implements Runnable {
 
         private final OpcUaServer server;
-        private final ServiceRequest<BrowseNextRequest, BrowseNextResponse> service;
+        private final ServiceRequest service;
 
-        private BrowseNext(OpcUaServer server,
-                           ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) {
+        private BrowseNext(OpcUaServer server, ServiceRequest service) {
 
             this.server = server;
             this.service = service;
@@ -325,7 +324,7 @@ public class BrowseHelper {
 
         @Override
         public void run() {
-            BrowseNextRequest request = service.getRequest();
+            BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
 
             List<BrowseResult> results = Lists.newArrayList();
 

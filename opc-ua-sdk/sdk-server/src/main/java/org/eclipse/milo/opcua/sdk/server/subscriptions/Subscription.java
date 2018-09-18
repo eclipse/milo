@@ -304,7 +304,7 @@ public class Subscription {
         logger.debug("[id={}] keep-alive counter reset to {}", subscriptionId, maxKeepAliveCount);
     }
 
-    private void returnKeepAlive(ServiceRequest<PublishRequest, PublishResponse> service) {
+    private void returnKeepAlive(ServiceRequest service) {
         ResponseHeader header = service.createResponseHeader();
 
         UInteger sequenceNumber = uint(currentSequenceNumber());
@@ -328,7 +328,7 @@ public class Subscription {
             subscriptionId, sequenceNumber);
     }
 
-    void returnStatusChangeNotification(ServiceRequest<PublishRequest, PublishResponse> service) {
+    void returnStatusChangeNotification(ServiceRequest service) {
         StatusChangeNotification statusChange = new StatusChangeNotification(
             new StatusCode(StatusCodes.Bad_Timeout), null);
 
@@ -352,7 +352,7 @@ public class Subscription {
         logger.debug("[id={}] returned StatusChangeNotification sequenceNumber={}.", subscriptionId, sequenceNumber);
     }
 
-    private void returnNotifications(ServiceRequest<PublishRequest, PublishResponse> service) {
+    private void returnNotifications(ServiceRequest service) {
         LinkedHashSet<BaseMonitoredItem<?>> items = new LinkedHashSet<>();
 
         lastIterator.forEachRemaining(items::add);
@@ -374,9 +374,7 @@ public class Subscription {
      * @param iterator a {@link PeekingIterator} over the current {@link BaseMonitoredItem}s.
      * @param service  a {@link ServiceRequest}, if available.
      */
-    private void gatherAndSend(PeekingIterator<BaseMonitoredItem<?>> iterator,
-                               Optional<ServiceRequest<PublishRequest, PublishResponse>> service) {
-
+    private void gatherAndSend(PeekingIterator<BaseMonitoredItem<?>> iterator, Optional<ServiceRequest> service) {
         if (service.isPresent()) {
             List<UaStructure> notifications = Lists.newArrayList();
 
@@ -410,9 +408,7 @@ public class Subscription {
         return item.getNotifications(notifications, max);
     }
 
-    private void sendNotifications(ServiceRequest<PublishRequest, PublishResponse> service,
-                                   List<UaStructure> notifications) {
-
+    private void sendNotifications(ServiceRequest service, List<UaStructure> notifications) {
         List<MonitoredItemNotification> dataNotifications = Lists.newArrayList();
         List<EventFieldList> eventNotifications = Lists.newArrayList();
 
@@ -553,7 +549,7 @@ public class Subscription {
      *
      * @param service The service request that contains the {@link PublishRequest}.
      */
-    synchronized void onPublish(ServiceRequest<PublishRequest, PublishResponse> service) {
+    synchronized void onPublish(ServiceRequest service) {
         State state = this.state.get();
 
         logger.trace("[id={}] onPublish(), state={}, keep-alive={}, lifetime={}",
@@ -649,7 +645,7 @@ public class Subscription {
     }
 
     private class PublishHandler {
-        private void whenNormal(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenNormal(ServiceRequest service) {
             boolean publishingEnabled = Subscription.this.publishingEnabled;
 
             if (!publishingEnabled || (publishingEnabled && !moreNotifications)) {
@@ -665,7 +661,7 @@ public class Subscription {
             }
         }
 
-        private void whenLate(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenLate(ServiceRequest service) {
             boolean publishingEnabled = Subscription.this.publishingEnabled;
             boolean notificationsAvailable = notificationsAvailable();
 
@@ -687,18 +683,18 @@ public class Subscription {
             }
         }
 
-        private void whenKeepAlive(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenKeepAlive(ServiceRequest service) {
             /* Subscription State Table Row 13 */
             publishQueue().addRequest(service);
         }
 
-        private void whenClosing(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenClosing(ServiceRequest service) {
             returnStatusChangeNotification(service);
 
             setState(State.Closed);
         }
 
-        private void whenClosed(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenClosed(ServiceRequest service) {
             publishQueue().addRequest(service);
         }
     }
@@ -711,7 +707,7 @@ public class Subscription {
 
             if (publishRequestQueued && publishingEnabled && notificationsAvailable) {
                 /* Subscription State Table Row 6 */
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
+                Optional<ServiceRequest> service =
                     Optional.ofNullable(publishQueue().poll());
 
                 if (service.isPresent()) {
@@ -724,7 +720,7 @@ public class Subscription {
             } else if (publishRequestQueued && !messageSent &&
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
                 /* Subscription State Table Row 7 */
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
+                Optional<ServiceRequest> service =
                     Optional.ofNullable(publishQueue().poll());
 
                 if (service.isPresent()) {
@@ -761,7 +757,7 @@ public class Subscription {
 
             if (publishingEnabled && notificationsAvailable && publishRequestQueued) {
                 /* Subscription State Table Row 14 */
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
+                Optional<ServiceRequest> service =
                     Optional.ofNullable(publishQueue().poll());
 
                 if (service.isPresent()) {
@@ -776,7 +772,7 @@ public class Subscription {
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
                 /* Subscription State Table Row 15 */
 
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
+                Optional<ServiceRequest> service =
                     Optional.ofNullable(publishQueue().poll());
 
                 if (service.isPresent()) {

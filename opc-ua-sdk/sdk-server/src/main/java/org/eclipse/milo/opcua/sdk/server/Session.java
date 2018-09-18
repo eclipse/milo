@@ -33,14 +33,9 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
 import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
@@ -219,24 +214,20 @@ public class Session implements SessionServiceSet {
 
     //region Session Services
     @Override
-    public void onCreateSession(
-        ServiceRequest<CreateSessionRequest, CreateSessionResponse> req) throws UaException {
-
-        throw new UaException(StatusCodes.Bad_InternalError);
+    public void onCreateSession(ServiceRequest serviceRequest) {
+        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
     }
 
     @Override
-    public void onActivateSession(
-        ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> req) throws UaException {
-
-        throw new UaException(StatusCodes.Bad_InternalError);
+    public void onActivateSession(ServiceRequest serviceRequest) {
+        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
     }
 
     @Override
-    public void onCloseSession(
-        ServiceRequest<CloseSessionRequest, CloseSessionResponse> serviceRequest) throws UaException {
+    public void onCloseSession(ServiceRequest serviceRequest) {
+        CloseSessionRequest request = (CloseSessionRequest) serviceRequest.getRequest();
 
-        close(serviceRequest.getRequest().getDeleteSubscriptions());
+        close(request.getDeleteSubscriptions());
 
         serviceRequest.setResponse(new CloseSessionResponse(serviceRequest.createResponseHeader()));
     }
@@ -252,7 +243,7 @@ public class Session implements SessionServiceSet {
     }
 
     @Override
-    public void onCancel(ServiceRequest<CancelRequest, CancelResponse> serviceRequest) throws UaException {
+    public void onCancel(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setResponse(new CancelResponse(serviceRequest.createResponseHeader(), uint(0)));
     }
     //endregion

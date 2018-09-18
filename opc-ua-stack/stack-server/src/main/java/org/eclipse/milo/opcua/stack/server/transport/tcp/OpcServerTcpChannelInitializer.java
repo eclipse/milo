@@ -13,20 +13,17 @@
 
 package org.eclipse.milo.opcua.stack.server.transport.tcp;
 
-import java.util.Optional;
-import java.util.function.Function;
-
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
+import org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
 import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
 
 public class OpcServerTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final Function<String, Optional<UaStackServer>> serverLookup;
+    private final ServerLookup serverLookup;
 
-    public OpcServerTcpChannelInitializer(Function<String, Optional<UaStackServer>> serverLookup) {
+    public OpcServerTcpChannelInitializer(ServerLookup serverLookup) {
         this.serverLookup = serverLookup;
     }
 

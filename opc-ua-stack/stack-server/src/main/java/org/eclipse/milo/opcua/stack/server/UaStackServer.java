@@ -30,7 +30,6 @@ import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
@@ -101,7 +100,7 @@ public class UaStackServer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<Class<? extends UaRequestMessage>, ServiceRequestHandler<UaRequestMessage, UaResponseMessage>>
+    private final Map<Class<? extends UaRequestMessage>, ServiceRequestHandler>
         serviceRequestHandlers = Maps.newConcurrentMap();
 
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
@@ -116,6 +115,15 @@ public class UaStackServer {
         this.config = config;
 
         addServiceSet(new DefaultDiscoveryServiceSet());
+
+        addServiceSet(new AttributeServiceSet() {});
+        addServiceSet(new MethodServiceSet() {});
+        addServiceSet(new MonitoredItemServiceSet() {});
+        addServiceSet(new NodeManagementServiceSet() {});
+        addServiceSet(new QueryServiceSet() {});
+        addServiceSet(new SessionServiceSet() {});
+        addServiceSet(new SubscriptionServiceSet() {});
+        addServiceSet(new ViewServiceSet() {});
     }
 
     public UaStackServerConfig getConfig() {
@@ -159,11 +167,11 @@ public class UaStackServer {
             .thenApply(u -> UaStackServer.this);
     }
 
-    public void onServiceRequest(ServiceRequest<UaRequestMessage, UaResponseMessage> serviceRequest) {
+    public void onServiceRequest(ServiceRequest serviceRequest) {
         logger.trace("onServiceRequest({})", serviceRequest);
 
         Class<? extends UaRequestMessage> requestClass = serviceRequest.getRequest().getClass();
-        ServiceRequestHandler<UaRequestMessage, UaResponseMessage> handler = serviceRequestHandlers.get(requestClass);
+        ServiceRequestHandler handler = serviceRequestHandlers.get(requestClass);
 
         try {
             if (handler != null) {
@@ -236,13 +244,11 @@ public class UaStackServer {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends UaRequestMessage, U extends UaResponseMessage> void addRequestHandler(
-        Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler) {
+    public <T extends UaRequestMessage> void addRequestHandler(
+        Class<T> requestClass,
+        ServiceRequestHandler requestHandler) {
 
-        ServiceRequestHandler<UaRequestMessage, UaResponseMessage> handler =
-            (ServiceRequestHandler<UaRequestMessage, UaResponseMessage>) requestHandler;
-
-        serviceRequestHandlers.put(requestClass, handler);
+        serviceRequestHandlers.put(requestClass, requestHandler);
     }
 
     void addServiceSet(AttributeServiceSet serviceSet) {
@@ -325,8 +331,8 @@ public class UaStackServer {
 
     private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
         @Override
-        public void onGetEndpoints(ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) {
-            GetEndpointsRequest request = serviceRequest.getRequest();
+        public void onGetEndpoints(ServiceRequest serviceRequest) {
+            GetEndpointsRequest request = (GetEndpointsRequest) serviceRequest.getRequest();
 
             List<String> profileUris = request.getProfileUris() != null ?
                 newArrayList(request.getProfileUris()) :
@@ -368,8 +374,8 @@ public class UaStackServer {
         }
 
         @Override
-        public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest) {
-            FindServersRequest request = serviceRequest.getRequest();
+        public void onFindServers(ServiceRequest serviceRequest) {
+            FindServersRequest request = (FindServersRequest) serviceRequest.getRequest();
 
             List<String> serverUris = request.getServerUris() != null ?
                 newArrayList(request.getServerUris()) :

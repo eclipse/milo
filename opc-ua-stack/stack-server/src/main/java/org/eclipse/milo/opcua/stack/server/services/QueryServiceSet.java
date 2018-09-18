@@ -15,18 +15,14 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
 
 public interface QueryServiceSet {
 
-    default void onQueryFirst(ServiceRequest<QueryFirstRequest, QueryFirstResponse> serviceRequest) throws UaException {
+    default void onQueryFirst(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onQueryNext(ServiceRequest<QueryNextRequest, QueryNextResponse> serviceRequest) throws UaException {
+    default void onQueryNext(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

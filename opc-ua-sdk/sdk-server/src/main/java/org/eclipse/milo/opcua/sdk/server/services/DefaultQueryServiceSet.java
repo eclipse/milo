@@ -14,10 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
 import org.eclipse.milo.opcua.stack.server.services.QueryServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
@@ -29,14 +25,14 @@ public class DefaultQueryServiceSet implements QueryServiceSet {
     private final ServiceMetric queryNextMetric = new ServiceMetric();
 
     @Override
-    public void onQueryFirst(ServiceRequest<QueryFirstRequest, QueryFirstResponse> service) throws UaException {
+    public void onQueryFirst(ServiceRequest service) throws UaException {
         queryFirstMetric.record(service);
 
         service.setServiceFault(Bad_ServiceUnsupported);
     }
 
     @Override
-    public void onQueryNext(ServiceRequest<QueryNextRequest, QueryNextResponse> service) throws UaException {
+    public void onQueryNext(ServiceRequest service) throws UaException {
         queryNextMetric.record(service);
 
         service.setServiceFault(Bad_ServiceUnsupported);

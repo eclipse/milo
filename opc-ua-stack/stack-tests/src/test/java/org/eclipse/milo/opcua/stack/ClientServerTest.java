@@ -144,7 +144,7 @@ public class ClientServerTest extends SecurityFixture {
 
     private void setReadRequestHandler(Variant variant) {
         server.addRequestHandler(ReadRequest.class, service -> {
-            ReadRequest request = service.getRequest();
+            ReadRequest request = (ReadRequest) service.getRequest();
 
             ResponseHeader header = new ResponseHeader(
                 DateTime.now(),

@@ -15,45 +15,26 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
 
 public interface ViewServiceSet {
 
-    default void onBrowse(ServiceRequest<BrowseRequest, BrowseResponse> serviceRequest) throws UaException {
+    default void onBrowse(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onBrowseNext(
-        ServiceRequest<BrowseNextRequest, BrowseNextResponse> serviceRequest) throws UaException {
-
+    default void onBrowseNext(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onTranslateBrowsePaths(
-        ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> serviceRequest)
-        throws UaException {
-
+    default void onTranslateBrowsePaths(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onRegisterNodes(
-        ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> serviceRequest) throws UaException {
-
+    default void onRegisterNodes(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onUnregisterNodes(
-        ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> serviceRequest) throws UaException {
-
+    default void onUnregisterNodes(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

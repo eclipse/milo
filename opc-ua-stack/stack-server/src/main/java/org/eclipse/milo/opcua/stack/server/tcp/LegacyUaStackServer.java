@@ -105,7 +105,7 @@ public interface LegacyUaStackServer {
     CompletableFuture<Unit> closeSecureChannel(ServerSecureChannel secureChannel);
 
     <T extends UaRequestMessage, U extends UaResponseMessage> void addRequestHandler(
-        Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler);
+        Class<T> requestClass, ServiceRequestHandler requestHandler);
 
     /**
      * Add an endpoint with the given security configuration. A certificate must be provided for secure endpoints.

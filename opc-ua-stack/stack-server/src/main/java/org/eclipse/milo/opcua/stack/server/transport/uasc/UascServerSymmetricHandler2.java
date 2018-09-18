@@ -166,10 +166,9 @@ public class UascServerSymmetricHandler2 extends SimpleChannelInboundHandler<Byt
                                         .setBuffer(message)
                                         .readMessage(null);
 
-                                    ServiceRequest<UaRequestMessage, UaResponseMessage> serviceRequest = new ServiceRequest<>(
+                                    ServiceRequest serviceRequest = new ServiceRequest(
                                         request,
-                                        0L, // TODO
-                                        null, // TODO
+                                        stackServer,
                                         secureChannel
                                     );
 

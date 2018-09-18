@@ -73,9 +73,8 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
             UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
             // TODO nothing about this is correct
-            ServiceRequest<UaRequestMessage, UaResponseMessage> serviceRequest = new ServiceRequest<UaRequestMessage, UaResponseMessage>(
+            ServiceRequest serviceRequest = new ServiceRequest(
                 request,
-                0,
                 stackServer,
                 secureChannel
             );
@@ -117,7 +116,6 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         UaResponseMessage response) {
 
         // TODO
-
     }
 
     private void sendServiceFault(
@@ -126,7 +124,6 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         Throwable fault) {
 
         // TODO
-
     }
 
 }

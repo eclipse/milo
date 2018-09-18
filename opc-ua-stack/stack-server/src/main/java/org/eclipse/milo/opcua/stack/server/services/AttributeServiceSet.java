@@ -15,18 +15,14 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 
 public interface AttributeServiceSet {
 
-    default void onRead(ServiceRequest<ReadRequest, ReadResponse> serviceRequest) throws UaException {
+    default void onRead(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onWrite(ServiceRequest<WriteRequest, WriteResponse> serviceRequest) throws UaException {
+    default void onWrite(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

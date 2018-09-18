@@ -48,73 +48,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
-import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -181,7 +121,7 @@ public class SessionManager implements
             .findFirst().ifPresent(s -> s.close(deleteSubscriptions));
     }
 
-    private Session session(ServiceRequest<?, ?> service) throws UaException {
+    private Session session(ServiceRequest service) throws UaException {
         long secureChannelId = service.getSecureChannel().getChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
@@ -216,10 +156,9 @@ public class SessionManager implements
 
     //region Session Services
     @Override
-    public void onCreateSession(
-        ServiceRequest<CreateSessionRequest, CreateSessionResponse> serviceRequest) throws UaException {
+    public void onCreateSession(ServiceRequest serviceRequest) throws UaException {
 
-        CreateSessionRequest request = serviceRequest.getRequest();
+        CreateSessionRequest request = (CreateSessionRequest) serviceRequest.getRequest();
 
         long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
         if (createdSessions.size() + activeSessions.size() >= maxSessionCount) {
@@ -386,10 +325,9 @@ public class SessionManager implements
     }
 
     @Override
-    public void onActivateSession(
-        ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> serviceRequest) throws UaException {
+    public void onActivateSession(ServiceRequest serviceRequest) throws UaException {
 
-        ActivateSessionRequest request = serviceRequest.getRequest();
+        ActivateSessionRequest request = (ActivateSessionRequest) serviceRequest.getRequest();
 
         ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
         long secureChannelId = secureChannel.getChannelId();
@@ -600,7 +538,7 @@ public class SessionManager implements
     }
 
     @Override
-    public void onCloseSession(ServiceRequest<CloseSessionRequest, CloseSessionResponse> service) throws UaException {
+    public void onCloseSession(ServiceRequest service) throws UaException {
         long secureChannelId = service.getSecureChannel().getChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
@@ -628,7 +566,7 @@ public class SessionManager implements
     }
 
     @Override
-    public void onCancel(ServiceRequest<CancelRequest, CancelResponse> service) throws UaException {
+    public void onCancel(ServiceRequest service) throws UaException {
         session(service).onCancel(service);
     }
 
@@ -661,29 +599,28 @@ public class SessionManager implements
 
     //region Attribute Services
     @Override
-    public void onRead(ServiceRequest<ReadRequest, ReadResponse> service) throws UaException {
+    public void onRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getAttributeServiceSet().onRead(service);
     }
 
     @Override
-    public void onWrite(ServiceRequest<WriteRequest, WriteResponse> service) throws UaException {
+    public void onWrite(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getAttributeServiceSet().onWrite(service);
     }
 
     @Override
-    public void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> service) throws UaException {
+    public void onHistoryRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getAttributeHistoryServiceSet().onHistoryRead(service);
     }
 
     @Override
-    public void onHistoryUpdate(
-        ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service) throws UaException {
+    public void onHistoryUpdate(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -693,42 +630,35 @@ public class SessionManager implements
 
     //region View Services
     @Override
-    public void onBrowse(ServiceRequest<BrowseRequest, BrowseResponse> service) throws UaException {
+    public void onBrowse(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onBrowse(service);
     }
 
     @Override
-    public void onBrowseNext(ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) throws UaException {
+    public void onBrowseNext(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onBrowseNext(service);
     }
 
     @Override
-    public void onTranslateBrowsePaths(
-        ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> service)
-        throws UaException {
-
+    public void onTranslateBrowsePaths(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onTranslateBrowsePaths(service);
     }
 
     @Override
-    public void onRegisterNodes(
-        ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> service) throws UaException {
-
+    public void onRegisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onRegisterNodes(service);
     }
 
     @Override
-    public void onUnregisterNodes(
-        ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> service) throws UaException {
-
+    public void onUnregisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onUnregisterNodes(service);
@@ -737,15 +667,14 @@ public class SessionManager implements
 
     //region NodeManagement Services
     @Override
-    public void onAddNodes(ServiceRequest<AddNodesRequest, AddNodesResponse> service) throws UaException {
+    public void onAddNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getNodeManagementServiceSet().onAddNodes(service);
     }
 
     @Override
-    public void onAddReferences(
-        ServiceRequest<AddReferencesRequest, AddReferencesResponse> service) throws UaException {
+    public void onAddReferences(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -753,15 +682,14 @@ public class SessionManager implements
     }
 
     @Override
-    public void onDeleteNodes(ServiceRequest<DeleteNodesRequest, DeleteNodesResponse> service) throws UaException {
+    public void onDeleteNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getNodeManagementServiceSet().onDeleteNodes(service);
     }
 
     @Override
-    public void onDeleteReferences(
-        ServiceRequest<DeleteReferencesRequest, DeleteReferencesResponse> service) throws UaException {
+    public void onDeleteReferences(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -771,8 +699,7 @@ public class SessionManager implements
 
     //region Subscription Services
     @Override
-    public void onCreateSubscription(
-        ServiceRequest<CreateSubscriptionRequest, CreateSubscriptionResponse> service) throws UaException {
+    public void onCreateSubscription(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -780,8 +707,7 @@ public class SessionManager implements
     }
 
     @Override
-    public void onModifySubscription(
-        ServiceRequest<ModifySubscriptionRequest, ModifySubscriptionResponse> service) throws UaException {
+    public void onModifySubscription(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -789,8 +715,7 @@ public class SessionManager implements
     }
 
     @Override
-    public void onSetPublishingMode(
-        ServiceRequest<SetPublishingModeRequest, SetPublishingModeResponse> service) throws UaException {
+    public void onSetPublishingMode(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -798,32 +723,28 @@ public class SessionManager implements
     }
 
     @Override
-    public void onPublish(ServiceRequest<PublishRequest, PublishResponse> service) throws UaException {
+    public void onPublish(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onPublish(service);
     }
 
     @Override
-    public void onRepublish(ServiceRequest<RepublishRequest, RepublishResponse> service) throws UaException {
+    public void onRepublish(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onRepublish(service);
     }
 
     @Override
-    public void onTransferSubscriptions(
-        ServiceRequest<TransferSubscriptionsRequest, TransferSubscriptionsResponse> service) throws UaException {
-
+    public void onTransferSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onTransferSubscriptions(service);
     }
 
     @Override
-    public void onDeleteSubscriptions(
-        ServiceRequest<DeleteSubscriptionsRequest, DeleteSubscriptionsResponse> service) throws UaException {
-
+    public void onDeleteSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onDeleteSubscriptions(service);
@@ -832,44 +753,35 @@ public class SessionManager implements
 
     //region MonitoredItem Services
     @Override
-    public void onCreateMonitoredItems(
-        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) throws UaException {
-
+    public void onCreateMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onCreateMonitoredItems(service);
     }
 
     @Override
-    public void onModifyMonitoredItems(
-        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) throws UaException {
-
+    public void onModifyMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onModifyMonitoredItems(service);
     }
 
     @Override
-    public void onSetMonitoringMode(
-        ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) throws UaException {
-
+    public void onSetMonitoringMode(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onSetMonitoringMode(service);
     }
 
     @Override
-    public void onSetTriggering(
-        ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) throws UaException {
-
+    public void onSetTriggering(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onSetTriggering(service);
     }
 
     @Override
-    public void onDeleteMonitoredItems(
-        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) throws UaException {
+    public void onDeleteMonitoredItems(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -879,7 +791,7 @@ public class SessionManager implements
 
     //region Method Services
     @Override
-    public void onCall(ServiceRequest<CallRequest, CallResponse> service) throws UaException {
+    public void onCall(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMethodServiceSet().onCall(service);
@@ -888,14 +800,14 @@ public class SessionManager implements
 
     //region Query Services
     @Override
-    public void onQueryFirst(ServiceRequest<QueryFirstRequest, QueryFirstResponse> service) throws UaException {
+    public void onQueryFirst(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getQueryServiceSet().onQueryFirst(service);
     }
 
     @Override
-    public void onQueryNext(ServiceRequest<QueryNextRequest, QueryNextResponse> service) throws UaException {
+    public void onQueryNext(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getQueryServiceSet().onQueryNext(service);

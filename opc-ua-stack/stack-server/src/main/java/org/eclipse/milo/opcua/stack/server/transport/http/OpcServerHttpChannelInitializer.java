@@ -28,13 +28,10 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpVersion;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.codec.http.websocketx.extensions.compression.WebSocketServerCompressionHandler;
 import io.netty.handler.logging.LogLevel;
@@ -49,17 +46,18 @@ import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
+import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
+import org.eclipse.milo.opcua.stack.server.transport.websocket.OpcServerWebSocketFrameHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler.HandshakeComplete;
 import static org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
 
 public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private static final String WS_PROTOCOL_BINARY = "opcua+uacp";
-    private static final String WS_PROTOCOL_JSON = "opcua+uajson";
-    
+    public static final String WS_PROTOCOL_BINARY = "opcua+uacp";
+    public static final String WS_PROTOCOL_JSON = "opcua+uajson";
+
     private final ServerLookup serverLookup;
 
     public OpcServerHttpChannelInitializer(ServerLookup serverLookup) {
@@ -89,11 +87,12 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
         channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
         channel.pipeline().addLast(new HttpServerCodec());
 
+        // TODO configure maxContentLength based on MaxRequestSize?
         channel.pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
         channel.pipeline().addLast(new OpcHttpTransportInterceptor(serverLookup));
     }
 
-    private static class OpcHttpTransportInterceptor extends SimpleChannelInboundHandler<HttpRequest> {
+    private static class OpcHttpTransportInterceptor extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -104,12 +103,11 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
         }
 
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, HttpRequest msg) throws Exception {
+        protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
             // TODO server lookup might have to be by path instead of full endpoint URL?
-            FullHttpRequest fullHttpRequest = (FullHttpRequest) msg;
 
-            String host = fullHttpRequest.headers().get(HttpHeaderNames.HOST);
-            String uri = fullHttpRequest.uri();
+            String host = httpRequest.headers().get(HttpHeaderNames.HOST);
+            String uri = httpRequest.uri();
 
             logger.info("host={} uri={}", host, uri);
 
@@ -119,8 +117,8 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
                     "unrecognized endpoint uri: " + uri)
             );
 
-            if (Objects.equals(fullHttpRequest.method(), HttpMethod.GET) &&
-                "websocket".equalsIgnoreCase(msg.headers().get(HttpHeaderValues.UPGRADE))) {
+            if (Objects.equals(httpRequest.method(), HttpMethod.GET) &&
+                "websocket".equalsIgnoreCase(httpRequest.headers().get(HttpHeaderValues.UPGRADE))) {
 
                 logger.info("intercepted WebSocket upgrade");
 
@@ -136,21 +134,18 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
                 ));
 
                 ctx.channel().pipeline().addLast(new OpcServerWebSocketFrameHandler());
+                ctx.channel().pipeline().addLast(new UascServerHelloHandler(serverLookup));
 
-                // TODO add UascServerHelloHandler
-
-                fullHttpRequest.retain();
-                ctx.executor().execute(() -> ctx.fireChannelRead(fullHttpRequest));
-            } else if (Objects.equals(msg.method(), HttpMethod.POST)) {
+                httpRequest.retain();
+                ctx.executor().execute(() -> ctx.fireChannelRead(httpRequest));
+            } else if (Objects.equals(httpRequest.method(), HttpMethod.POST)) {
                 logger.info("intercepted HTTP POST");
 
                 ctx.channel().pipeline().remove(this);
-
-                // TODO configure maxContentLength based on MaxRequestSize?
                 ctx.channel().pipeline().addLast(new OpcServerHttpRequestHandler(stackServer));
 
-                fullHttpRequest.retain();
-                ctx.executor().execute(() -> ctx.pipeline().fireChannelRead(fullHttpRequest));
+                httpRequest.retain();
+                ctx.executor().execute(() -> ctx.pipeline().fireChannelRead(httpRequest));
             } else {
                 HttpResponse response = new DefaultFullHttpResponse(
                     HttpVersion.HTTP_1_1,
@@ -163,45 +158,4 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
         }
     }
 
-    private static class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-
-
-        String subprotocol;
-        boolean uaScInitiated = false;
-
-        @Override
-        public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
-            if (event instanceof HandshakeComplete) {
-                HandshakeComplete handshake = (HandshakeComplete) event;
-
-                handshake.requestUri();
-                handshake.requestHeaders();
-
-                subprotocol = handshake.selectedSubprotocol();
-            }
-
-            super.userEventTriggered(ctx, event);
-        }
-
-        @Override
-        protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
-            if (WS_PROTOCOL_BINARY.equalsIgnoreCase(subprotocol)) {
-                // Pass the binary contents to the UA Secure Conversation handlers
-
-                if (!uaScInitiated) {
-                    // TODO add UaScHelloHandler
-                }
-
-                ctx.fireChannelRead(msg.content());
-            } else if (WS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
-                // End of the pipeline; decode and deliver
-
-                String text = ((TextWebSocketFrame) msg).text();
-                ctx.close();
-            } else {
-                ctx.close();
-            }
-        }
-
-    }
 }

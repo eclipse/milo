@@ -43,6 +43,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.server.services.ServiceResponse;
 import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
@@ -60,11 +61,11 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
     private final int maxChunkCount;
     private final int maxChunkSize;
 
-    private final LegacyUaTcpStackServer server;
+    private final UaStackServer server;
     private final SerializationQueue serializationQueue;
     private final ServerSecureChannel secureChannel;
 
-    public UascServerSymmetricHandler(LegacyUaTcpStackServer server,
+    public UascServerSymmetricHandler(UaStackServer server,
                                       SerializationQueue serializationQueue,
                                       ServerSecureChannel secureChannel) {
 
@@ -271,16 +272,15 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
 
                         @Override
                         public void onMessageDecoded(ByteBuf message, long requestId) {
-                            server.getExecutorService().execute(() -> {
+                            server.getConfig().getExecutor().execute(() -> {
                                 try {
                                     UaRequestMessage request = (UaRequestMessage) binaryDecoder
                                         .setBuffer(message)
                                         .readMessage(null);
 
-                                    server.receiveRequest(new ServiceRequest<>(
+                                    server.onServiceRequest(new ServiceRequest(
                                         request,
-                                        requestId,
-                                        null, // TODO
+                                        server,
                                         secureChannel
                                     ));
                                 } catch (Throwable t) {

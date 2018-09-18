@@ -75,11 +75,11 @@ public class FallbackServer {
         return server;
     }
 
-    private class GetEndpointsHandler implements ServiceRequestHandler<GetEndpointsRequest, GetEndpointsResponse> {
+    private class GetEndpointsHandler implements ServiceRequestHandler {
 
         @Override
-        public void handle(ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> service) throws UaException {
-            GetEndpointsRequest request = service.getRequest();
+        public void handle(ServiceRequest service) {
+            GetEndpointsRequest request = (GetEndpointsRequest) service.getRequest();
 
             String endpointUrl = request.getEndpointUrl();
             if (endpointUrl == null) endpointUrl = "";
@@ -115,11 +115,11 @@ public class FallbackServer {
 
     }
 
-    private class FindServersHandler implements ServiceRequestHandler<FindServersRequest, FindServersResponse> {
+    private class FindServersHandler implements ServiceRequestHandler {
 
         @Override
-        public void handle(ServiceRequest<FindServersRequest, FindServersResponse> service) throws UaException {
-            FindServersRequest request = service.getRequest();
+        public void handle(ServiceRequest service) throws UaException {
+            FindServersRequest request = (FindServersRequest) service.getRequest();
 
             List<ApplicationDescription> servers = new ArrayList<>();
             List<String> serverUris = l(request.getServerUris());

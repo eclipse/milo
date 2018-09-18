@@ -20,8 +20,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +28,7 @@ public class PublishQueue {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final LinkedList<ServiceRequest<PublishRequest, PublishResponse>> serviceQueue = new LinkedList<>();
+    private final LinkedList<ServiceRequest> serviceQueue = new LinkedList<>();
 
     private final LinkedHashMap<UInteger, WaitingSubscription> waitList = new LinkedHashMap<>();
 
@@ -42,7 +40,7 @@ public class PublishQueue {
      *
      * @param service the Publish {@link ServiceRequest}.
      */
-    public synchronized void addRequest(ServiceRequest<PublishRequest, PublishResponse> service) {
+    public synchronized void addRequest(ServiceRequest service) {
         List<WaitingSubscription> waitingSubscriptions = Lists.newArrayList(waitList.values());
 
         if (waitingSubscriptions.isEmpty()) {
@@ -101,7 +99,7 @@ public class PublishQueue {
      */
     public synchronized void addSubscription(Subscription subscription) {
         if (waitList.isEmpty() && !serviceQueue.isEmpty()) {
-            ServiceRequest<PublishRequest, PublishResponse> request = serviceQueue.poll();
+            ServiceRequest request = serviceQueue.poll();
 
             request.getServer().getConfig().getExecutor().execute(
                 () -> subscription.onPublish(request)
@@ -119,7 +117,7 @@ public class PublishQueue {
         return !isEmpty();
     }
 
-    public synchronized ServiceRequest<PublishRequest, PublishResponse> poll() {
+    public synchronized ServiceRequest poll() {
         return serviceQueue.poll();
     }
 

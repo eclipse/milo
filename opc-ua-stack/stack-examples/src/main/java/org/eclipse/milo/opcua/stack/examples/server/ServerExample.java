@@ -82,7 +82,7 @@ public class ServerExample {
         );
 
         server.addRequestHandler(ReadRequest.class, service -> {
-            ReadRequest request = service.getRequest();
+            ReadRequest request = (ReadRequest) service.getRequest();
 
             ResponseHeader header = new ResponseHeader(
                 DateTime.now(),

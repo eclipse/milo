@@ -15,22 +15,14 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
 
 public interface AttributeHistoryServiceSet {
 
-    default void onHistoryRead(
-        ServiceRequest<HistoryReadRequest, HistoryReadResponse> serviceRequest) throws UaException {
-
+    default void onHistoryRead(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onHistoryUpdate(
-        ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> serviceRequest) throws UaException {
-
+    default void onHistoryUpdate(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

@@ -57,10 +57,10 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
     private final ServiceMetric historyUpdateMetric = new ServiceMetric();
 
     @Override
-    public void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> service) {
+    public void onHistoryRead(ServiceRequest service) {
         historyReadMetric.record(service);
 
-        HistoryReadRequest request = service.getRequest();
+        HistoryReadRequest request = (HistoryReadRequest) service.getRequest();
 
         DiagnosticsContext<HistoryReadValueId> diagnosticsContext = new DiagnosticsContext<>();
 
@@ -149,11 +149,10 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
     }
 
     @Override
-    public void onHistoryUpdate(ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service)
-        throws UaException {
+    public void onHistoryUpdate(ServiceRequest service) throws UaException {
         historyUpdateMetric.record(service);
 
-        HistoryUpdateRequest request = service.getRequest();
+        HistoryUpdateRequest request = (HistoryUpdateRequest) service.getRequest();
 
         DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext = new DiagnosticsContext<>();
 

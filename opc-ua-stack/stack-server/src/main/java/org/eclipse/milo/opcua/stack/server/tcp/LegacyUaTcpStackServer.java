@@ -96,7 +96,7 @@ public class LegacyUaTcpStackServer implements LegacyUaStackServer {
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();
 
-    private final Map<Class<? extends UaRequestMessage>, ServiceRequestHandler<UaRequestMessage, UaResponseMessage>>
+    private final Map<Class<? extends UaRequestMessage>, ServiceRequestHandler>
         handlers = Maps.newConcurrentMap();
 
     private final Map<Long, ServerSecureChannel> secureChannels = Maps.newConcurrentMap();
@@ -195,7 +195,7 @@ public class LegacyUaTcpStackServer implements LegacyUaStackServer {
             .thenApply(ignored -> LegacyUaTcpStackServer.this);
     }
 
-    public void receiveRequest(ServiceRequest<UaRequestMessage, UaResponseMessage> serviceRequest) {
+    public void receiveRequest(ServiceRequest serviceRequest) {
         logger.trace("Received {} on {}.", serviceRequest, serviceRequest.getSecureChannel());
 
         serviceRequest.getFuture().whenComplete((response, throwable) -> {
@@ -230,7 +230,7 @@ public class LegacyUaTcpStackServer implements LegacyUaStackServer {
         });
 
         Class<? extends UaRequestMessage> requestClass = serviceRequest.getRequest().getClass();
-        ServiceRequestHandler<UaRequestMessage, UaResponseMessage> handler = handlers.get(requestClass);
+        ServiceRequestHandler handler = handlers.get(requestClass);
 
         try {
             if (handler != null) {
@@ -381,12 +381,10 @@ public class LegacyUaTcpStackServer implements LegacyUaStackServer {
 
     @SuppressWarnings("unchecked")
     public <T extends UaRequestMessage, U extends UaResponseMessage> void addRequestHandler(
-        Class<T> requestClass, ServiceRequestHandler<T, U> requestHandler) {
+        Class<T> requestClass,
+        ServiceRequestHandler requestHandler) {
 
-        ServiceRequestHandler<UaRequestMessage, UaResponseMessage> handler =
-            (ServiceRequestHandler<UaRequestMessage, UaResponseMessage>) requestHandler;
-
-        handlers.put(requestClass, handler);
+        handlers.put(requestClass, requestHandler);
     }
 
     @Override
@@ -450,8 +448,8 @@ public class LegacyUaTcpStackServer implements LegacyUaStackServer {
 
     private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
         @Override
-        public void onGetEndpoints(ServiceRequest<GetEndpointsRequest, GetEndpointsResponse> serviceRequest) {
-            GetEndpointsRequest request = serviceRequest.getRequest();
+        public void onGetEndpoints(ServiceRequest serviceRequest) {
+            GetEndpointsRequest request = (GetEndpointsRequest) serviceRequest.getRequest();
 
             List<String> profileUris = request.getProfileUris() != null ?
                 newArrayList(request.getProfileUris()) :
@@ -507,8 +505,8 @@ public class LegacyUaTcpStackServer implements LegacyUaStackServer {
         }
 
         @Override
-        public void onFindServers(ServiceRequest<FindServersRequest, FindServersResponse> serviceRequest) {
-            FindServersRequest request = serviceRequest.getRequest();
+        public void onFindServers(ServiceRequest serviceRequest) {
+            FindServersRequest request = (FindServersRequest) serviceRequest.getRequest();
 
             List<String> serverUris = request.getServerUris() != null ?
                 newArrayList(request.getServerUris()) :

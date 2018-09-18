@@ -15,12 +15,10 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 
 public interface MethodServiceSet {
 
-    default void onCall(ServiceRequest<CallRequest, CallResponse> serviceRequest) throws UaException {
+    default void onCall(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

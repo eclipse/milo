@@ -15,36 +15,22 @@ package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
 
 public interface NodeManagementServiceSet {
 
-    default void onAddNodes(ServiceRequest<AddNodesRequest, AddNodesResponse> serviceRequest) throws UaException {
+    default void onAddNodes(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onDeleteNodes(
-        ServiceRequest<DeleteNodesRequest, DeleteNodesResponse> serviceRequest) throws UaException {
-
+    default void onDeleteNodes(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onAddReferences(
-        ServiceRequest<AddReferencesRequest, AddReferencesResponse> serviceRequest) throws UaException {
-
+    default void onAddReferences(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 
-    default void onDeleteReferences(
-        ServiceRequest<DeleteReferencesRequest, DeleteReferencesResponse> serviceRequest) throws UaException {
-
+    default void onDeleteReferences(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
     }
 

@@ -43,7 +43,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
     private final ServiceMetric callCounter = new ServiceMetric();
 
     @Override
-    public void onCall(ServiceRequest<CallRequest, CallResponse> service) {
+    public void onCall(ServiceRequest service) {
         callCounter.record(service);
 
         DiagnosticsContext<CallMethodRequest> diagnosticsContext = new DiagnosticsContext<>();
@@ -51,7 +51,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        CallRequest request = service.getRequest();
+        CallRequest request = (CallRequest) service.getRequest();
 
         List<PendingCall> pendingCalls = l(request.getMethodsToCall())
             .stream()

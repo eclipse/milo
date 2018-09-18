@@ -14,11 +14,9 @@
 package org.eclipse.milo.opcua.stack.server.services;
 
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 
-public interface ServiceRequestHandler<T extends UaRequestMessage, U extends UaResponseMessage> {
+public interface ServiceRequestHandler {
 
-    void handle(ServiceRequest<T, U> service) throws UaException;
+    void handle(ServiceRequest serviceRequest) throws UaException;
 
 }

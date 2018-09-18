@@ -27,39 +27,31 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 
-public class ServiceRequest<ReqT extends UaRequestMessage, ResT extends UaResponseMessage> extends DefaultAttributeMap {
+public class ServiceRequest extends DefaultAttributeMap {
 
-    private final CompletableFuture<ResT> future = new CompletableFuture<>();
+    private final CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
 
-    private final ReqT request;
-    private final long requestId;
+    private final UaRequestMessage request;
     private final UaStackServer server;
     private final ServerSecureChannel secureChannel;
 
-    public ServiceRequest(ReqT request,
-                          long requestId,
-                          UaStackServer server,
-                          ServerSecureChannel secureChannel) {
+    public ServiceRequest(
+        UaRequestMessage request,
+        UaStackServer server,
+        ServerSecureChannel secureChannel) {
 
         this.request = request;
-        this.requestId = requestId;
         this.server = server;
         this.secureChannel = secureChannel;
     }
 
-    public CompletableFuture<ResT> getFuture() {
+    public CompletableFuture<UaResponseMessage> getFuture() {
         return future;
     }
 
-    public ReqT getRequest() {
+    public UaRequestMessage getRequest() {
         return request;
     }
-
-    /*
-    public long getRequestId() {
-        return requestId;
-    }
-    */
 
     public UaStackServer getServer() {
         return server;
@@ -69,7 +61,7 @@ public class ServiceRequest<ReqT extends UaRequestMessage, ResT extends UaRespon
         return secureChannel;
     }
 
-    public void setResponse(ResT response) {
+    public void setResponse(UaResponseMessage response) {
         future.complete(response);
     }
 
@@ -130,7 +122,6 @@ public class ServiceRequest<ReqT extends UaRequestMessage, ResT extends UaRespon
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-            .add("requestId", requestId)
             .add("request", request.getClass().getSimpleName())
             .toString();
     }

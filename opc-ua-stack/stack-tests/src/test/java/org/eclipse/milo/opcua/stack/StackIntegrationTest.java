@@ -192,23 +192,23 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         return String.format("opc.tcp://localhost:%d/test", getTcpBindPort());
     }
 
-//    public static class TestTcpStackIntegrationTest extends StackIntegrationTest {
-//
-//        @Test
-//        public void test() {}
-//
-//    }
-
-    public static class TestHttpStackIntegrationTest extends StackIntegrationTest {
-
-        @Override
-        protected String getDiscoveryUrl() {
-            return String.format("opc.https://localhost:%d/test", getHttpsBindPort());
-        }
+    public static class TestTcpStackIntegrationTest extends StackIntegrationTest {
 
         @Test
         public void test() {}
 
     }
+
+//    public static class TestHttpStackIntegrationTest extends StackIntegrationTest {
+//
+//        @Override
+//        protected String getDiscoveryUrl() {
+//            return String.format("opc.https://localhost:%d/test", getHttpsBindPort());
+//        }
+//
+//        @Test
+//        public void test() {}
+//
+//    }
 
 }

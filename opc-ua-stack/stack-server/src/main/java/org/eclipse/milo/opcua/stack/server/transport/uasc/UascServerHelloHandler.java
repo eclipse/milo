@@ -15,10 +15,8 @@ package org.eclipse.milo.opcua.stack.server.transport.uasc;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
 
 import com.google.common.primitives.Ints;
 import io.netty.buffer.ByteBuf;
@@ -44,6 +42,8 @@ import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
+
 public class UascServerHelloHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
     public static final AttributeKey<String> ENDPOINT_URL_KEY = AttributeKey.valueOf("endpoint-url");
@@ -60,9 +60,9 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
     private volatile boolean receivedHello = false;
 
-    private final Function<String, Optional<UaStackServer>> serverLookup;
+    private final ServerLookup serverLookup;
 
-    public UascServerHelloHandler(Function<String, Optional<UaStackServer>> serverLookup) {
+    public UascServerHelloHandler(ServerLookup serverLookup) {
         this.serverLookup = serverLookup;
     }
 
@@ -124,7 +124,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         String endpointUrl = hello.getEndpointUrl();
         String path = EndpointUtil.getPath(endpointUrl);
 
-        UaStackServer server = serverLookup.apply(path).orElseThrow(
+        UaStackServer server = serverLookup.getServer(path).orElseThrow(
             () -> new UaException(
                 StatusCodes.Bad_TcpEndpointUrlInvalid,
                 "unrecognized endpoint url: " + endpointUrl)

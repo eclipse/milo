@@ -25,7 +25,7 @@ public class ServiceMetric {
     private final Timer requestTimer = new Timer();
     private final Counter errorCounter = new Counter();
 
-    public void record(ServiceRequest<?, ?> service) {
+    public void record(ServiceRequest service) {
         Timer.Context context = requestTimer.time();
 
         service.getFuture().whenComplete((r, ex) -> {
