@@ -19,6 +19,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.netty.buffer.ByteBuf;
@@ -27,6 +28,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.ReferenceCountUtil;
+import io.netty.util.Timeout;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
@@ -72,7 +75,9 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ServerSecureChannel secureChannel;
-    private volatile boolean symmetricHandlerAdded = false;
+    private Timeout secureChannelTimeout;
+
+    private boolean symmetricHandlerAdded = false;
 
     private List<ByteBuf> chunkBuffers = new ArrayList<>();
 
@@ -114,11 +119,15 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
                 case CloseSecureChannel:
                     logger.debug("Received CloseSecureChannelRequest");
-                    if (secureChannel != null) {
-                        // TODO SecureChanel
-                        // server.closeSecureChannel(secureChannel);
-                    }
+
                     buffer.skipBytes(messageLength);
+
+                    if (secureChannelTimeout != null) {
+                        secureChannelTimeout.cancel();
+                        secureChannelTimeout = null;
+                    }
+
+                    ctx.close();
                     break;
 
                 default:
@@ -171,7 +180,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 // TODO SecureChanel
                 // secureChannel = server.openSecureChannel();
                 secureChannel = new ServerSecureChannel();
-                secureChannel.setChannelId(stackServer.getNextTokenId());
+                secureChannel.setChannelId(stackServer.getNextChannelId());
                 // secureChannel.setEndpointDescription(endpointDescription);
             } else {
                 // TODO SecureChanel
@@ -386,6 +395,23 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         );
 
         sendOpenSecureChannelResponse(ctx, requestId, response);
+
+        /*
+         * Cancel the previous timeout, if it exists, and start a new one.
+         */
+        if (secureChannelTimeout == null || secureChannelTimeout.cancel()) {
+            final long lifetime = channelLifetime;
+            secureChannelTimeout = Stack.sharedWheelTimer().newTimeout(t ->
+                {
+                    logger.debug(
+                        "SecureChannel renewal timed out after {}ms. id={}, channel={}",
+                        lifetime, secureChannel.getChannelId(), ctx.channel());
+
+                    ctx.close();
+                },
+                channelLifetime, TimeUnit.MILLISECONDS
+            );
+        }
     }
 
     private void sendOpenSecureChannelResponse(

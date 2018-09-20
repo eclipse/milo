@@ -17,22 +17,35 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import org.eclipse.milo.opcua.stack.server.transport.http.OpcServerHttpChannelInitializer;
+import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
+
+import static io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler.HandshakeComplete;
+import static org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
 
 public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
+    
+    private String subprotocol;
 
-    String subprotocol;
+    private final ServerLookup serverLookup;
+
+    public OpcServerWebSocketFrameHandler(ServerLookup serverLookup) {
+        this.serverLookup = serverLookup;
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
-        if (event instanceof WebSocketServerProtocolHandler.HandshakeComplete) {
-            WebSocketServerProtocolHandler.HandshakeComplete handshake = (WebSocketServerProtocolHandler.HandshakeComplete) event;
+        if (event instanceof HandshakeComplete) {
+            HandshakeComplete handshake = (HandshakeComplete) event;
 
             handshake.requestUri();
             handshake.requestHeaders();
 
             subprotocol = handshake.selectedSubprotocol();
+
+            if (OpcServerHttpChannelInitializer.WS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
+                ctx.channel().pipeline().addLast(new UascServerHelloHandler(serverLookup));
+            }
         }
 
         super.userEventTriggered(ctx, event);

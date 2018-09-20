@@ -46,7 +46,6 @@ import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
-import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
 import org.eclipse.milo.opcua.stack.server.transport.websocket.OpcServerWebSocketFrameHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,7 +119,7 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
             if (Objects.equals(httpRequest.method(), HttpMethod.GET) &&
                 "websocket".equalsIgnoreCase(httpRequest.headers().get(HttpHeaderValues.UPGRADE))) {
 
-                logger.info("intercepted WebSocket upgrade");
+                logger.debug("intercepted WebSocket upgrade");
 
                 ctx.channel().pipeline().remove(this);
 
@@ -133,13 +132,12 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
                     true
                 ));
 
-                ctx.channel().pipeline().addLast(new OpcServerWebSocketFrameHandler());
-                ctx.channel().pipeline().addLast(new UascServerHelloHandler(serverLookup));
+                ctx.channel().pipeline().addLast(new OpcServerWebSocketFrameHandler(serverLookup));
 
                 httpRequest.retain();
                 ctx.executor().execute(() -> ctx.fireChannelRead(httpRequest));
             } else if (Objects.equals(httpRequest.method(), HttpMethod.POST)) {
-                logger.info("intercepted HTTP POST");
+                logger.debug("intercepted HTTP POST");
 
                 ctx.channel().pipeline().remove(this);
                 ctx.channel().pipeline().addLast(new OpcServerHttpRequestHandler(stackServer));

@@ -199,16 +199,16 @@ public abstract class StackIntegrationTest extends SecurityFixture {
 
     }
 
-//    public static class TestHttpStackIntegrationTest extends StackIntegrationTest {
-//
-//        @Override
-//        protected String getDiscoveryUrl() {
-//            return String.format("opc.https://localhost:%d/test", getHttpsBindPort());
-//        }
-//
-//        @Test
-//        public void test() {}
-//
-//    }
+    public static class TestHttpStackIntegrationTest extends StackIntegrationTest {
+
+        @Override
+        protected String getDiscoveryUrl() {
+            return String.format("opc.https://localhost:%d/test", getHttpsBindPort());
+        }
+
+        @Test
+        public void test() {}
+
+    }
 
 }

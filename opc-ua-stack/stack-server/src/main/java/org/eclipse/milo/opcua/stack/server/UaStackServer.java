@@ -29,9 +29,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
@@ -243,79 +245,6 @@ public class UaStackServer {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends UaRequestMessage> void addRequestHandler(
-        Class<T> requestClass,
-        ServiceRequestHandler requestHandler) {
-
-        serviceRequestHandlers.put(requestClass, requestHandler);
-    }
-
-    void addServiceSet(AttributeServiceSet serviceSet) {
-        addRequestHandler(ReadRequest.class, serviceSet::onRead);
-        addRequestHandler(WriteRequest.class, serviceSet::onWrite);
-    }
-
-    void addServiceSet(AttributeHistoryServiceSet serviceSet) {
-        addRequestHandler(HistoryReadRequest.class, serviceSet::onHistoryRead);
-        addRequestHandler(HistoryUpdateRequest.class, serviceSet::onHistoryUpdate);
-    }
-
-    void addServiceSet(DiscoveryServiceSet serviceSet) {
-        addRequestHandler(GetEndpointsRequest.class, serviceSet::onGetEndpoints);
-        addRequestHandler(FindServersRequest.class, serviceSet::onFindServers);
-        addRequestHandler(RegisterServerRequest.class, serviceSet::onRegisterServer);
-    }
-
-    void addServiceSet(QueryServiceSet serviceSet) {
-        addRequestHandler(QueryFirstRequest.class, serviceSet::onQueryFirst);
-        addRequestHandler(QueryNextRequest.class, serviceSet::onQueryNext);
-    }
-
-    void addServiceSet(MethodServiceSet serviceSet) {
-        addRequestHandler(CallRequest.class, serviceSet::onCall);
-    }
-
-    void addServiceSet(MonitoredItemServiceSet serviceSet) {
-        addRequestHandler(CreateMonitoredItemsRequest.class, serviceSet::onCreateMonitoredItems);
-        addRequestHandler(ModifyMonitoredItemsRequest.class, serviceSet::onModifyMonitoredItems);
-        addRequestHandler(DeleteMonitoredItemsRequest.class, serviceSet::onDeleteMonitoredItems);
-        addRequestHandler(SetMonitoringModeRequest.class, serviceSet::onSetMonitoringMode);
-        addRequestHandler(SetTriggeringRequest.class, serviceSet::onSetTriggering);
-    }
-
-    void addServiceSet(NodeManagementServiceSet serviceSet) {
-        addRequestHandler(AddNodesRequest.class, serviceSet::onAddNodes);
-        addRequestHandler(DeleteNodesRequest.class, serviceSet::onDeleteNodes);
-        addRequestHandler(AddReferencesRequest.class, serviceSet::onAddReferences);
-        addRequestHandler(DeleteReferencesRequest.class, serviceSet::onDeleteReferences);
-    }
-
-    void addServiceSet(SessionServiceSet serviceSet) {
-        addRequestHandler(CreateSessionRequest.class, serviceSet::onCreateSession);
-        addRequestHandler(ActivateSessionRequest.class, serviceSet::onActivateSession);
-        addRequestHandler(CloseSessionRequest.class, serviceSet::onCloseSession);
-        addRequestHandler(CancelRequest.class, serviceSet::onCancel);
-    }
-
-    void addServiceSet(SubscriptionServiceSet serviceSet) {
-        addRequestHandler(CreateSubscriptionRequest.class, serviceSet::onCreateSubscription);
-        addRequestHandler(ModifySubscriptionRequest.class, serviceSet::onModifySubscription);
-        addRequestHandler(DeleteSubscriptionsRequest.class, serviceSet::onDeleteSubscriptions);
-        addRequestHandler(TransferSubscriptionsRequest.class, serviceSet::onTransferSubscriptions);
-        addRequestHandler(SetPublishingModeRequest.class, serviceSet::onSetPublishingMode);
-        addRequestHandler(PublishRequest.class, serviceSet::onPublish);
-        addRequestHandler(RepublishRequest.class, serviceSet::onRepublish);
-    }
-
-    void addServiceSet(ViewServiceSet serviceSet) {
-        addRequestHandler(BrowseRequest.class, serviceSet::onBrowse);
-        addRequestHandler(BrowseNextRequest.class, serviceSet::onBrowseNext);
-        addRequestHandler(TranslateBrowsePathsToNodeIdsRequest.class, serviceSet::onTranslateBrowsePaths);
-        addRequestHandler(RegisterNodesRequest.class, serviceSet::onRegisterNodes);
-        addRequestHandler(UnregisterNodesRequest.class, serviceSet::onUnregisterNodes);
-    }
-
     private EndpointDescription transformEndpoint(EndpointConfiguration endpoint) {
         return new EndpointDescription(
             endpoint.getEndpointUrl(),
@@ -325,8 +254,115 @@ public class UaStackServer {
             endpoint.getSecurityPolicy().getSecurityPolicyUri(),
             a(endpoint.getTokenPolicies(), UserTokenPolicy.class),
             endpoint.getTransportProfile().getUri(),
-            ubyte(0) // TODO
+            ubyte(getSecurityLevel(endpoint.getSecurityPolicy(), endpoint.getSecurityMode()))
         );
+    }
+
+    private static short getSecurityLevel(SecurityPolicy securityPolicy, MessageSecurityMode securityMode) {
+        short securityLevel = 0;
+
+        switch (securityPolicy) {
+            case Aes256_Sha256_RsaPss:
+            case Basic256Sha256:
+                securityLevel |= 0x08;
+                break;
+            case Aes128_Sha256_RsaOaep:
+                securityLevel |= 0x04;
+                break;
+            case Basic256:
+            case Basic128Rsa15:
+                securityLevel |= 0x01;
+                break;
+            case None:
+            default:
+                break;
+        }
+
+        switch (securityMode) {
+            case SignAndEncrypt:
+                securityLevel |= 0x80;
+                break;
+            case Sign:
+                securityLevel |= 0x40;
+                break;
+            default:
+                securityLevel |= 0x20;
+                break;
+        }
+
+        return securityLevel;
+    }
+
+    public <T extends UaRequestMessage> void addRequestHandler(
+        Class<T> requestClass,
+        ServiceRequestHandler requestHandler) {
+
+        serviceRequestHandlers.put(requestClass, requestHandler);
+    }
+
+    public void addServiceSet(AttributeServiceSet serviceSet) {
+        addRequestHandler(ReadRequest.class, serviceSet::onRead);
+        addRequestHandler(WriteRequest.class, serviceSet::onWrite);
+    }
+
+    public void addServiceSet(AttributeHistoryServiceSet serviceSet) {
+        addRequestHandler(HistoryReadRequest.class, serviceSet::onHistoryRead);
+        addRequestHandler(HistoryUpdateRequest.class, serviceSet::onHistoryUpdate);
+    }
+
+    public void addServiceSet(DiscoveryServiceSet serviceSet) {
+        addRequestHandler(GetEndpointsRequest.class, serviceSet::onGetEndpoints);
+        addRequestHandler(FindServersRequest.class, serviceSet::onFindServers);
+        addRequestHandler(RegisterServerRequest.class, serviceSet::onRegisterServer);
+    }
+
+    public void addServiceSet(QueryServiceSet serviceSet) {
+        addRequestHandler(QueryFirstRequest.class, serviceSet::onQueryFirst);
+        addRequestHandler(QueryNextRequest.class, serviceSet::onQueryNext);
+    }
+
+    public void addServiceSet(MethodServiceSet serviceSet) {
+        addRequestHandler(CallRequest.class, serviceSet::onCall);
+    }
+
+    public void addServiceSet(MonitoredItemServiceSet serviceSet) {
+        addRequestHandler(CreateMonitoredItemsRequest.class, serviceSet::onCreateMonitoredItems);
+        addRequestHandler(ModifyMonitoredItemsRequest.class, serviceSet::onModifyMonitoredItems);
+        addRequestHandler(DeleteMonitoredItemsRequest.class, serviceSet::onDeleteMonitoredItems);
+        addRequestHandler(SetMonitoringModeRequest.class, serviceSet::onSetMonitoringMode);
+        addRequestHandler(SetTriggeringRequest.class, serviceSet::onSetTriggering);
+    }
+
+    public void addServiceSet(NodeManagementServiceSet serviceSet) {
+        addRequestHandler(AddNodesRequest.class, serviceSet::onAddNodes);
+        addRequestHandler(DeleteNodesRequest.class, serviceSet::onDeleteNodes);
+        addRequestHandler(AddReferencesRequest.class, serviceSet::onAddReferences);
+        addRequestHandler(DeleteReferencesRequest.class, serviceSet::onDeleteReferences);
+    }
+
+    public void addServiceSet(SessionServiceSet serviceSet) {
+        addRequestHandler(CreateSessionRequest.class, serviceSet::onCreateSession);
+        addRequestHandler(ActivateSessionRequest.class, serviceSet::onActivateSession);
+        addRequestHandler(CloseSessionRequest.class, serviceSet::onCloseSession);
+        addRequestHandler(CancelRequest.class, serviceSet::onCancel);
+    }
+
+    public void addServiceSet(SubscriptionServiceSet serviceSet) {
+        addRequestHandler(CreateSubscriptionRequest.class, serviceSet::onCreateSubscription);
+        addRequestHandler(ModifySubscriptionRequest.class, serviceSet::onModifySubscription);
+        addRequestHandler(DeleteSubscriptionsRequest.class, serviceSet::onDeleteSubscriptions);
+        addRequestHandler(TransferSubscriptionsRequest.class, serviceSet::onTransferSubscriptions);
+        addRequestHandler(SetPublishingModeRequest.class, serviceSet::onSetPublishingMode);
+        addRequestHandler(PublishRequest.class, serviceSet::onPublish);
+        addRequestHandler(RepublishRequest.class, serviceSet::onRepublish);
+    }
+
+    public void addServiceSet(ViewServiceSet serviceSet) {
+        addRequestHandler(BrowseRequest.class, serviceSet::onBrowse);
+        addRequestHandler(BrowseNextRequest.class, serviceSet::onBrowseNext);
+        addRequestHandler(TranslateBrowsePathsToNodeIdsRequest.class, serviceSet::onTranslateBrowsePaths);
+        addRequestHandler(RegisterNodesRequest.class, serviceSet::onRegisterNodes);
+        addRequestHandler(UnregisterNodesRequest.class, serviceSet::onUnregisterNodes);
     }
 
     private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {

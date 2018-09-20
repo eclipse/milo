@@ -114,7 +114,7 @@ public class DiscoveryClient {
 
             return discoveryClient
                 .connect()
-                .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[0]))
+                .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[]{profileUri}))
                 .whenComplete((e, ex) -> discoveryClient.disconnect())
                 .thenApply(response -> l(response.getEndpoints()));
         } catch (UaException e) {

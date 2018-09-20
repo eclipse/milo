@@ -14,10 +14,15 @@
 package org.eclipse.milo.opcua.stack.client.transport.https;
 
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPBody;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPMessage;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -37,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
@@ -44,6 +50,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTransportRequest> {
 
@@ -89,7 +96,17 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
             case HTTPS_UAXML: {
                 OpcUaXmlStreamEncoder encoder = new OpcUaXmlStreamEncoder();
                 encoder.writeMessage(null, transportRequest.getRequest());
-                content.writeBytes(encoder.getDocumentXml().getBytes(StandardCharsets.UTF_8));
+
+                MessageFactory messageFactory = MessageFactory.newInstance();
+                SOAPMessage soapMessage = messageFactory.createMessage();
+
+                SOAPHeader soapHeader = soapMessage.getSOAPHeader();
+                soapHeader.detachNode();
+
+                SOAPBody soapBody = soapMessage.getSOAPBody();
+                soapBody.addDocument(encoder.getDocument());
+
+                soapMessage.writeTo(new ByteBufOutputStream(content));
                 break;
             }
 
@@ -144,6 +161,21 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                     }
 
                     OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(content);
+                    responseMessage = (UaResponseMessage) decoder.readMessage(null);
+                    break;
+                }
+
+                case HTTPS_UAXML: {
+                    MessageFactory messageFactory = MessageFactory.newInstance();
+
+                    SOAPMessage soapMessage = messageFactory.createMessage(
+                        null,
+                        new ByteBufInputStream(content)
+                    );
+
+                    Document document = soapMessage.getSOAPBody().extractContentAsDocument();
+
+                    OpcUaXmlStreamDecoder decoder = new OpcUaXmlStreamDecoder(document);
                     responseMessage = (UaResponseMessage) decoder.readMessage(null);
                     break;
                 }
