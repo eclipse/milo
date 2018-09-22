@@ -49,9 +49,9 @@ public abstract class AbstractTransport implements UaTransport {
     }
 
     private CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request, Channel channel) {
-        UaTransportRequest requestFuture = new UaTransportRequest(request);
+        UaTransportRequest transportRequest = new UaTransportRequest(request);
 
-        channel.writeAndFlush(requestFuture).addListener(f -> {
+        channel.writeAndFlush(transportRequest).addListener(f -> {
             if (!f.isSuccess()) {
                 Throwable cause = f.cause();
 
@@ -63,12 +63,12 @@ public abstract class AbstractTransport implements UaTransport {
                             if (ch != null) {
                                 sendRequest(request, ch);
                             } else {
-                                requestFuture.getFuture().completeExceptionally(ex);
+                                transportRequest.getFuture().completeExceptionally(ex);
                             }
                         })
                     );
                 } else {
-                    requestFuture.getFuture().completeExceptionally(cause);
+                    transportRequest.getFuture().completeExceptionally(cause);
 
                     logger.debug(
                         "Write failed, request={}, requestHandle={}",
@@ -85,7 +85,7 @@ public abstract class AbstractTransport implements UaTransport {
             }
         });
 
-        return requestFuture.getFuture();
+        return transportRequest.getFuture();
     }
 
 }

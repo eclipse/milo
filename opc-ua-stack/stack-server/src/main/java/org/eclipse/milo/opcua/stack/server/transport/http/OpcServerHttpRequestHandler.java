@@ -23,14 +23,19 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
@@ -128,7 +133,39 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         UInteger requestHandle,
         Throwable fault) {
 
-        // TODO
+        StatusCode statusCode = UaException.extract(fault)
+            .map(UaException::getStatusCode)
+            .orElse(StatusCode.BAD);
+
+        ServiceFault serviceFault = new ServiceFault(
+            new ResponseHeader(
+                DateTime.now(),
+                requestHandle,
+                statusCode,
+                null,
+                null,
+                null
+            )
+        );
+
+        ByteBuf contentBuffer = BufferUtil.pooledBuffer();
+
+        // TODO switch on transport profile for binary vs xml encoding
+        OpcUaBinaryStreamEncoder binaryEncoder = new OpcUaBinaryStreamEncoder();
+        binaryEncoder.setBuffer(contentBuffer);
+        binaryEncoder.writeMessage(null, serviceFault);
+
+        FullHttpResponse httpResponse = new DefaultFullHttpResponse(
+            HttpVersion.HTTP_1_1,
+            HttpResponseStatus.OK,
+            contentBuffer
+        );
+
+        httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        httpResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, UABINARY_CONTENT_TYPE);
+        httpResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, contentBuffer.readableBytes());
+
+        ctx.writeAndFlush(httpResponse);
     }
 
 }

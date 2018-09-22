@@ -211,7 +211,7 @@ public class UaStackClient {
             case TCP_UASC_UABINARY:
                 transport = new OpcTcpTransport(config);
                 break;
-                
+
             case HTTPS_UABINARY:
                 transport = new OpcHttpsTransport(config);
                 break;

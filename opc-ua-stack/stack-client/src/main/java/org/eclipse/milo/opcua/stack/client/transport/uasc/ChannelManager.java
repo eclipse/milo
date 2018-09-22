@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.stack.client.transport.uasc;
 
 import java.net.ConnectException;
-import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -411,7 +411,6 @@ public class ChannelManager {
         final CompletableFuture<Unit> disconnectFuture = new CompletableFuture<>();
     }
 
-    // TODO pass initializer in instead? Seems weird ChannelManager has to know about these 2 initializers
     public static CompletableFuture<ClientSecureChannel> bootstrap(UaStackClientConfig config) {
         CompletableFuture<ClientSecureChannel> handshake = new CompletableFuture<>();
 
@@ -438,10 +437,12 @@ public class ChannelManager {
         try {
             String endpointUrl = config.getEndpoint().getEndpointUrl();
 
-            // TODO EndpointUtil should handle this instead of using URI
-            URI uri = new URI(endpointUrl).parseServerAuthority();
+            String host = EndpointUtil.getHost(endpointUrl);
+            assert host != null;
 
-            bootstrap.connect(uri.getHost(), uri.getPort()).addListener((ChannelFuture f) -> {
+            int port = EndpointUtil.getPort(endpointUrl);
+
+            bootstrap.connect(host, port).addListener((ChannelFuture f) -> {
                 if (!f.isSuccess()) {
                     Throwable cause = f.cause();
 

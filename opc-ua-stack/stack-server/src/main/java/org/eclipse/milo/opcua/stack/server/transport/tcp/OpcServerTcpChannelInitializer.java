@@ -28,7 +28,7 @@ public class OpcServerTcpChannelInitializer extends ChannelInitializer<SocketCha
     }
 
     @Override
-    protected void initChannel(SocketChannel channel) throws Exception {
+    protected void initChannel(SocketChannel channel) {
         channel.pipeline().addLast(RateLimitingHandler.getInstance());
         channel.pipeline().addLast(new UascServerHelloHandler(stackServer));
     }

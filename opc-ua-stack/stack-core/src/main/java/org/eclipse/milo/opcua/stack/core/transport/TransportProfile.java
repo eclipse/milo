@@ -61,7 +61,7 @@ public enum TransportProfile {
             case HTTPS_UABINARY:
             case HTTPS_UAXML:
             case HTTPS_UAJSON:
-                return "opc.https";
+                return "https";
             case WSS_UASC_UABINARY:
             case WSS_UAJSON:
                 return "opc.wss";

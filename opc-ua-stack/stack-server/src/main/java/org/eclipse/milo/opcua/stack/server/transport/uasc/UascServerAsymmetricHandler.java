@@ -50,9 +50,9 @@ import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 import org.eclipse.milo.opcua.stack.core.types.structured.ChannelSecurityToken;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.OpenSecureChannelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
@@ -162,30 +162,25 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 String endpointUrl = ctx.channel().attr(UascServerHelloHandler.ENDPOINT_URL_KEY).get();
                 String securityPolicyUri = securityHeader.getSecurityPolicyUri();
 
-                EndpointDescription endpointDescription = stackServer.getEndpointDescriptions().stream()
-                    .filter(e -> {
+                boolean endpointWithSecurityPolicyExists = stackServer.getEndpointDescriptions()
+                    .stream()
+                    .anyMatch(e -> {
                         String s1 = EndpointUtil.getPath(endpointUrl);
                         String s2 = EndpointUtil.getPath(e.getEndpointUrl());
                         boolean uriMatch = s1.equals(s2);
                         boolean policyMatch = e.getSecurityPolicyUri().equals(securityPolicyUri);
                         return uriMatch && policyMatch;
-                    })
-                    .findFirst()
-                    .orElseThrow(() ->
-                        new UaException(
-                            StatusCodes.Bad_SecurityChecksFailed,
-                            "Endpoint URL or SecurityPolicy URI did not match")
-                    );
+                    });
 
-                // TODO SecureChanel
-                // secureChannel = server.openSecureChannel();
+                if (!endpointWithSecurityPolicyExists) {
+                    throw new UaException(
+                        StatusCodes.Bad_SecurityChecksFailed,
+                        String.format("No endpoint at %s with SecurityPolicy URI=%s", endpointUrl, securityPolicyUri));
+                }
+
                 secureChannel = new ServerSecureChannel();
                 secureChannel.setChannelId(stackServer.getNextChannelId());
-                // secureChannel.setEndpointDescription(endpointDescription);
             } else {
-                // TODO SecureChanel
-                // secureChannel = server.getSecureChannel(secureChannelId);
-
                 if (secureChannel == null) {
                     throw new UaException(StatusCodes.Bad_TcpSecureChannelUnknown,
                         "unknown secure channel id: " + secureChannelId);
@@ -320,6 +315,26 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         SecurityTokenRequestType requestType = request.getRequestType();
 
         if (requestType == SecurityTokenRequestType.Issue) {
+            MessageSecurityMode securityMode = request.getSecurityMode();
+
+            String endpointUrl = ctx.channel().attr(UascServerHelloHandler.ENDPOINT_URL_KEY).get();
+
+            boolean endpointWithSecurityModeExists = stackServer.getEndpointDescriptions()
+                .stream()
+                .anyMatch(e -> {
+                    String s1 = EndpointUtil.getPath(endpointUrl);
+                    String s2 = EndpointUtil.getPath(e.getEndpointUrl());
+                    boolean uriMatch = s1.equals(s2);
+                    boolean securityModeMatch = e.getSecurityMode() == securityMode;
+                    return uriMatch && securityModeMatch;
+                });
+
+            if (!endpointWithSecurityModeExists) {
+                throw new UaException(
+                    StatusCodes.Bad_SecurityChecksFailed,
+                    String.format("No endpoint at %s with MessageSecurityMode %s", endpointUrl, securityMode));
+            }
+
             secureChannel.setMessageSecurityMode(request.getSecurityMode());
         } else if (requestType == SecurityTokenRequestType.Renew &&
             secureChannel.getMessageSecurityMode() != request.getSecurityMode()) {
@@ -463,11 +478,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                             }
 
                             ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-
-                            long lifetime = response.getSecurityToken().getRevisedLifetime().longValue();
-
-                            // TODO SecureChanel
-                            // server.secureChannelIssuedOrRenewed(secureChannel, lifetime);
 
                             logger.debug("Sent OpenSecureChannelResponse.");
                         }

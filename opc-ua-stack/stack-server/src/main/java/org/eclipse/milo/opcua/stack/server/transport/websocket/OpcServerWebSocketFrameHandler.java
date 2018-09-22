@@ -43,7 +43,7 @@ public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<
 
             subprotocol = handshake.selectedSubprotocol();
 
-            if (Stack.WSS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
+            if (Stack.WSS_PROTOCOL_BINARY.equalsIgnoreCase(subprotocol)) {
                 ctx.channel().pipeline().addLast(new UascServerHelloHandler(stackServer));
             }
         }

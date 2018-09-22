@@ -24,7 +24,6 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 
 public class ServerSecureChannel extends DefaultAttributeMap implements SecureChannel {
@@ -43,7 +42,6 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
 
     private volatile SecurityPolicy securityPolicy;
     private volatile MessageSecurityMode messageSecurityMode;
-    private volatile EndpointDescription endpointDescription;
 
     public void setChannelId(long channelId) {
         this.channelId = channelId;
@@ -85,20 +83,6 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
     public void setMessageSecurityMode(MessageSecurityMode messageSecurityMode) {
         this.messageSecurityMode = messageSecurityMode;
     }
-
-    // TODO EndpointDescription is only used to get the desired Server Certificate
-    // for UASC this can be figured out from the ReceiverThumbprint in AsymSecHeader
-    // for HTTPS... not possible?
-
-    /*
-    public void setEndpointDescription(EndpointDescription endpointDescription) {
-        this.endpointDescription = endpointDescription;
-    }
-
-    public EndpointDescription getEndpointDescription() {
-        return endpointDescription;
-    }
-    */
 
     @Override
     public KeyPair getKeyPair() {
