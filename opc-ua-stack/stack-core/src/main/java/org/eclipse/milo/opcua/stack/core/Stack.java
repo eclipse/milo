@@ -52,6 +52,10 @@ public final class Stack {
     public static final String WSS_UAJSON_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/wss-uajson";
 
+    public static final String WSS_PROTOCOL_BINARY = "opcua+uacp";
+    
+    public static final String WSS_PROTOCOL_JSON = "opcua+uajson";
+
     public static final int DEFAULT_TCP_PORT = 12685;
     public static final int DEFAULT_HTTP_PORT = 8080;
     public static final int DEFAULT_HTTPS_PORT = 8443;

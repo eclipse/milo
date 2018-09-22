@@ -13,20 +13,22 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
-import java.net.InetAddress;
 import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ForwardingTable;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -74,6 +76,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsTo
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.Lazy;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
@@ -89,7 +92,7 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequestHandler;
 import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
-import org.eclipse.milo.opcua.stack.server.transport.SocketServerManager;
+import org.eclipse.milo.opcua.stack.server.transport.ServerChannelManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,8 +105,7 @@ public class UaStackServer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<Class<? extends UaRequestMessage>, ServiceRequestHandler>
-        serviceRequestHandlers = Maps.newConcurrentMap();
+    private final ServiceHandlerTable serviceHandlerTable = new ServiceHandlerTable();
 
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
     private final Lazy<ImmutableList<EndpointDescription>> endpointDescriptions = new Lazy<>();
@@ -111,21 +113,19 @@ public class UaStackServer {
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();
 
+    private final ServerChannelManager channelManager;
+
     private final UaStackServerConfig config;
 
     public UaStackServer(UaStackServerConfig config) {
         this.config = config;
 
-        addServiceSet(new DefaultDiscoveryServiceSet());
+        channelManager = new ServerChannelManager(this);
 
-        addServiceSet(new AttributeServiceSet() {});
-        addServiceSet(new MethodServiceSet() {});
-        addServiceSet(new MonitoredItemServiceSet() {});
-        addServiceSet(new NodeManagementServiceSet() {});
-        addServiceSet(new QueryServiceSet() {});
-        addServiceSet(new SessionServiceSet() {});
-        addServiceSet(new SubscriptionServiceSet() {});
-        addServiceSet(new ViewServiceSet() {});
+        config.getEndpoints().forEach(endpoint -> {
+            String path = EndpointUtil.getPath(endpoint.getEndpointUrl());
+            addServiceSet(path, new DefaultDiscoveryServiceSet());
+        });
     }
 
     public UaStackServerConfig getConfig() {
@@ -137,16 +137,21 @@ public class UaStackServer {
 
         config.getEndpoints().forEach(endpoint -> {
             logger.info(
-                "Binding endpoint {} to {} [{}/{}]",
+                "Binding endpoint {} to {}:{} [{}/{}]",
                 endpoint.getEndpointUrl(),
                 endpoint.getBindAddress(),
+                endpoint.getBindPort(),
                 endpoint.getSecurityPolicy(),
                 endpoint.getSecurityMode());
 
             futures.add(
-                SocketServerManager.get()
-                    .bind(endpoint, UaStackServer.this)
-                    .exceptionally(ex -> Unit.VALUE)
+                channelManager.bind(endpoint).exceptionally(ex -> {
+                    logger.warn(
+                        "Bind failed for endpoint {}",
+                        endpoint.getEndpointUrl(), ex);
+
+                    return Unit.VALUE;
+                })
             );
         });
 
@@ -159,9 +164,13 @@ public class UaStackServer {
 
         config.getEndpoints().forEach(endpoint ->
             futures.add(
-                SocketServerManager.get()
-                    .unbind(endpoint, UaStackServer.this)
-                    .exceptionally(ex -> Unit.VALUE)
+                channelManager.unbind(endpoint).exceptionally(ex -> {
+                    logger.warn(
+                        "Unbind failed for endpoint {}",
+                        endpoint.getEndpointUrl(), ex);
+
+                    return Unit.VALUE;
+                })
             )
         );
 
@@ -169,22 +178,23 @@ public class UaStackServer {
             .thenApply(u -> UaStackServer.this);
     }
 
-    public void onServiceRequest(ServiceRequest serviceRequest) {
-        logger.trace("onServiceRequest({})", serviceRequest);
+    public void onServiceRequest(String path, ServiceRequest serviceRequest) {
+        logger.trace("onServiceRequest(path={}, request={})", path, serviceRequest);
 
         Class<? extends UaRequestMessage> requestClass = serviceRequest.getRequest().getClass();
-        ServiceRequestHandler handler = serviceRequestHandlers.get(requestClass);
+
+        ServiceRequestHandler serviceHandler = serviceHandlerTable.get(path, requestClass);
 
         try {
-            if (handler != null) {
-                handler.handle(serviceRequest);
+            if (serviceHandler != null) {
+                serviceHandler.handle(serviceRequest);
             } else {
                 serviceRequest.setServiceFault(StatusCodes.Bad_ServiceUnsupported);
             }
         } catch (UaException e) {
             serviceRequest.setServiceFault(e);
         } catch (Throwable t) {
-            logger.error("Uncaught Throwable executing ServiceRequestHandler: {}", handler, t);
+            logger.error("Uncaught Throwable executing handler: {}", serviceHandler, t);
             serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
         }
     }
@@ -204,7 +214,15 @@ public class UaStackServer {
             List<String> discoveryUrls = config.getEndpoints()
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
+                .filter(url -> url.endsWith("/discovery"))
                 .collect(Collectors.toList());
+
+            if (discoveryUrls.isEmpty()) {
+                discoveryUrls = config.getEndpoints()
+                    .stream()
+                    .map(EndpointConfiguration::getEndpointUrl)
+                    .collect(Collectors.toList());
+            }
 
             return new ApplicationDescription(
                 config.getApplicationUri(),
@@ -232,19 +250,6 @@ public class UaStackServer {
         );
     }
 
-    private ByteString certificateByteString(@Nullable X509Certificate certificate) {
-        if (certificate != null) {
-            try {
-                return ByteString.of(certificate.getEncoded());
-            } catch (CertificateEncodingException e) {
-                logger.error("Error decoding certificate.", e);
-                return ByteString.NULL_VALUE;
-            }
-        } else {
-            return ByteString.NULL_VALUE;
-        }
-    }
-
     private EndpointDescription transformEndpoint(EndpointConfiguration endpoint) {
         return new EndpointDescription(
             endpoint.getEndpointUrl(),
@@ -256,6 +261,19 @@ public class UaStackServer {
             endpoint.getTransportProfile().getUri(),
             ubyte(getSecurityLevel(endpoint.getSecurityPolicy(), endpoint.getSecurityMode()))
         );
+    }
+
+    private ByteString certificateByteString(@Nullable X509Certificate certificate) {
+        if (certificate != null) {
+            try {
+                return ByteString.of(certificate.getEncoded());
+            } catch (CertificateEncodingException e) {
+                logger.error("Error decoding certificate.", e);
+                return ByteString.NULL_VALUE;
+            }
+        } else {
+            return ByteString.NULL_VALUE;
+        }
     }
 
     private static short getSecurityLevel(SecurityPolicy securityPolicy, MessageSecurityMode securityMode) {
@@ -293,76 +311,85 @@ public class UaStackServer {
         return securityLevel;
     }
 
-    public <T extends UaRequestMessage> void addRequestHandler(
+    public <T extends UaRequestMessage> void addServiceHandler(
+        String path,
         Class<T> requestClass,
-        ServiceRequestHandler requestHandler) {
+        ServiceRequestHandler serviceHandler) {
 
-        serviceRequestHandlers.put(requestClass, requestHandler);
+        logger.debug("Adding ServiceHandler for {} at {}", requestClass.getSimpleName(), path);
+
+        serviceHandlerTable.put(path, requestClass, serviceHandler);
     }
 
-    public void addServiceSet(AttributeServiceSet serviceSet) {
-        addRequestHandler(ReadRequest.class, serviceSet::onRead);
-        addRequestHandler(WriteRequest.class, serviceSet::onWrite);
+    public <T extends UaRequestMessage> void removeServiceHandler(String path, Class<T> requestClass) {
+        logger.debug("Removing ServiceHandler for {} at {}", requestClass.getSimpleName(), path);
+
+        serviceHandlerTable.remove(path, requestClass);
     }
 
-    public void addServiceSet(AttributeHistoryServiceSet serviceSet) {
-        addRequestHandler(HistoryReadRequest.class, serviceSet::onHistoryRead);
-        addRequestHandler(HistoryUpdateRequest.class, serviceSet::onHistoryUpdate);
+    public void addServiceSet(String path, AttributeServiceSet serviceSet) {
+        addServiceHandler(path, ReadRequest.class, serviceSet::onRead);
+        addServiceHandler(path, WriteRequest.class, serviceSet::onWrite);
     }
 
-    public void addServiceSet(DiscoveryServiceSet serviceSet) {
-        addRequestHandler(GetEndpointsRequest.class, serviceSet::onGetEndpoints);
-        addRequestHandler(FindServersRequest.class, serviceSet::onFindServers);
-        addRequestHandler(RegisterServerRequest.class, serviceSet::onRegisterServer);
+    public void addServiceSet(String path, AttributeHistoryServiceSet serviceSet) {
+        addServiceHandler(path, HistoryReadRequest.class, serviceSet::onHistoryRead);
+        addServiceHandler(path, HistoryUpdateRequest.class, serviceSet::onHistoryUpdate);
     }
 
-    public void addServiceSet(QueryServiceSet serviceSet) {
-        addRequestHandler(QueryFirstRequest.class, serviceSet::onQueryFirst);
-        addRequestHandler(QueryNextRequest.class, serviceSet::onQueryNext);
+    public void addServiceSet(String path, DiscoveryServiceSet serviceSet) {
+        addServiceHandler(path, GetEndpointsRequest.class, serviceSet::onGetEndpoints);
+        addServiceHandler(path, FindServersRequest.class, serviceSet::onFindServers);
+        addServiceHandler(path, RegisterServerRequest.class, serviceSet::onRegisterServer);
     }
 
-    public void addServiceSet(MethodServiceSet serviceSet) {
-        addRequestHandler(CallRequest.class, serviceSet::onCall);
+    public void addServiceSet(String path, QueryServiceSet serviceSet) {
+        addServiceHandler(path, QueryFirstRequest.class, serviceSet::onQueryFirst);
+        addServiceHandler(path, QueryNextRequest.class, serviceSet::onQueryNext);
     }
 
-    public void addServiceSet(MonitoredItemServiceSet serviceSet) {
-        addRequestHandler(CreateMonitoredItemsRequest.class, serviceSet::onCreateMonitoredItems);
-        addRequestHandler(ModifyMonitoredItemsRequest.class, serviceSet::onModifyMonitoredItems);
-        addRequestHandler(DeleteMonitoredItemsRequest.class, serviceSet::onDeleteMonitoredItems);
-        addRequestHandler(SetMonitoringModeRequest.class, serviceSet::onSetMonitoringMode);
-        addRequestHandler(SetTriggeringRequest.class, serviceSet::onSetTriggering);
+    public void addServiceSet(String path, MethodServiceSet serviceSet) {
+        addServiceHandler(path, CallRequest.class, serviceSet::onCall);
     }
 
-    public void addServiceSet(NodeManagementServiceSet serviceSet) {
-        addRequestHandler(AddNodesRequest.class, serviceSet::onAddNodes);
-        addRequestHandler(DeleteNodesRequest.class, serviceSet::onDeleteNodes);
-        addRequestHandler(AddReferencesRequest.class, serviceSet::onAddReferences);
-        addRequestHandler(DeleteReferencesRequest.class, serviceSet::onDeleteReferences);
+    public void addServiceSet(String path, MonitoredItemServiceSet serviceSet) {
+        addServiceHandler(path, CreateMonitoredItemsRequest.class, serviceSet::onCreateMonitoredItems);
+        addServiceHandler(path, ModifyMonitoredItemsRequest.class, serviceSet::onModifyMonitoredItems);
+        addServiceHandler(path, DeleteMonitoredItemsRequest.class, serviceSet::onDeleteMonitoredItems);
+        addServiceHandler(path, SetMonitoringModeRequest.class, serviceSet::onSetMonitoringMode);
+        addServiceHandler(path, SetTriggeringRequest.class, serviceSet::onSetTriggering);
     }
 
-    public void addServiceSet(SessionServiceSet serviceSet) {
-        addRequestHandler(CreateSessionRequest.class, serviceSet::onCreateSession);
-        addRequestHandler(ActivateSessionRequest.class, serviceSet::onActivateSession);
-        addRequestHandler(CloseSessionRequest.class, serviceSet::onCloseSession);
-        addRequestHandler(CancelRequest.class, serviceSet::onCancel);
+    public void addServiceSet(String path, NodeManagementServiceSet serviceSet) {
+        addServiceHandler(path, AddNodesRequest.class, serviceSet::onAddNodes);
+        addServiceHandler(path, DeleteNodesRequest.class, serviceSet::onDeleteNodes);
+        addServiceHandler(path, AddReferencesRequest.class, serviceSet::onAddReferences);
+        addServiceHandler(path, DeleteReferencesRequest.class, serviceSet::onDeleteReferences);
     }
 
-    public void addServiceSet(SubscriptionServiceSet serviceSet) {
-        addRequestHandler(CreateSubscriptionRequest.class, serviceSet::onCreateSubscription);
-        addRequestHandler(ModifySubscriptionRequest.class, serviceSet::onModifySubscription);
-        addRequestHandler(DeleteSubscriptionsRequest.class, serviceSet::onDeleteSubscriptions);
-        addRequestHandler(TransferSubscriptionsRequest.class, serviceSet::onTransferSubscriptions);
-        addRequestHandler(SetPublishingModeRequest.class, serviceSet::onSetPublishingMode);
-        addRequestHandler(PublishRequest.class, serviceSet::onPublish);
-        addRequestHandler(RepublishRequest.class, serviceSet::onRepublish);
+    public void addServiceSet(String path, SessionServiceSet serviceSet) {
+        addServiceHandler(path, CreateSessionRequest.class, serviceSet::onCreateSession);
+        addServiceHandler(path, ActivateSessionRequest.class, serviceSet::onActivateSession);
+        addServiceHandler(path, CloseSessionRequest.class, serviceSet::onCloseSession);
+        addServiceHandler(path, CancelRequest.class, serviceSet::onCancel);
     }
 
-    public void addServiceSet(ViewServiceSet serviceSet) {
-        addRequestHandler(BrowseRequest.class, serviceSet::onBrowse);
-        addRequestHandler(BrowseNextRequest.class, serviceSet::onBrowseNext);
-        addRequestHandler(TranslateBrowsePathsToNodeIdsRequest.class, serviceSet::onTranslateBrowsePaths);
-        addRequestHandler(RegisterNodesRequest.class, serviceSet::onRegisterNodes);
-        addRequestHandler(UnregisterNodesRequest.class, serviceSet::onUnregisterNodes);
+    public void addServiceSet(String path, SubscriptionServiceSet serviceSet) {
+        addServiceHandler(path, CreateSubscriptionRequest.class, serviceSet::onCreateSubscription);
+        addServiceHandler(path, ModifySubscriptionRequest.class, serviceSet::onModifySubscription);
+        addServiceHandler(path, DeleteSubscriptionsRequest.class, serviceSet::onDeleteSubscriptions);
+        addServiceHandler(path, TransferSubscriptionsRequest.class, serviceSet::onTransferSubscriptions);
+        addServiceHandler(path, SetPublishingModeRequest.class, serviceSet::onSetPublishingMode);
+        addServiceHandler(path, PublishRequest.class, serviceSet::onPublish);
+        addServiceHandler(path, RepublishRequest.class, serviceSet::onRepublish);
+    }
+
+    public void addServiceSet(String path, ViewServiceSet serviceSet) {
+        addServiceHandler(path, BrowseRequest.class, serviceSet::onBrowse);
+        addServiceHandler(path, BrowseNextRequest.class, serviceSet::onBrowseNext);
+        addServiceHandler(path, TranslateBrowsePathsToNodeIdsRequest.class, serviceSet::onTranslateBrowsePaths);
+        addServiceHandler(path, RegisterNodesRequest.class, serviceSet::onRegisterNodes);
+        addServiceHandler(path, UnregisterNodesRequest.class, serviceSet::onUnregisterNodes);
     }
 
     private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
@@ -376,6 +403,7 @@ public class UaStackServer {
 
             List<EndpointDescription> allEndpoints = getEndpointDescriptions()
                 .stream()
+                .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
                 .filter(ed -> filterProfileUris(ed, profileUris))
                 .collect(toList());
 
@@ -436,17 +464,26 @@ public class UaStackServer {
             List<String> allDiscoveryUrls = config.getEndpoints()
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
+                .filter(url -> url.endsWith("/discovery"))
                 .collect(Collectors.toList());
+
+            if (allDiscoveryUrls.isEmpty()) {
+                allDiscoveryUrls = config.getEndpoints()
+                    .stream()
+                    .map(EndpointConfiguration::getEndpointUrl)
+                    .collect(Collectors.toList());
+            }
 
             List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
                 .filter(discoveryUrl -> {
                     try {
-                        String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-                        String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
+
+                        String requestedHost = EndpointUtil.getHost(endpointUrl);
+                        String discoveryHost = EndpointUtil.getHost(discoveryUrl);
 
                         logger.debug("requestedHost={}, discoveryHost={}", requestedHost, discoveryHost);
 
-                        return requestedHost.equalsIgnoreCase(discoveryHost);
+                        return Strings.nullToEmpty(requestedHost).equalsIgnoreCase(discoveryHost);
                     } catch (Throwable e) {
                         logger.debug("Unable to create URI.", e);
                         return false;
@@ -454,27 +491,6 @@ public class UaStackServer {
                 })
                 .collect(toList());
 
-            if (matchingDiscoveryUrls.isEmpty()) {
-                matchingDiscoveryUrls = allDiscoveryUrls.stream()
-                    .filter(discoveryUrl -> {
-                        try {
-                            String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-                            String discoveryHost = new URI(discoveryUrl).parseServerAuthority().getHost();
-                            InetAddress requestedHostAddress = InetAddress.getByName(requestedHost);
-                            InetAddress discoveryHostAddress = InetAddress.getByName(discoveryHost);
-
-                            logger.debug(
-                                "requestedHostAddress={}, discoveryHostAddress={}",
-                                requestedHost, discoveryHost);
-
-                            return requestedHostAddress.equals(discoveryHostAddress);
-                        } catch (Throwable e) {
-                            logger.debug("Unable to create URI.", e);
-                            return false;
-                        }
-                    })
-                    .collect(toList());
-            }
 
             logger.debug("Matching discovery URLs: {}", matchingDiscoveryUrls);
 
@@ -483,7 +499,8 @@ public class UaStackServer {
                 config.getProductUri(),
                 config.getApplicationName(),
                 ApplicationType.Server,
-                null, null,
+                null,
+                null,
                 matchingDiscoveryUrls.isEmpty() ?
                     a(allDiscoveryUrls, String.class) :
                     a(matchingDiscoveryUrls, String.class)
@@ -492,6 +509,19 @@ public class UaStackServer {
 
         private boolean filterServerUris(ApplicationDescription ad, List<String> serverUris) {
             return serverUris.size() == 0 || serverUris.contains(ad.getApplicationUri());
+        }
+
+    }
+
+    private static class ServiceHandlerTable extends
+        ForwardingTable<String, Class<? extends UaRequestMessage>, ServiceRequestHandler> {
+
+        private final Table<String, Class<? extends UaRequestMessage>, ServiceRequestHandler> delegate =
+            Tables.synchronizedTable(HashBasedTable.create());
+
+        @Override
+        protected Table<String, Class<? extends UaRequestMessage>, ServiceRequestHandler> delegate() {
+            return delegate;
         }
 
     }

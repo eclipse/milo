@@ -115,6 +115,7 @@ public class EndpointConfiguration {
             transportProfile == that.transportProfile &&
             Objects.equal(bindAddress, that.bindAddress) &&
             Objects.equal(hostname, that.hostname) &&
+            Objects.equal(path, that.path) &&
             Objects.equal(certificate, that.certificate) &&
             securityPolicy == that.securityPolicy &&
             securityMode == that.securityMode &&
@@ -123,8 +124,17 @@ public class EndpointConfiguration {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(transportProfile, bindAddress, bindPort,
-            hostname, certificate, securityPolicy, securityMode, tokenPolicies);
+        return Objects.hashCode(
+            transportProfile,
+            bindAddress,
+            bindPort,
+            hostname,
+            path,
+            certificate,
+            securityPolicy,
+            securityMode,
+            tokenPolicies
+        );
     }
 
     @Override
@@ -134,7 +144,8 @@ public class EndpointConfiguration {
             .add("bindAddress", bindAddress)
             .add("bindPort", bindPort)
             .add("hostname", hostname)
-            .add("certificate", "...")
+            .add("path", path)
+            .add("certificate", certificate)
             .add("securityPolicy", securityPolicy)
             .add("securityMode", securityMode)
             .add("tokenPolicies", tokenPolicies)

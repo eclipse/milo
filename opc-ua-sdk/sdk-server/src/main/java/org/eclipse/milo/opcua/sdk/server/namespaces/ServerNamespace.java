@@ -50,7 +50,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 @SuppressWarnings("restriction")
-public class VendorNamespace implements Namespace {
+public class ServerNamespace implements Namespace {
 
     public static final UShort NAMESPACE_INDEX = ushort(1);
 
@@ -59,7 +59,7 @@ public class VendorNamespace implements Namespace {
     private final OpcUaServer server;
     private final String namespaceUri;
 
-    public VendorNamespace(OpcUaServer server, String namespaceUri) {
+    public ServerNamespace(OpcUaServer server, String namespaceUri) {
         this.server = server;
         this.namespaceUri = namespaceUri;
 

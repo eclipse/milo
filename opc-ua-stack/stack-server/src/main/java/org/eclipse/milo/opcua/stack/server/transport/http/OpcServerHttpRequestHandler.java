@@ -90,7 +90,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
                 }
             });
 
-            stackServer.onServiceRequest(serviceRequest);
+            stackServer.onServiceRequest(httpRequest.uri(), serviceRequest);
         } catch (Throwable t) {
             logger.error("Error decoding UaRequestMessage", t);
 

@@ -15,22 +15,22 @@ package org.eclipse.milo.opcua.stack.server.transport.tcp;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
-import org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
 import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
 
 public class OpcServerTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final ServerLookup serverLookup;
+    private final UaStackServer stackServer;
 
-    public OpcServerTcpChannelInitializer(ServerLookup serverLookup) {
-        this.serverLookup = serverLookup;
+    public OpcServerTcpChannelInitializer(UaStackServer stackServer) {
+        this.stackServer = stackServer;
     }
 
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
         channel.pipeline().addLast(RateLimitingHandler.getInstance());
-        channel.pipeline().addLast(new UascServerHelloHandler(serverLookup));
+        channel.pipeline().addLast(new UascServerHelloHandler(stackServer));
     }
 
 }

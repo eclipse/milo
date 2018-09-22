@@ -17,20 +17,20 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
-import org.eclipse.milo.opcua.stack.server.transport.http.OpcServerHttpChannelInitializer;
+import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
 
 import static io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler.HandshakeComplete;
-import static org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
 
 public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-    
+
     private String subprotocol;
 
-    private final ServerLookup serverLookup;
+    private final UaStackServer stackServer;
 
-    public OpcServerWebSocketFrameHandler(ServerLookup serverLookup) {
-        this.serverLookup = serverLookup;
+    public OpcServerWebSocketFrameHandler(UaStackServer stackServer) {
+        this.stackServer = stackServer;
     }
 
     @Override
@@ -43,8 +43,8 @@ public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<
 
             subprotocol = handshake.selectedSubprotocol();
 
-            if (OpcServerHttpChannelInitializer.WS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
-                ctx.channel().pipeline().addLast(new UascServerHelloHandler(serverLookup));
+            if (Stack.WSS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
+                ctx.channel().pipeline().addLast(new UascServerHelloHandler(stackServer));
             }
         }
 
@@ -53,11 +53,11 @@ public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) throws Exception {
-        if (OpcServerHttpChannelInitializer.WS_PROTOCOL_BINARY.equalsIgnoreCase(subprotocol)) {
+        if (Stack.WSS_PROTOCOL_BINARY.equalsIgnoreCase(subprotocol)) {
             // Pass the binary contents to the UA Secure Conversation handlers
 
             ctx.fireChannelRead(msg.content().retain());
-        } else if (OpcServerHttpChannelInitializer.WS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
+        } else if (Stack.WSS_PROTOCOL_JSON.equalsIgnoreCase(subprotocol)) {
             // TODO End of the pipeline; decode and deliver
             String text = ((TextWebSocketFrame) msg).text();
 

@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.base.Objects;
@@ -180,9 +181,8 @@ public class SessionManager implements
         ByteString serverCertificate = serviceRequest
             .getSecureChannel().getLocalCertificateBytes();
 
-        SignedSoftwareCertificate[] serverSoftwareCertificates = server.getSoftwareCertificates();
-
-        EndpointDescription[] serverEndpoints = Arrays.stream(server.getEndpointDescriptions())
+        EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
+            .stream()
             .filter(ed -> endpointMatchesUrl(ed, request.getEndpointUrl()))
             .toArray(EndpointDescription[]::new);
 
@@ -264,7 +264,7 @@ public class SessionManager implements
             serverNonce,
             serverCertificate,
             serverEndpoints,
-            serverSoftwareCertificates,
+            new SignedSoftwareCertificate[0],
             serverSignature,
             uint(maxRequestMessageSize)
         );
@@ -525,13 +525,23 @@ public class SessionManager implements
             UserIdentityToken token = (UserIdentityToken) tokenObject;
             String policyId = token.getPolicyId();
 
-            for (UserTokenPolicy policy : server.getUserTokenPolicies()) {
-                if (Objects.equal(policyId, policy.getPolicyId())) {
-                    return policy;
-                }
-            }
+            // TODO this shouldn't look at all endpoints, just the one for the current session
 
-            throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "policy not found: " + policyId);
+            Optional<UserTokenPolicy> policy = server.getStackServer()
+                .getEndpointDescriptions()
+                .stream()
+                .flatMap(endpoint -> {
+                    List<UserTokenPolicy> policies = l(endpoint.getUserIdentityTokens());
+                    return policies.stream();
+                })
+                .filter(t -> Objects.equal(policyId, t.getPolicyId()))
+                .findFirst();
+
+            return policy.orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_IdentityTokenInvalid,
+                    "policy not found: " + policyId)
+            );
         } else {
             throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
         }

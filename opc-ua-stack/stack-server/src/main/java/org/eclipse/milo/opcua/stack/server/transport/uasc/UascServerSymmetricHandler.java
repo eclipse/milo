@@ -13,46 +13,42 @@
 
 package org.eclipse.milo.opcua.stack.server.transport.uasc;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.ByteToMessageCodec;
+import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.ReferenceCountUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.UaExceptionStatus;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
-import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
-import org.eclipse.milo.opcua.stack.core.channel.messages.ErrorMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.server.services.ServiceResponse;
-import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceResponse> implements HeaderDecoder {
+public class UascServerSymmetricHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -61,15 +57,16 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
     private final int maxChunkCount;
     private final int maxChunkSize;
 
-    private final UaStackServer server;
+    private final UaStackServer stackServer;
     private final SerializationQueue serializationQueue;
     private final ServerSecureChannel secureChannel;
 
-    public UascServerSymmetricHandler(UaStackServer server,
-                                      SerializationQueue serializationQueue,
-                                      ServerSecureChannel secureChannel) {
+    public UascServerSymmetricHandler(
+        UaStackServer stackServer,
+        SerializationQueue serializationQueue,
+        ServerSecureChannel secureChannel) {
 
-        this.server = server;
+        this.stackServer = stackServer;
         this.serializationQueue = serializationQueue;
         this.secureChannel = secureChannel;
 
@@ -77,114 +74,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
         maxChunkSize = serializationQueue.getParameters().getLocalReceiveBufferSize();
 
         chunkBuffers = new ArrayList<>(maxChunkCount);
-    }
-
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        if (secureChannel != null) {
-            secureChannel.attr(LegacyUaTcpStackServer.BoundChannelKey).set(ctx.channel());
-        }
-
-        super.channelActive(ctx);
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (secureChannel != null) {
-            secureChannel.attr(LegacyUaTcpStackServer.BoundChannelKey).set(null);
-        }
-
-        super.channelInactive(ctx);
-    }
-
-    @Override
-    protected void encode(ChannelHandlerContext ctx, ServiceResponse serviceResponse, ByteBuf out) throws Exception {
-        serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
-            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
-
-            try {
-                binaryEncoder.setBuffer(messageBuffer);
-                binaryEncoder.writeMessage(null, serviceResponse.getResponse());
-
-                checkMessageSize(messageBuffer);
-
-                chunkEncoder.encodeSymmetric(
-                    secureChannel,
-                    serviceResponse.getRequestId(),
-                    messageBuffer,
-                    MessageType.SecureMessage,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding {}: {}",
-                                serviceResponse, ex.getMessage(), ex);
-
-                            sendServiceFault(ex.getStatusCode(), ctx, serviceResponse);
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-                        }
-                    }
-                );
-            } catch (UaSerializationException ex) {
-                logger.error("Error encoding response: {}", ex.getStatusCode(), ex);
-
-                sendServiceFault(ex.getStatusCode(), ctx, serviceResponse);
-            } finally {
-                messageBuffer.release();
-            }
-        });
-    }
-
-    private void sendServiceFault(
-        StatusCode statusCode,
-        ChannelHandlerContext ctx,
-        ServiceResponse serviceResponse) {
-
-        if (serviceResponse.isServiceFault()) {
-            // If we already failed to send a ServiceFault don't try again
-            ctx.fireExceptionCaught(new UaException(statusCode));
-        } else {
-            UInteger requestHandle = serviceResponse.getRequest().getRequestHeader().getRequestHandle();
-
-            ServiceFault serviceFault = new ServiceFault(
-                new ResponseHeader(
-                    DateTime.now(),
-                    requestHandle,
-                    statusCode,
-                    null, null, null
-                )
-            );
-
-            ServiceResponse newServiceResponse = new ServiceResponse(
-                serviceResponse.getRequest(),
-                serviceResponse.getRequestId(),
-                serviceFault
-            );
-
-            ctx.writeAndFlush(newServiceResponse);
-        }
-    }
-
-    private void checkMessageSize(ByteBuf messageBuffer) throws UaSerializationException {
-        int messageSize = messageBuffer.readableBytes();
-        int remoteMaxMessageSize = serializationQueue.getParameters().getRemoteMaxMessageSize();
-
-        if (remoteMaxMessageSize > 0 && messageSize > remoteMaxMessageSize) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_ResponseTooLarge,
-                "response exceeds remote max message size: " +
-                    messageSize + " > " + remoteMaxMessageSize);
-        }
     }
 
     @Override
@@ -200,7 +89,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
 
             switch (messageType) {
                 case SecureMessage:
-                    onSecureMessage(ctx, buffer.readSlice(messageLength), out);
+                    onSecureMessage(ctx, buffer.readSlice(messageLength));
                     break;
 
                 default:
@@ -209,7 +98,7 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
         }
     }
 
-    private void onSecureMessage(ChannelHandlerContext ctx, ByteBuf buffer, List<Object> out) throws UaException {
+    private void onSecureMessage(ChannelHandlerContext ctx, ByteBuf buffer) throws UaException {
         buffer.skipBytes(3); // Skip messageType
 
         char chunkType = (char) buffer.readByte();
@@ -272,34 +161,38 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
 
                         @Override
                         public void onMessageDecoded(ByteBuf message, long requestId) {
-                            server.getConfig().getExecutor().execute(() -> {
+                            stackServer.getConfig().getExecutor().execute(() -> {
                                 try {
+                                    String endpointUrl = ctx.channel().attr(
+                                        UascServerHelloHandler.ENDPOINT_URL_KEY).get();
+
+                                    String path = EndpointUtil.getPath(endpointUrl);
+
                                     UaRequestMessage request = (UaRequestMessage) binaryDecoder
                                         .setBuffer(message)
                                         .readMessage(null);
 
-                                    server.onServiceRequest(new ServiceRequest(
+                                    ServiceRequest serviceRequest = new ServiceRequest(
                                         request,
-                                        server,
+                                        stackServer,
                                         secureChannel
-                                    ));
+                                    );
+
+                                    serviceRequest.getFuture().whenComplete((response, fault) -> {
+                                        if (response != null) {
+                                            sendServiceResponse(ctx, requestId, request, response);
+                                        } else {
+                                            UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+
+                                            sendServiceFault(ctx, requestId, requestHandle, fault);
+                                        }
+                                    });
+
+                                    stackServer.onServiceRequest(path, serviceRequest);
                                 } catch (Throwable t) {
                                     logger.error("Error decoding UaRequestMessage", t);
 
-                                    StatusCode statusCode = UaExceptionStatus.extract(t)
-                                        .map(UaExceptionStatus::getStatusCode)
-                                        .orElse(StatusCode.BAD);
-
-                                    ServiceFault serviceFault = new ServiceFault(
-                                        new ResponseHeader(
-                                            DateTime.now(),
-                                            uint(0),
-                                            statusCode,
-                                            null, null, null
-                                        )
-                                    );
-
-                                    ctx.writeAndFlush(new ServiceResponse(null, requestId, serviceFault));
+                                    sendServiceFault(ctx, requestId, uint(0), t);
                                 } finally {
                                     message.release();
                                     buffersToDecode.clear();
@@ -309,6 +202,137 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
                     });
                 });
             }
+        }
+    }
+
+    private void sendServiceResponse(
+        ChannelHandlerContext ctx,
+        long requestId,
+        UaRequestMessage request,
+        UaResponseMessage response) {
+
+        serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
+
+            try {
+                binaryEncoder.setBuffer(messageBuffer);
+                binaryEncoder.writeMessage(null, response);
+
+                checkMessageSize(messageBuffer);
+
+                chunkEncoder.encodeSymmetric(
+                    secureChannel,
+                    requestId,
+                    messageBuffer,
+                    MessageType.SecureMessage,
+                    new ChunkEncoder.Callback() {
+                        @Override
+                        public void onEncodingError(UaException ex) {
+                            logger.error("Error encoding {}: {}",
+                                response, ex.getMessage(), ex);
+
+                            UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+
+                            sendServiceFault(ctx, requestId, requestHandle, ex);
+                        }
+
+                        @Override
+                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                            for (ByteBuf chunk : messageChunks) {
+                                chunkComposite.addComponent(chunk);
+                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                            }
+
+                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+                        }
+                    }
+                );
+            } catch (UaSerializationException ex) {
+                logger.error("Error encoding response: {}", ex.getStatusCode(), ex);
+
+                UInteger requestHandle = request.getRequestHeader().getRequestHandle();
+
+                sendServiceFault(ctx, requestId, requestHandle, ex);
+            } finally {
+                messageBuffer.release();
+            }
+        });
+    }
+
+    private void sendServiceFault(
+        ChannelHandlerContext ctx,
+        long requestId,
+        UInteger requestHandle,
+        Throwable fault) {
+
+        StatusCode statusCode = UaException.extract(fault)
+            .map(UaException::getStatusCode)
+            .orElse(StatusCode.BAD);
+
+        ServiceFault serviceFault = new ServiceFault(
+            new ResponseHeader(
+                DateTime.now(),
+                requestHandle,
+                statusCode,
+                null,
+                null,
+                null
+            )
+        );
+
+        serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
+
+            try {
+                binaryEncoder.setBuffer(messageBuffer);
+                binaryEncoder.writeMessage(null, serviceFault);
+
+                checkMessageSize(messageBuffer);
+
+                chunkEncoder.encodeSymmetric(
+                    secureChannel,
+                    requestId,
+                    messageBuffer,
+                    MessageType.SecureMessage,
+                    new ChunkEncoder.Callback() {
+                        @Override
+                        public void onEncodingError(UaException ex) {
+                            logger.error("Error encoding {}: {}",
+                                serviceFault, ex.getMessage(), ex);
+                        }
+
+                        @Override
+                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                            for (ByteBuf chunk : messageChunks) {
+                                chunkComposite.addComponent(chunk);
+                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                            }
+
+                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+                        }
+                    }
+                );
+            } catch (UaSerializationException ex) {
+                logger.error("Error encoding ServiceFault: {}", ex.getStatusCode(), ex);
+            } finally {
+                messageBuffer.release();
+            }
+        });
+    }
+
+    private void checkMessageSize(ByteBuf messageBuffer) throws UaSerializationException {
+        int messageSize = messageBuffer.readableBytes();
+        int remoteMaxMessageSize = serializationQueue.getParameters().getRemoteMaxMessageSize();
+
+        if (remoteMaxMessageSize > 0 && messageSize > remoteMaxMessageSize) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_ResponseTooLarge,
+                "response exceeds remote max message size: " +
+                    messageSize + " > " + remoteMaxMessageSize);
         }
     }
 
@@ -331,27 +355,6 @@ public class UascServerSymmetricHandler extends ByteToMessageCodec<ServiceRespon
                 );
 
                 throw new UaException(StatusCodes.Bad_SecureChannelTokenUnknown, message);
-            }
-        }
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        chunkBuffers.forEach(ReferenceCountUtil::safeRelease);
-        chunkBuffers.clear();
-
-        if (cause instanceof IOException) {
-            ctx.close();
-            logger.debug("[remote={}] IOException caught; channel closed");
-        } else {
-            ErrorMessage errorMessage = ExceptionHandler.sendErrorMessage(ctx, cause);
-
-            if (cause instanceof UaException) {
-                logger.debug("[remote={}] UaException caught; sent {}",
-                    ctx.channel().remoteAddress(), errorMessage, cause);
-            } else {
-                logger.error("[remote={}] Exception caught; sent {}",
-                    ctx.channel().remoteAddress(), errorMessage, cause);
             }
         }
     }

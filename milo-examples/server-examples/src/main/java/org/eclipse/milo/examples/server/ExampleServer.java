@@ -16,7 +16,6 @@ package org.eclipse.milo.examples.server;
 import java.io.File;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import com.google.common.collect.ImmutableList;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
@@ -120,6 +118,7 @@ public class ExampleServer {
                     .setBindAddress(bindAddress)
                     .setBindPort(12686)
                     .setHostname(hostname)
+                    .setPath("/example")
                     .setCertificate(firstCertificate.orElseThrow(
                         () -> new IllegalArgumentException("certificate")))
                     .addTokenPolicies(
@@ -141,6 +140,25 @@ public class ExampleServer {
                         .setSecurityMode(MessageSecurityMode.SignAndEncrypt)
                         .build()
                 );
+
+                /*
+                 * It's good practice to provide a discovery-specific endpoint.
+                 * It's required practice if all regular endpoints have security configured.
+                 *
+                 * Usage of the  "/discovery" suffix is defined by OPC UA Part 6:
+                 *
+                 * Each OPC UA Server Application implements the Discovery Service Set. If the OPC UA Server requires a
+                 * different address for this Endpoint it shall create the address by appending the path "/discovery" to
+                 * its base address.
+                 */
+
+                endpointConfigurations.add(
+                    base.copy()
+                        .setPath("/example/discovery")
+                        .setSecurityPolicy(SecurityPolicy.None)
+                        .setSecurityMode(MessageSecurityMode.None)
+                        .build()
+                );
             }
         }
 
@@ -155,9 +173,7 @@ public class ExampleServer {
         OpcUaServerConfig serverConfig = OpcUaServerConfig.builder()
             .setApplicationUri(applicationUri)
             .setApplicationName(LocalizedText.english("Eclipse Milo OPC UA Example Server"))
-            .setBindPort(12686)
-            .setBindAddresses(bindAddresses)
-            .setEndpointAddresses(hostnames)
+            .setEndpoints(endpointConfigurations)
             .setBuildInfo(
                 new BuildInfo(
                     "urn:eclipse:milo:example-server",
@@ -169,20 +185,6 @@ public class ExampleServer {
             .setCertificateValidator(certificateValidator)
             .setIdentityValidator(new CompositeValidator(identityValidator, x509IdentityValidator))
             .setProductUri("urn:eclipse:milo:example-server")
-            .setServerName("example")
-            .setSecurityPolicies(
-                EnumSet.of(
-                    SecurityPolicy.None,
-                    SecurityPolicy.Basic128Rsa15,
-                    SecurityPolicy.Basic256,
-                    SecurityPolicy.Basic256Sha256,
-                    SecurityPolicy.Aes128_Sha256_RsaOaep,
-                    SecurityPolicy.Aes256_Sha256_RsaPss))
-            .setUserTokenPolicies(
-                ImmutableList.of(
-                    USER_TOKEN_POLICY_ANONYMOUS,
-                    USER_TOKEN_POLICY_USERNAME,
-                    USER_TOKEN_POLICY_X509))
             .build();
 
         server = new OpcUaServer(serverConfig);

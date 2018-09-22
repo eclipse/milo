@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.server.transport.uasc;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -42,8 +43,6 @@ import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
-
 public class UascServerHelloHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
     public static final AttributeKey<String> ENDPOINT_URL_KEY = AttributeKey.valueOf("endpoint-url");
@@ -60,10 +59,10 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
 
     private volatile boolean receivedHello = false;
 
-    private final ServerLookup serverLookup;
+    private final UaStackServer stackServer;
 
-    public UascServerHelloHandler(ServerLookup serverLookup) {
-        this.serverLookup = serverLookup;
+    public UascServerHelloHandler(UaStackServer stackServer) {
+        this.stackServer = stackServer;
     }
 
     @Override
@@ -122,13 +121,20 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         final HelloMessage hello = TcpMessageDecoder.decodeHello(buffer);
 
         String endpointUrl = hello.getEndpointUrl();
-        String path = EndpointUtil.getPath(endpointUrl);
 
-        UaStackServer server = serverLookup.getServer(path).orElseThrow(
-            () -> new UaException(
+        boolean endpointMatch = stackServer.getEndpointDescriptions()
+            .stream()
+            .anyMatch(endpoint ->
+                Objects.equals(
+                    EndpointUtil.getPath(endpointUrl),
+                    EndpointUtil.getPath(endpoint.getEndpointUrl()))
+            );
+
+        if (!endpointMatch) {
+            throw new UaException(
                 StatusCodes.Bad_TcpEndpointUrlInvalid,
-                "unrecognized endpoint url: " + endpointUrl)
-        );
+                "unrecognized endpoint url: " + endpointUrl);
+        }
 
         ctx.channel().attr(ENDPOINT_URL_KEY).set(endpointUrl);
 
@@ -143,7 +149,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
                 "unsupported protocol version: " + remoteProtocolVersion);
         }
 
-        ChannelConfig config = server.getConfig().getChannelConfig();
+        ChannelConfig config = stackServer.getConfig().getChannelConfig();
 
         /* Our receive buffer size is determined by the remote send buffer size. */
         long localReceiveBufferSize = Math.min(remoteSendBufferSize, config.getMaxChunkSize());
@@ -169,12 +175,12 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         );
 
         SerializationQueue serializationQueue = new SerializationQueue(
-            server.getConfig().getExecutor(),
+            stackServer.getConfig().getExecutor(),
             parameters,
-            server.getConfig().getEncodingLimits()
+            stackServer.getConfig().getEncodingLimits()
         );
 
-        ctx.pipeline().addLast(new UascServerAsymmetricHandler(server, serializationQueue));
+        ctx.pipeline().addLast(new UascServerAsymmetricHandler(stackServer, serializationQueue));
         ctx.pipeline().remove(this);
 
         logger.debug("[remote={}] Removed HelloHandler, added AsymmetricHandler.", ctx.channel().remoteAddress());

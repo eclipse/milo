@@ -13,35 +13,24 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
-import java.util.EnumSet;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
-import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
-import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
-import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
-import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfigBuilder;
+import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
+import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
+import org.eclipse.milo.opcua.stack.server.UaStackServerConfigBuilder;
 
-import static com.google.common.collect.Lists.newArrayList;
+public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
 
-public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
-
-    private int bindPort = Stack.DEFAULT_TCP_PORT;
-    private List<String> bindAddresses = newArrayList("0.0.0.0");
-    private List<String> endpointAddresses = newArrayList(HostnameUtil.getHostname());
-    private EnumSet<SecurityPolicy> securityPolicies = EnumSet.of(SecurityPolicy.None);
     private IdentityValidator identityValidator = AnonymousIdentityValidator.INSTANCE;
 
     private BuildInfo buildInfo = new BuildInfo(
@@ -54,27 +43,6 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
     );
 
     private OpcUaServerConfigLimits limits = new OpcUaServerConfigLimits() {};
-
-
-    public OpcUaServerConfigBuilder setBindPort(int bindPort) {
-        this.bindPort = bindPort;
-        return this;
-    }
-
-    public OpcUaServerConfigBuilder setBindAddresses(List<String> bindAddresses) {
-        this.bindAddresses = bindAddresses;
-        return this;
-    }
-
-    public OpcUaServerConfigBuilder setEndpointAddresses(List<String> endpointAddresses) {
-        this.endpointAddresses = endpointAddresses;
-        return this;
-    }
-
-    public OpcUaServerConfigBuilder setSecurityPolicies(EnumSet<SecurityPolicy> securityPolicies) {
-        this.securityPolicies = securityPolicies;
-        return this;
-    }
 
     public OpcUaServerConfigBuilder setIdentityValidator(IdentityValidator identityValidator) {
         this.identityValidator = identityValidator;
@@ -92,8 +60,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
     }
 
     @Override
-    public OpcUaServerConfigBuilder setServerName(String serverName) {
-        super.setServerName(serverName);
+    public OpcUaServerConfigBuilder setEndpoints(Set<EndpointConfiguration> endpointConfigurations) {
+        super.setEndpoints(endpointConfigurations);
         return this;
     }
 
@@ -128,18 +96,6 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
     }
 
     @Override
-    public OpcUaServerConfigBuilder setUserTokenPolicies(List<UserTokenPolicy> userTokenPolicies) {
-        super.setUserTokenPolicies(userTokenPolicies);
-        return this;
-    }
-
-    @Override
-    public OpcUaServerConfigBuilder setSoftwareCertificates(List<SignedSoftwareCertificate> softwareCertificates) {
-        super.setSoftwareCertificates(softwareCertificates);
-        return this;
-    }
-
-    @Override
     public OpcUaServerConfigBuilder setExecutor(ExecutorService executor) {
         super.setExecutor(executor);
         return this;
@@ -152,13 +108,10 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
     }
 
     public OpcUaServerConfig build() {
-        UaTcpStackServerConfig stackServerConfig = super.build();
+        UaStackServerConfig stackServerConfig = super.build();
 
         return new OpcUaServerConfigImpl(
             stackServerConfig,
-            bindPort, bindAddresses,
-            endpointAddresses,
-            securityPolicies,
             identityValidator,
             buildInfo,
             limits
@@ -168,48 +121,21 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
 
     public static final class OpcUaServerConfigImpl implements OpcUaServerConfig {
 
-        private final UaTcpStackServerConfig stackServerConfig;
+        private final UaStackServerConfig stackServerConfig;
 
-        private final int bindPort;
-        private final List<String> bindAddresses;
-        private final List<String> endpointAddresses;
-        private final EnumSet<SecurityPolicy> securityPolicies;
         private final IdentityValidator identityValidator;
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
 
-        public OpcUaServerConfigImpl(UaTcpStackServerConfig stackServerConfig,
-                                     int bindPort,
-                                     List<String> bindAddresses,
-                                     List<String> endpointAddresses,
-                                     EnumSet<SecurityPolicy> securityPolicies,
+        public OpcUaServerConfigImpl(UaStackServerConfig stackServerConfig,
                                      IdentityValidator identityValidator,
                                      BuildInfo buildInfo,
                                      OpcUaServerConfigLimits limits) {
 
             this.stackServerConfig = stackServerConfig;
-            this.bindPort = bindPort;
-            this.bindAddresses = bindAddresses;
-            this.endpointAddresses = endpointAddresses;
-            this.securityPolicies = securityPolicies;
             this.identityValidator = identityValidator;
             this.buildInfo = buildInfo;
             this.limits = limits;
-        }
-
-        @Override
-        public int getBindPort() {
-            return bindPort;
-        }
-
-        @Override
-        public List<String> getBindAddresses() {
-            return bindAddresses;
-        }
-
-        @Override
-        public List<String> getEndpointAddresses() {
-            return endpointAddresses;
         }
 
         @Override
@@ -228,13 +154,8 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         }
 
         @Override
-        public EnumSet<SecurityPolicy> getSecurityPolicies() {
-            return securityPolicies;
-        }
-
-        @Override
-        public String getServerName() {
-            return stackServerConfig.getServerName();
+        public Set<EndpointConfiguration> getEndpoints() {
+            return stackServerConfig.getEndpoints();
         }
 
         @Override
@@ -268,16 +189,6 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         }
 
         @Override
-        public List<UserTokenPolicy> getUserTokenPolicies() {
-            return stackServerConfig.getUserTokenPolicies();
-        }
-
-        @Override
-        public List<SignedSoftwareCertificate> getSoftwareCertificates() {
-            return stackServerConfig.getSoftwareCertificates();
-        }
-
-        @Override
         public ChannelConfig getChannelConfig() {
             return stackServerConfig.getChannelConfig();
         }
@@ -286,7 +197,7 @@ public class OpcUaServerConfigBuilder extends UaTcpStackServerConfigBuilder {
         public EncodingLimits getEncodingLimits() {
             return stackServerConfig.getEncodingLimits();
         }
-        
+
     }
 
 }

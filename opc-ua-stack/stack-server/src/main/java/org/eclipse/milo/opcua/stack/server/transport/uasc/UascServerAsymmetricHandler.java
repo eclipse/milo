@@ -443,8 +443,8 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                         @Override
                         public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
                             if (!symmetricHandlerAdded) {
-                                UascServerSymmetricHandler2 symmetricHandler =
-                                    new UascServerSymmetricHandler2(
+                                UascServerSymmetricHandler symmetricHandler =
+                                    new UascServerSymmetricHandler(
                                         stackServer,
                                         serializationQueue,
                                         secureChannel

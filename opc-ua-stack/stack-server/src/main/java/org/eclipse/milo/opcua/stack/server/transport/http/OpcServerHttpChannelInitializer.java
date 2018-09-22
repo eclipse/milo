@@ -40,8 +40,10 @@ import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
 import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
@@ -50,17 +52,12 @@ import org.eclipse.milo.opcua.stack.server.transport.websocket.OpcServerWebSocke
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.eclipse.milo.opcua.stack.server.transport.SocketServerManager.SocketServer.ServerLookup;
-
 public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    public static final String WS_PROTOCOL_BINARY = "opcua+uacp";
-    public static final String WS_PROTOCOL_JSON = "opcua+uajson";
+    private final UaStackServer stackServer;
 
-    private final ServerLookup serverLookup;
-
-    public OpcServerHttpChannelInitializer(ServerLookup serverLookup) {
-        this.serverLookup = serverLookup;
+    public OpcServerHttpChannelInitializer(UaStackServer stackServer) {
+        this.stackServer = stackServer;
     }
 
     @Override
@@ -88,33 +85,40 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
 
         // TODO configure maxContentLength based on MaxRequestSize?
         channel.pipeline().addLast(new HttpObjectAggregator(Integer.MAX_VALUE));
-        channel.pipeline().addLast(new OpcHttpTransportInterceptor(serverLookup));
+        channel.pipeline().addLast(new OpcHttpTransportInterceptor(stackServer));
     }
 
     private static class OpcHttpTransportInterceptor extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         private final Logger logger = LoggerFactory.getLogger(getClass());
 
-        private final ServerLookup serverLookup;
+        private final UaStackServer stackServer;
 
-        public OpcHttpTransportInterceptor(ServerLookup serverLookup) {
-            this.serverLookup = serverLookup;
+        public OpcHttpTransportInterceptor(UaStackServer stackServer) {
+            this.stackServer = stackServer;
         }
 
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
-            // TODO server lookup might have to be by path instead of full endpoint URL?
-
             String host = httpRequest.headers().get(HttpHeaderNames.HOST);
             String uri = httpRequest.uri();
 
             logger.info("host={} uri={}", host, uri);
 
-            UaStackServer stackServer = serverLookup.getServer(uri).orElseThrow(
-                () -> new UaException(
+            boolean endpointMatch = stackServer.getEndpointDescriptions()
+                .stream()
+                .anyMatch(endpoint ->
+                    Objects.equals(
+                        uri,
+                        EndpointUtil.getPath(endpoint.getEndpointUrl()))
+                );
+
+            if (!endpointMatch) {
+                // TODO should this be a 404 response instead?
+                throw new UaException(
                     StatusCodes.Bad_TcpEndpointUrlInvalid,
-                    "unrecognized endpoint uri: " + uri)
-            );
+                    "unrecognized endpoint uri: " + uri);
+            }
 
             if (Objects.equals(httpRequest.method(), HttpMethod.GET) &&
                 "websocket".equalsIgnoreCase(httpRequest.headers().get(HttpHeaderValues.UPGRADE))) {
@@ -128,11 +132,11 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
                 // TODO configure webSocketPath based on path component of endpoint URL?
                 ctx.channel().pipeline().addLast(new WebSocketServerProtocolHandler(
                     "/ws",
-                    String.format("%s, %s", WS_PROTOCOL_BINARY, WS_PROTOCOL_JSON),
+                    String.format("%s, %s", Stack.WSS_PROTOCOL_BINARY, Stack.WSS_PROTOCOL_JSON),
                     true
                 ));
 
-                ctx.channel().pipeline().addLast(new OpcServerWebSocketFrameHandler(serverLookup));
+                ctx.channel().pipeline().addLast(new OpcServerWebSocketFrameHandler(stackServer));
 
                 httpRequest.retain();
                 ctx.executor().execute(() -> ctx.fireChannelRead(httpRequest));
