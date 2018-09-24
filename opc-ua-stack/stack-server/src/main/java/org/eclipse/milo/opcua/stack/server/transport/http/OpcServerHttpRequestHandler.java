@@ -13,6 +13,11 @@
 
 package org.eclipse.milo.opcua.stack.server.transport.http;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Objects;
+import java.util.Optional;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -23,6 +28,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -30,13 +36,17 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
+import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.Logger;
@@ -57,12 +67,27 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
-        SecurityPolicy securityPolicy = SecurityPolicy.None;
-
+        String host = httpRequest.headers().get(HttpHeaderNames.HOST);
+        String uri = httpRequest.uri();
         String securityPolicyUri = httpRequest.headers().get("OPCUA-SecurityPolicy");
-        if (securityPolicyUri != null) {
-            securityPolicy = SecurityPolicy.fromUri(securityPolicyUri);
-        }
+
+        logger.info("host={} uri={} securityPolicy={}", host, uri, securityPolicyUri);
+
+        SecurityPolicy securityPolicy = securityPolicyUri != null ?
+            SecurityPolicy.fromUri(securityPolicyUri) :
+            SecurityPolicy.None;
+
+        EndpointDescription endpoint = stackServer.getEndpointDescriptions()
+            .stream()
+            .filter(e ->
+                Objects.equals(uri, EndpointUtil.getPath(e.getEndpointUrl())) &&
+                    Objects.equals(securityPolicy.getSecurityPolicyUri(), e.getSecurityPolicyUri()))
+            .findFirst()
+            .orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_TcpEndpointUrlInvalid,
+                    "unrecognized endpoint uri: " + uri));
+
 
         ServerSecureChannel secureChannel = new ServerSecureChannel();
         secureChannel.setChannelId(0L); // TODO shared id per endpoint URL / path?
@@ -73,6 +98,23 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         } else {
             secureChannel.setMessageSecurityMode(MessageSecurityMode.Sign);
         }
+
+        ByteString thumbprint = ByteString.of(DigestUtil.sha1(endpoint.getServerCertificate().bytesOrEmpty()));
+
+        Optional<X509Certificate[]> certificateChain = stackServer.getConfig()
+            .getCertificateManager()
+            .getCertificateChain(thumbprint);
+
+        Optional<KeyPair> keyPair = stackServer.getConfig()
+            .getCertificateManager()
+            .getKeyPair(thumbprint);
+
+        certificateChain.ifPresent(chain -> {
+            secureChannel.setLocalCertificateChain(chain);
+            secureChannel.setLocalCertificate(chain[0]);
+        });
+        
+        keyPair.ifPresent(secureChannel::setKeyPair);
 
         ByteBuf content = httpRequest.content();
         OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(content);

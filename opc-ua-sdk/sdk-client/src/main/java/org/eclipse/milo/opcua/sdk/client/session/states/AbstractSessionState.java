@@ -157,6 +157,11 @@ abstract class AbstractSessionState implements SessionState {
                         SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
 
                         if (securityPolicy != SecurityPolicy.None) {
+                            if (response.getServerCertificate().isNullOrEmpty()) {
+                                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
+                                    "Certificate missing from CreateSessionResponse");
+                            }
+
                             List<X509Certificate> serverCertificateChain = CertificateUtil
                                 .decodeCertificates(response.getServerCertificate().bytesOrEmpty());
 
@@ -169,8 +174,7 @@ abstract class AbstractSessionState implements SessionState {
                                 throw new UaException(
                                     StatusCodes.Bad_SecurityChecksFailed,
                                     "Certificate from CreateSessionResponse did not " +
-                                        "match certificate from EndpointDescription!"
-                                );
+                                        "match certificate from EndpointDescription!");
                             }
 
                             CertificateValidator certificateValidator = client.getConfig().getCertificateValidator();
