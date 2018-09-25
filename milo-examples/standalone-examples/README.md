@@ -30,7 +30,7 @@ how to access an existing certificate in a keystore and the server demonstrates 
 
 1. Generate openssl command using the config:
 
-        openssl req -x509 -sha256 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt -extensions v3_self_signed -config=resources/openssl.cnf
+        openssl req -x509 -sha256 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt -extensions v3_self_signed -config resources/openssl.cnf
 
 2. Convert into one file
 
