@@ -98,7 +98,8 @@ public class ClientExampleRunner {
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
-        logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
+        logger.info("Using endpoint: {} [{}/{}]",
+            endpoint.getEndpointUrl(), securityPolicy, endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
