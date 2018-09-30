@@ -566,7 +566,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     }
 
     private void installSecurityToken(ChannelHandlerContext ctx, OpenSecureChannelResponse response) {
-        ChannelSecurity.SecuritySecrets newKeys = null;
+        ChannelSecurity.SecurityKeys newKeys = null;
         if (response.getServerProtocolVersion().longValue() < PROTOCOL_VERSION) {
             throw new UaRuntimeException(StatusCodes.Bad_ProtocolVersionUnsupported,
                 "server protocol version unsupported: " + response.getServerProtocolVersion());
@@ -585,7 +585,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         }
 
         ChannelSecurity oldSecrets = secureChannel.getChannelSecurity();
-        ChannelSecurity.SecuritySecrets oldKeys = oldSecrets != null ? oldSecrets.getCurrentKeys() : null;
+        ChannelSecurity.SecurityKeys oldKeys = oldSecrets != null ? oldSecrets.getCurrentKeys() : null;
         ChannelSecurityToken oldToken = oldSecrets != null ? oldSecrets.getCurrentToken() : null;
 
         secureChannel.setChannelSecurity(new ChannelSecurity(newKeys, newToken, oldKeys, oldToken));

@@ -154,13 +154,13 @@ public class ClientSecureChannel extends DefaultAttributeMap implements SecureCh
     }
 
     @Override
-    public ChannelSecurity.SecretKeys getEncryptionKeys(ChannelSecurity.SecuritySecrets secretKeys) {
-        return secretKeys.getClientKeys();
+    public ChannelSecurity.SecretKeys getEncryptionKeys(ChannelSecurity.SecurityKeys securityKeys) {
+        return securityKeys.getClientKeys();
     }
 
     @Override
-    public ChannelSecurity.SecretKeys getDecryptionKeys(ChannelSecurity.SecuritySecrets secretKeys) {
-        return secretKeys.getServerKeys();
+    public ChannelSecurity.SecretKeys getDecryptionKeys(ChannelSecurity.SecurityKeys securityKeys) {
+        return securityKeys.getServerKeys();
     }
 
     @Override
