@@ -15,9 +15,11 @@ package org.eclipse.milo.opcua.stack.client.transport;
 
 import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.slf4j.Logger;
@@ -45,27 +47,36 @@ public abstract class AbstractTransport implements UaTransport {
 
     @Override
     public CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request) {
-        return channel().thenCompose(channel -> sendRequest(request, channel));
+        return channel().thenCompose(channel -> sendRequest(request, channel, true));
     }
 
-    private CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request, Channel channel) {
+    private CompletableFuture<UaResponseMessage> sendRequest(
+        UaRequestMessage request, Channel channel, boolean firstAttempt) {
+
         UaTransportRequest transportRequest = new UaTransportRequest(request);
 
         channel.writeAndFlush(transportRequest).addListener(f -> {
             if (!f.isSuccess()) {
                 Throwable cause = f.cause();
 
-                if (cause instanceof ClosedChannelException) {
-                    logger.debug("Channel closed; retrying...");
+                if (cause instanceof ClosedChannelException && firstAttempt) {
+                    logger.debug("Write failed, channel closed; retrying...");
 
-                    config.getExecutor().execute(() ->
-                        channel().whenComplete((ch, ex) -> {
-                            if (ch != null) {
-                                sendRequest(request, ch);
-                            } else {
-                                transportRequest.getFuture().completeExceptionally(ex);
-                            }
-                        })
+                    Stack.sharedScheduledExecutor().schedule(
+                        () -> config.getExecutor().execute(() -> {
+                            CompletableFuture<UaResponseMessage> sendAgain =
+                                channel().thenCompose(ch -> sendRequest(request, ch, false));
+
+                            sendAgain.whenComplete((r, ex) -> {
+                                if (r != null) {
+                                    transportRequest.getFuture().complete(r);
+                                } else {
+                                    transportRequest.getFuture().completeExceptionally(ex);
+                                }
+                            });
+                        }),
+                        1,
+                        TimeUnit.SECONDS
                     );
                 } else {
                     transportRequest.getFuture().completeExceptionally(cause);
@@ -78,7 +89,7 @@ public abstract class AbstractTransport implements UaTransport {
             } else {
                 if (logger.isTraceEnabled()) {
                     logger.trace(
-                        "writeAndFlush succeeded for request={}, requestHandle={}",
+                        "Write succeeded for request={}, requestHandle={}",
                         request.getClass().getSimpleName(),
                         request.getRequestHeader().getRequestHandle());
                 }
