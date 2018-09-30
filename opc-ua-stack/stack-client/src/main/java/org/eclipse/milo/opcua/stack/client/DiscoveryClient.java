@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.stack.client;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.common.base.Strings;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -74,18 +75,28 @@ public class DiscoveryClient {
 
         String profileUri;
 
-        if ("opc.tcp".equalsIgnoreCase(scheme)) {
-            profileUri = Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
-        } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme) ||
-            "opc.http".equalsIgnoreCase(scheme) || "opc.https".equalsIgnoreCase(scheme)) {
-            profileUri = Stack.HTTPS_UABINARY_TRANSPORT_URI;
-        } else if ("opc.ws".equalsIgnoreCase(scheme) || "opc.wss".equalsIgnoreCase(scheme)) {
-            profileUri = Stack.WSS_UASC_UABINARY_TRANSPORT_URI;
-        } else {
-            return failedFuture(
-                new UaException(
-                    StatusCodes.Bad_InternalError,
-                    "unsupported protocol: " + scheme));
+        switch (Strings.nullToEmpty(scheme).toLowerCase()) {
+            case "opc.tcp":
+                profileUri = Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
+                break;
+
+            case "http":
+            case "https":
+            case "opc.http":
+            case "opc.https":
+                profileUri = Stack.HTTPS_UABINARY_TRANSPORT_URI;
+                break;
+
+            case "opc.ws":
+            case "opc.wss":
+                profileUri = Stack.WSS_UASC_UABINARY_TRANSPORT_URI;
+                break;
+
+            default:
+                return failedFuture(
+                    new UaException(
+                        StatusCodes.Bad_InternalError,
+                        "unsupported protocol: " + scheme));
         }
 
         return getEndpoints(endpointUrl, profileUri);
