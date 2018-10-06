@@ -354,7 +354,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             uint(channelLifetime)
         );
 
-        ChannelSecurity.SecuritySecrets newKeys = null;
+        ChannelSecurity.SecurityKeys newKeys = null;
 
         if (secureChannel.isSymmetricSigningEnabled()) {
             // Validate the remote nonce; it must be non-null and the correct length for the security algorithm.
@@ -383,7 +383,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         }
 
         ChannelSecurity oldSecrets = secureChannel.getChannelSecurity();
-        ChannelSecurity.SecuritySecrets oldKeys = oldSecrets != null ? oldSecrets.getCurrentKeys() : null;
+        ChannelSecurity.SecurityKeys oldKeys = oldSecrets != null ? oldSecrets.getCurrentKeys() : null;
         ChannelSecurityToken oldToken = oldSecrets != null ? oldSecrets.getCurrentToken() : null;
 
         ChannelSecurity newSecrets = new ChannelSecurity(

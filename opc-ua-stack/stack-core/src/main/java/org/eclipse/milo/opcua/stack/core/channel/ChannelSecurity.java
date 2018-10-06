@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.util.Optional;
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -22,28 +23,28 @@ import org.eclipse.milo.opcua.stack.core.util.PShaUtil;
 
 public class ChannelSecurity {
 
-    private final SecuritySecrets currentKeys;
+    private final SecurityKeys currentKeys;
     private final ChannelSecurityToken currentToken;
 
-    private final Optional<SecuritySecrets> previousKeys;
-    private final Optional<ChannelSecurityToken> previousToken;
+    private final SecurityKeys previousKeys;
+    private final ChannelSecurityToken previousToken;
 
-    public ChannelSecurity(SecuritySecrets currentSecuritySecrets, ChannelSecurityToken currentToken) {
-        this(currentSecuritySecrets, currentToken, null, null);
+    public ChannelSecurity(SecurityKeys currentSecurityKeys, ChannelSecurityToken currentToken) {
+        this(currentSecurityKeys, currentToken, null, null);
     }
 
-    public ChannelSecurity(SecuritySecrets currentKeys,
+    public ChannelSecurity(SecurityKeys currentKeys,
                            ChannelSecurityToken currentToken,
-                           SecuritySecrets previousKeys,
-                           ChannelSecurityToken previousToken) {
+                           @Nullable SecurityKeys previousKeys,
+                           @Nullable ChannelSecurityToken previousToken) {
 
         this.currentKeys = currentKeys;
         this.currentToken = currentToken;
-        this.previousKeys = Optional.ofNullable(previousKeys);
-        this.previousToken = Optional.ofNullable(previousToken);
+        this.previousKeys = previousKeys;
+        this.previousToken = previousToken;
     }
 
-    public SecuritySecrets getCurrentKeys() {
+    public SecurityKeys getCurrentKeys() {
         return currentKeys;
     }
 
@@ -51,17 +52,17 @@ public class ChannelSecurity {
         return currentToken;
     }
 
-    public Optional<SecuritySecrets> getPreviousKeys() {
-        return previousKeys;
+    public Optional<SecurityKeys> getPreviousKeys() {
+        return Optional.ofNullable(previousKeys);
     }
 
     public Optional<ChannelSecurityToken> getPreviousToken() {
-        return previousToken;
+        return Optional.ofNullable(previousToken);
     }
 
-    public static SecuritySecrets generateKeyPair(SecureChannel channel,
-                                                  ByteString clientNonce,
-                                                  ByteString serverNonce) {
+    public static SecurityKeys generateKeyPair(SecureChannel channel,
+                                               ByteString clientNonce,
+                                               ByteString serverNonce) {
 
         SecurityAlgorithm keyDerivation = channel.getSecurityPolicy().getKeyDerivationAlgorithm();
 
@@ -100,17 +101,17 @@ public class ChannelSecurity {
             PShaUtil.createPSha256Key(clientNonce.bytes(), serverNonce.bytes(),
                 signatureKeySize + encryptionKeySize, cipherTextBlockSize);
 
-        return new SecuritySecrets(
+        return new SecurityKeys(
             new SecretKeys(clientSignatureKey, clientEncryptionKey, clientInitializationVector),
             new SecretKeys(serverSignatureKey, serverEncryptionKey, serverInitializationVector)
         );
     }
 
-    public static class SecuritySecrets {
+    public static class SecurityKeys {
         private final SecretKeys clientKeys;
         private final SecretKeys serverKeys;
 
-        public SecuritySecrets(SecretKeys clientKeys, SecretKeys serverKeys) {
+        SecurityKeys(SecretKeys clientKeys, SecretKeys serverKeys) {
             this.clientKeys = clientKeys;
             this.serverKeys = serverKeys;
         }
@@ -129,7 +130,7 @@ public class ChannelSecurity {
         private final byte[] encryptionKey;
         private final byte[] initializationVector;
 
-        public SecretKeys(byte[] signatureKey, byte[] encryptionKey, byte[] initializationVector) {
+        SecretKeys(byte[] signatureKey, byte[] encryptionKey, byte[] initializationVector) {
             this.signatureKey = signatureKey;
             this.encryptionKey = encryptionKey;
             this.initializationVector = initializationVector;

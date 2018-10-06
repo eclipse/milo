@@ -29,7 +29,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.ipfilter.AbstractRemoteAddressFilter;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * A shared, stack-wide, one-per-application-regardless-of-how-many-server-instances-you-have handler that is added to
  * the beginning of every server pipeline to handle rate limiting and connection limits.
  * <p>
- * Any configuration changes must be made before {@link LegacyUaTcpStackServer#startup()} is called for the first time,
+ * Any configuration changes must be made before {@link UaStackServer#startup()} is called for the first time,
  * application-wide. Once the instance has been created further configuration changes will have no effect.
  */
 @ChannelHandler.Sharable

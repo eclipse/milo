@@ -348,7 +348,7 @@ public final class ChunkDecoder {
 
     private final class SymmetricDecoder extends AbstractDecoder {
 
-        private volatile ChannelSecurity.SecuritySecrets securitySecrets;
+        private volatile ChannelSecurity.SecurityKeys securityKeys;
 
         @Override
         public void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) throws UaException {
@@ -365,13 +365,13 @@ public final class ChunkDecoder {
                 long currentTokenId = channelSecurity.getCurrentToken().getTokenId().longValue();
 
                 if (receivedTokenId == currentTokenId) {
-                    securitySecrets = channelSecurity.getCurrentKeys();
+                    securityKeys = channelSecurity.getCurrentKeys();
                 } else {
                     long previousTokenId = channelSecurity.getPreviousToken()
                         .map(t -> t.getTokenId().longValue())
                         .orElse(-1L);
 
-                    logger.debug("Attempting to use SecuritySecrets from previousTokenId={}", previousTokenId);
+                    logger.debug("Attempting to use SecurityKeys from previousTokenId={}", previousTokenId);
 
                     if (receivedTokenId != previousTokenId) {
                         logger.warn(
@@ -383,7 +383,7 @@ public final class ChunkDecoder {
                     }
 
                     if (channel.isSymmetricEncryptionEnabled() && channelSecurity.getPreviousKeys().isPresent()) {
-                        securitySecrets = channelSecurity.getPreviousKeys().get();
+                        securityKeys = channelSecurity.getPreviousKeys().get();
                     }
                 }
             }
@@ -395,7 +395,7 @@ public final class ChunkDecoder {
                 String transformation = channel.getSecurityPolicy()
                     .getSymmetricEncryptionAlgorithm().getTransformation();
 
-                ChannelSecurity.SecretKeys decryptionKeys = channel.getDecryptionKeys(securitySecrets);
+                ChannelSecurity.SecretKeys decryptionKeys = channel.getDecryptionKeys(securityKeys);
 
                 SecretKeySpec keySpec = new SecretKeySpec(decryptionKeys.getEncryptionKey(), "AES");
                 IvParameterSpec ivSpec = new IvParameterSpec(decryptionKeys.getInitializationVector());
@@ -422,7 +422,7 @@ public final class ChunkDecoder {
         @Override
         public void verifyChunk(SecureChannel channel, ByteBuf chunkBuffer) throws UaException {
             SecurityAlgorithm securityAlgorithm = channel.getSecurityPolicy().getSymmetricSignatureAlgorithm();
-            byte[] secretKey = channel.getDecryptionKeys(securitySecrets).getSignatureKey();
+            byte[] secretKey = channel.getDecryptionKeys(securityKeys).getSignatureKey();
             int signatureSize = channel.getSymmetricSignatureSize();
 
             ByteBuffer chunkNioBuffer = chunkBuffer.nioBuffer(0, chunkBuffer.writerIndex());
