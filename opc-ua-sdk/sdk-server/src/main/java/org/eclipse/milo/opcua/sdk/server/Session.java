@@ -55,7 +55,6 @@ public class Session implements SessionServiceSet {
     private volatile long secureChannelId;
 
     private volatile Object identityObject;
-    private volatile ByteString clientCertificateBytes;
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
 
@@ -75,18 +74,21 @@ public class Session implements SessionServiceSet {
     private final NodeId sessionId;
     private final String sessionName;
     private final Duration sessionTimeout;
+    private final SecurityConfiguration securityConfiguration;
 
     public Session(OpcUaServer server,
                    NodeId sessionId,
                    String sessionName,
                    Duration sessionTimeout,
-                   long secureChannelId) {
+                   long secureChannelId,
+                   SecurityConfiguration securityConfiguration) {
 
         this.server = server;
         this.sessionId = sessionId;
         this.sessionName = sessionName;
         this.sessionTimeout = sessionTimeout;
         this.secureChannelId = secureChannelId;
+        this.securityConfiguration = securityConfiguration;
 
         subscriptionManager = new SubscriptionManager(this, server);
 
@@ -111,14 +113,13 @@ public class Session implements SessionServiceSet {
         return secureChannelId;
     }
 
-    @Nullable
-    public Object getIdentityObject() {
-        return identityObject;
+    public SecurityConfiguration getSecurityConfiguration() {
+        return securityConfiguration;
     }
 
     @Nullable
-    public ByteString getClientCertificateBytes() {
-        return clientCertificateBytes;
+    public Object getIdentityObject() {
+        return identityObject;
     }
 
     public void setSecureChannelId(long secureChannelId) {
@@ -127,10 +128,6 @@ public class Session implements SessionServiceSet {
 
     public void setIdentityObject(Object identityObject) {
         this.identityObject = identityObject;
-    }
-
-    public void setClientCertificateBytes(ByteString clientCertificateBytes) {
-        this.clientCertificateBytes = clientCertificateBytes;
     }
 
     void addLifecycleListener(LifecycleListener listener) {
@@ -248,7 +245,7 @@ public class Session implements SessionServiceSet {
     }
     //endregion
 
-    public static interface LifecycleListener {
+    public interface LifecycleListener {
         void onSessionClosed(Session session, boolean subscriptionsDeleted);
     }
 }

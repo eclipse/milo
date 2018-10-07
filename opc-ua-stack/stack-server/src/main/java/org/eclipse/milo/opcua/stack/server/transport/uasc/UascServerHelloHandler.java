@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 public class UascServerHelloHandler extends ByteToMessageDecoder implements HeaderDecoder {
 
-    public static final AttributeKey<String> ENDPOINT_URL_KEY = AttributeKey.valueOf("endpoint-url");
+    static final AttributeKey<String> ENDPOINT_URL_KEY = AttributeKey.valueOf("endpoint-url");
 
     /**
      * Cumulative count of all connection rejections for the lifetime of the server.

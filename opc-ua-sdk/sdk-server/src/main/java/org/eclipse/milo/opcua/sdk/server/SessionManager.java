@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.math.RoundingMode;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.cert.CertificateParsingException;
@@ -29,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
@@ -39,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -47,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
@@ -57,6 +57,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertific
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
@@ -75,6 +76,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
 
 public class SessionManager implements
     AttributeServiceSet,
@@ -123,7 +125,7 @@ public class SessionManager implements
     }
 
     private Session session(ServiceRequest service) throws UaException {
-        long secureChannelId = service.getSecureChannel().getChannelId();
+        long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
         Session session = activeSessions.get(authToken);
@@ -158,7 +160,6 @@ public class SessionManager implements
     //region Session Services
     @Override
     public void onCreateSession(ServiceRequest serviceRequest) throws UaException {
-
         CreateSessionRequest request = (CreateSessionRequest) serviceRequest.getRequest();
 
         long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
@@ -175,11 +176,11 @@ public class SessionManager implements
             Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout())
         );
 
-        ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
-        SecurityPolicy securityPolicy = secureChannel.getSecurityPolicy();
+        long secureChannelId = serviceRequest.getSecureChannelId();
+        EndpointDescription endpoint = serviceRequest.getEndpoint();
 
-        ByteString serverCertificate = serviceRequest
-            .getSecureChannel().getLocalCertificateBytes();
+        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+        MessageSecurityMode securityMode = endpoint.getSecurityMode();
 
         EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
             .stream()
@@ -204,28 +205,28 @@ public class SessionManager implements
 
         ByteString clientCertificateBytes = request.getClientCertificate();
 
-        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
-            List<X509Certificate> clientCertificateChain = CertificateUtil
+        X509Certificate clientCertificate = null;
+        List<X509Certificate> clientCertificateChain = null;
+
+        if (securityPolicy != SecurityPolicy.None) {
+            if (serviceRequest.getClientCertificateBytes() != null) {
+                if (!Objects.equal(clientCertificateBytes,
+                    serviceRequest.getClientCertificateBytes())) {
+
+                    throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
+                        "certificate used to open secure channel " +
+                            "differs from certificate used to create session");
+                }
+            }
+
+            clientCertificate = CertificateUtil
+                .decodeCertificate(clientCertificateBytes.bytes());
+
+            clientCertificateChain = CertificateUtil
                 .decodeCertificates(clientCertificateBytes.bytes());
 
-            X509Certificate clientCertificate = clientCertificateChain.get(0);
-
-            // Clients connecting via HTTPS will not have had
-            // a chance to provide a certificate until now.
-            if (secureChannel.getRemoteCertificate() == null) {
-                secureChannel.setRemoteCertificate(
-                    clientCertificateBytes.bytesOrEmpty());
-            }
-
-            // This check is redundant on HTTPS since we just set the
-            // certificate, but it's still required for UASC.
-            if (!secureChannel.getRemoteCertificate().equals(clientCertificate)) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
-                    "certificate used to open secure channel " +
-                        "differs from certificate used to create session");
-            }
-
-            CertificateValidator certificateValidator = server.getConfig().getCertificateValidator();
+            CertificateValidator certificateValidator =
+                server.getConfig().getCertificateValidator();
 
             certificateValidator.validate(clientCertificate);
             certificateValidator.verifyTrustChain(clientCertificateChain);
@@ -233,28 +234,63 @@ public class SessionManager implements
             validateApplicationUri(request.getClientDescription().getApplicationUri(), clientCertificate);
         }
 
-        // clientCertificateBytes may contain the bytes of the entire chain, but the
-        // signature must be created using only the bytes of the leaf certificate,
-        // so use the certificate bytes from secure channel instead.
-        SignatureData serverSignature = getServerSignature(
-            clientNonce,
-            secureChannel.getRemoteCertificateBytes(),
+        ByteString thumbprint = ByteString.of(sha1(endpoint.getServerCertificate().bytesOrEmpty()));
+
+        Optional<KeyPair> keyPair = server
+            .getConfig()
+            .getCertificateManager()
+            .getKeyPair(thumbprint);
+
+        Optional<X509Certificate> serverCertificate = server
+            .getConfig()
+            .getCertificateManager()
+            .getCertificate(thumbprint);
+
+        Optional<X509Certificate[]> serverCertificateChain = server
+            .getConfig()
+            .getCertificateManager()
+            .getCertificateChain(thumbprint);
+
+        SecurityConfiguration securityConfiguration = new SecurityConfiguration(
             securityPolicy,
-            secureChannel.getKeyPair()
+            securityMode,
+            keyPair.orElse(null),
+            serverCertificate.orElse(null),
+            serverCertificateChain.map(Lists::newArrayList).orElse(null),
+            clientCertificate,
+            clientCertificateChain
+        );
+
+        // SignatureData must be created using only the bytes of the client
+        // leaf certificate, not the bytes of the client certificate chain.
+        SignatureData serverSignature = getServerSignature(
+            securityPolicy,
+            keyPair.orElse(null),
+            clientNonce,
+            securityConfiguration.getClientCertificateBytes()
         );
 
         NodeId sessionId = new NodeId(1, "Session:" + UUID.randomUUID());
         String sessionName = request.getSessionName();
         Duration sessionTimeout = Duration.ofMillis(DoubleMath.roundToLong(revisedSessionTimeout, RoundingMode.UP));
-        Session session = new Session(server, sessionId, sessionName, sessionTimeout, secureChannel.getChannelId());
-        createdSessions.put(authenticationToken, session);
+
+        Session session = new Session(
+            server,
+            sessionId,
+            sessionName,
+            sessionTimeout,
+            secureChannelId,
+            securityConfiguration
+        );
+
+        session.setLastNonce(serverNonce);
 
         session.addLifecycleListener((s, remove) -> {
             createdSessions.remove(authenticationToken);
             activeSessions.remove(authenticationToken);
         });
 
-        session.setLastNonce(serverNonce);
+        createdSessions.put(authenticationToken, session);
 
         CreateSessionResponse response = new CreateSessionResponse(
             serviceRequest.createResponseHeader(),
@@ -262,7 +298,7 @@ public class SessionManager implements
             authenticationToken,
             revisedSessionTimeout,
             serverNonce,
-            serverCertificate,
+            securityConfiguration.getServerCertificateBytes(), // TODO leaf or chain?
             serverEndpoints,
             new SignedSoftwareCertificate[0],
             serverSignature,
@@ -272,12 +308,13 @@ public class SessionManager implements
         serviceRequest.setResponse(response);
     }
 
-    private boolean endpointMatchesUrl(EndpointDescription endpoint, String endpointUrl) {
+    private boolean endpointMatchesUrl(EndpointDescription endpoint, String requestedEndpointUrl) {
         try {
-            String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-            String endpointHost = new URI(endpoint.getEndpointUrl()).parseServerAuthority().getHost();
+            String requestedHost = EndpointUtil.getHost(requestedEndpointUrl);
+            String endpointHost = EndpointUtil.getHost(endpoint.getEndpointUrl());
 
-            return requestedHost.equalsIgnoreCase(endpointHost);
+            return Strings.nullToEmpty(requestedHost)
+                .equalsIgnoreCase(Strings.nullToEmpty(endpointHost));
         } catch (Throwable e) {
             logger.warn("Unable to create URI.", e);
             return false;
@@ -329,8 +366,9 @@ public class SessionManager implements
 
         ActivateSessionRequest request = (ActivateSessionRequest) serviceRequest.getRequest();
 
-        ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
-        long secureChannelId = secureChannel.getChannelId();
+        // ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
+
+        long secureChannelId = serviceRequest.getSecureChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
         List<SignedSoftwareCertificate> clientSoftwareCertificates = l(request.getClientSoftwareCertificates());
 
@@ -342,8 +380,9 @@ public class SessionManager implements
             if (session == null) {
                 throw new UaException(StatusCodes.Bad_SessionIdInvalid);
             } else {
+                verifyClientSignature(session, request);
 
-                verifyClientSignature(request, secureChannel, session);
+                SecurityConfiguration securityConfiguration = session.getSecurityConfiguration();
 
                 if (session.getSecureChannelId() == secureChannelId) {
                     /*
@@ -355,11 +394,11 @@ public class SessionManager implements
                     );
 
                     Object identityObject = validateIdentityToken(
-                        secureChannel,
                         session,
                         tokenObject,
                         request.getUserTokenSignature()
                     );
+
                     session.setIdentityObject(identityObject);
 
                     StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
@@ -381,7 +420,7 @@ public class SessionManager implements
                     /*
                      * Associate session with new secure channel if client certificate and identity token match.
                      */
-                    ByteString certificateBytes = secureChannel.getRemoteCertificateBytes();
+                    ByteString clientCertificateBytes = serviceRequest.getClientCertificateBytes();
 
                     if (request.getUserIdentityToken() == null || request.getUserIdentityToken().decode() == null) {
                         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
@@ -393,16 +432,25 @@ public class SessionManager implements
                     );
 
                     Object identityObject = validateIdentityToken(
-                        secureChannel,
                         session,
                         tokenObject,
                         request.getUserTokenSignature()
                     );
 
-                    if (identityObject.equals(session.getIdentityObject()) &&
-                        certificateBytes.equals(session.getClientCertificateBytes())) {
+                    boolean sameIdentity = Objects.equal(
+                        identityObject,
+                        session.getIdentityObject()
+                    );
 
+                    boolean sameCertificate = Objects.equal(
+                        clientCertificateBytes,
+                        securityConfiguration.getClientCertificateBytes()
+                    );
+
+                    if (sameIdentity && sameCertificate) {
                         session.setSecureChannelId(secureChannelId);
+
+                        // TODO SecurityConfiguration may have changed
 
                         logger.debug("Session id={} is now associated with secureChannelId={}",
                             session.getSessionId(), secureChannelId);
@@ -436,7 +484,7 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
             }
 
-            verifyClientSignature(request, secureChannel, session);
+            verifyClientSignature(session, request);
 
             Object tokenObject = request.getUserIdentityToken().decode(
                 server.getConfig().getEncodingLimits(),
@@ -444,17 +492,15 @@ public class SessionManager implements
             );
 
             Object identityObject = validateIdentityToken(
-                secureChannel,
                 session,
                 tokenObject,
                 request.getUserTokenSignature()
             );
+
             session.setIdentityObject(identityObject);
 
             createdSessions.remove(authToken);
             activeSessions.put(authToken, session);
-
-            session.setClientCertificateBytes(secureChannel.getRemoteCertificateBytes());
 
             StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
             Arrays.fill(results, StatusCode.GOOD);
@@ -474,16 +520,14 @@ public class SessionManager implements
         }
     }
 
-    private void verifyClientSignature(
-        ActivateSessionRequest request,
-        ServerSecureChannel secureChannel,
-        Session session) throws UaException {
+    private static void verifyClientSignature(Session session, ActivateSessionRequest request) throws UaException {
+        SecurityConfiguration securityConfiguration = session.getSecurityConfiguration();
 
-        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
+        if (securityConfiguration.getSecurityPolicy() != SecurityPolicy.None) {
             SignatureData clientSignature = request.getClientSignature();
 
             byte[] dataBytes = Bytes.concat(
-                secureChannel.getLocalCertificateBytes().bytesOrEmpty(),
+                securityConfiguration.getServerCertificateBytes().bytesOrEmpty(),
                 session.getLastNonce().bytesOrEmpty()
             );
 
@@ -491,7 +535,7 @@ public class SessionManager implements
 
             SignatureUtil.verify(
                 SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
-                secureChannel.getRemoteCertificate(),
+                securityConfiguration.getClientCertificate(),
                 dataBytes,
                 signatureBytes
             );
@@ -499,7 +543,6 @@ public class SessionManager implements
     }
 
     private Object validateIdentityToken(
-        ServerSecureChannel channel,
         Session session,
         Object tokenObject,
         SignatureData tokenSignature) throws UaException {
@@ -509,7 +552,6 @@ public class SessionManager implements
 
         if (tokenObject instanceof UserIdentityToken) {
             return identityValidator.validateIdentityToken(
-                channel,
                 session,
                 (UserIdentityToken) tokenObject,
                 tokenPolicy,
@@ -549,7 +591,7 @@ public class SessionManager implements
 
     @Override
     public void onCloseSession(ServiceRequest service) throws UaException {
-        long secureChannelId = service.getSecureChannel().getChannelId();
+        long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
         Session session = activeSessions.get(authToken);
@@ -580,29 +622,30 @@ public class SessionManager implements
         session(service).onCancel(service);
     }
 
-    private SignatureData getServerSignature(ByteString clientNonce,
-                                             ByteString clientCertificate,
-                                             SecurityPolicy securityPolicy,
-                                             KeyPair keyPair) throws UaException {
+    private SignatureData getServerSignature(
+        SecurityPolicy securityPolicy,
+        KeyPair keyPair,
+        ByteString clientNonce,
+        ByteString clientCertificate) throws UaException {
 
-        if (clientNonce.isNull() || clientCertificate.isNull() || keyPair == null) {
+        if (securityPolicy == SecurityPolicy.None) {
             return new SignatureData(null, null);
-        }
+        } else {
+            try {
+                SecurityAlgorithm algorithm = securityPolicy.getAsymmetricSignatureAlgorithm();
 
-        try {
-            SecurityAlgorithm algorithm = securityPolicy.getAsymmetricSignatureAlgorithm();
+                byte[] data = Bytes.concat(clientCertificate.bytes(), clientNonce.bytes());
 
-            byte[] data = Bytes.concat(clientCertificate.bytes(), clientNonce.bytes());
+                byte[] signature = SignatureUtil.sign(
+                    algorithm,
+                    keyPair.getPrivate(),
+                    ByteBuffer.wrap(data)
+                );
 
-            byte[] signature = SignatureUtil.sign(
-                algorithm,
-                keyPair.getPrivate(),
-                ByteBuffer.wrap(data)
-            );
-
-            return new SignatureData(algorithm.getUri(), ByteString.of(signature));
-        } catch (UaRuntimeException e) {
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
+                return new SignatureData(algorithm.getUri(), ByteString.of(signature));
+            } catch (UaRuntimeException e) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
+            }
         }
     }
     //endregion

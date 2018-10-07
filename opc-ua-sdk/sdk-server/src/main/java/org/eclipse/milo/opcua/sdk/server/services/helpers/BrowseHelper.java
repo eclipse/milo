@@ -243,12 +243,19 @@ public class BrowseHelper {
                         as.getBrowseName(),
                         as.getDisplayName(),
                         as.getNodeClass(),
-                        typeDefinition));
+                        typeDefinition)
+                );
             }).orElse(
-                CompletableFuture.completedFuture(new ReferenceDescription(
-                    referenceTypeId, reference.isForward(), targetNodeId,
-                    QualifiedName.NULL_VALUE, LocalizedText.NULL_VALUE,
-                    NodeClass.Unspecified, ExpandedNodeId.NULL_VALUE))
+                CompletableFuture.completedFuture(
+                    new ReferenceDescription(
+                        referenceTypeId,
+                        reference.isForward(),
+                        targetNodeId,
+                        QualifiedName.NULL_VALUE,
+                        LocalizedText.NULL_VALUE,
+                        NodeClass.Unspecified,
+                        ExpandedNodeId.NULL_VALUE)
+                )
             );
         }
 

@@ -26,7 +26,6 @@
         <module>bsd-parser</module>
         <module>stack-client</module>
         <module>stack-core</module>
-        <module>stack-examples</module>
         <module>stack-server</module>
         <module>stack-tests</module>
     </modules>

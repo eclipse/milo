@@ -654,6 +654,8 @@ public class ExampleNamespace implements Namespace {
             false
         );
 
+        server.getNodeManager().addNode(dataTypeNode);
+
         // Inverse ref to Structure
         dataTypeNode.addReference(new Reference(
             dataTypeId,
@@ -704,6 +706,8 @@ public class ExampleNamespace implements Namespace {
             .setDataType(dataTypeId)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
+
+        server.getNodeManager().addNode(customDataTypeVariable);
 
         CustomDataType value = new CustomDataType(
             "foo",

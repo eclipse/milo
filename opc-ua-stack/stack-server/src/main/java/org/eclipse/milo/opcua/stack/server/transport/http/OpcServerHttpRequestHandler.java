@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -61,7 +62,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
 
     private final UaStackServer stackServer;
 
-    public OpcServerHttpRequestHandler(UaStackServer stackServer) {
+    OpcServerHttpRequestHandler(UaStackServer stackServer) {
         this.stackServer = stackServer;
     }
 
@@ -69,19 +70,46 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest httpRequest) throws Exception {
         String host = httpRequest.headers().get(HttpHeaderNames.HOST);
         String uri = httpRequest.uri();
+        String contentType = httpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE);
         String securityPolicyUri = httpRequest.headers().get("OPCUA-SecurityPolicy");
 
-        logger.info("host={} uri={} securityPolicy={}", host, uri, securityPolicyUri);
+        logger.debug("host={} uri={} contentType={} securityPolicy={}", host, uri, contentType, securityPolicyUri);
 
         SecurityPolicy securityPolicy = securityPolicyUri != null ?
             SecurityPolicy.fromUri(securityPolicyUri) :
             SecurityPolicy.None;
 
+        MessageSecurityMode securityMode = securityPolicy == SecurityPolicy.None ?
+            MessageSecurityMode.None :
+            MessageSecurityMode.Sign;
+
         EndpointDescription endpoint = stackServer.getEndpointDescriptions()
             .stream()
-            .filter(e ->
-                Objects.equals(uri, EndpointUtil.getPath(e.getEndpointUrl())) &&
-                    Objects.equals(securityPolicy.getSecurityPolicyUri(), e.getSecurityPolicyUri()))
+            .filter(e -> {
+                // TODO match on Hostname?
+                // TODO use contentType to determine which TransportProfile to match
+                boolean transportMatch = Objects.equals(
+                    e.getTransportProfileUri(),
+                    TransportProfile.HTTPS_UABINARY.getUri()
+                );
+
+                boolean pathMatch = Objects.equals(
+                    EndpointUtil.getPath(e.getEndpointUrl()),
+                    uri
+                );
+
+                boolean securityPolicyMatch = Objects.equals(
+                    e.getSecurityPolicyUri(),
+                    securityPolicy.getSecurityPolicyUri()
+                );
+
+                boolean securityModeMatch = Objects.equals(
+                    e.getSecurityMode(),
+                    securityMode
+                );
+
+                return transportMatch && pathMatch && securityPolicyMatch && securityModeMatch;
+            })
             .findFirst()
             .orElseThrow(() ->
                 new UaException(
@@ -92,12 +120,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         ServerSecureChannel secureChannel = new ServerSecureChannel();
         secureChannel.setChannelId(0L); // TODO shared id per endpoint URL / path?
         secureChannel.setSecurityPolicy(securityPolicy);
-
-        if (securityPolicy == SecurityPolicy.None) {
-            secureChannel.setMessageSecurityMode(MessageSecurityMode.None);
-        } else {
-            secureChannel.setMessageSecurityMode(MessageSecurityMode.Sign);
-        }
+        secureChannel.setMessageSecurityMode(securityMode);
 
         ByteString thumbprint = ByteString.of(DigestUtil.sha1(endpoint.getServerCertificate().bytesOrEmpty()));
 
@@ -113,7 +136,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
             secureChannel.setLocalCertificateChain(chain);
             secureChannel.setLocalCertificate(chain[0]);
         });
-        
+
         keyPair.ifPresent(secureChannel::setKeyPair);
 
         ByteBuf content = httpRequest.content();
@@ -124,9 +147,11 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
             UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
             ServiceRequest serviceRequest = new ServiceRequest(
-                request,
                 stackServer,
-                secureChannel
+                request,
+                endpoint,
+                secureChannel.getChannelId(),
+                null
             );
 
             serviceRequest.getFuture().whenComplete((response, fault) -> {
@@ -137,7 +162,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
                 }
             });
 
-            stackServer.onServiceRequest(httpRequest.uri(), serviceRequest);
+            stackServer.onServiceRequest(uri, serviceRequest);
         } catch (Throwable t) {
             logger.error("Error decoding UaRequestMessage", t);
 

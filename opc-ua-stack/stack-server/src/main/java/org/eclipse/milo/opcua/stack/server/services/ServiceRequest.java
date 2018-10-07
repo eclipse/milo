@@ -14,15 +14,17 @@
 package org.eclipse.milo.opcua.stack.server.services;
 
 import java.util.concurrent.CompletableFuture;
+import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import io.netty.util.DefaultAttributeMap;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
@@ -31,34 +33,56 @@ public class ServiceRequest extends DefaultAttributeMap {
 
     private final CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
 
-    private final UaRequestMessage request;
     private final UaStackServer server;
-    private final ServerSecureChannel secureChannel;
+    private final UaRequestMessage request;
+    private final EndpointDescription endpoint;
+    private final long secureChannelId;
+    private final ByteString clientCertificateBytes;
 
     public ServiceRequest(
-        UaRequestMessage request,
         UaStackServer server,
-        ServerSecureChannel secureChannel) {
+        UaRequestMessage request,
+        EndpointDescription endpoint,
+        long secureChannelId,
+        @Nullable ByteString clientCertificateBytes) {
 
-        this.request = request;
         this.server = server;
-        this.secureChannel = secureChannel;
-    }
-
-    public CompletableFuture<UaResponseMessage> getFuture() {
-        return future;
-    }
-
-    public UaRequestMessage getRequest() {
-        return request;
+        this.request = request;
+        this.endpoint = endpoint;
+        this.secureChannelId = secureChannelId;
+        this.clientCertificateBytes = clientCertificateBytes;
     }
 
     public UaStackServer getServer() {
         return server;
     }
 
-    public ServerSecureChannel getSecureChannel() {
-        return secureChannel;
+    public EndpointDescription getEndpoint() {
+        return endpoint;
+    }
+
+    /**
+     * Get the client certificate bytes, or {@code null} if not available.
+     * <p>
+     * Only available on SecureConversation-based transports with security enabled.
+     *
+     * @return the client certificate bytes, or {@code null} if not available.
+     */
+    @Nullable
+    public ByteString getClientCertificateBytes() {
+        return clientCertificateBytes;
+    }
+
+    public long getSecureChannelId() {
+        return secureChannelId;
+    }
+
+    public UaRequestMessage getRequest() {
+        return request;
+    }
+
+    public CompletableFuture<UaResponseMessage> getFuture() {
+        return future;
     }
 
     public void setResponse(UaResponseMessage response) {

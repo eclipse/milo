@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
 import org.eclipse.milo.opcua.stack.core.util.BufferUtil;
@@ -61,7 +62,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
     private final SerializationQueue serializationQueue;
     private final ServerSecureChannel secureChannel;
 
-    public UascServerSymmetricHandler(
+    UascServerSymmetricHandler(
         UaStackServer stackServer,
         SerializationQueue serializationQueue,
         ServerSecureChannel secureChannel) {
@@ -163,8 +164,15 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                         public void onMessageDecoded(ByteBuf message, long requestId) {
                             stackServer.getConfig().getExecutor().execute(() -> {
                                 try {
-                                    String endpointUrl = ctx.channel().attr(
-                                        UascServerHelloHandler.ENDPOINT_URL_KEY).get();
+                                    String endpointUrl = ctx
+                                        .channel()
+                                        .attr(UascServerHelloHandler.ENDPOINT_URL_KEY)
+                                        .get();
+
+                                    EndpointDescription endpoint = ctx
+                                        .channel()
+                                        .attr(UascServerAsymmetricHandler.ENDPOINT_KEY)
+                                        .get();
 
                                     String path = EndpointUtil.getPath(endpointUrl);
 
@@ -173,9 +181,11 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                                         .readMessage(null);
 
                                     ServiceRequest serviceRequest = new ServiceRequest(
-                                        request,
                                         stackServer,
-                                        secureChannel
+                                        request,
+                                        endpoint,
+                                        secureChannel.getChannelId(),
+                                        secureChannel.getRemoteCertificateBytes()
                                     );
 
                                     serviceRequest.getFuture().whenComplete((response, fault) -> {

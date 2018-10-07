@@ -16,7 +16,9 @@ package org.eclipse.milo.opcua.stack;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +33,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -45,16 +48,18 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
+import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
-import org.eclipse.milo.opcua.stack.server.tcp.LegacyUaTcpStackServer;
-import org.eclipse.milo.opcua.stack.server.tcp.SocketServers;
+import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
+import org.eclipse.milo.opcua.stack.server.UaStackServer;
+import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterSuite;
@@ -62,6 +67,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
@@ -111,27 +117,19 @@ public class ClientServerTest extends SecurityFixture {
 
     private EndpointDescription[] endpoints;
 
-    private LegacyUaTcpStackServer server;
+    private UaStackServer server;
 
     @BeforeSuite
     public void setUpClientServer() throws Exception {
         super.setUp();
 
-        UaTcpStackServerConfig config = UaTcpStackServerConfig.builder()
-            .setServerName("test")
+        UaStackServerConfig config = UaStackServerConfig.builder()
             .setCertificateManager(serverCertificateManager)
             .setCertificateValidator(serverCertificateValidator)
+            .setEndpoints(createEndpointConfigurations(serverCertificate))
             .build();
 
-        server = new LegacyUaTcpStackServer(config);
-
-        server.addEndpoint("opc.tcp://localhost:12685/test", null)
-            .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic128Rsa15, MessageSecurityMode.Sign)
-            .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic256, MessageSecurityMode.Sign)
-            .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic256Sha256, MessageSecurityMode.Sign)
-            .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic128Rsa15, MessageSecurityMode.SignAndEncrypt)
-            .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic256, MessageSecurityMode.SignAndEncrypt)
-            .addEndpoint("opc.tcp://localhost:12685/test", null, serverCertificate, SecurityPolicy.Basic256Sha256, MessageSecurityMode.SignAndEncrypt);
+        server = new UaStackServer(config);
 
         setReadRequestHandler(new Variant(42));
 
@@ -142,8 +140,13 @@ public class ClientServerTest extends SecurityFixture {
             .toArray(new EndpointDescription[0]);
     }
 
+    @AfterSuite
+    public void tearDownClientServer() throws Exception {
+        server.shutdown().get();
+    }
+
     private void setReadRequestHandler(Variant variant) {
-        server.addRequestHandler(ReadRequest.class, service -> {
+        server.addServiceHandler("/test", ReadRequest.class, service -> {
             ReadRequest request = (ReadRequest) service.getRequest();
 
             ResponseHeader header = new ResponseHeader(
@@ -162,12 +165,6 @@ public class ClientServerTest extends SecurityFixture {
 
             service.setResponse(response);
         });
-    }
-
-    @AfterSuite
-    public void tearDownClientServer() throws Exception {
-        server.shutdown().get();
-        SocketServers.shutdownAll().get();
     }
 
     @Test(dataProvider = "getVariants")
@@ -506,7 +503,7 @@ public class ClientServerTest extends SecurityFixture {
 
         UaStackClient client = UaStackClient.create(config);
 
-        server.addRequestHandler(ReadRequest.class, service -> {
+        server.addServiceHandler("/test", ReadRequest.class, service -> {
             // intentionally do nothing so the request can timeout
             logger.info("received {}; ignoring...", service.getRequest());
         });
@@ -605,5 +602,112 @@ public class ClientServerTest extends SecurityFixture {
 
         client.disconnect().get();
     }
+
+    private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {
+        Set<EndpointConfiguration> endpointConfigurations = new LinkedHashSet<>();
+
+        List<String> bindAddresses = newArrayList();
+        bindAddresses.add("localhost");
+
+        Set<String> hostnames = new LinkedHashSet<>();
+        hostnames.add("localhost");
+
+        for (String bindAddress : bindAddresses) {
+            for (String hostname : hostnames) {
+                EndpointConfiguration.Builder builder = EndpointConfiguration.newBuilder()
+                    .setBindAddress(bindAddress)
+                    .setHostname(hostname)
+                    .setPath("/test")
+                    .setCertificate(certificate)
+                    .addTokenPolicies(
+                        USER_TOKEN_POLICY_ANONYMOUS);
+
+
+                /* No Security */
+                EndpointConfiguration.Builder noSecurityBuilder = builder.copy()
+                    .setSecurityPolicy(SecurityPolicy.None)
+                    .setSecurityMode(MessageSecurityMode.None);
+
+                endpointConfigurations.add(buildTcpEndpoint(noSecurityBuilder));
+
+                /* Basic128Rsa15 */
+                endpointConfigurations.add(buildTcpEndpoint(
+                    builder.copy()
+                        .setSecurityPolicy(SecurityPolicy.Basic128Rsa15)
+                        .setSecurityMode(MessageSecurityMode.Sign))
+                );
+
+                endpointConfigurations.add(buildTcpEndpoint(
+                    builder.copy()
+                        .setSecurityPolicy(SecurityPolicy.Basic128Rsa15)
+                        .setSecurityMode(MessageSecurityMode.SignAndEncrypt))
+                );
+
+                /* Basic256 */
+                endpointConfigurations.add(buildTcpEndpoint(
+                    builder.copy()
+                        .setSecurityPolicy(SecurityPolicy.Basic256)
+                        .setSecurityMode(MessageSecurityMode.Sign))
+                );
+
+                endpointConfigurations.add(buildTcpEndpoint(
+                    builder.copy()
+                        .setSecurityPolicy(SecurityPolicy.Basic256)
+                        .setSecurityMode(MessageSecurityMode.SignAndEncrypt))
+                );
+
+                /* Basic256Sha256 */
+                endpointConfigurations.add(buildTcpEndpoint(
+                    builder.copy()
+                        .setSecurityPolicy(SecurityPolicy.Basic256Sha256)
+                        .setSecurityMode(MessageSecurityMode.Sign))
+                );
+
+                endpointConfigurations.add(buildTcpEndpoint(
+                    builder.copy()
+                        .setSecurityPolicy(SecurityPolicy.Basic256Sha256)
+                        .setSecurityMode(MessageSecurityMode.SignAndEncrypt))
+                );
+
+                /*
+                 * It's good practice to provide a discovery-specific endpoint with no security.
+                 * It's required practice if all regular endpoints have security configured.
+                 *
+                 * Usage of the  "/discovery" suffix is defined by OPC UA Part 6:
+                 *
+                 * Each OPC UA Server Application implements the Discovery Service Set. If the OPC UA Server requires a
+                 * different address for this Endpoint it shall create the address by appending the path "/discovery" to
+                 * its base address.
+                 */
+
+                EndpointConfiguration.Builder discoveryBuilder = builder.copy()
+                    .setPath("/example/discovery")
+                    .setSecurityPolicy(SecurityPolicy.None)
+                    .setSecurityMode(MessageSecurityMode.None);
+
+                endpointConfigurations.add(buildTcpEndpoint(discoveryBuilder));
+            }
+        }
+
+        return endpointConfigurations;
+    }
+
+    private static EndpointConfiguration buildTcpEndpoint(EndpointConfiguration.Builder base) {
+        return base.copy()
+            .setTransportProfile(TransportProfile.TCP_UASC_UABINARY)
+            .setBindPort(12685)
+            .build();
+    }
+
+    /**
+     * A {@link UserTokenPolicy} for anonymous access.
+     */
+    private static final UserTokenPolicy USER_TOKEN_POLICY_ANONYMOUS = new UserTokenPolicy(
+        "anonymous",
+        UserTokenType.Anonymous,
+        null,
+        null,
+        null
+    );
 
 }

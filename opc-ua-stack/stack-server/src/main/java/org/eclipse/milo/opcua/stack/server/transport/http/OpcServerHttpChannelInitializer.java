@@ -54,32 +54,46 @@ import org.slf4j.LoggerFactory;
 
 public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
+    private SslContext sslContext;
+
     private final UaStackServer stackServer;
 
     public OpcServerHttpChannelInitializer(UaStackServer stackServer) {
         this.stackServer = stackServer;
+
+        try {
+            // TODO how is the certificate for HTTPS configured/provided?
+            // TODO configure private key and certificate
+
+            KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+
+            X509Certificate serverHttpsCertificate = new SelfSignedHttpsCertificateBuilder(keyPair)
+                .setCommonName("localhost")
+                .build();
+
+            PrivateKey privateKey = keyPair.getPrivate();
+
+            sslContext = SslContextBuilder
+                .forServer(privateKey, serverHttpsCertificate)
+                .clientAuth(ClientAuth.NONE)
+                .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                .build();
+        } catch (Exception e) {
+            LoggerFactory.getLogger(OpcServerHttpChannelInitializer.class)
+                .error("Error configuration SslContext: {}", e.getMessage(), e);
+
+            sslContext = null;
+        }
     }
 
     @Override
-    protected void initChannel(SocketChannel channel) throws Exception {
-        // TODO how is the certificate for HTTPS configured/provided?
-        // TODO configure private key and certificate
-        KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
-
-        X509Certificate serverHttpsCertificate = new SelfSignedHttpsCertificateBuilder(keyPair)
-            .setCommonName("localhost")
-            .build();
-
-        PrivateKey privateKey = keyPair.getPrivate();
-
-        SslContext sslContext = SslContextBuilder
-            .forServer(privateKey, serverHttpsCertificate)
-            .clientAuth(ClientAuth.NONE)
-            .trustManager(InsecureTrustManagerFactory.INSTANCE)
-            .build();
-
+    protected void initChannel(SocketChannel channel) {
         channel.pipeline().addLast(RateLimitingHandler.getInstance());
-        channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
+
+        if (sslContext != null) {
+            channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
+        }
+
         channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
         channel.pipeline().addLast(new HttpServerCodec());
 
@@ -103,7 +117,7 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
             String host = httpRequest.headers().get(HttpHeaderNames.HOST);
             String uri = httpRequest.uri();
 
-            logger.info("host={} uri={}", host, uri);
+            logger.debug("host={} uri={}", host, uri);
 
             boolean endpointMatch = stackServer.getEndpointDescriptions()
                 .stream()
