@@ -67,6 +67,8 @@ public abstract class StackIntegrationTest extends SecurityFixture {
 
     @BeforeSuite
     public void setUpClientServer() throws Exception {
+        super.setUp();
+
         int tcpBindPort = getTcpBindPort();
         int httpsBindPort = getHttpsBindPort();
 
@@ -195,7 +197,8 @@ public abstract class StackIntegrationTest extends SecurityFixture {
     public static class TestTcpStackIntegrationTest extends StackIntegrationTest {
 
         @Test
-        public void test() {}
+        public void test() {
+        }
 
     }
 
@@ -207,7 +210,8 @@ public abstract class StackIntegrationTest extends SecurityFixture {
         }
 
         @Test
-        public void test() {}
+        public void test() {
+        }
 
     }
 

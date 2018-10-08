@@ -57,7 +57,9 @@ public class ClientCertificateValidatorIT extends StackIntegrationTest {
 
     @Override
     protected UaStackClientConfigBuilder configureClient(UaStackClientConfigBuilder builder) {
-        return builder.setCertificateValidator(validator);
+        return builder
+            .setCertificate(clientCertificate)
+            .setCertificateValidator(validator);
     }
 
     @Override
