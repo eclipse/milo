@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 
 public class SelfSignedHttpsCertificateBuilder {
@@ -99,13 +98,13 @@ public class SelfSignedHttpsCertificateBuilder {
     private static class HttpsCertificateGenerator extends SelfSignedCertificateGenerator {
 
         @Override
-        protected void addKeyUsage(X509v3CertificateBuilder certificateBuilder) throws CertIOException {
-            super.addKeyUsage(certificateBuilder); // TODO
+        protected void addKeyUsage(X509v3CertificateBuilder certificateBuilder) {
+            // Don't set any KU fields
         }
 
         @Override
-        protected void addExtendedKeyUsage(X509v3CertificateBuilder certificateBuilder) throws CertIOException {
-            super.addExtendedKeyUsage(certificateBuilder); // TODO
+        protected void addExtendedKeyUsage(X509v3CertificateBuilder certificateBuilder) {
+            // Don't set any EKU fields
         }
 
     }

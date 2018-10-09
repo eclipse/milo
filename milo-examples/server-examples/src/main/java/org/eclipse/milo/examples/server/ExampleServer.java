@@ -94,9 +94,10 @@ public class ExampleServer {
 
         KeyPair httpsKeyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
-        X509Certificate httpsCertificate = new SelfSignedHttpsCertificateBuilder(httpsKeyPair)
-            .setCommonName(HostnameUtil.getHostname())
-            .build();
+        SelfSignedHttpsCertificateBuilder httpsCertificateBuilder = new SelfSignedHttpsCertificateBuilder(httpsKeyPair);
+        httpsCertificateBuilder.setCommonName(HostnameUtil.getHostname());
+        HostnameUtil.getHostnames("0.0.0.0").forEach(httpsCertificateBuilder::addDnsName);
+        X509Certificate httpsCertificate = httpsCertificateBuilder.build();
 
         UsernameIdentityValidator identityValidator = new UsernameIdentityValidator(
             true,
