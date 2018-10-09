@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.server.transport.tcp;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
 import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
@@ -30,7 +31,7 @@ public class OpcServerTcpChannelInitializer extends ChannelInitializer<SocketCha
     @Override
     protected void initChannel(SocketChannel channel) {
         channel.pipeline().addLast(RateLimitingHandler.getInstance());
-        channel.pipeline().addLast(new UascServerHelloHandler(stackServer));
+        channel.pipeline().addLast(new UascServerHelloHandler(stackServer, TransportProfile.TCP_UASC_UABINARY));
     }
 
 }

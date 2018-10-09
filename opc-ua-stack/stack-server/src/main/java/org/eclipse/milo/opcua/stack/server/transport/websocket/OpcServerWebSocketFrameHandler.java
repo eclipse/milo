@@ -18,6 +18,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.uasc.UascServerHelloHandler;
 
@@ -38,13 +39,17 @@ public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<
         if (event instanceof HandshakeComplete) {
             HandshakeComplete handshake = (HandshakeComplete) event;
 
-            handshake.requestUri();
-            handshake.requestHeaders();
-
             subprotocol = handshake.selectedSubprotocol();
 
             if (Stack.WSS_PROTOCOL_BINARY.equalsIgnoreCase(subprotocol)) {
-                ctx.channel().pipeline().addLast(new UascServerHelloHandler(stackServer));
+                UascServerHelloHandler helloHandler = new UascServerHelloHandler(
+                    stackServer,
+                    TransportProfile.WSS_UASC_UABINARY
+                );
+
+                ctx.channel().pipeline().addLast(helloHandler);
+            } else {
+                throw new IllegalArgumentException("subprotocol: " + subprotocol);
             }
         }
 
@@ -61,7 +66,7 @@ public class OpcServerWebSocketFrameHandler extends SimpleChannelInboundHandler<
             // TODO End of the pipeline; decode and deliver
             String text = ((TextWebSocketFrame) msg).text();
 
-            throw new Exception("TODO");
+            throw new IllegalArgumentException("subprotocol: " + subprotocol);
         } else {
             ctx.close();
         }

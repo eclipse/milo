@@ -38,6 +38,7 @@ import org.eclipse.milo.opcua.stack.core.channel.messages.HelloMessage;
 import org.eclipse.milo.opcua.stack.core.channel.messages.MessageType;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.TcpMessageEncoder;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.slf4j.Logger;
@@ -60,9 +61,17 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
     private volatile boolean receivedHello = false;
 
     private final UaStackServer stackServer;
+    private final TransportProfile transportProfile;
 
-    public UascServerHelloHandler(UaStackServer stackServer) {
+    public UascServerHelloHandler(UaStackServer stackServer, TransportProfile transportProfile) {
+        if (transportProfile != TransportProfile.TCP_UASC_UABINARY &&
+            transportProfile != TransportProfile.WSS_UASC_UABINARY) {
+
+            throw new IllegalArgumentException("transportProfile: " + transportProfile);
+        }
+
         this.stackServer = stackServer;
+        this.transportProfile = transportProfile;
     }
 
     @Override
@@ -180,7 +189,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
             stackServer.getConfig().getEncodingLimits()
         );
 
-        ctx.pipeline().addLast(new UascServerAsymmetricHandler(stackServer, serializationQueue));
+        ctx.pipeline().addLast(new UascServerAsymmetricHandler(stackServer, transportProfile, serializationQueue));
         ctx.pipeline().remove(this);
 
         logger.debug("[remote={}] Removed HelloHandler, added AsymmetricHandler.", ctx.channel().remoteAddress());

@@ -93,10 +93,16 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
     private final int maxChunkSize;
 
     private final UaStackServer stackServer;
+    private final TransportProfile transportProfile;
     private final SerializationQueue serializationQueue;
 
-    UascServerAsymmetricHandler(UaStackServer stackServer, SerializationQueue serializationQueue) {
+    UascServerAsymmetricHandler(
+        UaStackServer stackServer,
+        TransportProfile transportProfile,
+        SerializationQueue serializationQueue) {
+
         this.stackServer = stackServer;
+        this.transportProfile = transportProfile;
         this.serializationQueue = serializationQueue;
 
         maxArrayLength = stackServer.getConfig().getEncodingLimits().getMaxArrayLength();
@@ -302,10 +308,9 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                 .stream()
                 .filter(e -> {
                     // TODO match on Hostname?
-                    // TODO use ??? to determine which TransportProfile to match
                     boolean transportMatch = Objects.equals(
                         e.getTransportProfileUri(),
-                        TransportProfile.TCP_UASC_UABINARY.getUri()
+                        transportProfile.getUri()
                     );
 
                     boolean pathMatch = Objects.equals(
