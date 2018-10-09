@@ -146,7 +146,7 @@ public class UaStackServerConfigBuilder {
 
         private final ExecutorService executor;
 
-        public UaStackServerConfigImpl(
+        UaStackServerConfigImpl(
             Set<EndpointConfiguration> endpointConfigurations,
             LocalizedText applicationName,
             String applicationUri,

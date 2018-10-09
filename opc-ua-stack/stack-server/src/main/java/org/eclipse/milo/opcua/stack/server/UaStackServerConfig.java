@@ -98,18 +98,48 @@ public interface UaStackServerConfig {
      */
     ExecutorService getExecutor();
 
+    /**
+     * @return a new {@link UaStackServerConfigBuilder}.
+     */
     static UaStackServerConfigBuilder builder() {
         return new UaStackServerConfigBuilder();
     }
 
+    /**
+     * Copy the values from an existing {@link UaStackServerConfig} into a new {@link UaStackServerConfigBuilder}.
+     * <p>
+     * This builder can be used to make any desired modifications before invoking
+     * {@link UaStackServerConfigBuilder#build()} to produce a new config.
+     *
+     * @param config the {@link UaStackServerConfig} to copy from.
+     * @return a {@link UaStackServerConfigBuilder} pre-populated with values from {@code config}.
+     */
     static UaStackServerConfigBuilder copy(UaStackServerConfig config) {
         UaStackServerConfigBuilder builder = builder();
 
-        // TODO
+        builder.setEndpoints(config.getEndpoints());
+        builder.setApplicationName(config.getApplicationName());
+        builder.setApplicationUri(config.getApplicationUri());
+        builder.setProductUri(config.getProductUri());
+        builder.setChannelConfig(config.getChannelConfig());
+        builder.setEncodingLimits(config.getEncodingLimits());
+        builder.setCertificateManager(config.getCertificateManager());
+        builder.setCertificateValidator(config.getCertificateValidator());
+        builder.setHttpsKeyPair(config.getHttpsKeyPair().orElse(null));
+        builder.setHttpsCertificate(config.getHttpsCertificate().orElse(null));
+        builder.setExecutor(config.getExecutor());
 
         return builder;
     }
 
+    /**
+     * Copy the values from an existing {@link UaStackServerConfig} into a new {@link UaStackServerConfigBuilder}
+     * and then submit the builder to the provided consumer for modification.
+     *
+     * @param config   the {@link UaStackServerConfig} to copy from.
+     * @param consumer a {@link Consumer} that may modify the builder.
+     * @return a {@link UaStackServerConfig} built from the builder provided to {@code consumer}.
+     */
     static UaStackServerConfig copy(
         UaStackServerConfig config,
         Consumer<UaStackServerConfigBuilder> consumer) {
