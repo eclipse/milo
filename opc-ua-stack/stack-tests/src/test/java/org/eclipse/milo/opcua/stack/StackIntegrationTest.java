@@ -13,7 +13,9 @@
 
 package org.eclipse.milo.opcua.stack;
 
+import java.security.KeyPair;
 import java.security.Security;
+import java.security.cert.X509Certificate;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
@@ -30,6 +32,8 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
+import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.EndpointConfiguration;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
@@ -71,6 +75,12 @@ public abstract class StackIntegrationTest extends SecurityFixture {
 
         int tcpBindPort = getTcpBindPort();
         int httpsBindPort = getHttpsBindPort();
+
+        KeyPair httpsKeyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+
+        X509Certificate httpsCertificate = new SelfSignedHttpsCertificateBuilder(httpsKeyPair)
+            .setCommonName("localhost")
+            .build();
 
         List<String> bindAddresses = newArrayList();
         bindAddresses.add("localhost");
@@ -134,6 +144,8 @@ public abstract class StackIntegrationTest extends SecurityFixture {
                 .setEndpoints(endpointConfigurations)
                 .setCertificateManager(serverCertificateManager)
                 .setCertificateValidator(serverCertificateValidator)
+                .setHttpsKeyPair(httpsKeyPair)
+                .setHttpsCertificate(httpsCertificate)
         ).build();
 
         stackServer = new UaStackServer(serverConfig);
