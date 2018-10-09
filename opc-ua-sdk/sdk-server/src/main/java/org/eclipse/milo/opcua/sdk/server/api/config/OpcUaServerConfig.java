@@ -47,7 +47,7 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
         UserTokenType.UserName,
         null,
         null,
-        SecurityPolicy.Basic256.getSecurityPolicyUri()
+        SecurityPolicy.Basic256.getUri()
     );
 
     UserTokenPolicy USER_TOKEN_POLICY_X509 = new UserTokenPolicy(
@@ -55,7 +55,7 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
         UserTokenType.Certificate,
         null,
         null,
-        SecurityPolicy.Basic256.getSecurityPolicyUri()
+        SecurityPolicy.Basic256.getUri()
     );
 
     /**

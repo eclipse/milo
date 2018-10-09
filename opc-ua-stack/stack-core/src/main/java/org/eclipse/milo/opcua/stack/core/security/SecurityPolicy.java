@@ -120,8 +120,7 @@ public enum SecurityPolicy {
         this.certificateSignatureAlgorithm = certificateSignatureAlgorithm;
     }
 
-    // TODO rename this to getUri()
-    public String getSecurityPolicyUri() {
+    public String getUri() {
         return securityPolicyUri;
     }
 
@@ -155,7 +154,7 @@ public enum SecurityPolicy {
 
     public static SecurityPolicy fromUri(String securityPolicyUri) throws UaException {
         for (SecurityPolicy securityPolicy : values()) {
-            if (securityPolicy.getSecurityPolicyUri().equals(securityPolicyUri)) {
+            if (securityPolicy.getUri().equals(securityPolicyUri)) {
                 return securityPolicy;
             }
         }

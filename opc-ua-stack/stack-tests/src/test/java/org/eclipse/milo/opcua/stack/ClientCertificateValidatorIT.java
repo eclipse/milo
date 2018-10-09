@@ -65,7 +65,7 @@ public class ClientCertificateValidatorIT extends StackIntegrationTest {
     @Override
     protected EndpointDescription selectEndpoint(List<EndpointDescription> endpoints) {
         return endpoints.stream()
-            .filter(e -> !SecurityPolicy.None.getSecurityPolicyUri().equals(e.getSecurityPolicyUri()))
+            .filter(e -> !SecurityPolicy.None.getUri().equals(e.getSecurityPolicyUri()))
             .findFirst()
             .orElseThrow(() -> new RuntimeException("no secure endpoint found!"));
     }

@@ -35,7 +35,7 @@ public class SessionFsmTest {
                 null,
                 null,
                 MessageSecurityMode.None,
-                SecurityPolicy.None.getSecurityPolicyUri(),
+                SecurityPolicy.None.getUri(),
                 null,
                 TransportProfile.TCP_UASC_UABINARY.getUri(),
                 null

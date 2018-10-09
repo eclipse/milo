@@ -123,7 +123,7 @@
 //            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 //
 //        EndpointDescription endpoint = endpoints.stream()
-//            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
+//            .filter(e -> e.getUri().equals(SecurityPolicy.None.getUri()))
 //            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 //
 //        KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -441,7 +441,7 @@
 //            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 //
 //        EndpointDescription endpoint = endpoints.stream()
-//            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
+//            .filter(e -> e.getUri().equals(SecurityPolicy.None.getUri()))
 //            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 //
 //        KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -474,7 +474,7 @@
 //            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 //
 //        EndpointDescription endpoint = endpoints.stream()
-//            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
+//            .filter(e -> e.getUri().equals(SecurityPolicy.None.getUri()))
 //            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 //
 //        char[] cs = new char[1000];
@@ -510,7 +510,7 @@
 //            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 //
 //        EndpointDescription endpoint = endpoints.stream()
-//            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.Aes256_Sha256_RsaPss.getSecurityPolicyUri()))
+//            .filter(e -> e.getUri().equals(SecurityPolicy.Aes256_Sha256_RsaPss.getUri()))
 //            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 //
 //        KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -549,7 +549,7 @@
 //            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 //
 //        EndpointDescription endpoint = endpoints.stream()
-//            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+//            .filter(e -> e.getUri().equals(securityPolicy.getUri()))
 //            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 //
 //        KeyStoreLoader loader = new KeyStoreLoader().load();
@@ -587,7 +587,7 @@
 //            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 //
 //        EndpointDescription endpoint = endpoints.stream()
-//            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
+//            .filter(e -> e.getUri().equals(SecurityPolicy.None.getUri()))
 //            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 //
 //        class ConnectDisconnect implements Runnable {
@@ -653,7 +653,7 @@
 //            .getEndpoints(String.format("opc.tcp://localhost:%d/test-server", port)).get();
 //
 //        EndpointDescription endpoint = endpoints.stream()
-//            .filter(e -> e.getSecurityPolicyUri().equals(SecurityPolicy.None.getSecurityPolicyUri()))
+//            .filter(e -> e.getUri().equals(SecurityPolicy.None.getUri()))
 //            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 //
 //        OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()

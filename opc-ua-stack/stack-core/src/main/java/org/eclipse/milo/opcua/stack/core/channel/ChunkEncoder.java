@@ -314,7 +314,7 @@ public final class ChunkEncoder {
         @Override
         public void encodeSecurityHeader(SecureChannel channel, ByteBuf buffer) throws UaException {
             AsymmetricSecurityHeader header = new AsymmetricSecurityHeader(
-                channel.getSecurityPolicy().getSecurityPolicyUri(),
+                channel.getSecurityPolicy().getUri(),
                 channel.getLocalCertificateChainBytes(),
                 channel.getRemoteCertificateThumbprint()
             );
@@ -324,7 +324,7 @@ public final class ChunkEncoder {
 
         @Override
         public int getSecurityHeaderSize(SecureChannel channel) throws UaException {
-            String securityPolicyUri = channel.getSecurityPolicy().getSecurityPolicyUri();
+            String securityPolicyUri = channel.getSecurityPolicy().getUri();
             byte[] localCertificateChainBytes = channel.getLocalCertificateChainBytes().bytes();
             byte[] remoteCertificateThumbprint = channel.getRemoteCertificateThumbprint().bytes();
 

@@ -108,7 +108,7 @@ public class DiscoveryClient {
             null,
             null,
             MessageSecurityMode.None,
-            SecurityPolicy.None.getSecurityPolicyUri(),
+            SecurityPolicy.None.getUri(),
             null,
             profileUri,
             ubyte(0)

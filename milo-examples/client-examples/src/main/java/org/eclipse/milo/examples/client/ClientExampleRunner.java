@@ -95,7 +95,7 @@ public class ClientExampleRunner {
         }
 
         EndpointDescription endpoint = endpoints.stream()
-            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getUri()))
             .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         logger.info("Using endpoint: {} [{}/{}]",

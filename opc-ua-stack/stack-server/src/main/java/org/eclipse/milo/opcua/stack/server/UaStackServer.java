@@ -256,7 +256,7 @@ public class UaStackServer {
             getApplicationDescription(),
             certificateByteString(endpoint.getCertificate()),
             endpoint.getSecurityMode(),
-            endpoint.getSecurityPolicy().getSecurityPolicyUri(),
+            endpoint.getSecurityPolicy().getUri(),
             a(endpoint.getTokenPolicies(), UserTokenPolicy.class),
             endpoint.getTransportProfile().getUri(),
             ubyte(getSecurityLevel(endpoint.getSecurityPolicy(), endpoint.getSecurityMode()))

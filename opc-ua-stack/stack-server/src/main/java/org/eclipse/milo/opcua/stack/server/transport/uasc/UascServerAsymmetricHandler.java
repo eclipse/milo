@@ -315,7 +315,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
 
                     boolean securityPolicyMatch = Objects.equals(
                         e.getSecurityPolicyUri(),
-                        secureChannel.getSecurityPolicy().getSecurityPolicyUri()
+                        secureChannel.getSecurityPolicy().getUri()
                     );
 
                     boolean securityModeMatch = Objects.equals(

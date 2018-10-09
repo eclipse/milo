@@ -100,7 +100,7 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
 
                 boolean securityPolicyMatch = Objects.equals(
                     e.getSecurityPolicyUri(),
-                    securityPolicy.getSecurityPolicyUri()
+                    securityPolicy.getUri()
                 );
 
                 boolean securityModeMatch = Objects.equals(
