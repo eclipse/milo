@@ -97,15 +97,18 @@ public interface OpcUaServerConfig extends UaStackServerConfig {
     static OpcUaServerConfigBuilder copy(OpcUaServerConfig config) {
         OpcUaServerConfigBuilder builder = new OpcUaServerConfigBuilder();
 
-        // UaTcpStackServerConfig values
+        // UaStackServerConfig values
+        builder.setEndpoints(config.getEndpoints());
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
-        builder.setCertificateManager(config.getCertificateManager());
-        builder.setCertificateValidator(config.getCertificateValidator());
-        builder.setExecutor(config.getExecutor());
         builder.setChannelConfig(config.getChannelConfig());
         builder.setEncodingLimits(config.getEncodingLimits());
+        builder.setCertificateManager(config.getCertificateManager());
+        builder.setCertificateValidator(config.getCertificateValidator());
+        builder.setHttpsKeyPair(config.getHttpsKeyPair().orElse(null));
+        builder.setHttpsCertificate(config.getHttpsCertificate().orElse(null));
+        builder.setExecutor(config.getExecutor());
 
         // OpcUaServerConfig values
         builder.setIdentityValidator(config.getIdentityValidator());
