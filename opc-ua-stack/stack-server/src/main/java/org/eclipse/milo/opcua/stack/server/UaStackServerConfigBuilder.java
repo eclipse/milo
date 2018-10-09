@@ -19,13 +19,12 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
@@ -40,7 +39,7 @@ public class UaStackServerConfigBuilder {
 
     private String productUri = "server product uri not configured";
 
-    private ChannelConfig channelConfig = ChannelConfig.DEFAULT;
+    private MessageLimits messageLimits = MessageLimits.DEFAULT;
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
 
     private CertificateManager certificateManager;
@@ -71,8 +70,8 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
-    public UaStackServerConfigBuilder setChannelConfig(ChannelConfig channelConfig) {
-        this.channelConfig = channelConfig;
+    public UaStackServerConfigBuilder setMessageLimits(MessageLimits messageLimits) {
+        this.messageLimits = messageLimits;
         return this;
     }
 
@@ -116,7 +115,7 @@ public class UaStackServerConfigBuilder {
             applicationName,
             applicationUri,
             productUri,
-            channelConfig,
+            messageLimits,
             encodingLimits,
             certificateManager,
             certificateValidator,
@@ -135,7 +134,7 @@ public class UaStackServerConfigBuilder {
         private final String applicationUri;
         private final String productUri;
 
-        private final ChannelConfig channelConfig;
+        private final MessageLimits messageLimits;
         private final EncodingLimits encodingLimits;
 
         private final CertificateManager certificateManager;
@@ -151,7 +150,7 @@ public class UaStackServerConfigBuilder {
             LocalizedText applicationName,
             String applicationUri,
             String productUri,
-            ChannelConfig channelConfig,
+            MessageLimits messageLimits,
             EncodingLimits encodingLimits,
             CertificateManager certificateManager,
             CertificateValidator certificateValidator,
@@ -163,7 +162,7 @@ public class UaStackServerConfigBuilder {
             this.applicationName = applicationName;
             this.applicationUri = applicationUri;
             this.productUri = productUri;
-            this.channelConfig = channelConfig;
+            this.messageLimits = messageLimits;
             this.encodingLimits = encodingLimits;
             this.certificateManager = certificateManager;
             this.certificateValidator = certificateValidator;
@@ -193,8 +192,8 @@ public class UaStackServerConfigBuilder {
         }
 
         @Override
-        public ChannelConfig getChannelConfig() {
-            return channelConfig;
+        public MessageLimits getMessageLimits() {
+            return messageLimits;
         }
 
         @Override

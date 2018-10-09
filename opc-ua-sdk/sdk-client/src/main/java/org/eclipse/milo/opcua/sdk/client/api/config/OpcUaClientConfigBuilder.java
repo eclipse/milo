@@ -28,7 +28,7 @@ import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -146,8 +146,8 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     }
 
     @Override
-    public OpcUaClientConfigBuilder setChannelConfig(ChannelConfig channelConfig) {
-        super.setChannelConfig(channelConfig);
+    public OpcUaClientConfigBuilder setMessageLimits(MessageLimits messageLimits) {
+        super.setMessageLimits(messageLimits);
         return this;
     }
 
@@ -358,8 +358,8 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         }
 
         @Override
-        public ChannelConfig getChannelConfig() {
-            return stackClientConfig.getChannelConfig();
+        public MessageLimits getMessageLimits() {
+            return stackClientConfig.getMessageLimits();
         }
 
         @Override

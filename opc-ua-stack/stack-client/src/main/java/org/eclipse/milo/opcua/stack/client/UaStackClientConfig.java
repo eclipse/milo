@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.HashedWheelTimer;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
@@ -105,9 +105,9 @@ public interface UaStackClientConfig {
     UInteger getRequestTimeout();
 
     /**
-     * @return the {@link ChannelConfig} to use when creating secure channels.
+     * @return the {@link MessageLimits} to use when creating secure channels.
      */
-    ChannelConfig getChannelConfig();
+    MessageLimits getMessageLimits();
 
     /**
      * @return the secure channel lifetime to request, in milliseconds.
@@ -134,7 +134,7 @@ public interface UaStackClientConfig {
         config.getCertificate().ifPresent(builder::setCertificate);
         config.getCertificateChain().ifPresent(builder::setCertificateChain);
         builder.setCertificateValidator(config.getCertificateValidator());
-        builder.setChannelConfig(config.getChannelConfig());
+        builder.setMessageLimits(config.getMessageLimits());
         builder.setChannelLifetime(config.getChannelLifetime());
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());

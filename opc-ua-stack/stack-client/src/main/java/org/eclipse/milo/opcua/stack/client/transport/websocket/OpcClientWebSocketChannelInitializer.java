@@ -77,7 +77,7 @@ public class OpcClientWebSocketChannelInitializer extends ChannelInitializer<Soc
             channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
         }
 
-        int maxMessageSize = config.getChannelConfig().getMaxMessageSize();
+        int maxMessageSize = config.getMessageLimits().getMaxMessageSize();
 
         channel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
         channel.pipeline().addLast(new HttpClientCodec());
@@ -91,12 +91,12 @@ public class OpcClientWebSocketChannelInitializer extends ChannelInitializer<Soc
                     subprotocol,
                     true,
                     new DefaultHttpHeaders(),
-                    config.getChannelConfig().getMaxChunkSize()
+                    config.getMessageLimits().getMaxChunkSize()
                 )
             )
         );
 
-        channel.pipeline().addLast(new WebSocketFrameAggregator(config.getChannelConfig().getMaxMessageSize()));
+        channel.pipeline().addLast(new WebSocketFrameAggregator(config.getMessageLimits().getMaxMessageSize()));
 
         // OpcClientWebSocketFrameCodec adds UascClientAcknowledgeHandler when the WS upgrade is done.
         channel.pipeline().addLast(new OpcClientWebSocketBinaryFrameCodec(config, handshake));

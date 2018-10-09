@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -117,8 +117,8 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     }
 
     @Override
-    public OpcUaServerConfigBuilder setChannelConfig(ChannelConfig channelConfig) {
-        super.setChannelConfig(channelConfig);
+    public OpcUaServerConfigBuilder setMessageLimits(MessageLimits messageLimits) {
+        super.setMessageLimits(messageLimits);
         return this;
     }
 
@@ -214,8 +214,8 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         }
 
         @Override
-        public ChannelConfig getChannelConfig() {
-            return stackServerConfig.getChannelConfig();
+        public MessageLimits getMessageLimits() {
+            return stackServerConfig.getMessageLimits();
         }
 
         @Override

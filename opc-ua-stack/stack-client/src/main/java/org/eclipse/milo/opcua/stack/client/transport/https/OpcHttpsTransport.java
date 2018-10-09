@@ -176,7 +176,7 @@ public class OpcHttpsTransport implements UaTransport {
                         channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
                     }
 
-                    int maxMessageSize = config.getChannelConfig().getMaxMessageSize();
+                    int maxMessageSize = config.getMessageLimits().getMaxMessageSize();
 
                     channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());

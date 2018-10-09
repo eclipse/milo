@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -45,7 +45,7 @@ public class UaStackClientConfigTest extends SecurityFixture {
             .setCertificate(clientCertificate)
             .setCertificateChain(new X509Certificate[]{clientCertificate})
             .setCertificateValidator(validator)
-            .setChannelConfig(ChannelConfig.DEFAULT)
+            .setMessageLimits(MessageLimits.DEFAULT)
             .setChannelLifetime(uint(1234))
             .setExecutor(Stack.sharedExecutor())
             .setEventLoop(Stack.sharedEventLoop())
@@ -59,7 +59,7 @@ public class UaStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getCertificate(), original.getCertificate());
         assertEquals(copy.getCertificateChain(), original.getCertificateChain());
         assertEquals(copy.getCertificateValidator(), original.getCertificateValidator());
-        assertEquals(copy.getChannelConfig(), original.getChannelConfig());
+        assertEquals(copy.getMessageLimits(), original.getMessageLimits());
         assertEquals(copy.getChannelLifetime(), original.getChannelLifetime());
         assertEquals(copy.getExecutor(), original.getExecutor());
         assertEquals(copy.getEventLoop(), original.getEventLoop());
@@ -73,7 +73,7 @@ public class UaStackClientConfigTest extends SecurityFixture {
             .setKeyPair(clientKeyPair)
             .setCertificate(clientCertificate)
             .setCertificateValidator(validator)
-            .setChannelConfig(ChannelConfig.DEFAULT)
+            .setMessageLimits(MessageLimits.DEFAULT)
             .setChannelLifetime(uint(1234))
             .setExecutor(Stack.sharedExecutor())
             .setEventLoop(Stack.sharedEventLoop())
@@ -88,7 +88,7 @@ public class UaStackClientConfigTest extends SecurityFixture {
                     .setCertificate(null)
                     .setCertificateChain(null)
                     .setCertificateValidator(null)
-                    .setChannelConfig(null)
+                    .setMessageLimits(null)
                     .setChannelLifetime(uint(0))
                     .setAcknowledgeTimeout(uint(12345))
         );
@@ -97,7 +97,7 @@ public class UaStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getCertificate(), Optional.empty());
         assertEquals(copy.getCertificateChain(), Optional.empty());
         assertEquals(copy.getCertificateValidator(), null);
-        assertEquals(copy.getChannelConfig(), null);
+        assertEquals(copy.getMessageLimits(), null);
         assertEquals(copy.getChannelLifetime(), uint(0));
         assertEquals(copy.getAcknowledgeTimeout(), uint(12345));
     }

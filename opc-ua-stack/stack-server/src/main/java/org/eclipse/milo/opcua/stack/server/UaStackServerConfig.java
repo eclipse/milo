@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
@@ -64,9 +64,9 @@ public interface UaStackServerConfig {
     String getProductUri();
 
     /**
-     * @return the {@link ChannelConfig}.
+     * @return the {@link MessageLimits}.
      */
-    ChannelConfig getChannelConfig();
+    MessageLimits getMessageLimits();
 
     /**
      * @return the configured {@link EncodingLimits}.
@@ -121,7 +121,7 @@ public interface UaStackServerConfig {
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
-        builder.setChannelConfig(config.getChannelConfig());
+        builder.setMessageLimits(config.getMessageLimits());
         builder.setEncodingLimits(config.getEncodingLimits());
         builder.setCertificateManager(config.getCertificateManager());
         builder.setCertificateValidator(config.getCertificateValidator());

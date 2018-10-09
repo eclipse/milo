@@ -15,13 +15,12 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import com.google.common.base.Preconditions;
 
-// TODO refactor/rename: MessageLimits?
-public class ChannelConfig {
+public class MessageLimits {
 
     /**
-     * A {@link ChannelConfig} that uses the default settings.
+     * A {@link MessageLimits} that uses the default settings.
      */
-    public static final ChannelConfig DEFAULT = new ChannelConfig();
+    public static final MessageLimits DEFAULT = new MessageLimits();
 
     /**
      * The default maximum size of a message; 2MB by default.
@@ -48,19 +47,19 @@ public class ChannelConfig {
     private final int maxMessageSize;
 
     /**
-     * Create a {@link ChannelConfig} using the default parameters.
+     * Create a {@link MessageLimits} using the default parameters.
      *
-     * @see ChannelConfig#DEFAULT_MAX_CHUNK_SIZE
-     * @see ChannelConfig#DEFAULT_MAX_CHUNK_COUNT
-     * @see ChannelConfig#DEFAULT_MAX_MESSAGE_SIZE
+     * @see MessageLimits#DEFAULT_MAX_CHUNK_SIZE
+     * @see MessageLimits#DEFAULT_MAX_CHUNK_COUNT
+     * @see MessageLimits#DEFAULT_MAX_MESSAGE_SIZE
      */
-    public ChannelConfig() {
+    public MessageLimits() {
         this(DEFAULT_MAX_CHUNK_SIZE,
             DEFAULT_MAX_CHUNK_COUNT,
             DEFAULT_MAX_MESSAGE_SIZE);
     }
 
-    public ChannelConfig(
+    public MessageLimits(
         int maxChunkSize,
         int maxChunkCount,
         int maxMessageSize) {

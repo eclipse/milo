@@ -27,9 +27,9 @@ import io.netty.util.AttributeKey;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
 import org.eclipse.milo.opcua.stack.core.channel.ExceptionHandler;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.channel.SerializationQueue;
 import org.eclipse.milo.opcua.stack.core.channel.headers.HeaderDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.messages.AcknowledgeMessage;
@@ -158,7 +158,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
                 "unsupported protocol version: " + remoteProtocolVersion);
         }
 
-        ChannelConfig config = stackServer.getConfig().getChannelConfig();
+        MessageLimits config = stackServer.getConfig().getMessageLimits();
 
         /* Our receive buffer size is determined by the remote send buffer size. */
         long localReceiveBufferSize = Math.min(remoteSendBufferSize, config.getMaxChunkSize());
