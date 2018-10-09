@@ -22,7 +22,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
@@ -502,8 +501,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         }
 
         if (accumulateChunk(buffer)) {
-            // TODO does this really need to be a copy?
-            final List<ByteBuf> buffersToDecode = ImmutableList.copyOf(chunkBuffers);
+            final List<ByteBuf> buffersToDecode = chunkBuffers;
             chunkBuffers = new ArrayList<>(maxChunkCount);
 
             serializationQueue.decode((binaryDecoder, chunkDecoder) ->
@@ -632,8 +630,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         }
 
         if (accumulateChunk(buffer)) {
-            // TODO does this really need to be a copy?
-            final List<ByteBuf> buffersToDecode = ImmutableList.copyOf(chunkBuffers);
+            final List<ByteBuf> buffersToDecode = chunkBuffers;
             chunkBuffers = new ArrayList<>(maxChunkCount);
 
             serializationQueue.decode((decoder, chunkDecoder) -> {
