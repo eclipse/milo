@@ -44,8 +44,6 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
-import org.eclipse.milo.opcua.stack.core.util.SelfSignedCertificateGenerator;
-import org.eclipse.milo.opcua.stack.core.util.SelfSignedHttpsCertificateBuilder;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
 import org.eclipse.milo.opcua.stack.server.transport.websocket.OpcServerWebSocketFrameHandler;
@@ -54,37 +52,35 @@ import org.slf4j.LoggerFactory;
 
 public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private SslContext sslContext;
+    private SslContext sslContext = null;
 
     private final UaStackServer stackServer;
 
     public OpcServerHttpChannelInitializer(UaStackServer stackServer) {
         this.stackServer = stackServer;
 
-        try {
-            // TODO how is the certificate for HTTPS configured/provided?
-            // TODO configure private key and certificate
+        KeyPair keyPair = stackServer.getConfig().getHttpsKeyPair().orElse(null);
+        X509Certificate httpsCertificate = stackServer.getConfig().getHttpsCertificate().orElse(null);
 
-            KeyPair keyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
+        if (keyPair != null && httpsCertificate != null) {
+            try {
+                PrivateKey privateKey = keyPair.getPrivate();
 
-            X509Certificate serverHttpsCertificate = new SelfSignedHttpsCertificateBuilder(keyPair)
-                .setCommonName("localhost")
-                .build();
-
-            PrivateKey privateKey = keyPair.getPrivate();
-
-            sslContext = SslContextBuilder
-                .forServer(privateKey, serverHttpsCertificate)
-                .clientAuth(ClientAuth.NONE)
-                .trustManager(InsecureTrustManagerFactory.INSTANCE)
-                .build();
-        } catch (Exception e) {
+                sslContext = SslContextBuilder
+                    .forServer(privateKey, httpsCertificate)
+                    .clientAuth(ClientAuth.NONE)
+                    .trustManager(InsecureTrustManagerFactory.INSTANCE)
+                    .build();
+            } catch (Exception e) {
+                LoggerFactory.getLogger(OpcServerHttpChannelInitializer.class)
+                    .error("Error configuration SslContext: {}", e.getMessage(), e);
+            }
+        } else {
             LoggerFactory.getLogger(OpcServerHttpChannelInitializer.class)
-                .error("Error configuration SslContext: {}", e.getMessage(), e);
-
-            sslContext = null;
+                .warn("HTTPS KeyPair and/or Certificate not configured; falling back to plaintext...");
         }
     }
+
 
     @Override
     protected void initChannel(SocketChannel channel) {

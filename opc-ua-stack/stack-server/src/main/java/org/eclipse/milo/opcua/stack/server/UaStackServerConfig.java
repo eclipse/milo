@@ -13,6 +13,9 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
@@ -79,6 +82,16 @@ public interface UaStackServerConfig {
      * @return the {@link CertificateValidator} for this server.
      */
     CertificateValidator getCertificateValidator();
+
+    /**
+     * @return the {@link KeyPair} used for SSL/TLS with HTTPS endpoints.
+     */
+    Optional<KeyPair> getHttpsKeyPair();
+
+    /**
+     * @return the {@link X509Certificate} used for SSL/TLS with HTTPS endpoints.
+     */
+    Optional<X509Certificate> getHttpsCertificate();
 
     /**
      * @return the {@link ExecutorService} for this server.

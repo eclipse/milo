@@ -13,6 +13,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
@@ -92,6 +95,18 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     @Override
     public OpcUaServerConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
         super.setCertificateValidator(certificateValidator);
+        return this;
+    }
+
+    @Override
+    public OpcUaServerConfigBuilder setHttpsKeyPair(KeyPair httpsKeyPair) {
+        super.setHttpsKeyPair(httpsKeyPair);
+        return this;
+    }
+
+    @Override
+    public OpcUaServerConfigBuilder setHttpsCertificate(X509Certificate httpsCertificate) {
+        super.setHttpsCertificate(httpsCertificate);
         return this;
     }
 
@@ -181,6 +196,16 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         @Override
         public CertificateValidator getCertificateValidator() {
             return stackServerConfig.getCertificateValidator();
+        }
+
+        @Override
+        public Optional<KeyPair> getHttpsKeyPair() {
+            return stackServerConfig.getHttpsKeyPair();
+        }
+
+        @Override
+        public Optional<X509Certificate> getHttpsCertificate() {
+            return stackServerConfig.getHttpsCertificate();
         }
 
         @Override

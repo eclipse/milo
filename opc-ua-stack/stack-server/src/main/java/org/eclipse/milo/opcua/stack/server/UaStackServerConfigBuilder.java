@@ -13,9 +13,14 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
@@ -40,6 +45,9 @@ public class UaStackServerConfigBuilder {
 
     private CertificateManager certificateManager;
     private CertificateValidator certificateValidator;
+
+    private KeyPair httpsKeyPair;
+    private X509Certificate httpsCertificate;
 
     private ExecutorService executor;
 
@@ -83,6 +91,16 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
+    public UaStackServerConfigBuilder setHttpsKeyPair(KeyPair httpsKeyPair) {
+        this.httpsKeyPair = httpsKeyPair;
+        return this;
+    }
+
+    public UaStackServerConfigBuilder setHttpsCertificate(X509Certificate httpsCertificate) {
+        this.httpsCertificate = httpsCertificate;
+        return this;
+    }
+
     public UaStackServerConfigBuilder setExecutor(ExecutorService executor) {
         this.executor = executor;
         return this;
@@ -102,6 +120,8 @@ public class UaStackServerConfigBuilder {
             encodingLimits,
             certificateManager,
             certificateValidator,
+            httpsKeyPair,
+            httpsCertificate,
             executor
         );
     }
@@ -121,6 +141,9 @@ public class UaStackServerConfigBuilder {
         private final CertificateManager certificateManager;
         private final CertificateValidator certificateValidator;
 
+        private final KeyPair httpsKeyPair;
+        private final X509Certificate httpsCertificate;
+
         private final ExecutorService executor;
 
         public UaStackServerConfigImpl(
@@ -132,6 +155,8 @@ public class UaStackServerConfigBuilder {
             EncodingLimits encodingLimits,
             CertificateManager certificateManager,
             CertificateValidator certificateValidator,
+            @Nullable KeyPair httpsKeyPair,
+            @Nullable X509Certificate httpsCertificate,
             ExecutorService executor) {
 
             this.endpointConfigurations = endpointConfigurations;
@@ -142,6 +167,8 @@ public class UaStackServerConfigBuilder {
             this.encodingLimits = encodingLimits;
             this.certificateManager = certificateManager;
             this.certificateValidator = certificateValidator;
+            this.httpsKeyPair = httpsKeyPair;
+            this.httpsCertificate = httpsCertificate;
             this.executor = executor;
         }
 
@@ -183,6 +210,16 @@ public class UaStackServerConfigBuilder {
         @Override
         public CertificateValidator getCertificateValidator() {
             return certificateValidator;
+        }
+
+        @Override
+        public Optional<KeyPair> getHttpsKeyPair() {
+            return Optional.ofNullable(httpsKeyPair);
+        }
+
+        @Override
+        public Optional<X509Certificate> getHttpsCertificate() {
+            return Optional.ofNullable(httpsCertificate);
         }
 
         @Override
