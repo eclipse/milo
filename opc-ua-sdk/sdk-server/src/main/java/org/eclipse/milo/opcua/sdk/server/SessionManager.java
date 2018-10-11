@@ -280,7 +280,8 @@ public class SessionManager implements
             sessionName,
             sessionTimeout,
             secureChannelId,
-            securityConfiguration
+            securityConfiguration,
+            endpoint
         );
 
         session.setLastNonce(serverNonce);
@@ -450,7 +451,7 @@ public class SessionManager implements
                     if (sameIdentity && sameCertificate) {
                         session.setSecureChannelId(secureChannelId);
 
-                        // TODO SecurityConfiguration may have changed
+                        // TODO SecurityConfiguration and Endpoint may have changed
 
                         logger.debug("Session id={} is now associated with secureChannelId={}",
                             session.getSessionId(), secureChannelId);
@@ -548,7 +549,7 @@ public class SessionManager implements
         SignatureData tokenSignature) throws UaException {
 
         IdentityValidator identityValidator = server.getConfig().getIdentityValidator();
-        UserTokenPolicy tokenPolicy = validatePolicyId(tokenObject);
+        UserTokenPolicy tokenPolicy = validatePolicyId(session, tokenObject);
 
         if (tokenObject instanceof UserIdentityToken) {
             return identityValidator.validateIdentityToken(
@@ -562,20 +563,25 @@ public class SessionManager implements
         }
     }
 
-    private UserTokenPolicy validatePolicyId(Object tokenObject) throws UaException {
+    /**
+     * Validates the policyId on a {@link UserIdentityToken} Object is a policyId that exists on the Endpoint that
+     * {@code session} is connected to.
+     *
+     * @param session     the current {@link Session}
+     * @param tokenObject the {@link UserIdentityToken} Object from the client.
+     * @return the first {@link UserTokenPolicy} on the Endpoint matching the policyId.
+     * @throws UaException if the token object is invalid or no matching policy is found.
+     */
+    private UserTokenPolicy validatePolicyId(Session session, Object tokenObject) throws UaException {
         if (tokenObject instanceof UserIdentityToken) {
             UserIdentityToken token = (UserIdentityToken) tokenObject;
             String policyId = token.getPolicyId();
 
-            // TODO this shouldn't look at all endpoints, just the one for the current session
+            List<UserTokenPolicy> userIdentityTokens =
+                l(session.getEndpoint().getUserIdentityTokens());
 
-            Optional<UserTokenPolicy> policy = server.getStackServer()
-                .getEndpointDescriptions()
+            Optional<UserTokenPolicy> policy = userIdentityTokens
                 .stream()
-                .flatMap(endpoint -> {
-                    List<UserTokenPolicy> policies = l(endpoint.getUserIdentityTokens());
-                    return policies.stream();
-                })
                 .filter(t -> Objects.equal(policyId, t.getPolicyId()))
                 .findFirst();
 

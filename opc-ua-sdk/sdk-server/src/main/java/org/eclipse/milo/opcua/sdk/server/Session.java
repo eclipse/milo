@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
@@ -75,13 +76,15 @@ public class Session implements SessionServiceSet {
     private final String sessionName;
     private final Duration sessionTimeout;
     private final SecurityConfiguration securityConfiguration;
+    private final EndpointDescription endpoint;
 
     public Session(OpcUaServer server,
                    NodeId sessionId,
                    String sessionName,
                    Duration sessionTimeout,
                    long secureChannelId,
-                   SecurityConfiguration securityConfiguration) {
+                   SecurityConfiguration securityConfiguration,
+                   EndpointDescription endpoint) {
 
         this.server = server;
         this.sessionId = sessionId;
@@ -89,6 +92,7 @@ public class Session implements SessionServiceSet {
         this.sessionTimeout = sessionTimeout;
         this.secureChannelId = secureChannelId;
         this.securityConfiguration = securityConfiguration;
+        this.endpoint = endpoint;
 
         subscriptionManager = new SubscriptionManager(this, server);
 
@@ -115,6 +119,10 @@ public class Session implements SessionServiceSet {
 
     public SecurityConfiguration getSecurityConfiguration() {
         return securityConfiguration;
+    }
+
+    public EndpointDescription getEndpoint() {
+        return endpoint;
     }
 
     @Nullable
@@ -208,8 +216,8 @@ public class Session implements SessionServiceSet {
     public SubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
     }
-
     //region Session Services
+
     @Override
     public void onCreateSession(ServiceRequest serviceRequest) {
         serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
