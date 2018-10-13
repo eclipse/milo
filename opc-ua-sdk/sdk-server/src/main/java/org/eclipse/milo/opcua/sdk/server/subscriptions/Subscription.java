@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -363,42 +362,48 @@ public class Subscription {
 
         PeekingIterator<BaseMonitoredItem<?>> iterator = Iterators.peekingIterator(items.iterator());
 
-        gatherAndSend(iterator, Optional.of(service));
+        gatherAndSend(iterator, service);
 
         lastIterator = iterator.hasNext() ? iterator : Collections.emptyIterator();
     }
 
     /**
-     * Gather {@link MonitoredItemNotification}s and send them using {@code service}, if present.
+     * Gather {@link MonitoredItemNotification}s and send them using {@code service}.
      *
      * @param iterator a {@link PeekingIterator} over the current {@link BaseMonitoredItem}s.
-     * @param service  a {@link ServiceRequest}, if available.
+     * @param service  a {@link ServiceRequest}.
      */
-    private void gatherAndSend(PeekingIterator<BaseMonitoredItem<?>> iterator,
-                               Optional<ServiceRequest<PublishRequest, PublishResponse>> service) {
+    private void gatherAndSend(
+        PeekingIterator<BaseMonitoredItem<?>> iterator,
+        ServiceRequest<PublishRequest, PublishResponse> service) {
 
-        if (service.isPresent()) {
-            List<UaStructure> notifications = Lists.newArrayList();
+        List<UaStructure> notifications = Lists.newArrayList();
 
-            while (notifications.size() < maxNotificationsPerPublish && iterator.hasNext()) {
-                BaseMonitoredItem<?> item = iterator.peek();
+        while (notifications.size() < maxNotificationsPerPublish && iterator.hasNext()) {
+            BaseMonitoredItem<?> item = iterator.peek();
 
-                boolean gatheredAllForItem = gather(item, notifications, maxNotificationsPerPublish);
+            boolean gatheredAllForItem = gather(item, notifications, maxNotificationsPerPublish);
 
-                if (gatheredAllForItem && iterator.hasNext()) {
-                    iterator.next();
-                }
+            if (gatheredAllForItem) {
+                iterator.next();
+            } else {
+                // Not being able to gather all notifications for an item implies that
+                // notifications.size() is no longer < maxNotificationsPerPublish, but
+                // force a break from the loop just in case...
+                break;
             }
+        }
 
-            moreNotifications = iterator.hasNext();
+        moreNotifications = iterator.hasNext();
 
-            sendNotifications(service.get(), notifications);
+        sendNotifications(service, notifications);
 
-            if (moreNotifications) {
-                gatherAndSend(iterator, Optional.ofNullable(publishQueue().poll()));
-            }
-        } else {
-            if (moreNotifications) {
+        if (moreNotifications) {
+            ServiceRequest<PublishRequest, PublishResponse> nextService = publishQueue().poll();
+
+            if (nextService != null) {
+                gatherAndSend(iterator, nextService);
+            } else {
                 publishQueue().addSubscription(this);
             }
         }
@@ -428,7 +433,7 @@ public class Subscription {
 
         if (dataNotifications.size() > 0) {
             DataChangeNotification dataChange = new DataChangeNotification(
-                dataNotifications.toArray(new MonitoredItemNotification[dataNotifications.size()]),
+                dataNotifications.toArray(new MonitoredItemNotification[0]),
                 new DiagnosticInfo[0]);
 
             notificationData.add(ExtensionObject.encode(dataChange));
@@ -436,7 +441,7 @@ public class Subscription {
 
         if (eventNotifications.size() > 0) {
             EventNotificationList eventChange = new EventNotificationList(
-                eventNotifications.toArray(new EventFieldList[eventNotifications.size()]));
+                eventNotifications.toArray(new EventFieldList[0]));
 
             notificationData.add(ExtensionObject.encode(eventChange));
         }
@@ -446,7 +451,7 @@ public class Subscription {
         NotificationMessage notificationMessage = new NotificationMessage(
             sequenceNumber,
             new DateTime(),
-            notificationData.toArray(new ExtensionObject[notificationData.size()])
+            notificationData.toArray(new ExtensionObject[0])
         );
 
         availableMessages.put(notificationMessage.getSequenceNumber(), notificationMessage);
@@ -711,12 +716,11 @@ public class Subscription {
 
             if (publishRequestQueued && publishingEnabled && notificationsAvailable) {
                 /* Subscription State Table Row 6 */
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
-                    Optional.ofNullable(publishQueue().poll());
+                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
 
-                if (service.isPresent()) {
+                if (service != null) {
                     resetLifetimeCounter();
-                    returnNotifications(service.get());
+                    returnNotifications(service);
                     messageSent = true;
                 } else {
                     whenNormal();
@@ -724,12 +728,11 @@ public class Subscription {
             } else if (publishRequestQueued && !messageSent &&
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
                 /* Subscription State Table Row 7 */
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
-                    Optional.ofNullable(publishQueue().poll());
+                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
 
-                if (service.isPresent()) {
+                if (service != null) {
                     resetLifetimeCounter();
-                    returnKeepAlive(service.get());
+                    returnKeepAlive(service);
                     messageSent = true;
                 } else {
                     whenNormal();
@@ -761,13 +764,12 @@ public class Subscription {
 
             if (publishingEnabled && notificationsAvailable && publishRequestQueued) {
                 /* Subscription State Table Row 14 */
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
-                    Optional.ofNullable(publishQueue().poll());
+                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
 
-                if (service.isPresent()) {
+                if (service != null) {
                     setState(State.Normal);
                     resetLifetimeCounter();
-                    returnNotifications(service.get());
+                    returnNotifications(service);
                     messageSent = true;
                 } else {
                     whenKeepAlive();
@@ -776,11 +778,10 @@ public class Subscription {
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
                 /* Subscription State Table Row 15 */
 
-                Optional<ServiceRequest<PublishRequest, PublishResponse>> service =
-                    Optional.ofNullable(publishQueue().poll());
+                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
 
-                if (service.isPresent()) {
-                    returnKeepAlive(service.get());
+                if (service != null) {
+                    returnKeepAlive(service);
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
                 } else {
