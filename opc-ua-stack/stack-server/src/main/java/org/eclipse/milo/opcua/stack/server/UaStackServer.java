@@ -17,6 +17,7 @@ import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
@@ -135,25 +136,28 @@ public class UaStackServer {
     public CompletableFuture<UaStackServer> startup() {
         List<CompletableFuture<Unit>> futures = new ArrayList<>();
 
-        config.getEndpoints().forEach(endpoint -> {
-            logger.info(
-                "Binding endpoint {} to {}:{} [{}/{}]",
-                endpoint.getEndpointUrl(),
-                endpoint.getBindAddress(),
-                endpoint.getBindPort(),
-                endpoint.getSecurityPolicy(),
-                endpoint.getSecurityMode());
+        config.getEndpoints()
+            .stream()
+            .sorted(Comparator.comparing(EndpointConfiguration::getTransportProfile))
+            .forEach(endpoint -> {
+                logger.info(
+                    "Binding endpoint {} to {}:{} [{}/{}]",
+                    endpoint.getEndpointUrl(),
+                    endpoint.getBindAddress(),
+                    endpoint.getBindPort(),
+                    endpoint.getSecurityPolicy(),
+                    endpoint.getSecurityMode());
 
-            futures.add(
-                channelManager.bind(endpoint).exceptionally(ex -> {
-                    logger.warn(
-                        "Bind failed for endpoint {}",
-                        endpoint.getEndpointUrl(), ex);
+                futures.add(
+                    channelManager.bind(endpoint).exceptionally(ex -> {
+                        logger.warn(
+                            "Bind failed for endpoint {}",
+                            endpoint.getEndpointUrl(), ex);
 
-                    return Unit.VALUE;
-                })
-            );
-        });
+                        return Unit.VALUE;
+                    })
+                );
+            });
 
         return FutureUtils.sequence(futures)
             .thenApply(u -> UaStackServer.this);
