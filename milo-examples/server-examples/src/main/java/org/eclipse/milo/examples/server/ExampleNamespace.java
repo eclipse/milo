@@ -106,7 +106,7 @@ public class ExampleNamespace implements Namespace {
         {"LocalizedText", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
         {"QualifiedName", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
         {"NodeId", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))},
-
+        {"Variant", Identifiers.BaseDataType, new Variant(32)},
         {"Duration", Identifiers.Duration, new Variant(1.0)},
         {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
     };
