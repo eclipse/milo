@@ -180,7 +180,6 @@ public class SessionManager implements
         EndpointDescription endpoint = serviceRequest.getEndpoint();
 
         SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
-        MessageSecurityMode securityMode = endpoint.getSecurityMode();
 
         EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
             .stream()
@@ -188,6 +187,7 @@ public class SessionManager implements
             .toArray(EndpointDescription[]::new);
 
         ByteString clientNonce = request.getClientNonce();
+
         if (clientNonce.isNotNull() && (clientNonce.length() < 32)) {
             throw new UaException(StatusCodes.Bad_NonceInvalid);
         }
@@ -205,67 +205,50 @@ public class SessionManager implements
 
         ByteString clientCertificateBytes = request.getClientCertificate();
 
-        X509Certificate clientCertificate = null;
-        List<X509Certificate> clientCertificateChain = null;
+        if (serviceRequest.getClientCertificateBytes() != null) {
+            if (!Objects.equal(clientCertificateBytes,
+                serviceRequest.getClientCertificateBytes())) {
+
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
+                    "certificate used to open secure channel " +
+                        "differs from certificate used to create session");
+            }
+        }
+
+        SecurityConfiguration securityConfiguration = createSecurityConfiguration(
+            endpoint,
+            clientCertificateBytes
+        );
 
         if (securityPolicy != SecurityPolicy.None) {
-            if (serviceRequest.getClientCertificateBytes() != null) {
-                if (!Objects.equal(clientCertificateBytes,
-                    serviceRequest.getClientCertificateBytes())) {
+            X509Certificate clientCertificate =
+                securityConfiguration.getClientCertificate();
 
-                    throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
-                        "certificate used to open secure channel " +
-                            "differs from certificate used to create session");
-                }
+            List<X509Certificate> clientCertificateChain =
+                securityConfiguration.getClientCertificateChain();
+
+            if (clientCertificate == null || clientCertificateChain == null) {
+                throw new UaException(
+                    StatusCodes.Bad_SecurityChecksFailed,
+                    "client certificate must be non-null");
             }
 
-            clientCertificate = CertificateUtil
-                .decodeCertificate(clientCertificateBytes.bytes());
+            String applicationUri = request.getClientDescription().getApplicationUri();
 
-            clientCertificateChain = CertificateUtil
-                .decodeCertificates(clientCertificateBytes.bytes());
+            validateApplicationUri(applicationUri, clientCertificate);
 
             CertificateValidator certificateValidator =
                 server.getConfig().getCertificateValidator();
 
             certificateValidator.validate(clientCertificate);
             certificateValidator.verifyTrustChain(clientCertificateChain);
-
-            validateApplicationUri(request.getClientDescription().getApplicationUri(), clientCertificate);
         }
-
-        ByteString thumbprint = ByteString.of(sha1(endpoint.getServerCertificate().bytesOrEmpty()));
-
-        Optional<KeyPair> keyPair = server
-            .getConfig()
-            .getCertificateManager()
-            .getKeyPair(thumbprint);
-
-        Optional<X509Certificate> serverCertificate = server
-            .getConfig()
-            .getCertificateManager()
-            .getCertificate(thumbprint);
-
-        Optional<X509Certificate[]> serverCertificateChain = server
-            .getConfig()
-            .getCertificateManager()
-            .getCertificateChain(thumbprint);
-
-        SecurityConfiguration securityConfiguration = new SecurityConfiguration(
-            securityPolicy,
-            securityMode,
-            keyPair.orElse(null),
-            serverCertificate.orElse(null),
-            serverCertificateChain.map(Lists::newArrayList).orElse(null),
-            clientCertificate,
-            clientCertificateChain
-        );
 
         // SignatureData must be created using only the bytes of the client
         // leaf certificate, not the bytes of the client certificate chain.
         SignatureData serverSignature = getServerSignature(
             securityPolicy,
-            keyPair.orElse(null),
+            securityConfiguration.getKeyPair(),
             clientNonce,
             securityConfiguration.getClientCertificateBytes()
         );
@@ -280,8 +263,8 @@ public class SessionManager implements
             sessionName,
             sessionTimeout,
             secureChannelId,
-            securityConfiguration,
-            endpoint
+            endpoint,
+            securityConfiguration
         );
 
         session.setLastNonce(serverNonce);
@@ -299,7 +282,7 @@ public class SessionManager implements
             authenticationToken,
             revisedSessionTimeout,
             serverNonce,
-            securityConfiguration.getServerCertificateBytes(), // TODO leaf or chain?
+            securityConfiguration.getServerCertificateBytes(),
             serverEndpoints,
             new SignedSoftwareCertificate[0],
             serverSignature,
@@ -307,6 +290,60 @@ public class SessionManager implements
         );
 
         serviceRequest.setResponse(response);
+    }
+
+    private SecurityConfiguration createSecurityConfiguration(
+        EndpointDescription endpoint,
+        ByteString clientCertificateBytes) throws UaException {
+
+        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+        MessageSecurityMode securityMode = endpoint.getSecurityMode();
+
+        X509Certificate clientCertificate = null;
+        List<X509Certificate> clientCertificateChain = null;
+
+        KeyPair keyPair = null;
+        X509Certificate serverCertificate = null;
+        List<X509Certificate> serverCertificateChain = null;
+
+        if (securityPolicy != SecurityPolicy.None) {
+            clientCertificate = CertificateUtil
+                .decodeCertificate(clientCertificateBytes.bytes());
+
+            clientCertificateChain = CertificateUtil
+                .decodeCertificates(clientCertificateBytes.bytes());
+
+            ByteString thumbprint = ByteString.of(sha1(endpoint.getServerCertificate().bytesOrEmpty()));
+
+            keyPair = server
+                .getConfig()
+                .getCertificateManager()
+                .getKeyPair(thumbprint)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+
+            serverCertificate = server
+                .getConfig()
+                .getCertificateManager()
+                .getCertificate(thumbprint)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+
+            serverCertificateChain = server
+                .getConfig()
+                .getCertificateManager()
+                .getCertificateChain(thumbprint)
+                .map(Lists::newArrayList)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+        }
+
+        return new SecurityConfiguration(
+            securityPolicy,
+            securityMode,
+            keyPair,
+            serverCertificate,
+            serverCertificateChain,
+            clientCertificate,
+            clientCertificateChain
+        );
     }
 
     private boolean endpointMatchesUrl(EndpointDescription endpoint, String requestedEndpointUrl) {
@@ -451,7 +488,13 @@ public class SessionManager implements
                     if (sameIdentity && sameCertificate) {
                         session.setSecureChannelId(secureChannelId);
 
-                        // TODO SecurityConfiguration and Endpoint may have changed
+                        SecurityConfiguration newSecurityConfiguration = createSecurityConfiguration(
+                            serviceRequest.getEndpoint(),
+                            clientCertificateBytes
+                        );
+
+                        session.setEndpoint(serviceRequest.getEndpoint());
+                        session.setSecurityConfiguration(newSecurityConfiguration);
 
                         logger.debug("Session id={} is now associated with secureChannelId={}",
                             session.getSessionId(), secureChannelId);

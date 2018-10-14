@@ -71,20 +71,22 @@ public class Session implements SessionServiceSet {
     private final DefaultSubscriptionServiceSet subscriptionServiceSet;
     private final DefaultViewServiceSet viewServiceSet;
 
+    private volatile EndpointDescription endpoint;
+    private volatile SecurityConfiguration securityConfiguration;
+
     private final OpcUaServer server;
     private final NodeId sessionId;
     private final String sessionName;
     private final Duration sessionTimeout;
-    private final SecurityConfiguration securityConfiguration;
-    private final EndpointDescription endpoint;
 
-    public Session(OpcUaServer server,
-                   NodeId sessionId,
-                   String sessionName,
-                   Duration sessionTimeout,
-                   long secureChannelId,
-                   SecurityConfiguration securityConfiguration,
-                   EndpointDescription endpoint) {
+    public Session(
+        OpcUaServer server,
+        NodeId sessionId,
+        String sessionName,
+        Duration sessionTimeout,
+        long secureChannelId,
+        EndpointDescription endpoint,
+        SecurityConfiguration securityConfiguration) {
 
         this.server = server;
         this.sessionId = sessionId;
@@ -136,6 +138,14 @@ public class Session implements SessionServiceSet {
 
     public void setIdentityObject(Object identityObject) {
         this.identityObject = identityObject;
+    }
+
+    public void setEndpoint(EndpointDescription endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public void setSecurityConfiguration(SecurityConfiguration securityConfiguration) {
+        this.securityConfiguration = securityConfiguration;
     }
 
     void addLifecycleListener(LifecycleListener listener) {
