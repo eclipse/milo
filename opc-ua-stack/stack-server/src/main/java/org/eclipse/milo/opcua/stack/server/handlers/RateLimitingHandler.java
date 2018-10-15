@@ -15,7 +15,6 @@ package org.eclipse.milo.opcua.stack.server.handlers;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -80,7 +79,7 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Multiset<InetAddress> connections = ConcurrentHashMultiset.create();
-    private final ConcurrentMap<InetAddress, LinkedList<Date>> timestamps = Maps.newConcurrentMap();
+    private final ConcurrentMap<InetAddress, LinkedList<Long>> timestamps = Maps.newConcurrentMap();
 
     private final boolean enabled;
     private final int maxAttempts;
@@ -114,23 +113,23 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
             return true;
         }
 
-        LinkedList<Date> dates = timestamps.computeIfAbsent(address, ia -> new LinkedList<>());
+        LinkedList<Long> attempts = timestamps.computeIfAbsent(address, ia -> new LinkedList<>());
 
-        if (dates.size() >= maxAttempts) {
-            long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
 
+        if (attempts.size() >= maxAttempts) {
             // count the number of previous connections from this address
             // that have occurred within the rate limit window.
             int attemptsInWindow = 0;
-            for (Date d : dates) {
-                if (now - d.getTime() < rateLimitWindowMs) {
+            for (Long ts : attempts) {
+                if (now - ts < rateLimitWindowMs) {
                     attemptsInWindow++;
                 }
             }
 
-            dates.addLast(new Date());
-            while (dates.size() > maxAttempts) {
-                dates.removeFirst();
+            attempts.addLast(now);
+            while (attempts.size() > maxAttempts) {
+                attempts.removeFirst();
             }
 
             int connectionsTotal = connections.size();
@@ -157,7 +156,7 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
 
             return accept;
         } else {
-            dates.addLast(new Date());
+            attempts.addLast(now);
 
             return true;
         }
