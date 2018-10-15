@@ -203,12 +203,10 @@ public class UaStackServer {
         }
     }
 
-    // TODO this doesn't belong here
     public long getNextChannelId() {
         return channelIds.incrementAndGet();
     }
 
-    // TODO this doesn't belong here
     public long getNextTokenId() {
         return tokenIds.incrementAndGet();
     }
