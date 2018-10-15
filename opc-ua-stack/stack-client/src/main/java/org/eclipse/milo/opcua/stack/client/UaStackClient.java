@@ -15,11 +15,8 @@ package org.eclipse.milo.opcua.stack.client;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Maps;
-import io.netty.util.HashedWheelTimer;
-import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.client.transport.https.OpcHttpsTransport;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
@@ -50,10 +47,8 @@ public class UaStackClient {
     private final LongSequence requestHandles = new LongSequence(0, UInteger.MAX_VALUE);
 
     private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
-    private final Map<UInteger, Timeout> timeouts = Maps.newConcurrentMap();
 
     private final ExecutionQueue deliveryQueue;
-    private final HashedWheelTimer wheelTimer;
 
     private final UaStackClientConfig config;
     private final UaTransport transport;
@@ -64,7 +59,6 @@ public class UaStackClient {
 
 
         deliveryQueue = new ExecutionQueue(config.getExecutor());
-        wheelTimer = config.getWheelTimer();
     }
 
     public UaStackClientConfig getConfig() {
@@ -84,9 +78,6 @@ public class UaStackClient {
 
                 pending.forEach((h, cf) -> cf.completeExceptionally(disconnect));
                 pending.clear();
-
-                timeouts.forEach((h, t) -> t.cancel());
-                timeouts.clear();
             })
             .thenApply(t -> UaStackClient.this);
     }
@@ -115,34 +106,29 @@ public class UaStackClient {
         RequestHeader requestHeader = request.getRequestHeader();
         UInteger requestHandle = requestHeader.getRequestHandle();
 
-        CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
-
+        final CompletableFuture<UaResponseMessage> future = new CompletableFuture<>();
         pending.put(requestHandle, future);
-        scheduleRequestTimeout(requestHeader);
 
         transport.sendRequest(request).whenComplete((response, ex) -> {
+            pending.remove(requestHandle);
+            
             if (response != null) {
-                receiveResponse(request, response);
+                deliverResponse(request, response, future);
             } else {
-                pending.remove(requestHandle);
                 future.completeExceptionally(ex);
-
-                Timeout timeout = timeouts.remove(requestHandle);
-                if (timeout != null) timeout.cancel();
             }
         });
 
         return future;
     }
 
-    private void receiveResponse(UaRequestMessage request, UaResponseMessage response) {
+    private void deliverResponse(
+        UaRequestMessage request,
+        UaResponseMessage response,
+        CompletableFuture<UaResponseMessage> future) {
+
         ResponseHeader header = response.getResponseHeader();
         UInteger requestHandle = header.getRequestHandle();
-
-        CompletableFuture<UaResponseMessage> future = pending.remove(requestHandle);
-
-        Timeout timeout = timeouts.remove(requestHandle);
-        if (timeout != null) timeout.cancel();
 
         if (future != null) {
             deliveryQueue.submit(() -> {
@@ -174,27 +160,6 @@ public class UaStackClient {
                 response.getClass().getSimpleName(),
                 requestHandle,
                 response.getResponseHeader().getTimestamp());
-        }
-    }
-
-    private void scheduleRequestTimeout(RequestHeader requestHeader) {
-        UInteger requestHandle = requestHeader.getRequestHandle();
-
-        long timeoutHint = requestHeader.getTimeoutHint() != null ?
-            requestHeader.getTimeoutHint().longValue() : 0L;
-
-        if (timeoutHint > 0) {
-            Timeout timeout = wheelTimer.newTimeout(t -> {
-                if (timeouts.remove(requestHandle) != null && !t.isCancelled()) {
-                    CompletableFuture<UaResponseMessage> f = pending.remove(requestHandle);
-                    if (f != null) {
-                        String message = "request timed out after " + timeoutHint + "ms";
-                        f.completeExceptionally(new UaException(StatusCodes.Bad_Timeout, message));
-                    }
-                }
-            }, timeoutHint, TimeUnit.MILLISECONDS);
-
-            timeouts.put(requestHandle, timeout);
         }
     }
 

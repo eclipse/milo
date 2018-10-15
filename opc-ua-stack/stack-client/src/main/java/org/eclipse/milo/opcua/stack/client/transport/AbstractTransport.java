@@ -18,10 +18,16 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import io.netty.channel.Channel;
+import io.netty.util.HashedWheelTimer;
+import io.netty.util.Timeout;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +35,21 @@ public abstract class AbstractTransport implements UaTransport {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final HashedWheelTimer wheelTimer;
+
     private final UaStackClientConfig config;
 
     public AbstractTransport(UaStackClientConfig config) {
         this.config = config;
+
+        wheelTimer = config.getWheelTimer();
     }
 
+    /**
+     * Get the {@link UaStackClientConfig} of the {@link UaStackClient} this transport instance belongs to.
+     *
+     * @return the {@link UaStackClientConfig} of the {@link UaStackClient} this transport instance belongs to.
+     */
     public UaStackClientConfig getConfig() {
         return config;
     }
@@ -60,6 +75,13 @@ public abstract class AbstractTransport implements UaTransport {
         boolean firstAttempt) {
 
         UaTransportRequest transportRequest = new UaTransportRequest(request);
+
+        scheduleRequestTimeout(transportRequest);
+
+        transportRequest.getFuture().whenComplete(
+            (response, ex) ->
+                cancelRequestTimeout(transportRequest)
+        );
 
         channel.writeAndFlush(transportRequest).addListener(f -> {
             if (!f.isSuccess()) {
@@ -103,6 +125,33 @@ public abstract class AbstractTransport implements UaTransport {
         });
 
         return transportRequest.getFuture();
+    }
+
+    private void scheduleRequestTimeout(UaTransportRequest transportRequest) {
+        RequestHeader requestHeader = transportRequest.getRequest().getRequestHeader();
+
+        long timeoutHint = requestHeader.getTimeoutHint() != null ?
+            requestHeader.getTimeoutHint().longValue() : 0L;
+
+        if (timeoutHint > 0) {
+            Timeout timeout = wheelTimer.newTimeout(
+                t -> {
+                    String message = "request timed out after " + timeoutHint + "ms";
+
+                    transportRequest.getFuture().completeExceptionally(
+                        new UaException(StatusCodes.Bad_Timeout, message));
+                },
+                timeoutHint,
+                TimeUnit.MILLISECONDS
+            );
+
+            transportRequest.setTimeout(timeout);
+        }
+    }
+
+    private void cancelRequestTimeout(UaTransportRequest transportRequest) {
+        Timeout timeout = transportRequest.getTimeout();
+        if (timeout != null) timeout.cancel();
     }
 
 }

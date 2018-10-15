@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
 
-    public static final AttributeKey<List<UaTransportRequest>> KEY_AWAITING_HANDSHAKE =
+    static final AttributeKey<List<UaTransportRequest>> KEY_AWAITING_HANDSHAKE =
         AttributeKey.valueOf("awaiting-handshake");
 
     private final Logger logger = LoggerFactory.getLogger(getClass());

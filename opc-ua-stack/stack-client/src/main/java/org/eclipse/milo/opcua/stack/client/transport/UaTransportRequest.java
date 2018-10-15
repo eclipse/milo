@@ -14,11 +14,15 @@
 package org.eclipse.milo.opcua.stack.client.transport;
 
 import java.util.concurrent.CompletableFuture;
+import javax.annotation.Nullable;
 
+import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 
 public class UaTransportRequest {
+
+    private volatile Timeout timeout;
 
     private final UaRequestMessage request;
     private final CompletableFuture<UaResponseMessage> future;
@@ -38,6 +42,15 @@ public class UaTransportRequest {
 
     public CompletableFuture<UaResponseMessage> getFuture() {
         return future;
+    }
+
+    public synchronized void setTimeout(Timeout timeout) {
+        this.timeout = timeout;
+    }
+
+    @Nullable
+    public synchronized Timeout getTimeout() {
+        return timeout;
     }
 
 }

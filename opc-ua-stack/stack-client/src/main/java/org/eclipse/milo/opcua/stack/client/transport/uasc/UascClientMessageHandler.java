@@ -28,7 +28,6 @@ import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
-import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import io.netty.util.Timeout;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
@@ -73,18 +72,16 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequest> implements HeaderDecoder {
 
-    public static final AttributeKey<Map<Long, UaTransportRequest>> KEY_PENDING_REQUEST_FUTURES =
-        AttributeKey.valueOf("pending-request-futures");
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private List<ByteBuf> chunkBuffers = new ArrayList<>();
 
     private final AtomicReference<AsymmetricSecurityHeader> headerRef = new AtomicReference<>();
 
-    private final Map<Long, UaTransportRequest> pending;
+    private final Map<Long, UaTransportRequest> pending = Maps.newConcurrentMap();
+    private final LongSequence requestIdSequence = new LongSequence(1L, UInteger.MAX_VALUE);
+
     private ScheduledFuture renewFuture;
-    private final LongSequence requestIdSequence;
     private Timeout secureChannelTimeout;
     private final int maxChunkCount;
     private final int maxChunkSize;
@@ -94,7 +91,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     private final SerializationQueue serializationQueue;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
-    public UascClientMessageHandler(
+    UascClientMessageHandler(
         UaStackClientConfig config,
         ClientSecureChannel secureChannel,
         SerializationQueue serializationQueue,
@@ -104,22 +101,6 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
         this.secureChannel = secureChannel;
         this.serializationQueue = serializationQueue;
         this.handshakeFuture = handshakeFuture;
-
-        secureChannel
-            .attr(KEY_PENDING_REQUEST_FUTURES)
-            .setIfAbsent(Maps.newConcurrentMap());
-
-        pending = secureChannel
-            .attr(KEY_PENDING_REQUEST_FUTURES)
-            .get();
-
-        secureChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-            .setIfAbsent(new LongSequence(1L, UInteger.MAX_VALUE));
-
-        requestIdSequence = secureChannel
-            .attr(ClientSecureChannel.KEY_REQUEST_ID_SEQUENCE)
-            .get();
 
         handshakeFuture.thenAccept(sc -> {
             Channel channel = sc.getChannel();
@@ -145,7 +126,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     }
 
     @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+    public void handlerAdded(ChannelHandlerContext ctx) {
         SecurityTokenRequestType requestType = secureChannel.getChannelId() == 0 ?
             SecurityTokenRequestType.Issue : SecurityTokenRequestType.Renew;
 
@@ -178,7 +159,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         logger.error(
             "[remote={}] Exception caught: {}",
             ctx.channel().remoteAddress(), cause.getMessage(), cause);
@@ -190,7 +171,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     }
 
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         if (evt instanceof CloseSecureChannelRequest) {
             sendCloseSecureChannelRequest(ctx, (CloseSecureChannelRequest) evt);
         }
@@ -345,7 +326,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, UaTransportRequest request, ByteBuf buffer) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, UaTransportRequest request, ByteBuf buffer) {
         serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
@@ -375,8 +356,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
                             // No matter how we complete, make sure the entry in pending is removed.
                             // This covers the case where the request fails due to a timeout in the
-                            // upper layers as well as normal completion.
-                            // TODO nothing in the upper layer calls complete() on this future
+                            // transport layer as well as normal completion.
                             request.getFuture().whenComplete((r, x) -> pending.remove(requestId));
 
                             CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
@@ -664,7 +644,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
                         if (request != null) {
                             request.getFuture().completeExceptionally(ex);
                         } else {
-                            logger.warn("No UaRequestFuture for requestId={}", requestId);
+                            logger.warn("No pending request for requestId={}", requestId);
                         }
                     }
 
@@ -680,7 +660,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
                                 request.getFuture().complete(response);
                             } else {
-                                logger.warn("No UaRequestFuture for requestId={}", requestId);
+                                logger.warn("No pending request for requestId={}", requestId);
                             }
                         } catch (Throwable t) {
                             logger.error("Error decoding UaResponseMessage", t);
