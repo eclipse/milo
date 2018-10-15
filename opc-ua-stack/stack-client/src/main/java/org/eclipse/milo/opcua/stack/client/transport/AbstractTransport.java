@@ -35,6 +35,10 @@ public abstract class AbstractTransport implements UaTransport {
         this.config = config;
     }
 
+    public UaStackClientConfig getConfig() {
+        return config;
+    }
+
     /**
      * Get a {@link Channel} suitable for sending a request on.
      * <p>
@@ -50,8 +54,10 @@ public abstract class AbstractTransport implements UaTransport {
         return channel().thenCompose(channel -> sendRequest(request, channel, true));
     }
 
-    private CompletableFuture<UaResponseMessage> sendRequest(
-        UaRequestMessage request, Channel channel, boolean firstAttempt) {
+    protected CompletableFuture<UaResponseMessage> sendRequest(
+        UaRequestMessage request,
+        Channel channel,
+        boolean firstAttempt) {
 
         UaTransportRequest transportRequest = new UaTransportRequest(request);
 

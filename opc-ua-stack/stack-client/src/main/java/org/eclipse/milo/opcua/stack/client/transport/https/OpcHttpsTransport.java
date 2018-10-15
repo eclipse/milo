@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.client.transport.https;
 
-import java.nio.channels.ClosedChannelException;
 import java.util.concurrent.CompletableFuture;
 
 import io.netty.bootstrap.Bootstrap;
@@ -31,30 +30,28 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.concurrent.FutureListener;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
-import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcHttpsTransport implements UaTransport {
+public class OpcHttpsTransport extends AbstractTransport {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpcHttpsTransport.class);
 
     private ChannelPool channelPool = null;
 
-    private final UaStackClientConfig config;
-
     public OpcHttpsTransport(UaStackClientConfig config) {
-        this.config = config;
+        super(config);
     }
 
     @Override
     public synchronized CompletableFuture<UaTransport> connect() {
         if (channelPool == null) {
-            channelPool = createChannelPool(config);
+            channelPool = createChannelPool(getConfig());
         }
 
         return CompletableFuture.completedFuture(OpcHttpsTransport.this);
@@ -71,6 +68,11 @@ public class OpcHttpsTransport implements UaTransport {
     }
 
     @Override
+    public synchronized CompletableFuture<Channel> channel() {
+        return acquireChannel();
+    }
+
+    @Override
     public synchronized CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request) {
         LOGGER.trace("sendRequest({})", request.getClass().getSimpleName());
 
@@ -80,51 +82,9 @@ public class OpcHttpsTransport implements UaTransport {
         );
     }
 
-    private synchronized CompletableFuture<UaResponseMessage> sendRequest(
-        UaRequestMessage request, Channel channel, boolean firstAttempt) {
-
-        UaTransportRequest requestFuture = new UaTransportRequest(request);
-
-        channel.writeAndFlush(requestFuture).addListener(f -> {
-            if (!f.isSuccess()) {
-                Throwable cause = f.cause();
-
-                if (cause instanceof ClosedChannelException && firstAttempt) {
-                    LOGGER.debug("Channel closed; retrying...");
-
-                    config.getExecutor().execute(() ->
-                        acquireChannel().whenComplete((ch, ex) -> {
-                            if (ch != null) {
-                                sendRequest(request, ch, false);
-                            } else {
-                                requestFuture.getFuture().completeExceptionally(ex);
-                            }
-                        })
-                    );
-                } else {
-                    requestFuture.getFuture().completeExceptionally(cause);
-
-                    LOGGER.debug(
-                        "Write failed, request={}, requestHandle={}",
-                        request.getClass().getSimpleName(),
-                        request.getRequestHeader().getRequestHandle());
-                }
-            } else {
-                if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace(
-                        "Write succeeded, request={}, requestHandle={}",
-                        request.getClass().getSimpleName(),
-                        request.getRequestHeader().getRequestHandle());
-                }
-            }
-        });
-
-        return requestFuture.getFuture();
-    }
-
     private synchronized CompletableFuture<Channel> acquireChannel() {
         if (channelPool == null) {
-            channelPool = createChannelPool(config);
+            channelPool = createChannelPool(getConfig());
         }
 
         CompletableFuture<Channel> future = new CompletableFuture<>();
