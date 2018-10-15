@@ -602,7 +602,6 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
         ctx.executor().execute(() -> {
             // SecureChannel is ready; remove the acknowledge handler.
-            // TODO can this be removed earlier?
             if (ctx.pipeline().get(UascClientAcknowledgeHandler.class) != null) {
                 ctx.pipeline().remove(UascClientAcknowledgeHandler.class);
             }

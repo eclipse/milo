@@ -124,10 +124,17 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
                 );
 
             if (!endpointMatch) {
-                // TODO should this be a 404 response instead?
-                throw new UaException(
-                    StatusCodes.Bad_TcpEndpointUrlInvalid,
-                    "unrecognized endpoint uri: " + uri);
+                logger.debug("unrecognized endpoint URL: " + uri);
+
+                HttpResponse response = new DefaultFullHttpResponse(
+                    HttpVersion.HTTP_1_1,
+                    HttpResponseStatus.NOT_FOUND
+                );
+
+                ctx.channel().writeAndFlush(response)
+                    .addListener(future -> ctx.close());
+
+                return;
             }
 
             if (Objects.equals(httpRequest.method(), HttpMethod.GET) &&
