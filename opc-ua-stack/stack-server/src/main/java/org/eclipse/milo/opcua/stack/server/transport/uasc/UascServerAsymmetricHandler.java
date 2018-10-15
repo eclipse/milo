@@ -307,7 +307,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             EndpointDescription endpoint = stackServer.getEndpointDescriptions()
                 .stream()
                 .filter(e -> {
-                    // TODO match on Hostname?
                     boolean transportMatch = Objects.equals(
                         e.getTransportProfileUri(),
                         transportProfile.getUri()

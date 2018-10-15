@@ -86,7 +86,6 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
         EndpointDescription endpoint = stackServer.getEndpointDescriptions()
             .stream()
             .filter(e -> {
-                // TODO match on Hostname?
                 // TODO use contentType to determine which TransportProfile to match
                 boolean transportMatch = Objects.equals(
                     e.getTransportProfileUri(),
