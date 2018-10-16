@@ -18,13 +18,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -40,6 +40,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_DESCRIPTION_PREDICATE;
@@ -218,16 +219,20 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         ));
     }
 
+
+    @Nullable
     @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
+    @Nullable
     @UaOptional("Icon")
     public ByteString getIcon() {
         return getProperty(Icon).orElse(null);
     }
 
+    @Nullable
     @UaOptional("NamingRule")
     public NamingRuleType getNamingRule() {
         return getProperty(NamingRule).orElse(null);
@@ -245,22 +250,25 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         setProperty(NamingRule, namingRule);
     }
 
-    public static final Property<String> NodeVersion = new BasicProperty<>(
-        new QualifiedName(0, "NodeVersion"),
+    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "NodeVersion",
         Identifiers.String,
         ValueRanks.Scalar,
         String.class
     );
 
-    public static final Property<ByteString> Icon = new BasicProperty<>(
-        new QualifiedName(0, "Icon"),
+    public static final QualifiedProperty<ByteString> Icon = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "Icon",
         Identifiers.Image,
         ValueRanks.Scalar,
         ByteString.class
     );
 
-    public static final Property<NamingRuleType> NamingRule = new BasicProperty<>(
-        new QualifiedName(0, "NamingRule"),
+    public static final QualifiedProperty<NamingRuleType> NamingRule = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "NamingRule",
         Identifiers.NamingRuleType,
         ValueRanks.Scalar,
         NamingRuleType.class

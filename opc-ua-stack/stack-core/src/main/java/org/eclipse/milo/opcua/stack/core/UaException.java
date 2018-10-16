@@ -115,4 +115,8 @@ public class UaException extends Exception implements UaExceptionStatus {
         }
     }
 
+    public static Optional<StatusCode> extractStatusCode(Throwable ex) {
+        return extract(ex).map(UaException::getStatusCode);
+    }
+
 }

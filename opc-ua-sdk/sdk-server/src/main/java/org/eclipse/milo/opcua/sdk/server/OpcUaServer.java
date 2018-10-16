@@ -34,8 +34,8 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManag
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
 import org.eclipse.milo.opcua.sdk.server.nodes.EventFactory;
-import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;

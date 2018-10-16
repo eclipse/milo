@@ -13,9 +13,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -26,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 public class UaViewNode extends UaNode implements ViewNode {
 
@@ -74,11 +76,13 @@ public class UaViewNode extends UaNode implements ViewNode {
         fireAttributeChanged(AttributeId.EventNotifier, eventNotifier);
     }
 
+    @Nullable
     @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
+    @Nullable
     @UaOptional("ViewVersion")
     public UInteger getViewVersion() {
         return getProperty(ViewVersion).orElse(null);
@@ -92,15 +96,17 @@ public class UaViewNode extends UaNode implements ViewNode {
         setProperty(ViewVersion, viewVersion);
     }
 
-    public static final Property<String> NodeVersion = new BasicProperty<>(
-        new QualifiedName(0, "NodeVersion"),
+    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "NodeVersion",
         Identifiers.String,
         ValueRanks.Scalar,
         String.class
     );
 
-    public static final Property<UInteger> ViewVersion = new BasicProperty<>(
-        new QualifiedName(0, "ViewVersion"),
+    public static final QualifiedProperty<UInteger> ViewVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "ViewVersion",
         Identifiers.UInt32,
         ValueRanks.Scalar,
         UInteger.class

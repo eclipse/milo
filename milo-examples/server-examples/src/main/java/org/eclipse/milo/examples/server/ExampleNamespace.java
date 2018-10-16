@@ -40,7 +40,6 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.EventFactory;
-import org.eclipse.milo.opcua.sdk.server.nodes.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -51,6 +50,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -111,7 +111,7 @@ public class ExampleNamespace implements Namespace {
         {"LocalizedText", Identifiers.LocalizedText, new Variant(LocalizedText.english("localized text"))},
         {"QualifiedName", Identifiers.QualifiedName, new Variant(new QualifiedName(1234, "defg"))},
         {"NodeId", Identifiers.NodeId, new Variant(new NodeId(1234, "abcd"))},
-
+        {"Variant", Identifiers.BaseDataType, new Variant(32)},
         {"Duration", Identifiers.Duration, new Variant(1.0)},
         {"UtcTime", Identifiers.UtcTime, new Variant(DateTime.now())},
     };
@@ -160,67 +160,63 @@ public class ExampleNamespace implements Namespace {
         eventFactory = server.getEventFactory();
         nodeFactory = server.getNodeFactory();
 
-        try {
-            // Create a "HelloWorld" folder and add it to the node manager
-            NodeId folderNodeId = new NodeId(namespaceIndex, "HelloWorld");
+        // Create a "HelloWorld" folder and add it to the node manager
+        NodeId folderNodeId = new NodeId(namespaceIndex, "HelloWorld");
 
-            UaFolderNode folderNode = new UaFolderNode(
-                server,
-                folderNodeId,
-                new QualifiedName(namespaceIndex, "HelloWorld"),
-                LocalizedText.english("HelloWorld")
+        UaFolderNode folderNode = new UaFolderNode(
+            server,
+            folderNodeId,
+            new QualifiedName(namespaceIndex, "HelloWorld"),
+            LocalizedText.english("HelloWorld")
+        );
+
+        server.getNodeManager().addNode(folderNode);
+
+        // Make sure our new folder shows up under the server's Objects folder
+        server.getNodeManager().addReference(new Reference(
+            folderNode.getNodeId(),
+            Identifiers.Organizes,
+            Identifiers.ObjectsFolder.expanded(),
+            NodeClass.Object,
+            false
+        ));
+
+        // Add the rest of the nodes
+        addVariableNodes(folderNode);
+
+        addSqrtMethod(folderNode);
+        addGenerateEventMethod(folderNode);
+
+        addCustomDataTypeVariable(folderNode);
+
+        addCustomObjectTypeAndInstance(folderNode);
+
+        // Set the EventNotifier bit on Server Node for Events
+        UaNode serverNode = server.getNodeManager().get(Identifiers.Server);
+        if (serverNode instanceof ObjectNode) {
+            ((ObjectNode) serverNode).setEventNotifier(ubyte(1));
+        }
+
+        // Post a bogus Event every couple seconds
+        server.getScheduledExecutorService().scheduleAtFixedRate(() -> {
+            BaseEventNode eventNode = eventFactory.createEvent(
+                new NodeId(1, UUID.randomUUID()),
+                new QualifiedName(1, "foo"),
+                LocalizedText.english("foo"),
+                Identifiers.BaseEventType
             );
 
-            server.getNodeManager().addNode(folderNode);
+            eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
+            eventNode.setEventType(Identifiers.BaseEventType);
+            eventNode.setSourceNode(NodeId.NULL_VALUE);
+            eventNode.setSourceName("");
+            eventNode.setTime(DateTime.now());
+            eventNode.setReceiveTime(DateTime.NULL_VALUE);
+            eventNode.setMessage(LocalizedText.english("event message!"));
+            eventNode.setSeverity(ushort(2));
 
-            // Make sure our new folder shows up under the server's Objects folder
-            server.getNodeManager().addReference(new Reference(
-                folderNode.getNodeId(),
-                Identifiers.Organizes,
-                Identifiers.ObjectsFolder.expanded(),
-                NodeClass.Object,
-                false
-            ));
-
-            // Add the rest of the nodes
-            addVariableNodes(folderNode);
-
-            addSqrtMethod(folderNode);
-            addGenerateEventMethod(folderNode);
-
-            addCustomDataTypeVariable(folderNode);
-
-            addCustomObjectTypeAndInstance(folderNode);
-
-            // Set the EventNotifier bit on Server Node for Events
-            UaNode serverNode = server.getNodeManager().get(Identifiers.Server);
-            if (serverNode instanceof ObjectNode) {
-                ((ObjectNode) serverNode).setEventNotifier(ubyte(1));
-            }
-
-            // Post a bogus Event every couple seconds
-            server.getScheduledExecutorService().scheduleAtFixedRate(() -> {
-                BaseEventNode eventNode = eventFactory.createEvent(
-                    new NodeId(1, UUID.randomUUID()),
-                    new QualifiedName(1, "foo"),
-                    LocalizedText.english("foo"),
-                    Identifiers.BaseEventType
-                );
-
-                eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-                eventNode.setEventType(Identifiers.BaseEventType);
-                eventNode.setSourceNode(NodeId.NULL_VALUE);
-                eventNode.setSourceName("");
-                eventNode.setTime(DateTime.now());
-                eventNode.setReceiveTime(DateTime.NULL_VALUE);
-                eventNode.setMessage(LocalizedText.english("event message!"));
-                eventNode.setSeverity(ushort(2));
-
-                server.getEventBus().post(eventNode);
-            }, 0, 2, TimeUnit.SECONDS);
-        } catch (UaException e) {
-            logger.error("Error adding nodes: {}", e.getMessage(), e);
-        }
+            server.getEventBus().post(eventNode);
+        }, 0, 2, TimeUnit.SECONDS);
     }
 
     @Override
@@ -542,20 +538,25 @@ public class ExampleNamespace implements Namespace {
         rootNode.addOrganizes(dataAccessFolder);
 
         // AnalogItemType node
-        AnalogItemNode node = (AnalogItemNode) nodeFactory.createVariable(
-            new NodeId(namespaceIndex, "HelloWorld/DataAccess/AnalogValue"),
-            new QualifiedName(namespaceIndex, "AnalogValue"),
-            LocalizedText.english("AnalogValue"),
-            Identifiers.AnalogItemType
-        );
+        try {
+            AnalogItemNode node = (AnalogItemNode) nodeFactory.createNode(
+                new NodeId(namespaceIndex, "HelloWorld/DataAccess/AnalogValue"),
+                Identifiers.AnalogItemType,
+                true
+            );
 
-        node.setDataType(Identifiers.Double);
-        node.setValue(new DataValue(new Variant(3.14d)));
+            node.setBrowseName(new QualifiedName(namespaceIndex, "AnalogValue"));
+            node.setDisplayName(LocalizedText.english("AnalogValue"));
+            node.setDataType(Identifiers.Double);
+            node.setValue(new DataValue(new Variant(3.14d)));
 
-        node.setEURange(new Range(0.0, 100.0));
+            node.setEURange(new Range(0.0, 100.0));
 
-        server.getNodeManager().addNode(node);
-        dataAccessFolder.addOrganizes(node);
+            server.getNodeManager().addNode(node);
+            dataAccessFolder.addOrganizes(node);
+        } catch (UaException e) {
+            logger.error("Error creating AnalogItemType instance: {}", e.getMessage(), e);
+        }
     }
 
     private void addSqrtMethod(UaFolderNode folderNode) {
@@ -638,7 +639,7 @@ public class ExampleNamespace implements Namespace {
         }
     }
 
-    private void addCustomObjectTypeAndInstance(UaFolderNode rootFolder) throws UaException {
+    private void addCustomObjectTypeAndInstance(UaFolderNode rootFolder) {
         // Define a new ObjectType called "MyObjectType".
         UaObjectTypeNode objectTypeNode = UaObjectTypeNode.builder(server)
             .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType"))
@@ -657,6 +658,14 @@ public class ExampleNamespace implements Namespace {
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
 
+        foo.addReference(new Reference(
+            foo.getNodeId(),
+            Identifiers.HasModellingRule,
+            Identifiers.ModellingRule_Mandatory.expanded(),
+            NodeClass.Object,
+            true
+        ));
+
         foo.setValue(new DataValue(new Variant(0)));
         objectTypeNode.addComponent(foo);
 
@@ -668,6 +677,14 @@ public class ExampleNamespace implements Namespace {
             .setDataType(Identifiers.String)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
+
+        bar.addReference(new Reference(
+            bar.getNodeId(),
+            Identifiers.HasModellingRule,
+            Identifiers.ModellingRule_Mandatory.expanded(),
+            NodeClass.Object,
+            true
+        ));
 
         bar.setValue(new DataValue(new Variant("bar")));
         objectTypeNode.addComponent(bar);
@@ -689,29 +706,36 @@ public class ExampleNamespace implements Namespace {
             false
         ));
 
-        // Add it into the address space.
+        // Add type definition and declarations to address space.
         server.getNodeManager().addNode(objectTypeNode);
+        server.getNodeManager().addNode(foo);
+        server.getNodeManager().addNode(bar);
 
         // Use NodeFactory to create instance of MyObjectType called "MyObject".
         // NodeFactory takes care of recursively instantiating MyObject member nodes
         // as well as adding all nodes to the address space.
-        UaObjectNode myObject = nodeFactory.createObject(
-            new NodeId(namespaceIndex, "HelloWorld/MyObject"),
-            new QualifiedName(namespaceIndex, "MyObject"),
-            LocalizedText.english("MyObject"),
-            objectTypeNode.getNodeId()
-        );
+        try {
+            UaObjectNode myObject = (UaObjectNode) nodeFactory.createNode(
+                new NodeId(namespaceIndex, "HelloWorld/MyObject"),
+                objectTypeNode.getNodeId(),
+                false
+            );
+            myObject.setBrowseName(new QualifiedName(namespaceIndex, "MyObject"));
+            myObject.setDisplayName(LocalizedText.english("MyObject"));
 
-        // Add forward and inverse references from the root folder.
-        rootFolder.addOrganizes(myObject);
+            // Add forward and inverse references from the root folder.
+            rootFolder.addOrganizes(myObject);
 
-        myObject.addReference(new Reference(
-            myObject.getNodeId(),
-            Identifiers.Organizes,
-            rootFolder.getNodeId().expanded(),
-            rootFolder.getNodeClass(),
-            false
-        ));
+            myObject.addReference(new Reference(
+                myObject.getNodeId(),
+                Identifiers.Organizes,
+                rootFolder.getNodeId().expanded(),
+                rootFolder.getNodeClass(),
+                false
+            ));
+        } catch (UaException e) {
+            logger.error("Error creating MyObjectType instance: {}", e.getMessage(), e);
+        }
     }
 
     private void addCustomDataTypeVariable(UaFolderNode rootFolder) {

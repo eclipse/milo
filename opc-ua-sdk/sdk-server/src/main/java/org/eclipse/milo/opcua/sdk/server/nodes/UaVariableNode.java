@@ -18,14 +18,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -49,6 +49,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
@@ -317,41 +318,49 @@ public class UaVariableNode extends UaNode implements VariableNode {
         ));
     }
 
+    @Nullable
     @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
+    @Nullable
     @UaOptional("LocalTime")
     public TimeZoneDataType getLocalTime() {
         return getProperty(LocalTime).orElse(null);
     }
 
+    @Nullable
     @UaOptional("DataTypeVersion")
     public String getDataTypeVersion() {
         return getProperty(DataTypeVersion).orElse(null);
     }
 
+    @Nullable
     @UaOptional("DictionaryFragment")
     public ByteString getDictionaryFragment() {
         return getProperty(DictionaryFragment).orElse(null);
     }
 
+    @Nullable
     @UaOptional("AllowNulls")
     public Boolean getAllowNulls() {
         return getProperty(AllowNulls).orElse(null);
     }
 
+    @Nullable
     @UaOptional("MaxStringLength")
     public UInteger getMaxStringLength() {
         return getProperty(MaxStringLength).orElse(null);
     }
 
+    @Nullable
     @UaOptional("MaxArrayLength")
     public UInteger getMaxArrayLength() {
         return getProperty(MaxArrayLength).orElse(null);
     }
 
+    @Nullable
     @UaOptional("EngineeringUnits")
     public EUInformation getEngineeringUnits() {
         return getProperty(EngineeringUnits).orElse(null);
@@ -389,64 +398,73 @@ public class UaVariableNode extends UaNode implements VariableNode {
         setProperty(EngineeringUnits, engineeringUnits);
     }
 
-    public static final Property<String> NodeVersion = new BasicProperty<>(
-        new QualifiedName(0, "NodeVersion"),
+    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "NodeVersion",
         Identifiers.String,
         ValueRanks.Scalar,
         String.class
     );
 
-    public static final Property<TimeZoneDataType> LocalTime = new BasicProperty<>(
-        new QualifiedName(0, "LocalTime"),
+    public static final QualifiedProperty<TimeZoneDataType> LocalTime = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "LocalTime",
         Identifiers.TimeZoneDataType,
         ValueRanks.Scalar,
         TimeZoneDataType.class
     );
 
-    public static final Property<String> DataTypeVersion = new BasicProperty<>(
-        new QualifiedName(0, "DataTypeVersion"),
+    public static final QualifiedProperty<String> DataTypeVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "DataTypeVersion",
         Identifiers.String,
         ValueRanks.Scalar,
         String.class
     );
 
-    public static final Property<ByteString> DictionaryFragment = new BasicProperty<>(
-        new QualifiedName(0, "DictionaryFragment"),
+    public static final QualifiedProperty<ByteString> DictionaryFragment = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "DictionaryFragment",
         Identifiers.ByteString,
         ValueRanks.Scalar,
         ByteString.class
     );
 
-    public static final Property<Boolean> AllowNulls = new BasicProperty<>(
-        new QualifiedName(0, "AllowNulls"),
+    public static final QualifiedProperty<Boolean> AllowNulls = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "AllowNulls",
         Identifiers.Boolean,
         ValueRanks.Scalar,
         Boolean.class
     );
 
-    public static final Property<LocalizedText> ValueAsText = new BasicProperty<>(
-        new QualifiedName(0, "ValueAsText"),
+    public static final QualifiedProperty<LocalizedText> ValueAsText = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "ValueAsText",
         Identifiers.LocalizedText,
         ValueRanks.Scalar,
         LocalizedText.class
     );
 
-    public static final Property<UInteger> MaxStringLength = new BasicProperty<>(
-        new QualifiedName(0, "MaxStringLength"),
+    public static final QualifiedProperty<UInteger> MaxStringLength = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "MaxStringLength",
         Identifiers.UInt32,
         ValueRanks.Scalar,
         UInteger.class
     );
 
-    public static final Property<UInteger> MaxArrayLength = new BasicProperty<>(
-        new QualifiedName(0, "MaxArrayLength"),
+    public static final QualifiedProperty<UInteger> MaxArrayLength = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "MaxArrayLength",
         Identifiers.UInt32,
         ValueRanks.Scalar,
         UInteger.class
     );
 
-    public static final Property<EUInformation> EngineeringUnits = new BasicProperty<>(
-        new QualifiedName(0, "EngineeringUnits"),
+    public static final QualifiedProperty<EUInformation> EngineeringUnits = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "EngineeringUnits",
         Identifiers.EUInformation,
         ValueRanks.Scalar,
         EUInformation.class
