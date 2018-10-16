@@ -14,8 +14,10 @@
 package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Predicate;
 
+import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
@@ -26,23 +28,44 @@ import org.slf4j.LoggerFactory;
 
 public class Reference {
 
+    public enum Direction {
+        FORWARD,
+        INVERSE
+    }
+
     private final NodeId sourceNodeId;
     private final NodeId referenceTypeId;
     private final ExpandedNodeId targetNodeId;
     private final NodeClass targetNodeClass;
-    private final boolean forward;
+    private final Direction direction;
 
-    public Reference(NodeId sourceNodeId,
-                     NodeId referenceTypeId,
-                     ExpandedNodeId targetNodeId,
-                     NodeClass targetNodeClass,
-                     boolean forward) {
+    public Reference(
+        NodeId sourceNodeId,
+        NodeId referenceTypeId,
+        ExpandedNodeId targetNodeId,
+        NodeClass targetNodeClass,
+        boolean forward) {
+
+        this(
+            sourceNodeId,
+            referenceTypeId,
+            targetNodeId,
+            targetNodeClass,
+            forward ? Direction.FORWARD : Direction.INVERSE);
+    }
+
+    public Reference(
+        NodeId sourceNodeId,
+        NodeId referenceTypeId,
+        ExpandedNodeId targetNodeId,
+        NodeClass targetNodeClass,
+        Direction direction) {
 
         this.sourceNodeId = sourceNodeId;
         this.referenceTypeId = referenceTypeId;
         this.targetNodeId = targetNodeId;
         this.targetNodeClass = targetNodeClass;
-        this.forward = forward;
+        this.direction = direction;
     }
 
     public NodeId getSourceNodeId() {
@@ -61,12 +84,16 @@ public class Reference {
         return targetNodeClass;
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     public boolean isForward() {
-        return forward;
+        return direction == Direction.FORWARD;
     }
 
     public boolean isInverse() {
-        return !isForward();
+        return direction == Direction.INVERSE;
     }
 
     /**
@@ -102,35 +129,28 @@ public class Reference {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Reference reference = (Reference) o;
-
-        return forward == reference.forward &&
-            referenceTypeId.equals(reference.referenceTypeId) &&
-            sourceNodeId.equals(reference.sourceNodeId) &&
+        return Objects.equals(sourceNodeId, reference.sourceNodeId) &&
+            Objects.equals(referenceTypeId, reference.referenceTypeId) &&
+            Objects.equals(targetNodeId, reference.targetNodeId) &&
             targetNodeClass == reference.targetNodeClass &&
-            targetNodeId.equals(reference.targetNodeId);
+            direction == reference.direction;
     }
 
     @Override
     public int hashCode() {
-        int result = sourceNodeId.hashCode();
-        result = 31 * result + referenceTypeId.hashCode();
-        result = 31 * result + targetNodeId.hashCode();
-        result = 31 * result + targetNodeClass.hashCode();
-        result = 31 * result + (forward ? 1 : 0);
-        return result;
+        return Objects.hash(sourceNodeId, referenceTypeId, targetNodeId, targetNodeClass, direction);
     }
 
     @Override
     public String toString() {
-        return "Reference{" +
-            "sourceNodeId=" + sourceNodeId +
-            ", referenceTypeId=" + referenceTypeId +
-            ", targetNodeId=" + targetNodeId +
-            ", targetNodeClass=" + targetNodeClass +
-            ", forward=" + forward +
-            '}';
+        return MoreObjects.toStringHelper(this)
+            .add("sourceNodeId", sourceNodeId)
+            .add("referenceTypeId", referenceTypeId)
+            .add("targetNodeId", targetNodeId)
+            .add("targetNodeClass", targetNodeClass)
+            .add("direction", direction)
+            .toString();
     }
 
     public static final Predicate<Reference> HAS_COMPONENT_PREDICATE =

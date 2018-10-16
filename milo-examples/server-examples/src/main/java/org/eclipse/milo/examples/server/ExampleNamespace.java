@@ -19,8 +19,10 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
+import org.eclipse.milo.examples.server.methods.GenerateEvent;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -32,7 +34,9 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
@@ -45,6 +49,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
@@ -140,6 +145,7 @@ public class ExampleNamespace implements Namespace {
 
     private final SubscriptionModel subscriptionModel;
 
+    private final EventFactory eventFactory;
     private final NodeFactory nodeFactory;
 
     private final OpcUaServer server;
@@ -151,6 +157,7 @@ public class ExampleNamespace implements Namespace {
 
         subscriptionModel = new SubscriptionModel(server, this);
 
+        eventFactory = server.getEventFactory();
         nodeFactory = server.getNodeFactory();
 
         // Create a "HelloWorld" folder and add it to the node manager
@@ -177,11 +184,45 @@ public class ExampleNamespace implements Namespace {
         // Add the rest of the nodes
         addVariableNodes(folderNode);
 
-        addMethodNode(folderNode);
+        addSqrtMethod(folderNode);
+
+        addGenerateEventMethod(folderNode);
 
         addCustomDataTypeVariable(folderNode);
 
         addCustomObjectTypeAndInstance(folderNode);
+
+        // Set the EventNotifier bit on Server Node for Events
+        UaNode serverNode = server.getNodeManager().get(Identifiers.Server);
+        if (serverNode instanceof ObjectNode) {
+            ((ObjectNode) serverNode).setEventNotifier(ubyte(1));
+        }
+
+        // Post a bogus Event every couple seconds
+        server.getScheduledExecutorService().scheduleAtFixedRate(() -> {
+            try {
+                BaseEventNode eventNode = eventFactory.createEvent(
+                    new NodeId(1, UUID.randomUUID()),
+                    Identifiers.BaseEventType
+                );
+
+                eventNode.setBrowseName(new QualifiedName(1, "foo"));
+                eventNode.setDisplayName(LocalizedText.english("foo"));
+
+                eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
+                eventNode.setEventType(Identifiers.BaseEventType);
+                eventNode.setSourceNode(NodeId.NULL_VALUE);
+                eventNode.setSourceName("");
+                eventNode.setTime(DateTime.now());
+                eventNode.setReceiveTime(DateTime.NULL_VALUE);
+                eventNode.setMessage(LocalizedText.english("event message!"));
+                eventNode.setSeverity(ushort(2));
+
+                server.getEventBus().post(eventNode);
+            } catch (UaException e) {
+                logger.error("Error creating EventNode: {}", e.getMessage(), e);
+            }
+        }, 0, 2, TimeUnit.SECONDS);
     }
 
     @Override
@@ -524,7 +565,7 @@ public class ExampleNamespace implements Namespace {
         }
     }
 
-    private void addMethodNode(UaFolderNode folderNode) {
+    private void addSqrtMethod(UaFolderNode folderNode) {
         UaMethodNode methodNode = UaMethodNode.builder(server)
             .setNodeId(new NodeId(namespaceIndex, "HelloWorld/sqrt(x)"))
             .setBrowseName(new QualifiedName(namespaceIndex, "sqrt(x)"))
@@ -561,6 +602,46 @@ public class ExampleNamespace implements Namespace {
             ));
         } catch (Exception e) {
             logger.error("Error creating sqrt() method.", e);
+        }
+    }
+
+    private void addGenerateEventMethod(UaFolderNode folderNode) {
+        UaMethodNode methodNode = UaMethodNode.builder(server)
+            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/generateEvent(eventTypeId)"))
+            .setBrowseName(new QualifiedName(namespaceIndex, "generateEvent(eventTypeId)"))
+            .setDisplayName(new LocalizedText(null, "generateEvent(eventTypeId)"))
+            .setDescription(
+                LocalizedText.english("Generate an Event with the TypeDefinition indicated by eventTypeId."))
+            .build();
+
+
+        try {
+            AnnotationBasedInvocationHandler invocationHandler =
+                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new GenerateEvent(server));
+
+            methodNode.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
+            methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
+            methodNode.setInvocationHandler(invocationHandler);
+
+            server.getNodeManager().addNode(methodNode);
+
+            folderNode.addReference(new Reference(
+                folderNode.getNodeId(),
+                Identifiers.HasComponent,
+                methodNode.getNodeId().expanded(),
+                methodNode.getNodeClass(),
+                true
+            ));
+
+            methodNode.addReference(new Reference(
+                methodNode.getNodeId(),
+                Identifiers.HasComponent,
+                folderNode.getNodeId().expanded(),
+                folderNode.getNodeClass(),
+                false
+            ));
+        } catch (Exception e) {
+            logger.error("Error creating generateEvent() method.", e);
         }
     }
 

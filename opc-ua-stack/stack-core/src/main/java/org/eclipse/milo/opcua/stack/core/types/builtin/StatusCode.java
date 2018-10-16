@@ -31,16 +31,16 @@ public final class StatusCode {
 
     private final long value;
 
-    public StatusCode(long value) {
-        this.value = value;
+    public StatusCode(int value) {
+        this.value = value & 0xFFFFFFFFL;
     }
 
-    public StatusCode(int value) {
-        this.value = value;
+    public StatusCode(long value) {
+        this.value = value & 0xFFFFFFFFL;
     }
 
     public StatusCode(UInteger value) {
-        this.value = value.longValue();
+        this(value.longValue());
     }
 
     public long getValue() {

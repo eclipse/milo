@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerIn
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.VendorNamespace;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
@@ -89,6 +90,8 @@ public class OpcUaServer implements UaNodeContext {
     private final SessionManager sessionManager = new SessionManager(this);
     private final ServerTable serverTable = new ServerTable();
 
+    private final EventBus eventBus;
+    private final EventFactory eventFactory;
     private final NodeFactory nodeFactory;
 
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
@@ -96,7 +99,6 @@ public class OpcUaServer implements UaNodeContext {
 
     private final UaTcpStackServer discoveryServer;
     private final UaTcpStackServer stackServer;
-    private final EventBus eventBus;
 
     private final OpcUaNamespace uaNamespace;
     private final VendorNamespace vendorNamespace;
@@ -148,6 +150,7 @@ public class OpcUaServer implements UaNodeContext {
         }
 
         nodeFactory = new NodeFactory(this, objectTypeManager, variableTypeManager);
+        eventFactory = new EventFactory(this, objectTypeManager, variableTypeManager);
 
         for (String bindAddress : config.getBindAddresses()) {
             Set<String> hostnames = Sets.newHashSet(config.getEndpointAddresses());
@@ -261,6 +264,14 @@ public class OpcUaServer implements UaNodeContext {
         return serverTable;
     }
 
+    public EventBus getEventBus() {
+        return eventBus;
+    }
+
+    public EventFactory getEventFactory() {
+        return eventFactory;
+    }
+
     public NodeFactory getNodeFactory() {
         return nodeFactory;
     }
@@ -271,10 +282,6 @@ public class OpcUaServer implements UaNodeContext {
 
     public VariableTypeManager getVariableTypeManager() {
         return variableTypeManager;
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public Map<UInteger, Subscription> getSubscriptions() {
@@ -336,5 +343,4 @@ public class OpcUaServer implements UaNodeContext {
     public Map<ByteString, BrowseContinuationPoint> getBrowseContinuationPoints() {
         return browseContinuationPoints;
     }
-
 }

@@ -93,7 +93,9 @@ public class ClientExampleRunner {
 
         EndpointDescription endpoint = Arrays.stream(endpoints)
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
-            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+            .filter(clientExample.endpointFilter())
+            .findFirst()
+            .orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
 
@@ -114,7 +116,7 @@ public class ClientExampleRunner {
         try {
             OpcUaClient client = createClient();
 
-            future.whenComplete((c, ex) -> {
+            future.whenCompleteAsync((c, ex) -> {
                 if (ex != null) {
                     logger.error("Error running example: {}", ex.getMessage(), ex);
                 }
