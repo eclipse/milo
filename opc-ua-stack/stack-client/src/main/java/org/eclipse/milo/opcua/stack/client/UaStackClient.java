@@ -61,15 +61,32 @@ public class UaStackClient {
         deliveryQueue = new ExecutionQueue(config.getExecutor());
     }
 
+    /**
+     * @return the {@link UaStackClientConfig} this client was created with.
+     */
     public UaStackClientConfig getConfig() {
         return config;
     }
 
+    /**
+     * Connect this {@link UaStackClient} to the server in the configured endpoint.
+     * <p>
+     * Depending on the underlying transport this may or may not actually make a connection attempt.
+     *
+     * @return this {@link UaStackClient}.
+     */
     public CompletableFuture<UaStackClient> connect() {
         return transport.connect()
             .thenApply(t -> UaStackClient.this);
     }
 
+    /**
+     * Disconnect this {@link UaStackClient} from the server in the configured endpoint.
+     * <p>
+     * Depending on the underlying transport this may or may not actually make a disconnect attempt.
+     *
+     * @return this {@link UaStackClient}.
+     */
     public CompletableFuture<UaStackClient> disconnect() {
         return transport.disconnect()
             .whenComplete((u, ex) -> {
@@ -82,14 +99,38 @@ public class UaStackClient {
             .thenApply(t -> UaStackClient.this);
     }
 
+    /**
+     * Create a new {@link RequestHeader} with a null authentication token.
+     * <p>
+     * A unique request handle will be automatically assigned to the header.
+     *
+     * @return a new {@link RequestHeader} with a null authentication token.
+     */
     public RequestHeader newRequestHeader() {
         return newRequestHeader(NodeId.NULL_VALUE);
     }
 
+    /**
+     * Create a new {@link RequestHeader} with {@code authToken}.
+     * <p>
+     * A unique request handle will be automatically assigned to the header.
+     *
+     * @param authToken the authentication token to create the header with.
+     * @return a new {@link RequestHeader} created with {@code authToken}.
+     */
     public RequestHeader newRequestHeader(NodeId authToken) {
         return newRequestHeader(authToken, config.getRequestTimeout());
     }
 
+    /**
+     * Create a new {@link RequestHeader} with {@code authToken} and {@code requestTimeout}.
+     * <p>
+     * A unique request handle will be automatically assigned to the header.
+     *
+     * @param authToken      the authentication token to create the header with.
+     * @param requestTimeout the timeout hint to create the header with.f
+     * @return a new {@link RequestHeader} created with {@code authToken} and {@code requestTimeout}.
+     */
     public RequestHeader newRequestHeader(NodeId authToken, UInteger requestTimeout) {
         return new RequestHeader(
             authToken,
@@ -102,6 +143,18 @@ public class UaStackClient {
         );
     }
 
+    /**
+     * Send a {@link UaRequestMessage} to the connected server.
+     * <p>
+     * The {@link RequestHeader} of {@code request} must have a unique request handle. Use the
+     * {@code newRequestHeader} helper functions to create headers for {@link UaRequestMessage}s.
+     *
+     * @param request the {@link UaRequestMessage} to send.
+     * @return a {@link CompletableFuture} containing the eventual {@link UaResponseMessage} from the server.
+     * @see #newRequestHeader()
+     * @see #newRequestHeader(NodeId)
+     * @see #newRequestHeader(NodeId, UInteger)
+     */
     public CompletableFuture<UaResponseMessage> sendRequest(UaRequestMessage request) {
         RequestHeader requestHeader = request.getRequestHeader();
         UInteger requestHandle = requestHeader.getRequestHandle();
@@ -122,6 +175,17 @@ public class UaStackClient {
         return future;
     }
 
+    /**
+     * Complete {@code future} with {@code response} on the {@code deliveryQueue}.
+     * <p>
+     * This is done for two reasons:
+     * 1. the transport future is completed on its serialization queue thread, which we want to get off of ASAP.
+     * 2. the futures need to be completed serially, in the order received from the server.
+     *
+     * @param request  the original {@link UaRequestMessage}.
+     * @param response the {@link UaResponseMessage}.
+     * @param future   the {@link CompletableFuture} awaiting completion.
+     */
     private void deliverResponse(
         UaRequestMessage request,
         UaResponseMessage response,
@@ -155,6 +219,34 @@ public class UaStackClient {
         });
     }
 
+    /**
+     * Create a {@link UaStackClient} with {@code config}.
+     * <p>
+     * The {@link UaTransport} instance to create will be inferred from the transport profile URI in the configured
+     * endpoint.
+     * <p>
+     * Supported transports:
+     * <ul>
+     * <li>TCP + UA Binary</li>
+     * <li>HTTP(s) + UA Binary</li>
+     * </ul>
+     * <p>
+     * Experimentally supported:
+     * <ul>
+     * <li>WebSocket + UA Binary</li>
+     * </ul>
+     * <p>
+     * Not supported:
+     * <ul>
+     * <li>HTTP(s) + UA JSON</li>
+     * <li>HTTP(s) + UA XML</li>
+     * <li>WebSocket + UA JSON</li>
+     * </ul>
+     *
+     * @param config the {@link UaStackClientConfig}.
+     * @return a {@link UaStackClient} created with {@code config}.
+     * @throws UaException if the transport is unsupported.
+     */
     public static UaStackClient create(UaStackClientConfig config) throws UaException {
         String transportProfileUri =
             config.getEndpoint().getTransportProfileUri();
