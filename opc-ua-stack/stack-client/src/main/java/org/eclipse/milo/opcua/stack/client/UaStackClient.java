@@ -111,7 +111,7 @@ public class UaStackClient {
 
         transport.sendRequest(request).whenComplete((response, ex) -> {
             pending.remove(requestHandle);
-            
+
             if (response != null) {
                 deliverResponse(request, response, future);
             } else {
@@ -130,37 +130,29 @@ public class UaStackClient {
         ResponseHeader header = response.getResponseHeader();
         UInteger requestHandle = header.getRequestHandle();
 
-        if (future != null) {
-            deliveryQueue.submit(() -> {
-                if (header.getServiceResult().isGood()) {
-                    future.complete(response);
+        deliveryQueue.submit(() -> {
+            if (header.getServiceResult().isGood()) {
+                future.complete(response);
+            } else {
+                ServiceFault serviceFault;
+
+                if (response instanceof ServiceFault) {
+                    serviceFault = (ServiceFault) response;
                 } else {
-                    ServiceFault serviceFault;
-
-                    if (response instanceof ServiceFault) {
-                        serviceFault = (ServiceFault) response;
-                    } else {
-                        serviceFault = new ServiceFault(header);
-                    }
-
-                    if (logger.isDebugEnabled()) {
-                        logger.debug(
-                            "Received ServiceFault request={} requestHandle={}, result={}",
-                            request.getClass().getSimpleName(),
-                            requestHandle,
-                            header.getServiceResult());
-                    }
-
-                    future.completeExceptionally(new UaServiceFaultException(serviceFault));
+                    serviceFault = new ServiceFault(header);
                 }
-            });
-        } else {
-            logger.warn(
-                "Received unmatched {} with requestHandle={}, timestamp={}",
-                response.getClass().getSimpleName(),
-                requestHandle,
-                response.getResponseHeader().getTimestamp());
-        }
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
+                        "Received ServiceFault request={} requestHandle={}, result={}",
+                        request.getClass().getSimpleName(),
+                        requestHandle,
+                        header.getServiceResult());
+                }
+
+                future.completeExceptionally(new UaServiceFaultException(serviceFault));
+            }
+        });
     }
 
     public static UaStackClient create(UaStackClientConfig config) throws UaException {
