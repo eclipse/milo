@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.DataValue.valueOnly;
 
@@ -69,6 +70,21 @@ public class UaMethodNode extends UaNode implements MethodNode {
     @Override
     public CompletableFuture<StatusCode> writeUserExecutable(DataValue value) {
         return writeAttribute(AttributeId.UserExecutable, value);
+    }
+
+    @Override
+    public CompletableFuture<String> getNodeVersion() {
+        return getProperty(MethodNode.NodeVersion);
+    }
+
+    @Override
+    public CompletableFuture<Argument[]> getInputArguments() {
+        return getProperty(MethodNode.InputArguments);
+    }
+
+    @Override
+    public CompletableFuture<Argument[]> getOutputArguments() {
+        return getProperty(MethodNode.OutputArguments);
     }
 
 }

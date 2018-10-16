@@ -17,11 +17,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.BasicProperty;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
+import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
@@ -35,6 +35,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.sdk.core.Reference.ALWAYS_GENERATES_EVENT_PREDICATE;
 import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_MODELLING_RULE_PREDICATE;
@@ -124,16 +125,19 @@ public class UaMethodNode extends UaNode implements MethodNode {
         this.handler = Optional.of(handler);
     }
 
+    @Nullable
     @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
+    @Nullable
     @UaOptional("InputArguments")
     public Argument[] getInputArguments() {
         return getProperty(InputArguments).orElse(null);
     }
 
+    @Nullable
     @UaOptional("OutputArguments")
     public Argument[] getOutputArguments() {
         return getProperty(OutputArguments).orElse(null);
@@ -151,22 +155,26 @@ public class UaMethodNode extends UaNode implements MethodNode {
         setProperty(OutputArguments, outputArguments);
     }
 
-    public static final Property<Argument[]> InputArguments = new BasicProperty<>(
-        new QualifiedName(0, "InputArguments"),
+
+    public static final QualifiedProperty<Argument[]> InputArguments = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "InputArguments",
         Identifiers.Argument,
         ValueRanks.OneDimension,
         Argument[].class
     );
 
-    public static final Property<Argument[]> OutputArguments = new BasicProperty<>(
-        new QualifiedName(0, "OutputArguments"),
+    public static final QualifiedProperty<Argument[]> OutputArguments = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "OutputArguments",
         Identifiers.Argument,
         ValueRanks.OneDimension,
         Argument[].class
     );
 
-    public static final Property<String> NodeVersion = new BasicProperty<>(
-        new QualifiedName(0, "NodeVersion"),
+    public static final QualifiedProperty<String> NodeVersion = new QualifiedProperty<>(
+        Namespaces.OPC_UA,
+        "NodeVersion",
         Identifiers.String,
         ValueRanks.Scalar,
         String.class
