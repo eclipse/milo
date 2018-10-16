@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
-import org.eclipse.milo.opcua.stack.client.transport.https.OpcHttpsTransport;
+import org.eclipse.milo.opcua.stack.client.transport.http.OpcHttpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.websocket.OpcWebSocketTransport;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -170,7 +170,7 @@ public class UaStackClient {
                 break;
 
             case HTTPS_UABINARY:
-                transport = new OpcHttpsTransport(config);
+                transport = new OpcHttpTransport(config);
                 break;
 
             case WSS_UASC_UABINARY:

@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.transport.https;
+package org.eclipse.milo.opcua.stack.client.transport.http;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -38,13 +38,13 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcHttpsTransport extends AbstractTransport {
+public class OpcHttpTransport extends AbstractTransport {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(OpcHttpsTransport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OpcHttpTransport.class);
 
     private ChannelPool channelPool = null;
 
-    public OpcHttpsTransport(UaStackClientConfig config) {
+    public OpcHttpTransport(UaStackClientConfig config) {
         super(config);
     }
 
@@ -54,7 +54,7 @@ public class OpcHttpsTransport extends AbstractTransport {
             channelPool = createChannelPool(getConfig());
         }
 
-        return CompletableFuture.completedFuture(OpcHttpsTransport.this);
+        return CompletableFuture.completedFuture(OpcHttpTransport.this);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class OpcHttpsTransport extends AbstractTransport {
             channelPool = null;
         }
 
-        return CompletableFuture.completedFuture(OpcHttpsTransport.this);
+        return CompletableFuture.completedFuture(OpcHttpTransport.this);
     }
 
     @Override

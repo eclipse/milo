@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.stack.client.transport.https;
+package org.eclipse.milo.opcua.stack.client.transport.http;
 
 import java.net.MalformedURLException;
 import java.util.List;
