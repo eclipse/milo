@@ -21,6 +21,8 @@ public final class DateTime {
 
     public static final DateTime MIN_VALUE = new DateTime(0L);
 
+    public static final DateTime NULL_VALUE = MIN_VALUE;
+
     /**
      * The delta in 100 nanosecond intervals between Java epoch (January 1, 1970) and UTC epoch (Jan 1, 1601).
      */

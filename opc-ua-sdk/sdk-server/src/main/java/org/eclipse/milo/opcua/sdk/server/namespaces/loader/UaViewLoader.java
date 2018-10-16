@@ -13,14 +13,14 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 
 public class UaViewLoader {
 
-    private final OpcUaServer server;
+    private final UaNodeContext context;
 
-    public UaViewLoader(OpcUaServer server) {
-        this.server = server;
+    public UaViewLoader(UaNodeContext context) {
+        this.context = context;
     }
 
     public void buildNodes() {}

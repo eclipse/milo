@@ -151,4 +151,27 @@ public enum AttributeId {
         return from(attributeId).isPresent();
     }
 
+    /**
+     * Get the set of valid attributes for a {@link org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass}.
+     * @param nodeClass the {@link org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass}.
+     * @return the set of valid attributes for {@code nodeClass}.
+     */
+    public static ImmutableSet<AttributeId> getAttributes(
+        org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass nodeClass) {
+
+        //@formatter:off
+        switch (nodeClass) {
+            case Object:        return OBJECT_NODE_ATTRIBUTES;
+            case Variable:      return VARIABLE_NODE_ATTRIBUTES;
+            case Method:        return METHOD_NODE_ATTRIBUTES;
+            case ObjectType:    return OBJECT_TYPE_NODE_ATTRIBUTES;
+            case VariableType:  return VARIABLE_TYPE_NODE_ATTRIBUTES;
+            case ReferenceType: return REFERENCE_TYPE_NODE_ATTRIBUTES;
+            case DataType:      return DATA_TYPE_NODE_ATTRIBUTES;
+            case View:          return VIEW_NODE_ATTRIBUTES;
+            default:            return ImmutableSet.of();
+        }
+        //@formatter:on
+    }
+
 }

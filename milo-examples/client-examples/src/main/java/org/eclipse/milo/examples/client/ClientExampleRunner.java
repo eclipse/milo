@@ -89,14 +89,16 @@ public class ClientExampleRunner {
             } else {
                 discoveryUrl += "/discovery";
             }
-            
+
             logger.info("Trying explicit discovery URL: {}", discoveryUrl);
             endpoints = DiscoveryClient.getEndpoints(discoveryUrl).get();
         }
 
         EndpointDescription endpoint = endpoints.stream()
             .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getUri()))
-            .findFirst().orElseThrow(() -> new Exception("no desired endpoints returned"));
+            .filter(clientExample.endpointFilter())
+            .findFirst()
+            .orElseThrow(() -> new Exception("no desired endpoints returned"));
 
         logger.info("Using endpoint: {} [{}/{}]",
             endpoint.getEndpointUrl(), securityPolicy, endpoint.getSecurityMode());
@@ -118,7 +120,7 @@ public class ClientExampleRunner {
         try {
             OpcUaClient client = createClient();
 
-            future.whenComplete((c, ex) -> {
+            future.whenCompleteAsync((c, ex) -> {
                 if (ex != null) {
                     logger.error("Error running example: {}", ex.getMessage(), ex);
                 }

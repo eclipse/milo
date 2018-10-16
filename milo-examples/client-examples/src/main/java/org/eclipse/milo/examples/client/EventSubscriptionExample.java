@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,10 +13,9 @@
 
 package org.eclipse.milo.examples.client;
 
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
@@ -41,13 +40,12 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-
-public class ProsysEventSubscriptionExample implements ClientExample {
+public class EventSubscriptionExample implements ClientExample {
 
     public static void main(String[] args) throws Exception {
-        ProsysEventSubscriptionExample example = new ProsysEventSubscriptionExample();
+        EventSubscriptionExample example = new EventSubscriptionExample();
 
-        new ClientExampleRunner(example, false).run();
+        new ClientExampleRunner(example, true).run();
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -78,6 +76,11 @@ public class ProsysEventSubscriptionExample implements ClientExample {
                 new SimpleAttributeOperand(
                     Identifiers.BaseEventType,
                     new QualifiedName[]{new QualifiedName(0, "EventId")},
+                    AttributeId.Value.uid(),
+                    null),
+                new SimpleAttributeOperand(
+                    Identifiers.BaseEventType,
+                    new QualifiedName[]{new QualifiedName(0, "EventType")},
                     AttributeId.Value.uid(),
                     null),
                 new SimpleAttributeOperand(
@@ -117,21 +120,23 @@ public class ProsysEventSubscriptionExample implements ClientExample {
             .createMonitoredItems(TimestampsToReturn.Both, newArrayList(request)).get();
 
         // do something with the value updates
-        UaMonitoredItem item = items.get(0);
+        UaMonitoredItem monitoredItem = items.get(0);
 
-        item.setEventConsumer((i, vs) -> {
-            Arrays.stream(vs).forEach(
-                v -> logger.info("{} variant received: {}",
-                    i.getReadValueId().getNodeId(), v.getValue())
-            );
+        final AtomicInteger eventCount = new AtomicInteger(0);
 
-            future.complete(client);
+        monitoredItem.setEventConsumer((item, vs) -> {
+            logger.info(
+                "Event Received from {}",
+                item.getReadValueId().getNodeId());
+
+            for (int i = 0; i < vs.length; i++) {
+                logger.info("\tvariant[{}]: {}", i, vs[i].getValue());
+            }
+
+            if (eventCount.incrementAndGet() == 3) {
+                future.complete(client);
+            }
         });
-    }
-
-    @Override
-    public String getEndpointUrl() {
-        return "opc.tcp://localhost:53530/OPCUA/SimulationServer";
     }
 
 }

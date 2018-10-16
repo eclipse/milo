@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
@@ -274,8 +275,11 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public <T> void setProperty(QualifiedProperty<T> property, T value) {
-        VariableNode node = getPropertyNode(property.getBrowseName()).orElseGet(() -> {
+        VariableNode node = getPropertyNode(property).orElseGet(() -> {
             String browseName = property.getBrowseName();
+
+            UShort namespaceIndex = context.getNamespaceManager()
+                .getNamespaceTable().getIndex(property.getNamespaceUri());
 
             NodeId propertyNodeId = new NodeId(
                 getNodeId().getNamespaceIndex(),
@@ -285,7 +289,7 @@ public abstract class UaNode implements UaServerNode {
             UaPropertyNode propertyNode = new UaPropertyNode(
                 context,
                 propertyNodeId,
-                new QualifiedName(getNodeId().getNamespaceIndex(), browseName),
+                new QualifiedName(namespaceIndex, browseName),
                 LocalizedText.english(browseName)
             );
 
@@ -305,7 +309,11 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public Optional<VariableNode> getPropertyNode(QualifiedProperty<?> property) {
-        return getPropertyNode(property.getBrowseName());
+        Optional<QualifiedName> qualifiedName = property
+            .getQualifiedName(context.getNamespaceManager().getNamespaceTable());
+
+        return qualifiedName.map(this::getPropertyNode)
+            .orElseGet(() -> getPropertyNode(property.getBrowseName()));
     }
 
     public Optional<VariableNode> getPropertyNode(String browseName) {
@@ -361,6 +369,22 @@ public abstract class UaNode implements UaServerNode {
             getNodeClass(),
             false
         ));
+    }
+
+    /**
+     * Find a {@link UaNode} with the specified {@code browseName} referenced by this node.
+     *
+     * @param browseName the Browse Name of the target node.
+     * @param references a {@link Predicate} used to include/exclude references to follow.
+     * @return the target node, if one was found.
+     */
+    public Optional<UaNode> findNode(QualifiedName browseName, Predicate<Reference> references) {
+        return getNodeManager().getReferences(nodeId)
+            .stream()
+            .filter(references)
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .filter(n -> n.getBrowseName().equals(browseName))
+            .findFirst();
     }
 
     protected Optional<ObjectNode> getObjectComponent(String namespaceUri, String name) {

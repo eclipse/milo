@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import sun.reflect.annotation.ExceptionProxy;
 
 public interface NodeManager<T extends Node> {
 
@@ -57,8 +58,12 @@ public interface NodeManager<T extends Node> {
      */
     @Nullable
     default T get(NodeId nodeId) {
-        return getNode(nodeId)
-            .orElse(null);
+        return getNode(nodeId).orElse(null);
+    }
+
+    @Nullable
+    default T get(ExpandedNodeId nodeId) {
+        return getNode(nodeId).orElse(null);
     }
 
     /**

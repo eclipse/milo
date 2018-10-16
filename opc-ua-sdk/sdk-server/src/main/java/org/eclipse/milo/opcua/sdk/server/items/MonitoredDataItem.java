@@ -13,6 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.items;
 
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.util.DataChangeMonitoringFilter;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -50,6 +52,8 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
     private volatile ExtensionObject filterResult = null;
 
     public MonitoredDataItem(
+        OpcUaServer server,
+        Session session,
         UInteger id,
         UInteger subscriptionId,
         ReadValueId readValueId,
@@ -61,7 +65,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
         UInteger queueSize,
         boolean discardOldest) throws UaException {
 
-        super(id, subscriptionId, readValueId, monitoringMode,
+        super(server, session, id, subscriptionId, readValueId, monitoringMode,
             timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
 
         installFilter(filter);
@@ -83,7 +87,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
     }
 
     @Override
-    protected void enqueue(DataValue value) {
+    protected synchronized void enqueue(DataValue value) {
         if (queue.size() < queue.maxSize()) {
             queue.add(value);
         } else {
