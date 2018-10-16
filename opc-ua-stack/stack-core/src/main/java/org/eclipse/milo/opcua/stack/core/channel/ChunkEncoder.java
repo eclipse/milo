@@ -314,7 +314,7 @@ public final class ChunkEncoder {
         @Override
         public void encodeSecurityHeader(SecureChannel channel, ByteBuf buffer) throws UaException {
             AsymmetricSecurityHeader header = new AsymmetricSecurityHeader(
-                channel.getSecurityPolicy().getSecurityPolicyUri(),
+                channel.getSecurityPolicy().getUri(),
                 channel.getLocalCertificateChainBytes(),
                 channel.getRemoteCertificateThumbprint()
             );
@@ -324,7 +324,7 @@ public final class ChunkEncoder {
 
         @Override
         public int getSecurityHeaderSize(SecureChannel channel) throws UaException {
-            String securityPolicyUri = channel.getSecurityPolicy().getSecurityPolicyUri();
+            String securityPolicyUri = channel.getSecurityPolicy().getUri();
             byte[] localCertificateChainBytes = channel.getLocalCertificateChainBytes().bytes();
             byte[] remoteCertificateThumbprint = channel.getRemoteCertificateThumbprint().bytes();
 
@@ -367,7 +367,7 @@ public final class ChunkEncoder {
 
     private class SymmetricEncoder extends AbstractEncoder {
 
-        private volatile ChannelSecurity.SecuritySecrets securitySecrets;
+        private volatile ChannelSecurity.SecurityKeys securityKeys;
 
         @Override
         public void encodeSecurityHeader(SecureChannel channel, ByteBuf buffer) {
@@ -376,13 +376,13 @@ public final class ChunkEncoder {
 
             SymmetricSecurityHeader.encode(new SymmetricSecurityHeader(tokenId), buffer);
 
-            securitySecrets = channelSecurity != null ? channelSecurity.getCurrentKeys() : null;
+            securityKeys = channelSecurity != null ? channelSecurity.getCurrentKeys() : null;
         }
 
         @Override
         public byte[] signChunk(SecureChannel channel, ByteBuffer chunkNioBuffer) throws UaException {
             SecurityAlgorithm signatureAlgorithm = channel.getSecurityPolicy().getSymmetricSignatureAlgorithm();
-            byte[] signatureKey = channel.getEncryptionKeys(securitySecrets).getSignatureKey();
+            byte[] signatureKey = channel.getEncryptionKeys(securityKeys).getSignatureKey();
 
             return SignatureUtil.hmac(
                 signatureAlgorithm,
@@ -396,7 +396,7 @@ public final class ChunkEncoder {
             try {
                 String transformation = channel.getSecurityPolicy()
                     .getSymmetricEncryptionAlgorithm().getTransformation();
-                ChannelSecurity.SecretKeys secretKeys = channel.getEncryptionKeys(securitySecrets);
+                ChannelSecurity.SecretKeys secretKeys = channel.getEncryptionKeys(securityKeys);
 
                 SecretKeySpec keySpec = new SecretKeySpec(secretKeys.getEncryptionKey(), "AES");
                 IvParameterSpec ivSpec = new IvParameterSpec(secretKeys.getInitializationVector());

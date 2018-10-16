@@ -14,7 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import java.math.RoundingMode;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.cert.CertificateParsingException;
@@ -25,9 +24,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
@@ -38,17 +39,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.QueryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
-import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -56,84 +46,37 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryFirstResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.QueryNextResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
-import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
+import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.QueryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
 
 public class SessionManager implements
     AttributeServiceSet,
@@ -181,8 +124,8 @@ public class SessionManager implements
             .findFirst().ifPresent(s -> s.close(deleteSubscriptions));
     }
 
-    private Session session(ServiceRequest<?, ?> service) throws UaException {
-        long secureChannelId = service.getSecureChannel().getChannelId();
+    private Session session(ServiceRequest service) throws UaException {
+        long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
         Session session = activeSessions.get(authToken);
@@ -216,10 +159,8 @@ public class SessionManager implements
 
     //region Session Services
     @Override
-    public void onCreateSession(
-        ServiceRequest<CreateSessionRequest, CreateSessionResponse> serviceRequest) throws UaException {
-
-        CreateSessionRequest request = serviceRequest.getRequest();
+    public void onCreateSession(ServiceRequest serviceRequest) throws UaException {
+        CreateSessionRequest request = (CreateSessionRequest) serviceRequest.getRequest();
 
         long maxSessionCount = server.getConfig().getLimits().getMaxSessionCount().longValue();
         if (createdSessions.size() + activeSessions.size() >= maxSessionCount) {
@@ -229,25 +170,24 @@ public class SessionManager implements
 
         ByteString serverNonce = NonceUtil.generateNonce(32);
         NodeId authenticationToken = new NodeId(0, NonceUtil.generateNonce(32));
-        long maxRequestMessageSize = serviceRequest.getServer().getChannelConfig().getMaxMessageSize();
+        long maxRequestMessageSize = serviceRequest.getServer().getConfig().getMessageLimits().getMaxMessageSize();
         double revisedSessionTimeout = Math.max(
             5000,
             Math.min(MAX_SESSION_TIMEOUT_MS, request.getRequestedSessionTimeout())
         );
 
-        ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
-        SecurityPolicy securityPolicy = secureChannel.getSecurityPolicy();
+        long secureChannelId = serviceRequest.getSecureChannelId();
+        EndpointDescription endpoint = serviceRequest.getEndpoint();
 
-        ByteString serverCertificate = serviceRequest
-            .getSecureChannel().getEndpointDescription().getServerCertificate();
+        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
 
-        SignedSoftwareCertificate[] serverSoftwareCertificates = server.getSoftwareCertificates();
-
-        EndpointDescription[] serverEndpoints = Arrays.stream(server.getEndpointDescriptions())
+        EndpointDescription[] serverEndpoints = server.getEndpointDescriptions()
+            .stream()
             .filter(ed -> endpointMatchesUrl(ed, request.getEndpointUrl()))
             .toArray(EndpointDescription[]::new);
 
         ByteString clientNonce = request.getClientNonce();
+
         if (clientNonce.isNotNull() && (clientNonce.length() < 32)) {
             throw new UaException(StatusCodes.Bad_NonceInvalid);
         }
@@ -265,48 +205,76 @@ public class SessionManager implements
 
         ByteString clientCertificateBytes = request.getClientCertificate();
 
-        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
-            List<X509Certificate> clientCertificateChain = CertificateUtil
-                .decodeCertificates(clientCertificateBytes.bytes());
+        if (serviceRequest.getClientCertificateBytes() != null) {
+            if (!Objects.equal(clientCertificateBytes,
+                serviceRequest.getClientCertificateBytes())) {
 
-            X509Certificate clientCertificate = clientCertificateChain.get(0);
-
-            if (!secureChannel.getRemoteCertificate().equals(clientCertificate)) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "certificate used to open secure channel " +
                         "differs from certificate used to create session");
             }
+        }
 
-            CertificateValidator certificateValidator = server.getConfig().getCertificateValidator();
+        SecurityConfiguration securityConfiguration = createSecurityConfiguration(
+            endpoint,
+            clientCertificateBytes
+        );
+
+        if (securityPolicy != SecurityPolicy.None) {
+            X509Certificate clientCertificate =
+                securityConfiguration.getClientCertificate();
+
+            List<X509Certificate> clientCertificateChain =
+                securityConfiguration.getClientCertificateChain();
+
+            if (clientCertificate == null || clientCertificateChain == null) {
+                throw new UaException(
+                    StatusCodes.Bad_SecurityChecksFailed,
+                    "client certificate must be non-null");
+            }
+
+            String applicationUri = request.getClientDescription().getApplicationUri();
+
+            validateApplicationUri(applicationUri, clientCertificate);
+
+            CertificateValidator certificateValidator =
+                server.getConfig().getCertificateValidator();
 
             certificateValidator.validate(clientCertificate);
             certificateValidator.verifyTrustChain(clientCertificateChain);
-
-            validateApplicationUri(request.getClientDescription().getApplicationUri(), clientCertificate);
         }
 
-        // clientCertificateBytes may contain the bytes of the entire chain, but the
-        // signature must be created using only the bytes of the leaf certificate,
-        // so use the certificate bytes from secure channel instead.
+        // SignatureData must be created using only the bytes of the client
+        // leaf certificate, not the bytes of the client certificate chain.
         SignatureData serverSignature = getServerSignature(
-            clientNonce,
-            secureChannel.getRemoteCertificateBytes(),
             securityPolicy,
-            secureChannel.getKeyPair()
+            securityConfiguration.getKeyPair(),
+            clientNonce,
+            securityConfiguration.getClientCertificateBytes()
         );
 
         NodeId sessionId = new NodeId(1, "Session:" + UUID.randomUUID());
         String sessionName = request.getSessionName();
         Duration sessionTimeout = Duration.ofMillis(DoubleMath.roundToLong(revisedSessionTimeout, RoundingMode.UP));
-        Session session = new Session(server, sessionId, sessionName, sessionTimeout, secureChannel.getChannelId());
-        createdSessions.put(authenticationToken, session);
+
+        Session session = new Session(
+            server,
+            sessionId,
+            sessionName,
+            sessionTimeout,
+            secureChannelId,
+            endpoint,
+            securityConfiguration
+        );
+
+        session.setLastNonce(serverNonce);
 
         session.addLifecycleListener((s, remove) -> {
             createdSessions.remove(authenticationToken);
             activeSessions.remove(authenticationToken);
         });
 
-        session.setLastNonce(serverNonce);
+        createdSessions.put(authenticationToken, session);
 
         CreateSessionResponse response = new CreateSessionResponse(
             serviceRequest.createResponseHeader(),
@@ -314,9 +282,9 @@ public class SessionManager implements
             authenticationToken,
             revisedSessionTimeout,
             serverNonce,
-            serverCertificate,
+            securityConfiguration.getServerCertificateBytes(),
             serverEndpoints,
-            serverSoftwareCertificates,
+            new SignedSoftwareCertificate[0],
             serverSignature,
             uint(maxRequestMessageSize)
         );
@@ -324,12 +292,67 @@ public class SessionManager implements
         serviceRequest.setResponse(response);
     }
 
-    private boolean endpointMatchesUrl(EndpointDescription endpoint, String endpointUrl) {
-        try {
-            String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-            String endpointHost = new URI(endpoint.getEndpointUrl()).parseServerAuthority().getHost();
+    private SecurityConfiguration createSecurityConfiguration(
+        EndpointDescription endpoint,
+        ByteString clientCertificateBytes) throws UaException {
 
-            return requestedHost.equalsIgnoreCase(endpointHost);
+        SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
+        MessageSecurityMode securityMode = endpoint.getSecurityMode();
+
+        X509Certificate clientCertificate = null;
+        List<X509Certificate> clientCertificateChain = null;
+
+        KeyPair keyPair = null;
+        X509Certificate serverCertificate = null;
+        List<X509Certificate> serverCertificateChain = null;
+
+        if (securityPolicy != SecurityPolicy.None) {
+            clientCertificate = CertificateUtil
+                .decodeCertificate(clientCertificateBytes.bytes());
+
+            clientCertificateChain = CertificateUtil
+                .decodeCertificates(clientCertificateBytes.bytes());
+
+            ByteString thumbprint = ByteString.of(sha1(endpoint.getServerCertificate().bytesOrEmpty()));
+
+            keyPair = server
+                .getConfig()
+                .getCertificateManager()
+                .getKeyPair(thumbprint)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+
+            serverCertificate = server
+                .getConfig()
+                .getCertificateManager()
+                .getCertificate(thumbprint)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+
+            serverCertificateChain = server
+                .getConfig()
+                .getCertificateManager()
+                .getCertificateChain(thumbprint)
+                .map(Lists::newArrayList)
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_ConfigurationError));
+        }
+
+        return new SecurityConfiguration(
+            securityPolicy,
+            securityMode,
+            keyPair,
+            serverCertificate,
+            serverCertificateChain,
+            clientCertificate,
+            clientCertificateChain
+        );
+    }
+
+    private boolean endpointMatchesUrl(EndpointDescription endpoint, String requestedEndpointUrl) {
+        try {
+            String requestedHost = EndpointUtil.getHost(requestedEndpointUrl);
+            String endpointHost = EndpointUtil.getHost(endpoint.getEndpointUrl());
+
+            return Strings.nullToEmpty(requestedHost)
+                .equalsIgnoreCase(Strings.nullToEmpty(endpointHost));
         } catch (Throwable e) {
             logger.warn("Unable to create URI.", e);
             return false;
@@ -377,13 +400,13 @@ public class SessionManager implements
     }
 
     @Override
-    public void onActivateSession(
-        ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> serviceRequest) throws UaException {
+    public void onActivateSession(ServiceRequest serviceRequest) throws UaException {
 
-        ActivateSessionRequest request = serviceRequest.getRequest();
+        ActivateSessionRequest request = (ActivateSessionRequest) serviceRequest.getRequest();
 
-        ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
-        long secureChannelId = secureChannel.getChannelId();
+        // ServerSecureChannel secureChannel = serviceRequest.getSecureChannel();
+
+        long secureChannelId = serviceRequest.getSecureChannelId();
         NodeId authToken = request.getRequestHeader().getAuthenticationToken();
         List<SignedSoftwareCertificate> clientSoftwareCertificates = l(request.getClientSoftwareCertificates());
 
@@ -395,8 +418,9 @@ public class SessionManager implements
             if (session == null) {
                 throw new UaException(StatusCodes.Bad_SessionIdInvalid);
             } else {
+                verifyClientSignature(session, request);
 
-                verifyClientSignature(request, secureChannel, session);
+                SecurityConfiguration securityConfiguration = session.getSecurityConfiguration();
 
                 if (session.getSecureChannelId() == secureChannelId) {
                     /*
@@ -408,11 +432,11 @@ public class SessionManager implements
                     );
 
                     Object identityObject = validateIdentityToken(
-                        secureChannel,
                         session,
                         tokenObject,
                         request.getUserTokenSignature()
                     );
+
                     session.setIdentityObject(identityObject);
 
                     StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
@@ -434,7 +458,7 @@ public class SessionManager implements
                     /*
                      * Associate session with new secure channel if client certificate and identity token match.
                      */
-                    ByteString certificateBytes = secureChannel.getRemoteCertificateBytes();
+                    ByteString clientCertificateBytes = serviceRequest.getClientCertificateBytes();
 
                     if (request.getUserIdentityToken() == null || request.getUserIdentityToken().decode() == null) {
                         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
@@ -446,16 +470,31 @@ public class SessionManager implements
                     );
 
                     Object identityObject = validateIdentityToken(
-                        secureChannel,
                         session,
                         tokenObject,
                         request.getUserTokenSignature()
                     );
 
-                    if (identityObject.equals(session.getIdentityObject()) &&
-                        certificateBytes.equals(session.getClientCertificateBytes())) {
+                    boolean sameIdentity = Objects.equal(
+                        identityObject,
+                        session.getIdentityObject()
+                    );
 
+                    boolean sameCertificate = Objects.equal(
+                        clientCertificateBytes,
+                        securityConfiguration.getClientCertificateBytes()
+                    );
+
+                    if (sameIdentity && sameCertificate) {
                         session.setSecureChannelId(secureChannelId);
+
+                        SecurityConfiguration newSecurityConfiguration = createSecurityConfiguration(
+                            serviceRequest.getEndpoint(),
+                            clientCertificateBytes
+                        );
+
+                        session.setEndpoint(serviceRequest.getEndpoint());
+                        session.setSecurityConfiguration(newSecurityConfiguration);
 
                         logger.debug("Session id={} is now associated with secureChannelId={}",
                             session.getSessionId(), secureChannelId);
@@ -489,7 +528,7 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
             }
 
-            verifyClientSignature(request, secureChannel, session);
+            verifyClientSignature(session, request);
 
             Object tokenObject = request.getUserIdentityToken().decode(
                 server.getConfig().getEncodingLimits(),
@@ -497,17 +536,15 @@ public class SessionManager implements
             );
 
             Object identityObject = validateIdentityToken(
-                secureChannel,
                 session,
                 tokenObject,
                 request.getUserTokenSignature()
             );
+
             session.setIdentityObject(identityObject);
 
             createdSessions.remove(authToken);
             activeSessions.put(authToken, session);
-
-            session.setClientCertificateBytes(secureChannel.getRemoteCertificateBytes());
 
             StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
             Arrays.fill(results, StatusCode.GOOD);
@@ -527,16 +564,14 @@ public class SessionManager implements
         }
     }
 
-    private void verifyClientSignature(
-        ActivateSessionRequest request,
-        ServerSecureChannel secureChannel,
-        Session session) throws UaException {
+    private static void verifyClientSignature(Session session, ActivateSessionRequest request) throws UaException {
+        SecurityConfiguration securityConfiguration = session.getSecurityConfiguration();
 
-        if (secureChannel.getSecurityPolicy() != SecurityPolicy.None) {
+        if (securityConfiguration.getSecurityPolicy() != SecurityPolicy.None) {
             SignatureData clientSignature = request.getClientSignature();
 
             byte[] dataBytes = Bytes.concat(
-                secureChannel.getLocalCertificateBytes().bytesOrEmpty(),
+                securityConfiguration.getServerCertificateBytes().bytesOrEmpty(),
                 session.getLastNonce().bytesOrEmpty()
             );
 
@@ -544,7 +579,7 @@ public class SessionManager implements
 
             SignatureUtil.verify(
                 SecurityAlgorithm.fromUri(clientSignature.getAlgorithm()),
-                secureChannel.getRemoteCertificate(),
+                securityConfiguration.getClientCertificate(),
                 dataBytes,
                 signatureBytes
             );
@@ -552,17 +587,15 @@ public class SessionManager implements
     }
 
     private Object validateIdentityToken(
-        ServerSecureChannel channel,
         Session session,
         Object tokenObject,
         SignatureData tokenSignature) throws UaException {
 
         IdentityValidator identityValidator = server.getConfig().getIdentityValidator();
-        UserTokenPolicy tokenPolicy = validatePolicyId(tokenObject);
+        UserTokenPolicy tokenPolicy = validatePolicyId(session, tokenObject);
 
         if (tokenObject instanceof UserIdentityToken) {
             return identityValidator.validateIdentityToken(
-                channel,
                 session,
                 (UserIdentityToken) tokenObject,
                 tokenPolicy,
@@ -573,26 +606,41 @@ public class SessionManager implements
         }
     }
 
-    private UserTokenPolicy validatePolicyId(Object tokenObject) throws UaException {
+    /**
+     * Validates the policyId on a {@link UserIdentityToken} Object is a policyId that exists on the Endpoint that
+     * {@code session} is connected to.
+     *
+     * @param session     the current {@link Session}
+     * @param tokenObject the {@link UserIdentityToken} Object from the client.
+     * @return the first {@link UserTokenPolicy} on the Endpoint matching the policyId.
+     * @throws UaException if the token object is invalid or no matching policy is found.
+     */
+    private UserTokenPolicy validatePolicyId(Session session, Object tokenObject) throws UaException {
         if (tokenObject instanceof UserIdentityToken) {
             UserIdentityToken token = (UserIdentityToken) tokenObject;
             String policyId = token.getPolicyId();
 
-            for (UserTokenPolicy policy : server.getUserTokenPolicies()) {
-                if (Objects.equal(policyId, policy.getPolicyId())) {
-                    return policy;
-                }
-            }
+            List<UserTokenPolicy> userIdentityTokens =
+                l(session.getEndpoint().getUserIdentityTokens());
 
-            throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "policy not found: " + policyId);
+            Optional<UserTokenPolicy> policy = userIdentityTokens
+                .stream()
+                .filter(t -> Objects.equal(policyId, t.getPolicyId()))
+                .findFirst();
+
+            return policy.orElseThrow(() ->
+                new UaException(
+                    StatusCodes.Bad_IdentityTokenInvalid,
+                    "policy not found: " + policyId)
+            );
         } else {
             throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
         }
     }
 
     @Override
-    public void onCloseSession(ServiceRequest<CloseSessionRequest, CloseSessionResponse> service) throws UaException {
-        long secureChannelId = service.getSecureChannel().getChannelId();
+    public void onCloseSession(ServiceRequest service) throws UaException {
+        long secureChannelId = service.getSecureChannelId();
         NodeId authToken = service.getRequest().getRequestHeader().getAuthenticationToken();
 
         Session session = activeSessions.get(authToken);
@@ -619,62 +667,62 @@ public class SessionManager implements
     }
 
     @Override
-    public void onCancel(ServiceRequest<CancelRequest, CancelResponse> service) throws UaException {
+    public void onCancel(ServiceRequest service) throws UaException {
         session(service).onCancel(service);
     }
 
-    private SignatureData getServerSignature(ByteString clientNonce,
-                                             ByteString clientCertificate,
-                                             SecurityPolicy securityPolicy,
-                                             KeyPair keyPair) throws UaException {
+    private SignatureData getServerSignature(
+        SecurityPolicy securityPolicy,
+        KeyPair keyPair,
+        ByteString clientNonce,
+        ByteString clientCertificate) throws UaException {
 
-        if (clientNonce.isNull() || clientCertificate.isNull() || keyPair == null) {
+        if (securityPolicy == SecurityPolicy.None) {
             return new SignatureData(null, null);
-        }
+        } else {
+            try {
+                SecurityAlgorithm algorithm = securityPolicy.getAsymmetricSignatureAlgorithm();
 
-        try {
-            SecurityAlgorithm algorithm = securityPolicy.getAsymmetricSignatureAlgorithm();
+                byte[] data = Bytes.concat(clientCertificate.bytes(), clientNonce.bytes());
 
-            byte[] data = Bytes.concat(clientCertificate.bytes(), clientNonce.bytes());
+                byte[] signature = SignatureUtil.sign(
+                    algorithm,
+                    keyPair.getPrivate(),
+                    ByteBuffer.wrap(data)
+                );
 
-            byte[] signature = SignatureUtil.sign(
-                algorithm,
-                keyPair.getPrivate(),
-                ByteBuffer.wrap(data)
-            );
-
-            return new SignatureData(algorithm.getUri(), ByteString.of(signature));
-        } catch (UaRuntimeException e) {
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
+                return new SignatureData(algorithm.getUri(), ByteString.of(signature));
+            } catch (UaRuntimeException e) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
+            }
         }
     }
     //endregion
 
     //region Attribute Services
     @Override
-    public void onRead(ServiceRequest<ReadRequest, ReadResponse> service) throws UaException {
+    public void onRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getAttributeServiceSet().onRead(service);
     }
 
     @Override
-    public void onWrite(ServiceRequest<WriteRequest, WriteResponse> service) throws UaException {
+    public void onWrite(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getAttributeServiceSet().onWrite(service);
     }
 
     @Override
-    public void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> service) throws UaException {
+    public void onHistoryRead(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getAttributeHistoryServiceSet().onHistoryRead(service);
     }
 
     @Override
-    public void onHistoryUpdate(
-        ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service) throws UaException {
+    public void onHistoryUpdate(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -684,42 +732,35 @@ public class SessionManager implements
 
     //region View Services
     @Override
-    public void onBrowse(ServiceRequest<BrowseRequest, BrowseResponse> service) throws UaException {
+    public void onBrowse(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onBrowse(service);
     }
 
     @Override
-    public void onBrowseNext(ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) throws UaException {
+    public void onBrowseNext(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onBrowseNext(service);
     }
 
     @Override
-    public void onTranslateBrowsePaths(
-        ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> service)
-        throws UaException {
-
+    public void onTranslateBrowsePaths(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onTranslateBrowsePaths(service);
     }
 
     @Override
-    public void onRegisterNodes(
-        ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> service) throws UaException {
-
+    public void onRegisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onRegisterNodes(service);
     }
 
     @Override
-    public void onUnregisterNodes(
-        ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> service) throws UaException {
-
+    public void onUnregisterNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getViewServiceSet().onUnregisterNodes(service);
@@ -728,15 +769,14 @@ public class SessionManager implements
 
     //region NodeManagement Services
     @Override
-    public void onAddNodes(ServiceRequest<AddNodesRequest, AddNodesResponse> service) throws UaException {
+    public void onAddNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getNodeManagementServiceSet().onAddNodes(service);
     }
 
     @Override
-    public void onAddReferences(
-        ServiceRequest<AddReferencesRequest, AddReferencesResponse> service) throws UaException {
+    public void onAddReferences(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -744,15 +784,14 @@ public class SessionManager implements
     }
 
     @Override
-    public void onDeleteNodes(ServiceRequest<DeleteNodesRequest, DeleteNodesResponse> service) throws UaException {
+    public void onDeleteNodes(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getNodeManagementServiceSet().onDeleteNodes(service);
     }
 
     @Override
-    public void onDeleteReferences(
-        ServiceRequest<DeleteReferencesRequest, DeleteReferencesResponse> service) throws UaException {
+    public void onDeleteReferences(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -762,8 +801,7 @@ public class SessionManager implements
 
     //region Subscription Services
     @Override
-    public void onCreateSubscription(
-        ServiceRequest<CreateSubscriptionRequest, CreateSubscriptionResponse> service) throws UaException {
+    public void onCreateSubscription(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -771,8 +809,7 @@ public class SessionManager implements
     }
 
     @Override
-    public void onModifySubscription(
-        ServiceRequest<ModifySubscriptionRequest, ModifySubscriptionResponse> service) throws UaException {
+    public void onModifySubscription(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -780,8 +817,7 @@ public class SessionManager implements
     }
 
     @Override
-    public void onSetPublishingMode(
-        ServiceRequest<SetPublishingModeRequest, SetPublishingModeResponse> service) throws UaException {
+    public void onSetPublishingMode(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -789,32 +825,28 @@ public class SessionManager implements
     }
 
     @Override
-    public void onPublish(ServiceRequest<PublishRequest, PublishResponse> service) throws UaException {
+    public void onPublish(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onPublish(service);
     }
 
     @Override
-    public void onRepublish(ServiceRequest<RepublishRequest, RepublishResponse> service) throws UaException {
+    public void onRepublish(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onRepublish(service);
     }
 
     @Override
-    public void onTransferSubscriptions(
-        ServiceRequest<TransferSubscriptionsRequest, TransferSubscriptionsResponse> service) throws UaException {
-
+    public void onTransferSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onTransferSubscriptions(service);
     }
 
     @Override
-    public void onDeleteSubscriptions(
-        ServiceRequest<DeleteSubscriptionsRequest, DeleteSubscriptionsResponse> service) throws UaException {
-
+    public void onDeleteSubscriptions(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getSubscriptionServiceSet().onDeleteSubscriptions(service);
@@ -823,44 +855,35 @@ public class SessionManager implements
 
     //region MonitoredItem Services
     @Override
-    public void onCreateMonitoredItems(
-        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) throws UaException {
-
+    public void onCreateMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onCreateMonitoredItems(service);
     }
 
     @Override
-    public void onModifyMonitoredItems(
-        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) throws UaException {
-
+    public void onModifyMonitoredItems(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onModifyMonitoredItems(service);
     }
 
     @Override
-    public void onSetMonitoringMode(
-        ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) throws UaException {
-
+    public void onSetMonitoringMode(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onSetMonitoringMode(service);
     }
 
     @Override
-    public void onSetTriggering(
-        ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) throws UaException {
-
+    public void onSetTriggering(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMonitoredItemServiceSet().onSetTriggering(service);
     }
 
     @Override
-    public void onDeleteMonitoredItems(
-        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) throws UaException {
+    public void onDeleteMonitoredItems(ServiceRequest service) throws UaException {
 
         Session session = session(service);
 
@@ -870,7 +893,7 @@ public class SessionManager implements
 
     //region Method Services
     @Override
-    public void onCall(ServiceRequest<CallRequest, CallResponse> service) throws UaException {
+    public void onCall(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getMethodServiceSet().onCall(service);
@@ -879,14 +902,14 @@ public class SessionManager implements
 
     //region Query Services
     @Override
-    public void onQueryFirst(ServiceRequest<QueryFirstRequest, QueryFirstResponse> service) throws UaException {
+    public void onQueryFirst(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getQueryServiceSet().onQueryFirst(service);
     }
 
     @Override
-    public void onQueryNext(ServiceRequest<QueryNextRequest, QueryNextResponse> service) throws UaException {
+    public void onQueryNext(ServiceRequest service) throws UaException {
         Session session = session(service);
 
         session.getQueryServiceSet().onQueryNext(service);

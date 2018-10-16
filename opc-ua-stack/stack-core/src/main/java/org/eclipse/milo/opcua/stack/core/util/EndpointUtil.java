@@ -27,6 +27,49 @@ public class EndpointUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EndpointUtil.class);
 
+    private static final Pattern ENDPOINT_URL_PATTERN =
+        Pattern.compile("(opc.tcp|http|https|opc.http|opc.https|opc.ws|opc.wss)://([^:/]+)(:\\d+)?(/.*)?");
+
+    @Nullable
+    public static String getScheme(@Nonnull String endpointUrl) {
+        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+
+        if (matcher.matches()) {
+            return matcher.group(1);
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static String getHost(@Nonnull String endpointUrl) {
+        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+
+        if (matcher.matches()) {
+            return matcher.group(2);
+        }
+
+        return null;
+    }
+
+    public static int getPort(@Nonnull String endpointUrl) {
+        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
+
+        if (matcher.matches()) {
+            try {
+                String group = matcher.group(3);
+                if (group != null && group.startsWith(":")) {
+                    group = group.substring(1);
+                    return Integer.valueOf(group);
+                }
+            } catch (NumberFormatException ignored) {
+                // ignored
+            }
+        }
+
+        return 4840;
+    }
+
     /**
      * Get the path component from an endpoint URL.
      * <p>
@@ -100,9 +143,6 @@ public class EndpointUtil {
             endpoint.getSecurityLevel()
         );
     }
-
-    private static final Pattern ENDPOINT_URL_PATTERN =
-        Pattern.compile("(opc.tcp|http|https)://([^:/]+)(:\\d+)?(/.*)?");
 
     static String updateUrl(String endpointUrl, @Nullable String hostname) {
         return updateUrl(endpointUrl, hostname, -1);

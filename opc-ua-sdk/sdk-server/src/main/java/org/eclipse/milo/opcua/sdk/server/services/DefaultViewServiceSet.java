@@ -29,26 +29,22 @@ import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.sdk.server.util.PendingBrowse;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.ViewServiceSet;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RegisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.TranslateBrowsePathsToNodeIdsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.UnregisterNodesResponse;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.groupingBy;
@@ -65,10 +61,10 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     private final BrowseHelper browseHelper = new BrowseHelper();
 
     @Override
-    public void onBrowse(ServiceRequest<BrowseRequest, BrowseResponse> service) {
+    public void onBrowse(ServiceRequest service) {
         browseCounter.record(service);
 
-        BrowseRequest request = service.getRequest();
+        BrowseRequest request = (BrowseRequest) service.getRequest();
 
         DiagnosticsContext<BrowseDescription> diagnosticsContext = new DiagnosticsContext<>();
 
@@ -138,16 +134,14 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     }
 
     @Override
-    public void onBrowseNext(ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) {
+    public void onBrowseNext(ServiceRequest service) {
         browseNextCounter.record(service);
 
         browseHelper.browseNext(service);
     }
 
     @Override
-    public void onTranslateBrowsePaths(
-        ServiceRequest<TranslateBrowsePathsToNodeIdsRequest, TranslateBrowsePathsToNodeIdsResponse> service) {
-
+    public void onTranslateBrowsePaths(ServiceRequest service) {
         translateBrowsePathsCounter.record(service);
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
@@ -164,12 +158,10 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     }
 
     @Override
-    public void onRegisterNodes(
-        ServiceRequest<RegisterNodesRequest, RegisterNodesResponse> service) throws UaException {
-
+    public void onRegisterNodes(ServiceRequest service) throws UaException {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
 
-        RegisterNodesRequest request = service.getRequest();
+        RegisterNodesRequest request = (RegisterNodesRequest) service.getRequest();
 
         List<NodeId> nodeIds = l(request.getNodesToRegister());
 
@@ -188,12 +180,10 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     }
 
     @Override
-    public void onUnregisterNodes(
-        ServiceRequest<UnregisterNodesRequest, UnregisterNodesResponse> service) throws UaException {
-
+    public void onUnregisterNodes(ServiceRequest service) throws UaException {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
 
-        UnregisterNodesRequest request = service.getRequest();
+        UnregisterNodesRequest request = (UnregisterNodesRequest) service.getRequest();
 
         List<NodeId> nodeIds = l(request.getNodesToUnregister());
 

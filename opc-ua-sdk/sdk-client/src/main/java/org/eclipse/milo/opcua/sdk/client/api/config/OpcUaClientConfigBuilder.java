@@ -25,10 +25,10 @@ import org.eclipse.milo.opcua.binaryschema.GenericBsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.AnonymousProvider;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -36,16 +36,39 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
+public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
+
+    private LocalizedText applicationName = LocalizedText.english("client application name not configured");
+    private String applicationUri = "client application uri not configured";
+    private String productUri = "client product uri not configured";
 
     private Supplier<String> sessionName;
-
     private UInteger sessionTimeout = uint(120000);
-    private UInteger maxResponseMessageSize = uint(0);
-    private UInteger requestTimeout = uint(60000);
-    private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
     private IdentityProvider identityProvider = new AnonymousProvider();
+
+    private UInteger maxResponseMessageSize = uint(0);
+    private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
+
     private BsdParser bsdParser = new GenericBsdParser();
+    private UInteger keepAliveFailuresAllowed = uint(1);
+    private UInteger keepAliveInterval = uint(5000);
+    private UInteger keepAliveTimeout = uint(5000);
+
+
+    public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
+        this.applicationName = applicationName;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setApplicationUri(String applicationUri) {
+        this.applicationUri = applicationUri;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setProductUri(String productUri) {
+        this.productUri = productUri;
+        return this;
+    }
 
     public OpcUaClientConfigBuilder setSessionName(Supplier<String> sessionName) {
         this.sessionName = sessionName;
@@ -67,11 +90,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         return this;
     }
 
-    public OpcUaClientConfigBuilder setRequestTimeout(UInteger requestTimeout) {
-        this.requestTimeout = requestTimeout;
-        return this;
-    }
-
     public OpcUaClientConfigBuilder setIdentityProvider(IdentityProvider identityProvider) {
         this.identityProvider = identityProvider;
         return this;
@@ -82,9 +100,18 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         return this;
     }
 
-    @Override
-    public OpcUaClientConfigBuilder setEndpointUrl(String endpointUrl) {
-        super.setEndpointUrl(endpointUrl);
+    public OpcUaClientConfigBuilder setKeepAliveFailuresAllowed(UInteger keepAliveFailuresAllowed) {
+        this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveInterval(UInteger keepAliveInterval) {
+        this.keepAliveInterval = keepAliveInterval;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setKeepAliveTimeout(UInteger keepAliveTimeout) {
+        this.keepAliveTimeout = keepAliveTimeout;
         return this;
     }
 
@@ -119,26 +146,8 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     }
 
     @Override
-    public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
-        super.setApplicationName(applicationName);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setApplicationUri(String applicationUri) {
-        super.setApplicationUri(applicationUri);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setProductUri(String productUri) {
-        super.setProductUri(productUri);
-        return this;
-    }
-
-    @Override
-    public OpcUaClientConfigBuilder setChannelConfig(ChannelConfig channelConfig) {
-        super.setChannelConfig(channelConfig);
+    public OpcUaClientConfigBuilder setMessageLimits(MessageLimits messageLimits) {
+        super.setMessageLimits(messageLimits);
         return this;
     }
 
@@ -173,60 +182,109 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     }
 
     @Override
+    public OpcUaClientConfigBuilder setConnectTimeout(UInteger connectTimeout) {
+        super.setConnectTimeout(connectTimeout);
+        return this;
+    }
+
+    @Override
     public OpcUaClientConfigBuilder setAcknowledgeTimeout(UInteger acknowledgeTimeout) {
         super.setAcknowledgeTimeout(acknowledgeTimeout);
         return this;
     }
 
+    @Override
+    public OpcUaClientConfigBuilder setRequestTimeout(UInteger requestTimeout) {
+        super.setRequestTimeout(requestTimeout);
+        return this;
+    }
+
     public OpcUaClientConfig build() {
-        UaTcpStackClientConfig stackClientConfig = super.build();
+        UaStackClientConfig stackClientConfig = super.build();
 
         if (sessionName == null) {
             sessionName = () -> String.format("UaSession:%s:%s",
-                stackClientConfig.getApplicationName().getText(),
-                System.currentTimeMillis());
+                applicationName.getText(),
+                System.currentTimeMillis()
+            );
         }
 
         return new OpcUaClientConfigImpl(
             stackClientConfig,
+            applicationName,
+            applicationUri,
+            productUri,
             sessionName,
             sessionTimeout,
             maxResponseMessageSize,
             maxPendingPublishRequests,
-            requestTimeout,
             identityProvider,
-            bsdParser
+            bsdParser,
+            keepAliveFailuresAllowed,
+            keepAliveInterval,
+            keepAliveTimeout
         );
     }
 
-    public static class OpcUaClientConfigImpl implements OpcUaClientConfig {
+    static class OpcUaClientConfigImpl implements OpcUaClientConfig {
 
-        private final UaTcpStackClientConfig stackClientConfig;
+        private final UaStackClientConfig stackClientConfig;
+        private final LocalizedText applicationName;
+        private final String applicationUri;
+        private final String productUri;
         private final Supplier<String> sessionName;
         private final UInteger sessionTimeout;
         private final UInteger maxResponseMessageSize;
         private final UInteger maxPendingPublishRequests;
-        private final UInteger requestTimeout;
         private final IdentityProvider identityProvider;
         private final BsdParser bsdParser;
+        private final UInteger keepAliveFailuresAllowed;
+        private final UInteger keepAliveInterval;
+        private final UInteger keepAliveTimeout;
 
-        public OpcUaClientConfigImpl(UaTcpStackClientConfig stackClientConfig,
-                                     Supplier<String> sessionName,
-                                     UInteger sessionTimeout,
-                                     UInteger maxResponseMessageSize,
-                                     UInteger maxPendingPublishRequests,
-                                     UInteger requestTimeout,
-                                     IdentityProvider identityProvider,
-                                     BsdParser bsdParser) {
+        OpcUaClientConfigImpl(
+            UaStackClientConfig stackClientConfig,
+            LocalizedText applicationName,
+            String applicationUri,
+            String productUri,
+            Supplier<String> sessionName,
+            UInteger sessionTimeout,
+            UInteger maxResponseMessageSize,
+            UInteger maxPendingPublishRequests,
+            IdentityProvider identityProvider,
+            BsdParser bsdParser,
+            UInteger keepAliveFailuresAllowed,
+            UInteger keepAliveInterval,
+            UInteger keepAliveTimeout) {
 
             this.stackClientConfig = stackClientConfig;
+            this.applicationName = applicationName;
+            this.applicationUri = applicationUri;
+            this.productUri = productUri;
             this.sessionName = sessionName;
             this.sessionTimeout = sessionTimeout;
             this.maxResponseMessageSize = maxResponseMessageSize;
             this.maxPendingPublishRequests = maxPendingPublishRequests;
-            this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
             this.bsdParser = bsdParser;
+            this.keepAliveFailuresAllowed = keepAliveFailuresAllowed;
+            this.keepAliveInterval = keepAliveInterval;
+            this.keepAliveTimeout = keepAliveTimeout;
+        }
+
+        @Override
+        public LocalizedText getApplicationName() {
+            return applicationName;
+        }
+
+        @Override
+        public String getApplicationUri() {
+            return applicationUri;
+        }
+
+        @Override
+        public String getProductUri() {
+            return productUri;
         }
 
         @Override
@@ -250,11 +308,6 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         }
 
         @Override
-        public UInteger getRequestTimeout() {
-            return requestTimeout;
-        }
-
-        @Override
         public IdentityProvider getIdentityProvider() {
             return identityProvider;
         }
@@ -265,12 +318,22 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         }
 
         @Override
-        public Optional<String> getEndpointUrl() {
-            return stackClientConfig.getEndpointUrl();
+        public UInteger getKeepAliveFailuresAllowed() {
+            return keepAliveFailuresAllowed;
         }
 
         @Override
-        public Optional<EndpointDescription> getEndpoint() {
+        public UInteger getKeepAliveInterval() {
+            return keepAliveInterval;
+        }
+
+        @Override
+        public UInteger getKeepAliveTimeout() {
+            return keepAliveTimeout;
+        }
+
+        @Override
+        public EndpointDescription getEndpoint() {
             return stackClientConfig.getEndpoint();
         }
 
@@ -295,23 +358,8 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         }
 
         @Override
-        public LocalizedText getApplicationName() {
-            return stackClientConfig.getApplicationName();
-        }
-
-        @Override
-        public String getApplicationUri() {
-            return stackClientConfig.getApplicationUri();
-        }
-
-        @Override
-        public String getProductUri() {
-            return stackClientConfig.getProductUri();
-        }
-
-        @Override
-        public ChannelConfig getChannelConfig() {
-            return stackClientConfig.getChannelConfig();
+        public MessageLimits getMessageLimits() {
+            return stackClientConfig.getMessageLimits();
         }
 
         @Override
@@ -340,8 +388,18 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         }
 
         @Override
+        public UInteger getConnectTimeout() {
+            return stackClientConfig.getConnectTimeout();
+        }
+
+        @Override
         public UInteger getAcknowledgeTimeout() {
             return stackClientConfig.getAcknowledgeTimeout();
+        }
+
+        @Override
+        public UInteger getRequestTimeout() {
+            return stackClientConfig.getRequestTimeout();
         }
 
     }

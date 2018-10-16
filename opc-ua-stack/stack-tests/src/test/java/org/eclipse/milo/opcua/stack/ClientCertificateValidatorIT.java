@@ -14,12 +14,11 @@
 package org.eclipse.milo.opcua.stack;
 
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfigBuilder;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -57,14 +56,16 @@ public class ClientCertificateValidatorIT extends StackIntegrationTest {
     }
 
     @Override
-    protected UaTcpStackClientConfigBuilder configureClient(UaTcpStackClientConfigBuilder builder) {
-        return builder.setCertificateValidator(validator);
+    protected UaStackClientConfigBuilder configureClient(UaStackClientConfigBuilder builder) {
+        return builder
+            .setCertificate(clientCertificate)
+            .setCertificateValidator(validator);
     }
 
     @Override
-    protected EndpointDescription selectEndpoint(EndpointDescription[] endpoints) {
-        return Arrays.stream(endpoints)
-            .filter(e -> !SecurityPolicy.None.getSecurityPolicyUri().equals(e.getSecurityPolicyUri()))
+    protected EndpointDescription selectEndpoint(List<EndpointDescription> endpoints) {
+        return endpoints.stream()
+            .filter(e -> !SecurityPolicy.None.getUri().equals(e.getSecurityPolicyUri()))
             .findFirst()
             .orElseThrow(() -> new RuntimeException("no secure endpoint found!"));
     }

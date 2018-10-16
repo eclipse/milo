@@ -25,6 +25,8 @@ import java.util.List;
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity.SecretKeys;
+import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity.SecurityKeys;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -51,9 +53,9 @@ public interface SecureChannel {
 
     ChannelSecurity getChannelSecurity();
 
-    ChannelSecurity.SecretKeys getEncryptionKeys(ChannelSecurity.SecuritySecrets secretKeys);
+    SecretKeys getEncryptionKeys(SecurityKeys securityKeys);
 
-    ChannelSecurity.SecretKeys getDecryptionKeys(ChannelSecurity.SecuritySecrets secretKeys);
+    SecretKeys getDecryptionKeys(SecurityKeys securityKeys);
 
     ByteString getLocalNonce();
 

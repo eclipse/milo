@@ -20,8 +20,6 @@ import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
-import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -41,7 +39,6 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
 
     @Override
     public Object validateX509Token(
-        ServerSecureChannel channel,
         Session session,
         X509IdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -59,7 +56,7 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
                     "algorithm in token signature did not match algorithm specified by token policy");
             }
         } else {
-            SecurityPolicy securityPolicy = channel.getSecurityPolicy();
+            SecurityPolicy securityPolicy = session.getSecurityConfiguration().getSecurityPolicy();
 
             if (!securityPolicy.getAsymmetricSignatureAlgorithm().getUri().equals(tokenSignature.getAlgorithm())) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
@@ -71,7 +68,6 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
 
         if (algorithm != SecurityAlgorithm.None) {
             verifySignature(
-                channel,
                 session,
                 tokenSignature,
                 identityCertificate,
@@ -87,13 +83,15 @@ public class X509IdentityValidator extends AbstractIdentityValidator {
     }
 
     private void verifySignature(
-        SecureChannel channel,
         Session session,
         SignatureData tokenSignature,
         X509Certificate identityCertificate,
         SecurityAlgorithm algorithm) throws UaException {
 
-        ByteString serverCertificateBs = channel.getLocalCertificateBytes();
+        ByteString serverCertificateBs = session
+            .getSecurityConfiguration()
+            .getServerCertificateBytes();
+        
         ByteString lastNonceBs = session.getLastNonce();
 
         byte[] dataBytes = Bytes.concat(serverCertificateBs.bytesOrEmpty(), lastNonceBs.bytesOrEmpty());

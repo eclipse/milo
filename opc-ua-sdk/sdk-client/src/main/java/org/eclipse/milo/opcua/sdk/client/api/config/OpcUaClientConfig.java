@@ -18,11 +18,28 @@ import java.util.function.Supplier;
 
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.sdk.client.api.identity.IdentityProvider;
-import org.eclipse.milo.opcua.stack.client.config.UaTcpStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 
-public interface OpcUaClientConfig extends UaTcpStackClientConfig {
+public interface OpcUaClientConfig extends UaStackClientConfig {
+
+    /**
+     * @return the name of the client application, as a {@link LocalizedText}.
+     */
+    LocalizedText getApplicationName();
+
+    /**
+     * @return a URI for the client's application instance. This should be the same as the URI in the client
+     * certificate, if present.
+     */
+    String getApplicationUri();
+
+    /**
+     * @return the URI for the client's application product.
+     */
+    String getProductUri();
 
     /**
      * @return a {@link Supplier} for the session name.
@@ -33,11 +50,6 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
      * @return the session timeout, in milliseconds, to request.
      */
     UInteger getSessionTimeout();
-
-    /**
-     * @return the timeout, in milliseconds, before failing a request due to timeout.
-     */
-    UInteger getRequestTimeout();
 
     /**
      * @return the maximum size for a response from the server.
@@ -60,6 +72,22 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
     BsdParser getBsdParser();
 
     /**
+     * @return the number of consecutive keep-alive request failures allowed before a connection is determined to be in
+     * error state.
+     */
+    UInteger getKeepAliveFailuresAllowed();
+
+    /**
+     * @return the interval, in milliseconds, between consecutive keep-alive requests.
+     */
+    UInteger getKeepAliveInterval();
+
+    /**
+     * @return the amount of time to wait, in milliseconds, for a keep-alive request before timing out.
+     */
+    UInteger getKeepAliveTimeout();
+
+    /**
      * @return a new {@link OpcUaClientConfigBuilder}.
      */
     static OpcUaClientConfigBuilder builder() {
@@ -77,21 +105,23 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
     static OpcUaClientConfigBuilder copy(OpcUaClientConfig config) {
         OpcUaClientConfigBuilder builder = new OpcUaClientConfigBuilder();
 
-        // UaTcpStackClientConfig values
-        config.getEndpointUrl().ifPresent(builder::setEndpointUrl);
-        config.getEndpoint().ifPresent(builder::setEndpoint);
+        // UaStackClientConfig values
+        builder.setEndpoint(config.getEndpoint());
         config.getKeyPair().ifPresent(builder::setKeyPair);
         config.getCertificate().ifPresent(builder::setCertificate);
         config.getCertificateChain().ifPresent(builder::setCertificateChain);
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
-        builder.setChannelConfig(config.getChannelConfig());
+        builder.setMessageLimits(config.getMessageLimits());
         builder.setEncodingLimits(config.getEncodingLimits());
         builder.setChannelLifetime(config.getChannelLifetime());
         builder.setExecutor(config.getExecutor());
         builder.setEventLoop(config.getEventLoop());
         builder.setWheelTimer(config.getWheelTimer());
+        builder.setConnectTimeout(config.getConnectTimeout());
+        builder.setAcknowledgeTimeout(config.getAcknowledgeTimeout());
+        builder.setRequestTimeout(config.getRequestTimeout());
 
         // OpcUaClientConfig values
         builder.setSessionName(config.getSessionName());
@@ -101,6 +131,9 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
         builder.setMaxPendingPublishRequests(config.getMaxPendingPublishRequests());
         builder.setIdentityProvider(config.getIdentityProvider());
         builder.setBsdParser(config.getBsdParser());
+        builder.setKeepAliveFailuresAllowed(config.getKeepAliveFailuresAllowed());
+        builder.setKeepAliveInterval(config.getKeepAliveInterval());
+        builder.setKeepAliveTimeout(config.getKeepAliveTimeout());
 
         return builder;
     }

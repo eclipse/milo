@@ -31,7 +31,6 @@ import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -54,6 +53,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.jooq.lambda.tuple.Tuple3;
 
 import static java.util.stream.Collectors.toList;
@@ -73,10 +73,10 @@ public class BrowseHelper {
         new StatusCode(StatusCodes.Bad_NodeIdUnknown),
         ByteString.NULL_VALUE, new ReferenceDescription[0]);
 
-    public void browseNext(ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) {
+    public void browseNext(ServiceRequest service) {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
 
-        BrowseNextRequest request = service.getRequest();
+        BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
 
         List<ByteString> continuationPoints = l(request.getContinuationPoints());
 
@@ -243,12 +243,19 @@ public class BrowseHelper {
                         as.getBrowseName(),
                         as.getDisplayName(),
                         as.getNodeClass(),
-                        typeDefinition));
+                        typeDefinition)
+                );
             }).orElse(
-                CompletableFuture.completedFuture(new ReferenceDescription(
-                    referenceTypeId, reference.isForward(), targetNodeId,
-                    QualifiedName.NULL_VALUE, LocalizedText.NULL_VALUE,
-                    NodeClass.Unspecified, ExpandedNodeId.NULL_VALUE))
+                CompletableFuture.completedFuture(
+                    new ReferenceDescription(
+                        referenceTypeId,
+                        reference.isForward(),
+                        targetNodeId,
+                        QualifiedName.NULL_VALUE,
+                        LocalizedText.NULL_VALUE,
+                        NodeClass.Unspecified,
+                        ExpandedNodeId.NULL_VALUE)
+                )
             );
         }
 
@@ -314,10 +321,9 @@ public class BrowseHelper {
     private static class BrowseNext implements Runnable {
 
         private final OpcUaServer server;
-        private final ServiceRequest<BrowseNextRequest, BrowseNextResponse> service;
+        private final ServiceRequest service;
 
-        private BrowseNext(OpcUaServer server,
-                           ServiceRequest<BrowseNextRequest, BrowseNextResponse> service) {
+        private BrowseNext(OpcUaServer server, ServiceRequest service) {
 
             this.server = server;
             this.service = service;
@@ -325,7 +331,7 @@ public class BrowseHelper {
 
         @Override
         public void run() {
-            BrowseNextRequest request = service.getRequest();
+            BrowseNextRequest request = (BrowseNextRequest) service.getRequest();
 
             List<BrowseResult> results = Lists.newArrayList();
 

@@ -74,6 +74,10 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
         }
     }
 
+    public Document getDocument() {
+        return document;
+    }
+
     public String getDocumentXml() {
         return "";
     }

@@ -34,7 +34,6 @@ import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -52,6 +51,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusChangeNotification;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -303,7 +303,7 @@ public class Subscription {
         logger.debug("[id={}] keep-alive counter reset to {}", subscriptionId, maxKeepAliveCount);
     }
 
-    private void returnKeepAlive(ServiceRequest<PublishRequest, PublishResponse> service) {
+    private void returnKeepAlive(ServiceRequest service) {
         ResponseHeader header = service.createResponseHeader();
 
         UInteger sequenceNumber = uint(currentSequenceNumber());
@@ -327,7 +327,7 @@ public class Subscription {
             subscriptionId, sequenceNumber);
     }
 
-    void returnStatusChangeNotification(ServiceRequest<PublishRequest, PublishResponse> service) {
+    void returnStatusChangeNotification(ServiceRequest service) {
         StatusChangeNotification statusChange = new StatusChangeNotification(
             new StatusCode(StatusCodes.Bad_Timeout), null);
 
@@ -351,7 +351,7 @@ public class Subscription {
         logger.debug("[id={}] returned StatusChangeNotification sequenceNumber={}.", subscriptionId, sequenceNumber);
     }
 
-    private void returnNotifications(ServiceRequest<PublishRequest, PublishResponse> service) {
+    private void returnNotifications(ServiceRequest service) {
         LinkedHashSet<BaseMonitoredItem<?>> items = new LinkedHashSet<>();
 
         lastIterator.forEachRemaining(items::add);
@@ -375,7 +375,7 @@ public class Subscription {
      */
     private void gatherAndSend(
         PeekingIterator<BaseMonitoredItem<?>> iterator,
-        ServiceRequest<PublishRequest, PublishResponse> service) {
+        ServiceRequest service) {
 
         List<UaStructure> notifications = Lists.newArrayList();
 
@@ -399,7 +399,7 @@ public class Subscription {
         sendNotifications(service, notifications);
 
         if (moreNotifications) {
-            ServiceRequest<PublishRequest, PublishResponse> nextService = publishQueue().poll();
+            ServiceRequest nextService = publishQueue().poll();
 
             if (nextService != null) {
                 gatherAndSend(iterator, nextService);
@@ -415,9 +415,7 @@ public class Subscription {
         return item.getNotifications(notifications, max);
     }
 
-    private void sendNotifications(ServiceRequest<PublishRequest, PublishResponse> service,
-                                   List<UaStructure> notifications) {
-
+    private void sendNotifications(ServiceRequest service, List<UaStructure> notifications) {
         List<MonitoredItemNotification> dataNotifications = Lists.newArrayList();
         List<EventFieldList> eventNotifications = Lists.newArrayList();
 
@@ -558,7 +556,7 @@ public class Subscription {
      *
      * @param service The service request that contains the {@link PublishRequest}.
      */
-    synchronized void onPublish(ServiceRequest<PublishRequest, PublishResponse> service) {
+    synchronized void onPublish(ServiceRequest service) {
         State state = this.state.get();
 
         logger.trace("[id={}] onPublish(), state={}, keep-alive={}, lifetime={}",
@@ -654,7 +652,7 @@ public class Subscription {
     }
 
     private class PublishHandler {
-        private void whenNormal(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenNormal(ServiceRequest service) {
             boolean publishingEnabled = Subscription.this.publishingEnabled;
 
             if (!publishingEnabled || (publishingEnabled && !moreNotifications)) {
@@ -670,7 +668,7 @@ public class Subscription {
             }
         }
 
-        private void whenLate(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenLate(ServiceRequest service) {
             boolean publishingEnabled = Subscription.this.publishingEnabled;
             boolean notificationsAvailable = notificationsAvailable();
 
@@ -692,18 +690,18 @@ public class Subscription {
             }
         }
 
-        private void whenKeepAlive(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenKeepAlive(ServiceRequest service) {
             /* Subscription State Table Row 13 */
             publishQueue().addRequest(service);
         }
 
-        private void whenClosing(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenClosing(ServiceRequest service) {
             returnStatusChangeNotification(service);
 
             setState(State.Closed);
         }
 
-        private void whenClosed(ServiceRequest<PublishRequest, PublishResponse> service) {
+        private void whenClosed(ServiceRequest service) {
             publishQueue().addRequest(service);
         }
     }
@@ -716,7 +714,7 @@ public class Subscription {
 
             if (publishRequestQueued && publishingEnabled && notificationsAvailable) {
                 /* Subscription State Table Row 6 */
-                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
+                ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
                     resetLifetimeCounter();
@@ -728,7 +726,7 @@ public class Subscription {
             } else if (publishRequestQueued && !messageSent &&
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
                 /* Subscription State Table Row 7 */
-                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
+                ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
                     resetLifetimeCounter();
@@ -764,7 +762,7 @@ public class Subscription {
 
             if (publishingEnabled && notificationsAvailable && publishRequestQueued) {
                 /* Subscription State Table Row 14 */
-                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
+                ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
                     setState(State.Normal);
@@ -778,7 +776,7 @@ public class Subscription {
                 (!publishingEnabled || (publishingEnabled && !notificationsAvailable))) {
                 /* Subscription State Table Row 15 */
 
-                ServiceRequest<PublishRequest, PublishResponse> service = publishQueue().poll();
+                ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
                     returnKeepAlive(service);

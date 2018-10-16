@@ -14,6 +14,7 @@
 package org.eclipse.milo.examples.client;
 
 import java.security.Security;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -58,17 +59,21 @@ public class SecureClientStandaloneRunner {
         String discoveryUrl = clientExample.getDiscoveryEndpointUrl();
         logger.info("URL of discovery endpoint = {}", discoveryUrl);
 
-        EndpointDescription[] endpoints = UaTcpStackClient.getEndpoints(discoveryUrl).get();
+        List<EndpointDescription> endpoints = DiscoveryClient.getEndpoints(discoveryUrl).get();
 
         logger.info("Available endpoints:");
         for (EndpointDescription endpointDescription : endpoints) {
             logger.info(endpointDescription.getEndpointUrl() + " " + endpointDescription.getSecurityPolicyUri());
         }
-        EndpointDescription endpoint = chooseEndpoint(endpoints, clientExample.getSecurityPolicy(),
-                clientExample.getMessageSecurityMode());
+
+        EndpointDescription endpoint = chooseEndpoint(
+            endpoints,
+            clientExample.getSecurityPolicy(),
+            clientExample.getMessageSecurityMode()
+        );
 
         logger.info("Using endpoint: {} [{}, {}]", endpoint.getEndpointUrl(), endpoint.getSecurityPolicyUri(),
-                endpoint.getSecurityMode());
+            endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english(APPLICATION_NAME))
@@ -80,11 +85,14 @@ public class SecureClientStandaloneRunner {
             .setKeyPair(clientExample.getKeyPair())
             .build();
 
-        return new OpcUaClient(config);
+        return OpcUaClient.create(config);
     }
 
-    private EndpointDescription chooseEndpoint(EndpointDescription[] endpoints, SecurityPolicy minSecurityPolicy,
-                                               MessageSecurityMode minMessageSecurityMode) {
+    private EndpointDescription chooseEndpoint(
+        List<EndpointDescription> endpoints,
+        SecurityPolicy minSecurityPolicy,
+        MessageSecurityMode minMessageSecurityMode) {
+
         EndpointDescription bestFound = null;
         SecurityPolicy bestFoundSecurityPolicy = null;
         for (EndpointDescription endpoint : endpoints) {
@@ -96,13 +104,13 @@ public class SecureClientStandaloneRunner {
             }
             if (minSecurityPolicy.compareTo(endpointSecurityPolicy) <= 0) {
                 if (minMessageSecurityMode.compareTo(endpoint.getSecurityMode()) <= 0) {
-                    //Found endpoint which fulfills minimum requirements
+                    // Found endpoint which fulfills minimum requirements
                     if (bestFound == null) {
                         bestFound = endpoint;
                         bestFoundSecurityPolicy = endpointSecurityPolicy;
                     } else {
                         if (bestFoundSecurityPolicy.compareTo(endpointSecurityPolicy) < 0) {
-                            //Found endpoint that has higher security than previously found one
+                            // Found endpoint that has higher security than previously found one
                             bestFound = endpoint;
                             bestFoundSecurityPolicy = endpointSecurityPolicy;
                         }

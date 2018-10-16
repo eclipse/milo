@@ -15,8 +15,8 @@ package org.eclipse.milo.opcua.stack;
 
 import java.security.cert.X509Certificate;
 
+import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelSecurity;
-import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -65,7 +65,7 @@ public abstract class SecureChannelFixture extends SecurityFixture {
             case Basic256Sha256:
             default:
                 if (messageSecurity != MessageSecurityMode.None) {
-                    ChannelSecurity.SecuritySecrets clientSecrets = ChannelSecurity.generateKeyPair(
+                    ChannelSecurity.SecurityKeys clientSecrets = ChannelSecurity.generateKeyPair(
                         clientChannel,
                         clientChannel.getLocalNonce(),
                         clientChannel.getRemoteNonce()
@@ -84,7 +84,7 @@ public abstract class SecureChannelFixture extends SecurityFixture {
                 serverChannel.setRemoteCertificate(clientCertificateBytes);
 
                 if (messageSecurity != MessageSecurityMode.None) {
-                    ChannelSecurity.SecuritySecrets serverSecrets = ChannelSecurity.generateKeyPair(
+                    ChannelSecurity.SecurityKeys serverSecrets = ChannelSecurity.generateKeyPair(
                         serverChannel,
                         serverChannel.getRemoteNonce(),
                         serverChannel.getLocalNonce()

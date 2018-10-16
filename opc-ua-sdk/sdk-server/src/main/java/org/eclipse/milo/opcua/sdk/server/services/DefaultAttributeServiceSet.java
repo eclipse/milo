@@ -26,8 +26,6 @@ import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -40,6 +38,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.server.services.AttributeServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.groupingBy;
@@ -53,10 +53,10 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
     private final ServiceMetric writeMetric = new ServiceMetric();
 
     @Override
-    public void onRead(ServiceRequest<ReadRequest, ReadResponse> service) {
+    public void onRead(ServiceRequest service) {
         readMetric.record(service);
 
-        ReadRequest request = service.getRequest();
+        ReadRequest request = (ReadRequest) service.getRequest();
 
         DiagnosticsContext<ReadValueId> diagnosticsContext = new DiagnosticsContext<>();
 
@@ -146,10 +146,10 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
     }
 
     @Override
-    public void onWrite(ServiceRequest<WriteRequest, WriteResponse> service) {
+    public void onWrite(ServiceRequest service) {
         writeMetric.record(service);
 
-        WriteRequest request = service.getRequest();
+        WriteRequest request = (WriteRequest) service.getRequest();
 
         DiagnosticsContext<WriteValue> diagnosticsContext = new DiagnosticsContext<>();
 

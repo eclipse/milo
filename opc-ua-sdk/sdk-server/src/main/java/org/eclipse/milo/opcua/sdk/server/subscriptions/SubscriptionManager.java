@@ -43,7 +43,6 @@ import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription.State;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -73,7 +72,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemModifyRes
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.NotificationMessage;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
@@ -85,6 +83,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRespo
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.jooq.lambda.tuple.Tuple3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -142,8 +141,8 @@ public class SubscriptionManager {
         return subscriptions.get(subscriptionId);
     }
 
-    public void createSubscription(ServiceRequest<CreateSubscriptionRequest, CreateSubscriptionResponse> service) {
-        CreateSubscriptionRequest request = service.getRequest();
+    public void createSubscription(ServiceRequest service) {
+        CreateSubscriptionRequest request = (CreateSubscriptionRequest) service.getRequest();
 
         UInteger subscriptionId = nextSubscriptionId();
 
@@ -182,8 +181,8 @@ public class SubscriptionManager {
         service.setResponse(response);
     }
 
-    public void modifySubscription(ServiceRequest<ModifySubscriptionRequest, ModifySubscriptionResponse> service) {
-        ModifySubscriptionRequest request = service.getRequest();
+    public void modifySubscription(ServiceRequest service) {
+        ModifySubscriptionRequest request = (ModifySubscriptionRequest) service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 
         try {
@@ -210,8 +209,8 @@ public class SubscriptionManager {
         }
     }
 
-    public void deleteSubscription(ServiceRequest<DeleteSubscriptionsRequest, DeleteSubscriptionsResponse> service) {
-        DeleteSubscriptionsRequest request = service.getRequest();
+    public void deleteSubscription(ServiceRequest service) {
+        DeleteSubscriptionsRequest request = (DeleteSubscriptionsRequest) service.getRequest();
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
@@ -271,15 +270,15 @@ public class SubscriptionManager {
         service.setResponse(response);
 
         while (subscriptions.isEmpty() && publishQueue.isNotEmpty()) {
-            ServiceRequest<PublishRequest, PublishResponse> publishService = publishQueue.poll();
+            ServiceRequest publishService = publishQueue.poll();
             if (publishService != null) {
                 publishService.setServiceFault(StatusCodes.Bad_NoSubscription);
             }
         }
     }
 
-    public void setPublishingMode(ServiceRequest<SetPublishingModeRequest, SetPublishingModeResponse> service) {
-        SetPublishingModeRequest request = service.getRequest();
+    public void setPublishingMode(ServiceRequest service) {
+        SetPublishingModeRequest request = (SetPublishingModeRequest) service.getRequest();
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         StatusCode[] results = new StatusCode[subscriptionIds.size()];
@@ -301,16 +300,14 @@ public class SubscriptionManager {
         service.setResponse(response);
     }
 
-    public void createMonitoredItems(
-        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) {
-
-        CreateMonitoredItemsRequest request = service.getRequest();
+    public void createMonitoredItems(ServiceRequest service) {
+        CreateMonitoredItemsRequest request = (CreateMonitoredItemsRequest) service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 
         try {
             Subscription subscription = subscriptions.get(subscriptionId);
-            TimestampsToReturn timestamps = service.getRequest().getTimestampsToReturn();
-            List<MonitoredItemCreateRequest> itemsToCreate = l(service.getRequest().getItemsToCreate());
+            TimestampsToReturn timestamps = request.getTimestampsToReturn();
+            List<MonitoredItemCreateRequest> itemsToCreate = l(request.getItemsToCreate());
 
             if (subscription == null) {
                 throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
@@ -535,16 +532,14 @@ public class SubscriptionManager {
         }
     }
 
-    public void modifyMonitoredItems(
-        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) {
-
-        ModifyMonitoredItemsRequest request = service.getRequest();
+    public void modifyMonitoredItems(ServiceRequest service) {
+        ModifyMonitoredItemsRequest request = (ModifyMonitoredItemsRequest) service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 
         try {
             Subscription subscription = subscriptions.get(subscriptionId);
-            TimestampsToReturn timestamps = service.getRequest().getTimestampsToReturn();
-            List<MonitoredItemModifyRequest> itemsToModify = l(service.getRequest().getItemsToModify());
+            TimestampsToReturn timestamps = request.getTimestampsToReturn();
+            List<MonitoredItemModifyRequest> itemsToModify = l(request.getItemsToModify());
 
             if (subscription == null) {
                 throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
@@ -756,15 +751,13 @@ public class SubscriptionManager {
         }
     }
 
-    public void deleteMonitoredItems(
-        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) {
-
-        DeleteMonitoredItemsRequest request = service.getRequest();
+    public void deleteMonitoredItems(ServiceRequest service) {
+        DeleteMonitoredItemsRequest request = (DeleteMonitoredItemsRequest) service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 
         try {
             Subscription subscription = subscriptions.get(subscriptionId);
-            List<UInteger> itemsToDelete = l(service.getRequest().getMonitoredItemIds());
+            List<UInteger> itemsToDelete = l(request.getMonitoredItemIds());
 
             if (subscription == null) {
                 throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
@@ -836,8 +829,8 @@ public class SubscriptionManager {
         }
     }
 
-    public void setMonitoringMode(ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) {
-        SetMonitoringModeRequest request = service.getRequest();
+    public void setMonitoringMode(ServiceRequest service) {
+        SetMonitoringModeRequest request = (SetMonitoringModeRequest) service.getRequest();
         UInteger subscriptionId = request.getSubscriptionId();
 
         try {
@@ -900,8 +893,8 @@ public class SubscriptionManager {
         }
     }
 
-    public void publish(ServiceRequest<PublishRequest, PublishResponse> service) {
-        PublishRequest request = service.getRequest();
+    public void publish(ServiceRequest service) {
+        PublishRequest request = (PublishRequest) service.getRequest();
 
         if (!transferred.isEmpty()) {
             Subscription subscription = transferred.remove(0);
@@ -942,8 +935,8 @@ public class SubscriptionManager {
         publishQueue.addRequest(service);
     }
 
-    public void republish(ServiceRequest<RepublishRequest, RepublishResponse> service) {
-        RepublishRequest request = service.getRequest();
+    public void republish(ServiceRequest service) {
+        RepublishRequest request = (RepublishRequest) service.getRequest();
 
         if (subscriptions.isEmpty()) {
             service.setServiceFault(StatusCodes.Bad_SubscriptionIdInvalid);
@@ -972,8 +965,8 @@ public class SubscriptionManager {
         service.setResponse(response);
     }
 
-    public void setTriggering(ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) {
-        SetTriggeringRequest request = service.getRequest();
+    public void setTriggering(ServiceRequest service) {
+        SetTriggeringRequest request = (SetTriggeringRequest) service.getRequest();
 
         UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
@@ -1077,7 +1070,7 @@ public class SubscriptionManager {
     }
 
     public void sendStatusChangeNotification(Subscription subscription) {
-        ServiceRequest<PublishRequest, PublishResponse> service = publishQueue.poll();
+        ServiceRequest service = publishQueue.poll();
 
         if (service != null) {
             subscription.returnStatusChangeNotification(service);

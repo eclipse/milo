@@ -20,12 +20,12 @@ import java.util.List;
 import io.netty.buffer.ByteBuf;
 import io.netty.util.ReferenceCountUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.ChannelConfig;
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.channel.ChannelParameters;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkDecoder;
 import org.eclipse.milo.opcua.stack.core.channel.ChunkEncoder;
-import org.eclipse.milo.opcua.stack.core.channel.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.MessageAbortedException;
 import org.eclipse.milo.opcua.stack.core.channel.SecureChannel;
 import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
@@ -41,8 +41,8 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static org.eclipse.milo.opcua.stack.core.channel.ChannelConfig.DEFAULT_MAX_CHUNK_SIZE;
-import static org.eclipse.milo.opcua.stack.core.channel.ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.MessageLimits.DEFAULT_MAX_CHUNK_SIZE;
+import static org.eclipse.milo.opcua.stack.core.channel.MessageLimits.DEFAULT_MAX_MESSAGE_SIZE;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
@@ -78,24 +78,24 @@ public class ChunkSerializationTest extends SecureChannelFixture {
     );
 
     private ChannelParameters unlimitedChunkCountParameters = new ChannelParameters(
-        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_MESSAGE_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
         0,
-        ChannelConfig.DEFAULT_MAX_MESSAGE_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_MESSAGE_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
         0
     );
 
     private ChannelParameters unlimitedMessageSizeParameters = new ChannelParameters(
         0,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
         0,
         0,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
-        ChannelConfig.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
+        MessageLimits.DEFAULT_MAX_CHUNK_SIZE,
         0
     );
 

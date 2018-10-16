@@ -24,8 +24,6 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.MethodServices.CallContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.util.PendingCall;
-import org.eclipse.milo.opcua.stack.core.application.services.MethodServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
@@ -34,6 +32,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -43,7 +43,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
     private final ServiceMetric callCounter = new ServiceMetric();
 
     @Override
-    public void onCall(ServiceRequest<CallRequest, CallResponse> service) {
+    public void onCall(ServiceRequest service) {
         callCounter.record(service);
 
         DiagnosticsContext<CallMethodRequest> diagnosticsContext = new DiagnosticsContext<>();
@@ -51,7 +51,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        CallRequest request = service.getRequest();
+        CallRequest request = (CallRequest) service.getRequest();
 
         List<PendingCall> pendingCalls = l(request.getMethodsToCall())
             .stream()

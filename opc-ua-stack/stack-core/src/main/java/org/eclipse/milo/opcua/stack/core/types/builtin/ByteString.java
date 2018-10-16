@@ -42,6 +42,10 @@ public final class ByteString implements Serializable {
         return bytes == null;
     }
 
+    public boolean isNullOrEmpty() {
+        return bytes == null || bytes.length == 0;
+    }
+
     public boolean isNotNull() {
         return bytes != null;
     }

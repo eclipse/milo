@@ -28,8 +28,6 @@ import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryUpdate;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.AttributeHistoryServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
@@ -44,6 +42,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.server.services.AttributeHistoryServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.groupingBy;
@@ -57,10 +57,10 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
     private final ServiceMetric historyUpdateMetric = new ServiceMetric();
 
     @Override
-    public void onHistoryRead(ServiceRequest<HistoryReadRequest, HistoryReadResponse> service) {
+    public void onHistoryRead(ServiceRequest service) {
         historyReadMetric.record(service);
 
-        HistoryReadRequest request = service.getRequest();
+        HistoryReadRequest request = (HistoryReadRequest) service.getRequest();
 
         DiagnosticsContext<HistoryReadValueId> diagnosticsContext = new DiagnosticsContext<>();
 
@@ -149,11 +149,10 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
     }
 
     @Override
-    public void onHistoryUpdate(ServiceRequest<HistoryUpdateRequest, HistoryUpdateResponse> service)
-        throws UaException {
+    public void onHistoryUpdate(ServiceRequest service) throws UaException {
         historyUpdateMetric.record(service);
 
-        HistoryUpdateRequest request = service.getRequest();
+        HistoryUpdateRequest request = (HistoryUpdateRequest) service.getRequest();
 
         DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext = new DiagnosticsContext<>();
 

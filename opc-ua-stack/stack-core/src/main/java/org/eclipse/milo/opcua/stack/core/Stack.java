@@ -34,16 +34,31 @@ public final class Stack {
     public static final String VERSION =
         ManifestUtil.read("X-Stack-Version").orElse("dev");
 
-    public static final String UA_TCP_BINARY_TRANSPORT_URI =
+    public static final String TCP_UASC_UABINARY_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/uatcp-uasc-uabinary";
 
-    public static final String UA_HTTPS_BINARY_TRANSPORT_URI =
+    public static final String HTTPS_UABINARY_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/https-uabinary";
 
-    public static final String UA_HTTPS_XML_TRANSPORT_URI =
+    public static final String HTTPS_UAXML_TRANSPORT_URI =
         "http://opcfoundation.org/UA-Profile/Transport/https-uasoapxml";
 
-    public static final int DEFAULT_PORT = 12685;
+    public static final String HTTPS_UAJSON_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/https-uajson";
+
+    public static final String WSS_UASC_UABINARY_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/wss-uasc-uabinary";
+
+    public static final String WSS_UAJSON_TRANSPORT_URI =
+        "http://opcfoundation.org/UA-Profile/Transport/wss-uajson";
+
+    public static final String WSS_PROTOCOL_BINARY = "opcua+uacp";
+    
+    public static final String WSS_PROTOCOL_JSON = "opcua+uajson";
+
+    public static final int DEFAULT_TCP_PORT = 12685;
+    public static final int DEFAULT_HTTP_PORT = 8080;
+    public static final int DEFAULT_HTTPS_PORT = 8443;
 
     private static NioEventLoopGroup EVENT_LOOP;
     private static ExecutorService EXECUTOR_SERVICE;

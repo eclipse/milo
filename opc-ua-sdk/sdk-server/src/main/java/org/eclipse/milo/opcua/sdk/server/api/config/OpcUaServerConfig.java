@@ -13,8 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
-import java.util.EnumSet;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
@@ -25,11 +23,10 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.eclipse.milo.opcua.stack.server.config.UaTcpStackServerConfig;
+import org.eclipse.milo.opcua.stack.server.UaStackServerConfig;
 
-public interface OpcUaServerConfig extends UaTcpStackServerConfig {
+public interface OpcUaServerConfig extends UaStackServerConfig {
 
     /**
      * A {@link UserTokenPolicy} for anonymous access.
@@ -50,7 +47,7 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
         UserTokenType.UserName,
         null,
         null,
-        SecurityPolicy.Basic256.getSecurityPolicyUri()
+        SecurityPolicy.Basic256.getUri()
     );
 
     UserTokenPolicy USER_TOKEN_POLICY_X509 = new UserTokenPolicy(
@@ -58,32 +55,8 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
         UserTokenType.Certificate,
         null,
         null,
-        SecurityPolicy.Basic256.getSecurityPolicyUri()
+        SecurityPolicy.Basic256.getUri()
     );
-
-    /**
-     * @return the port to bind to.
-     */
-    int getBindPort();
-
-    /**
-     * @return the list of addresses to bind to.
-     */
-    List<String> getBindAddresses();
-
-    /**
-     * @return the list of addresses used to build endpoint URLs and {@link EndpointDescription}s.
-     */
-    List<String> getEndpointAddresses();
-
-    /**
-     * The set of {@link SecurityPolicy}s supported by this server.
-     * <p>
-     * Any policies other than {@link SecurityPolicy#None} require the server to have a certificate configured.
-     *
-     * @return the set of {@link SecurityPolicy}s supported by this server.
-     */
-    EnumSet<SecurityPolicy> getSecurityPolicies();
 
     /**
      * Get the {@link IdentityValidator} for the server.
@@ -124,24 +97,20 @@ public interface OpcUaServerConfig extends UaTcpStackServerConfig {
     static OpcUaServerConfigBuilder copy(OpcUaServerConfig config) {
         OpcUaServerConfigBuilder builder = new OpcUaServerConfigBuilder();
 
-        // UaTcpStackServerConfig values
-        builder.setServerName(config.getServerName());
+        // UaStackServerConfig values
+        builder.setEndpoints(config.getEndpoints());
         builder.setApplicationName(config.getApplicationName());
         builder.setApplicationUri(config.getApplicationUri());
         builder.setProductUri(config.getProductUri());
+        builder.setMessageLimits(config.getMessageLimits());
+        builder.setEncodingLimits(config.getEncodingLimits());
         builder.setCertificateManager(config.getCertificateManager());
         builder.setCertificateValidator(config.getCertificateValidator());
+        builder.setHttpsKeyPair(config.getHttpsKeyPair().orElse(null));
+        builder.setHttpsCertificate(config.getHttpsCertificate().orElse(null));
         builder.setExecutor(config.getExecutor());
-        builder.setUserTokenPolicies(config.getUserTokenPolicies());
-        builder.setSoftwareCertificates(config.getSoftwareCertificates());
-        builder.setChannelConfig(config.getChannelConfig());
-        builder.setEncodingLimits(config.getEncodingLimits());
 
         // OpcUaServerConfig values
-        builder.setSecurityPolicies(config.getSecurityPolicies());
-        builder.setBindPort(config.getBindPort());
-        builder.setBindAddresses(config.getBindAddresses());
-        builder.setEndpointAddresses(config.getEndpointAddresses());
         builder.setIdentityValidator(config.getIdentityValidator());
         builder.setBuildInfo(config.getBuildInfo());
         builder.setLimits(config.getLimits());

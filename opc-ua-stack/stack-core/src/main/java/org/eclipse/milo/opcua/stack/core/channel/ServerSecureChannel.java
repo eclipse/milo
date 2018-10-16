@@ -24,7 +24,6 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
-import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 
 public class ServerSecureChannel extends DefaultAttributeMap implements SecureChannel {
@@ -43,7 +42,6 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
 
     private volatile SecurityPolicy securityPolicy;
     private volatile MessageSecurityMode messageSecurityMode;
-    private volatile EndpointDescription endpointDescription;
 
     public void setChannelId(long channelId) {
         this.channelId = channelId;
@@ -84,14 +82,6 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
 
     public void setMessageSecurityMode(MessageSecurityMode messageSecurityMode) {
         this.messageSecurityMode = messageSecurityMode;
-    }
-
-    public void setEndpointDescription(EndpointDescription endpointDescription) {
-        this.endpointDescription = endpointDescription;
-    }
-
-    public EndpointDescription getEndpointDescription() {
-        return endpointDescription;
     }
 
     @Override
@@ -140,13 +130,13 @@ public class ServerSecureChannel extends DefaultAttributeMap implements SecureCh
     }
 
     @Override
-    public ChannelSecurity.SecretKeys getEncryptionKeys(ChannelSecurity.SecuritySecrets secretKeys) {
-        return secretKeys.getServerKeys();
+    public ChannelSecurity.SecretKeys getEncryptionKeys(ChannelSecurity.SecurityKeys securityKeys) {
+        return securityKeys.getServerKeys();
     }
 
     @Override
-    public ChannelSecurity.SecretKeys getDecryptionKeys(ChannelSecurity.SecuritySecrets secretKeys) {
-        return secretKeys.getClientKeys();
+    public ChannelSecurity.SecretKeys getDecryptionKeys(ChannelSecurity.SecurityKeys securityKeys) {
+        return securityKeys.getClientKeys();
     }
 
     @Override

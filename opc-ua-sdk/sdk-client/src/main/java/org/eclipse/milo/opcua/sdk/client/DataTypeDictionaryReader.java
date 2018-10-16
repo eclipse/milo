@@ -34,7 +34,7 @@ import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.CodecDescription;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -83,12 +83,12 @@ public class DataTypeDictionaryReader {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaTcpStackClient stackClient;
+    private final UaStackClient stackClient;
     private final OpcUaSession session;
     private final BsdParser bsdParser;
 
     public DataTypeDictionaryReader(
-        UaTcpStackClient stackClient,
+        UaStackClient stackClient,
         OpcUaSession session,
         BsdParser bsdParser) {
 
@@ -380,7 +380,8 @@ public class DataTypeDictionaryReader {
             new BrowseDescription[]{browseDescription}
         );
 
-        return stackClient.<BrowseResponse>sendRequest(browseRequest)
+        return stackClient.sendRequest(browseRequest)
+            .thenApply(BrowseResponse.class::cast)
             .thenApply(r -> Objects.requireNonNull(r.getResults())[0]);
     }
 
@@ -401,7 +402,9 @@ public class DataTypeDictionaryReader {
             readValueIds.toArray(new ReadValueId[0])
         );
 
-        return stackClient.<ReadResponse>sendRequest(readRequest).thenApply(r -> l(r.getResults()));
+        return stackClient.sendRequest(readRequest)
+            .thenApply(ReadResponse.class::cast)
+            .thenApply(r -> l(r.getResults()));
     }
 
 }

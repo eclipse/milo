@@ -31,19 +31,15 @@ import org.eclipse.milo.opcua.sdk.server.services.DefaultViewServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.NodeManagementServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.SessionServiceSet;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CancelRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CancelResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CloseSessionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSessionResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.server.services.NodeManagementServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.SessionServiceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +56,6 @@ public class Session implements SessionServiceSet {
     private volatile long secureChannelId;
 
     private volatile Object identityObject;
-    private volatile ByteString clientCertificateBytes;
 
     private volatile ByteString lastNonce = ByteString.NULL_VALUE;
 
@@ -76,22 +71,30 @@ public class Session implements SessionServiceSet {
     private final DefaultSubscriptionServiceSet subscriptionServiceSet;
     private final DefaultViewServiceSet viewServiceSet;
 
+    private volatile EndpointDescription endpoint;
+    private volatile SecurityConfiguration securityConfiguration;
+
     private final OpcUaServer server;
     private final NodeId sessionId;
     private final String sessionName;
     private final Duration sessionTimeout;
 
-    public Session(OpcUaServer server,
-                   NodeId sessionId,
-                   String sessionName,
-                   Duration sessionTimeout,
-                   long secureChannelId) {
+    public Session(
+        OpcUaServer server,
+        NodeId sessionId,
+        String sessionName,
+        Duration sessionTimeout,
+        long secureChannelId,
+        EndpointDescription endpoint,
+        SecurityConfiguration securityConfiguration) {
 
         this.server = server;
         this.sessionId = sessionId;
         this.sessionName = sessionName;
         this.sessionTimeout = sessionTimeout;
         this.secureChannelId = secureChannelId;
+        this.securityConfiguration = securityConfiguration;
+        this.endpoint = endpoint;
 
         subscriptionManager = new SubscriptionManager(this, server);
 
@@ -116,14 +119,17 @@ public class Session implements SessionServiceSet {
         return secureChannelId;
     }
 
-    @Nullable
-    public Object getIdentityObject() {
-        return identityObject;
+    public SecurityConfiguration getSecurityConfiguration() {
+        return securityConfiguration;
+    }
+
+    public EndpointDescription getEndpoint() {
+        return endpoint;
     }
 
     @Nullable
-    public ByteString getClientCertificateBytes() {
-        return clientCertificateBytes;
+    public Object getIdentityObject() {
+        return identityObject;
     }
 
     public void setSecureChannelId(long secureChannelId) {
@@ -134,8 +140,12 @@ public class Session implements SessionServiceSet {
         this.identityObject = identityObject;
     }
 
-    public void setClientCertificateBytes(ByteString clientCertificateBytes) {
-        this.clientCertificateBytes = clientCertificateBytes;
+    public void setEndpoint(EndpointDescription endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public void setSecurityConfiguration(SecurityConfiguration securityConfiguration) {
+        this.securityConfiguration = securityConfiguration;
     }
 
     void addLifecycleListener(LifecycleListener listener) {
@@ -216,27 +226,23 @@ public class Session implements SessionServiceSet {
     public SubscriptionManager getSubscriptionManager() {
         return subscriptionManager;
     }
-
     //region Session Services
-    @Override
-    public void onCreateSession(
-        ServiceRequest<CreateSessionRequest, CreateSessionResponse> req) throws UaException {
 
-        throw new UaException(StatusCodes.Bad_InternalError);
+    @Override
+    public void onCreateSession(ServiceRequest serviceRequest) {
+        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
     }
 
     @Override
-    public void onActivateSession(
-        ServiceRequest<ActivateSessionRequest, ActivateSessionResponse> req) throws UaException {
-
-        throw new UaException(StatusCodes.Bad_InternalError);
+    public void onActivateSession(ServiceRequest serviceRequest) {
+        serviceRequest.setServiceFault(StatusCodes.Bad_InternalError);
     }
 
     @Override
-    public void onCloseSession(
-        ServiceRequest<CloseSessionRequest, CloseSessionResponse> serviceRequest) throws UaException {
+    public void onCloseSession(ServiceRequest serviceRequest) {
+        CloseSessionRequest request = (CloseSessionRequest) serviceRequest.getRequest();
 
-        close(serviceRequest.getRequest().getDeleteSubscriptions());
+        close(request.getDeleteSubscriptions());
 
         serviceRequest.setResponse(new CloseSessionResponse(serviceRequest.createResponseHeader()));
     }
@@ -252,12 +258,12 @@ public class Session implements SessionServiceSet {
     }
 
     @Override
-    public void onCancel(ServiceRequest<CancelRequest, CancelResponse> serviceRequest) throws UaException {
+    public void onCancel(ServiceRequest serviceRequest) throws UaException {
         serviceRequest.setResponse(new CancelResponse(serviceRequest.createResponseHeader(), uint(0)));
     }
     //endregion
 
-    public static interface LifecycleListener {
+    public interface LifecycleListener {
         void onSessionClosed(Session session, boolean subscriptionsDeleted);
     }
 }

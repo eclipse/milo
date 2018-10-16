@@ -84,10 +84,6 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
     private final EncodingLimits encodingLimits;
 
-    public OpcUaXmlStreamDecoder() {
-        this(EncodingLimits.DEFAULT);
-    }
-
     public OpcUaXmlStreamDecoder(EncodingLimits encodingLimits) {
         this.encodingLimits = encodingLimits;
 
@@ -96,6 +92,16 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         } catch (ParserConfigurationException e) {
             throw new UaRuntimeException(StatusCodes.Bad_InternalError, e);
         }
+    }
+
+    public OpcUaXmlStreamDecoder() {
+        this(EncodingLimits.DEFAULT);
+    }
+
+    public OpcUaXmlStreamDecoder(Document document) {
+        this();
+
+        setInput(document);
     }
 
     public OpcUaXmlStreamDecoder(Reader reader) throws IOException, SAXException {
@@ -108,6 +114,13 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         this();
 
         setInput(inputStream);
+    }
+
+    public OpcUaXmlStreamDecoder setInput(Document document) {
+        this.document = document;
+        currentNode = document.getFirstChild();
+
+        return this;
     }
 
     public OpcUaXmlStreamDecoder setInput(Reader reader) throws IOException, SAXException {

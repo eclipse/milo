@@ -15,7 +15,11 @@ package org.eclipse.milo.opcua.sdk.client.session;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
+import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -26,12 +30,22 @@ public class SessionFsmTest {
     @Test
     public void testCloseSessionWhileInactive() throws Exception {
         OpcUaClientConfig clientConfig = OpcUaClientConfig.builder()
+            .setEndpoint(new EndpointDescription(
+                "opc.tcp://localhost:12685",
+                null,
+                null,
+                MessageSecurityMode.None,
+                SecurityPolicy.None.getUri(),
+                null,
+                TransportProfile.TCP_UASC_UABINARY.getUri(),
+                null
+            ))
             .setApplicationName(LocalizedText.english("Eclipse Milo Test Client"))
             .setApplicationUri("urn:eclipse:milo:examples:client")
             .setRequestTimeout(uint(60000))
             .build();
 
-        OpcUaClient client = new OpcUaClient(clientConfig);
+        OpcUaClient client = OpcUaClient.create(clientConfig);
 
         SessionFsm sessionFsm = new SessionFsm(client);
 

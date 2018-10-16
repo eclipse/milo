@@ -15,7 +15,7 @@ package org.eclipse.milo.examples.client;
 
 import java.io.File;
 import java.security.Security;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +24,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.milo.examples.server.ExampleServer;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
-import org.eclipse.milo.opcua.stack.client.UaTcpStackClient;
+import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -76,28 +76,32 @@ public class ClientExampleRunner {
 
         SecurityPolicy securityPolicy = clientExample.getSecurityPolicy();
 
-        EndpointDescription[] endpoints;
+        List<EndpointDescription> endpoints;
 
         try {
-            endpoints = UaTcpStackClient
-                .getEndpoints(clientExample.getEndpointUrl())
-                .get();
+            endpoints = DiscoveryClient.getEndpoints(clientExample.getEndpointUrl()).get();
         } catch (Throwable ex) {
             // try the explicit discovery endpoint as well
-            String discoveryUrl = clientExample.getEndpointUrl() + "/discovery";
+            String discoveryUrl = clientExample.getEndpointUrl();
+
+            if (discoveryUrl.endsWith("/")) {
+                discoveryUrl += "discovery";
+            } else {
+                discoveryUrl += "/discovery";
+            }
+
             logger.info("Trying explicit discovery URL: {}", discoveryUrl);
-            endpoints = UaTcpStackClient
-                .getEndpoints(discoveryUrl)
-                .get();
+            endpoints = DiscoveryClient.getEndpoints(discoveryUrl).get();
         }
 
-        EndpointDescription endpoint = Arrays.stream(endpoints)
-            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getSecurityPolicyUri()))
+        EndpointDescription endpoint = endpoints.stream()
+            .filter(e -> e.getSecurityPolicyUri().equals(securityPolicy.getUri()))
             .filter(clientExample.endpointFilter())
             .findFirst()
             .orElseThrow(() -> new Exception("no desired endpoints returned"));
 
-        logger.info("Using endpoint: {} [{}]", endpoint.getEndpointUrl(), securityPolicy);
+        logger.info("Using endpoint: {} [{}/{}]",
+            endpoint.getEndpointUrl(), securityPolicy, endpoint.getSecurityMode());
 
         OpcUaClientConfig config = OpcUaClientConfig.builder()
             .setApplicationName(LocalizedText.english("eclipse milo opc-ua client"))
@@ -109,7 +113,7 @@ public class ClientExampleRunner {
             .setRequestTimeout(uint(5000))
             .build();
 
-        return new OpcUaClient(config);
+        return OpcUaClient.create(config);
     }
 
     public void run() {

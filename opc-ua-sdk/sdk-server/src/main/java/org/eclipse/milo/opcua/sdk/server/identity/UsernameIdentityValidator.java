@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.channel.ServerSecureChannel;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -43,7 +42,6 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
 
     @Override
     public Object validateAnonymousToken(
-        ServerSecureChannel channel,
         Session session,
         AnonymousIdentityToken token,
         UserTokenPolicy tokenPolicy,
@@ -59,21 +57,21 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
 
     @Override
     public Object validateUsernameToken(
-        ServerSecureChannel channel,
         Session session,
         UserNameIdentityToken token,
         UserTokenPolicy tokenPolicy,
         SignatureData tokenSignature) throws UaException {
 
-        return validateUserNameIdentityToken(channel, session, token);
+        return validateUserNameIdentityToken(session, token);
     }
 
     private String validateUserNameIdentityToken(
-        ServerSecureChannel channel,
         Session session,
         UserNameIdentityToken token) throws UaException {
 
-        SecurityPolicy securityPolicy = channel.getSecurityPolicy();
+        SecurityPolicy securityPolicy = session
+            .getSecurityConfiguration().getSecurityPolicy();
+
         String username = token.getUserName();
         ByteString lastNonce = session.getLastNonce();
         int lastNonceLength = lastNonce.length();
@@ -86,7 +84,7 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
 
         String algorithmUri = token.getEncryptionAlgorithm();
         if (algorithmUri == null || algorithmUri.isEmpty()) {
-            algorithm = channel.getSecurityPolicy().getAsymmetricEncryptionAlgorithm();
+            algorithm = securityPolicy.getAsymmetricEncryptionAlgorithm();
         } else {
             try {
                 algorithm = SecurityAlgorithm.fromUri(algorithmUri);
@@ -106,7 +104,7 @@ public class UsernameIdentityValidator extends AbstractIdentityValidator {
         if (tokenBytes == null) tokenBytes = new byte[0];
 
         if (algorithm != SecurityAlgorithm.None) {
-            byte[] plainTextBytes = decryptTokenData(channel, session, algorithm, tokenBytes);
+            byte[] plainTextBytes = decryptTokenData(session, algorithm, tokenBytes);
 
             int length = ((plainTextBytes[3] & 0xFF) << 24) |
                 ((plainTextBytes[2] & 0xFF) << 16) |

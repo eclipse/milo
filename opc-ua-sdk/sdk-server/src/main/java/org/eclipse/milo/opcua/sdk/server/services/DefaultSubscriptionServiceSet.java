@@ -23,26 +23,14 @@ import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.application.services.SubscriptionServiceSet;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateSubscriptionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteSubscriptionsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifySubscriptionResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.RepublishRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.RepublishResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetPublishingModeResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.TransferSubscriptionsResponse;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.eclipse.milo.opcua.stack.server.services.SubscriptionServiceSet;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
@@ -56,43 +44,41 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
     }
 
     @Override
-    public void onCreateSubscription(ServiceRequest<CreateSubscriptionRequest, CreateSubscriptionResponse> service) {
+    public void onCreateSubscription(ServiceRequest service) {
         subscriptionManager.createSubscription(service);
     }
 
     @Override
-    public void onModifySubscription(ServiceRequest<ModifySubscriptionRequest, ModifySubscriptionResponse> service) {
+    public void onModifySubscription(ServiceRequest service) {
         subscriptionManager.modifySubscription(service);
     }
 
     @Override
-    public void onDeleteSubscriptions(ServiceRequest<DeleteSubscriptionsRequest, DeleteSubscriptionsResponse> service) {
+    public void onDeleteSubscriptions(ServiceRequest service) {
         subscriptionManager.deleteSubscription(service);
     }
 
     @Override
-    public void onSetPublishingMode(ServiceRequest<SetPublishingModeRequest, SetPublishingModeResponse> service) {
+    public void onSetPublishingMode(ServiceRequest service) {
         subscriptionManager.setPublishingMode(service);
     }
 
     @Override
-    public void onPublish(ServiceRequest<PublishRequest, PublishResponse> service) {
+    public void onPublish(ServiceRequest service) {
         subscriptionManager.publish(service);
     }
 
     @Override
-    public void onRepublish(ServiceRequest<RepublishRequest, RepublishResponse> service) {
+    public void onRepublish(ServiceRequest service) {
         subscriptionManager.republish(service);
     }
 
     @Override
-    public void onTransferSubscriptions(
-        ServiceRequest<TransferSubscriptionsRequest, TransferSubscriptionsResponse> service) {
-
+    public void onTransferSubscriptions(ServiceRequest service) {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        TransferSubscriptionsRequest request = service.getRequest();
+        TransferSubscriptionsRequest request = (TransferSubscriptionsRequest) service.getRequest();
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {

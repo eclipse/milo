@@ -15,18 +15,8 @@ package org.eclipse.milo.opcua.sdk.server.services;
 
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.services.MonitoredItemServiceSet;
-import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.DeleteMonitoredItemsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.ModifyMonitoredItemsResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetMonitoringModeResponse;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
+import org.eclipse.milo.opcua.stack.server.services.MonitoredItemServiceSet;
+import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
 
@@ -43,47 +33,38 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
     }
 
     @Override
-    public void onCreateMonitoredItems(
-        ServiceRequest<CreateMonitoredItemsRequest, CreateMonitoredItemsResponse> service) {
-
+    public void onCreateMonitoredItems(ServiceRequest service) {
         createMonitoredItemsMetric.record(service);
 
         subscriptionManager.createMonitoredItems(service);
     }
 
     @Override
-    public void onModifyMonitoredItems(
-        ServiceRequest<ModifyMonitoredItemsRequest, ModifyMonitoredItemsResponse> service) {
-
+    public void onModifyMonitoredItems(ServiceRequest service) {
         modifyMonitoredItemsMetric.record(service);
 
         subscriptionManager.modifyMonitoredItems(service);
     }
 
     @Override
-    public void onDeleteMonitoredItems(
-        ServiceRequest<DeleteMonitoredItemsRequest, DeleteMonitoredItemsResponse> service) {
-
+    public void onDeleteMonitoredItems(ServiceRequest service) {
         deleteMonitoredItemsMetric.record(service);
 
         subscriptionManager.deleteMonitoredItems(service);
     }
 
     @Override
-    public void onSetMonitoringMode(
-        ServiceRequest<SetMonitoringModeRequest, SetMonitoringModeResponse> service) {
-
+    public void onSetMonitoringMode(ServiceRequest service) {
         setMonitoringModeMetric.record(service);
 
         subscriptionManager.setMonitoringMode(service);
     }
 
     @Override
-    public void onSetTriggering(
-        ServiceRequest<SetTriggeringRequest, SetTriggeringResponse> service) throws UaException {
-
+    public void onSetTriggering(ServiceRequest service) throws UaException {
         setTriggeringMetric.record(service);
 
         subscriptionManager.setTriggering(service);
     }
+
 }
