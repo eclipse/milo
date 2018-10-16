@@ -79,7 +79,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
         super(server, session, id, subscriptionId, readValueId, monitoringMode,
             timestamps, clientHandle, samplingInterval, queueSize, discardOldest);
-        
+
         filterContext = new FilterContext() {
             @Override
             public OpcUaServer getServer() {
@@ -171,29 +171,36 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Nonnull
     private Variant[] generateOverflowEventFields() {
-        UUID eventId = UUID.randomUUID();
+        try {
+            UUID eventId = UUID.randomUUID();
 
-        BaseEventNode overflowEvent = server.getEventFactory().createEvent(
-            new NodeId(1, eventId),
-            new QualifiedName(1, "EventQueueOverflow"),
-            LocalizedText.english("EventQueueOverflow"),
-            Identifiers.EventQueueOverflowEventType
-        );
+            BaseEventNode overflowEvent = server.getEventFactory().createEvent(
+                new NodeId(1, eventId),
+                Identifiers.EventQueueOverflowEventType
+            );
 
-        ByteBuffer buffer = ByteBuffer.allocate(64);
-        buffer.putLong(eventId.getMostSignificantBits());
-        buffer.putLong(eventId.getLeastSignificantBits());
+            overflowEvent.setBrowseName(new QualifiedName(1, "EventQueueOverflow"));
+            overflowEvent.setDisplayName(LocalizedText.english("EventQueueOverflow"));
 
-        overflowEvent.setEventId(ByteString.of(buffer.array()));
-        overflowEvent.setEventType(Identifiers.EventQueueOverflowEventType);
-        overflowEvent.setSourceNode(Identifiers.Server);
-        overflowEvent.setSourceName("Server");
-        overflowEvent.setTime(DateTime.now());
-        overflowEvent.setReceiveTime(DateTime.NULL_VALUE);
-        overflowEvent.setMessage(LocalizedText.english("Event Queue Overflow"));
-        overflowEvent.setSeverity(ushort(0));
+            ByteBuffer buffer = ByteBuffer.allocate(64);
+            buffer.putLong(eventId.getMostSignificantBits());
+            buffer.putLong(eventId.getLeastSignificantBits());
 
-        return selectEventFields(overflowEvent);
+            overflowEvent.setEventId(ByteString.of(buffer.array()));
+            overflowEvent.setEventType(Identifiers.EventQueueOverflowEventType);
+            overflowEvent.setSourceNode(Identifiers.Server);
+            overflowEvent.setSourceName("Server");
+            overflowEvent.setTime(DateTime.now());
+            overflowEvent.setReceiveTime(DateTime.NULL_VALUE);
+            overflowEvent.setMessage(LocalizedText.english("Event Queue Overflow"));
+            overflowEvent.setSeverity(ushort(0));
+
+            return selectEventFields(overflowEvent);
+        } catch (UaException e) {
+            logger.error("Error creating overflow event: {}", e.getMessage(), e);
+
+            return new Variant[0];
+        }
     }
 
     @Override

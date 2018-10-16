@@ -19,11 +19,10 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.EventFactory;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -53,10 +52,11 @@ public class GenerateEvent {
         try {
             BaseEventNode eventNode = eventFactory.createEvent(
                 new NodeId(1, UUID.randomUUID()),
-                new QualifiedName(1, "foo"),
-                LocalizedText.english("foo"),
                 eventTypeId
             );
+
+            eventNode.setBrowseName(new QualifiedName(1, "foo"));
+            eventNode.setDisplayName(LocalizedText.english("foo"));
 
             eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
             eventNode.setEventType(Identifiers.BaseEventType);
@@ -68,7 +68,7 @@ public class GenerateEvent {
             eventNode.setSeverity(ushort(2));
 
             server.getEventBus().post(eventNode);
-        } catch (UaRuntimeException e) {
+        } catch (UaException e) {
             context.setFailure(new UaException(e.getStatusCode()));
         }
     }

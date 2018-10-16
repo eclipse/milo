@@ -39,7 +39,6 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaDataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -50,6 +49,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
+import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
@@ -185,6 +185,7 @@ public class ExampleNamespace implements Namespace {
         addVariableNodes(folderNode);
 
         addSqrtMethod(folderNode);
+
         addGenerateEventMethod(folderNode);
 
         addCustomDataTypeVariable(folderNode);
@@ -199,23 +200,28 @@ public class ExampleNamespace implements Namespace {
 
         // Post a bogus Event every couple seconds
         server.getScheduledExecutorService().scheduleAtFixedRate(() -> {
-            BaseEventNode eventNode = eventFactory.createEvent(
-                new NodeId(1, UUID.randomUUID()),
-                new QualifiedName(1, "foo"),
-                LocalizedText.english("foo"),
-                Identifiers.BaseEventType
-            );
+            try {
+                BaseEventNode eventNode = eventFactory.createEvent(
+                    new NodeId(1, UUID.randomUUID()),
+                    Identifiers.BaseEventType
+                );
 
-            eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
-            eventNode.setEventType(Identifiers.BaseEventType);
-            eventNode.setSourceNode(NodeId.NULL_VALUE);
-            eventNode.setSourceName("");
-            eventNode.setTime(DateTime.now());
-            eventNode.setReceiveTime(DateTime.NULL_VALUE);
-            eventNode.setMessage(LocalizedText.english("event message!"));
-            eventNode.setSeverity(ushort(2));
+                eventNode.setBrowseName(new QualifiedName(1, "foo"));
+                eventNode.setDisplayName(LocalizedText.english("foo"));
 
-            server.getEventBus().post(eventNode);
+                eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
+                eventNode.setEventType(Identifiers.BaseEventType);
+                eventNode.setSourceNode(NodeId.NULL_VALUE);
+                eventNode.setSourceName("");
+                eventNode.setTime(DateTime.now());
+                eventNode.setReceiveTime(DateTime.NULL_VALUE);
+                eventNode.setMessage(LocalizedText.english("event message!"));
+                eventNode.setSeverity(ushort(2));
+
+                server.getEventBus().post(eventNode);
+            } catch (UaException e) {
+                logger.error("Error creating EventNode: {}", e.getMessage(), e);
+            }
         }, 0, 2, TimeUnit.SECONDS);
     }
 

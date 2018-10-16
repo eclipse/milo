@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.server.nodes;
+package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
 import java.util.Optional;
 import java.util.Set;
@@ -22,9 +22,10 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class EventFactory {
 
@@ -46,9 +47,7 @@ public class EventFactory {
 
     public BaseEventNode createEvent(
         NodeId nodeId,
-        QualifiedName browseName,
-        LocalizedText displayName,
-        NodeId typeDefinitionId) {
+        NodeId typeDefinitionId) throws UaException {
 
         NodeFactory nodeFactory = new NodeFactory(
             new EventNodeContext(server),
@@ -56,10 +55,8 @@ public class EventFactory {
             variableTypeManager
         );
 
-        return (BaseEventNode) nodeFactory.createObject(
-            nodeId, browseName, displayName, typeDefinitionId);
+        return (BaseEventNode) nodeFactory.createNode(nodeId, typeDefinitionId, true);
     }
-
 
     private static class EventNodeContext implements UaNodeContext {
 
