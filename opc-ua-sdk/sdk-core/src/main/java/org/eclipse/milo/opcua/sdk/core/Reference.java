@@ -16,6 +16,7 @@ package org.eclipse.milo.opcua.sdk.core;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -66,6 +67,18 @@ public class Reference {
 
     public boolean isInverse() {
         return !isForward();
+    }
+
+    /**
+     * Check if this reference is a subtype of the built-in reference identified by {@code superTypeId}.
+     *
+     * @param superTypeId the {@link NodeId} of the supertype.
+     * @return {@code true} if this reference is a subtype of the built-in reference type identified by
+     * {@code superTypeId}.
+     * @see BuiltinReferenceType
+     */
+    public boolean subtypeOf(NodeId superTypeId) {
+        return subtypeOf(superTypeId, BuiltinReferenceType.getReferenceMap());
     }
 
     public boolean subtypeOf(NodeId superTypeId, Map<NodeId, ReferenceType> referenceTypes) {

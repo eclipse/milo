@@ -274,7 +274,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public <T> void setProperty(QualifiedProperty<T> property, T value) {
-        VariableNode node = getPropertyNode(property.getBrowseName()).orElseGet(() -> {
+        VariableNode node = getPropertyNode(property).orElseGet(() -> {
             String browseName = property.getBrowseName();
 
             NodeId propertyNodeId = new NodeId(
@@ -305,7 +305,11 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public Optional<VariableNode> getPropertyNode(QualifiedProperty<?> property) {
-        return getPropertyNode(property.getBrowseName());
+        Optional<QualifiedName> qualifiedName = property
+            .getQualifiedName(context.getNamespaceManager().getNamespaceTable());
+
+        return qualifiedName.map(this::getPropertyNode)
+            .orElseGet(() -> getPropertyNode(property.getBrowseName()));
     }
 
     public Optional<VariableNode> getPropertyNode(String browseName) {
