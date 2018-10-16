@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import sun.reflect.annotation.ExceptionProxy;
 
 public interface NodeManager<T extends Node> {
 
