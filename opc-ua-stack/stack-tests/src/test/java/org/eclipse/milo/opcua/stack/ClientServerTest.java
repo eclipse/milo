@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import com.beust.jcommander.internal.Lists;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -29,6 +28,7 @@ import org.eclipse.milo.opcua.stack.client.DiscoveryClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -75,7 +75,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertThrows;
+import static org.testng.Assert.fail;
 
 public class ClientServerTest extends SecurityFixture {
 
@@ -502,6 +502,7 @@ public class ClientServerTest extends SecurityFixture {
             .build();
 
         UaStackClient client = UaStackClient.create(config);
+        client.connect().get();
 
         server.addServiceHandler("/test", ReadRequest.class, service -> {
             // intentionally do nothing so the request can timeout
@@ -514,7 +515,7 @@ public class ClientServerTest extends SecurityFixture {
             uint(0),
             uint(0),
             null,
-            DEFAULT_TIMEOUT_HINT,
+            uint(1000),
             null
         );
 
@@ -531,11 +532,17 @@ public class ClientServerTest extends SecurityFixture {
             }
         );
 
-        assertThrows(ExecutionException.class, () -> {
-            UaResponseMessage response = client.sendRequest(request).get();
+        try {
+            client.sendRequest(request).get();
 
-            logger.info("response={}", response);
-        });
+            fail("expected response to timeout");
+        } catch (Throwable t) {
+            StatusCode statusCode = UaException
+                .extractStatusCode(t)
+                .orElse(StatusCode.BAD);
+
+            assertEquals(statusCode.getValue(), StatusCodes.Bad_Timeout);
+        }
     }
 
     private UaStackClient createClient(EndpointDescription endpoint) throws UaException {
@@ -545,10 +552,10 @@ public class ClientServerTest extends SecurityFixture {
             .setCertificate(clientCertificate)
             .setCertificateValidator(new InsecureCertificateValidator() {
                 @Override
-                public void validate(X509Certificate certificate) throws UaException {}
+                public void validate(X509Certificate certificate) {}
 
                 @Override
-                public void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {}
+                public void verifyTrustChain(List<X509Certificate> certificateChain) {}
             })
             .build();
 
