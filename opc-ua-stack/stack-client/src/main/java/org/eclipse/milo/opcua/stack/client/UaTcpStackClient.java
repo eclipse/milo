@@ -180,12 +180,14 @@ public class UaTcpStackClient implements UaStackClient {
 
     public <T extends UaResponseMessage> CompletableFuture<T> sendRequest(UaRequestMessage request) {
         return channelManager.getChannel()
-            .thenCompose(sc -> sendRequest(request, sc));
+            .thenCompose(sc -> sendRequest(request, sc, true));
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends UaResponseMessage> CompletionStage<T> sendRequest(UaRequestMessage request,
-                                                                         ClientSecureChannel sc) {
+    private <T extends UaResponseMessage> CompletionStage<T> sendRequest(
+        UaRequestMessage request,
+        ClientSecureChannel sc,
+        boolean firstAttempt) {
 
         Channel channel = sc.getChannel();
 
@@ -213,18 +215,25 @@ public class UaTcpStackClient implements UaStackClient {
             if (!f.isSuccess()) {
                 Throwable cause = f.cause();
 
-                if (cause instanceof ClosedChannelException) {
+                if (cause instanceof ClosedChannelException && firstAttempt) {
                     logger.debug("Channel closed; retrying...");
 
-                    getExecutorService().execute(() ->
-                        sendRequest(request).whenComplete((r, ex) -> {
-                            if (r != null) {
-                                T t = (T) r;
-                                future.complete(t);
-                            } else {
-                                future.completeExceptionally(ex);
-                            }
-                        })
+                    Stack.sharedScheduledExecutor().schedule(
+                        () -> config.getExecutor().execute(() -> {
+                            CompletableFuture<UaResponseMessage> sendAgain = channelManager
+                                .getChannel()
+                                .thenCompose(ch -> sendRequest(request, ch, false));
+
+                            sendAgain.whenComplete((r, ex) -> {
+                                if (r != null) {
+                                    future.complete((T) r);
+                                } else {
+                                    future.completeExceptionally(ex);
+                                }
+                            });
+                        }),
+                        1,
+                        TimeUnit.SECONDS
                     );
                 } else {
                     UInteger requestHandle = request.getRequestHeader().getRequestHandle();
