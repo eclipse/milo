@@ -32,10 +32,10 @@ public class LongSequence {
     /**
      * @return the current value in the sequence, followed by an increment.
      */
-    public Long getAndIncrement() {
+    public long getAndIncrement() {
         while (true) {
-            Long current = atomic.get();
-            Long next = (current >= high ? low : current + 1);
+            long current = atomic.get();
+            long next = (current >= high ? low : current + 1);
             if (atomic.compareAndSet(current, next)) {
                 return current;
             }
@@ -45,7 +45,7 @@ public class LongSequence {
     /**
      * @return the current value in the sequence, without incrementing.
      */
-    public Long get() {
+    public long get() {
         return atomic.get();
     }
 
