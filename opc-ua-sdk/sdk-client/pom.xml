@@ -26,11 +26,6 @@
             <artifactId>bsd-parser-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.codepoetics</groupId>
-            <artifactId>protonpack</artifactId>
-            <version>${protonpack.version}</version>
-        </dependency>
     </dependencies>
 
 </project>

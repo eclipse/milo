@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-import com.codepoetics.protonpack.StreamUtils;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
@@ -469,8 +469,9 @@ abstract class AbstractSessionState implements SessionState {
                         Stream<StatusCode> statusCodes = results.stream()
                             .map(TransferResult::getStatusCode);
 
-                        String[] ss = StreamUtils.zip(
-                            subscriptionIds, statusCodes,
+                        String[] ss = Streams.zip(
+                            subscriptionIds,
+                            statusCodes,
                             (i, s) -> String.format("id=%s/%s",
                                 i, StatusCodes.lookup(s.getValue())
                                     .map(sa -> sa[0]).orElse(s.toString()))

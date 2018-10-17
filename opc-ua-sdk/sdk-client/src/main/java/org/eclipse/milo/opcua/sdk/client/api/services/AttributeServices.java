@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.codepoetics.protonpack.StreamUtils;
+import com.google.common.collect.Streams;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -80,9 +80,11 @@ public interface AttributeServices {
             failed.completeExceptionally(new IllegalArgumentException("nodeIds.size() != attributeIds.size()"));
             return failed;
         } else {
-            Stream<ReadValueId> stream = StreamUtils.zip(
-                nodeIds.stream(), attributeIds.stream(),
-                (nId, aId) -> new ReadValueId(nId, aId, null, QualifiedName.NULL_VALUE));
+            Stream<ReadValueId> stream = Streams.zip(
+                nodeIds.stream(),
+                attributeIds.stream(),
+                (nId, aId) -> new ReadValueId(nId, aId, null, QualifiedName.NULL_VALUE)
+            );
 
             return read(maxAge, timestampsToReturn, stream.collect(Collectors.toList()))
                 .thenApply(r -> l(r.getResults()));
@@ -153,9 +155,11 @@ public interface AttributeServices {
             failed.completeExceptionally(new IllegalArgumentException("nodeIds.size() != values.size()"));
             return failed;
         } else {
-            Stream<WriteValue> stream = StreamUtils.zip(
-                nodeIds.stream(), values.stream(),
-                (nodeId, value) -> new WriteValue(nodeId, uint(13), null, value));
+            Stream<WriteValue> stream = Streams.zip(
+                nodeIds.stream(),
+                values.stream(),
+                (nodeId, value) -> new WriteValue(nodeId, uint(13), null, value)
+            );
 
             return write(stream.collect(Collectors.toList()))
                 .thenApply(response -> l(response.getResults()));
