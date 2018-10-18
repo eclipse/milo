@@ -101,7 +101,7 @@ public class EndpointConfiguration {
 
     public String getEndpointUrl() {
         String scheme = transportProfile.getScheme();
-        String p = path.startsWith("/") ? path : "/" + path;
+        String p = path.isEmpty() || path.startsWith("/") ? path : "/" + path;
 
         return String.format("%s://%s:%s%s", scheme, hostname, bindPort, p);
     }
