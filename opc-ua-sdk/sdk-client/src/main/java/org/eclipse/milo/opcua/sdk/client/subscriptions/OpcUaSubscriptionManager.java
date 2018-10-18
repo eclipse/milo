@@ -671,6 +671,17 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
                 List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
 
+                if (notificationData.isEmpty()) {
+                    subscriptionListeners.forEach(
+                        listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
+                    );
+
+                    subscription.getNotificationListeners().forEach(
+                        listener -> listener.onKeepAliveNotification(
+                            subscription, notificationMessage.getPublishTime())
+                    );
+                }
+
                 for (ExtensionObject xo : notificationData) {
                     Object o = xo.decode();
 
