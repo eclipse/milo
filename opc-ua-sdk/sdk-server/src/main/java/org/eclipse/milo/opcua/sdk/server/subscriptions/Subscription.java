@@ -559,8 +559,10 @@ public class Subscription {
     synchronized void onPublish(ServiceRequest service) {
         State state = this.state.get();
 
-        logger.trace("[id={}] onPublish(), state={}, keep-alive={}, lifetime={}",
-            subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        if (logger.isTraceEnabled()) {
+            logger.trace("[id={}] onPublish(), state={}, keep-alive={}, lifetime={}",
+                subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        }
 
         if (state == State.Normal) {
             publishHandler.whenNormal(service);
@@ -583,8 +585,11 @@ public class Subscription {
     synchronized void onPublishingTimer() {
         State state = this.state.get();
 
-        logger.trace("[id={}] onPublishingTimer(), state={}, keep-alive={}, lifetime={}",
-            subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                "[id={}] onPublishingTimer(), state={}, keep-alive={}, lifetime={}",
+                subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        }
 
         long startNanos = System.nanoTime();
 
@@ -601,20 +606,27 @@ public class Subscription {
         }
 
         long elapsedNanos = System.nanoTime() - startNanos;
-        long elapsedMillis = TimeUnit.MILLISECONDS.convert(elapsedNanos, TimeUnit.NANOSECONDS);
 
-        long adjustedInterval = DoubleMath.roundToLong(publishingInterval - elapsedMillis, RoundingMode.UP);
+        long intervalNanos = TimeUnit.NANOSECONDS.convert(
+            DoubleMath.roundToLong(publishingInterval, RoundingMode.UP),
+            TimeUnit.MILLISECONDS
+        );
 
-        startPublishingTimer(adjustedInterval);
+        long adjustedIntervalNanos = Math.max(0, intervalNanos - elapsedNanos);
+
+        startPublishingTimer(adjustedIntervalNanos);
     }
 
     synchronized void startPublishingTimer() {
-        long interval = DoubleMath.roundToLong(publishingInterval, RoundingMode.UP);
+        long intervalNanos = TimeUnit.NANOSECONDS.convert(
+            DoubleMath.roundToLong(publishingInterval, RoundingMode.UP),
+            TimeUnit.MILLISECONDS
+        );
 
-        startPublishingTimer(interval);
+        startPublishingTimer(intervalNanos);
     }
 
-    private synchronized void startPublishingTimer(long interval) {
+    private synchronized void startPublishingTimer(long delayNanos) {
         if (state.get() == State.Closed) return;
 
         // lifetimeCounter is always accessed while synchronized on 'this'.
@@ -627,8 +639,8 @@ public class Subscription {
         } else {
             subscriptionManager.getServer().getScheduledExecutorService().schedule(
                 this::onPublishingTimer,
-                interval,
-                TimeUnit.MILLISECONDS
+                delayNanos,
+                TimeUnit.NANOSECONDS
             );
         }
     }
@@ -661,8 +673,9 @@ public class Subscription {
             } else if (publishingEnabled && moreNotifications) {
                 /* Subscription State Table Row 5 */
                 resetLifetimeCounter();
-                returnNotifications(service);
+                resetKeepAliveCounter();
                 messageSent = true;
+                returnNotifications(service);
             } else {
                 throw new IllegalStateException("unhandled subscription state");
             }
@@ -676,15 +689,17 @@ public class Subscription {
                 /* Subscription State Table Row 10 */
                 setState(State.Normal);
                 resetLifetimeCounter();
-                returnNotifications(service);
+                resetKeepAliveCounter();
                 messageSent = true;
+                returnNotifications(service);
             } else if (!publishingEnabled ||
                 (publishingEnabled && !notificationsAvailable && !moreNotifications)) {
                 /* Subscription State Table Row 11 */
                 setState(State.KeepAlive);
                 resetLifetimeCounter();
-                returnKeepAlive(service);
+                resetKeepAliveCounter();
                 messageSent = true;
+                returnKeepAlive(service);
             } else {
                 throw new IllegalStateException("unhandled subscription state");
             }
@@ -718,8 +733,9 @@ public class Subscription {
 
                 if (service != null) {
                     resetLifetimeCounter();
-                    returnNotifications(service);
+                    resetKeepAliveCounter();
                     messageSent = true;
+                    returnNotifications(service);
                 } else {
                     whenNormal();
                 }
@@ -730,8 +746,9 @@ public class Subscription {
 
                 if (service != null) {
                     resetLifetimeCounter();
-                    returnKeepAlive(service);
+                    resetKeepAliveCounter();
                     messageSent = true;
+                    returnKeepAlive(service);
                 } else {
                     whenNormal();
                 }
@@ -767,8 +784,9 @@ public class Subscription {
                 if (service != null) {
                     setState(State.Normal);
                     resetLifetimeCounter();
-                    returnNotifications(service);
+                    resetKeepAliveCounter();
                     messageSent = true;
+                    returnNotifications(service);
                 } else {
                     whenKeepAlive();
                 }
@@ -779,9 +797,9 @@ public class Subscription {
                 ServiceRequest service = publishQueue().poll();
 
                 if (service != null) {
-                    returnKeepAlive(service);
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
+                    returnKeepAlive(service);
                 } else {
                     whenKeepAlive();
                 }

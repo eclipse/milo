@@ -400,7 +400,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         long maxPendingPublishes = getMaxPendingPublishes();
 
-        double timeoutHint = maxPendingPublishes * maxKeepAlive * 1.25;
+        double timeoutHint = maxPendingPublishes * maxKeepAlive * 1.5;
 
         if (Double.isInfinite(timeoutHint) || timeoutHint > UInteger.MAX_VALUE) {
             timeoutHint = 0d;
@@ -550,7 +550,12 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             return;
         }
 
-        subscription.setLastSequenceNumber(sequenceNumber);
+        if (notificationMessage.getNotificationData() != null &&
+            notificationMessage.getNotificationData().length > 0) {
+
+            // Set last sequence number only if this isn't a keep-alive
+            subscription.setLastSequenceNumber(sequenceNumber);
+        }
 
         UInteger[] availableSequenceNumbers = response.getAvailableSequenceNumbers();
 
@@ -661,6 +666,17 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             try {
                 Map<UInteger, OpcUaMonitoredItem> items = subscription.getItemsByClientHandle();
                 List<ExtensionObject> notificationData = l(notificationMessage.getNotificationData());
+
+                if (notificationData.isEmpty()) {
+                    subscriptionListeners.forEach(
+                        listener -> listener.onKeepAlive(subscription, notificationMessage.getPublishTime())
+                    );
+
+                    subscription.getNotificationListeners().forEach(
+                        listener -> listener.onKeepAliveNotification(
+                            subscription, notificationMessage.getPublishTime())
+                    );
+                }
 
                 for (ExtensionObject xo : notificationData) {
                     Object o = xo.decode(client.getConfig().getEncodingLimits(), client.getDataTypeManager());
