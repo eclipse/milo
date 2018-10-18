@@ -54,9 +54,9 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultViewServiceSet implements ViewServiceSet {
 
-    private final ServiceMetric browseCounter = new ServiceMetric();
-    private final ServiceMetric browseNextCounter = new ServiceMetric();
-    private final ServiceMetric translateBrowsePathsCounter = new ServiceMetric();
+    private final ServiceCounter browseCounter = new ServiceCounter();
+    private final ServiceCounter browseNextCounter = new ServiceCounter();
+    private final ServiceCounter translateBrowsePathsCounter = new ServiceCounter();
 
     private final BrowseHelper browseHelper = new BrowseHelper();
 

@@ -21,8 +21,8 @@ import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ServiceUnsupport
 
 public class DefaultQueryServiceSet implements QueryServiceSet {
 
-    private final ServiceMetric queryFirstMetric = new ServiceMetric();
-    private final ServiceMetric queryNextMetric = new ServiceMetric();
+    private final ServiceCounter queryFirstMetric = new ServiceCounter();
+    private final ServiceCounter queryNextMetric = new ServiceCounter();
 
     @Override
     public void onQueryFirst(ServiceRequest service) throws UaException {

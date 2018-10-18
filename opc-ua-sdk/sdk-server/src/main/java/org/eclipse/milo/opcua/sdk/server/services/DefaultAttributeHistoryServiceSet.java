@@ -53,8 +53,8 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServiceSet {
 
-    private final ServiceMetric historyReadMetric = new ServiceMetric();
-    private final ServiceMetric historyUpdateMetric = new ServiceMetric();
+    private final ServiceCounter historyReadMetric = new ServiceCounter();
+    private final ServiceCounter historyUpdateMetric = new ServiceCounter();
 
     @Override
     public void onHistoryRead(ServiceRequest service) {

@@ -20,11 +20,11 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
 
-    private final ServiceMetric createMonitoredItemsMetric = new ServiceMetric();
-    private final ServiceMetric modifyMonitoredItemsMetric = new ServiceMetric();
-    private final ServiceMetric deleteMonitoredItemsMetric = new ServiceMetric();
-    private final ServiceMetric setMonitoringModeMetric = new ServiceMetric();
-    private final ServiceMetric setTriggeringMetric = new ServiceMetric();
+    private final ServiceCounter createMonitoredItemsMetric = new ServiceCounter();
+    private final ServiceCounter modifyMonitoredItemsMetric = new ServiceCounter();
+    private final ServiceCounter deleteMonitoredItemsMetric = new ServiceCounter();
+    private final ServiceCounter setMonitoringModeMetric = new ServiceCounter();
+    private final ServiceCounter setTriggeringMetric = new ServiceCounter();
 
     private final SubscriptionManager subscriptionManager;
 
