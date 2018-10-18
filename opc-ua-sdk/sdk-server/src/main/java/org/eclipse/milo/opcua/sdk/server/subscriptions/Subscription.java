@@ -598,20 +598,27 @@ public class Subscription {
         }
 
         long elapsedNanos = System.nanoTime() - startNanos;
-        long elapsedMillis = TimeUnit.MILLISECONDS.convert(elapsedNanos, TimeUnit.NANOSECONDS);
 
-        long adjustedInterval = DoubleMath.roundToLong(publishingInterval - elapsedMillis, RoundingMode.UP);
+        long intervalNanos = TimeUnit.NANOSECONDS.convert(
+            DoubleMath.roundToLong(publishingInterval, RoundingMode.UP),
+            TimeUnit.MILLISECONDS
+        );
 
-        startPublishingTimer(adjustedInterval);
+        long adjustedIntervalNanos = Math.max(0, intervalNanos - elapsedNanos);
+
+        startPublishingTimer(adjustedIntervalNanos);
     }
 
     synchronized void startPublishingTimer() {
-        long interval = DoubleMath.roundToLong(publishingInterval, RoundingMode.UP);
+        long intervalNanos = TimeUnit.NANOSECONDS.convert(
+            DoubleMath.roundToLong(publishingInterval, RoundingMode.UP),
+            TimeUnit.MILLISECONDS
+        );
 
-        startPublishingTimer(interval);
+        startPublishingTimer(intervalNanos);
     }
 
-    private synchronized void startPublishingTimer(long interval) {
+    private synchronized void startPublishingTimer(long delayNanos) {
         if (state.get() == State.Closed) return;
 
         // lifetimeCounter is always accessed while synchronized on 'this'.
@@ -624,8 +631,8 @@ public class Subscription {
         } else {
             subscriptionManager.getServer().getScheduledExecutorService().schedule(
                 this::onPublishingTimer,
-                interval,
-                TimeUnit.MILLISECONDS
+                delayNanos,
+                TimeUnit.NANOSECONDS
             );
         }
     }
