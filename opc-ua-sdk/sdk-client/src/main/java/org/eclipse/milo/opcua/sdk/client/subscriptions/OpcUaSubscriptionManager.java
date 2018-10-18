@@ -554,7 +554,12 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
             return;
         }
 
-        subscription.setLastSequenceNumber(sequenceNumber);
+        if (notificationMessage.getNotificationData() != null &&
+            notificationMessage.getNotificationData().length > 0) {
+
+            // Set last sequence number only if this isn't a keep-alive
+            subscription.setLastSequenceNumber(sequenceNumber);
+        }
 
         UInteger[] availableSequenceNumbers = response.getAvailableSequenceNumbers();
 
