@@ -556,8 +556,10 @@ public class Subscription {
     synchronized void onPublish(ServiceRequest<PublishRequest, PublishResponse> service) {
         State state = this.state.get();
 
-        logger.trace("[id={}] onPublish(), state={}, keep-alive={}, lifetime={}",
-            subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        if (logger.isTraceEnabled()) {
+            logger.trace("[id={}] onPublish(), state={}, keep-alive={}, lifetime={}",
+                subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        }
 
         if (state == State.Normal) {
             publishHandler.whenNormal(service);
@@ -580,8 +582,11 @@ public class Subscription {
     synchronized void onPublishingTimer() {
         State state = this.state.get();
 
-        logger.trace("[id={}] onPublishingTimer(), state={}, keep-alive={}, lifetime={}",
-            subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        if (logger.isTraceEnabled()) {
+            logger.trace(
+                "[id={}] onPublishingTimer(), state={}, keep-alive={}, lifetime={}",
+                subscriptionId, state, keepAliveCounter, lifetimeCounter);
+        }
 
         long startNanos = System.nanoTime();
 
