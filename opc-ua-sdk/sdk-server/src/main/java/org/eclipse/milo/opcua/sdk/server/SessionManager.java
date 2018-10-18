@@ -205,7 +205,9 @@ public class SessionManager implements
 
         ByteString clientCertificateBytes = request.getClientCertificate();
 
-        if (serviceRequest.getClientCertificateBytes() != null) {
+        if (securityPolicy != SecurityPolicy.None &&
+            serviceRequest.getClientCertificateBytes() != null) {
+
             if (!Objects.equal(clientCertificateBytes,
                 serviceRequest.getClientCertificateBytes())) {
 
