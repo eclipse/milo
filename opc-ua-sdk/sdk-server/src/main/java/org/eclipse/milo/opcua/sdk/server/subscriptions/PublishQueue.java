@@ -17,12 +17,14 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.stack.core.application.services.ServiceRequest;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.PublishResponse;
+import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +50,10 @@ public class PublishQueue {
         if (waitingSubscriptions.isEmpty()) {
             serviceQueue.add(service);
 
-            logger.debug("Queued PublishRequest, size={}", serviceQueue.size());
+            logger.debug("Queued PublishRequest requestHandle={}, size={}",
+                service.getRequest().getRequestHeader().getRequestHandle(),
+                serviceQueue.size()
+            );
         } else {
             WaitingSubscription subscription = null;
 
@@ -101,11 +106,16 @@ public class PublishQueue {
      */
     public synchronized void addSubscription(Subscription subscription) {
         if (waitList.isEmpty() && !serviceQueue.isEmpty()) {
-            ServiceRequest<PublishRequest, PublishResponse> request = serviceQueue.poll();
+            ServiceRequest<PublishRequest, PublishResponse> request = poll();
 
-            request.getServer().getExecutorService().execute(
-                () -> subscription.onPublish(request)
-            );
+            if (request != null) {
+                request.getServer().getExecutorService().execute(
+                    () ->
+                        subscription.onPublish(request)
+                );
+            } else {
+                waitList.putIfAbsent(subscription.getId(), new WaitingSubscription(subscription));
+            }
         } else {
             waitList.putIfAbsent(subscription.getId(), new WaitingSubscription(subscription));
         }
@@ -119,8 +129,35 @@ public class PublishQueue {
         return !isEmpty();
     }
 
+    @Nullable
     public synchronized ServiceRequest<PublishRequest, PublishResponse> poll() {
-        return serviceQueue.poll();
+        long now = System.currentTimeMillis();
+
+        while (true) {
+            ServiceRequest<PublishRequest, PublishResponse> serviceRequest = serviceQueue.poll();
+
+            if (serviceRequest == null) {
+                return null;
+            } else {
+                RequestHeader requestHeader = serviceRequest
+                    .getRequest()
+                    .getRequestHeader();
+
+                long timeoutHint = requestHeader.getTimeoutHint().longValue();
+                long timestamp = requestHeader.getTimestamp().getJavaTime();
+
+                if (timeoutHint == 0 || timestamp + timeoutHint >= now) {
+                    return serviceRequest;
+                } else {
+                    logger.debug(
+                        "Discarding expired PublishRequest requestHandle={} timestamp={} timeoutHint={}",
+                        serviceRequest.getRequest().getRequestHeader().getRequestHandle(),
+                        requestHeader.getTimestamp().getJavaDate(),
+                        timeoutHint
+                    );
+                }
+            }
+        }
     }
 
     public static class WaitingSubscription {
