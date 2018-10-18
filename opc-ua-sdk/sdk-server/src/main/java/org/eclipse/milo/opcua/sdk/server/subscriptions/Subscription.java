@@ -658,8 +658,9 @@ public class Subscription {
             } else if (publishingEnabled && moreNotifications) {
                 /* Subscription State Table Row 5 */
                 resetLifetimeCounter();
-                returnNotifications(service);
+                resetKeepAliveCounter();
                 messageSent = true;
+                returnNotifications(service);
             } else {
                 throw new IllegalStateException("unhandled subscription state");
             }
@@ -673,15 +674,17 @@ public class Subscription {
                 /* Subscription State Table Row 10 */
                 setState(State.Normal);
                 resetLifetimeCounter();
-                returnNotifications(service);
+                resetKeepAliveCounter();
                 messageSent = true;
+                returnNotifications(service);
             } else if (!publishingEnabled ||
                 (publishingEnabled && !notificationsAvailable && !moreNotifications)) {
                 /* Subscription State Table Row 11 */
                 setState(State.KeepAlive);
                 resetLifetimeCounter();
-                returnKeepAlive(service);
+                resetKeepAliveCounter();
                 messageSent = true;
+                returnKeepAlive(service);
             } else {
                 throw new IllegalStateException("unhandled subscription state");
             }
@@ -716,8 +719,9 @@ public class Subscription {
 
                 if (service.isPresent()) {
                     resetLifetimeCounter();
-                    returnNotifications(service.get());
+                    resetKeepAliveCounter();
                     messageSent = true;
+                    returnNotifications(service.get());
                 } else {
                     whenNormal();
                 }
@@ -729,8 +733,9 @@ public class Subscription {
 
                 if (service.isPresent()) {
                     resetLifetimeCounter();
-                    returnKeepAlive(service.get());
+                    resetKeepAliveCounter();
                     messageSent = true;
+                    returnKeepAlive(service.get());
                 } else {
                     whenNormal();
                 }
@@ -767,8 +772,9 @@ public class Subscription {
                 if (service.isPresent()) {
                     setState(State.Normal);
                     resetLifetimeCounter();
-                    returnNotifications(service.get());
+                    resetKeepAliveCounter();
                     messageSent = true;
+                    returnNotifications(service.get());
                 } else {
                     whenKeepAlive();
                 }
@@ -780,9 +786,9 @@ public class Subscription {
                     Optional.ofNullable(publishQueue().poll());
 
                 if (service.isPresent()) {
-                    returnKeepAlive(service.get());
                     resetLifetimeCounter();
                     resetKeepAliveCounter();
+                    returnKeepAlive(service.get());
                 } else {
                     whenKeepAlive();
                 }
