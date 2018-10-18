@@ -400,7 +400,7 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
         long maxPendingPublishes = getMaxPendingPublishes();
 
-        double timeoutHint = maxPendingPublishes * maxKeepAlive * 1.25;
+        double timeoutHint = maxPendingPublishes * maxKeepAlive * 1.5;
 
         if (Double.isInfinite(timeoutHint) || timeoutHint > UInteger.MAX_VALUE) {
             timeoutHint = 0d;
