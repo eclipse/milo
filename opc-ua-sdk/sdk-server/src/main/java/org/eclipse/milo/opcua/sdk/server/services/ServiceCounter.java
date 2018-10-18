@@ -13,39 +13,33 @@
 
 package org.eclipse.milo.opcua.sdk.server.services;
 
-import com.codahale.metrics.Counter;
-import com.codahale.metrics.Timer;
+import java.util.concurrent.atomic.LongAdder;
+
 import org.eclipse.milo.opcua.stack.core.types.structured.ServiceCounterDataType;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
-public class ServiceMetric {
+public class ServiceCounter {
 
-    private final Timer requestTimer = new Timer();
-    private final Counter errorCounter = new Counter();
+    private final LongAdder totalCount = new LongAdder();
+    private final LongAdder errorCount = new LongAdder();
 
     public void record(ServiceRequest service) {
-        Timer.Context context = requestTimer.time();
-
         service.getFuture().whenComplete((r, ex) -> {
-            context.stop();
-            if (ex != null) errorCounter.inc();
+            totalCount.increment();
+
+            if (ex != null) {
+                errorCount.increment();
+            }
         });
-    }
-
-    public Timer getRequestTimer() {
-        return requestTimer;
-    }
-
-    public Counter getErrorCounter() {
-        return errorCounter;
     }
 
     public ServiceCounterDataType getServiceCounter() {
         return new ServiceCounterDataType(
-            uint(requestTimer.getCount()),
-            uint(errorCounter.getCount()));
+            uint(totalCount.sum()),
+            uint(errorCount.sum())
+        );
     }
 
 }

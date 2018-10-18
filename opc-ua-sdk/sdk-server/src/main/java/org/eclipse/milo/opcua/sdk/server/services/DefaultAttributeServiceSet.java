@@ -49,8 +49,8 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
-    private final ServiceMetric readMetric = new ServiceMetric();
-    private final ServiceMetric writeMetric = new ServiceMetric();
+    private final ServiceCounter readMetric = new ServiceCounter();
+    private final ServiceCounter writeMetric = new ServiceCounter();
 
     @Override
     public void onRead(ServiceRequest service) {

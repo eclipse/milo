@@ -21,10 +21,10 @@ import static org.eclipse.milo.opcua.stack.core.StatusCodes.Bad_ServiceUnsupport
 
 public class DefaultNodeManagementServiceSet implements NodeManagementServiceSet {
 
-    private final ServiceMetric addNodesMetric = new ServiceMetric();
-    private final ServiceMetric deleteNodesMetric = new ServiceMetric();
-    private final ServiceMetric addReferencesMetric = new ServiceMetric();
-    private final ServiceMetric deleteReferencesMetric = new ServiceMetric();
+    private final ServiceCounter addNodesMetric = new ServiceCounter();
+    private final ServiceCounter deleteNodesMetric = new ServiceCounter();
+    private final ServiceCounter addReferencesMetric = new ServiceCounter();
+    private final ServiceCounter deleteReferencesMetric = new ServiceCounter();
 
     @Override
     public void onAddNodes(ServiceRequest service) throws UaException {

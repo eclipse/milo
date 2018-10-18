@@ -40,7 +40,7 @@ import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultMethodServiceSet implements MethodServiceSet {
 
-    private final ServiceMetric callCounter = new ServiceMetric();
+    private final ServiceCounter callCounter = new ServiceCounter();
 
     @Override
     public void onCall(ServiceRequest service) {
