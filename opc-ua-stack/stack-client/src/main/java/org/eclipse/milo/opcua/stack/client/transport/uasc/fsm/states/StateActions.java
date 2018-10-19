@@ -59,7 +59,7 @@ class StateActions {
 
     // <editor-fold desc="Connect">
     static void connectAsync(ChannelFsm fsm) {
-        fsm.getExecutor().execute(() -> connect(fsm));
+        fsm.getExecutorService().execute(() -> connect(fsm));
     }
 
     private static void connect(ChannelFsm fsm) {
@@ -142,7 +142,7 @@ class StateActions {
         final CompletableFuture<Channel> channelFuture = fsm.getContext().getChannelFuture();
 
         if (channelFuture != null) {
-            fsm.getExecutor().execute(
+            fsm.getExecutorService().execute(
                 () ->
                     channelFuture.whenComplete((ch, ex) -> {
                         if (ch != null) {
@@ -153,7 +153,7 @@ class StateActions {
                     })
             );
         } else {
-            fsm.getExecutor().execute(
+            fsm.getExecutorService().execute(
                 () ->
                     fsm.fireEvent(new DisconnectSuccess())
             );

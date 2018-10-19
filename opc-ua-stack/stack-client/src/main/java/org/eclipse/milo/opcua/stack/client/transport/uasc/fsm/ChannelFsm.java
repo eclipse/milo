@@ -14,7 +14,7 @@
 package org.eclipse.milo.opcua.stack.client.transport.uasc.fsm;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
@@ -46,14 +46,6 @@ public class ChannelFsm {
 
     public ChannelFsm(UaStackClientConfig config) {
         this.config = config;
-    }
-
-    public UaStackClientConfig getConfig() {
-        return config;
-    }
-
-    public Executor getExecutor() {
-        return config.getExecutor();
     }
 
     public CompletableFuture<Channel> connect() {
@@ -137,8 +129,16 @@ public class ChannelFsm {
         return context;
     }
 
+    public UaStackClientConfig getConfig() {
+        return config;
+    }
+
+    public ExecutorService getExecutorService() {
+        return config.getExecutor();
+    }
+
     public boolean isPersistent() {
-        return true; // TODO config
+        return config.isConnectPersistent();
     }
 
     public static class Context {
