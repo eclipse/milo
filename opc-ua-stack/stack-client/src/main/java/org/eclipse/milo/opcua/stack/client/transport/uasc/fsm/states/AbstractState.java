@@ -22,9 +22,9 @@ import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.GetChannel;
 
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
-public abstract class AbstractState extends ChannelFsm.State {
+abstract class AbstractState extends ChannelFsm.State {
 
-    protected void handleConnectOrGetChannel(ChannelFsm fsm, ChannelFsm.Event event) {
+    void handleConnectOrGetChannel(ChannelFsm fsm, ChannelFsm.Event event) {
         CompletableFuture<Channel> channelFuture =
             fsm.getContext().getChannelFuture();
 
