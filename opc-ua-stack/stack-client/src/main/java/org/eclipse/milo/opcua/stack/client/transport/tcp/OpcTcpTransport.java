@@ -19,12 +19,11 @@ import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
-import org.eclipse.milo.opcua.stack.client.transport.uasc.ChannelManager;
-import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
+import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.ChannelFsm;
 
 public class OpcTcpTransport extends AbstractTransport implements UaTransport {
 
-    private final ChannelManager channelManager;
+    private final ChannelFsm channelFsm;
 
     private final UaStackClientConfig config;
 
@@ -33,7 +32,7 @@ public class OpcTcpTransport extends AbstractTransport implements UaTransport {
 
         this.config = config;
 
-        channelManager = new ChannelManager(config);
+        channelFsm = new ChannelFsm(config);
     }
 
     public UaStackClientConfig getConfig() {
@@ -42,21 +41,19 @@ public class OpcTcpTransport extends AbstractTransport implements UaTransport {
 
     @Override
     public CompletableFuture<UaTransport> connect() {
-        return channelManager.connect()
+        return channelFsm.connect()
             .thenApply(v -> OpcTcpTransport.this);
     }
 
     @Override
     public CompletableFuture<UaTransport> disconnect() {
-        return channelManager.disconnect()
+        return channelFsm.disconnect()
             .thenApply(v -> OpcTcpTransport.this);
     }
 
     @Override
     public CompletableFuture<Channel> channel() {
-        return channelManager.getChannel()
-            .thenApply(ClientSecureChannel::getChannel);
+        return channelFsm.getChannel();
     }
-
 
 }
