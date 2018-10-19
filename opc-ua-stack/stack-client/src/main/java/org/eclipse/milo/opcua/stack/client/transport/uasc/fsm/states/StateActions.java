@@ -21,6 +21,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
@@ -29,6 +30,7 @@ import io.netty.channel.ConnectTimeoutException;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.Timeout;
+import io.netty.util.TimerTask;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcClientTcpChannelInitializer;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
@@ -161,8 +163,13 @@ class StateActions {
     }
 
     private static void disconnect(ChannelFsm fsm, Channel channel) {
+        final TimerTask onTimeout = t -> channel.close().addListener(
+            (ChannelFutureListener) channelFuture ->
+                fsm.fireEvent(new DisconnectSuccess())
+        );
+
         final Timeout timeout = fsm.getConfig().getWheelTimer().newTimeout(
-            t -> fsm.fireEvent(new DisconnectSuccess()),
+            onTimeout,
             5,
             TimeUnit.SECONDS
         );
