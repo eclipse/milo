@@ -145,6 +145,16 @@ public class FutureUtils {
         }
 
         /**
+         * Turn this {@link CompletionBuilder} into an {@link AsyncCompletionBuilder}.
+         *
+         * @param executor the {@link Executor} to use for the async completion.
+         * @return an {@link AsyncCompletionBuilder}.
+         */
+        public CompletionBuilder<T> async(Executor executor) {
+            return new AsyncCompletionBuilder<>(toComplete, executor);
+        }
+
+        /**
          * Complete the contained to-be-completed {@link CompletableFuture} using the result of {@code future}.
          *
          * @param future the {@link CompletableFuture} to use as the result for the contained future.
