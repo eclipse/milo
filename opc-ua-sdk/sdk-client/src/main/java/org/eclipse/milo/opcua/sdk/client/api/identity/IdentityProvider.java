@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
-import org.jooq.lambda.tuple.Tuple2;
 
 public interface IdentityProvider {
 
@@ -26,9 +25,8 @@ public interface IdentityProvider {
      * activating a session.
      *
      * @param endpoint the {@link EndpointDescription} being connected to.
-     * @return a {@link Tuple2} containing the {@link UserIdentityToken} and {@link SignatureData}.
+     * @return a {@link SignedIdentityToken} containing the {@link UserIdentityToken} and {@link SignatureData}.
      */
-    Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
-                                                              ByteString serverNonce) throws Exception;
+    SignedIdentityToken getIdentityToken(EndpointDescription endpoint, ByteString serverNonce) throws Exception;
 
 }

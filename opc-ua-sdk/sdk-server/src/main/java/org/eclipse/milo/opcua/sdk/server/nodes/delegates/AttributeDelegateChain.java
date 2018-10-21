@@ -14,9 +14,6 @@
 package org.eclipse.milo.opcua.sdk.server.nodes.delegates;
 
 import java.util.function.Function;
-import java.util.stream.Stream;
-
-import org.jooq.lambda.Seq;
 
 public class AttributeDelegateChain {
 
@@ -25,10 +22,13 @@ public class AttributeDelegateChain {
         AttributeDelegate root,
         Function<AttributeDelegate, AttributeDelegate>... childFns) {
 
-        return Seq.foldLeft(
-            Stream.of(childFns), root,
-            (parent, childFn) -> childFn.apply(parent)
-        );
+        AttributeDelegate delegate = root;
+
+        for (Function<AttributeDelegate, AttributeDelegate> childFn : childFns) {
+            delegate = childFn.apply(delegate);
+        }
+
+        return delegate;
     }
 
 }

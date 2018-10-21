@@ -14,6 +14,7 @@
 package org.eclipse.milo.opcua.sdk.client.subscriptions;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,7 +61,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.StatusChangeNotificati
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -683,12 +683,12 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
 
                     if (o instanceof DataChangeNotification) {
                         DataChangeNotification dcn = (DataChangeNotification) o;
-                        List<MonitoredItemNotification> monitoredItems = l(dcn.getMonitoredItems());
-                        int notificationCount = monitoredItems.size();
+                        List<MonitoredItemNotification> monitoredItemNotifications = l(dcn.getMonitoredItems());
+                        int notificationCount = monitoredItemNotifications.size();
 
                         logger.debug("Received {} MonitoredItemNotifications", notificationCount);
 
-                        for (MonitoredItemNotification min : monitoredItems) {
+                        for (MonitoredItemNotification min : monitoredItemNotifications) {
                             logger.trace("MonitoredItemNotification: clientHandle={}, value={}",
                                 min.getClientHandle(), min.getValue());
 
@@ -708,24 +708,24 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                             );
                         } else {
                             if (!subscription.getNotificationListeners().isEmpty()) {
-                                ImmutableList.Builder<Tuple2<UaMonitoredItem, DataValue>> builder =
-                                    ImmutableList.builder();
+                                List<UaMonitoredItem> monitoredItems = new ArrayList<>();
+                                List<DataValue> dataValues = new ArrayList<>();
 
-                                for (MonitoredItemNotification n : monitoredItems) {
+                                for (MonitoredItemNotification n : monitoredItemNotifications) {
                                     UaMonitoredItem item = subscription
                                         .getItemsByClientHandle().get(n.getClientHandle());
 
                                     if (item != null) {
-                                        builder.add(new Tuple2<>(item, n.getValue()));
+                                        monitoredItems.add(item);
+                                        dataValues.add(n.getValue());
                                     }
                                 }
-
-                                ImmutableList<Tuple2<UaMonitoredItem, DataValue>> itemValues = builder.build();
 
                                 subscription.getNotificationListeners().forEach(
                                     listener -> listener.onDataChangeNotification(
                                         subscription,
-                                        itemValues,
+                                        monitoredItems,
+                                        dataValues,
                                         notificationMessage.getPublishTime()
                                     )
                                 );
@@ -733,9 +733,9 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                         }
                     } else if (o instanceof EventNotificationList) {
                         EventNotificationList enl = (EventNotificationList) o;
-                        List<EventFieldList> events = l(enl.getEvents());
+                        List<EventFieldList> eventFieldLists = l(enl.getEvents());
 
-                        for (EventFieldList efl : events) {
+                        for (EventFieldList efl : eventFieldLists) {
                             logger.trace("EventFieldList: clientHandle={}, values={}",
                                 efl.getClientHandle(), Arrays.toString(efl.getEventFields()));
 
@@ -744,21 +744,24 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                         }
 
                         if (!subscription.getNotificationListeners().isEmpty()) {
-                            ImmutableList.Builder<Tuple2<UaMonitoredItem, Variant[]>> builder = ImmutableList.builder();
+                            List<UaMonitoredItem> monitoredItems = new ArrayList<>();
+                            List<Variant[]> eventFields = new ArrayList<>();
 
-                            for (EventFieldList efl : events) {
-                                UaMonitoredItem item = subscription.getItemsByClientHandle().get(efl.getClientHandle());
+                            for (EventFieldList efl : eventFieldLists) {
+                                UaMonitoredItem item = subscription
+                                    .getItemsByClientHandle().get(efl.getClientHandle());
+
                                 if (item != null) {
-                                    builder.add(new Tuple2<>(item, efl.getEventFields()));
+                                    monitoredItems.add(item);
+                                    eventFields.add(efl.getEventFields());
                                 }
                             }
-
-                            ImmutableList<Tuple2<UaMonitoredItem, Variant[]>> itemEvents = builder.build();
 
                             subscription.getNotificationListeners().forEach(
                                 listener -> listener.onEventNotification(
                                     subscription,
-                                    itemEvents,
+                                    monitoredItems,
+                                    eventFields,
                                     notificationMessage.getPublishTime()
                                 )
                             );

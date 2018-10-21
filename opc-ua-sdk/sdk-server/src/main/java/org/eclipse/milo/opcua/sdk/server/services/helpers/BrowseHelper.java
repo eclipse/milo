@@ -54,7 +54,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
-import org.jooq.lambda.tuple.Tuple3;
 
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.browseResultMasks;
@@ -426,22 +425,28 @@ public class BrowseHelper {
 
     }
 
-    private static class BrowseAttributes extends Tuple3<QualifiedName, LocalizedText, NodeClass> {
+    private static class BrowseAttributes {
+
+        private final QualifiedName browseName;
+        private final LocalizedText displayName;
+        private final NodeClass nodeClass;
 
         private BrowseAttributes(QualifiedName browseName, LocalizedText displayName, NodeClass nodeClass) {
-            super(browseName, displayName, nodeClass);
+            this.browseName = browseName;
+            this.displayName = displayName;
+            this.nodeClass = nodeClass;
         }
 
-        private QualifiedName getBrowseName() {
-            return v1();
+        public QualifiedName getBrowseName() {
+            return browseName;
         }
 
-        private LocalizedText getDisplayName() {
-            return v2();
+        public LocalizedText getDisplayName() {
+            return displayName;
         }
 
-        private NodeClass getNodeClass() {
-            return v3();
+        public NodeClass getNodeClass() {
+            return nodeClass;
         }
 
     }

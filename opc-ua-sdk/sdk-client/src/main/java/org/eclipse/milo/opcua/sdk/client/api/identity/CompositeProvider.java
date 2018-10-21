@@ -19,9 +19,6 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
-import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +41,8 @@ public class CompositeProvider implements IdentityProvider {
     }
 
     @Override
-    public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
-                                                                     ByteString serverNonce) throws Exception {
+    public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
+                                                ByteString serverNonce) throws Exception {
 
         Iterator<IdentityProvider> iterator = providers.iterator();
 

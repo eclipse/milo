@@ -72,11 +72,6 @@
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jool</artifactId>
-            <version>${jool.version}</version>
-        </dependency>
 
         <!-- Required for OpcUaXmlStreamDecoder and BsdParser on Java 9+ -->
         <dependency>

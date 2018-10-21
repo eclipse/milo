@@ -21,18 +21,17 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.jooq.lambda.tuple.Tuple3;
 
 class ReferenceTable {
 
-    private final List<Tuple3<BrowsePath, NodeId, Target>> references = new ArrayList<>();
+    private final List<RefRow> references = new ArrayList<>();
 
     void addReference(
         BrowsePath sourcePath,
         NodeId referenceTypeId,
         ExpandedNodeId targetNodeId) {
 
-        references.add(new Tuple3<>(sourcePath, referenceTypeId, new Target(targetNodeId)));
+        references.add(new RefRow(sourcePath, referenceTypeId, new RefTarget(targetNodeId)));
     }
 
     void addReference(
@@ -40,11 +39,11 @@ class ReferenceTable {
         NodeId referenceTypeId,
         BrowsePath targetPath) {
 
-        references.add(new Tuple3<>(sourcePath, referenceTypeId, new Target(targetPath)));
+        references.add(new RefRow(sourcePath, referenceTypeId, new RefTarget(targetPath)));
     }
 
-    List<Tuple3<BrowsePath, NodeId, Target>> getReferences(BrowsePath sourcePath) {
-        return references.stream().filter(t -> t.v1.equals(sourcePath)).collect(Collectors.toList());
+    List<RefRow> getReferences(BrowsePath sourcePath) {
+        return references.stream().filter(t -> t.browsePath.equals(sourcePath)).collect(Collectors.toList());
     }
 
     static ReferenceTable merge(ReferenceTable table1, ReferenceTable table2) {
@@ -53,8 +52,8 @@ class ReferenceTable {
         mergedTable.references.addAll(table1.references);
 
         table2.references.forEach(row -> {
-            BrowsePath browsePath = row.v1;
-            NodeId referenceTypeId = row.v2;
+            BrowsePath browsePath = row.browsePath;
+            NodeId referenceTypeId = row.nodeId;
 
             if (Identifiers.HasTypeDefinition.equals(referenceTypeId)) {
                 // Don't merge a HasTypeDefinition reference if there's already one present
@@ -64,7 +63,7 @@ class ReferenceTable {
 
                 boolean noTypeDefinition = mergedTable.references.stream()
                     .noneMatch(r ->
-                        r.v1.equals(browsePath) && r.v2.equals(Identifiers.HasTypeDefinition));
+                        r.browsePath.equals(browsePath) && r.nodeId.equals(Identifiers.HasTypeDefinition));
 
                 if (noTypeDefinition) {
                     mergedTable.references.add(row);
@@ -77,16 +76,43 @@ class ReferenceTable {
         return mergedTable;
     }
 
-    static class Target {
+    static class RefRow {
+        final BrowsePath browsePath;
+        final NodeId nodeId;
+        final RefTarget target;
+
+        public RefRow(BrowsePath browsePath, NodeId nodeId, RefTarget target) {
+            this.browsePath = browsePath;
+            this.nodeId = nodeId;
+            this.target = target;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            RefRow row = (RefRow) o;
+            return Objects.equals(browsePath, row.browsePath) &&
+                Objects.equals(nodeId, row.nodeId) &&
+                Objects.equals(target, row.target);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(browsePath, nodeId, target);
+        }
+    }
+
+    static class RefTarget {
         final ExpandedNodeId targetNodeId;
         final BrowsePath targetPath;
 
-        Target(ExpandedNodeId targetNodeId) {
+        RefTarget(ExpandedNodeId targetNodeId) {
             this.targetNodeId = targetNodeId;
             this.targetPath = null;
         }
 
-        Target(BrowsePath targetPath) {
+        RefTarget(BrowsePath targetPath) {
             this.targetPath = targetPath;
             this.targetNodeId = null;
         }
@@ -95,7 +121,7 @@ class ReferenceTable {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Target target = (Target) o;
+            RefTarget target = (RefTarget) o;
             return Objects.equals(targetNodeId, target.targetNodeId) &&
                 Objects.equals(targetPath, target.targetPath);
         }

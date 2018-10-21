@@ -39,7 +39,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
-import org.jooq.lambda.tuple.Tuple3;
 
 public class NodeFactory {
 
@@ -211,12 +210,11 @@ public class NodeFactory {
         }
 
         nodes.forEach((browsePath, node) -> {
-            List<Tuple3<BrowsePath, NodeId, ReferenceTable.Target>> references =
-                referenceTable.getReferences(browsePath);
+            List<ReferenceTable.RefRow> references = referenceTable.getReferences(browsePath);
 
             references.forEach(t -> {
-                NodeId referenceTypeId = t.v2;
-                ReferenceTable.Target target = t.v3;
+                NodeId referenceTypeId = t.nodeId;
+                ReferenceTable.RefTarget target = t.target;
 
                 if (!Identifiers.HasModellingRule.equals(referenceTypeId)) {
                     if (target.targetNodeId != null) {
@@ -339,8 +337,8 @@ public class NodeFactory {
         return referenceTable
             .getReferences(browsePath)
             .stream()
-            .filter(t -> t.v2.equals(Identifiers.HasTypeDefinition))
-            .map(t -> t.v3.targetNodeId)
+            .filter(t -> t.nodeId.equals(Identifiers.HasTypeDefinition))
+            .map(t -> t.target.targetNodeId)
             .findFirst()
             .orElse(ExpandedNodeId.NULL_VALUE);
     }

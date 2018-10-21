@@ -37,11 +37,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,8 +106,8 @@ public class UsernameProvider implements IdentityProvider {
     }
 
     @Override
-    public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
-                                                                     ByteString serverNonce) throws Exception {
+    public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
+                                                ByteString serverNonce) throws Exception {
 
         List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
 
@@ -216,7 +214,7 @@ public class UsernameProvider implements IdentityProvider {
             encryptionAlgorithm
         );
 
-        return new Tuple2<>(token, new SignatureData());
+        return new SignedIdentityToken(token, new SignatureData());
     }
 
     private Cipher getAndInitializeCipher(X509Certificate serverCertificate,

@@ -23,11 +23,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
-import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +44,8 @@ public class X509IdentityProvider implements IdentityProvider {
     }
 
     @Override
-    public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(EndpointDescription endpoint,
-                                                                     ByteString serverNonce) throws Exception {
+    public SignedIdentityToken getIdentityToken(EndpointDescription endpoint,
+                                                ByteString serverNonce) throws Exception {
 
         List<UserTokenPolicy> userIdentityTokens = l(endpoint.getUserIdentityTokens());
 
@@ -98,7 +96,7 @@ public class X509IdentityProvider implements IdentityProvider {
             ByteString.of(signature)
         );
 
-        return new Tuple2<>(token, signatureData);
+        return new SignedIdentityToken(token, signatureData);
     }
 
 }
