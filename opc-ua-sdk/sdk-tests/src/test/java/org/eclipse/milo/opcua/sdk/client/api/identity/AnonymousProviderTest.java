@@ -17,10 +17,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.UserTokenType;
 import org.eclipse.milo.opcua.stack.core.types.structured.AnonymousIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
-import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.jooq.lambda.tuple.Tuple2;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
@@ -45,11 +42,11 @@ public class AnonymousProviderTest {
 
         AnonymousProvider p = new AnonymousProvider();
 
-        Tuple2<UserIdentityToken, SignatureData> t2 =
+        SignedIdentityToken signedIdentityToken =
             p.getIdentityToken(endpoint, ByteString.NULL_VALUE);
 
-        assertEquals(t2.v1().getPolicyId(), "anonymous");
-        assertTrue(t2.v1() instanceof AnonymousIdentityToken);
+        assertEquals(signedIdentityToken.getToken().getPolicyId(), "anonymous");
+        assertTrue(signedIdentityToken.getToken() instanceof AnonymousIdentityToken);
     }
 
     @Test
@@ -67,11 +64,11 @@ public class AnonymousProviderTest {
 
         AnonymousProvider p = new AnonymousProvider();
 
-        Tuple2<UserIdentityToken, SignatureData> t2 =
+        SignedIdentityToken signedIdentityToken =
             p.getIdentityToken(endpoint, ByteString.NULL_VALUE);
 
-        assertEquals(t2.v1().getPolicyId(), "");
-        assertTrue(t2.v1() instanceof AnonymousIdentityToken);
+        assertEquals(signedIdentityToken.getToken().getPolicyId(), "");
+        assertTrue(signedIdentityToken.getToken() instanceof AnonymousIdentityToken);
     }
 
     @Test
@@ -89,11 +86,11 @@ public class AnonymousProviderTest {
 
         AnonymousProvider p = new AnonymousProvider();
 
-        Tuple2<UserIdentityToken, SignatureData> t2 =
+        SignedIdentityToken signedIdentityToken =
             p.getIdentityToken(endpoint, ByteString.NULL_VALUE);
 
-        assertNull(t2.v1().getPolicyId());
-        assertTrue(t2.v1() instanceof AnonymousIdentityToken);
+        assertNull(signedIdentityToken.getToken().getPolicyId());
+        assertTrue(signedIdentityToken.getToken() instanceof AnonymousIdentityToken);
     }
 
     @Test

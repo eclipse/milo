@@ -29,6 +29,7 @@ import com.google.common.primitives.Bytes;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
+import org.eclipse.milo.opcua.sdk.client.api.identity.SignedIdentityToken;
 import org.eclipse.milo.opcua.sdk.client.api.subscriptions.UaSubscription;
 import org.eclipse.milo.opcua.sdk.client.session.Fsm;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
@@ -74,7 +75,6 @@ import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -236,12 +236,12 @@ abstract class AbstractSessionState implements SessionState {
 
             ByteString serverNonce = csr.getServerNonce();
 
-            Tuple2<UserIdentityToken, SignatureData> tuple =
+            SignedIdentityToken signedIdentityToken =
                 client.getConfig().getIdentityProvider()
                     .getIdentityToken(endpoint, serverNonce);
 
-            UserIdentityToken userIdentityToken = tuple.v1();
-            SignatureData userTokenSignature = tuple.v2();
+            UserIdentityToken userIdentityToken = signedIdentityToken.getToken();
+            SignatureData userTokenSignature = signedIdentityToken.getSignature();
 
             ActivateSessionRequest request = new ActivateSessionRequest(
                 client.newRequestHeader(csr.getAuthenticationToken(), REQUEST_TIMEOUT),
@@ -358,12 +358,12 @@ abstract class AbstractSessionState implements SessionState {
         try {
             EndpointDescription endpoint = stackClient.getConfig().getEndpoint();
 
-            Tuple2<UserIdentityToken, SignatureData> tuple =
+            SignedIdentityToken signedIdentityToken =
                 client.getConfig().getIdentityProvider()
                     .getIdentityToken(endpoint, session.getServerNonce());
 
-            UserIdentityToken userIdentityToken = tuple.v1();
-            SignatureData userTokenSignature = tuple.v2();
+            UserIdentityToken userIdentityToken = signedIdentityToken.getToken();
+            SignatureData userTokenSignature = signedIdentityToken.getSignature();
 
             SignatureData clientSignature = buildClientSignature(
                 client.getConfig(),

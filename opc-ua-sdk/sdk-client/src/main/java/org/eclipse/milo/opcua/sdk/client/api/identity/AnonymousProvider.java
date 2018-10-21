@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignatureData;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
-import org.jooq.lambda.tuple.Tuple2;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -34,7 +33,7 @@ public class AnonymousProvider implements IdentityProvider {
     public static final IdentityProvider INSTANCE = new AnonymousProvider(); 
 
     @Override
-    public Tuple2<UserIdentityToken, SignatureData> getIdentityToken(
+    public SignedIdentityToken getIdentityToken(
         EndpointDescription endpoint,
         ByteString serverNonce) throws Exception {
 
@@ -46,7 +45,7 @@ public class AnonymousProvider implements IdentityProvider {
             .map(policy -> {
                 UserIdentityToken token = new AnonymousIdentityToken(policy.getPolicyId());
 
-                return new Tuple2<>(token, new SignatureData());
+                return new SignedIdentityToken(token, new SignatureData());
             })
             .orElseThrow(() -> new Exception("no anonymous token policy found"));
     }

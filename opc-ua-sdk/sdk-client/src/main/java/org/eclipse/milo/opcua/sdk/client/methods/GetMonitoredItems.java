@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.jooq.lambda.tuple.Tuple2;
 
 public class GetMonitoredItems extends AbstractUaMethod {
 
@@ -32,7 +31,7 @@ public class GetMonitoredItems extends AbstractUaMethod {
      * GetMonitoredItems is used to get information about monitored items of a subscription.
      *
      * @param subscriptionId identifier of the subscription.
-     * @return a {@link Tuple2} containing the output arguments.
+     * @return a 2-dimensional array containing the output arguments.
      * <p>
      * serverHandles (UInt32[]) - array of serverHandles for all MonitoredItems of the subscription identified by
      * subscriptionId.
@@ -40,19 +39,19 @@ public class GetMonitoredItems extends AbstractUaMethod {
      * clientHandles (UInt32[]) - array of clientHandles for all MonitoredItems of the subscription identified by
      * subscriptionId.
      */
-    public CompletableFuture<Tuple2<UInteger[], UInteger[]>> invoke(UInteger subscriptionId) {
+    public CompletableFuture<UInteger[][]> invoke(UInteger subscriptionId) {
         Variant[] inputArguments = new Variant[]{
             new Variant(subscriptionId)
         };
 
         return invoke(inputArguments).thenCompose(outputArguments -> {
             try {
-                UInteger[] v0 = (UInteger[]) outputArguments[0].getValue();
-                UInteger[] v1 = (UInteger[]) outputArguments[1].getValue();
+                UInteger[] serverHandles = (UInteger[]) outputArguments[0].getValue();
+                UInteger[] clientHandles = (UInteger[]) outputArguments[1].getValue();
 
-                return CompletableFuture.completedFuture(new Tuple2<>(v0, v1));
+                return CompletableFuture.completedFuture(new UInteger[][]{serverHandles, clientHandles});
             } catch (Throwable t) {
-                CompletableFuture<Tuple2<UInteger[], UInteger[]>> f = new CompletableFuture<>();
+                CompletableFuture<UInteger[][]> f = new CompletableFuture<>();
                 f.completeExceptionally(new UaException(t));
                 return f;
             }

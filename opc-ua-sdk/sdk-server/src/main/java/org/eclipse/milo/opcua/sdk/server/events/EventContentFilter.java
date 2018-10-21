@@ -63,7 +63,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.LiteralOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.SimpleAttributeOperand;
-import org.jooq.lambda.tuple.Tuple2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,19 +80,18 @@ public class EventContentFilter {
             throw new UaException(StatusCodes.Bad_EventFilterInvalid);
         }
 
-        Tuple2<StatusCode[], DiagnosticInfo[]> selectClauseResults =
-            validateSelectClauses(context, selectClauses);
+        SelectClauseValidationResult selectClauseResults = validateSelectClauses(context, selectClauses);
 
         ContentFilterResult whereClauseResult = validateWhereClause(context, filter.getWhereClause());
 
         return new EventFilterResult(
-            selectClauseResults.v1(),
-            selectClauseResults.v2(),
+            selectClauseResults.statusCodes,
+            selectClauseResults.diagnosticInfos,
             whereClauseResult
         );
     }
 
-    private static Tuple2<StatusCode[], DiagnosticInfo[]> validateSelectClauses(
+    private static SelectClauseValidationResult validateSelectClauses(
         FilterContext context,
         SimpleAttributeOperand[] selectClauses) {
 
@@ -116,9 +114,10 @@ public class EventContentFilter {
             }
         }
 
-        return new Tuple2<>(
+        return new SelectClauseValidationResult(
             statusCodes.toArray(new StatusCode[0]),
-            diagnosticInfos.toArray(new DiagnosticInfo[0]));
+            diagnosticInfos.toArray(new DiagnosticInfo[0])
+        );
     }
 
     private static void validateSimpleOperand(
@@ -523,6 +522,16 @@ public class EventContentFilter {
             }
         }
 
+    }
+
+    static class SelectClauseValidationResult {
+        private final StatusCode[] statusCodes;
+        private final DiagnosticInfo[] diagnosticInfos;
+
+        public SelectClauseValidationResult(StatusCode[] statusCodes, DiagnosticInfo[] diagnosticInfos) {
+            this.statusCodes = statusCodes;
+            this.diagnosticInfos = diagnosticInfos;
+        }
     }
 
 }

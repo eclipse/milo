@@ -84,7 +84,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.SetTriggeringResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.SubscriptionAcknowledgement;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
-import org.jooq.lambda.tuple.Tuple3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -365,7 +364,7 @@ public class SubscriptionManager {
 
                 if (attributeId.equals(AttributeId.EventNotifier.uid())) {
                     readEventAttributes(namespace, nodeId).thenAccept(as -> {
-                        Optional<UByte> eventNotifier = as.v3();
+                        Optional<UByte> eventNotifier = as.eventNotifier;
 
                         try {
                             if (!eventNotifier.isPresent()) {
@@ -741,14 +740,27 @@ public class SubscriptionManager {
             return new EventAttributes(
                 AccessLevel.fromMask(accessLevel),
                 AccessLevel.fromMask(userAccessLevel),
-                eventNotifier);
+                eventNotifier
+            );
         });
     }
 
-    private static class EventAttributes extends Tuple3<EnumSet<AccessLevel>, EnumSet<AccessLevel>, Optional<UByte>> {
-        public EventAttributes(EnumSet<AccessLevel> v1, EnumSet<AccessLevel> v2, Optional<UByte> v3) {
-            super(v1, v2, v3);
+    private static class EventAttributes {
+
+        private final EnumSet<AccessLevel> accessLevels;
+        private final EnumSet<AccessLevel> userAccessLevels;
+        private final Optional<UByte> eventNotifier;
+
+        EventAttributes(
+            EnumSet<AccessLevel> accessLevels,
+            EnumSet<AccessLevel> userAccessLevels,
+            Optional<UByte> eventNotifier) {
+
+            this.accessLevels = accessLevels;
+            this.userAccessLevels = userAccessLevels;
+            this.eventNotifier = eventNotifier;
         }
+
     }
 
     public void deleteMonitoredItems(ServiceRequest service) {
