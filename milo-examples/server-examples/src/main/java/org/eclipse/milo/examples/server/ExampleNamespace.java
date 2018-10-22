@@ -211,8 +211,8 @@ public class ExampleNamespace implements Namespace {
 
                 eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
                 eventNode.setEventType(Identifiers.BaseEventType);
-                eventNode.setSourceNode(NodeId.NULL_VALUE);
-                eventNode.setSourceName("");
+                eventNode.setSourceNode(serverNode.getNodeId());
+                eventNode.setSourceName(serverNode.getDisplayName().getText());
                 eventNode.setTime(DateTime.now());
                 eventNode.setReceiveTime(DateTime.NULL_VALUE);
                 eventNode.setMessage(LocalizedText.english("event message!"));
