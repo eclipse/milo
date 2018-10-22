@@ -69,11 +69,9 @@ public class ChannelFsm {
     }
 
     public CompletableFuture<Channel> getChannel() {
-        State current;
-
+        readWriteLock.readLock().lock();
         try {
-            readWriteLock.readLock().lock();
-            current = state.get();
+            State current = state.get();
 
             if (current instanceof Connected) {
                 // "Fast" path... already connected.
