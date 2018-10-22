@@ -18,6 +18,7 @@ import java.util.UUID;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
@@ -34,9 +35,11 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 public class GenerateEvent {
 
     private final OpcUaServer server;
+    private final MethodNode methodNode;
 
-    public GenerateEvent(OpcUaServer server) {
+    public GenerateEvent(OpcUaServer server, MethodNode methodNode) {
         this.server = server;
+        this.methodNode = methodNode;
     }
 
     @UaMethod
@@ -60,8 +63,8 @@ public class GenerateEvent {
 
             eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
             eventNode.setEventType(Identifiers.BaseEventType);
-            eventNode.setSourceNode(NodeId.NULL_VALUE);
-            eventNode.setSourceName("");
+            eventNode.setSourceNode(methodNode.getNodeId());
+            eventNode.setSourceName(methodNode.getDisplayName().getText());
             eventNode.setTime(DateTime.now());
             eventNode.setReceiveTime(DateTime.NULL_VALUE);
             eventNode.setMessage(LocalizedText.english("event message!"));

@@ -617,7 +617,7 @@ public class ExampleNamespace implements Namespace {
 
         try {
             AnnotationBasedInvocationHandler invocationHandler =
-                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new GenerateEvent(server));
+                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new GenerateEvent(server, methodNode));
 
             methodNode.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
             methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
