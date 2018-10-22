@@ -132,7 +132,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Override
     protected synchronized void enqueue(Variant[] value) {
-        if (queueSize < queue.maxSize()) {
+        if (queue.size() < queue.maxSize()) {
             queue.add(value);
         } else {
             if (getQueueSize() > 1) {
