@@ -155,7 +155,8 @@ public class ExampleServer {
 
         server.getNamespaceManager().registerAndAdd(
             ExampleNamespace.NAMESPACE_URI,
-            idx -> new ExampleNamespace(server, idx));
+            idx -> new ExampleNamespace(server, idx)
+        );
     }
 
     private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {
@@ -173,7 +174,7 @@ public class ExampleServer {
                 EndpointConfiguration.Builder builder = EndpointConfiguration.newBuilder()
                     .setBindAddress(bindAddress)
                     .setHostname(hostname)
-                    .setPath("/example")
+                    .setPath("/milo")
                     .setCertificate(certificate)
                     .addTokenPolicies(
                         USER_TOKEN_POLICY_ANONYMOUS,
@@ -214,7 +215,7 @@ public class ExampleServer {
                  */
 
                 EndpointConfiguration.Builder discoveryBuilder = builder.copy()
-                    .setPath("/example/discovery")
+                    .setPath("/milo/discovery")
                     .setSecurityPolicy(SecurityPolicy.None)
                     .setSecurityMode(MessageSecurityMode.None);
 
