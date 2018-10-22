@@ -268,6 +268,8 @@ public abstract class UaNode implements UaServerNode {
 
             addProperty(propertyNode);
 
+            context.getNodeManager().addNode(propertyNode);
+
             return propertyNode;
         });
 
@@ -297,6 +299,8 @@ public abstract class UaNode implements UaServerNode {
             propertyNode.setValueRank(property.getValueRank());
 
             addProperty(propertyNode);
+
+            context.getNodeManager().addNode(propertyNode);
 
             return propertyNode;
         });
@@ -335,7 +339,7 @@ public abstract class UaNode implements UaServerNode {
         }
     }
 
-    public void addProperty(UaVariableNode node) {
+    void addProperty(UaVariableNode node) {
         addReference(new Reference(
             getNodeId(),
             Identifiers.HasProperty,
@@ -353,7 +357,7 @@ public abstract class UaNode implements UaServerNode {
         ));
     }
 
-    public void removeProperty(UaVariableNode node) {
+    void removeProperty(UaVariableNode node) {
         removeReference(new Reference(
             getNodeId(),
             Identifiers.HasProperty,
