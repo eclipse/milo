@@ -81,7 +81,7 @@ class ReferenceTable {
         final NodeId nodeId;
         final RefTarget target;
 
-        public RefRow(BrowsePath browsePath, NodeId nodeId, RefTarget target) {
+        RefRow(BrowsePath browsePath, NodeId nodeId, RefTarget target) {
             this.browsePath = browsePath;
             this.nodeId = nodeId;
             this.target = target;
