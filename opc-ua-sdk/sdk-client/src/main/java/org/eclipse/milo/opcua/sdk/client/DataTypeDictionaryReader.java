@@ -208,8 +208,17 @@ public class DataTypeDictionaryReader {
                     }
 
                     if (bytesRead < fragmentSize) {
-                        // a partial fragment means this is the last read that will
+                        // A partial fragment means this is the last read that will
                         // succeed; don't bother trying to read the next fragment.
+                        return completedFuture(fragmentBuffer);
+                    } else if (bytesRead > fragmentSize) {
+                        // Some servers don't support index range properly and just
+                        // return the entire contents. when this happens, we can assume
+                        // we've read everything there is to read.
+                        // An edge case where the dictionary size is exactly equal to the
+                        // fragment size still exists. In this case we must hope the server
+                        // properly terminates the subsequent request with something like
+                        // Bad_IndexRangeNoData or else the infinite loop could still happen.
                         return completedFuture(fragmentBuffer);
                     } else {
                         return readFragments(nodeId, fragmentBuffer, fragmentSize, index + bytesRead);
