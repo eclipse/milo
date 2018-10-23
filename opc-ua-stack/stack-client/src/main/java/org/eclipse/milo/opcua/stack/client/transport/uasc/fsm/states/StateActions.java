@@ -68,13 +68,11 @@ class StateActions {
         bootstrap(fsm.getConfig()).whenComplete(
             (channel, ex) -> {
                 if (channel != null) {
-                    LOGGER.debug(
-                        "Channel bootstrap succeeded: localAddress={}, remoteAddress={}",
-                        channel.localAddress(), channel.remoteAddress());
+                    LOGGER.debug("[{}] Channel bootstrap succeeded, channel={}", fsm.getId(), channel);
 
                     fsm.fireEvent(new ConnectSuccess(channel));
                 } else {
-                    LOGGER.debug("Channel bootstrap failed: {}", ex.getMessage(), ex);
+                    LOGGER.debug("[{}] Channel bootstrap failed: {}", fsm.getId(), ex.getMessage(), ex);
 
                     fsm.fireEvent(new ConnectFailure(ex));
                 }
@@ -177,7 +175,7 @@ class StateActions {
         channel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
             @Override
             public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-                LOGGER.debug("channelInactive(), disconnect complete");
+                LOGGER.debug("[{}] channelInactive(), disconnect complete", fsm.getId());
                 timeout.cancel();
                 fsm.fireEvent(new DisconnectSuccess());
                 super.channelInactive(ctx);

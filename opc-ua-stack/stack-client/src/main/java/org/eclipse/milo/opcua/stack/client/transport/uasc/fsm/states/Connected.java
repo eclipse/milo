@@ -53,8 +53,7 @@ public class Connected extends AbstractState {
             channel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-                    LOGGER.debug("channelInactive() local={}, remote={}",
-                        ctx.channel().localAddress(), ctx.channel().remoteAddress());
+                    LOGGER.debug("[{}] channelInactive() channel={}", fsm.getId(), ctx.channel());
 
                     fsm.fireEvent(new ChannelInactive());
 

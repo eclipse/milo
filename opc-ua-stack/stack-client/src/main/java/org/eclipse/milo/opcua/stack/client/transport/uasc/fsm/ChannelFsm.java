@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.client.transport.uasc.fsm;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nullable;
@@ -34,7 +35,11 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class ChannelFsm {
 
+    private static final AtomicLong ID_SEQUENCE = new AtomicLong(0L);
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Long id = ID_SEQUENCE.getAndIncrement();
 
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 
@@ -49,6 +54,8 @@ public class ChannelFsm {
     }
 
     public CompletableFuture<Channel> connect() {
+        logger.debug("[{}] connect()", getId());
+
         Connect connect = new Connect();
 
         fireEvent(connect);
@@ -59,6 +66,8 @@ public class ChannelFsm {
     }
 
     public CompletableFuture<Unit> disconnect() {
+        logger.debug("[{}] disconnect()", getId());
+
         Disconnect disconnect = new Disconnect();
 
         fireEvent(disconnect);
@@ -69,6 +78,8 @@ public class ChannelFsm {
     }
 
     public CompletableFuture<Channel> getChannel() {
+        logger.debug("[{}] getChannel()", getId());
+
         readWriteLock.readLock().lock();
         try {
             State current = state.get();
@@ -106,7 +117,8 @@ public class ChannelFsm {
                 );
 
                 logger.debug(
-                    "S({}) x E({}) = S'({})",
+                    "[{}] S({}) x E({}) = S'({})",
+                    getId(),
                     prevState.getClass().getSimpleName(),
                     event.getClass().getSimpleName(),
                     nextState.getClass().getSimpleName()
@@ -121,6 +133,10 @@ public class ChannelFsm {
                 readWriteLock.writeLock().unlock();
             }
         }
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Context getContext() {
