@@ -18,6 +18,8 @@ import java.util.concurrent.CompletableFuture;
 import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.ChannelFsm;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.Connect;
+import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.ConnectFailure;
+import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.ConnectSuccess;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.Disconnect;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.DisconnectSuccess;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.GetChannel;
@@ -52,6 +54,24 @@ public class Disconnecting extends ChannelFsm.State {
                 ((Disconnect) event).getDisconnectFuture();
 
             complete(future).with(fsm.getContext().getDisconnectFuture());
+        } else if (event instanceof ConnectFailure) {
+            ConnectFailure connectFailure = (ConnectFailure) event;
+
+            CompletableFuture<Channel> future =
+                fsm.getContext().getChannelFuture();
+
+            if (future != null) {
+                future.completeExceptionally(connectFailure.getFailure());
+            }
+        } else if (event instanceof ConnectSuccess) {
+            ConnectSuccess connectSuccess = (ConnectSuccess) event;
+
+            CompletableFuture<Channel> future =
+                fsm.getContext().getChannelFuture();
+
+            if (future != null) {
+                future.complete(connectSuccess.getChannel());
+            }
         }
     }
 
