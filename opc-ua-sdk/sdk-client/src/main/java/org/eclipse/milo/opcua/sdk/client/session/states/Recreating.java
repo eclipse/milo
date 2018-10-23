@@ -27,7 +27,19 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class Recreating extends AbstractSessionState implements SessionState {
 
+    private static final long MAX_DELAY = 16; // seconds
+
     private final CompletableFuture<OpcUaSession> sessionFuture = new CompletableFuture<>();
+
+    private final long delay;
+
+    public Recreating() {
+        this(1);
+    }
+
+    public Recreating(long delay) {
+        this.delay = delay;
+    }
 
     @Override
     public CompletableFuture<OpcUaSession> getSessionFuture() {
@@ -59,9 +71,10 @@ public class Recreating extends AbstractSessionState implements SessionState {
 
             sessionFuture.completeExceptionally(failure);
 
-            Recreating recreating = new Recreating();
+            long nextDelay = Math.min(MAX_DELAY, delay << 1L);
+            Recreating recreating = new Recreating(nextDelay);
 
-            createSessionAsync(fsm, recreating.getSessionFuture());
+            createSessionAsync(fsm, recreating.getSessionFuture(), delay);
 
             return recreating;
         } else if (event instanceof CloseSessionEvent) {

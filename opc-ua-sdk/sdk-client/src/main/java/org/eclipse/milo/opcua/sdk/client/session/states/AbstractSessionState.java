@@ -21,6 +21,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
@@ -46,6 +47,7 @@ import org.eclipse.milo.opcua.sdk.client.session.events.TransferFailureEvent;
 import org.eclipse.milo.opcua.sdk.client.session.events.TransferSuccessEvent;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
@@ -93,7 +95,19 @@ abstract class AbstractSessionState implements SessionState {
 
     // <editor-fold desc="Create Session">
     static void createSessionAsync(Fsm fsm, CompletableFuture<OpcUaSession> sessionFuture) {
-        fsm.getClient().getConfig().getExecutor().execute(() -> createSession(fsm, sessionFuture));
+        createSessionAsync(fsm, sessionFuture, 0L);
+    }
+
+    static void createSessionAsync(Fsm fsm, CompletableFuture<OpcUaSession> sessionFuture, long delaySeconds) {
+        LOGGER.debug("[{}] Scheduling CreateSession for +{} seconds", fsm.getId(), delaySeconds);
+
+        Stack.sharedScheduledExecutor().schedule(
+            () ->
+                fsm.getClient().getConfig().getExecutor()
+                    .execute(() -> createSession(fsm, sessionFuture)),
+            delaySeconds,
+            TimeUnit.SECONDS
+        );
     }
 
     private static void createSession(Fsm fsm, CompletableFuture<OpcUaSession> sessionFuture) {
@@ -145,13 +159,13 @@ abstract class AbstractSessionState implements SessionState {
             client.getConfig().getMaxResponseMessageSize()
         );
 
-        LOGGER.debug("Sending CreateSessionRequest...");
+        LOGGER.debug("[{}] Sending CreateSessionRequest...", fsm.getId());
 
         stackClient.sendRequest(request)
             .thenApply(CreateSessionResponse.class::cast)
             .whenCompleteAsync((response, ex) -> {
                 if (response != null) {
-                    LOGGER.debug("CreateSession succeeded: {}", response.getSessionId());
+                    LOGGER.debug("[{}] CreateSession succeeded: {}", fsm.getId(), response.getSessionId());
 
                     try {
                         SecurityPolicy securityPolicy = SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri());
@@ -201,12 +215,12 @@ abstract class AbstractSessionState implements SessionState {
 
                         fsm.fireEvent(new CreateSessionSuccessEvent(response, sessionFuture));
                     } catch (UaException e) {
-                        LOGGER.debug("CreateSession failed: {}", e.getMessage(), e);
+                        LOGGER.debug("[{}] CreateSession failed: {}", fsm.getId(), e.getMessage(), e);
 
                         fsm.fireEvent(new CreateSessionFailureEvent(e, sessionFuture));
                     }
                 } else {
-                    LOGGER.debug("CreateSession failed: {}", ex.getMessage(), ex);
+                    LOGGER.debug("[{}] CreateSession failed: {}", fsm.getId(), ex.getMessage(), ex);
 
                     fsm.fireEvent(new CreateSessionFailureEvent(ex, sessionFuture));
                 }
@@ -252,7 +266,7 @@ abstract class AbstractSessionState implements SessionState {
                 userTokenSignature
             );
 
-            LOGGER.debug("Sending ActivateSessionRequest...");
+            LOGGER.debug("[{}] Sending ActivateSessionRequest...", fsm.getId());
 
             stackClient.sendRequest(request)
                 .thenApply(ActivateSessionResponse.class::cast)
@@ -268,16 +282,20 @@ abstract class AbstractSessionState implements SessionState {
                             csr.getServerSoftwareCertificates()
                         );
 
-                        LOGGER.debug("Session activated: {}", session);
+                        LOGGER.debug("[{}] Session activated: {}", fsm.getId(), session);
 
                         session.setServerNonce(asr.getServerNonce());
 
                         fsm.fireEvent(new ActivateSessionSuccessEvent(session, sessionFuture));
                     } else {
+                        LOGGER.debug("[{}] ActivateSession failed: {}", fsm.getId(), ex.getMessage(), ex);
+
                         fsm.fireEvent(new ActivateSessionFailureEvent(ex, sessionFuture));
                     }
                 }, client.getConfig().getExecutor());
         } catch (Exception ex) {
+            LOGGER.debug("[{}] ActivateSession failed: {}", fsm.getId(), ex.getMessage(), ex);
+
             fsm.fireEvent(new ActivateSessionFailureEvent(ex, sessionFuture));
         }
     }
@@ -324,13 +342,13 @@ abstract class AbstractSessionState implements SessionState {
 
         CloseSessionRequest request = new CloseSessionRequest(requestHeader, true);
 
-        LOGGER.debug("Sending CloseSessionRequest...");
+        LOGGER.debug("[{}] Sending CloseSessionRequest...", fsm.getId());
 
         stackClient.sendRequest(request).whenCompleteAsync((csr, ex2) -> {
             if (ex2 != null) {
-                LOGGER.debug("CloseSession failed: {}", ex2.getMessage(), ex2);
+                LOGGER.debug("[{}] CloseSession failed: {}", fsm.getId(), ex2.getMessage(), ex2);
             } else {
-                LOGGER.debug("Session closed: {}", sessionId);
+                LOGGER.debug("[{}] Session closed: {}", fsm.getId(), sessionId);
             }
 
             fsm.fireEvent(new CloseSessionSuccessEvent(closeFuture, sessionFuture));
@@ -379,26 +397,26 @@ abstract class AbstractSessionState implements SessionState {
                 userTokenSignature
             );
 
-            LOGGER.debug("Sending (re)ActivateSessionRequest...");
+            LOGGER.debug("[{}] Sending (re)ActivateSessionRequest...", fsm.getId());
 
             stackClient.connect()
                 .thenCompose(c -> c.sendRequest(request))
                 .thenApply(ActivateSessionResponse.class::cast)
                 .whenCompleteAsync((asr, ex) -> {
                     if (asr != null) {
-                        LOGGER.debug("Session reactivated: {}", session);
+                        LOGGER.debug("[{}] Session reactivated: {}", fsm.getId(), session);
 
                         session.setServerNonce(asr.getServerNonce());
 
                         fsm.fireEvent(new ReactivateSuccessEvent(session, sessionFuture));
                     } else {
-                        LOGGER.debug("(re)ActivateSession failed: {}", session, ex);
+                        LOGGER.debug("[{}] (re)ActivateSession failed: {}", fsm.getId(), session, ex);
 
                         fsm.fireEvent(new ReactivateFailureEvent(ex, session, sessionFuture));
                     }
                 }, client.getConfig().getExecutor());
         } catch (Exception ex) {
-            LOGGER.debug("(re)ActivateSession failed: {}", session, ex);
+            LOGGER.debug("[{}] (re)ActivateSession failed: {}", fsm.getId(), session, ex);
 
             fsm.fireEvent(new ReactivateFailureEvent(ex, session, sessionFuture));
         }
@@ -440,7 +458,7 @@ abstract class AbstractSessionState implements SessionState {
             true
         );
 
-        LOGGER.debug("Sending TransferSubscriptionsRequest...");
+        LOGGER.debug("[{}] Sending TransferSubscriptionsRequest...", fsm.getId());
 
         stackClient.sendRequest(request)
             .thenApply(TransferSubscriptionsResponse.class::cast)
@@ -477,7 +495,7 @@ abstract class AbstractSessionState implements SessionState {
                                     .map(sa -> sa[0]).orElse(s.toString()))
                         ).toArray(String[]::new);
 
-                        LOGGER.debug("TransferSubscriptions results: {}", Arrays.toString(ss));
+                        LOGGER.debug("[{}] TransferSubscriptions results: {}", fsm.getId(), Arrays.toString(ss));
                     }
 
                     fsm.fireEvent(new TransferSuccessEvent(session, sessionFuture));
@@ -493,7 +511,7 @@ abstract class AbstractSessionState implements SessionState {
                         statusCode.getValue() == StatusCodes.Bad_OutOfService ||
                         statusCode.getValue() == StatusCodes.Bad_ServiceUnsupported) {
 
-                        LOGGER.debug("TransferSubscriptions not supported: {}", statusCode);
+                        LOGGER.debug("[{}] TransferSubscriptions not supported: {}", fsm.getId(), statusCode);
 
                         client.getConfig().getExecutor().execute(() -> {
                             // transferFailed() will remove the subscription, but that is okay
@@ -506,7 +524,7 @@ abstract class AbstractSessionState implements SessionState {
 
                         fsm.fireEvent(new TransferSuccessEvent(session, sessionFuture));
                     } else {
-                        LOGGER.debug("TransferSubscriptions failed: {}", statusCode);
+                        LOGGER.debug("[{}] TransferSubscriptions failed: {}", fsm.getId(), statusCode);
 
                         fsm.fireEvent(new TransferFailureEvent(ex, session, sessionFuture));
                     }
@@ -543,10 +561,10 @@ abstract class AbstractSessionState implements SessionState {
 
             CompletableFuture.allOf(futures).whenCompleteAsync((v, ex) -> {
                 if (ex != null) {
-                    LOGGER.warn("Initialization failed: {}", session, ex);
+                    LOGGER.warn("[{}] Initialization failed: {}", fsm.getId(), session, ex);
                     fsm.fireEvent(new InitializeFailureEvent(ex, session, sessionFuture));
                 } else {
-                    LOGGER.debug("Initialization succeeded: {}", session);
+                    LOGGER.debug("[{}] Initialization succeeded: {}", fsm.getId(), session);
                     fsm.fireEvent(new InitializeSuccessEvent(session, sessionFuture));
                 }
             }, stackClient.getConfig().getExecutor());

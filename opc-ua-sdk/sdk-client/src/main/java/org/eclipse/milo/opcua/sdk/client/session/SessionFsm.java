@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.client.session;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Predicate;
@@ -44,9 +45,19 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.completeAsync;
 
 public class SessionFsm {
 
+    private static final AtomicLong ID_SEQUENCE = new AtomicLong(0L);
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final long id = ID_SEQUENCE.getAndIncrement();
+
     private final Fsm fsm = new Fsm() {
+
+        @Override
+        public long getId() {
+            return id;
+        }
+
         @Override
         public OpcUaClient getClient() {
             return SessionFsm.this.client;
@@ -151,7 +162,8 @@ public class SessionFsm {
                 );
 
                 logger.debug(
-                    "S({}) x E({}) = S'({})",
+                    "[{}] S({}) x E({}) = S'({})",
+                    id,
                     prevState.getClass().getSimpleName(),
                     event.getClass().getSimpleName(),
                     nextState.getClass().getSimpleName()
@@ -177,32 +189,32 @@ public class SessionFsm {
     }
 
     private void notifySessionActive(OpcUaSession session) {
-        logger.debug("notifySessionActive()");
+        logger.debug("[{}] notifySessionActive()", id);
 
         notificationQueue.submit(() -> {
-            logger.debug("notifying {} listeners...", listeners.size());
+            logger.debug("[{}] notifying {} listeners...", id, listeners.size());
 
             listeners.forEach(listener -> {
                 try {
                     listener.onSessionActive(session);
                 } catch (Throwable t) {
-                    logger.warn("Uncaught Throwable notifying listener: {}", listener, t);
+                    logger.warn("[{}] Uncaught Throwable notifying listener: {}", id, listener, t);
                 }
             });
         });
     }
 
     private void notifySessionInactive(OpcUaSession session) {
-        logger.debug("notifySessionInactive()");
+        logger.debug("[{}] notifySessionInactive()", id);
 
         notificationQueue.submit(() -> {
-            logger.debug("notifying {} listeners...", listeners.size());
+            logger.debug("[{}] notifying {} listeners...", id, listeners.size());
 
             listeners.forEach(listener -> {
                 try {
                     listener.onSessionInactive(session);
                 } catch (Throwable t) {
-                    logger.warn("Uncaught Throwable notifying listener: {}", listener, t);
+                    logger.warn("[{}] Uncaught Throwable notifying listener: {}", id, listener, t);
                 }
             });
         });
@@ -227,7 +239,7 @@ public class SessionFsm {
                 status == StatusCodes.Bad_RequestTypeInvalid;
         };
 
-        private final Logger logger = LoggerFactory.getLogger(getClass());
+        private final Logger logger = LoggerFactory.getLogger(SessionFsm.class);
 
         private final Fsm fsm;
 
@@ -240,7 +252,7 @@ public class SessionFsm {
             StatusCode serviceResult = serviceFault.getResponseHeader().getServiceResult();
 
             if (SESSION_ERROR.or(SECURE_CHANNEL_ERROR).test(serviceResult)) {
-                logger.debug("ServiceFault: {}", serviceResult);
+                logger.debug("[{}] ServiceFault: {}", fsm.getId(), serviceResult);
 
                 fsm.fireEvent(new ServiceFaultEvent(serviceResult));
             }

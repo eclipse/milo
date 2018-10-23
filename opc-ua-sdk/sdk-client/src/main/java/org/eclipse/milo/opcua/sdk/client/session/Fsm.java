@@ -20,6 +20,8 @@ import org.eclipse.milo.opcua.sdk.client.session.events.Event;
 
 public interface Fsm {
 
+    long getId();
+
     OpcUaClient getClient();
 
     void fireEvent(Event event);

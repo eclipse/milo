@@ -166,12 +166,16 @@ public class Active extends AbstractSessionState implements SessionState {
                 if (ex != null) {
                     if (keepAliveFailureCount.incrementAndGet() > keepAliveFailuresAllowed) {
                         logger.warn(
-                            "Keep Alive failureCount=" + keepAliveFailureCount +
-                                " exceeds failuresAllowed=" + keepAliveFailuresAllowed);
+                            "[{}] Keep Alive failureCount={} exceeds failuresAllowed={}",
+                            fsm.getId(), keepAliveFailureCount, keepAliveFailuresAllowed
+                        );
 
                         maybeFireEvent(new KeepAliveFailureEvent());
                     } else {
-                        logger.debug("Keep Alive failureCount=" + keepAliveFailureCount, ex);
+                        logger.debug(
+                            "[{}] Keep Alive failureCount={}",
+                            fsm.getId(), keepAliveFailureCount, ex
+                        );
 
                         StatusCode statusCode = UaException.extract(ex)
                             .map(UaException::getStatusCode)
@@ -196,7 +200,7 @@ public class Active extends AbstractSessionState implements SessionState {
                         Object value = results[0].getValue().getValue();
                         if (value instanceof Integer) {
                             ServerState state = ServerState.from((Integer) value);
-                            logger.debug("ServerState: " + state);
+                            logger.debug("[{}] ServerState: {}", fsm.getId(), state);
                         }
                     }
 
