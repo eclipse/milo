@@ -192,7 +192,7 @@ class StateActions {
             null
         );
 
-        LOGGER.debug("Sending CloseSecureChannelRequest...");
+        LOGGER.debug("[{}] Sending CloseSecureChannelRequest...", fsm.getId());
 
         channel.pipeline().fireUserEventTriggered(
             new CloseSecureChannelRequest(requestHeader));
@@ -202,7 +202,7 @@ class StateActions {
     // <editor-fold desc="Reconnect">
     static void reconnectAsync(ChannelFsm fsm) {
         long delaySeconds = fsm.getContext().getReconnectDelay();
-        LOGGER.debug("Scheduling reconnect for +{} seconds", delaySeconds);
+        LOGGER.debug("[{}] Scheduling reconnect for +{} seconds", fsm.getId(), delaySeconds);
 
         Stack.sharedScheduledExecutor().schedule(
             () -> connectAsync(fsm),
