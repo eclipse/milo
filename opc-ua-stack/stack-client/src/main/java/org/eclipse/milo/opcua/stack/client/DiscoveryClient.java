@@ -116,6 +116,7 @@ public class DiscoveryClient {
 
         UaStackClientConfig config = UaStackClientConfig.builder()
             .setEndpoint(endpoint)
+            .setConnectPersistent(false)
             .build();
 
         try {
