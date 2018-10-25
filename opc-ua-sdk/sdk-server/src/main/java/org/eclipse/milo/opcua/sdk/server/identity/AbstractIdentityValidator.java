@@ -34,6 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserNameIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
+import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
 import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 
 public abstract class AbstractIdentityValidator implements IdentityValidator {
@@ -164,7 +165,12 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
                                       SecurityAlgorithm algorithm,
                                       byte[] dataBytes) throws UaException {
 
-        X509Certificate certificate = session.getSecurityConfiguration().getServerCertificate();
+        X509Certificate certificate = CertificateUtil.decodeCertificate(
+            session.getEndpoint()
+                .getServerCertificate()
+                .bytesOrEmpty()
+        );
+
         int cipherTextBlockSize = SecureChannel.getAsymmetricCipherTextBlockSize(certificate, algorithm);
         int blockCount = dataBytes.length / cipherTextBlockSize;
 
