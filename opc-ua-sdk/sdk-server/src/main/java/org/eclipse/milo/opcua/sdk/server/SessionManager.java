@@ -284,7 +284,7 @@ public class SessionManager implements
             authenticationToken,
             revisedSessionTimeout,
             serverNonce,
-            securityConfiguration.getServerCertificateBytes(),
+            endpoint.getServerCertificate(),
             serverEndpoints,
             new SignedSoftwareCertificate[0],
             serverSignature,
