@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.util.ArrayUtil;
 
 public final class NumericRange {
 
@@ -64,6 +65,14 @@ public final class NumericRange {
 
             this.low = low;
             this.high = high;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this)
+                .add("low", low)
+                .add("high", high)
+                .toString();
         }
     }
 
@@ -192,9 +201,17 @@ public final class NumericRange {
 
         if (dimension == dimensionCount) {
             if (current.getClass().isArray()) {
-                Class<?> type = current.getClass().getComponentType();
+                Class<?> currentType = ArrayUtil.getType(current);
+                Class<?> updateType = ArrayUtil.getType(update);
+
+                if (currentType != updateType) {
+                    throw new UaException(
+                        StatusCodes.Bad_TypeMismatch,
+                        String.format("currentType=%s, updateType=%s", current, update));
+                }
+
                 int length = Array.getLength(current);
-                Object copy = Array.newInstance(type, length);
+                Object copy = Array.newInstance(currentType, length);
 
                 if (low >= length || high >= length) {
                     throw new UaException(StatusCodes.Bad_IndexRangeNoData);
