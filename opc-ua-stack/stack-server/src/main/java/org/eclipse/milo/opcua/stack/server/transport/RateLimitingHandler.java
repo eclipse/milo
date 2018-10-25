@@ -100,9 +100,9 @@ public class RateLimitingHandler extends AbstractRemoteAddressFilter<InetSocketA
         this.maxConnections = maxConnections;
         this.maxConnectionsPerAddress = maxConnectionsPerAddress;
 
-        logger.debug(
+        logger.debug(String.format(
             "enabled=%s, maxAttempts=%s, rateLimitWindowMs=%s, maxConnections=%s, maxConnectionsPerAddress=%s",
-            enabled, maxAttempts, rateLimitWindowMs, maxConnections, maxConnectionsPerAddress);
+            enabled, maxAttempts, rateLimitWindowMs, maxConnections, maxConnectionsPerAddress));
     }
 
     @Override
