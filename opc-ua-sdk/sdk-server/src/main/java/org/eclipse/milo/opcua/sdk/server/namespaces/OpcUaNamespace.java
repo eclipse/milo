@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefresh;
 import org.eclipse.milo.opcua.sdk.server.model.methods.GetMonitoredItems;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ResendData;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsNode;
@@ -89,6 +90,20 @@ public class OpcUaNamespace implements Namespace {
 
         loadNodes();
         configureServerObject();
+
+        try {
+            UaMethodNode conditionRefresh = (UaMethodNode) nodeManager.get(Identifiers.ConditionType_ConditionRefresh);
+            assert conditionRefresh != null;
+
+            AnnotationBasedInvocationHandler handler =
+                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new ConditionRefresh(server));
+
+            conditionRefresh.setInvocationHandler(handler);
+            conditionRefresh.setInputArguments(handler.getInputArguments());
+            conditionRefresh.setOutputArguments(handler.getOutputArguments());
+        } catch (Exception e) {
+            logger.error("Error setting up ConditionRefresh Method.", e);
+        }
     }
 
     @Override
