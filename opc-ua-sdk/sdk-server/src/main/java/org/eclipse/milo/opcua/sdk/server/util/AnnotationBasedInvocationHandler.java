@@ -34,7 +34,7 @@ import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
 import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -145,13 +145,13 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
             try {
                 Object[] parameters = new Object[1 + inputs.length + outputs.length];
 
-                UaObjectNode objectNode =
-                    (UaObjectNode) server.getNodeManager().getNode(objectId)
-                        .orElseThrow(() -> new Exception("owner Object node found"));
+                UaNode ownerNode = server.getNodeManager()
+                    .getNode(objectId)
+                    .orElseThrow(() -> new Exception("owner node found"));
 
                 InvocationContext context = new InvocationContextImpl(
                     accessContext,
-                    objectNode,
+                    ownerNode,
                     future,
                     inputArgumentResults,
                     latch
@@ -287,7 +287,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     }
 
     public interface InvocationContext extends AccessContext {
-        UaObjectNode getObjectNode();
+        UaNode getOwnerNode();
 
         void setFailure(UaException failure);
     }
@@ -321,20 +321,20 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
 
     private static class InvocationContextImpl implements InvocationContext {
         private final AccessContext accessContext;
-        private final UaObjectNode objectNode;
+        private final UaNode ownerNode;
         private final CompletableFuture<CallMethodResult> future;
         private final StatusCode[] inputArgumentResults;
         private final CountDownLatch latch;
 
         private InvocationContextImpl(
             AccessContext accessContext,
-            UaObjectNode objectNode,
+            UaNode ownerNode,
             CompletableFuture<CallMethodResult> future,
             StatusCode[] inputArgumentResults,
             CountDownLatch latch) {
 
             this.accessContext = accessContext;
-            this.objectNode = objectNode;
+            this.ownerNode = ownerNode;
             this.inputArgumentResults = inputArgumentResults;
             this.future = future;
             this.latch = latch;
@@ -346,8 +346,8 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
         }
 
         @Override
-        public UaObjectNode getObjectNode() {
-            return objectNode;
+        public UaNode getOwnerNode() {
+            return ownerNode;
         }
 
         @Override
