@@ -263,7 +263,9 @@ public class ClientServerTest extends SecurityFixture {
 
         // Test some where we don't wait for disconnect to finish...
         for (int i = 0; i < 1000; i++) {
+            logger.debug("connecting...");
             client.connect().get();
+            logger.debug("...connected");
 
             RequestHeader header = new RequestHeader(
                 NodeId.NULL_VALUE,
