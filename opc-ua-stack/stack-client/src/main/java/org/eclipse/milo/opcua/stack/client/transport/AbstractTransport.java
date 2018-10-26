@@ -136,10 +136,14 @@ public abstract class AbstractTransport implements UaTransport {
         if (timeoutHint > 0) {
             Timeout timeout = wheelTimer.newTimeout(
                 t -> {
-                    String message = "request timed out after " + timeoutHint + "ms";
+                    UaException exception = new UaException(
+                        StatusCodes.Bad_Timeout,
+                        String.format(
+                            "requestId=%s timed out after %sms",
+                            requestHeader.getRequestHandle(), timeoutHint)
+                    );
 
-                    transportRequest.getFuture().completeExceptionally(
-                        new UaException(StatusCodes.Bad_Timeout, message));
+                    transportRequest.getFuture().completeExceptionally(exception);
                 },
                 timeoutHint,
                 TimeUnit.MILLISECONDS
