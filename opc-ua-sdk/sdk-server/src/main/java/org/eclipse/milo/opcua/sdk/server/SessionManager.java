@@ -57,6 +57,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertific
 import org.eclipse.milo.opcua.stack.core.types.structured.UserIdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.UserTokenPolicy;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
+import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.core.util.SignatureUtil;
@@ -237,7 +238,7 @@ public class SessionManager implements
 
             String applicationUri = request.getClientDescription().getApplicationUri();
 
-            validateApplicationUri(applicationUri, clientCertificate);
+            CertificateValidationUtil.validateApplicationUri(clientCertificate, applicationUri);
 
             CertificateValidator certificateValidator =
                 server.getConfig().getCertificateValidator();
@@ -358,46 +359,6 @@ public class SessionManager implements
         } catch (Throwable e) {
             logger.warn("Unable to create URI.", e);
             return false;
-        }
-    }
-
-    /**
-     * Validate that the application URI matches the SubjectAltName URI in the given certificate.
-     *
-     * @param applicationUri the URI to match.
-     * @param certificate    the certificate to match against.
-     * @throws UaException if the certificate is invalid, does not contain a uri, or contains a uri that does not match.
-     */
-    private void validateApplicationUri(String applicationUri, X509Certificate certificate) throws UaException {
-        try {
-            Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
-            if (subjectAltNames == null) subjectAltNames = Collections.emptyList();
-
-            for (List<?> idAndValue : subjectAltNames) {
-                if (idAndValue != null && idAndValue.size() == 2) {
-                    if (idAndValue.get(0).equals(6)) {
-                        String certificateUri = (String) idAndValue.get(1);
-                        if (!applicationUri.equals(certificateUri)) {
-                            String message = String.format(
-                                "Certificate URI does not match. certificateUri=%s, applicationUri=%s",
-                                certificateUri, applicationUri);
-
-                            logger.warn(message);
-
-                            throw new UaException(StatusCodes.Bad_CertificateUriInvalid, message);
-                        }
-                        return;
-                    }
-                }
-            }
-
-            String message = "Certificate does not contain a SubjectAlternativeName URI entry.";
-
-            throw new UaException(StatusCodes.Bad_CertificateUriInvalid, message);
-        } catch (CertificateParsingException e) {
-            logger.warn("Error parsing client certificate.", e);
-
-            throw new UaException(StatusCodes.Bad_CertificateInvalid);
         }
     }
 
