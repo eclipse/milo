@@ -53,6 +53,13 @@ import org.slf4j.LoggerFactory;
 
 public class DirectoryCertificateValidator implements CertificateValidator, AutoCloseable {
 
+    /**
+     * The maximum number of certificates that can accumulate in the rejected
+     * directory before the oldest certificates are deleted to make room for
+     * newer ones.
+     */
+    static final int MAX_REJECTED_CERTIFICATES = 128;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Set<X509Certificate> trustedCertificates = Sets.newConcurrentHashSet();
@@ -177,7 +184,8 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         try {
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
-                trustedCertificates, issuerCertificates,
+                trustedCertificates,
+                issuerCertificates,
                 issuerCrls
             );
         } catch (UaException e) {
@@ -200,6 +208,8 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
     }
 
     public synchronized void addRejectedCertificate(X509Certificate certificate) {
+        pruneOldRejectedCertificates();
+
         writeCertificateToDir(certificate, rejectedDir);
     }
 
@@ -251,7 +261,7 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         return String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
     }
 
-    private void writeCertificateToDir(X509Certificate certificate, File dir) {
+    private synchronized void writeCertificateToDir(X509Certificate certificate, File dir) {
         try {
             String filename = getFilename(certificate);
 
@@ -262,9 +272,32 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
                 fos.flush();
             }
 
-            logger.info("Wrote certificate entry: {}", f.getAbsolutePath());
+            logger.debug("Wrote certificate entry: {}", f.getAbsolutePath());
         } catch (Exception e) {
             logger.error("Error adding rejected certificate entry.", e);
+        }
+    }
+
+    /**
+     * If {@code rejectedDir} contains more than {@code MAX_REJECTED_CERTIFICATES}, delete older certificates until
+     * there are {@code MAX_REJECTED_CERTIFICATES} - 1 certificates (thus creating room to add a new one).
+     */
+    synchronized void pruneOldRejectedCertificates() {
+        File[] files = rejectedDir.listFiles();
+
+        if (files != null && files.length >= MAX_REJECTED_CERTIFICATES) {
+            int excessCount = files.length - MAX_REJECTED_CERTIFICATES;
+
+            Arrays.stream(files)
+                .sorted(
+                    (o1, o2) ->
+                        (int) (o1.lastModified() - o2.lastModified()))
+                .limit(excessCount + 1)
+                .forEach(file -> {
+                    if (!file.delete()) {
+                        logger.warn("Unable to delete rejected certificate: {}", file);
+                    }
+                });
         }
     }
 
