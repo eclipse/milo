@@ -132,7 +132,10 @@ public class DataTypeDictionaryReader {
 
         return readDataTypeDictionaryBytes(nodeId, DEFAULT_FRAGMENT_SIZE)
             .thenCompose(bs -> createDataTypeDictionary(nodeId, bs))
-            .exceptionally(ex -> null);
+            .exceptionally(ex -> {
+                logger.debug("Failed to create DataTypeDictionary: {}", ex.getMessage(), ex);
+                return null;
+            });
     }
 
     CompletableFuture<ByteString> readDataTypeDictionaryBytes(NodeId nodeId, int fragmentSize) {
