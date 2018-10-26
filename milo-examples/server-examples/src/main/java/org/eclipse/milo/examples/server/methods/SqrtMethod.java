@@ -40,7 +40,7 @@ public class SqrtMethod {
             Out<Double> xSqrt) {
 
         System.out.println("sqrt(" + x.toString() + ")");
-        logger.debug("Invoking sqrt() method of Object '{}'", context.getObjectNode().getBrowseName().getName());
+        logger.debug("Invoking sqrt() method of Object '{}'", context.getOwnerNode().getBrowseName().getName());
 
         xSqrt.set(Math.sqrt(x));
     }
