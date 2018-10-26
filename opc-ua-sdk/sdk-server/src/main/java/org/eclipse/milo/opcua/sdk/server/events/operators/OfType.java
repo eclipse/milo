@@ -49,7 +49,7 @@ public class OfType implements Operator<Boolean> {
         if (value instanceof NodeId) {
             NodeId nodeId = (NodeId) value;
 
-            // lookup Node
+            // TODO lookup Node
         }
 
         return null;

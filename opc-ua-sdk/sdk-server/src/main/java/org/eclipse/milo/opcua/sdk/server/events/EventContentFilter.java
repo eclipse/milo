@@ -367,7 +367,7 @@ public class EventContentFilter {
 
             // Complex FilterOperators
             case InView:                return Operators.UNSUPPORTED;
-            case OfType:                return Operators.OF_TYPE;
+            case OfType:                return Operators.UNSUPPORTED;
             case RelatedTo:             return Operators.UNSUPPORTED;
             default:                    return Operators.UNSUPPORTED;
         }

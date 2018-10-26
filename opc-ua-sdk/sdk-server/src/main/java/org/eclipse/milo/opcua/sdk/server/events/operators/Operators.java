@@ -32,7 +32,6 @@ public class Operators {
     public static final GreaterThanOrEqual GREATER_THAN_OR_EQUAL = new GreaterThanOrEqual();
     public static final LessThanOrEqual LESS_THAN_OR_EQUAL = new LessThanOrEqual();
     public static final Not NOT = new Not();
-    public static final OfType OF_TYPE = new OfType();
     public static final Cast CAST = new Cast();
 
     public static final Operator<Object> UNSUPPORTED = new Operator<Object>() {
