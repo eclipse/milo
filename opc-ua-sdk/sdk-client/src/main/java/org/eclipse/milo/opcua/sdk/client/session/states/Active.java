@@ -48,6 +48,8 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.complete;
 
 public class Active extends AbstractSessionState implements SessionState {
 
+    private final Logger logger = LoggerFactory.getLogger(SessionFsm.class);
+
     private OpcUaSession session;
     private CompletableFuture<OpcUaSession> sessionFuture;
 
@@ -124,8 +126,13 @@ public class Active extends AbstractSessionState implements SessionState {
 
             Reactivating reactivating = new Reactivating();
 
-            fsm.getClient().getStackClient().disconnect().whenComplete((c, ex) ->
-                reactivateSessionAsync(fsm, session, reactivating.getSessionFuture()));
+            fsm.getClient().getStackClient().disconnect().whenComplete(
+                (c, ex) -> {
+                    logger.debug("disconnect complete; reactivating...");
+
+                    reactivateSessionAsync(fsm, session, reactivating.getSessionFuture());
+                }
+            );
 
             return reactivating;
         } else {
