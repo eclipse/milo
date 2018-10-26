@@ -369,36 +369,22 @@ public class SessionManager implements
      * @throws UaException if the certificate is invalid, does not contain a uri, or contains a uri that does not match.
      */
     private void validateApplicationUri(String applicationUri, X509Certificate certificate) throws UaException {
-        try {
-            Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
-            if (subjectAltNames == null) subjectAltNames = Collections.emptyList();
+		Optional<Object> subjectAltNameField = CertificateUtil.getSubjectAltNameField(certificate,
+				CertificateUtil.SUBJECT_ALT_NAME_URI);
+		if (subjectAltNameField.isPresent()) {
+			String certificateUri = (String) subjectAltNameField.get();
+			if (!applicationUri.equals(certificateUri)) {
+				String message = String.format("Certificate URI does not match. certificateUri=%s, applicationUri=%s",
+						certificateUri, applicationUri);
 
-            for (List<?> idAndValue : subjectAltNames) {
-                if (idAndValue != null && idAndValue.size() == 2) {
-                    if (idAndValue.get(0).equals(6)) {
-                        String certificateUri = (String) idAndValue.get(1);
-                        if (!applicationUri.equals(certificateUri)) {
-                            String message = String.format(
-                                "Certificate URI does not match. certificateUri=%s, applicationUri=%s",
-                                certificateUri, applicationUri);
-
-                            logger.warn(message);
-
-                            throw new UaException(StatusCodes.Bad_CertificateUriInvalid, message);
-                        }
-                        return;
-                    }
-                }
-            }
-
-            String message = "Certificate does not contain a SubjectAlternativeName URI entry.";
-
-            throw new UaException(StatusCodes.Bad_CertificateUriInvalid, message);
-        } catch (CertificateParsingException e) {
-            logger.warn("Error parsing client certificate.", e);
-
-            throw new UaException(StatusCodes.Bad_CertificateInvalid);
-        }
+				logger.warn(message);
+				throw new UaException(StatusCodes.Bad_CertificateUriInvalid, message);
+			}
+			return;
+		} else {
+			String message = "Certificate does not contain a SubjectAlternativeName URI entry.";
+			throw new UaException(StatusCodes.Bad_CertificateUriInvalid, message);
+		}
     }
 
     @Override
