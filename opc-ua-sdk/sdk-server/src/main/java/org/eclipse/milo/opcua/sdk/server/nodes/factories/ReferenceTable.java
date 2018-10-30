@@ -61,11 +61,13 @@ class ReferenceTable {
                 // This logic may need to be extended to include other Reference types for
                 // which there should only be one.
 
-                boolean noTypeDefinition = mergedTable.references.stream()
-                    .noneMatch(r ->
-                        r.browsePath.equals(browsePath) && r.nodeId.equals(Identifiers.HasTypeDefinition));
+                boolean hasTypeDefinitionReference = mergedTable.references.stream().anyMatch(
+                    r ->
+                        r.browsePath.equals(browsePath) &&
+                            r.nodeId.equals(Identifiers.HasTypeDefinition)
+                );
 
-                if (noTypeDefinition) {
+                if (!hasTypeDefinitionReference) {
                     mergedTable.references.add(row);
                 }
             } else if (!mergedTable.references.contains(row)) {

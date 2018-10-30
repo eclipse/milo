@@ -103,10 +103,7 @@ public class InstanceDeclarationHierarchy {
         }
 
         private InstanceDeclarationHierarchy buildHierarchyForType(NodeId typeDefinitionId) {
-            BrowsePath browsePath = new BrowsePath(
-                null,
-                new QualifiedName(typeDefinitionId.getNamespaceIndex(), "/")
-            );
+            BrowsePath browsePath = BrowsePath.ROOT;
 
             nodeTable.addNode(browsePath, typeDefinitionId);
             referenceTable.addReference(browsePath, Identifiers.HasTypeDefinition, typeDefinitionId.expanded());
