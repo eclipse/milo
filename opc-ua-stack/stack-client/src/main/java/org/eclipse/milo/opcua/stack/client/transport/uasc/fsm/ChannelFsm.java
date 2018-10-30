@@ -155,7 +155,7 @@ public class ChannelFsm {
         return config.isConnectPersistent();
     }
 
-    public static class Context {
+    public class Context {
 
         private CompletableFuture<Channel> channelFuture;
         private CompletableFuture<Unit> disconnectFuture;
@@ -163,20 +163,56 @@ public class ChannelFsm {
 
         @Nullable
         public CompletableFuture<Channel> getChannelFuture() {
-            return channelFuture;
+            readWriteLock.readLock().lock();
+            try {
+                return channelFuture;
+            } finally {
+                readWriteLock.readLock().unlock();
+            }
         }
 
         public void setChannelFuture(@Nullable CompletableFuture<Channel> channelFuture) {
-            this.channelFuture = channelFuture;
+            readWriteLock.writeLock().lock();
+            try {
+                CompletableFuture<Channel> previous = this.channelFuture;
+                this.channelFuture = channelFuture;
+
+                if (previous != null && !previous.isDone()) {
+                    logger.debug("previous channelFuture replaced without being completed");
+
+                    previous.completeExceptionally(
+                        new IllegalStateException(String.format("state=%s", state.get())));
+                }
+            } finally {
+                readWriteLock.writeLock().unlock();
+            }
         }
 
         @Nullable
         public CompletableFuture<Unit> getDisconnectFuture() {
-            return disconnectFuture;
+            readWriteLock.readLock().lock();
+            try {
+                return disconnectFuture;
+            } finally {
+                readWriteLock.readLock().unlock();
+            }
         }
 
         public void setDisconnectFuture(@Nullable CompletableFuture<Unit> disconnectFuture) {
-            this.disconnectFuture = disconnectFuture;
+            readWriteLock.writeLock().lock();
+            try {
+                CompletableFuture<Unit> previous = this.disconnectFuture;
+                this.disconnectFuture = disconnectFuture;
+
+                if (previous != null && !previous.isDone()) {
+                    logger.debug("previous disconnectFuture replaced without being completed");
+
+                    previous.completeExceptionally(
+                        new IllegalStateException(String.format("state=%s", state.get())));
+                }
+            } finally {
+                readWriteLock.writeLock().unlock();
+            }
         }
 
         public long getReconnectDelay() {

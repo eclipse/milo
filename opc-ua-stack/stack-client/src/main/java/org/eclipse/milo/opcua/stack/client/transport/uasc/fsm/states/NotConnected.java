@@ -67,8 +67,6 @@ public class NotConnected extends ChannelFsm.State {
             CompletableFuture<Unit> future =
                 fsm.getContext().getDisconnectFuture();
 
-            fsm.getContext().setDisconnectFuture(null);
-
             if (future != null) {
                 future.complete(Unit.VALUE);
             }

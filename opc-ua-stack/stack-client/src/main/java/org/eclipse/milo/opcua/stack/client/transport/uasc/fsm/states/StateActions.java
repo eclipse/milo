@@ -138,26 +138,17 @@ class StateActions {
     // </editor-fold>
 
     // <editor-fold desc="Disconnect">
-    static void disconnectAsync(ChannelFsm fsm) {
-        final CompletableFuture<Channel> channelFuture = fsm.getContext().getChannelFuture();
-
-        if (channelFuture != null) {
-            fsm.getExecutorService().execute(
-                () ->
-                    channelFuture.whenComplete((ch, ex) -> {
-                        if (ch != null) {
-                            disconnect(fsm, ch);
-                        } else {
-                            fsm.fireEvent(new DisconnectSuccess());
-                        }
-                    })
-            );
-        } else {
-            fsm.getExecutorService().execute(
-                () ->
-                    fsm.fireEvent(new DisconnectSuccess())
-            );
-        }
+    static void disconnectAsync(ChannelFsm fsm, CompletableFuture<Channel> future) {
+        fsm.getExecutorService().execute(
+            () ->
+                future.whenComplete((ch, ex) -> {
+                    if (ch != null) {
+                        disconnect(fsm, ch);
+                    } else {
+                        fsm.fireEvent(new DisconnectSuccess());
+                    }
+                })
+        );
     }
 
     private static void disconnect(ChannelFsm fsm, Channel channel) {
@@ -172,7 +163,7 @@ class StateActions {
             TimeUnit.SECONDS
         );
 
-        channel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
+        channel.pipeline().addFirst(new ChannelInboundHandlerAdapter() {
             @Override
             public void channelInactive(ChannelHandlerContext ctx) throws Exception {
                 LOGGER.debug("[{}] channelInactive(), disconnect complete", fsm.getId());
@@ -200,8 +191,7 @@ class StateActions {
     // </editor-fold>
 
     // <editor-fold desc="Reconnect">
-    static void reconnectAsync(ChannelFsm fsm) {
-        long delaySeconds = fsm.getContext().getReconnectDelay();
+    static void reconnectAsync(ChannelFsm fsm, long delaySeconds) {
         LOGGER.debug("[{}] Scheduling reconnect for +{} seconds", fsm.getId(), delaySeconds);
 
         Stack.sharedScheduledExecutor().schedule(

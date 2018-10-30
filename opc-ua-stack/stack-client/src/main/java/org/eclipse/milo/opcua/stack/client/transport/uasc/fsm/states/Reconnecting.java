@@ -30,11 +30,12 @@ public class Reconnecting extends AbstractState {
         if (event instanceof ConnectSuccess) {
             return new Connected();
         } else if (event instanceof ConnectFailure) {
-            StateActions.reconnectAsync(fsm);
+            StateActions.reconnectAsync(fsm, fsm.getContext().getReconnectDelay());
 
             return new Reconnecting();
         } else if (event instanceof Disconnect) {
-            StateActions.disconnectAsync(fsm);
+            // on external transition from Reconnecting -> Disconnecting, Disconnecting
+            // should wait for the current reconnect and then issue a disconnect.
 
             return new Disconnecting();
         } else {

@@ -32,8 +32,8 @@ public class Disconnecting extends ChannelFsm.State {
     @Override
     public ChannelFsm.State execute(ChannelFsm fsm, ChannelFsm.Event event) {
         if (event instanceof Connect) {
-            StateActions.connectAsync(fsm);
-
+            // Connecting will use onExternalTransition to initiate the
+            // connect attempt after the disconnect result comes in.
             return new Connecting();
         } else if (event instanceof DisconnectSuccess) {
             return new NotConnected();
@@ -82,6 +82,19 @@ public class Disconnecting extends ChannelFsm.State {
                 ((Disconnect) event).getDisconnectFuture();
 
             fsm.getContext().setDisconnectFuture(disconnectFuture);
+
+            if (prevState instanceof Connecting || prevState instanceof Reconnecting) {
+                CompletableFuture<Channel> channelFuture = fsm.getContext().getChannelFuture();
+
+                if (channelFuture != null) {
+                    channelFuture.whenComplete(
+                        (c, x) ->
+                            StateActions.disconnectAsync(fsm, fsm.getContext().getChannelFuture())
+                    );
+                } else {
+                    StateActions.disconnectAsync(fsm, fsm.getContext().getChannelFuture());
+                }
+            }
         }
     }
 

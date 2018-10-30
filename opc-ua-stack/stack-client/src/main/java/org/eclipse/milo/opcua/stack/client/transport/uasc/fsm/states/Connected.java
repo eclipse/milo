@@ -25,14 +25,20 @@ import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.events.Disconnect;
 
 public class Connected extends AbstractState {
 
+    private volatile boolean active = true;
+
     @Override
     public ChannelFsm.State execute(ChannelFsm fsm, ChannelFsm.Event event) {
         if (event instanceof ChannelInactive) {
+            active = false;
+
             StateActions.connectAsync(fsm);
 
             return new Reconnecting();
         } else if (event instanceof Disconnect) {
-            StateActions.disconnectAsync(fsm);
+            active = false;
+
+            StateActions.disconnectAsync(fsm, fsm.getContext().getChannelFuture());
 
             return new Disconnecting();
         } else {
@@ -53,9 +59,11 @@ public class Connected extends AbstractState {
             channel.pipeline().addLast(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-                    LOGGER.debug("[{}] channelInactive() channel={}", fsm.getId(), ctx.channel());
+                    if (active) {
+                        LOGGER.debug("[{}] channelInactive() channel={}", fsm.getId(), ctx.channel());
 
-                    fsm.fireEvent(new ChannelInactive());
+                        fsm.fireEvent(new ChannelInactive());
+                    }
 
                     super.channelInactive(ctx);
                 }
