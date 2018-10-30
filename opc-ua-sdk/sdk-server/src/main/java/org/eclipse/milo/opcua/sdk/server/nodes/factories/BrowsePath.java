@@ -19,6 +19,11 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class BrowsePath {
 
+    static final BrowsePath ROOT = new BrowsePath(
+        null,
+        new QualifiedName(0, "/")
+    );
+
     BrowsePath parent;
     QualifiedName browseName;
 
@@ -50,7 +55,7 @@ public class BrowsePath {
             if (!s.endsWith(separator)) {
                 s += separator;
             }
-            return s + browseName.getName();
+            return s + browseName.getNamespaceIndex() + ":" + browseName.getName();
         }
     }
 
