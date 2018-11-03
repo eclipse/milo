@@ -33,6 +33,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.opcfoundation.opcua.binaryschema.StructuredType;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -69,7 +73,17 @@ public class JsonStructureCodec extends AbstractCodec<JsonObject, JsonElement> {
         if (value == null) {
             return JsonNull.INSTANCE;
         } else if (value instanceof Number) {
-            return new JsonPrimitive((Number) value);
+            if (value instanceof UByte) {
+                return new JsonPrimitive(((UByte) value).shortValue());
+            } else if (value instanceof UShort) {
+                return new JsonPrimitive(((UShort) value).intValue());
+            } else if (value instanceof UInteger) {
+                return new JsonPrimitive(((UInteger) value).longValue());
+            } else if (value instanceof ULong) {
+                return new JsonPrimitive(((ULong) value).toBigInteger());
+            } else {
+                return new JsonPrimitive((Number) value);
+            }
         } else if (value instanceof Boolean) {
             return new JsonPrimitive((Boolean) value);
         } else if (value instanceof String) {
