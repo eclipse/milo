@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.stack.client;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import com.google.common.base.Strings;
 import org.eclipse.milo.opcua.stack.core.Stack;
@@ -23,7 +24,10 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
+import org.eclipse.milo.opcua.stack.core.types.structured.ApplicationDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.FindServersResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.GetEndpointsResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.RequestHeader;
@@ -49,6 +53,27 @@ public class DiscoveryClient {
         return stackClient.disconnect().thenApply(c -> DiscoveryClient.this);
     }
 
+    public CompletableFuture<FindServersResponse> findServers(
+        String endpointUrl,
+        String[] localeIds,
+        String[] serverUris) {
+
+        RequestHeader header = stackClient.newRequestHeader(
+            NodeId.NULL_VALUE,
+            stackClient.getConfig().getRequestTimeout()
+        );
+
+        FindServersRequest request = new FindServersRequest(
+            header,
+            endpointUrl,
+            localeIds,
+            serverUris
+        );
+
+        return stackClient.sendRequest(request)
+            .thenApply(FindServersResponse.class::cast);
+    }
+
     public CompletableFuture<GetEndpointsResponse> getEndpoints(
         String endpointUrl,
         String[] localeIds,
@@ -70,67 +95,98 @@ public class DiscoveryClient {
             .thenApply(GetEndpointsResponse.class::cast);
     }
 
+    public static CompletableFuture<List<ApplicationDescription>> findServers(String endpointUrl) {
+        return findServers(endpointUrl, new String[0]);
+    }
+
+    private static CompletableFuture<List<ApplicationDescription>> findServers(
+        String endpointUrl,
+        String[] serverUris) {
+
+        return withDiscoveryClient(endpointUrl, dc -> {
+            CompletableFuture<FindServersResponse> future =
+                dc.findServers(endpointUrl, new String[0], serverUris);
+
+            return future.thenApply(r -> l(r.getServers()));
+        });
+    }
+
     public static CompletableFuture<List<EndpointDescription>> getEndpoints(String endpointUrl) {
-        String scheme = EndpointUtil.getScheme(endpointUrl);
+        try {
+            String profileUri = getProfileUri(endpointUrl);
 
-        String profileUri;
-
-        switch (Strings.nullToEmpty(scheme).toLowerCase()) {
-            case "opc.tcp":
-                profileUri = Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
-                break;
-
-            case "http":
-            case "https":
-            case "opc.http":
-            case "opc.https":
-                profileUri = Stack.HTTPS_UABINARY_TRANSPORT_URI;
-                break;
-
-            case "opc.ws":
-            case "opc.wss":
-                profileUri = Stack.WSS_UASC_UABINARY_TRANSPORT_URI;
-                break;
-
-            default:
-                return failedFuture(
-                    new UaException(
-                        StatusCodes.Bad_InternalError,
-                        "unsupported protocol: " + scheme));
+            return getEndpoints(endpointUrl, profileUri);
+        } catch (UaException e) {
+            return failedFuture(e);
         }
-
-        return getEndpoints(endpointUrl, profileUri);
     }
 
     private static CompletableFuture<List<EndpointDescription>> getEndpoints(String endpointUrl, String profileUri) {
-        EndpointDescription endpoint = new EndpointDescription(
-            endpointUrl,
-            null,
-            null,
-            MessageSecurityMode.None,
-            SecurityPolicy.None.getUri(),
-            null,
-            profileUri,
-            ubyte(0)
-        );
+        return withDiscoveryClient(endpointUrl, dc -> {
+            CompletableFuture<GetEndpointsResponse> future =
+                dc.getEndpoints(endpointUrl, new String[0], new String[]{profileUri});
 
-        UaStackClientConfig config = UaStackClientConfig.builder()
-            .setEndpoint(endpoint)
-            .setConnectPersistent(false)
-            .build();
+            return future.thenApply(r -> l(r.getEndpoints()));
+        });
+    }
+
+    private static <T> CompletableFuture<T> withDiscoveryClient(
+        String endpointUrl,
+        Function<DiscoveryClient, CompletableFuture<T>> f) {
 
         try {
+            String profileUri = getProfileUri(endpointUrl);
+
+            EndpointDescription endpoint = new EndpointDescription(
+                endpointUrl,
+                null,
+                null,
+                MessageSecurityMode.None,
+                SecurityPolicy.None.getUri(),
+                null,
+                profileUri,
+                ubyte(0)
+            );
+
+            UaStackClientConfig config = UaStackClientConfig.builder()
+                .setEndpoint(endpoint)
+                .setConnectPersistent(false)
+                .build();
+
             UaStackClient stackClient = UaStackClient.create(config);
 
             DiscoveryClient discoveryClient = new DiscoveryClient(stackClient);
 
             return discoveryClient
                 .connect()
-                .thenCompose(c -> c.getEndpoints(endpointUrl, new String[0], new String[]{profileUri}))
-                .whenComplete((e, ex) -> discoveryClient.disconnect())
-                .thenApply(response -> l(response.getEndpoints()));
+                .thenCompose(f::apply)
+                .whenComplete((e, ex) -> discoveryClient.disconnect());
         } catch (UaException e) {
             return failedFuture(e);
+        }
+    }
+
+    private static String getProfileUri(String endpointUrl) throws UaException {
+        String scheme = EndpointUtil.getScheme(endpointUrl);
+
+        switch (Strings.nullToEmpty(scheme).toLowerCase()) {
+            case "opc.tcp":
+                return Stack.TCP_UASC_UABINARY_TRANSPORT_URI;
+
+            case "http":
+            case "https":
+            case "opc.http":
+            case "opc.https":
+                return Stack.HTTPS_UABINARY_TRANSPORT_URI;
+
+            case "opc.ws":
+            case "opc.wss":
+                return Stack.WSS_UASC_UABINARY_TRANSPORT_URI;
+
+            default:
+                throw new UaException(
+                    StatusCodes.Bad_InternalError,
+                    "unsupported protocol: " + scheme);
         }
     }
 
