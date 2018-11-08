@@ -309,23 +309,21 @@ public class OpcUaClient implements UaClient {
 
     @Override
     public CompletableFuture<UaClient> connect() {
-        return getStackClient().connect()
+        return getStackClient()
+            .connect()
             .thenCompose(c -> sessionFsm.openSession())
             .thenApply(s -> OpcUaClient.this);
     }
 
     @Override
     public CompletableFuture<OpcUaClient> disconnect() {
-        // Subscriptions must be cleared first, effectively stopping new
-        // PublishRequests from being sent, otherwise continued PublishRequests
-        // will initiate reconnection and re-activation.
-        subscriptionManager.clearSubscriptions();
-
         return sessionFsm
             .closeSession()
             .exceptionally(ex -> Unit.VALUE)
-            .thenCompose(u -> getStackClient().disconnect())
-            .thenApply(c -> OpcUaClient.this)
+            .thenCompose(u ->
+                getStackClient()
+                    .disconnect()
+                    .thenApply(c -> OpcUaClient.this))
             .exceptionally(ex -> OpcUaClient.this);
     }
 
