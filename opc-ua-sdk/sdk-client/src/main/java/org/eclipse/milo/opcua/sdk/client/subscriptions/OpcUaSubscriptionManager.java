@@ -104,6 +104,11 @@ public class OpcUaSubscriptionManager implements UaSubscriptionManager {
                 // from before the re-activation to expire/timeout.
                 pendingCountMap.replace(session.getSessionId(), new AtomicLong(0));
             }
+
+            @Override
+            public void onSessionActive(UaSession session) {
+                maybeSendPublishRequests();
+            }
         });
     }
 

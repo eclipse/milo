@@ -84,8 +84,6 @@ public class Active extends AbstractSessionState implements SessionState {
 
         // TODO Stack should notify a new secure channel was created (due to reconnect) and we should reactivate
 
-        fsm.getClient().getSubscriptionManager().startPublishing();
-
         scheduleKeepAlive(fsm);
     }
 
