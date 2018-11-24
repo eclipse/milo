@@ -35,6 +35,8 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -432,16 +434,30 @@ public class Subscription {
         if (dataNotifications.size() > 0) {
             DataChangeNotification dataChange = new DataChangeNotification(
                 dataNotifications.toArray(new MonitoredItemNotification[0]),
-                new DiagnosticInfo[0]);
+                new DiagnosticInfo[0]
+            );
 
-            notificationData.add(ExtensionObject.encode(dataChange));
+            notificationData.add(ExtensionObject.encode(
+                dataChange,
+                dataChange.getBinaryEncodingId(),
+                OpcUaDefaultBinaryEncoding.getInstance(),
+                subscriptionManager.getServer().getConfig().getEncodingLimits(),
+                OpcUaDataTypeManager.getInstance()
+            ));
         }
 
         if (eventNotifications.size() > 0) {
             EventNotificationList eventChange = new EventNotificationList(
-                eventNotifications.toArray(new EventFieldList[0]));
+                eventNotifications.toArray(new EventFieldList[0])
+            );
 
-            notificationData.add(ExtensionObject.encode(eventChange));
+            notificationData.add(ExtensionObject.encode(
+                eventChange,
+                eventChange.getBinaryEncodingId(),
+                OpcUaDefaultBinaryEncoding.getInstance(),
+                subscriptionManager.getServer().getConfig().getEncodingLimits(),
+                OpcUaDataTypeManager.getInstance()
+            ));
         }
 
         UInteger sequenceNumber = uint(nextSequenceNumber());
