@@ -17,13 +17,11 @@ import java.net.ConnectException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
+import com.digitalpetri.netty.fsm.ChannelActions;
 import com.digitalpetri.netty.fsm.ChannelFsm;
 import com.digitalpetri.netty.fsm.ChannelFsmConfig;
 import com.digitalpetri.netty.fsm.ChannelFsmFactory;
-import com.digitalpetri.netty.fsm.ConnectProxy;
-import com.digitalpetri.netty.fsm.DisconnectProxy;
 import com.digitalpetri.netty.fsm.Event;
-import com.digitalpetri.netty.fsm.KeepAliveProxy;
 import com.digitalpetri.netty.fsm.State;
 import com.digitalpetri.strictmachine.FsmContext;
 import io.netty.bootstrap.Bootstrap;
@@ -62,18 +60,14 @@ public class ClientChannelFsm {
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
     public static ChannelFsm newChannelFsm(UaStackClientConfig config) {
-        ChannelFsmProxy fsmProxy = new ChannelFsmProxy(config);
-
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
             .setLazy(false)
             .setPersistent(true)
             .setMaxIdleSeconds(0)
             .setMaxReconnectDelaySeconds(16)
+            .setChannelActions(new ClientChannelActions(config))
             .setExecutor(Stack.sharedExecutor())
             .setScheduler(Stack.sharedScheduledExecutor())
-            .setConnectProxy(fsmProxy)
-            .setDisconnectProxy(fsmProxy)
-            .setKeepAliveProxy(fsmProxy)
             .setLoggerName(CHANNEL_FSM_LOGGER_NAME)
             .build();
 
@@ -82,13 +76,13 @@ public class ClientChannelFsm {
         return fsmFactory.newChannelFsm();
     }
 
-    private static class ChannelFsmProxy implements ConnectProxy, DisconnectProxy, KeepAliveProxy {
+    private static class ClientChannelActions implements ChannelActions {
 
         private static final Logger LOGGER = LoggerFactory.getLogger(CHANNEL_FSM_LOGGER_NAME);
 
         private final UaStackClientConfig config;
 
-        ChannelFsmProxy(UaStackClientConfig config) {
+        ClientChannelActions(UaStackClientConfig config) {
             this.config = config;
         }
 
