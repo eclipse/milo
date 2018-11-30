@@ -167,7 +167,7 @@ public class ClientChannelFsm {
             channel.pipeline().addFirst(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void channelInactive(ChannelHandlerContext channelContext) throws Exception {
-                    LOGGER.debug("[{}] channelInactive(), disconnect complete", ctx.getInstanceId());
+                    LOGGER.debug("[{}] channelInactive() disconnect complete", ctx.getInstanceId());
                     timeout.cancel();
                     disconnectFuture.complete(null);
                     super.channelInactive(channelContext);
