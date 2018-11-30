@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 public interface ClientExample {
 
     default String getEndpointUrl() {
-        return "opc.tcp://localhost:12686/example";
+        return "opc.tcp://localhost:12686/milo";
     }
 
     default Predicate<EndpointDescription> endpointFilter() {
