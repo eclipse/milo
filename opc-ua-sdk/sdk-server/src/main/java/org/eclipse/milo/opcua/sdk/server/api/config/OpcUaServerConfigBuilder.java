@@ -122,6 +122,12 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         return this;
     }
 
+    @Override
+    public OpcUaServerConfigBuilder setEncodingLimits(EncodingLimits encodingLimits) {
+        super.setEncodingLimits(encodingLimits);
+        return this;
+    }
+
     public OpcUaServerConfig build() {
         UaStackServerConfig stackServerConfig = super.build();
 
