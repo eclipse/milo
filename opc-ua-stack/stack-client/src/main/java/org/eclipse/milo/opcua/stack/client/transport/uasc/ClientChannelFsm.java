@@ -61,10 +61,10 @@ public class ClientChannelFsm {
 
     public static ChannelFsm newChannelFsm(UaStackClientConfig config) {
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
-            .setLazy(false)
-            .setPersistent(true)
-            .setMaxIdleSeconds(0)
+            .setLazy(false) // reconnect immediately
+            .setMaxIdleSeconds(0) // keep alive handled by SessionFsm
             .setMaxReconnectDelaySeconds(16)
+            .setPersistent(config.isConnectPersistent())
             .setChannelActions(new ClientChannelActions(config))
             .setExecutor(Stack.sharedExecutor())
             .setScheduler(Stack.sharedScheduledExecutor())
