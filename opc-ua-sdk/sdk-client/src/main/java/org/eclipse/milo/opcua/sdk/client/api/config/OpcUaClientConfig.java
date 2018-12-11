@@ -122,7 +122,6 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
         builder.setConnectTimeout(config.getConnectTimeout());
         builder.setAcknowledgeTimeout(config.getAcknowledgeTimeout());
         builder.setRequestTimeout(config.getRequestTimeout());
-        builder.setConnectPersistent(config.isConnectPersistent());
 
         // OpcUaClientConfig values
         builder.setSessionName(config.getSessionName());

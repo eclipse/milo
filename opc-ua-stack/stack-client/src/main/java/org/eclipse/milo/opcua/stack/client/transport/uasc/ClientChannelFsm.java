@@ -64,7 +64,7 @@ public class ClientChannelFsm {
             .setLazy(false) // reconnect immediately
             .setMaxIdleSeconds(0) // keep alive handled by SessionFsm
             .setMaxReconnectDelaySeconds(16)
-            .setPersistent(config.isConnectPersistent())
+            .setPersistent(true)
             .setChannelActions(new ClientChannelActions(config))
             .setExecutor(Stack.sharedExecutor())
             .setScheduler(Stack.sharedScheduledExecutor())

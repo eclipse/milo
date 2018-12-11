@@ -51,7 +51,6 @@ public class UaStackClientConfigTest extends SecurityFixture {
             .setEventLoop(Stack.sharedEventLoop())
             .setWheelTimer(Stack.sharedWheelTimer())
             .setAcknowledgeTimeout(uint(12345))
-            .setConnectPersistent(false)
             .build();
 
         UaStackClientConfig copy = UaStackClientConfig.copy(original).build();
@@ -66,7 +65,6 @@ public class UaStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getEventLoop(), original.getEventLoop());
         assertEquals(copy.getWheelTimer(), original.getWheelTimer());
         assertEquals(copy.getAcknowledgeTimeout(), original.getAcknowledgeTimeout());
-        assertEquals(copy.isConnectPersistent(), original.isConnectPersistent());
     }
 
     @Test
@@ -80,7 +78,6 @@ public class UaStackClientConfigTest extends SecurityFixture {
             .setExecutor(Stack.sharedExecutor())
             .setEventLoop(Stack.sharedEventLoop())
             .setWheelTimer(Stack.sharedWheelTimer())
-            .setConnectPersistent(true)
             .build();
 
         UaStackClientConfig copy = UaStackClientConfig.copy(
@@ -94,7 +91,6 @@ public class UaStackClientConfigTest extends SecurityFixture {
                     .setMessageLimits(null)
                     .setChannelLifetime(uint(0))
                     .setAcknowledgeTimeout(uint(12345))
-                    .setConnectPersistent(false)
         );
 
         assertEquals(copy.getKeyPair(), Optional.empty());
@@ -104,7 +100,6 @@ public class UaStackClientConfigTest extends SecurityFixture {
         assertEquals(copy.getMessageLimits(), null);
         assertEquals(copy.getChannelLifetime(), uint(0));
         assertEquals(copy.getAcknowledgeTimeout(), uint(12345));
-        assertEquals(copy.isConnectPersistent(), false);
     }
 
 }

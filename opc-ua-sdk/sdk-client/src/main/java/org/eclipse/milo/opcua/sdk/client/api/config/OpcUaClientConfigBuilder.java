@@ -199,12 +199,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         return this;
     }
 
-    @Override
-    public OpcUaClientConfigBuilder setConnectPersistent(boolean connectPersistent) {
-        super.setConnectPersistent(connectPersistent);
-        return this;
-    }
-
     public OpcUaClientConfig build() {
         UaStackClientConfig stackClientConfig = super.build();
 
@@ -406,11 +400,6 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public UInteger getRequestTimeout() {
             return stackClientConfig.getRequestTimeout();
-        }
-
-        @Override
-        public boolean isConnectPersistent() {
-            return stackClientConfig.isConnectPersistent();
         }
 
     }

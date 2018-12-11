@@ -114,14 +114,6 @@ public interface UaStackClientConfig {
      */
     UInteger getChannelLifetime();
 
-    /**
-     * Return {@code true} if connect attempts should be persistent, i.e. the client will continue to attempt to
-     * reconnect if the initial connect attempt fails.
-     *
-     * @return {@code true} if connect attempts should be persistent.
-     */
-    boolean isConnectPersistent();
-
     static UaStackClientConfigBuilder builder() {
         return new UaStackClientConfigBuilder();
     }
@@ -150,7 +142,6 @@ public interface UaStackClientConfig {
         builder.setConnectTimeout(config.getConnectTimeout());
         builder.setAcknowledgeTimeout(config.getAcknowledgeTimeout());
         builder.setRequestTimeout(config.getRequestTimeout());
-        builder.setConnectPersistent(config.isConnectPersistent());
 
         return builder;
     }

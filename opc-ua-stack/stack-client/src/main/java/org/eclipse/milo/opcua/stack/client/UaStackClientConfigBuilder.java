@@ -49,7 +49,6 @@ public class UaStackClientConfigBuilder {
     private UInteger requestTimeout = uint(60_000);
     private MessageLimits messageLimits = MessageLimits.DEFAULT;
     private UInteger channelLifetime = uint(60 * 60 * 1000);
-    private boolean connectPersistent = true;
 
     public UaStackClientConfigBuilder setEndpoint(EndpointDescription endpoint) {
         this.endpoint = endpoint;
@@ -121,11 +120,6 @@ public class UaStackClientConfigBuilder {
         return this;
     }
 
-    public UaStackClientConfigBuilder setConnectPersistent(boolean connectPersistent) {
-        this.connectPersistent = connectPersistent;
-        return this;
-    }
-
     public UaStackClientConfig build() {
         if (executor == null) {
             executor = Stack.sharedExecutor();
@@ -151,8 +145,7 @@ public class UaStackClientConfigBuilder {
             acknowledgeTimeout,
             requestTimeout,
             messageLimits,
-            channelLifetime,
-            connectPersistent
+            channelLifetime
         );
     }
 
@@ -173,7 +166,6 @@ public class UaStackClientConfigBuilder {
         private final UInteger requestTimeout;
         private final MessageLimits messageLimits;
         private final UInteger channelLifetime;
-        private final boolean connectPersistent;
 
         UaStackClientConfigImpl(
             EndpointDescription endpoint,
@@ -189,8 +181,7 @@ public class UaStackClientConfigBuilder {
             UInteger acknowledgeTimeout,
             UInteger requestTimeout,
             MessageLimits messageLimits,
-            UInteger channelLifetime,
-            boolean connectPersistent) {
+            UInteger channelLifetime) {
 
             this.endpoint = endpoint;
             this.keyPair = keyPair;
@@ -206,7 +197,6 @@ public class UaStackClientConfigBuilder {
             this.requestTimeout = requestTimeout;
             this.messageLimits = messageLimits;
             this.channelLifetime = channelLifetime;
-            this.connectPersistent = connectPersistent;
         }
 
         @Override
@@ -285,11 +275,6 @@ public class UaStackClientConfigBuilder {
         @Override
         public UInteger getRequestTimeout() {
             return requestTimeout;
-        }
-
-        @Override
-        public boolean isConnectPersistent() {
-            return connectPersistent;
         }
 
     }
