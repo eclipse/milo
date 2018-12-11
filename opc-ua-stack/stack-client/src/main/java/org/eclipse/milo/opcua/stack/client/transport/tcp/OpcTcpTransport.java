@@ -15,11 +15,12 @@ package org.eclipse.milo.opcua.stack.client.transport.tcp;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.digitalpetri.netty.fsm.ChannelFsm;
 import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
-import org.eclipse.milo.opcua.stack.client.transport.uasc.fsm.ChannelFsm;
+import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientChannelFsm;
 
 public class OpcTcpTransport extends AbstractTransport implements UaTransport {
 
@@ -32,7 +33,7 @@ public class OpcTcpTransport extends AbstractTransport implements UaTransport {
 
         this.config = config;
 
-        channelFsm = new ChannelFsm(config);
+        channelFsm = ClientChannelFsm.newChannelFsm(config);
     }
 
     public UaStackClientConfig getConfig() {
