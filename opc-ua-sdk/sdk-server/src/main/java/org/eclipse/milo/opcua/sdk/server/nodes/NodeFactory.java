@@ -165,6 +165,8 @@ public class NodeFactory {
             instance.setDataType(declaration.getDataType());
             instance.setValueRank(declaration.getValueRank());
             instance.setArrayDimensions(declaration.getArrayDimensions());
+            instance.setAccessLevel(declaration.getAccessLevel());
+            instance.setUserAccessLevel(declaration.getUserAccessLevel());
 
             node.addProperty(instance);
             nodeMap.addNode(instance);
@@ -203,6 +205,8 @@ public class NodeFactory {
             instance.setDataType(declaration.getDataType());
             instance.setValueRank(declaration.getValueRank());
             instance.setArrayDimensions(declaration.getArrayDimensions());
+            instance.setAccessLevel(declaration.getAccessLevel());
+            instance.setUserAccessLevel(declaration.getUserAccessLevel());
 
             addComponent(node, instance);
             nodeMap.addNode(instance);
