@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Kevin Herron
+ * Copyright (c) 2018 Kevin Herron
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -15,250 +15,146 @@ package org.eclipse.milo.opcua.sdk.client.session;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Predicate;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import com.digitalpetri.strictmachine.Fsm;
+import com.digitalpetri.strictmachine.FsmContext;
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
 import org.eclipse.milo.opcua.sdk.client.SessionActivityListener;
-import org.eclipse.milo.opcua.sdk.client.api.ServiceFaultListener;
-import org.eclipse.milo.opcua.sdk.client.session.events.CloseSessionEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.CreateSessionEvent;
-import org.eclipse.milo.opcua.sdk.client.session.events.Event;
-import org.eclipse.milo.opcua.sdk.client.session.events.ServiceFaultEvent;
-import org.eclipse.milo.opcua.sdk.client.session.states.Active;
-import org.eclipse.milo.opcua.sdk.client.session.states.Inactive;
-import org.eclipse.milo.opcua.sdk.client.session.states.SessionState;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.structured.ServiceFault;
-import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.Unit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.completeAsync;
 
 public class SessionFsm {
 
-    private static final AtomicLong ID_SEQUENCE = new AtomicLong(0L);
+    static final String LOGGER_NAME = "org.eclipse.milo.opcua.sdk.client.SessionFsm";
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final long id = ID_SEQUENCE.getAndIncrement();
+    private final List<SessionInitializer> sessionInitializers;
+    private final List<SessionActivityListener> sessionActivityListeners;
 
-    private final Fsm fsm = new Fsm() {
+    private final Fsm<State, Event> fsm;
 
-        @Override
-        public long getId() {
-            return id;
-        }
+    SessionFsm(Fsm<State, Event> fsm) {
+        this.fsm = fsm;
 
-        @Override
-        public OpcUaClient getClient() {
-            return SessionFsm.this.client;
-        }
+        sessionInitializers = fsm.getFromContext(ctx -> {
+            KEY_SESSION_INITIALIZERS.set(ctx, new SessionInitializers());
+            return KEY_SESSION_INITIALIZERS.get(ctx).sessionInitializers;
+        });
 
-        @Override
-        public void fireEvent(Event event) {
-            SessionFsm.this.fireEvent(event);
-        }
-
-        @Override
-        public List<SessionInitializer> getInitializers() {
-            return initializers;
-        }
-    };
-
-    private final List<SessionInitializer> initializers = newCopyOnWriteArrayList();
-    private final List<SessionActivityListener> listeners = newCopyOnWriteArrayList();
-    private final AtomicReference<SessionState> state = new AtomicReference<>(new Inactive());
-    private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
-
-    private final ExecutionQueue notificationQueue;
-
-    private final OpcUaClient client;
-
-    public SessionFsm(OpcUaClient client) {
-        this.client = client;
-
-        notificationQueue = new ExecutionQueue(client.getConfig().getExecutor());
-
-        client.addFaultListener(new FaultListener(fsm));
+        sessionActivityListeners = fsm.getFromContext(ctx -> {
+            KEY_SESSION_ACTIVITY_LISTENERS.set(ctx, new SessionActivityListeners());
+            return KEY_SESSION_ACTIVITY_LISTENERS.get(ctx).sessionActivityListeners;
+        });
     }
 
     public CompletableFuture<OpcUaSession> openSession() {
-        CompletableFuture<OpcUaSession> sessionFuture = new CompletableFuture<>();
+        Event.OpenSession openSession = new Event.OpenSession();
 
-        fireEvent(new CreateSessionEvent(sessionFuture));
+        fsm.fireEvent(openSession);
 
-        return completeAsync(
-            new CompletableFuture<OpcUaSession>(),
-            client.getConfig().getExecutor()
-        ).with(sessionFuture);
+        return openSession.future;
     }
 
     public CompletableFuture<Unit> closeSession() {
-        CompletableFuture<Unit> closeFuture = new CompletableFuture<>();
+        Event.CloseSession closeSession = new Event.CloseSession();
 
-        fireEvent(new CloseSessionEvent(closeFuture));
+        fsm.fireEvent(closeSession);
 
-        return completeAsync(
-            new CompletableFuture<Unit>(),
-            client.getConfig().getExecutor()
-        ).with(closeFuture);
+        return closeSession.future;
     }
 
     public CompletableFuture<OpcUaSession> getSession() {
-        readWriteLock.readLock().lock();
-        try {
-            CompletableFuture<OpcUaSession> sessionFuture = state.get().getSessionFuture();
+        CompletableFuture<OpcUaSession> future = fsm.getFromContext(ctx -> {
+            State state = ctx.currentState();
 
-            if (sessionFuture.isDone()) {
-                return sessionFuture;
+            if (state == State.Active) {
+                SessionFuture sf = KEY_SESSION_FUTURE.get(ctx);
+
+                assert sf != null;
+
+                return sf.future;
             } else {
-                return completeAsync(
-                    new CompletableFuture<OpcUaSession>(),
-                    client.getConfig().getExecutor()
-                ).with(sessionFuture);
+                return null;
             }
-        } finally {
-            readWriteLock.readLock().unlock();
+        });
+
+        if (future != null) {
+            return future;
+        } else {
+            // "Slow" path... not activated yet.
+            Event.GetSession getSession = new Event.GetSession();
+
+            fsm.fireEvent(getSession);
+
+            return getSession.future;
         }
     }
 
     public void addInitializer(SessionInitializer initializer) {
-        initializers.add(initializer);
+        sessionInitializers.add(initializer);
     }
 
     public void removeInitializer(SessionInitializer initializer) {
-        initializers.remove(initializer);
+        sessionInitializers.remove(initializer);
     }
 
-    public void addListener(SessionActivityListener listener) {
-        listeners.add(listener);
+    public void addActivityListener(SessionActivityListener listener) {
+        sessionActivityListeners.add(listener);
     }
 
-    public void removeListener(SessionActivityListener listener) {
-        listeners.remove(listener);
+    public void removeActivityListener(SessionActivityListener listener) {
+        sessionActivityListeners.remove(listener);
     }
 
-    private void fireEvent(Event event) {
-        if (readWriteLock.writeLock().isHeldByCurrentThread()) {
-            client.getConfig().getExecutor()
-                .execute(() -> fireEvent(event));
-        } else {
-            readWriteLock.writeLock().lock();
+    static final FsmContext.Key<Long> KEY_WAIT_TIME =
+        new FsmContext.Key<>("delay", Long.class);
 
-            try {
-                SessionState prevState = state.get();
+    static final FsmContext.Key<ScheduledFuture> KEY_WAIT_FUTURE =
+        new FsmContext.Key<>("delayFuture", ScheduledFuture.class);
 
-                SessionState nextState = state.updateAndGet(
-                    state -> state.execute(fsm, event)
-                );
+    static final FsmContext.Key<CloseFuture> KEY_CLOSE_FUTURE =
+        new FsmContext.Key<>("closeFuture", CloseFuture.class);
 
-                logger.debug(
-                    "[{}] S({}) x E({}) = S'({})",
-                    id,
-                    prevState.getClass().getSimpleName(),
-                    event.getClass().getSimpleName(),
-                    nextState.getClass().getSimpleName()
-                );
+    static final FsmContext.Key<OpcUaSession> KEY_SESSION =
+        new FsmContext.Key<>("session", OpcUaSession.class);
 
-                if (prevState.getClass() == nextState.getClass()) {
-                    nextState.onInternalTransition(fsm, event);
-                } else {
-                    nextState.onExternalTransition(fsm, prevState, event);
+    static final FsmContext.Key<SessionFuture> KEY_SESSION_FUTURE =
+        new FsmContext.Key<>("sessionFuture", SessionFuture.class);
 
-                    if (nextState instanceof Active) {
-                        // transition from non-Active to Active
-                        notifySessionActive(((Active) nextState).getSession());
-                    } else if (prevState instanceof Active) {
-                        // transition from Active to non-Active
-                        notifySessionInactive(((Active) prevState).getSession());
-                    }
-                }
-            } finally {
-                readWriteLock.writeLock().unlock();
-            }
-        }
+    static final FsmContext.Key<Long> KEY_KEEP_ALIVE_FAILURE_COUNT =
+        new FsmContext.Key<>("keepAliveFailureCount", Long.class);
+
+    static final FsmContext.Key<ScheduledFuture> KEY_KEEP_ALIVE_SCHEDULED_FUTURE =
+        new FsmContext.Key<>("keepAliveScheduledFuture", ScheduledFuture.class);
+
+    static final FsmContext.Key<SessionInitializers> KEY_SESSION_INITIALIZERS =
+        new FsmContext.Key<>("sessionInitializers", SessionInitializers.class);
+
+    static final FsmContext.Key<SessionActivityListeners> KEY_SESSION_ACTIVITY_LISTENERS =
+        new FsmContext.Key<>("sessionActivityListeners", SessionActivityListeners.class);
+
+    static class CloseFuture {
+        final CompletableFuture<Unit> future = new CompletableFuture<>();
     }
 
-    private void notifySessionActive(OpcUaSession session) {
-        logger.debug("[{}] notifySessionActive()", id);
-
-        notificationQueue.submit(() -> {
-            logger.debug("[{}] notifying {} listeners...", id, listeners.size());
-
-            listeners.forEach(listener -> {
-                try {
-                    listener.onSessionActive(session);
-                } catch (Throwable t) {
-                    logger.warn("[{}] Uncaught Throwable notifying listener: {}", id, listener, t);
-                }
-            });
-        });
+    static class SessionFuture {
+        final CompletableFuture<OpcUaSession> future = new CompletableFuture<>();
     }
 
-    private void notifySessionInactive(OpcUaSession session) {
-        logger.debug("[{}] notifySessionInactive()", id);
+    static class SessionInitializers {
+        private SessionInitializers() {}
 
-        notificationQueue.submit(() -> {
-            logger.debug("[{}] notifying {} listeners...", id, listeners.size());
-
-            listeners.forEach(listener -> {
-                try {
-                    listener.onSessionInactive(session);
-                } catch (Throwable t) {
-                    logger.warn("[{}] Uncaught Throwable notifying listener: {}", id, listener, t);
-                }
-            });
-        });
+        final List<SessionInitializer> sessionInitializers = new CopyOnWriteArrayList<>();
     }
 
-    private static class FaultListener implements ServiceFaultListener {
+    static class SessionActivityListeners {
+        private SessionActivityListeners() {}
 
-        private static final Predicate<StatusCode> SESSION_ERROR = statusCode -> {
-            long status = statusCode.getValue();
-
-            return status == StatusCodes.Bad_SessionClosed ||
-                status == StatusCodes.Bad_SessionIdInvalid ||
-                status == StatusCodes.Bad_SessionNotActivated;
-        };
-
-        private static final Predicate<StatusCode> SECURE_CHANNEL_ERROR = statusCode -> {
-            long status = statusCode.getValue();
-
-            return status == StatusCodes.Bad_SecureChannelIdInvalid ||
-                status == StatusCodes.Bad_SecurityChecksFailed ||
-                status == StatusCodes.Bad_TcpSecureChannelUnknown ||
-                status == StatusCodes.Bad_RequestTypeInvalid;
-        };
-
-        private final Logger logger = LoggerFactory.getLogger(SessionFsm.class);
-
-        private final Fsm fsm;
-
-        FaultListener(Fsm fsm) {
-            this.fsm = fsm;
-        }
-
-        @Override
-        public void onServiceFault(ServiceFault serviceFault) {
-            StatusCode serviceResult = serviceFault.getResponseHeader().getServiceResult();
-
-            if (SESSION_ERROR.or(SECURE_CHANNEL_ERROR).test(serviceResult)) {
-                logger.debug("[{}] ServiceFault: {}", fsm.getId(), serviceResult);
-
-                fsm.fireEvent(new ServiceFaultEvent(serviceResult));
-            }
-        }
-
+        final List<SessionActivityListener> sessionActivityListeners = new CopyOnWriteArrayList<>();
     }
+
 
     public interface SessionInitializer {
 

@@ -24,6 +24,7 @@ import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfig;
 import org.eclipse.milo.opcua.sdk.client.model.TypeRegistryInitializer;
 import org.eclipse.milo.opcua.sdk.client.session.SessionFsm;
+import org.eclipse.milo.opcua.sdk.client.session.SessionFsmFactory;
 import org.eclipse.milo.opcua.sdk.client.subscriptions.OpcUaSubscriptionManager;
 import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -120,6 +121,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newCopyOnWriteArrayList;
+import static org.eclipse.milo.opcua.sdk.client.session.SessionFsm.SessionInitializer;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
@@ -164,7 +166,7 @@ public class OpcUaClient implements UaClient {
         this.config = config;
         this.stackClient = stackClient;
 
-        sessionFsm = new SessionFsm(this);
+        sessionFsm = SessionFsmFactory.newSessionFsm(this);
 
         sessionFsm.addInitializer((client, session) -> {
             logger.debug("SessionInitializer: DataTypeDictionary");
@@ -754,21 +756,21 @@ public class OpcUaClient implements UaClient {
     }
 
     public void addSessionActivityListener(SessionActivityListener listener) {
-        sessionFsm.addListener(listener);
+        sessionFsm.addActivityListener(listener);
         logger.debug("Added SessionActivityListener: {}", listener);
     }
 
     public void removeSessionActivityListener(SessionActivityListener listener) {
-        sessionFsm.removeListener(listener);
+        sessionFsm.removeActivityListener(listener);
         logger.debug("Removed SessionActivityListener: {}", listener);
     }
 
-    public void addSessionInitializer(SessionFsm.SessionInitializer initializer) {
+    public void addSessionInitializer(SessionInitializer initializer) {
         sessionFsm.addInitializer(initializer);
         logger.debug("Added SessionInitializer: {}", initializer);
     }
 
-    public void removeSessionInitializer(SessionFsm.SessionInitializer initializer) {
+    public void removeSessionInitializer(SessionInitializer initializer) {
         sessionFsm.removeInitializer(initializer);
         logger.debug("Removed SessionInitializer: {}", initializer);
     }

@@ -47,7 +47,7 @@ public class SessionFsmTest {
 
         OpcUaClient client = OpcUaClient.create(clientConfig);
 
-        SessionFsm sessionFsm = new SessionFsm(client);
+        SessionFsm sessionFsm = SessionFsmFactory.newSessionFsm(client);
 
         assertNotNull(sessionFsm.closeSession().get());
     }
