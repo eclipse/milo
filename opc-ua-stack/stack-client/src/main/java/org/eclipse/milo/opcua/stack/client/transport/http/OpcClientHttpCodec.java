@@ -13,16 +13,9 @@
 
 package org.eclipse.milo.opcua.stack.client.transport.http;
 
-import java.net.MalformedURLException;
 import java.util.List;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPHeader;
-import javax.xml.soap.SOAPMessage;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -42,15 +35,12 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTransportRequest> {
 
@@ -67,7 +57,7 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
 
     private final UaStackClientConfig config;
 
-    OpcClientHttpCodec(UaStackClientConfig config) throws MalformedURLException {
+    OpcClientHttpCodec(UaStackClientConfig config) {
         this.config = config;
 
         endpoint = config.getEndpoint();
@@ -94,20 +84,9 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
             }
 
             case HTTPS_UAXML: {
-                OpcUaXmlStreamEncoder encoder = new OpcUaXmlStreamEncoder();
-                encoder.writeMessage(null, transportRequest.getRequest());
-
-                MessageFactory messageFactory = MessageFactory.newInstance();
-                SOAPMessage soapMessage = messageFactory.createMessage();
-
-                SOAPHeader soapHeader = soapMessage.getSOAPHeader();
-                soapHeader.detachNode();
-
-                SOAPBody soapBody = soapMessage.getSOAPBody();
-                soapBody.addDocument(encoder.getDocument());
-
-                soapMessage.writeTo(new ByteBufOutputStream(content));
-                break;
+                // TODO put document into a SOAP message.
+                throw new UaException(StatusCodes.Bad_InternalError,
+                    "no encoder for transport: " + transportProfile);
             }
 
             default:
@@ -166,18 +145,9 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                 }
 
                 case HTTPS_UAXML: {
-                    MessageFactory messageFactory = MessageFactory.newInstance();
-
-                    SOAPMessage soapMessage = messageFactory.createMessage(
-                        null,
-                        new ByteBufInputStream(content)
-                    );
-
-                    Document document = soapMessage.getSOAPBody().extractContentAsDocument();
-
-                    OpcUaXmlStreamDecoder decoder = new OpcUaXmlStreamDecoder(document);
-                    responseMessage = (UaResponseMessage) decoder.readMessage(null);
-                    break;
+                    // TODO extract document from SOAP message body
+                    throw new UaException(StatusCodes.Bad_InternalError,
+                        "no decoder for transport: " + transportProfile);
                 }
 
                 default:
