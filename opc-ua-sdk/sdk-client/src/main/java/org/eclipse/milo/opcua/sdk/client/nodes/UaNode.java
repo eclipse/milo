@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.client.nodes;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
@@ -114,13 +115,13 @@ public abstract class UaNode implements Node {
     protected <T> CompletableFuture<T> getProperty(QualifiedProperty<T> property) {
         return getPropertyNode(property)
             .thenCompose(VariableNode::getValue)
-            .thenApply(value -> property.getJavaType().cast(value));
+            .thenApply(value -> cast(value, property.getJavaType()));
     }
 
     protected <T> CompletableFuture<T> getProperty(Property<T> property) {
         return getPropertyNode(property.getBrowseName())
             .thenCompose(VariableNode::getValue)
-            .thenApply(value -> property.getJavaType().cast(value));
+            .thenApply(value -> cast(value, property.getJavaType()));
     }
 
     protected <T> CompletableFuture<StatusCode> setProperty(QualifiedProperty<T> property, T value) {
@@ -371,12 +372,30 @@ public abstract class UaNode implements Node {
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 return null;
             }
-        } else if (UaStructure.class.isAssignableFrom(clazz) && o instanceof ExtensionObject) {
+        } else if (o instanceof ExtensionObject) {
             Object decoded = ((ExtensionObject) o).decode(
                 client.getConfig().getEncodingLimits(),
                 client.getDataTypeManager()
             );
             return clazz.cast(decoded);
+        } else if (o instanceof ExtensionObject[]) {
+            ExtensionObject[] xos = (ExtensionObject[]) o;
+            Class<?> componentType = clazz.getComponentType();
+
+            Object array = Array.newInstance(componentType, xos.length);
+
+            for (int i = 0; i < xos.length; i++) {
+                ExtensionObject xo = xos[i];
+
+                Object decoded = xo.decode(
+                    client.getConfig().getEncodingLimits(),
+                    client.getDataTypeManager()
+                );
+
+                Array.set(array, i, componentType.cast(decoded));
+            }
+
+            return clazz.cast(array);
         } else {
             return clazz.cast(o);
         }
