@@ -42,6 +42,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseDirection;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
@@ -59,6 +60,7 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
+import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class DefaultAddressSpace implements AddressSpace {
 
@@ -78,14 +80,20 @@ public class DefaultAddressSpace implements AddressSpace {
 
         return future.thenCompose(response -> {
             DataValue value = l(response.getResults()).get(0);
-            NodeClass nodeClass = NodeClass.from((Integer) value.getValue().getValue());
+            StatusCode statusCode = value.getStatusCode();
 
-            if (nodeClass != null) {
-                client.getNodeCache().putAttribute(nodeId, AttributeId.NodeClass, value);
+            if (statusCode != null && statusCode.isGood()) {
+                NodeClass nodeClass = NodeClass.from((Integer) value.getValue().getValue());
 
-                return completedFuture(createNode(nodeId, nodeClass));
+                if (nodeClass != null) {
+                    client.getNodeCache().putAttribute(nodeId, AttributeId.NodeClass, value);
+
+                    return completedFuture(createNode(nodeId, nodeClass));
+                } else {
+                    return failedFuture(new UaException(statusCode, "NodeClass was null"));
+                }
             } else {
-                return failedFuture(new UaException(value.getStatusCode(), "NodeClass was null"));
+                return failedUaFuture(statusCode);
             }
         });
     }
