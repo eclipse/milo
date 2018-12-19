@@ -139,13 +139,12 @@ public final class UInteger extends UNumber implements Comparable<UInteger> {
     }
 
     /**
-     * Unchecked internal constructor. This serves two purposes: first it allows
-     * {@link #UInteger(long)} to stay deprecated without warnings and second
-     * constructor without unnecessary value checks.
+     * Unchecked internal constructor.
+     * This serves to construct without unnecessary value checks.
      *
      * @param value  The value to wrap
      * @param unused Unused parameter to distinguish between this and the
-     *               deprecated public constructor.
+     *               public constructor.
      */
     private UInteger(long value, boolean unused) {
         this.value = value;
