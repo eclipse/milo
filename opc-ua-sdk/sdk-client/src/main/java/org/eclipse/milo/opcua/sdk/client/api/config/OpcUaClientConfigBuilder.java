@@ -45,6 +45,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
     private IdentityProvider identityProvider = new AnonymousProvider();
     private BsdParser bsdParser = new GenericBsdParser();
+    private String[] sessionLocaleIds = new String[0];
 
     public OpcUaClientConfigBuilder setSessionName(Supplier<String> sessionName) {
         this.sessionName = sessionName;
@@ -78,6 +79,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setBsdParser(BsdParser bsdParser) {
         this.bsdParser = bsdParser;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setSessionLocaleIds(String[] sessionLocaleIds) {
+        this.sessionLocaleIds = sessionLocaleIds;
         return this;
     }
 
@@ -188,7 +194,8 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             maxPendingPublishRequests,
             requestTimeout,
             identityProvider,
-            bsdParser
+            bsdParser,
+            sessionLocaleIds
         );
     }
 
@@ -202,6 +209,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         private final UInteger requestTimeout;
         private final IdentityProvider identityProvider;
         private final BsdParser bsdParser;
+        private final String[] sessionLocaleIds;
 
         public OpcUaClientConfigImpl(UaTcpStackClientConfig stackClientConfig,
                                      Supplier<String> sessionName,
@@ -210,7 +218,8 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
                                      UInteger maxPendingPublishRequests,
                                      UInteger requestTimeout,
                                      IdentityProvider identityProvider,
-                                     BsdParser bsdParser) {
+                                     BsdParser bsdParser,
+                                     String[] sessionLocaleIds) {
 
             this.stackClientConfig = stackClientConfig;
             this.sessionName = sessionName;
@@ -220,6 +229,7 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
             this.requestTimeout = requestTimeout;
             this.identityProvider = identityProvider;
             this.bsdParser = bsdParser;
+            this.sessionLocaleIds = sessionLocaleIds;
         }
 
         @Override
@@ -255,6 +265,11 @@ public class OpcUaClientConfigBuilder extends UaTcpStackClientConfigBuilder {
         @Override
         public BsdParser getBsdParser() {
             return bsdParser;
+        }
+        
+        @Override
+        public String[] getSessionLocaleIds() {
+            return sessionLocaleIds;
         }
 
         @Override
