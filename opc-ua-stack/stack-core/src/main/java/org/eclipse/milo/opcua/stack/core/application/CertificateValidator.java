@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.core.application;
 
-
 import java.security.cert.X509Certificate;
 import java.util.List;
 
