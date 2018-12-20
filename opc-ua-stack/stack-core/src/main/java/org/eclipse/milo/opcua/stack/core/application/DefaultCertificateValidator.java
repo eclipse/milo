@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.core.application;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

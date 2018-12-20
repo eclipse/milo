@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.sdk.client.session.states;
 
-
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaSession;
