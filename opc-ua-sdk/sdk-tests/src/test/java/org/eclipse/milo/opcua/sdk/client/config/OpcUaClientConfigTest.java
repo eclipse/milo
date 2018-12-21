@@ -35,6 +35,7 @@ public class OpcUaClientConfigTest {
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
             .setBsdParser(new GenericBsdParser())
+            .setSessionLocaleIds(new String[]{"en", "es"})
             .build();
 
         OpcUaClientConfig copy = OpcUaClientConfig.copy(original).build();
@@ -46,6 +47,7 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getMaxPendingPublishRequests(), original.getMaxPendingPublishRequests());
         assertEquals(copy.getIdentityProvider(), original.getIdentityProvider());
         assertEquals(copy.getBsdParser(), original.getBsdParser());
+        assertEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
     }
 
     @Test
@@ -68,16 +70,19 @@ public class OpcUaClientConfigTest {
                     .setMaxPendingPublishRequests(uint(0))
                     .setIdentityProvider(new AnonymousProvider())
                     .setBsdParser(new GenericBsdParser())
+                    .setSessionLocaleIds(new String[]{"en", "es"})
         );
 
         assertNotEquals(copy.getSessionName(), original.getSessionName());
         assertNotEquals(copy.getIdentityProvider(), original.getIdentityProvider());
         assertNotEquals(copy.getBsdParser(), original.getBsdParser());
+        assertNotEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
 
         assertEquals(copy.getSessionTimeout(), uint(0));
         assertEquals(copy.getRequestTimeout(), uint(0));
         assertEquals(copy.getMaxResponseMessageSize(), uint(0));
         assertEquals(copy.getMaxPendingPublishRequests(), uint(0));
+        assertEquals(copy.getSessionLocaleIds(), new String[]{"en", "es"});
     }
 
 }

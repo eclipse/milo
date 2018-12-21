@@ -60,6 +60,11 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
     BsdParser getBsdParser();
 
     /**
+     * @return the list of locale ids in priority order for localized strings
+     */
+    String[] getSessionLocaleIds();
+
+    /**
      * @return a new {@link OpcUaClientConfigBuilder}.
      */
     static OpcUaClientConfigBuilder builder() {
@@ -100,6 +105,7 @@ public interface OpcUaClientConfig extends UaTcpStackClientConfig {
         builder.setMaxPendingPublishRequests(config.getMaxPendingPublishRequests());
         builder.setIdentityProvider(config.getIdentityProvider());
         builder.setBsdParser(config.getBsdParser());
+        builder.setSessionLocaleIds(config.getSessionLocaleIds());
 
         return builder;
     }

@@ -226,6 +226,8 @@ abstract class AbstractSessionState implements SessionState {
 
                 ByteString serverNonce = csr.getServerNonce();
 
+                String[] localeIds = client.getConfig().getSessionLocaleIds();
+
                 Tuple2<UserIdentityToken, SignatureData> tuple =
                     client.getConfig().getIdentityProvider()
                         .getIdentityToken(endpoint, serverNonce);
@@ -237,7 +239,7 @@ abstract class AbstractSessionState implements SessionState {
                     client.newRequestHeader(csr.getAuthenticationToken(), REQUEST_TIMEOUT),
                     buildClientSignature(secureChannel, serverNonce),
                     new SignedSoftwareCertificate[0],
-                    new String[0],
+                    localeIds,
                     ExtensionObject.encode(userIdentityToken),
                     userTokenSignature
                 );
