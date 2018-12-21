@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.time.Instant;
 import java.util.Date;
 
 import com.google.common.base.MoreObjects;
@@ -29,7 +30,7 @@ public final class DateTime {
     private final long utcTime;
 
     public DateTime() {
-        this(javaToUtc(System.currentTimeMillis()));
+        this(Instant.now());
     }
 
     public DateTime(long utcTime) {
@@ -38,6 +39,10 @@ public final class DateTime {
 
     public DateTime(Date date) {
         this(javaToUtc(date.getTime()));
+    }
+
+    public DateTime(Instant instant) {
+        this(javaToUtc(instant.toEpochMilli()) + (instant.getNano() % 1_000_000) / 100);
     }
 
     /**
@@ -59,6 +64,13 @@ public final class DateTime {
      */
     public Date getJavaDate() {
         return new Date(utcToJava(utcTime));
+    }
+
+    /**
+     * @return this time as an {@link Instant}.
+     */
+    public Instant getJavaInstant() {
+        return Instant.ofEpochSecond(utcToJava(utcTime) / 1_000, (utcTime % 10_000_000) * 100);
     }
 
     public boolean isNull() {
@@ -96,11 +108,11 @@ public final class DateTime {
     }
 
     private static long javaToUtc(long javaTime) {
-        return (javaTime * 10000L) + EPOCH_DELTA;
+        return (javaTime * 10_000) + EPOCH_DELTA;
     }
 
     private static long utcToJava(long utcTime) {
-        return (utcTime - EPOCH_DELTA) / 10000L;
+        return (utcTime - EPOCH_DELTA) / 10_000;
     }
 
 }
