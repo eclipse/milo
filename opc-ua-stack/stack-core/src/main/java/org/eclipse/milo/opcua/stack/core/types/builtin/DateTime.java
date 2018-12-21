@@ -107,6 +107,13 @@ public final class DateTime {
         return new DateTime();
     }
 
+    /**
+     * @return a {@link DateTime} initialized to now, considering nanoseconds
+     */
+    public static DateTime nowNanos() {
+        return new DateTime(Instant.now());
+    }
+
     private static long javaToUtc(long javaTime) {
         return (javaTime * 10_000) + EPOCH_DELTA;
     }
