@@ -30,7 +30,7 @@ public final class DateTime {
     private final long utcTime;
 
     public DateTime() {
-        this(Instant.now());
+        this(javaToUtc(System.currentTimeMillis()));
     }
 
     public DateTime(long utcTime) {
