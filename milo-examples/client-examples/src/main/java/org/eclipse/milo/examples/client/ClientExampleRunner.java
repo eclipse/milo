@@ -13,7 +13,9 @@
 
 package org.eclipse.milo.examples.client;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.Security;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -65,12 +67,13 @@ public class ClientExampleRunner {
     }
 
     private OpcUaClient createClient() throws Exception {
-        File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
-        if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
+        Path securityTempDir = Paths.get(System.getProperty("java.io.tmpdir"), "security");
+        Files.createDirectories(securityTempDir);
+        if (!Files.exists(securityTempDir)) {
             throw new Exception("unable to create security dir: " + securityTempDir);
         }
         LoggerFactory.getLogger(getClass())
-            .info("security temp dir: {}", securityTempDir.getAbsolutePath());
+            .info("security temp dir: {}", securityTempDir.toAbsolutePath());
 
         KeyStoreLoader loader = new KeyStoreLoader().load(securityTempDir);
 
@@ -84,11 +87,10 @@ public class ClientExampleRunner {
             // try the explicit discovery endpoint as well
             String discoveryUrl = clientExample.getEndpointUrl();
 
-            if (discoveryUrl.endsWith("/")) {
-                discoveryUrl += "discovery";
-            } else {
-                discoveryUrl += "/discovery";
+            if (!discoveryUrl.endsWith("/")) {
+                discoveryUrl += "/";
             }
+            discoveryUrl += "discovery";
 
             logger.info("Trying explicit discovery URL: {}", discoveryUrl);
             endpoints = DiscoveryClient.getEndpoints(discoveryUrl).get();
@@ -164,7 +166,7 @@ public class ClientExampleRunner {
         }
 
         try {
-            Thread.sleep(999999999);
+            Thread.sleep(999_999_999);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
