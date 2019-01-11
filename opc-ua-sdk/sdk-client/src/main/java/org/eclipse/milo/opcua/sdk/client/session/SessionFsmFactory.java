@@ -936,6 +936,34 @@ public class SessionFsmFactory {
                 if (tsr != null) {
                     List<TransferResult> results = l(tsr.getResults());
 
+                    LOGGER.debug(
+                        "[{}] TransferSubscriptions supported: {}",
+                        ctx.getInstanceId(), tsr.getResponseHeader().getServiceResult());
+
+                    if (LOGGER.isDebugEnabled()) {
+                        try {
+                            Stream<UInteger> subscriptionIds = subscriptions.stream()
+                                .map(UaSubscription::getSubscriptionId);
+                            Stream<StatusCode> statusCodes = results.stream()
+                                .map(TransferResult::getStatusCode);
+
+                            //noinspection UnstableApiUsage
+                            String[] ss = Streams.zip(
+                                subscriptionIds,
+                                statusCodes,
+                                (i, s) -> String.format("id=%s/%s",
+                                    i, StatusCodes.lookup(s.getValue())
+                                        .map(sa -> sa[0]).orElse(s.toString()))
+                            ).toArray(String[]::new);
+
+                            LOGGER.debug(
+                                "[{}] TransferSubscriptions results: {}",
+                                ctx.getInstanceId(), Arrays.toString(ss));
+                        } catch (Throwable t) {
+                            LOGGER.error("[{}] error logging TransferSubscription results", ctx.getInstanceId(), t);
+                        }
+                    }
+
                     client.getConfig().getExecutor().execute(() -> {
                         for (int i = 0; i < results.size(); i++) {
                             TransferResult result = results.get(i);
@@ -950,26 +978,6 @@ public class SessionFsmFactory {
                             }
                         }
                     });
-
-                    if (LOGGER.isDebugEnabled()) {
-                        Stream<UInteger> subscriptionIds = subscriptions.stream()
-                            .map(UaSubscription::getSubscriptionId);
-                        Stream<StatusCode> statusCodes = results.stream()
-                            .map(TransferResult::getStatusCode);
-
-                        //noinspection UnstableApiUsage
-                        String[] ss = Streams.zip(
-                            subscriptionIds,
-                            statusCodes,
-                            (i, s) -> String.format("id=%s/%s",
-                                i, StatusCodes.lookup(s.getValue())
-                                    .map(sa -> sa[0]).orElse(s.toString()))
-                        ).toArray(String[]::new);
-
-                        LOGGER.debug(
-                            "[{}] TransferSubscriptions results: {}",
-                            ctx.getInstanceId(), Arrays.toString(ss));
-                    }
 
                     transferFuture.complete(Unit.VALUE);
                 } else {
