@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -209,7 +209,7 @@ public class AttributeWriter {
     }
 
     private static DataValue validateDataType(
-        UaNodeManager nodeManager,
+        NodeManager<UaNode> nodeManager,
         NodeId dataType,
         DataValue value) throws UaException {
 
@@ -329,7 +329,7 @@ public class AttributeWriter {
     }
 
     private static Class<?> getExpectedClass(
-        UaNodeManager nodeManager,
+        NodeManager<UaNode> nodeManager,
         NodeId dataTypeId,
         Class<?> valueClass) throws UaException {
 
@@ -372,7 +372,7 @@ public class AttributeWriter {
     /**
      * @return {@code true} if {@code dataTypeId} is a subtype of {@code potentialSuperTypeId}.
      */
-    private static boolean subtypeOf(UaNodeManager nodeManager, NodeId dataTypeId, NodeId potentialSuperTypeId) {
+    private static boolean subtypeOf(NodeManager<UaNode> nodeManager, NodeId dataTypeId, NodeId potentialSuperTypeId) {
         UaNode dataTypeNode = nodeManager.get(dataTypeId);
 
         if (dataTypeNode != null) {
@@ -395,7 +395,7 @@ public class AttributeWriter {
      * @return the first concrete built-in supertype for {@code dataTypeId}, if one exists.
      */
     @Nullable
-    private static NodeId findConcreteBuiltInSuperTypeId(UaNodeManager nodeManager, NodeId dataTypeId) {
+    private static NodeId findConcreteBuiltInSuperTypeId(NodeManager<UaNode> nodeManager, NodeId dataTypeId) {
         if (TypeUtil.isBuiltin(dataTypeId) && isConcrete(nodeManager, dataTypeId)) {
             return dataTypeId;
         } else {
@@ -410,7 +410,7 @@ public class AttributeWriter {
     }
 
     @Nullable
-    private static NodeId getSuperTypeId(UaNodeManager nodeManager, NodeId dataTypeId) {
+    private static NodeId getSuperTypeId(NodeManager<UaNode> nodeManager, NodeId dataTypeId) {
         UaNode dataTypeNode = nodeManager.get(dataTypeId);
 
         if (dataTypeNode != null) {
@@ -425,7 +425,7 @@ public class AttributeWriter {
         }
     }
 
-    private static boolean isAbstract(UaNodeManager nodeManager, NodeId dataTypeId) {
+    private static boolean isAbstract(NodeManager<UaNode> nodeManager, NodeId dataTypeId) {
         UaNode node = nodeManager.get(dataTypeId);
 
         if (node instanceof DataTypeNode) {
@@ -435,7 +435,7 @@ public class AttributeWriter {
         }
     }
 
-    private static boolean isConcrete(UaNodeManager nodeManager, NodeId dataTypeId) {
+    private static boolean isConcrete(NodeManager<UaNode> nodeManager, NodeId dataTypeId) {
         return !isAbstract(nodeManager, dataTypeId);
     }
 

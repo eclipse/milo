@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -76,7 +77,7 @@ public class EventFactory {
         }
 
         @Override
-        public UaNodeManager getNodeManager() {
+        public NodeManager<UaNode> getNodeManager() {
             return nodeManager;
         }
 
@@ -84,9 +85,9 @@ public class EventFactory {
 
     private static class EventNodeManager extends UaNodeManager {
 
-        private final UaNodeManager delegate;
+        private final NodeManager<UaNode> delegate;
 
-        EventNodeManager(UaNodeManager delegate) {
+        EventNodeManager(NodeManager<UaNode> delegate) {
             this.delegate = delegate;
         }
 

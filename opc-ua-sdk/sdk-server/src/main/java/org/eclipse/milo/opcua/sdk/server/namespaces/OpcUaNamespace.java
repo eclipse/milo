@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler.NotImplementedHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefresh;
@@ -76,7 +77,8 @@ public class OpcUaNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaNodeManager nodeManager;
+    private final UaNodeManager nodeManager = new UaNodeManager();
+
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -84,10 +86,10 @@ public class OpcUaNamespace implements Namespace {
     public OpcUaNamespace(OpcUaServer server) {
         this.server = server;
 
-        nodeManager = server.getNodeManager();
-
         subscriptionModel = new SubscriptionModel(server, this);
+    }
 
+    public void initialize() {
         loadNodes();
         configureServerObject();
 
@@ -114,6 +116,11 @@ public class OpcUaNamespace implements Namespace {
     @Override
     public String getNamespaceUri() {
         return NamespaceTable.OPC_UA_NAMESPACE;
+    }
+
+    @Override
+    public NodeManager<UaNode> getNodeManager() {
+        return nodeManager;
     }
 
     @Override

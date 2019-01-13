@@ -15,12 +15,14 @@ package org.eclipse.milo.opcua.sdk.server.events.operators;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableSet;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
 import org.eclipse.milo.opcua.sdk.server.events.ValidationException;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.FilterOperator;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 
 public class Operators {
@@ -50,5 +52,16 @@ public class Operators {
             throw new ValidationException(StatusCodes.Bad_FilterOperatorUnsupported);
         }
     };
+
+    public static final ImmutableSet<FilterOperator> SUPPORTED_OPERATORS = ImmutableSet.<FilterOperator>builder()
+        .add(FilterOperator.Equals)
+        .add(FilterOperator.IsNull)
+        .add(FilterOperator.GreaterThan)
+        .add(FilterOperator.LessThan)
+        .add(FilterOperator.GreaterThanOrEqual)
+        .add(FilterOperator.LessThanOrEqual)
+        .add(FilterOperator.Not)
+        .add(FilterOperator.Cast)
+        .build();
 
 }
