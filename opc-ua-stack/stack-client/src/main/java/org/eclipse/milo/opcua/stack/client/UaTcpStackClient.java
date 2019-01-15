@@ -551,10 +551,12 @@ public class UaTcpStackClient implements UaStackClient {
         FindServersRequest request = new FindServersRequest(
             new RequestHeader(null, DateTime.now(), uint(1), uint(0), null, uint(5000), null),
             endpointUrl, null, null);
-
-        return client.<FindServersResponse>sendRequest(request)
-            .whenComplete((r, ex) -> client.disconnect())
-            .thenApply(FindServersResponse::getServers);
+        
+        return client.connect().thenCompose(c ->
+            c.<FindServersResponse>sendRequest(request)
+                .whenComplete((r, ex) -> client.disconnect())
+                .thenApply(FindServersResponse::getServers)
+        );
     }
 
     /**
