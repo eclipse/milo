@@ -274,12 +274,7 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                                     "Received OpenSecureChannelRequest ({}, id={}).",
                                     request.getRequestType(), secureChannelId);
 
-                                OpenSecureChannelResponse response = openSecureChannel(ctx, request);
-
-                                sendOpenSecureChannelResponse(ctx, requestId, response);
-                            } catch (UaException e) {
-                                logger.error("Error installing security token: {}", e.getStatusCode(), e);
-                                ctx.close();
+                                sendOpenSecureChannelResponse(ctx, requestId, request);
                             } catch (Throwable t) {
                                 logger.error("Error decoding OpenSecureChannelRequest", t);
                                 ctx.close();
@@ -294,8 +289,78 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         }
     }
 
-    private OpenSecureChannelResponse openSecureChannel(ChannelHandlerContext ctx,
-                                                        OpenSecureChannelRequest request) throws UaException {
+    private void sendOpenSecureChannelResponse(
+        ChannelHandlerContext ctx,
+        long requestId,
+        OpenSecureChannelRequest request
+    ) {
+
+        serializationQueue.encode((writer, chunkEncoder) -> {
+            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
+
+            try {
+                OpenSecureChannelResponse response = openSecureChannel(ctx, request);
+
+                writer.setBuffer(messageBuffer);
+                writer.writeMessage(null, response);
+
+                checkMessageSize(messageBuffer);
+
+                chunkEncoder.encodeAsymmetric(
+                    secureChannel,
+                    requestId,
+                    messageBuffer,
+                    MessageType.OpenSecureChannel,
+                    new ChunkEncoder.Callback() {
+                        @Override
+                        public void onEncodingError(UaException ex) {
+                            logger.error("Error encoding OpenSecureChannelResponse: {}", ex.getMessage(), ex);
+                            ctx.fireExceptionCaught(ex);
+                        }
+
+                        @Override
+                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
+                            if (!symmetricHandlerAdded) {
+                                UascServerSymmetricHandler symmetricHandler =
+                                    new UascServerSymmetricHandler(
+                                        stackServer,
+                                        serializationQueue,
+                                        secureChannel
+                                    );
+
+                                ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);
+
+                                symmetricHandlerAdded = true;
+                            }
+
+                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
+
+                            for (ByteBuf chunk : messageChunks) {
+                                chunkComposite.addComponent(chunk);
+                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
+                            }
+
+                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
+
+                            logger.debug("Sent OpenSecureChannelResponse.");
+                        }
+                    }
+                );
+            } catch (UaException e) {
+                logger.error("Error installing security token: {}", e.getStatusCode(), e);
+                ctx.close();
+            } catch (UaSerializationException e) {
+                ctx.fireExceptionCaught(e);
+            } finally {
+                messageBuffer.release();
+            }
+        });
+    }
+
+    private OpenSecureChannelResponse openSecureChannel(
+        ChannelHandlerContext ctx,
+        OpenSecureChannelRequest request
+    ) throws UaException {
 
         SecurityTokenRequestType requestType = request.getRequestType();
 
@@ -428,68 +493,6 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
             newToken,
             secureChannel.getLocalNonce()
         );
-    }
-
-    private void sendOpenSecureChannelResponse(
-        ChannelHandlerContext ctx,
-        long requestId,
-        OpenSecureChannelResponse response) {
-
-        serializationQueue.encode((writer, chunkEncoder) -> {
-            ByteBuf messageBuffer = BufferUtil.pooledBuffer();
-
-            try {
-                writer.setBuffer(messageBuffer);
-                writer.writeMessage(null, response);
-
-                checkMessageSize(messageBuffer);
-
-                chunkEncoder.encodeAsymmetric(
-                    secureChannel,
-                    requestId,
-                    messageBuffer,
-                    MessageType.OpenSecureChannel,
-                    new ChunkEncoder.Callback() {
-                        @Override
-                        public void onEncodingError(UaException ex) {
-                            logger.error("Error encoding OpenSecureChannelResponse: {}", ex.getMessage(), ex);
-                            ctx.fireExceptionCaught(ex);
-                        }
-
-                        @Override
-                        public void onMessageEncoded(List<ByteBuf> messageChunks, long requestId) {
-                            if (!symmetricHandlerAdded) {
-                                UascServerSymmetricHandler symmetricHandler =
-                                    new UascServerSymmetricHandler(
-                                        stackServer,
-                                        serializationQueue,
-                                        secureChannel
-                                    );
-
-                                ctx.pipeline().addBefore(ctx.name(), null, symmetricHandler);
-
-                                symmetricHandlerAdded = true;
-                            }
-
-                            CompositeByteBuf chunkComposite = BufferUtil.compositeBuffer();
-
-                            for (ByteBuf chunk : messageChunks) {
-                                chunkComposite.addComponent(chunk);
-                                chunkComposite.writerIndex(chunkComposite.writerIndex() + chunk.readableBytes());
-                            }
-
-                            ctx.writeAndFlush(chunkComposite, ctx.voidPromise());
-
-                            logger.debug("Sent OpenSecureChannelResponse.");
-                        }
-                    }
-                );
-            } catch (UaSerializationException e) {
-                ctx.fireExceptionCaught(e);
-            } finally {
-                messageBuffer.release();
-            }
-        });
     }
 
     private void checkMessageSize(ByteBuf messageBuffer) throws UaSerializationException {
