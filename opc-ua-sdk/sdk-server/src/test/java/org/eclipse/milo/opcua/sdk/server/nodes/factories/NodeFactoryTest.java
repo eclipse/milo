@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.AnalogItemNode;
@@ -55,7 +56,7 @@ public class NodeFactoryTest {
 
         UaNodeContext context = new UaNodeContext() {
             @Override
-            public UaNodeManager getNodeManager() {
+            public NodeManager<UaNode> getNodeManager() {
                 return nodeManager;
             }
 

@@ -20,8 +20,8 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.util.StreamUtil;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -37,7 +37,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 public class NodeFactory {
 
     private final OpcUaServer server;
-    private final UaNodeManager nodeManager;
+    private final NodeManager<UaNode> nodeManager;
 
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;

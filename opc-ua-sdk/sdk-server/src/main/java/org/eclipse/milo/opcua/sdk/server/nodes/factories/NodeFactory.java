@@ -20,8 +20,8 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
@@ -92,7 +92,7 @@ public class NodeFactory {
         NodeId typeDefinitionId,
         boolean includeOptionalNodes) throws UaException {
 
-        UaNodeManager nodeManager = context.getNodeManager();
+        NodeManager<UaNode> nodeManager = context.getNodeManager();
 
         if (!nodeManager.containsNode(typeDefinitionId)) {
             throw new UaException(

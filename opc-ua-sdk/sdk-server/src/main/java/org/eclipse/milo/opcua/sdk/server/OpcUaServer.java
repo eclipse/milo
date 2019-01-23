@@ -27,11 +27,14 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractCollatedNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
@@ -43,6 +46,7 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
@@ -77,8 +81,8 @@ public class OpcUaServer implements UaNodeContext {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
-    private final UaNodeManager nodeManager = new UaNodeManager();
     private final NamespaceManager namespaceManager = new NamespaceManager();
+    private final NodeManager<UaNode> nodeManager = new NamespacedNodeManager();
     private final SessionManager sessionManager = new SessionManager(this);
     private final ServerTable serverTable = new ServerTable();
 
@@ -121,10 +125,13 @@ public class OpcUaServer implements UaNodeContext {
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
         namespaceManager.addNamespace(opcUaNamespace = new OpcUaNamespace(this));
+        opcUaNamespace.initialize();
 
         serverNamespace = namespaceManager.registerAndAdd(
             config.getApplicationUri(),
-            index -> new ServerNamespace(OpcUaServer.this, config.getApplicationUri()));
+            index -> new ServerNamespace(OpcUaServer.this, config.getApplicationUri())
+        );
+        serverNamespace.initialize();
 
         serverTable.addUri(stackServer.getApplicationDescription().getApplicationUri());
 
@@ -165,7 +172,7 @@ public class OpcUaServer implements UaNodeContext {
         return namespaceManager;
     }
 
-    public UaNodeManager getNodeManager() {
+    public NodeManager<UaNode> getNodeManager() {
         return nodeManager;
     }
 
@@ -240,4 +247,19 @@ public class OpcUaServer implements UaNodeContext {
     public Map<ByteString, BrowseContinuationPoint> getBrowseContinuationPoints() {
         return browseContinuationPoints;
     }
+
+    private class NamespacedNodeManager extends AbstractCollatedNodeManager<UShort, UaNode> {
+
+        @Override
+        public UShort getKey(NodeId nodeId) {
+            return nodeId.getNamespaceIndex();
+        }
+
+        @Override
+        public NodeManager<UaNode> getNodeManager(UShort key) {
+            return namespaceManager.getNamespace(key).getNodeManager();
+        }
+
+    }
+
 }

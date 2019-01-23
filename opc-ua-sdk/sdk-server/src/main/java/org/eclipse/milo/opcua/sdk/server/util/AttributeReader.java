@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -140,7 +140,7 @@ public class AttributeReader {
         }
     }
 
-    private static boolean isStructureSubtype(UaNodeManager nodeManager, NodeId dataTypeId) {
+    private static boolean isStructureSubtype(NodeManager<UaNode> nodeManager, NodeId dataTypeId) {
         UaNode dataTypeNode = nodeManager.get(dataTypeId);
 
         if (dataTypeNode != null) {
@@ -211,7 +211,7 @@ public class AttributeReader {
             return null;
         }
 
-        UaNodeManager nodeManager = context.getServer().getNodeManager();
+        NodeManager<UaNode> nodeManager = context.getServer().getNodeManager();
 
         UaNode dataTypeNode = nodeManager.get(dataTypeId);
 

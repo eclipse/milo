@@ -31,6 +31,7 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -70,7 +71,7 @@ public class TestNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaNodeManager nodeManager;
+    private final UaNodeManager nodeManager = new UaNodeManager();
     private final UaFolderNode testFolder;
     private final SubscriptionModel subscriptionModel;
 
@@ -80,8 +81,6 @@ public class TestNamespace implements Namespace {
     public TestNamespace(OpcUaServer server, UShort namespaceIndex) {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
-
-        nodeManager = server.getNodeManager();
 
         NodeId testFolderNodeId = new NodeId(namespaceIndex, "Test");
 
@@ -115,6 +114,11 @@ public class TestNamespace implements Namespace {
     @Override
     public String getNamespaceUri() {
         return NAMESPACE_URI;
+    }
+
+    @Override
+    public NodeManager<UaNode> getNodeManager() {
+        return nodeManager;
     }
 
     @Override

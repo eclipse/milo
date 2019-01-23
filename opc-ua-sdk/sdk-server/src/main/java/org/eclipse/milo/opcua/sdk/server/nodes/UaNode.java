@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
@@ -188,7 +189,7 @@ public abstract class UaNode implements UaServerNode {
         return context;
     }
 
-    public final UaNodeManager getNodeManager() {
+    public final NodeManager<UaNode> getNodeManager() {
         return context.getNodeManager();
     }
 

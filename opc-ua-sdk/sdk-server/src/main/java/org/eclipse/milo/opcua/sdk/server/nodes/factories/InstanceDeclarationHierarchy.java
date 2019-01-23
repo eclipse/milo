@@ -18,11 +18,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class InstanceDeclarationHierarchy {
@@ -67,7 +66,7 @@ public class InstanceDeclarationHierarchy {
     }
 
     public static InstanceDeclarationHierarchy create(
-        UaNodeManager nodeManager,
+        NodeManager<UaNode> nodeManager,
         NodeId typeDefinitionId,
         boolean includeOptionalNodes) {
 
@@ -81,10 +80,10 @@ public class InstanceDeclarationHierarchy {
         private final NodeTable nodeTable = new NodeTable();
         private final ReferenceTable referenceTable = new ReferenceTable();
 
-        private final UaNodeManager nodeManager;
+        private final NodeManager<UaNode> nodeManager;
         private final boolean includeOptionalNodes;
 
-        Builder(UaNodeManager nodeManager, boolean includeOptionalNodes) {
+        Builder(NodeManager<UaNode> nodeManager, boolean includeOptionalNodes) {
             this.nodeManager = nodeManager;
             this.includeOptionalNodes = includeOptionalNodes;
         }

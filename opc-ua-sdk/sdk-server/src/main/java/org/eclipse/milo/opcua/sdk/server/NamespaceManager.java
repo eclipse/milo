@@ -21,7 +21,7 @@ import java.util.function.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.util.NoOpNamespace;
+import org.eclipse.milo.opcua.sdk.server.util.UnknownNamespace;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
@@ -38,7 +38,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class NamespaceManager {
 
-    private static final Namespace NO_OP_NAMESPACE = new NoOpNamespace();
+    private static final Namespace UNKNOWN_NAMESPACE = new UnknownNamespace();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -113,7 +113,7 @@ public class NamespaceManager {
     public Namespace getNamespace(UShort index) {
         Namespace namespace = namespaces.get(index);
 
-        return namespace != null ? namespace : NO_OP_NAMESPACE;
+        return namespace != null ? namespace : UNKNOWN_NAMESPACE;
     }
 
     public NamespaceTable getNamespaceTable() {

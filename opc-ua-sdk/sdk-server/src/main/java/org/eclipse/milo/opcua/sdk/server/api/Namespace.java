@@ -13,6 +13,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface Namespace extends NamespaceServices {
@@ -26,5 +27,12 @@ public interface Namespace extends NamespaceServices {
      * @return the URI identifying this {@link Namespace}.
      */
     String getNamespaceUri();
+
+    /**
+     * Get the {@link NodeManager} for {@link UaNode}s in this Namespace.
+     *
+     * @return the {@link NodeManager} for {@link UaNode}s in this Namespace.
+     */
+    NodeManager<UaNode> getNodeManager();
 
 }

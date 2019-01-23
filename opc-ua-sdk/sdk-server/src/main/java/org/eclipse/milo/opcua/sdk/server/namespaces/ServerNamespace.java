@@ -23,11 +23,14 @@ import com.google.common.collect.Lists;
 import com.sun.management.UnixOperatingSystemMXBean;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
@@ -54,6 +57,8 @@ public class ServerNamespace implements Namespace {
 
     public static final UShort NAMESPACE_INDEX = ushort(1);
 
+    private final UaNodeManager nodeManager = new UaNodeManager();
+
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -64,7 +69,9 @@ public class ServerNamespace implements Namespace {
         this.namespaceUri = namespaceUri;
 
         subscriptionModel = new SubscriptionModel(server, this);
+    }
 
+    public void initialize() {
         addVendorServerInfoNodes();
     }
 
@@ -79,8 +86,13 @@ public class ServerNamespace implements Namespace {
     }
 
     @Override
+    public NodeManager<UaNode> getNodeManager() {
+        return nodeManager;
+    }
+
+    @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaServerNode node = server.getNodeManager().get(nodeId);
+        UaServerNode node = nodeManager.get(nodeId);
 
         if (node != null) {
             return CompletableFuture.completedFuture(node.getReferences());
@@ -101,7 +113,7 @@ public class ServerNamespace implements Namespace {
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId id : readValueIds) {
-            UaServerNode node = server.getNodeManager().get(id.getNodeId());
+            UaServerNode node = nodeManager.get(id.getNodeId());
 
             DataValue value = (node != null) ?
                 node.readAttribute(new AttributeContext(context), id.getAttributeId()) :
@@ -117,7 +129,7 @@ public class ServerNamespace implements Namespace {
     public void write(WriteContext context, List<WriteValue> writeValues) {
         List<StatusCode> results = writeValues.stream()
             .map(value -> {
-                if (server.getNodeManager().containsNode(value.getNodeId())) {
+                if (nodeManager.containsNode(value.getNodeId())) {
                     return new StatusCode(StatusCodes.Bad_NotWritable);
                 } else {
                     return new StatusCode(StatusCodes.Bad_NodeIdUnknown);
@@ -149,7 +161,7 @@ public class ServerNamespace implements Namespace {
     }
 
     private void addVendorServerInfoNodes() {
-        server.getNodeManager().getNode(Identifiers.Server_VendorServerInfo).ifPresent(node -> {
+        nodeManager.getNode(Identifiers.Server_VendorServerInfo).ifPresent(node -> {
             UaObjectNode vendorServerInfo = (UaObjectNode) node;
 
             // standard Java API
@@ -177,7 +189,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         availableProcessors.setDataType(Identifiers.Int32);
-        server.getNodeManager().addNode(availableProcessors);
+        nodeManager.addNode(availableProcessors);
 
         vendorServerInfo.addComponent(availableProcessors);
     }
@@ -197,7 +209,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         usedMemory.setDataType(Identifiers.Int64);
-        server.getNodeManager().addNode(usedMemory);
+        nodeManager.addNode(usedMemory);
 
         UaVariableNode maxMemory = new UaVariableNode(
             server,
@@ -210,7 +222,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         maxMemory.setDataType(Identifiers.Int64);
-        server.getNodeManager().addNode(maxMemory);
+        nodeManager.addNode(maxMemory);
 
         UaVariableNode osName = new UaVariableNode(
             server,
@@ -223,7 +235,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         osName.setDataType(Identifiers.String);
-        server.getNodeManager().addNode(osName);
+        nodeManager.addNode(osName);
 
         UaVariableNode osArch = new UaVariableNode(
             server,
@@ -236,7 +248,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         osArch.setDataType(Identifiers.String);
-        server.getNodeManager().addNode(osArch);
+        nodeManager.addNode(osArch);
 
         UaVariableNode osVersion = new UaVariableNode(
             server,
@@ -249,7 +261,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         osVersion.setDataType(Identifiers.String);
-        server.getNodeManager().addNode(osVersion);
+        nodeManager.addNode(osVersion);
 
         vendorServerInfo.addComponent(usedMemory);
         vendorServerInfo.addComponent(maxMemory);
@@ -277,7 +289,7 @@ public class ServerNamespace implements Namespace {
                 }
             };
             processCpuLoad.setDataType(Identifiers.Double);
-            server.getNodeManager().addNode(processCpuLoad);
+            nodeManager.addNode(processCpuLoad);
 
             UaVariableNode systemCpuLoad = new UaVariableNode(
                 server,
@@ -290,7 +302,7 @@ public class ServerNamespace implements Namespace {
                 }
             };
             systemCpuLoad.setDataType(Identifiers.Double);
-            server.getNodeManager().addNode(systemCpuLoad);
+            nodeManager.addNode(systemCpuLoad);
 
             vendorServerInfo.addComponent(processCpuLoad);
             vendorServerInfo.addComponent(systemCpuLoad);
@@ -309,7 +321,7 @@ public class ServerNamespace implements Namespace {
                     }
                 };
                 openFileDescriptors.setDataType(Identifiers.Int64);
-                server.getNodeManager().addNode(openFileDescriptors);
+                nodeManager.addNode(openFileDescriptors);
 
                 UaVariableNode maxFileDescriptors = new UaVariableNode(
                     server,
@@ -322,7 +334,7 @@ public class ServerNamespace implements Namespace {
                     }
                 };
                 maxFileDescriptors.setDataType(Identifiers.Int64);
-                server.getNodeManager().addNode(maxFileDescriptors);
+                nodeManager.addNode(maxFileDescriptors);
 
                 vendorServerInfo.addComponent(openFileDescriptors);
                 vendorServerInfo.addComponent(maxFileDescriptors);

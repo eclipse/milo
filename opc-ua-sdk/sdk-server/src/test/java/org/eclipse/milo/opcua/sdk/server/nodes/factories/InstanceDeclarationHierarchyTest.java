@@ -15,7 +15,9 @@ package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.testng.annotations.Test;
@@ -31,7 +33,7 @@ public class InstanceDeclarationHierarchyTest {
 
         UaNodeContext context = new UaNodeContext() {
             @Override
-            public UaNodeManager getNodeManager() {
+            public NodeManager<UaNode> getNodeManager() {
                 return nodeManager;
             }
 

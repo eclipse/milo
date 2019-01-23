@@ -19,8 +19,10 @@ import java.util.List;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -74,7 +76,7 @@ public class AttributeDelegateChainTest {
 
         UaNodeContext context = new UaNodeContext() {
             @Override
-            public UaNodeManager getNodeManager() {
+            public NodeManager<UaNode> getNodeManager() {
                 return new UaNodeManager();
             }
 
