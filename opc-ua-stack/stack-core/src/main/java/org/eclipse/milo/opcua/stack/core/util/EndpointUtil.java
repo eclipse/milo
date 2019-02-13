@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
-import java.net.URI;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -70,31 +69,31 @@ public class EndpointUtil {
         return 4840;
     }
 
+
     /**
      * Get the path component from an endpoint URL.
      * <p>
      * An empty path becomes "/" and trailing "/" are removed from non-empty paths.
-     * <p>
-     * If the URL is not valid the full URL will be returned.
      *
      * @param endpointUrl the endpoint URL.
      * @return the path component from the endpoint URL.
      */
+    @Nonnull
     public static String getPath(@Nonnull String endpointUrl) {
-        try {
-            URI uri = new URI(endpointUrl).parseServerAuthority();
+        Matcher matcher = ENDPOINT_URL_PATTERN.matcher(endpointUrl);
 
-            String path = uri.getPath();
+        if (matcher.matches()) {
+            String path = matcher.group(4);
 
             if (path == null || path.isEmpty()) {
                 path = "/";
             } else if (path.length() > 1 && path.endsWith("/")) {
                 path = path.substring(0, path.length() - 1);
             }
+
             return path;
-        } catch (Throwable e) {
-            LOGGER.warn("Endpoint URL '{}' is not a valid URI: {}", e.getMessage(), e);
-            return endpointUrl;
+        } else {
+            return "/";
         }
     }
 

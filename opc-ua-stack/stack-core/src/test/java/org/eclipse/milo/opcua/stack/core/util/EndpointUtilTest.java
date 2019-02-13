@@ -21,22 +21,26 @@ import static org.testng.Assert.assertEquals;
 public class EndpointUtilTest {
 
     @Test
-    public void testGetPath() throws Exception {
+    public void testGetPath() {
         assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/foo"), "/foo");
         assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/foo/"), "/foo");
+        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840/foo"), "/foo");
+        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840/foo/"), "/foo");
     }
 
     @Test
-    public void testGetPath_EmptyAndSlash() throws Exception {
+    public void testGetPath_EmptyAndSlash() {
         assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840"), "/");
         assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/"), "/");
+        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840"), "/");
+        assertEquals(EndpointUtil.getPath("opc.tcp://invalid_host:4840/"), "/");
     }
 
 
     @Test
-    public void testGetPath_Invalid() throws Exception {
+    public void testGetPath_Invalid() {
         assertEquals(EndpointUtil.getPath("opc.tcp://localhost:4840/no spaces allowed"),
-            "opc.tcp://localhost:4840/no spaces allowed");
+            "/no spaces allowed");
     }
 
     @Test
