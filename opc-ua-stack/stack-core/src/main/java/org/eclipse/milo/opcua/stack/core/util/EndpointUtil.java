@@ -19,12 +19,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class EndpointUtil {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EndpointUtil.class);
 
     private static final Pattern ENDPOINT_URL_PATTERN =
         Pattern.compile("(opc.tcp|http|https|opc.http|opc.https|opc.ws|opc.wss)://([^:/]+)(:\\d+)?(/.*)?");
@@ -68,7 +64,6 @@ public class EndpointUtil {
 
         return 4840;
     }
-
 
     /**
      * Get the path component from an endpoint URL.
