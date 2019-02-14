@@ -13,7 +13,6 @@
 
 package org.eclipse.milo.opcua.stack.server;
 
-import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ForwardingTable;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
@@ -97,6 +95,7 @@ import org.eclipse.milo.opcua.stack.server.transport.ServerChannelManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
@@ -429,10 +428,10 @@ public class UaStackServer {
 
         private boolean filterEndpointUrls(EndpointDescription endpoint, String endpointUrl) {
             try {
-                String requestedHost = new URI(endpointUrl).parseServerAuthority().getHost();
-                String endpointHost = new URI(endpoint.getEndpointUrl()).parseServerAuthority().getHost();
+                String requestedHost = EndpointUtil.getHost(endpointUrl);
+                String endpointHost = EndpointUtil.getHost(endpoint.getEndpointUrl());
 
-                return requestedHost.equalsIgnoreCase(endpointHost);
+                return nullToEmpty(requestedHost).equalsIgnoreCase(endpointHost);
             } catch (Throwable e) {
                 logger.debug("Unable to create URI.", e);
                 return false;
@@ -485,7 +484,7 @@ public class UaStackServer {
 
                         logger.debug("requestedHost={}, discoveryHost={}", requestedHost, discoveryHost);
 
-                        return Strings.nullToEmpty(requestedHost).equalsIgnoreCase(discoveryHost);
+                        return nullToEmpty(requestedHost).equalsIgnoreCase(discoveryHost);
                     } catch (Throwable e) {
                         logger.debug("Unable to create URI.", e);
                         return false;
