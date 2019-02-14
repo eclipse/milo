@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractCollatedNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.DelegatingNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
@@ -248,16 +248,11 @@ public class OpcUaServer implements UaNodeContext {
         return browseContinuationPoints;
     }
 
-    private class NamespacedNodeManager extends AbstractCollatedNodeManager<UShort, UaNode> {
+    private class NamespacedNodeManager extends DelegatingNodeManager<UaNode> {
 
         @Override
-        public UShort getKey(NodeId nodeId) {
-            return nodeId.getNamespaceIndex();
-        }
-
-        @Override
-        public NodeManager<UaNode> getNodeManager(UShort key) {
-            return namespaceManager.getNamespace(key).getNodeManager();
+        protected NodeManager<UaNode> getNodeManager(NodeId nodeId) {
+            return namespaceManager.getNamespace(nodeId.getNamespaceIndex()).getNodeManager();
         }
 
     }

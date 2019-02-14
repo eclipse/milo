@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
@@ -77,8 +78,7 @@ public class OpcUaNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaNodeManager nodeManager = new UaNodeManager();
-
+    private final NamespaceNodeManager nodeManager;
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -86,6 +86,7 @@ public class OpcUaNamespace implements Namespace {
     public OpcUaNamespace(OpcUaServer server) {
         this.server = server;
 
+        nodeManager = new NamespaceNodeManager(server);
         subscriptionModel = new SubscriptionModel(server, this);
     }
 

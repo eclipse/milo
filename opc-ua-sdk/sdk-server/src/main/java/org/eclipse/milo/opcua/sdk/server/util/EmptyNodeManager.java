@@ -14,8 +14,8 @@
 package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class EmptyNodeManager implements NodeManager<UaNode> {
 
-    static EmptyNodeManager INSTANCE = new EmptyNodeManager();
+    public static EmptyNodeManager INSTANCE = new EmptyNodeManager();
 
     private EmptyNodeManager() {}
 
@@ -50,11 +50,17 @@ public class EmptyNodeManager implements NodeManager<UaNode> {
     public void addReference(Reference reference) {}
 
     @Override
+    public void addVirtualReference(Reference reference) {}
+
+    @Override
     public void removeReference(Reference reference) {}
 
     @Override
-    public Set<Reference> getReferences(NodeId nodeId) {
-        return Collections.emptySet();
+    public void removeVirtualReference(Reference reference) {}
+
+    @Override
+    public List<Reference> getReferences(NodeId nodeId) {
+        return Collections.emptyList();
     }
 
 }

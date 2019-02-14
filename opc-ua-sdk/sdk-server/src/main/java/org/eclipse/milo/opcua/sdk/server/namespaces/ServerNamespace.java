@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import com.google.common.collect.Lists;
 import com.sun.management.UnixOperatingSystemMXBean;
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
@@ -57,8 +58,7 @@ public class ServerNamespace implements Namespace {
 
     public static final UShort NAMESPACE_INDEX = ushort(1);
 
-    private final UaNodeManager nodeManager = new UaNodeManager();
-
+    private final NamespaceNodeManager nodeManager;
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -68,6 +68,7 @@ public class ServerNamespace implements Namespace {
         this.server = server;
         this.namespaceUri = namespaceUri;
 
+        nodeManager = new NamespaceNodeManager(server);
         subscriptionModel = new SubscriptionModel(server, this);
     }
 

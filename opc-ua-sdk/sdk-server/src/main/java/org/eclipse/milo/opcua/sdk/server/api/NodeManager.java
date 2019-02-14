@@ -13,8 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
@@ -109,6 +109,13 @@ public interface NodeManager<T extends Node> {
     void addReference(Reference reference);
 
     /**
+     * Add a virtual {@link Reference} to this {@link NodeManager}.
+     *
+     * @param reference the virtual {@link Reference} to add.
+     */
+    void addVirtualReference(Reference reference);
+
+    /**
      * Remove a {@link Reference} from this {@link NodeManager}.
      *
      * @param reference the {@link Reference} to remove.
@@ -116,11 +123,18 @@ public interface NodeManager<T extends Node> {
     void removeReference(Reference reference);
 
     /**
+     * Remove a virtual {@link Reference} from this {@link NodeManager}.
+     *
+     * @param reference the virtual {@link Reference} to remove.
+     */
+    void removeVirtualReference(Reference reference);
+
+    /**
      * Get all {@link Reference}s where {@code nodeId} is the source.
      *
      * @param nodeId the {@link NodeId} of the source node.
      * @return all {@link Reference}s where {@code nodeId} is the source.
      */
-    Set<Reference> getReferences(NodeId nodeId);
+    List<Reference> getReferences(NodeId nodeId);
 
 }

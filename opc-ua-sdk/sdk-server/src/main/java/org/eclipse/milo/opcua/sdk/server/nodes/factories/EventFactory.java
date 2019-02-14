@@ -13,8 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
@@ -108,7 +108,7 @@ public class EventFactory {
         }
 
         @Override
-        public Set<Reference> getReferences(NodeId nodeId) {
+        public List<Reference> getReferences(NodeId nodeId) {
             if (super.containsNode(nodeId)) {
                 return super.getReferences(nodeId);
             } else {
