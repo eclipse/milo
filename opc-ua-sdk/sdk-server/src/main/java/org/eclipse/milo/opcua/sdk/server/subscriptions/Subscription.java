@@ -66,6 +66,7 @@ public class Subscription {
 
     private static final double MIN_PUBLISHING_INTERVAL = 1.0;
     private static final double MAX_PUBLISHING_INTERVAL = 60 * 1000.0;
+    private static final double DEFAULT_PUBLISHING_INTERVAL = 250.0;
 
     private static final int MAX_NOTIFICATIONS = 0xFFFF;
 
@@ -192,7 +193,8 @@ public class Subscription {
         if (requestedPublishingInterval < MIN_PUBLISHING_INTERVAL ||
             Double.isNaN(requestedPublishingInterval) ||
             Double.isInfinite(requestedPublishingInterval)) {
-            requestedPublishingInterval = MIN_PUBLISHING_INTERVAL;
+
+            requestedPublishingInterval = DEFAULT_PUBLISHING_INTERVAL;
         }
 
         if (requestedPublishingInterval > MAX_PUBLISHING_INTERVAL) {
