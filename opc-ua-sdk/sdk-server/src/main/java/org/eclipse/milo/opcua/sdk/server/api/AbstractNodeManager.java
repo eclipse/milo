@@ -93,14 +93,15 @@ public abstract class AbstractNodeManager<T extends Node> implements NodeManager
 
     @Override
     public List<Reference> getReferences(NodeId nodeId) {
+        List<Reference> concreteList = concreteReferences.get(nodeId);
+        LinkedHashSet<Reference> concreteSet = new LinkedHashSet<>(concreteList);
         LinkedHashSet<Reference> virtualSet = new LinkedHashSet<>(virtualReferences.get(nodeId));
-        LinkedHashSet<Reference> concreteSet = new LinkedHashSet<>(concreteReferences.get(nodeId));
 
         // All virtual refs that do not also have a concrete ref
         Set<Reference> uniqueVirtualRefs = Sets.difference(virtualSet, concreteSet);
 
         List<Reference> references = Lists.newArrayList();
-        references.addAll(concreteReferences.get(nodeId));
+        references.addAll(concreteList);
         references.addAll(uniqueVirtualRefs);
         return references;
     }

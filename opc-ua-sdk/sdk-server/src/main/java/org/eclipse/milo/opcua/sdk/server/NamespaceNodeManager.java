@@ -17,10 +17,18 @@ import java.util.Optional;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
+/**
+ * A smart {@link NodeManager} implementation suitable for use by {@link Namespace}s.
+ * <p>
+ * When references are added or removed, a virtual inverse reference is automatically added or removed from the
+ * appropriate {@link NodeManager} by way of the {@link OpcUaServer.ServerNodeManager}.
+ */
 public class NamespaceNodeManager extends AbstractNodeManager<UaNode> {
 
     private final OpcUaServer server;
