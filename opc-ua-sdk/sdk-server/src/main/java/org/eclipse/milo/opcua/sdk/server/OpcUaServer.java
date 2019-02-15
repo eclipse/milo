@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractCollatedNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.DelegatingNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
@@ -46,7 +46,6 @@ import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.core.util.ManifestUtil;
@@ -82,7 +81,7 @@ public class OpcUaServer implements UaNodeContext {
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
     private final NamespaceManager namespaceManager = new NamespaceManager();
-    private final NodeManager<UaNode> nodeManager = new NamespacedNodeManager();
+    private final ServerNodeManager nodeManager = new ServerNodeManager();
     private final SessionManager sessionManager = new SessionManager(this);
     private final ServerTable serverTable = new ServerTable();
 
@@ -172,7 +171,7 @@ public class OpcUaServer implements UaNodeContext {
         return namespaceManager;
     }
 
-    public NodeManager<UaNode> getNodeManager() {
+    public ServerNodeManager getNodeManager() {
         return nodeManager;
     }
 
@@ -248,16 +247,19 @@ public class OpcUaServer implements UaNodeContext {
         return browseContinuationPoints;
     }
 
-    private class NamespacedNodeManager extends AbstractCollatedNodeManager<UShort, UaNode> {
+    /**
+     * A {@link NodeManager} that delegates to the NodeManager belonging to the same namespace as the NodeId or source
+     * NodeId of the reference being acted on.
+     * <p>
+     * Doesn't actually store any Nodes or References itself; sub-managers are expected to do the actual storage.
+     */
+    public class ServerNodeManager extends DelegatingNodeManager<UaNode> {
+
+        private ServerNodeManager() {}
 
         @Override
-        public UShort getKey(NodeId nodeId) {
-            return nodeId.getNamespaceIndex();
-        }
-
-        @Override
-        public NodeManager<UaNode> getNodeManager(UShort key) {
-            return namespaceManager.getNamespace(key).getNodeManager();
+        protected NodeManager<UaNode> getNodeManager(NodeId nodeId) {
+            return namespaceManager.getNamespace(nodeId.getNamespaceIndex()).getNodeManager();
         }
 
     }

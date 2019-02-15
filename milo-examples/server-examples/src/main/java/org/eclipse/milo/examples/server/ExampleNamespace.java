@@ -28,8 +28,8 @@ import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
+import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
@@ -144,8 +144,7 @@ public class ExampleNamespace implements Namespace {
 
     private final Random random = new Random();
 
-    private final UaNodeManager localNodeManager = new UaNodeManager();
-
+    private final NamespaceNodeManager nodeManager;
     private final SubscriptionModel subscriptionModel;
 
     private final EventFactory eventFactory;
@@ -158,6 +157,7 @@ public class ExampleNamespace implements Namespace {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
 
+        nodeManager = new NamespaceNodeManager(server);
         subscriptionModel = new SubscriptionModel(server, this);
 
         eventFactory = server.getEventFactory();
@@ -176,11 +176,10 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("HelloWorld")
         );
 
-        localNodeManager.addNode(folderNode);
+        nodeManager.addNode(folderNode);
 
         // Make sure our new folder shows up under the server's Objects folder.
-        // Use the server NodeManager to add references to nodes in other namespaces.
-        server.getNodeManager().addReference(new Reference(
+        folderNode.addReference(new Reference(
             folderNode.getNodeId(),
             Identifiers.Organizes,
             Identifiers.ObjectsFolder.expanded(),
@@ -245,8 +244,8 @@ public class ExampleNamespace implements Namespace {
     }
 
     @Override
-    public UaNodeManager getNodeManager() {
-        return localNodeManager;
+    public NamespaceNodeManager getNodeManager() {
+        return nodeManager;
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {
@@ -267,7 +266,7 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("ArrayTypes")
         );
 
-        localNodeManager.addNode(arrayTypesFolder);
+        nodeManager.addNode(arrayTypesFolder);
         rootNode.addOrganizes(arrayTypesFolder);
 
         for (Object[] os : STATIC_ARRAY_NODES) {
@@ -296,7 +295,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(new ValueLoggingDelegate());
 
-            localNodeManager.addNode(node);
+            nodeManager.addNode(node);
             arrayTypesFolder.addOrganizes(node);
         }
     }
@@ -309,7 +308,7 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("ScalarTypes")
         );
 
-        localNodeManager.addNode(scalarTypesFolder);
+        nodeManager.addNode(scalarTypesFolder);
         rootNode.addOrganizes(scalarTypesFolder);
 
         for (Object[] os : STATIC_SCALAR_NODES) {
@@ -331,7 +330,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(new ValueLoggingDelegate());
 
-            localNodeManager.addNode(node);
+            nodeManager.addNode(node);
             scalarTypesFolder.addOrganizes(node);
         }
     }
@@ -344,7 +343,7 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("WriteOnly")
         );
 
-        localNodeManager.addNode(writeOnlyFolder);
+        nodeManager.addNode(writeOnlyFolder);
         rootNode.addOrganizes(writeOnlyFolder);
 
         String name = "String";
@@ -360,7 +359,7 @@ public class ExampleNamespace implements Namespace {
 
         node.setValue(new DataValue(new Variant("can't read this")));
 
-        localNodeManager.addNode(node);
+        nodeManager.addNode(node);
         writeOnlyFolder.addOrganizes(node);
     }
 
@@ -372,7 +371,7 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("OnlyAdminCanRead")
         );
 
-        localNodeManager.addNode(adminFolder);
+        nodeManager.addNode(adminFolder);
         rootNode.addOrganizes(adminFolder);
 
         String name = "String";
@@ -395,7 +394,7 @@ public class ExampleNamespace implements Namespace {
             }
         }));
 
-        localNodeManager.addNode(node);
+        nodeManager.addNode(node);
         adminFolder.addOrganizes(node);
     }
 
@@ -407,7 +406,7 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("OnlyAdminCanWrite")
         );
 
-        localNodeManager.addNode(adminFolder);
+        nodeManager.addNode(adminFolder);
         rootNode.addOrganizes(adminFolder);
 
         String name = "String";
@@ -430,7 +429,7 @@ public class ExampleNamespace implements Namespace {
             }
         }));
 
-        localNodeManager.addNode(node);
+        nodeManager.addNode(node);
         adminFolder.addOrganizes(node);
     }
 
@@ -442,7 +441,7 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("Dynamic")
         );
 
-        localNodeManager.addNode(dynamicFolder);
+        nodeManager.addNode(dynamicFolder);
         rootNode.addOrganizes(dynamicFolder);
 
         // Dynamic Boolean
@@ -474,7 +473,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(delegate);
 
-            localNodeManager.addNode(node);
+            nodeManager.addNode(node);
             dynamicFolder.addOrganizes(node);
         }
 
@@ -507,7 +506,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(delegate);
 
-            localNodeManager.addNode(node);
+            nodeManager.addNode(node);
             dynamicFolder.addOrganizes(node);
         }
 
@@ -540,7 +539,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(delegate);
 
-            localNodeManager.addNode(node);
+            nodeManager.addNode(node);
             dynamicFolder.addOrganizes(node);
         }
     }
@@ -554,7 +553,7 @@ public class ExampleNamespace implements Namespace {
             LocalizedText.english("DataAccess")
         );
 
-        localNodeManager.addNode(dataAccessFolder);
+        nodeManager.addNode(dataAccessFolder);
         rootNode.addOrganizes(dataAccessFolder);
 
         // AnalogItemType node
@@ -572,7 +571,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setEURange(new Range(0.0, 100.0));
 
-            localNodeManager.addNode(node);
+            nodeManager.addNode(node);
             dataAccessFolder.addOrganizes(node);
         } catch (UaException e) {
             logger.error("Error creating AnalogItemType instance: {}", e.getMessage(), e);
@@ -597,7 +596,7 @@ public class ExampleNamespace implements Namespace {
             methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
             methodNode.setInvocationHandler(invocationHandler);
 
-            localNodeManager.addNode(methodNode);
+            nodeManager.addNode(methodNode);
 
             folderNode.addReference(new Reference(
                 folderNode.getNodeId(),
@@ -637,7 +636,7 @@ public class ExampleNamespace implements Namespace {
             methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
             methodNode.setInvocationHandler(invocationHandler);
 
-            localNodeManager.addNode(methodNode);
+            nodeManager.addNode(methodNode);
 
             folderNode.addReference(new Reference(
                 folderNode.getNodeId(),
@@ -727,9 +726,9 @@ public class ExampleNamespace implements Namespace {
         ));
 
         // Add type definition and declarations to address space.
-        localNodeManager.addNode(objectTypeNode);
-        localNodeManager.addNode(foo);
-        localNodeManager.addNode(bar);
+        nodeManager.addNode(objectTypeNode);
+        nodeManager.addNode(foo);
+        nodeManager.addNode(bar);
 
         // Use NodeFactory to create instance of MyObjectType called "MyObject".
         // NodeFactory takes care of recursively instantiating MyObject member nodes
@@ -773,7 +772,7 @@ public class ExampleNamespace implements Namespace {
             false
         );
 
-        localNodeManager.addNode(dataTypeNode);
+        nodeManager.addNode(dataTypeNode);
 
         // Inverse ref to Structure
         dataTypeNode.addReference(new Reference(
@@ -785,7 +784,7 @@ public class ExampleNamespace implements Namespace {
         ));
 
         // Forward ref from Structure
-        Optional<UaDataTypeNode> structureDataTypeNode = localNodeManager
+        Optional<UaDataTypeNode> structureDataTypeNode = nodeManager
             .getNode(Identifiers.Structure)
             .map(UaDataTypeNode.class::cast);
 
@@ -826,7 +825,7 @@ public class ExampleNamespace implements Namespace {
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
 
-        localNodeManager.addNode(customDataTypeVariable);
+        nodeManager.addNode(customDataTypeVariable);
 
         CustomDataType value = new CustomDataType(
             "foo",
@@ -852,7 +851,7 @@ public class ExampleNamespace implements Namespace {
 
     @Override
     public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaServerNode node = localNodeManager.get(nodeId);
+        UaServerNode node = nodeManager.get(nodeId);
 
         if (node != null) {
             return CompletableFuture.completedFuture(node.getReferences());
@@ -871,7 +870,7 @@ public class ExampleNamespace implements Namespace {
         List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
 
         for (ReadValueId readValueId : readValueIds) {
-            UaServerNode node = localNodeManager.get(readValueId.getNodeId());
+            UaServerNode node = nodeManager.get(readValueId.getNodeId());
 
             if (node != null) {
                 DataValue value = node.readAttribute(
@@ -896,7 +895,7 @@ public class ExampleNamespace implements Namespace {
         List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
 
         for (WriteValue writeValue : writeValues) {
-            UaServerNode node = localNodeManager.get(writeValue.getNodeId());
+            UaServerNode node = nodeManager.get(writeValue.getNodeId());
 
             if (node != null) {
                 try {
@@ -948,7 +947,7 @@ public class ExampleNamespace implements Namespace {
 
     @Override
     public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
-        Optional<UaNode> node = localNodeManager.getNode(methodId);
+        Optional<UaNode> node = nodeManager.getNode(methodId);
 
         return node.flatMap(n -> {
             if (n instanceof UaMethodNode) {
