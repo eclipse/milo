@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
  * A smart {@link NodeManager} implementation suitable for use by {@link Namespace}s.
  * <p>
  * When references are added or removed, a virtual inverse reference is automatically added or removed from the
- * appropriate {@link NodeManager} by way of the {@link OpcUaServer.ServerNodeManager}.
+ * appropriate {@link NodeManager} by way of the {@link ServerNodeManager}.
  */
 public class NamespaceNodeManager extends AbstractNodeManager<UaNode> {
 
