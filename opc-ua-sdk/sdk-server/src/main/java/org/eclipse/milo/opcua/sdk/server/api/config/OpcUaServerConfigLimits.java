@@ -28,7 +28,7 @@ public interface OpcUaServerConfigLimits {
     }
 
     default Double getMinSupportedSampleRate() {
-        return 1.0;
+        return 0.0;
     }
 
     default Double getMaxSupportedSampleRate() {
