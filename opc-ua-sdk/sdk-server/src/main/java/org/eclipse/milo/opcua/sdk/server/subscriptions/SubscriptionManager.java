@@ -334,7 +334,11 @@ public class SubscriptionManager {
                 if (!AttributeId.isValid(attributeId)) {
                     MonitoredItemCreateResult result = new MonitoredItemCreateResult(
                         new StatusCode(StatusCodes.Bad_AttributeIdInvalid),
-                        uint(0), 0d, uint(0), null);
+                        uint(0),
+                        0d,
+                        uint(0),
+                        null
+                    );
 
                     p.getResultFuture().complete(result);
                     continue;
@@ -344,16 +348,25 @@ public class SubscriptionManager {
                     if (!AttributeId.Value.isEqual(attributeId)) {
                         MonitoredItemCreateResult result = new MonitoredItemCreateResult(
                             new StatusCode(StatusCodes.Bad_DataEncodingInvalid),
-                            uint(0), 0d, uint(0), null);
+                            uint(0),
+                            0d,
+                            uint(0),
+                            null
+                        );
 
                         p.getResultFuture().complete(result);
                         continue;
                     }
                     if (!dataEncoding.equals(DEFAULT_BINARY_ENCODING) &&
                         !dataEncoding.equals(DEFAULT_XML_ENCODING)) {
+
                         MonitoredItemCreateResult result = new MonitoredItemCreateResult(
                             new StatusCode(StatusCodes.Bad_DataEncodingUnsupported),
-                            uint(0), 0d, uint(0), null);
+                            uint(0),
+                            0d,
+                            uint(0),
+                            null
+                        );
 
                         p.getResultFuture().complete(result);
                         continue;
@@ -411,6 +424,7 @@ public class SubscriptionManager {
 
                                 if (statusCode.getValue() == StatusCodes.Bad_NodeIdInvalid ||
                                     statusCode.getValue() == StatusCodes.Bad_NodeIdUnknown) {
+
                                     throw new UaException(statusCode);
                                 }
                             }
@@ -468,7 +482,8 @@ public class SubscriptionManager {
                                 item.getId(),
                                 item.getSamplingInterval(),
                                 uint(item.getQueueSize()),
-                                item.getFilterResult());
+                                item.getFilterResult()
+                            );
 
                             p.getResultFuture().complete(result);
                         } catch (Throwable t) {
@@ -476,8 +491,13 @@ public class SubscriptionManager {
                                 .map(UaException::getStatusCode)
                                 .orElse(StatusCode.BAD);
 
-                            MonitoredItemCreateResult result =
-                                new MonitoredItemCreateResult(statusCode, uint(0), 0d, uint(0), null);
+                            MonitoredItemCreateResult result = new MonitoredItemCreateResult(
+                                statusCode,
+                                uint(0),
+                                0d,
+                                uint(0),
+                                null
+                            );
 
                             p.getResultFuture().complete(result);
                         }
@@ -571,7 +591,10 @@ public class SubscriptionManager {
                 if (item == null) {
                     MonitoredItemModifyResult result = new MonitoredItemModifyResult(
                         new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid),
-                        0d, uint(0), null);
+                        0d,
+                        uint(0),
+                        null
+                    );
 
                     p.getResultFuture().complete(result);
                 } else {
@@ -616,7 +639,8 @@ public class SubscriptionManager {
                                 samplingInterval,
                                 parameters.getFilter(),
                                 parameters.getQueueSize(),
-                                parameters.getDiscardOldest());
+                                parameters.getDiscardOldest()
+                            );
 
                             modifiedItems.add(item);
 
@@ -624,7 +648,8 @@ public class SubscriptionManager {
                                 StatusCode.GOOD,
                                 item.getSamplingInterval(),
                                 uint(item.getQueueSize()),
-                                item.getFilterResult());
+                                item.getFilterResult()
+                            );
 
                             p.getResultFuture().complete(result);
                         } catch (Throwable t) {
@@ -636,7 +661,8 @@ public class SubscriptionManager {
                                 statusCode,
                                 item.getSamplingInterval(),
                                 uint(item.getQueueSize()),
-                                item.getFilterResult());
+                                item.getFilterResult()
+                            );
 
                             p.getResultFuture().complete(result);
                         }
