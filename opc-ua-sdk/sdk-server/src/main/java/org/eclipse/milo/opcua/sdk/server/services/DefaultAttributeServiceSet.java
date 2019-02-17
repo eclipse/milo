@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -85,16 +86,45 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
+        CompletableFuture<List<DataValue>> readFuture = namespaceCollatedRead(
+            server,
+            session,
+            request.getMaxAge(),
+            request.getTimestampsToReturn(),
+            nodesToRead
+        );
 
-        List<PendingRead> pendingReads = newArrayListWithCapacity(nodesToRead.size());
-        List<CompletableFuture<DataValue>> futures = newArrayListWithCapacity(nodesToRead.size());
+        readFuture.thenAcceptAsync(values -> {
+            ResponseHeader header = service.createResponseHeader();
 
-        for (ReadValueId id : nodesToRead) {
-            PendingRead pending = new PendingRead(id);
+            DiagnosticInfo[] diagnosticInfos =
+                diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            pendingReads.add(pending);
-            futures.add(pending.getFuture());
-        }
+            ReadResponse response = new ReadResponse(
+                header,
+                a(values, DataValue.class),
+                diagnosticInfos
+            );
+
+            service.setResponse(response);
+        }, server.getExecutorService());
+    }
+
+    public static CompletableFuture<List<DataValue>> namespaceCollatedRead(
+        OpcUaServer server,
+        Session session,
+        double maxAge,
+        TimestampsToReturn timestamps,
+        List<ReadValueId> nodesToRead
+    ) {
+
+        List<PendingRead> pendingReads = nodesToRead.stream()
+            .map(PendingRead::new)
+            .collect(toList());
+
+        List<CompletableFuture<DataValue>> futures = pendingReads.stream()
+            .map(PendingRead::getFuture)
+            .collect(toList());
 
         // Group PendingReads by namespace and call read for each.
 
@@ -107,7 +137,11 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
 
             ReadContext context = new ReadContext(
-                server, session, future, diagnosticsContext);
+                server,
+                session,
+                future,
+                new DiagnosticsContext<>()
+            );
 
             server.getExecutorService().execute(() -> {
                 Namespace namespace = server.getNamespaceManager().getNamespace(index);
@@ -118,9 +152,10 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
                 namespace.read(
                     context,
-                    request.getMaxAge(),
-                    request.getTimestampsToReturn(),
-                    readValueIds);
+                    maxAge,
+                    timestamps,
+                    readValueIds
+                );
             });
 
             future.thenAccept(values -> {
@@ -130,19 +165,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             });
         });
 
-        // When all PendingReads have been completed send a ReadResponse with the values.
-
-        FutureUtils.sequence(futures).thenAcceptAsync(values -> {
-            ResponseHeader header = service.createResponseHeader();
-
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToRead);
-
-            ReadResponse response = new ReadResponse(
-                header, a(values, DataValue.class), diagnosticInfos);
-
-            service.setResponse(response);
-        }, server.getExecutorService());
+        return FutureUtils.sequence(futures);
     }
 
     @Override

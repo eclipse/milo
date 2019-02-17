@@ -33,7 +33,7 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
     }
 
     @Override
-    public void onCreateMonitoredItems(ServiceRequest service) {
+    public void onCreateMonitoredItems(ServiceRequest service) throws UaException {
         createMonitoredItemsMetric.record(service);
 
         subscriptionManager.createMonitoredItems(service);
