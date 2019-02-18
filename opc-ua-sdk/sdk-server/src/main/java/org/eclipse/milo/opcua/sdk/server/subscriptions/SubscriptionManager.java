@@ -296,8 +296,8 @@ public class SubscriptionManager {
 
     public void createMonitoredItems(ServiceRequest service) throws UaException {
         CreateMonitoredItemsRequest request = (CreateMonitoredItemsRequest) service.getRequest();
-        UInteger subscriptionId = request.getSubscriptionId();
 
+        UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
         TimestampsToReturn timestamps = request.getTimestampsToReturn();
         List<MonitoredItemCreateRequest> itemsToCreate = l(request.getItemsToCreate());
@@ -567,8 +567,8 @@ public class SubscriptionManager {
 
     public void modifyMonitoredItems(ServiceRequest service) throws UaException {
         ModifyMonitoredItemsRequest request = (ModifyMonitoredItemsRequest) service.getRequest();
-        UInteger subscriptionId = request.getSubscriptionId();
 
+        UInteger subscriptionId = request.getSubscriptionId();
         Subscription subscription = subscriptions.get(subscriptionId);
         TimestampsToReturn timestamps = request.getTimestampsToReturn();
         List<MonitoredItemModifyRequest> itemsToModify = l(request.getItemsToModify());
@@ -862,82 +862,88 @@ public class SubscriptionManager {
         }
     }
 
-    public void deleteMonitoredItems(ServiceRequest service) {
+    public void deleteMonitoredItems(ServiceRequest service) throws UaException {
         DeleteMonitoredItemsRequest request = (DeleteMonitoredItemsRequest) service.getRequest();
+
         UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        List<UInteger> itemsToDelete = l(request.getMonitoredItemIds());
 
-        try {
-            Subscription subscription = subscriptions.get(subscriptionId);
-            List<UInteger> itemsToDelete = l(request.getMonitoredItemIds());
+        if (subscription == null) {
+            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (itemsToDelete.isEmpty()) {
+            throw new UaException(StatusCodes.Bad_NothingToDo);
+        }
 
-            if (subscription == null) {
-                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
-            }
-            if (itemsToDelete.isEmpty()) {
-                throw new UaException(StatusCodes.Bad_NothingToDo);
-            }
+        StatusCode[] deleteResults = new StatusCode[itemsToDelete.size()];
+        List<BaseMonitoredItem<?>> deletedItems = newArrayListWithCapacity(itemsToDelete.size());
 
-            StatusCode[] deleteResults = new StatusCode[itemsToDelete.size()];
-            List<BaseMonitoredItem<?>> deletedItems = newArrayListWithCapacity(itemsToDelete.size());
+        synchronized (subscription) {
+            for (int i = 0; i < itemsToDelete.size(); i++) {
+                UInteger itemId = itemsToDelete.get(i);
+                BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
 
-            synchronized (subscription) {
-                for (int i = 0; i < itemsToDelete.size(); i++) {
-                    UInteger itemId = itemsToDelete.get(i);
-                    BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
+                if (item == null) {
+                    deleteResults[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+                } else {
+                    deletedItems.add(item);
 
-                    if (item == null) {
-                        deleteResults[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
-                    } else {
-                        deletedItems.add(item);
-
-                        deleteResults[i] = StatusCode.GOOD;
-                    }
+                    deleteResults[i] = StatusCode.GOOD;
                 }
-
-                subscription.removeMonitoredItems(deletedItems);
             }
 
-            /*
-             * Notify namespaces of the items that have been deleted.
-             */
+            subscription.removeMonitoredItems(deletedItems);
+        }
 
-            Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
-                .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+        /*
+         * Notify namespaces of the items that have been deleted.
+         */
 
-            byNamespace.entrySet().forEach(entry -> {
-                UShort namespaceIndex = entry.getKey();
+        Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
+            .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
 
-                List<BaseMonitoredItem<?>> items = entry.getValue();
-                List<DataItem> dataItems = Lists.newArrayList();
-                List<EventItem> eventItems = Lists.newArrayList();
+        byNamespace.forEach((namespaceIndex, items) -> {
+            List<DataItem> dataItems = Lists.newArrayList();
+            List<EventItem> eventItems = Lists.newArrayList();
 
-                for (BaseMonitoredItem<?> item : items) {
-                    if (item instanceof MonitoredDataItem) {
-                        dataItems.add((DataItem) item);
-                    } else if (item instanceof MonitoredEventItem) {
-                        eventItems.add((EventItem) item);
-                    }
+            for (BaseMonitoredItem<?> item : items) {
+                if (item instanceof MonitoredDataItem) {
+                    dataItems.add((DataItem) item);
+                } else if (item instanceof MonitoredEventItem) {
+                    eventItems.add((EventItem) item);
                 }
+            }
+
+            try {
+                Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
 
                 if (!dataItems.isEmpty()) {
-                    server.getNamespaceManager().getNamespace(namespaceIndex).onDataItemsDeleted(dataItems);
+                    namespace.onDataItemsDeleted(dataItems);
                 }
                 if (!eventItems.isEmpty()) {
-                    server.getNamespaceManager().getNamespace(namespaceIndex).onEventItemsDeleted(eventItems);
+                    namespace.onEventItemsDeleted(eventItems);
                 }
-            });
+            } catch (Throwable t) {
+                logger.error(
+                    "Unexpected error notifying namespaceIndex={} " +
+                        "of MonitoredItems being deleted.", namespaceIndex, t);
+            }
+        });
 
-            /*
-             * Build and return results.
-             */
-            ResponseHeader header = service.createResponseHeader();
-            DeleteMonitoredItemsResponse response = new DeleteMonitoredItemsResponse(
-                header, deleteResults, new DiagnosticInfo[0]);
+        /*
+         * Build and return results.
+         */
+        ResponseHeader header = service.createResponseHeader();
 
-            service.setResponse(response);
-        } catch (UaException e) {
-            service.setServiceFault(e);
-        }
+        DeleteMonitoredItemsResponse response = new DeleteMonitoredItemsResponse(
+            header,
+            deleteResults,
+            new DiagnosticInfo[0]
+        );
+
+        service.setResponse(response);
+
     }
 
     public void setMonitoringMode(ServiceRequest service) {
@@ -1096,6 +1102,9 @@ public class SubscriptionManager {
             return;
         }
 
+        StatusCode[] addResults;
+        StatusCode[] removeResults;
+
         synchronized (subscription) {
             Map<UInteger, BaseMonitoredItem<?>> itemsById = subscription.getMonitoredItems();
 
@@ -1105,7 +1114,7 @@ public class SubscriptionManager {
                 return;
             }
 
-            List<StatusCode> removeResults = linksToRemove.stream()
+            removeResults = linksToRemove.stream()
                 .map(linkedItemId -> {
                     BaseMonitoredItem<?> item = itemsById.get(linkedItemId);
                     if (item != null) {
@@ -1118,9 +1127,9 @@ public class SubscriptionManager {
                         return new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
                     }
                 })
-                .collect(toList());
+                .toArray(StatusCode[]::new);
 
-            List<StatusCode> addResults = linksToAdd.stream()
+            addResults = linksToAdd.stream()
                 .map(linkedItemId -> {
                     BaseMonitoredItem<?> linkedItem = itemsById.get(linkedItemId);
                     if (linkedItem != null) {
@@ -1130,18 +1139,18 @@ public class SubscriptionManager {
                         return new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
                     }
                 })
-                .collect(toList());
-
-            SetTriggeringResponse response = new SetTriggeringResponse(
-                service.createResponseHeader(),
-                addResults.toArray(new StatusCode[addResults.size()]),
-                new DiagnosticInfo[0],
-                removeResults.toArray(new StatusCode[removeResults.size()]),
-                new DiagnosticInfo[0]
-            );
-
-            service.setResponse(response);
+                .toArray(StatusCode[]::new);
         }
+
+        SetTriggeringResponse response = new SetTriggeringResponse(
+            service.createResponseHeader(),
+            addResults,
+            new DiagnosticInfo[0],
+            removeResults,
+            new DiagnosticInfo[0]
+        );
+
+        service.setResponse(response);
     }
 
     public void sessionClosed(boolean deleteSubscriptions) {
