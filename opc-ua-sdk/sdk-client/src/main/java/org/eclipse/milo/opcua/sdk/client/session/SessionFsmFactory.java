@@ -103,12 +103,6 @@ public class SessionFsmFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionFsm.LOGGER_NAME);
 
-    /**
-     * Max amount of time to wait for one of the requests send by the session FSM to complete.
-     * Using the default 120,000ms may result in the appearance of the FSM having deadlocked or stopped working.
-     */
-    private static final UInteger REQUEST_TIMEOUT = uint(16000);
-
     private static final int MAX_WAIT_SECONDS = 16;
 
     private SessionFsmFactory() {}
@@ -780,7 +774,7 @@ public class SessionFsmFactory {
         );
 
         CreateSessionRequest request = new CreateSessionRequest(
-            client.newRequestHeader(REQUEST_TIMEOUT),
+            client.newRequestHeader(),
             clientDescription,
             serverUri,
             client.getConfig().getEndpoint().getEndpointUrl(),
@@ -870,7 +864,7 @@ public class SessionFsmFactory {
             SignatureData userTokenSignature = signedIdentityToken.getSignature();
 
             ActivateSessionRequest request = new ActivateSessionRequest(
-                client.newRequestHeader(csr.getAuthenticationToken(), REQUEST_TIMEOUT),
+                client.newRequestHeader(csr.getAuthenticationToken()),
                 buildClientSignature(client.getConfig(), serverNonce),
                 new SignedSoftwareCertificate[0],
                 new String[0],
@@ -923,7 +917,7 @@ public class SessionFsmFactory {
             .toArray(UInteger[]::new);
 
         TransferSubscriptionsRequest request = new TransferSubscriptionsRequest(
-            client.newRequestHeader(session.getAuthenticationToken(), REQUEST_TIMEOUT),
+            client.newRequestHeader(session.getAuthenticationToken()),
             subscriptionIdsArray,
             true
         );
