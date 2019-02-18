@@ -69,7 +69,7 @@ public class ChannelConfig {
     }
 
     /**
-     * @param maxChunkSize   The maximum size of a single chunk. Must be greater than or equal to 8192.
+     * @param maxChunkSize   The maximum size of a single chunk. Must be greater than or equal to 8196.
      * @param maxChunkCount  The maximum number of chunks that a message can break down into.
      * @param maxMessageSize The maximum size of a message after all chunks have been assembled.
      */
