@@ -27,6 +27,33 @@ public interface OpcUaServerConfigLimits {
         return uint(550);
     }
 
+    /**
+     * Get the minimum allowed publishing interval.
+     *
+     * @return the minimum allowed publishing interval.
+     */
+    default Double getMinPublishingInterval() {
+        return 10.0;
+    }
+
+    /**
+     * Get the maximum allowed publishing interval.
+     *
+     * @return the maximum allowed publishing interval.
+     */
+    default Double getMaxPublishingInterval() {
+        return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
+    }
+
+    /**
+     * Get the default publishing interval, used when the requested interval is either invalid or below the minimum.
+     *
+     * @return the default publishing interval.
+     */
+    default Double getDefaultPublishingInterval() {
+        return 250.0;
+    }
+
     default Double getMinSupportedSampleRate() {
         return 0.0;
     }

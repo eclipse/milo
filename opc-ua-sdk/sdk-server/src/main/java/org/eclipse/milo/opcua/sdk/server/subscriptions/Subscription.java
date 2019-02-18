@@ -33,6 +33,7 @@ import com.google.common.collect.PeekingIterator;
 import com.google.common.math.DoubleMath;
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
@@ -64,10 +65,6 @@ public class Subscription {
 
     private static final double MIN_LIFETIME = 10 * 1000.0;
     private static final double MAX_LIFETIME = 60 * 60 * 1000.0;
-
-    private static final double MIN_PUBLISHING_INTERVAL = 1.0;
-    private static final double MAX_PUBLISHING_INTERVAL = 60 * 1000.0;
-    private static final double DEFAULT_PUBLISHING_INTERVAL = 250.0;
 
     private static final int MAX_NOTIFICATIONS = 0xFFFF;
 
@@ -197,15 +194,22 @@ public class Subscription {
      * @param requestedPublishingInterval the requested publishing interval.
      */
     private void setPublishingInterval(double requestedPublishingInterval) {
-        if (requestedPublishingInterval < MIN_PUBLISHING_INTERVAL ||
+        OpcUaServerConfigLimits limits = subscriptionManager.getServer()
+            .getConfig()
+            .getLimits();
+
+        double minPublishingInterval = limits.getMinPublishingInterval();
+        double maxPublishingInterval = limits.getMaxPublishingInterval();
+
+        if (requestedPublishingInterval < minPublishingInterval ||
             Double.isNaN(requestedPublishingInterval) ||
             Double.isInfinite(requestedPublishingInterval)) {
 
-            requestedPublishingInterval = DEFAULT_PUBLISHING_INTERVAL;
+            requestedPublishingInterval = limits.getDefaultPublishingInterval();
         }
 
-        if (requestedPublishingInterval > MAX_PUBLISHING_INTERVAL) {
-            requestedPublishingInterval = MAX_PUBLISHING_INTERVAL;
+        if (requestedPublishingInterval > maxPublishingInterval) {
+            requestedPublishingInterval = maxPublishingInterval;
         }
 
         this.publishingInterval = requestedPublishingInterval;
@@ -230,11 +234,16 @@ public class Subscription {
         }
 
         // the time between publishes cannot exceed the max publishing interval.
-        if (keepAliveInterval > MAX_PUBLISHING_INTERVAL) {
-            maxKeepAliveCount = (long) (MAX_PUBLISHING_INTERVAL / publishingInterval);
+        double maxPublishingInterval = subscriptionManager.getServer()
+            .getConfig()
+            .getLimits()
+            .getMaxPublishingInterval();
+
+        if (keepAliveInterval > maxPublishingInterval) {
+            maxKeepAliveCount = (long) (maxPublishingInterval / publishingInterval);
 
             if (maxKeepAliveCount < UInteger.MAX_VALUE) {
-                if (MAX_PUBLISHING_INTERVAL % publishingInterval != 0) {
+                if (maxPublishingInterval % publishingInterval != 0) {
                     maxKeepAliveCount++;
                 }
             }
