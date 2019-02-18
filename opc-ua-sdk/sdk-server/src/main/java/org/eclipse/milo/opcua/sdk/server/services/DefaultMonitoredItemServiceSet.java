@@ -40,7 +40,7 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
     }
 
     @Override
-    public void onModifyMonitoredItems(ServiceRequest service) {
+    public void onModifyMonitoredItems(ServiceRequest service) throws UaException {
         modifyMonitoredItemsMetric.record(service);
 
         subscriptionManager.modifyMonitoredItems(service);

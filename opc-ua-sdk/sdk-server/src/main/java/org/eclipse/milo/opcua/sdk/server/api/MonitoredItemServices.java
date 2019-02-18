@@ -38,8 +38,30 @@ public interface MonitoredItemServices {
      */
     default void onCreateDataItem(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
-        UInteger requestedQueueSize,
         Double requestedSamplingInterval,
+        UInteger requestedQueueSize,
+        BiConsumer<Double, UInteger> revisionCallback) {
+
+        revisionCallback.accept(requestedSamplingInterval, requestedQueueSize);
+    }
+
+    /**
+     * A {@link DataItem} is being modified for a Node managed by this {@link MonitoredItemServices}.
+     * <p>
+     * This is a chance to revise the requested queue size and/or sampling interval.
+     * <p>
+     * The sampling interval has already been revised to fit within the configured server limits and to be at least the
+     * value of the Minimum Sampling Interval attribute for the Node if it was present.
+     *
+     * @param itemToModify              the item that will be modified.
+     * @param requestedQueueSize        the requested queue size.
+     * @param requestedSamplingInterval the requested sampling interval.
+     * @param revisionCallback          the callback to invoke to revise the sampling interval and queue size.
+     */
+    default void onModifyDataItem(
+        @SuppressWarnings("unused") ReadValueId itemToModify,
+        Double requestedSamplingInterval,
+        UInteger requestedQueueSize,
         BiConsumer<Double, UInteger> revisionCallback) {
 
         revisionCallback.accept(requestedSamplingInterval, requestedQueueSize);
@@ -56,6 +78,23 @@ public interface MonitoredItemServices {
      */
     default void onCreateEventItem(
         @SuppressWarnings("unused") ReadValueId itemToMonitor,
+        UInteger requestedQueueSize,
+        Consumer<UInteger> revisionCallback) {
+
+        revisionCallback.accept(requestedQueueSize);
+    }
+
+    /**
+     * An {@link EventItem} is being modified for a Node managed by this {@link MonitoredItemServices}.
+     * <p>
+     * This is a chance to revise the requested queue size.
+     *
+     * @param itemToModify       the item that will be modified.
+     * @param requestedQueueSize the requested queue size.
+     * @param revisionCallback   the callback to invoke to revise the queue size.
+     */
+    default void onModifyEventItem(
+        @SuppressWarnings("unused") ReadValueId itemToModify,
         UInteger requestedQueueSize,
         Consumer<UInteger> revisionCallback) {
 
