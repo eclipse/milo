@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.SubscriptionManager;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -49,12 +50,12 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
     }
 
     @Override
-    public void onModifySubscription(ServiceRequest service) {
+    public void onModifySubscription(ServiceRequest service) throws UaException {
         subscriptionManager.modifySubscription(service);
     }
 
     @Override
-    public void onDeleteSubscriptions(ServiceRequest service) {
+    public void onDeleteSubscriptions(ServiceRequest service) throws UaException {
         subscriptionManager.deleteSubscription(service);
     }
 
@@ -74,16 +75,16 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
     }
 
     @Override
-    public void onTransferSubscriptions(ServiceRequest service) {
+    public void onTransferSubscriptions(ServiceRequest service) throws UaException {
+        TransferSubscriptionsRequest request = (TransferSubscriptionsRequest) service.getRequest();
+
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
-        TransferSubscriptionsRequest request = (TransferSubscriptionsRequest) service.getRequest();
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_NothingToDo);
-            return;
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         List<TransferResult> results = Lists.newArrayList();
@@ -123,11 +124,13 @@ public class DefaultSubscriptionServiceSet implements SubscriptionServiceSet {
             }
         }
 
-        service.setResponse(new TransferSubscriptionsResponse(
+        TransferSubscriptionsResponse response = new TransferSubscriptionsResponse(
             service.createResponseHeader(),
             a(results, TransferResult.class),
             new DiagnosticInfo[0]
-        ));
+        );
+
+        service.setResponse(response);
     }
 
     private boolean sessionsHaveSameUser(Session s1, Session s2) {

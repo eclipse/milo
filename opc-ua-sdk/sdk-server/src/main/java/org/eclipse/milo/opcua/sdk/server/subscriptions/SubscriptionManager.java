@@ -179,49 +179,48 @@ public class SubscriptionManager {
         service.setResponse(response);
     }
 
-    public void modifySubscription(ServiceRequest service) {
+    public void modifySubscription(ServiceRequest service) throws UaException {
         ModifySubscriptionRequest request = (ModifySubscriptionRequest) service.getRequest();
+
         UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
 
-        try {
-            Subscription subscription = subscriptions.get(subscriptionId);
-
-            if (subscription == null) {
-                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
-            }
-
-            subscription.modifySubscription(request);
-
-            ResponseHeader header = service.createResponseHeader();
-
-            ModifySubscriptionResponse response = new ModifySubscriptionResponse(
-                header,
-                subscription.getPublishingInterval(),
-                uint(subscription.getLifetimeCount()),
-                uint(subscription.getMaxKeepAliveCount())
-            );
-
-            service.setResponse(response);
-        } catch (UaException e) {
-            service.setServiceFault(e);
+        if (subscription == null) {
+            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
         }
+
+        subscription.modifySubscription(request);
+
+        ResponseHeader header = service.createResponseHeader();
+
+        ModifySubscriptionResponse response = new ModifySubscriptionResponse(
+            header,
+            subscription.getPublishingInterval(),
+            uint(subscription.getLifetimeCount()),
+            uint(subscription.getMaxKeepAliveCount())
+        );
+
+        service.setResponse(response);
     }
 
-    public void deleteSubscription(ServiceRequest service) {
+    public void deleteSubscription(ServiceRequest service) throws UaException {
         DeleteSubscriptionsRequest request = (DeleteSubscriptionsRequest) service.getRequest();
+
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_NothingToDo);
-            return;
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         StatusCode[] results = new StatusCode[subscriptionIds.size()];
 
         for (int i = 0; i < subscriptionIds.size(); i++) {
-            Subscription subscription = subscriptions.remove(subscriptionIds.get(i));
+            UInteger subscriptionId = subscriptionIds.get(i);
+            Subscription subscription = subscriptions.remove(subscriptionId);
 
             if (subscription != null) {
+                server.getSubscriptions().remove(subscription.getId());
+
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 
                 /*
@@ -243,11 +242,19 @@ public class SubscriptionManager {
                         }
                     }
 
-                    if (!dataItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onDataItemsDeleted(dataItems);
-                    }
-                    if (!eventItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onEventItemsDeleted(eventItems);
+                    try {
+                        Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
+
+                        if (!dataItems.isEmpty()) {
+                            namespace.onDataItemsDeleted(dataItems);
+                        }
+                        if (!eventItems.isEmpty()) {
+                            namespace.onEventItemsDeleted(eventItems);
+                        }
+                    } catch (Throwable t) {
+                        logger.error(
+                            "Unexpected error notifying namespaceIndex={} " +
+                                "of MonitoredItems being deleted.", namespaceIndex, t);
                     }
                 });
 
@@ -258,8 +265,12 @@ public class SubscriptionManager {
         }
 
         ResponseHeader header = service.createResponseHeader();
+
         DeleteSubscriptionsResponse response = new DeleteSubscriptionsResponse(
-            header, results, new DiagnosticInfo[0]);
+            header,
+            results,
+            new DiagnosticInfo[0]
+        );
 
         service.setResponse(response);
 
@@ -288,8 +299,12 @@ public class SubscriptionManager {
         }
 
         ResponseHeader header = service.createResponseHeader();
+
         SetPublishingModeResponse response = new SetPublishingModeResponse(
-            header, results, new DiagnosticInfo[0]);
+            header,
+            results,
+            new DiagnosticInfo[0]
+        );
 
         service.setResponse(response);
     }
@@ -1225,7 +1240,7 @@ public class SubscriptionManager {
             }
         }
     }
-    
+
 }
 
 
