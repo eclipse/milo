@@ -317,7 +317,7 @@ public class SubscriptionManager {
             .distinct()
             .collect(toList());
 
-        CompletableFuture<Map<NodeId, List<DataValue>>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
+        CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
 
         attributesFuture.thenAccept(attributeGroups -> {
             MonitoredItemCreateResult[] createResults = new MonitoredItemCreateResult[itemsToCreate.size()];
@@ -327,7 +327,7 @@ public class SubscriptionManager {
             for (int i = 0; i < itemsToCreate.size(); i++) {
                 MonitoredItemCreateRequest createRequest = itemsToCreate.get(i);
 
-                List<DataValue> attributeGroup = attributeGroups.get(
+                AttributeGroup attributeGroup = attributeGroups.get(
                     createRequest.getItemToMonitor().getNodeId()
                 );
 
@@ -409,7 +409,7 @@ public class SubscriptionManager {
         MonitoredItemCreateRequest request,
         Subscription subscription,
         TimestampsToReturn timestamps,
-        List<DataValue> attributeGroup
+        AttributeGroup attributeGroup
     ) throws UaException {
 
         UInteger attributeId = request.getItemToMonitor().getAttributeId();
@@ -431,10 +431,10 @@ public class SubscriptionManager {
             }
         }
 
-        DataValue accessLevelValue = attributeGroup.get(0);
-        DataValue userAccessLevelValue = attributeGroup.get(1);
-        DataValue eventNotifierValue = attributeGroup.get(2);
-        DataValue minimumSamplingIntervalValue = attributeGroup.get(3);
+        DataValue accessLevelValue = attributeGroup.accessLevelValue;
+        DataValue userAccessLevelValue = attributeGroup.userAccessLevelValue;
+        DataValue eventNotifierValue = attributeGroup.eventNotifierValue;
+        DataValue minimumSamplingIntervalValue = attributeGroup.minimumSamplingIntervalValue;
 
         if (attributeId.equals(AttributeId.EventNotifier.uid())) {
             if (eventNotifierValue.getStatusCode() == null) {
@@ -593,7 +593,7 @@ public class SubscriptionManager {
             .distinct()
             .collect(toList());
 
-        CompletableFuture<Map<NodeId, List<DataValue>>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
+        CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
 
         attributesFuture.thenAccept(attributeGroups -> {
             MonitoredItemModifyResult[] modifyResults = new MonitoredItemModifyResult[itemsToModify.size()];
@@ -686,7 +686,7 @@ public class SubscriptionManager {
         MonitoredItemModifyRequest request,
         TimestampsToReturn timestamps,
         Subscription subscription,
-        Map<NodeId, List<DataValue>> attributeGroups
+        Map<NodeId, AttributeGroup> attributeGroups
     ) throws UaException {
 
         UInteger itemId = request.getMonitoredItemId();
@@ -700,9 +700,7 @@ public class SubscriptionManager {
 
         NodeId nodeId = monitoredItem.getReadValueId().getNodeId();
         UInteger attributeId = monitoredItem.getReadValueId().getAttributeId();
-
-        List<DataValue> attributeGroup = attributeGroups.get(nodeId);
-        DataValue minimumSamplingIntervalValue = attributeGroup.get(3);
+        AttributeGroup attributeGroup = attributeGroups.get(nodeId);
 
         if (attributeId.equals(AttributeId.EventNotifier.uid())) {
             UInteger requestedQueueSize = parameters.getQueueSize();
@@ -733,7 +731,7 @@ public class SubscriptionManager {
             );
         } else {
             Double minimumSamplingInterval = Optional.ofNullable(
-                (Double) minimumSamplingIntervalValue.getValue().getValue()
+                (Double) attributeGroup.minimumSamplingIntervalValue.getValue().getValue()
             ).orElse(0.0);
 
             double requestedSamplingInterval = getSamplingInterval(
@@ -802,7 +800,7 @@ public class SubscriptionManager {
         return samplingInterval;
     }
 
-    private CompletableFuture<Map<NodeId, List<DataValue>>> readMonitoringAttributes(List<NodeId> nodeIds) {
+    private CompletableFuture<Map<NodeId, AttributeGroup>> readMonitoringAttributes(List<NodeId> nodeIds) {
         List<ReadValueId> attributesToRead = nodeIds.stream()
             .flatMap(nodeId -> {
                 Function<AttributeId, ReadValueId> f = id -> new ReadValueId(
@@ -830,14 +828,38 @@ public class SubscriptionManager {
         );
 
         return future.thenApply(attributeValues -> {
-            Map<NodeId, List<DataValue>> attributeGroups = new HashMap<>();
+            Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
 
             for (int i = 0; i < nodeIds.size(); i += 4) {
-                attributeGroups.put(nodeIds.get(i), attributeValues.subList(i, i + 4));
+                monitoringAttributes.put(nodeIds.get(i), new AttributeGroup(
+                    attributeValues.get(i),
+                    attributeValues.get(i + 1),
+                    attributeValues.get(i + 2),
+                    attributeValues.get(i + 3)
+                ));
             }
 
-            return attributeGroups;
+            return monitoringAttributes;
         });
+    }
+
+    private static class AttributeGroup {
+        final DataValue accessLevelValue;
+        final DataValue userAccessLevelValue;
+        final DataValue eventNotifierValue;
+        final DataValue minimumSamplingIntervalValue;
+
+        AttributeGroup(
+            DataValue accessLevelValue,
+            DataValue userAccessLevelValue,
+            DataValue eventNotifierValue,
+            DataValue minimumSamplingIntervalValue) {
+
+            this.accessLevelValue = accessLevelValue;
+            this.userAccessLevelValue = userAccessLevelValue;
+            this.eventNotifierValue = eventNotifierValue;
+            this.minimumSamplingIntervalValue = minimumSamplingIntervalValue;
+        }
     }
 
     public void deleteMonitoredItems(ServiceRequest service) {
