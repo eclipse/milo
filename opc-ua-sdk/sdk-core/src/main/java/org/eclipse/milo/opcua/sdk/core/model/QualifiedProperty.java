@@ -15,12 +15,16 @@ package org.eclipse.milo.opcua.sdk.core.model;
 
 import java.util.Objects;
 import java.util.Optional;
+import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class QualifiedProperty<T> {
 
@@ -62,6 +66,21 @@ public class QualifiedProperty<T> {
 
     public Class<T> getJavaType() {
         return javaType;
+    }
+
+    @Nullable
+    public UInteger[] getArrayDimensions() {
+        int valueRank = getValueRank();
+
+        if (valueRank <= 0) {
+            return null;
+        } else {
+            UInteger[] arrayDimensions = new UInteger[valueRank];
+            for (int i = 0; i < valueRank; i++) {
+                arrayDimensions[i] = uint(0);
+            }
+            return arrayDimensions;
+        }
     }
 
     /**
