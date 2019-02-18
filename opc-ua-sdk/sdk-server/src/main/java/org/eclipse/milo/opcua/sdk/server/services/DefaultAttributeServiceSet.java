@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.WriteContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -134,12 +135,10 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
         byNamespace.keySet().forEach(index -> {
             List<PendingRead> pending = byNamespace.get(index);
 
-            CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
-
             ReadContext context = new ReadContext(
                 server,
                 session,
-                future,
+                Pending.callback(pending),
                 new DiagnosticsContext<>()
             );
 
@@ -156,12 +155,6 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
                     timestamps,
                     readValueIds
                 );
-            });
-
-            future.thenAccept(values -> {
-                for (int i = 0; i < values.size(); i++) {
-                    pending.get(i).getFuture().complete(values.get(i));
-                }
             });
         });
 
@@ -191,6 +184,30 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
+        CompletableFuture<List<StatusCode>> writeFuture = namespaceCollatedWrite(server, session, nodesToWrite);
+
+        writeFuture.thenAcceptAsync(values -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            DiagnosticInfo[] diagnosticInfos =
+                diagnosticsContext.getDiagnosticInfos(nodesToWrite);
+
+            WriteResponse response = new WriteResponse(
+                header,
+                a(values, StatusCode.class),
+                diagnosticInfos
+            );
+
+            service.setResponse(response);
+        }, server.getExecutorService());
+    }
+
+    public static CompletableFuture<List<StatusCode>> namespaceCollatedWrite(
+        OpcUaServer server,
+        Session session,
+        List<WriteValue> nodesToWrite
+    ) {
+
         List<PendingWrite> pendingWrites = newArrayListWithCapacity(nodesToWrite.size());
         List<CompletableFuture<StatusCode>> futures = newArrayListWithCapacity(nodesToWrite.size());
 
@@ -207,10 +224,12 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
         byNamespace.keySet().forEach(index -> {
             List<PendingWrite> pending = byNamespace.get(index);
 
-            CompletableFuture<List<StatusCode>> future = new CompletableFuture<>();
-
             WriteContext context = new WriteContext(
-                server, session, future, diagnosticsContext);
+                server,
+                session,
+                Pending.callback(pending),
+                new DiagnosticsContext<>()
+            );
 
             server.getExecutorService().execute(() -> {
                 Namespace namespace = server.getNamespaceManager().getNamespace(index);
@@ -221,25 +240,9 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
                 namespace.write(context, writeValues);
             });
-
-            future.thenAccept(statusCodes -> {
-                for (int i = 0; i < statusCodes.size(); i++) {
-                    pending.get(i).getFuture().complete(statusCodes.get(i));
-                }
-            });
         });
 
-        FutureUtils.sequence(futures).thenAcceptAsync(values -> {
-            ResponseHeader header = service.createResponseHeader();
-
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToWrite);
-
-            WriteResponse response = new WriteResponse(
-                header, a(values, StatusCode.class), diagnosticInfos);
-
-            service.setResponse(response);
-        }, server.getExecutorService());
+        return FutureUtils.sequence(futures);
     }
 
 }
