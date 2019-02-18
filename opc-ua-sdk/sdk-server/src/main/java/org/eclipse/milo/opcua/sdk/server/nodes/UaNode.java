@@ -28,7 +28,6 @@ import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -266,6 +265,7 @@ public abstract class UaNode implements UaServerNode {
 
             propertyNode.setDataType(property.getDataType());
             propertyNode.setValueRank(property.getValueRank());
+            propertyNode.setArrayDimensions(property.getArrayDimensions());
 
             addProperty(propertyNode);
 
@@ -278,11 +278,17 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public <T> void setProperty(QualifiedProperty<T> property, T value) {
+        UShort namespaceIndex = context.getNamespaceManager()
+            .getNamespaceTable().getIndex(property.getNamespaceUri());
+
+        if (namespaceIndex == null) {
+            throw new IllegalArgumentException(
+                "property belongs to unregistered " +
+                    "namespace: " + property.getNamespaceUri());
+        }
+
         VariableNode node = getPropertyNode(property).orElseGet(() -> {
             String browseName = property.getBrowseName();
-
-            UShort namespaceIndex = context.getNamespaceManager()
-                .getNamespaceTable().getIndex(property.getNamespaceUri());
 
             NodeId propertyNodeId = new NodeId(
                 getNodeId().getNamespaceIndex(),
@@ -298,6 +304,7 @@ public abstract class UaNode implements UaServerNode {
 
             propertyNode.setDataType(property.getDataType());
             propertyNode.setValueRank(property.getValueRank());
+            propertyNode.setArrayDimensions(property.getArrayDimensions());
 
             addProperty(propertyNode);
 

@@ -13,8 +13,13 @@
 
 package org.eclipse.milo.opcua.sdk.core.model;
 
+import javax.annotation.Nullable;
+
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public interface Property<T> {
 
@@ -25,5 +30,20 @@ public interface Property<T> {
     Integer getValueRank();
 
     Class<T> getJavaType();
+
+    @Nullable
+    default UInteger[] getArrayDimensions() {
+        int valueRank = getValueRank();
+
+        if (valueRank <= 0) {
+            return null;
+        } else {
+            UInteger[] arrayDimensions = new UInteger[valueRank];
+            for (int i = 0; i < valueRank; i++) {
+                arrayDimensions[i] = uint(0);
+            }
+            return arrayDimensions;
+        }
+    }
 
 }
