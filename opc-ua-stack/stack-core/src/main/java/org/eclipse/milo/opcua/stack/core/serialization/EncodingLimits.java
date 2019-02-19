@@ -13,10 +13,12 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
+import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+
 public class EncodingLimits {
 
-    public static final int DEFAULT_MAX_ARRAY_LENGTH = 65535;
-    public static final int DEFAULT_MAX_STRING_LENGTH = 65535;
+    public static final int DEFAULT_MAX_ARRAY_LENGTH = MessageLimits.DEFAULT_MAX_MESSAGE_SIZE;
+    public static final int DEFAULT_MAX_STRING_LENGTH = MessageLimits.DEFAULT_MAX_MESSAGE_SIZE;
     public static final int DEFAULT_MAX_RECURSION_DEPTH = 128;
 
     public static final EncodingLimits DEFAULT = new EncodingLimits(
