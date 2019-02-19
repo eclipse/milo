@@ -19,13 +19,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -446,12 +446,10 @@ public class SubscriptionManager {
         AttributeGroup attributeGroup = attributeGroups.get(nodeId);
 
         if (attributeId.equals(AttributeId.EventNotifier.uid())) {
-            UByte eventNotifier = attributeGroup
-                .getEventNotifier()
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_AttributeIdInvalid));
+            UByte eventNotifier = attributeGroup.getEventNotifier();
 
             // Verify that the SubscribeToEvents bit is set
-            if ((eventNotifier.intValue() & 1) == 0) {
+            if (eventNotifier == null || (eventNotifier.intValue() & 1) == 0) {
                 throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
             }
 
@@ -486,13 +484,11 @@ public class SubscriptionManager {
             );
         } else {
             if (attributeId.equals(AttributeId.Value.uid())) {
-                UByte accessLevel = attributeGroup
-                    .getAccessLevel()
-                    .orElse(ubyte(0));
+                UByte accessLevel = attributeGroup.getAccessLevel();
+                if (accessLevel == null) accessLevel = ubyte(0);
 
-                UByte userAccessLevel = attributeGroup
-                    .getUserAccessLevel()
-                    .orElse(ubyte(0));
+                UByte userAccessLevel = attributeGroup.getUserAccessLevel();
+                if (userAccessLevel == null) userAccessLevel = ubyte(0);
 
                 EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(accessLevel);
                 EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromMask(userAccessLevel);
@@ -509,9 +505,17 @@ public class SubscriptionManager {
             String indexRange = request.getItemToMonitor().getIndexRange();
             if (indexRange != null) NumericRange.parse(indexRange);
 
-            Double minimumSamplingInterval = attributeGroup
-                .getMinimumSamplingInterval()
-                .orElse(0.0);
+            Double minimumSamplingInterval = 0.0;
+            try {
+                minimumSamplingInterval = attributeGroup.getMinimumSamplingInterval();
+                if (minimumSamplingInterval == null) {
+                    minimumSamplingInterval = server.getConfig().getLimits().getMinSupportedSampleRate();
+                }
+            } catch (UaException e) {
+                if (e.getStatusCode().getValue() != StatusCodes.Bad_AttributeIdInvalid) {
+                    throw e;
+                }
+            }
 
             double requestedSamplingInterval = getSamplingInterval(
                 subscription,
@@ -613,7 +617,7 @@ public class SubscriptionManager {
                     );
                 } catch (UaException e) {
                     modifyResults[i] = new MonitoredItemModifyResult(
-                        StatusCode.GOOD,
+                        e.getStatusCode(),
                         0.0,
                         UInteger.MIN,
                         null
@@ -722,9 +726,17 @@ public class SubscriptionManager {
                 parameters.getDiscardOldest()
             );
         } else {
-            Double minimumSamplingInterval = attributeGroup
-                .getMinimumSamplingInterval()
-                .orElse(0.0);
+            Double minimumSamplingInterval = 0.0;
+            try {
+                minimumSamplingInterval = attributeGroup.getMinimumSamplingInterval();
+                if (minimumSamplingInterval == null) {
+                    minimumSamplingInterval = server.getConfig().getLimits().getMinSupportedSampleRate();
+                }
+            } catch (UaException e) {
+                if (e.getStatusCode().getValue() != StatusCodes.Bad_AttributeIdInvalid) {
+                    throw e;
+                }
+            }
 
             double requestedSamplingInterval = getSamplingInterval(
                 subscription,
@@ -1190,54 +1202,62 @@ public class SubscriptionManager {
             this.minimumSamplingIntervalValue = minimumSamplingIntervalValue;
         }
 
-        Optional<UByte> getAccessLevel() {
+        @Nullable
+        UByte getAccessLevel() throws UaException {
             Object value = getValue(accessLevelValue);
 
             if (value instanceof UByte) {
-                return Optional.of((UByte) value);
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        Optional<UByte> getUserAccessLevel() {
-            Object value = getValue(userAccessLevelValue);
-
-            if (value instanceof UByte) {
-                return Optional.of((UByte) value);
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        Optional<UByte> getEventNotifier() {
-            Object value = getValue(eventNotifierValue);
-
-            if (value instanceof UByte) {
-                return Optional.of((UByte) value);
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        Optional<Double> getMinimumSamplingInterval() {
-            Object value = getValue(minimumSamplingIntervalValue);
-
-            if (value instanceof Double) {
-                return Optional.of((Double) value);
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        private Object getValue(DataValue dataValue) {
-            if (dataValue.getStatusCode() != null &&
-                dataValue.getStatusCode().isGood()) {
-
-                return dataValue.getValue().getValue();
+                return (UByte) value;
             } else {
                 return null;
             }
+        }
+
+        @Nullable
+        UByte getUserAccessLevel() throws UaException {
+            Object value = getValue(userAccessLevelValue);
+
+            if (value instanceof UByte) {
+                return (UByte) value;
+            } else {
+                return null;
+            }
+        }
+
+        @Nullable
+        UByte getEventNotifier() throws UaException {
+            Object value = getValue(eventNotifierValue);
+
+            if (value instanceof UByte) {
+                return (UByte) value;
+            } else {
+                return null;
+            }
+        }
+
+        @Nullable
+        Double getMinimumSamplingInterval() throws UaException {
+            Object value = getValue(minimumSamplingIntervalValue);
+
+            if (value instanceof Double) {
+                return (Double) value;
+            } else {
+                return null;
+            }
+        }
+
+        private Object getValue(DataValue dataValue) throws UaException {
+            StatusCode statusCode = dataValue.getStatusCode();
+
+            if (statusCode == null) {
+                throw new UaException(StatusCode.BAD);
+            }
+
+            if (statusCode.isBad()) {
+                throw new UaException(statusCode);
+            }
+
+            return dataValue.getValue().getValue();
         }
     }
 
