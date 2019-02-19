@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -87,6 +88,8 @@ public class Subscription {
     private final PublishHandler publishHandler = new PublishHandler();
     private final TimerHandler timerHandler = new TimerHandler();
 
+    private volatile ScheduledFuture<?> publishingTimer;
+
     private volatile boolean messageSent = false;
     private volatile boolean moreNotifications = false;
     private volatile long keepAliveCounter;
@@ -146,6 +149,10 @@ public class Subscription {
 
     public synchronized List<BaseMonitoredItem<?>> deleteSubscription() {
         setState(State.Closed);
+
+        ScheduledFuture<?> sf = publishingTimer;
+        if (sf != null) sf.cancel(false);
+        publishingTimer = null;
 
         logger.debug("[id={}] subscription deleted.", subscriptionId);
 
@@ -655,7 +662,7 @@ public class Subscription {
 
             setState(State.Closing);
         } else {
-            subscriptionManager.getServer().getScheduledExecutorService().schedule(
+            publishingTimer = subscriptionManager.getServer().getScheduledExecutorService().schedule(
                 this::onPublishingTimer,
                 delayNanos,
                 TimeUnit.NANOSECONDS

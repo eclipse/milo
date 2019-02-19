@@ -69,6 +69,8 @@ public class OpcUaServer implements UaNodeContext {
         logger.info("Eclipse Milo OPC UA Server SDK version: {}", SDK_VERSION);
     }
 
+    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Stack.sharedScheduledExecutor();
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final Map<ByteString, BrowseContinuationPoint> browseContinuationPoints = Maps.newConcurrentMap();
@@ -151,6 +153,9 @@ public class OpcUaServer implements UaNodeContext {
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        subscriptions.values()
+            .forEach(Subscription::deleteSubscription);
+
         return stackServer.shutdown()
             .thenApply(s -> OpcUaServer.this);
     }
@@ -229,7 +234,7 @@ public class OpcUaServer implements UaNodeContext {
     }
 
     public ScheduledExecutorService getScheduledExecutorService() {
-        return Stack.sharedScheduledExecutor();
+        return SCHEDULED_EXECUTOR_SERVICE;
     }
 
     public ImmutableList<EndpointDescription> getEndpointDescriptions() {
