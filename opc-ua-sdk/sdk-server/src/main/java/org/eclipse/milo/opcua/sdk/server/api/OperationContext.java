@@ -34,7 +34,7 @@ public class OperationContext<T, U> implements AccessContext {
                             @Nullable Session session,
                             DiagnosticsContext<T> diagnostics) {
 
-        this(server, session, new CompletableFuture<List<U>>(), diagnostics);
+        this(server, session, new CompletableFuture<>(), diagnostics);
     }
 
     public OperationContext(OpcUaServer server,

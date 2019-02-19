@@ -33,21 +33,21 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
     }
 
     @Override
-    public void onCreateMonitoredItems(ServiceRequest service) {
+    public void onCreateMonitoredItems(ServiceRequest service) throws UaException {
         createMonitoredItemsMetric.record(service);
 
         subscriptionManager.createMonitoredItems(service);
     }
 
     @Override
-    public void onModifyMonitoredItems(ServiceRequest service) {
+    public void onModifyMonitoredItems(ServiceRequest service) throws UaException {
         modifyMonitoredItemsMetric.record(service);
 
         subscriptionManager.modifyMonitoredItems(service);
     }
 
     @Override
-    public void onDeleteMonitoredItems(ServiceRequest service) {
+    public void onDeleteMonitoredItems(ServiceRequest service) throws UaException {
         deleteMonitoredItemsMetric.record(service);
 
         subscriptionManager.deleteMonitoredItems(service);
@@ -61,7 +61,7 @@ public class DefaultMonitoredItemServiceSet implements MonitoredItemServiceSet {
     }
 
     @Override
-    public void onSetTriggering(ServiceRequest service) throws UaException {
+    public void onSetTriggering(ServiceRequest service) {
         setTriggeringMetric.record(service);
 
         subscriptionManager.setTriggering(service);

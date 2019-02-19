@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.WriteContext;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -30,6 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -85,16 +87,45 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
+        CompletableFuture<List<DataValue>> readFuture = namespaceCollatedRead(
+            server,
+            session,
+            request.getMaxAge(),
+            request.getTimestampsToReturn(),
+            nodesToRead
+        );
 
-        List<PendingRead> pendingReads = newArrayListWithCapacity(nodesToRead.size());
-        List<CompletableFuture<DataValue>> futures = newArrayListWithCapacity(nodesToRead.size());
+        readFuture.thenAcceptAsync(values -> {
+            ResponseHeader header = service.createResponseHeader();
 
-        for (ReadValueId id : nodesToRead) {
-            PendingRead pending = new PendingRead(id);
+            DiagnosticInfo[] diagnosticInfos =
+                diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
-            pendingReads.add(pending);
-            futures.add(pending.getFuture());
-        }
+            ReadResponse response = new ReadResponse(
+                header,
+                a(values, DataValue.class),
+                diagnosticInfos
+            );
+
+            service.setResponse(response);
+        }, server.getExecutorService());
+    }
+
+    public static CompletableFuture<List<DataValue>> namespaceCollatedRead(
+        OpcUaServer server,
+        Session session,
+        double maxAge,
+        TimestampsToReturn timestamps,
+        List<ReadValueId> nodesToRead
+    ) {
+
+        List<PendingRead> pendingReads = nodesToRead.stream()
+            .map(PendingRead::new)
+            .collect(toList());
+
+        List<CompletableFuture<DataValue>> futures = pendingReads.stream()
+            .map(PendingRead::getFuture)
+            .collect(toList());
 
         // Group PendingReads by namespace and call read for each.
 
@@ -104,10 +135,12 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
         byNamespace.keySet().forEach(index -> {
             List<PendingRead> pending = byNamespace.get(index);
 
-            CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
-
             ReadContext context = new ReadContext(
-                server, session, future, diagnosticsContext);
+                server,
+                session,
+                Pending.callback(pending),
+                new DiagnosticsContext<>()
+            );
 
             server.getExecutorService().execute(() -> {
                 Namespace namespace = server.getNamespaceManager().getNamespace(index);
@@ -118,31 +151,14 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
                 namespace.read(
                     context,
-                    request.getMaxAge(),
-                    request.getTimestampsToReturn(),
-                    readValueIds);
-            });
-
-            future.thenAccept(values -> {
-                for (int i = 0; i < values.size(); i++) {
-                    pending.get(i).getFuture().complete(values.get(i));
-                }
+                    maxAge,
+                    timestamps,
+                    readValueIds
+                );
             });
         });
 
-        // When all PendingReads have been completed send a ReadResponse with the values.
-
-        FutureUtils.sequence(futures).thenAcceptAsync(values -> {
-            ResponseHeader header = service.createResponseHeader();
-
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToRead);
-
-            ReadResponse response = new ReadResponse(
-                header, a(values, DataValue.class), diagnosticInfos);
-
-            service.setResponse(response);
-        }, server.getExecutorService());
+        return FutureUtils.sequence(futures);
     }
 
     @Override
@@ -168,6 +184,30 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
+        CompletableFuture<List<StatusCode>> writeFuture = namespaceCollatedWrite(server, session, nodesToWrite);
+
+        writeFuture.thenAcceptAsync(values -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            DiagnosticInfo[] diagnosticInfos =
+                diagnosticsContext.getDiagnosticInfos(nodesToWrite);
+
+            WriteResponse response = new WriteResponse(
+                header,
+                a(values, StatusCode.class),
+                diagnosticInfos
+            );
+
+            service.setResponse(response);
+        }, server.getExecutorService());
+    }
+
+    public static CompletableFuture<List<StatusCode>> namespaceCollatedWrite(
+        OpcUaServer server,
+        Session session,
+        List<WriteValue> nodesToWrite
+    ) {
+
         List<PendingWrite> pendingWrites = newArrayListWithCapacity(nodesToWrite.size());
         List<CompletableFuture<StatusCode>> futures = newArrayListWithCapacity(nodesToWrite.size());
 
@@ -184,10 +224,12 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
         byNamespace.keySet().forEach(index -> {
             List<PendingWrite> pending = byNamespace.get(index);
 
-            CompletableFuture<List<StatusCode>> future = new CompletableFuture<>();
-
             WriteContext context = new WriteContext(
-                server, session, future, diagnosticsContext);
+                server,
+                session,
+                Pending.callback(pending),
+                new DiagnosticsContext<>()
+            );
 
             server.getExecutorService().execute(() -> {
                 Namespace namespace = server.getNamespaceManager().getNamespace(index);
@@ -198,25 +240,9 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
                 namespace.write(context, writeValues);
             });
-
-            future.thenAccept(statusCodes -> {
-                for (int i = 0; i < statusCodes.size(); i++) {
-                    pending.get(i).getFuture().complete(statusCodes.get(i));
-                }
-            });
         });
 
-        FutureUtils.sequence(futures).thenAcceptAsync(values -> {
-            ResponseHeader header = service.createResponseHeader();
-
-            DiagnosticInfo[] diagnosticInfos =
-                diagnosticsContext.getDiagnosticInfos(nodesToWrite);
-
-            WriteResponse response = new WriteResponse(
-                header, a(values, StatusCode.class), diagnosticInfos);
-
-            service.setResponse(response);
-        }, server.getExecutorService());
+        return FutureUtils.sequence(futures);
     }
 
 }

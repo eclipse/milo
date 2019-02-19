@@ -13,25 +13,26 @@
 
 package org.eclipse.milo.opcua.sdk.server.subscriptions;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.annotation.Nullable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -39,6 +40,7 @@ import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredEventItem;
+import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription.State;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -87,14 +89,11 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.sequence;
 
 public class SubscriptionManager {
 
@@ -180,49 +179,48 @@ public class SubscriptionManager {
         service.setResponse(response);
     }
 
-    public void modifySubscription(ServiceRequest service) {
+    public void modifySubscription(ServiceRequest service) throws UaException {
         ModifySubscriptionRequest request = (ModifySubscriptionRequest) service.getRequest();
+
         UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
 
-        try {
-            Subscription subscription = subscriptions.get(subscriptionId);
-
-            if (subscription == null) {
-                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
-            }
-
-            subscription.modifySubscription(request);
-
-            ResponseHeader header = service.createResponseHeader();
-
-            ModifySubscriptionResponse response = new ModifySubscriptionResponse(
-                header,
-                subscription.getPublishingInterval(),
-                uint(subscription.getLifetimeCount()),
-                uint(subscription.getMaxKeepAliveCount())
-            );
-
-            service.setResponse(response);
-        } catch (UaException e) {
-            service.setServiceFault(e);
+        if (subscription == null) {
+            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
         }
+
+        subscription.modifySubscription(request);
+
+        ResponseHeader header = service.createResponseHeader();
+
+        ModifySubscriptionResponse response = new ModifySubscriptionResponse(
+            header,
+            subscription.getPublishingInterval(),
+            uint(subscription.getLifetimeCount()),
+            uint(subscription.getMaxKeepAliveCount())
+        );
+
+        service.setResponse(response);
     }
 
-    public void deleteSubscription(ServiceRequest service) {
+    public void deleteSubscription(ServiceRequest service) throws UaException {
         DeleteSubscriptionsRequest request = (DeleteSubscriptionsRequest) service.getRequest();
+
         List<UInteger> subscriptionIds = l(request.getSubscriptionIds());
 
         if (subscriptionIds.isEmpty()) {
-            service.setServiceFault(StatusCodes.Bad_NothingToDo);
-            return;
+            throw new UaException(StatusCodes.Bad_NothingToDo);
         }
 
         StatusCode[] results = new StatusCode[subscriptionIds.size()];
 
         for (int i = 0; i < subscriptionIds.size(); i++) {
-            Subscription subscription = subscriptions.remove(subscriptionIds.get(i));
+            UInteger subscriptionId = subscriptionIds.get(i);
+            Subscription subscription = subscriptions.remove(subscriptionId);
 
             if (subscription != null) {
+                server.getSubscriptions().remove(subscription.getId());
+
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 
                 /*
@@ -232,13 +230,9 @@ public class SubscriptionManager {
                 Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
                     .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
 
-                byNamespace.entrySet().forEach(entry -> {
-                    UShort namespaceIndex = entry.getKey();
-
-                    List<BaseMonitoredItem<?>> items = entry.getValue();
+                byNamespace.forEach((namespaceIndex, items) -> {
                     List<DataItem> dataItems = Lists.newArrayList();
                     List<EventItem> eventItems = Lists.newArrayList();
-
 
                     for (BaseMonitoredItem<?> item : items) {
                         if (item instanceof MonitoredDataItem) {
@@ -248,11 +242,19 @@ public class SubscriptionManager {
                         }
                     }
 
-                    if (!dataItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onDataItemsDeleted(dataItems);
-                    }
-                    if (!eventItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onEventItemsDeleted(eventItems);
+                    try {
+                        Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
+
+                        if (!dataItems.isEmpty()) {
+                            namespace.onDataItemsDeleted(dataItems);
+                        }
+                        if (!eventItems.isEmpty()) {
+                            namespace.onEventItemsDeleted(eventItems);
+                        }
+                    } catch (Throwable t) {
+                        logger.error(
+                            "Unexpected error notifying namespaceIndex={} " +
+                                "of MonitoredItems being deleted.", namespaceIndex, t);
                     }
                 });
 
@@ -263,8 +265,12 @@ public class SubscriptionManager {
         }
 
         ResponseHeader header = service.createResponseHeader();
+
         DeleteSubscriptionsResponse response = new DeleteSubscriptionsResponse(
-            header, results, new DiagnosticInfo[0]);
+            header,
+            results,
+            new DiagnosticInfo[0]
+        );
 
         service.setResponse(response);
 
@@ -293,548 +299,84 @@ public class SubscriptionManager {
         }
 
         ResponseHeader header = service.createResponseHeader();
+
         SetPublishingModeResponse response = new SetPublishingModeResponse(
-            header, results, new DiagnosticInfo[0]);
+            header,
+            results,
+            new DiagnosticInfo[0]
+        );
 
         service.setResponse(response);
     }
 
-    public void createMonitoredItems(ServiceRequest service) {
+    public void createMonitoredItems(ServiceRequest service) throws UaException {
         CreateMonitoredItemsRequest request = (CreateMonitoredItemsRequest) service.getRequest();
+
         UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        TimestampsToReturn timestamps = request.getTimestampsToReturn();
+        List<MonitoredItemCreateRequest> itemsToCreate = l(request.getItemsToCreate());
 
-        try {
-            Subscription subscription = subscriptions.get(subscriptionId);
-            TimestampsToReturn timestamps = request.getTimestampsToReturn();
-            List<MonitoredItemCreateRequest> itemsToCreate = l(request.getItemsToCreate());
+        if (subscription == null) {
+            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (timestamps == null) {
+            throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
+        }
+        if (itemsToCreate.isEmpty()) {
+            throw new UaException(StatusCodes.Bad_NothingToDo);
+        }
 
-            if (subscription == null) {
-                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
-            }
-            if (timestamps == null) {
-                throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
-            }
-            if (itemsToCreate.isEmpty()) {
-                throw new UaException(StatusCodes.Bad_NothingToDo);
-            }
+        List<NodeId> distinctNodeIds = itemsToCreate.stream()
+            .map(item -> item.getItemToMonitor().getNodeId())
+            .distinct()
+            .collect(toList());
 
-            List<BaseMonitoredItem<?>> createdItems =
-                Collections.synchronizedList(newArrayListWithCapacity(itemsToCreate.size()));
+        CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
 
-            List<PendingItemCreation> pending = itemsToCreate.stream()
-                .map(PendingItemCreation::new)
-                .collect(toList());
+        attributesFuture.thenAccept(attributeGroups -> {
+            MonitoredItemCreateResult[] createResults = new MonitoredItemCreateResult[itemsToCreate.size()];
 
-            for (PendingItemCreation p : pending) {
-                MonitoredItemCreateRequest r = p.getRequest();
-                NodeId nodeId = r.getItemToMonitor().getNodeId();
-                UInteger attributeId = r.getItemToMonitor().getAttributeId();
-                QualifiedName dataEncoding = r.getItemToMonitor().getDataEncoding();
+            List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
 
-                if (!AttributeId.isValid(attributeId)) {
-                    MonitoredItemCreateResult result = new MonitoredItemCreateResult(
-                        new StatusCode(StatusCodes.Bad_AttributeIdInvalid),
-                        uint(0),
-                        0d,
-                        uint(0),
-                        null
+            for (int i = 0; i < itemsToCreate.size(); i++) {
+                MonitoredItemCreateRequest createRequest = itemsToCreate.get(i);
+
+                try {
+                    BaseMonitoredItem<?> monitoredItem = createMonitoredItem(
+                        createRequest,
+                        subscription,
+                        timestamps,
+                        attributeGroups
                     );
 
-                    p.getResultFuture().complete(result);
-                    continue;
-                }
+                    monitoredItems.add(monitoredItem);
 
-                if (dataEncoding.isNotNull()) {
-                    if (!AttributeId.Value.isEqual(attributeId)) {
-                        MonitoredItemCreateResult result = new MonitoredItemCreateResult(
-                            new StatusCode(StatusCodes.Bad_DataEncodingInvalid),
-                            uint(0),
-                            0d,
-                            uint(0),
-                            null
-                        );
-
-                        p.getResultFuture().complete(result);
-                        continue;
-                    }
-                    if (!dataEncoding.equals(DEFAULT_BINARY_ENCODING) &&
-                        !dataEncoding.equals(DEFAULT_XML_ENCODING)) {
-
-                        MonitoredItemCreateResult result = new MonitoredItemCreateResult(
-                            new StatusCode(StatusCodes.Bad_DataEncodingUnsupported),
-                            uint(0),
-                            0d,
-                            uint(0),
-                            null
-                        );
-
-                        p.getResultFuture().complete(result);
-                        continue;
-                    }
-                }
-
-                Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
-
-                if (attributeId.equals(AttributeId.EventNotifier.uid())) {
-                    readEventAttributes(namespace, nodeId).thenAccept(as -> {
-                        Optional<UByte> eventNotifier = as.eventNotifier;
-
-                        try {
-                            if (!eventNotifier.isPresent()) {
-                                throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
-                            }
-
-                            MonitoredEventItem item = new MonitoredEventItem(
-                                server,
-                                session,
-                                uint(subscription.nextItemId()),
-                                subscriptionId,
-                                r.getItemToMonitor(),
-                                r.getMonitoringMode(),
-                                timestamps,
-                                r.getRequestedParameters().getClientHandle(),
-                                0.0,
-                                r.getRequestedParameters().getQueueSize(),
-                                r.getRequestedParameters().getDiscardOldest(),
-                                r.getRequestedParameters().getFilter()
-                            );
-
-                            createdItems.add(item);
-
-                            MonitoredItemCreateResult result = new MonitoredItemCreateResult(
-                                StatusCode.GOOD,
-                                item.getId(),
-                                item.getSamplingInterval(),
-                                uint(item.getQueueSize()),
-                                item.getFilterResult());
-
-                            p.getResultFuture().complete(result);
-                        } catch (UaException e) {
-                            MonitoredItemCreateResult result =
-                                new MonitoredItemCreateResult(e.getStatusCode(), uint(0), 0d, uint(0), null);
-
-                            p.getResultFuture().complete(result);
-                        }
-                    });
-                } else {
-                    readDataAttributes(session, namespace, nodeId).thenAccept(vs -> {
-                        try {
-                            for (DataValue value : vs) {
-                                StatusCode statusCode = value.getStatusCode();
-
-                                if (statusCode.getValue() == StatusCodes.Bad_NodeIdInvalid ||
-                                    statusCode.getValue() == StatusCodes.Bad_NodeIdUnknown) {
-
-                                    throw new UaException(statusCode);
-                                }
-                            }
-
-                            UByte accessLevel = Optional.ofNullable(
-                                (UByte) vs.get(0).getValue().getValue()).orElse(ubyte(1));
-
-                            UByte userAccessLevel = Optional.ofNullable(
-                                (UByte) vs.get(1).getValue().getValue()).orElse(ubyte(1));
-
-                            Double minimumSamplingInterval = Optional.ofNullable(
-                                (Double) vs.get(2).getValue().getValue()).orElse(0.0);
-
-                            EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(accessLevel);
-                            EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromMask(userAccessLevel);
-
-                            double samplingInterval = r.getRequestedParameters().getSamplingInterval();
-                            double minSupportedSampleRate = server.getConfig().getLimits().getMinSupportedSampleRate();
-                            double maxSupportedSampleRate = server.getConfig().getLimits().getMaxSupportedSampleRate();
-
-                            if (samplingInterval < 0) samplingInterval = subscription.getPublishingInterval();
-                            if (samplingInterval < minimumSamplingInterval) samplingInterval = minimumSamplingInterval;
-                            if (samplingInterval < minSupportedSampleRate) samplingInterval = minSupportedSampleRate;
-                            if (samplingInterval > maxSupportedSampleRate) samplingInterval = maxSupportedSampleRate;
-
-                            if (!accessLevels.contains(AccessLevel.CurrentRead)) {
-                                throw new UaException(StatusCodes.Bad_NotReadable);
-                            }
-                            if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
-                                throw new UaException(StatusCodes.Bad_UserAccessDenied);
-                            }
-
-                            String indexRange = r.getItemToMonitor().getIndexRange();
-                            if (indexRange != null) NumericRange.parse(indexRange);
-
-                            MonitoredDataItem item = new MonitoredDataItem(
-                                server,
-                                session,
-                                uint(subscription.nextItemId()),
-                                subscriptionId,
-                                r.getItemToMonitor(),
-                                r.getMonitoringMode(),
-                                timestamps,
-                                r.getRequestedParameters().getClientHandle(),
-                                samplingInterval,
-                                r.getRequestedParameters().getFilter(),
-                                r.getRequestedParameters().getQueueSize(),
-                                r.getRequestedParameters().getDiscardOldest()
-                            );
-
-                            createdItems.add(item);
-
-                            MonitoredItemCreateResult result = new MonitoredItemCreateResult(
-                                StatusCode.GOOD,
-                                item.getId(),
-                                item.getSamplingInterval(),
-                                uint(item.getQueueSize()),
-                                item.getFilterResult()
-                            );
-
-                            p.getResultFuture().complete(result);
-                        } catch (Throwable t) {
-                            StatusCode statusCode = UaException.extract(t)
-                                .map(UaException::getStatusCode)
-                                .orElse(StatusCode.BAD);
-
-                            MonitoredItemCreateResult result = new MonitoredItemCreateResult(
-                                statusCode,
-                                uint(0),
-                                0d,
-                                uint(0),
-                                null
-                            );
-
-                            p.getResultFuture().complete(result);
-                        }
-                    });
-                }
-            }
-
-            List<CompletableFuture<MonitoredItemCreateResult>> futures = pending.stream()
-                .map(PendingItemCreation::getResultFuture)
-                .collect(toList());
-
-            sequence(futures).thenAccept(results -> {
-                subscription.addMonitoredItems(createdItems);
-
-                // Notify namespaces of the items we just created.
-                Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = createdItems.stream()
-                    .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
-
-                byNamespace.entrySet().forEach(entry -> {
-                    UShort namespaceIndex = entry.getKey();
-
-                    List<BaseMonitoredItem<?>> items = entry.getValue();
-                    List<DataItem> dataItems = Lists.newArrayList();
-                    List<EventItem> eventItems = Lists.newArrayList();
-
-                    for (BaseMonitoredItem<?> item : items) {
-                        if (item instanceof MonitoredDataItem) {
-                            dataItems.add((DataItem) item);
-                        } else if (item instanceof MonitoredEventItem) {
-                            eventItems.add((EventItem) item);
-                        }
-                    }
-
-                    if (!dataItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onDataItemsCreated(dataItems);
-                    }
-                    if (!eventItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onEventItemsCreated(eventItems);
-                    }
-                });
-
-                ResponseHeader header = service.createResponseHeader();
-
-                CreateMonitoredItemsResponse response = new CreateMonitoredItemsResponse(
-                    header, a(results, MonitoredItemCreateResult.class), new DiagnosticInfo[0]);
-
-                service.setResponse(response);
-            });
-        } catch (UaException e) {
-            service.setServiceFault(e);
-        }
-    }
-
-    public void modifyMonitoredItems(ServiceRequest service) {
-        ModifyMonitoredItemsRequest request = (ModifyMonitoredItemsRequest) service.getRequest();
-        UInteger subscriptionId = request.getSubscriptionId();
-
-        try {
-            Subscription subscription = subscriptions.get(subscriptionId);
-            TimestampsToReturn timestamps = request.getTimestampsToReturn();
-            List<MonitoredItemModifyRequest> itemsToModify = l(request.getItemsToModify());
-
-            if (subscription == null) {
-                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
-            }
-            if (timestamps == null) {
-                throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
-            }
-            if (itemsToModify.isEmpty()) {
-                throw new UaException(StatusCodes.Bad_NothingToDo);
-            }
-
-            List<PendingItemModification> pending = itemsToModify.stream()
-                .map(PendingItemModification::new)
-                .collect(toList());
-
-            List<BaseMonitoredItem<?>> modifiedItems =
-                Collections.synchronizedList(newArrayListWithCapacity(itemsToModify.size()));
-
-            /*
-             * Modify requested items and prepare results.
-             */
-
-            for (PendingItemModification p : pending) {
-                MonitoredItemModifyRequest r = p.getRequest();
-                UInteger itemId = r.getMonitoredItemId();
-                MonitoringParameters parameters = r.getRequestedParameters();
-
-                BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
-
-                if (item == null) {
-                    MonitoredItemModifyResult result = new MonitoredItemModifyResult(
-                        new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid),
-                        0d,
-                        uint(0),
+                    createResults[i] = new MonitoredItemCreateResult(
+                        StatusCode.GOOD,
+                        monitoredItem.getId(),
+                        monitoredItem.getSamplingInterval(),
+                        uint(monitoredItem.getQueueSize()),
+                        monitoredItem.getFilterResult()
+                    );
+                } catch (UaException e) {
+                    createResults[i] = new MonitoredItemCreateResult(
+                        e.getStatusCode(),
+                        UInteger.MIN,
+                        0.0,
+                        UInteger.MIN,
                         null
                     );
-
-                    p.getResultFuture().complete(result);
-                } else {
-                    NodeId nodeId = item.getReadValueId().getNodeId();
-                    Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
-
-                    readDataAttributes(session, namespace, nodeId).thenAccept(vs -> {
-                        try {
-                            for (DataValue value : vs) {
-                                StatusCode statusCode = value.getStatusCode();
-
-                                if (statusCode.getValue() == StatusCodes.Bad_NodeIdInvalid ||
-                                    statusCode.getValue() == StatusCodes.Bad_NodeIdUnknown) {
-                                    throw new UaException(statusCode);
-                                }
-                            }
-
-                            UByte accessLevel = Optional.ofNullable(
-                                (UByte) vs.get(0).getValue().getValue()).orElse(ubyte(1));
-
-                            UByte userAccessLevel = Optional.ofNullable(
-                                (UByte) vs.get(1).getValue().getValue()).orElse(ubyte(1));
-
-                            Double minimumSamplingInterval = Optional.ofNullable(
-                                (Double) vs.get(2).getValue().getValue()).orElse(0.0);
-
-                            EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(accessLevel);
-                            EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromMask(userAccessLevel);
-
-                            double samplingInterval = parameters.getSamplingInterval();
-                            double minSupportedSampleRate = server.getConfig().getLimits().getMinSupportedSampleRate();
-                            double maxSupportedSampleRate = server.getConfig().getLimits().getMaxSupportedSampleRate();
-
-                            if (samplingInterval < 0) samplingInterval = subscription.getPublishingInterval();
-                            if (samplingInterval < minimumSamplingInterval) samplingInterval = minimumSamplingInterval;
-                            if (samplingInterval < minSupportedSampleRate) samplingInterval = minSupportedSampleRate;
-                            if (samplingInterval > maxSupportedSampleRate) samplingInterval = maxSupportedSampleRate;
-
-                            item.modify(
-                                timestamps,
-                                parameters.getClientHandle(),
-                                samplingInterval,
-                                parameters.getFilter(),
-                                parameters.getQueueSize(),
-                                parameters.getDiscardOldest()
-                            );
-
-                            modifiedItems.add(item);
-
-                            MonitoredItemModifyResult result = new MonitoredItemModifyResult(
-                                StatusCode.GOOD,
-                                item.getSamplingInterval(),
-                                uint(item.getQueueSize()),
-                                item.getFilterResult()
-                            );
-
-                            p.getResultFuture().complete(result);
-                        } catch (Throwable t) {
-                            StatusCode statusCode = UaException.extract(t)
-                                .map(UaException::getStatusCode)
-                                .orElse(StatusCode.BAD);
-
-                            MonitoredItemModifyResult result = new MonitoredItemModifyResult(
-                                statusCode,
-                                item.getSamplingInterval(),
-                                uint(item.getQueueSize()),
-                                item.getFilterResult()
-                            );
-
-                            p.getResultFuture().complete(result);
-                        }
-                    });
                 }
             }
 
-            subscription.resetLifetimeCounter();
+            subscription.addMonitoredItems(monitoredItems);
 
-            /*
-             * Notify namespaces of the items we just modified.
-             */
-
-            List<CompletableFuture<MonitoredItemModifyResult>> futures = pending.stream()
-                .map(PendingItemModification::getResultFuture)
-                .collect(toList());
-
-            sequence(futures).thenAccept(results -> {
-                Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = modifiedItems.stream()
-                    .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
-
-                byNamespace.entrySet().forEach(entry -> {
-                    UShort namespaceIndex = entry.getKey();
-
-                    List<BaseMonitoredItem<?>> items = entry.getValue();
-                    List<DataItem> dataItems = Lists.newArrayList();
-                    List<EventItem> eventItems = Lists.newArrayList();
-
-
-                    for (BaseMonitoredItem<?> item : items) {
-                        if (item instanceof MonitoredDataItem) {
-                            dataItems.add((DataItem) item);
-                        } else if (item instanceof MonitoredEventItem) {
-                            eventItems.add((EventItem) item);
-                        }
-                    }
-
-                    if (!dataItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onDataItemsModified(dataItems);
-                    }
-                    if (!eventItems.isEmpty()) {
-                        server.getNamespaceManager().getNamespace(namespaceIndex).onEventItemsModified(eventItems);
-                    }
-                });
-
-                /*
-                 * Namespaces have been notified; send response.
-                 */
-
-                ResponseHeader header = service.createResponseHeader();
-                ModifyMonitoredItemsResponse response = new ModifyMonitoredItemsResponse(
-                    header, a(results, MonitoredItemModifyResult.class), new DiagnosticInfo[0]);
-
-                service.setResponse(response);
-            });
-        } catch (UaException e) {
-            service.setServiceFault(e);
-        }
-    }
-
-    private CompletableFuture<List<DataValue>> readDataAttributes(Session session, Namespace namespace, NodeId itemId) {
-        Function<AttributeId, ReadValueId> f = id ->
-            new ReadValueId(itemId, id.uid(), null, QualifiedName.NULL_VALUE);
-
-        CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
-
-        ReadContext readContext = new ReadContext(
-            server, session, future, new DiagnosticsContext<>());
-
-        List<ReadValueId> attributes = newArrayList(
-            f.apply(AttributeId.AccessLevel),
-            f.apply(AttributeId.UserAccessLevel),
-            f.apply(AttributeId.MinimumSamplingInterval));
-
-        namespace.read(readContext, 0.0, TimestampsToReturn.Neither, attributes);
-
-        return future;
-    }
-
-    private CompletableFuture<EventAttributes> readEventAttributes(Namespace namespace, NodeId nodeId) {
-        Function<AttributeId, ReadValueId> f = id ->
-            new ReadValueId(nodeId, id.uid(), null, QualifiedName.NULL_VALUE);
-
-        CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
-
-        ReadContext readContext = new ReadContext(
-            server, null, future, new DiagnosticsContext<>());
-
-        List<ReadValueId> readValueIds = newArrayList(
-            f.apply(AttributeId.AccessLevel),
-            f.apply(AttributeId.UserAccessLevel),
-            f.apply(AttributeId.EventNotifier));
-
-        namespace.read(readContext, 0.0, TimestampsToReturn.Neither, readValueIds);
-
-        return future.thenApply(values -> {
-            UByte accessLevel = Optional.ofNullable((UByte) values.get(0).getValue().getValue()).orElse(ubyte(1));
-            UByte userAccessLevel = Optional.ofNullable((UByte) values.get(1).getValue().getValue()).orElse(ubyte(1));
-            Optional<UByte> eventNotifier = Optional.ofNullable((UByte) values.get(2).getValue().getValue());
-
-            return new EventAttributes(
-                AccessLevel.fromMask(accessLevel),
-                AccessLevel.fromMask(userAccessLevel),
-                eventNotifier
-            );
-        });
-    }
-
-    private static class EventAttributes {
-
-        private final EnumSet<AccessLevel> accessLevels;
-        private final EnumSet<AccessLevel> userAccessLevels;
-        private final Optional<UByte> eventNotifier;
-
-        EventAttributes(
-            EnumSet<AccessLevel> accessLevels,
-            EnumSet<AccessLevel> userAccessLevels,
-            Optional<UByte> eventNotifier) {
-
-            this.accessLevels = accessLevels;
-            this.userAccessLevels = userAccessLevels;
-            this.eventNotifier = eventNotifier;
-        }
-
-    }
-
-    public void deleteMonitoredItems(ServiceRequest service) {
-        DeleteMonitoredItemsRequest request = (DeleteMonitoredItemsRequest) service.getRequest();
-        UInteger subscriptionId = request.getSubscriptionId();
-
-        try {
-            Subscription subscription = subscriptions.get(subscriptionId);
-            List<UInteger> itemsToDelete = l(request.getMonitoredItemIds());
-
-            if (subscription == null) {
-                throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
-            }
-            if (itemsToDelete.isEmpty()) {
-                throw new UaException(StatusCodes.Bad_NothingToDo);
-            }
-
-            StatusCode[] deleteResults = new StatusCode[itemsToDelete.size()];
-            List<BaseMonitoredItem<?>> deletedItems = newArrayListWithCapacity(itemsToDelete.size());
-
-            synchronized (subscription) {
-                for (int i = 0; i < itemsToDelete.size(); i++) {
-                    UInteger itemId = itemsToDelete.get(i);
-                    BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
-
-                    if (item == null) {
-                        deleteResults[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
-                    } else {
-                        deletedItems.add(item);
-
-                        deleteResults[i] = StatusCode.GOOD;
-                    }
-                }
-
-                subscription.removeMonitoredItems(deletedItems);
-            }
-
-            /*
-             * Notify namespaces of the items that have been deleted.
-             */
-
-            Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
+            // Notify namespaces of the items we just created.
+            Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = monitoredItems.stream()
                 .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
 
-            byNamespace.entrySet().forEach(entry -> {
-                UShort namespaceIndex = entry.getKey();
-
-                List<BaseMonitoredItem<?>> items = entry.getValue();
+            byNamespace.forEach((namespaceIndex, items) -> {
                 List<DataItem> dataItems = Lists.newArrayList();
                 List<EventItem> eventItems = Lists.newArrayList();
 
@@ -846,25 +388,547 @@ public class SubscriptionManager {
                     }
                 }
 
-                if (!dataItems.isEmpty()) {
-                    server.getNamespaceManager().getNamespace(namespaceIndex).onDataItemsDeleted(dataItems);
+                try {
+                    Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
+
+                    if (!dataItems.isEmpty()) {
+                        namespace.onDataItemsCreated(dataItems);
+                    }
+                    if (!eventItems.isEmpty()) {
+                        namespace.onEventItemsCreated(eventItems);
+                    }
+                } catch (Throwable t) {
+                    logger.error(
+                        "Unexpected error notifying namespaceIndex={} " +
+                            "of MonitoredItems being created.", namespaceIndex, t);
                 }
-                if (!eventItems.isEmpty()) {
-                    server.getNamespaceManager().getNamespace(namespaceIndex).onEventItemsDeleted(eventItems);
+            });
+
+            ResponseHeader header = service.createResponseHeader();
+
+            CreateMonitoredItemsResponse response = new CreateMonitoredItemsResponse(
+                header,
+                createResults,
+                new DiagnosticInfo[0]
+            );
+
+            service.setResponse(response);
+        });
+    }
+
+    private BaseMonitoredItem<?> createMonitoredItem(
+        MonitoredItemCreateRequest request,
+        Subscription subscription,
+        TimestampsToReturn timestamps,
+        Map<NodeId, AttributeGroup> attributeGroups
+    ) throws UaException {
+
+        NodeId nodeId = request.getItemToMonitor().getNodeId();
+        UInteger attributeId = request.getItemToMonitor().getAttributeId();
+        QualifiedName dataEncoding = request.getItemToMonitor().getDataEncoding();
+
+        if (!AttributeId.isValid(attributeId)) {
+            throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
+        }
+
+        if (dataEncoding.isNotNull()) {
+            if (!AttributeId.Value.isEqual(attributeId)) {
+                throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
+            }
+
+            if (!dataEncoding.equals(DEFAULT_BINARY_ENCODING) &&
+                !dataEncoding.equals(DEFAULT_XML_ENCODING)) {
+
+                throw new UaException(StatusCodes.Bad_DataEncodingUnsupported);
+            }
+        }
+
+        AttributeGroup attributeGroup = attributeGroups.get(nodeId);
+
+        if (attributeId.equals(AttributeId.EventNotifier.uid())) {
+            UByte eventNotifier = attributeGroup.getEventNotifier();
+
+            // Verify that the SubscribeToEvents bit is set
+            if (eventNotifier == null || (eventNotifier.intValue() & 1) == 0) {
+                throw new UaException(StatusCodes.Bad_AttributeIdInvalid);
+            }
+
+            UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
+            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+
+            Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
+
+            try {
+                namespace.onCreateEventItem(
+                    request.getItemToMonitor(),
+                    requestedQueueSize,
+                    revisedQueueSize::set
+                );
+            } catch (Throwable t) {
+                throw new UaException(StatusCodes.Bad_InternalError, t);
+            }
+
+            return new MonitoredEventItem(
+                server,
+                session,
+                uint(subscription.nextItemId()),
+                subscription.getId(),
+                request.getItemToMonitor(),
+                request.getMonitoringMode(),
+                timestamps,
+                request.getRequestedParameters().getClientHandle(),
+                0.0,
+                revisedQueueSize.get(),
+                request.getRequestedParameters().getDiscardOldest(),
+                request.getRequestedParameters().getFilter()
+            );
+        } else {
+            if (attributeId.equals(AttributeId.Value.uid())) {
+                UByte accessLevel = attributeGroup.getAccessLevel();
+                if (accessLevel == null) accessLevel = ubyte(0);
+
+                UByte userAccessLevel = attributeGroup.getUserAccessLevel();
+                if (userAccessLevel == null) userAccessLevel = ubyte(0);
+
+                EnumSet<AccessLevel> accessLevels = AccessLevel.fromMask(accessLevel);
+                EnumSet<AccessLevel> userAccessLevels = AccessLevel.fromMask(userAccessLevel);
+
+                if (!accessLevels.contains(AccessLevel.CurrentRead)) {
+                    throw new UaException(StatusCodes.Bad_NotReadable);
+                }
+                if (!userAccessLevels.contains(AccessLevel.CurrentRead)) {
+                    throw new UaException(StatusCodes.Bad_UserAccessDenied);
+                }
+            }
+
+            // Validate the requested index range by parsing it.
+            String indexRange = request.getItemToMonitor().getIndexRange();
+            if (indexRange != null) NumericRange.parse(indexRange);
+
+            Double minimumSamplingInterval = 0.0;
+            try {
+                minimumSamplingInterval = attributeGroup.getMinimumSamplingInterval();
+                if (minimumSamplingInterval == null) {
+                    minimumSamplingInterval = server.getConfig().getLimits().getMinSupportedSampleRate();
+                }
+            } catch (UaException e) {
+                if (e.getStatusCode().getValue() != StatusCodes.Bad_AttributeIdInvalid) {
+                    throw e;
+                }
+            }
+
+            double requestedSamplingInterval = getSamplingInterval(
+                subscription,
+                minimumSamplingInterval,
+                request.getRequestedParameters().getSamplingInterval()
+            );
+
+            UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
+
+            Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
+
+            AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
+            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+
+            try {
+                namespace.onCreateDataItem(
+                    request.getItemToMonitor(),
+                    requestedSamplingInterval,
+                    requestedQueueSize,
+                    (rsi, rqs) -> {
+                        revisedSamplingInterval.set(rsi);
+                        revisedQueueSize.set(rqs);
+                    }
+                );
+            } catch (Throwable t) {
+                throw new UaException(StatusCodes.Bad_InternalError, t);
+            }
+
+            return new MonitoredDataItem(
+                server,
+                session,
+                uint(subscription.nextItemId()),
+                subscription.getId(),
+                request.getItemToMonitor(),
+                request.getMonitoringMode(),
+                timestamps,
+                request.getRequestedParameters().getClientHandle(),
+                revisedSamplingInterval.get(),
+                request.getRequestedParameters().getFilter(),
+                revisedQueueSize.get(),
+                request.getRequestedParameters().getDiscardOldest()
+            );
+        }
+    }
+
+    public void modifyMonitoredItems(ServiceRequest service) throws UaException {
+        ModifyMonitoredItemsRequest request = (ModifyMonitoredItemsRequest) service.getRequest();
+
+        UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        TimestampsToReturn timestamps = request.getTimestampsToReturn();
+        List<MonitoredItemModifyRequest> itemsToModify = l(request.getItemsToModify());
+
+        if (subscription == null) {
+            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (timestamps == null) {
+            throw new UaException(StatusCodes.Bad_TimestampsToReturnInvalid);
+        }
+        if (itemsToModify.isEmpty()) {
+            throw new UaException(StatusCodes.Bad_NothingToDo);
+        }
+
+        List<NodeId> distinctNodeIds = itemsToModify.stream()
+            .map(item -> {
+                UInteger itemId = item.getMonitoredItemId();
+                BaseMonitoredItem<?> monitoredItem = subscription.getMonitoredItems().get(itemId);
+                return monitoredItem != null ? monitoredItem.getReadValueId().getNodeId() : NodeId.NULL_VALUE;
+            })
+            .filter(NodeId::isNotNull)
+            .distinct()
+            .collect(toList());
+
+        CompletableFuture<Map<NodeId, AttributeGroup>> attributesFuture = readMonitoringAttributes(distinctNodeIds);
+
+        attributesFuture.thenAccept(attributeGroups -> {
+            MonitoredItemModifyResult[] modifyResults = new MonitoredItemModifyResult[itemsToModify.size()];
+
+            List<BaseMonitoredItem<?>> monitoredItems = new ArrayList<>();
+
+            for (int i = 0; i < itemsToModify.size(); i++) {
+                MonitoredItemModifyRequest modifyRequest = itemsToModify.get(i);
+
+                try {
+                    BaseMonitoredItem<?> monitoredItem = modifyMonitoredItem(
+                        modifyRequest,
+                        timestamps,
+                        subscription,
+                        attributeGroups
+                    );
+
+                    monitoredItems.add(monitoredItem);
+
+                    modifyResults[i] = new MonitoredItemModifyResult(
+                        StatusCode.GOOD,
+                        monitoredItem.getSamplingInterval(),
+                        uint(monitoredItem.getQueueSize()),
+                        monitoredItem.getFilterResult()
+                    );
+                } catch (UaException e) {
+                    modifyResults[i] = new MonitoredItemModifyResult(
+                        e.getStatusCode(),
+                        0.0,
+                        UInteger.MIN,
+                        null
+                    );
+                }
+            }
+
+            subscription.resetLifetimeCounter();
+
+            /*
+             * Notify namespaces of the items we just modified.
+             */
+
+            Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = monitoredItems.stream()
+                .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+
+            byNamespace.forEach((namespaceIndex, items) -> {
+                List<DataItem> dataItems = Lists.newArrayList();
+                List<EventItem> eventItems = Lists.newArrayList();
+
+                for (BaseMonitoredItem<?> item : items) {
+                    if (item instanceof MonitoredDataItem) {
+                        dataItems.add((DataItem) item);
+                    } else if (item instanceof MonitoredEventItem) {
+                        eventItems.add((EventItem) item);
+                    }
+                }
+
+                try {
+                    Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
+
+                    if (!dataItems.isEmpty()) {
+                        namespace.onDataItemsModified(dataItems);
+                    }
+                    if (!eventItems.isEmpty()) {
+                        namespace.onEventItemsModified(eventItems);
+                    }
+                } catch (Throwable t) {
+                    logger.error(
+                        "Unexpected error notifying namespaceIndex={} " +
+                            "of MonitoredItems being modified.", namespaceIndex, t);
                 }
             });
 
             /*
-             * Build and return results.
+             * Namespaces have been notified; send response.
              */
+
             ResponseHeader header = service.createResponseHeader();
-            DeleteMonitoredItemsResponse response = new DeleteMonitoredItemsResponse(
-                header, deleteResults, new DiagnosticInfo[0]);
+
+            ModifyMonitoredItemsResponse response = new ModifyMonitoredItemsResponse(
+                header,
+                modifyResults,
+                new DiagnosticInfo[0]
+            );
 
             service.setResponse(response);
-        } catch (UaException e) {
-            service.setServiceFault(e);
+        });
+    }
+
+    private BaseMonitoredItem<?> modifyMonitoredItem(
+        MonitoredItemModifyRequest request,
+        TimestampsToReturn timestamps,
+        Subscription subscription,
+        Map<NodeId, AttributeGroup> attributeGroups
+    ) throws UaException {
+
+        UInteger itemId = request.getMonitoredItemId();
+        MonitoringParameters parameters = request.getRequestedParameters();
+
+        BaseMonitoredItem<?> monitoredItem = subscription.getMonitoredItems().get(itemId);
+
+        if (monitoredItem == null) {
+            throw new UaException(StatusCodes.Bad_MonitoredItemIdInvalid);
         }
+
+        NodeId nodeId = monitoredItem.getReadValueId().getNodeId();
+        UInteger attributeId = monitoredItem.getReadValueId().getAttributeId();
+        AttributeGroup attributeGroup = attributeGroups.get(nodeId);
+
+        if (attributeId.equals(AttributeId.EventNotifier.uid())) {
+            UInteger requestedQueueSize = parameters.getQueueSize();
+
+            Namespace namespace = server.getNamespaceManager().getNamespace(
+                nodeId.getNamespaceIndex()
+            );
+
+            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+
+            try {
+                namespace.onModifyEventItem(
+                    monitoredItem.getReadValueId(),
+                    requestedQueueSize,
+                    revisedQueueSize::set
+                );
+            } catch (Throwable t) {
+                throw new UaException(StatusCodes.Bad_InternalError, t);
+            }
+
+            monitoredItem.modify(
+                timestamps,
+                parameters.getClientHandle(),
+                monitoredItem.getSamplingInterval(),
+                parameters.getFilter(),
+                revisedQueueSize.get(),
+                parameters.getDiscardOldest()
+            );
+        } else {
+            Double minimumSamplingInterval = 0.0;
+            try {
+                minimumSamplingInterval = attributeGroup.getMinimumSamplingInterval();
+                if (minimumSamplingInterval == null) {
+                    minimumSamplingInterval = server.getConfig().getLimits().getMinSupportedSampleRate();
+                }
+            } catch (UaException e) {
+                if (e.getStatusCode().getValue() != StatusCodes.Bad_AttributeIdInvalid) {
+                    throw e;
+                }
+            }
+
+            double requestedSamplingInterval = getSamplingInterval(
+                subscription,
+                minimumSamplingInterval,
+                request.getRequestedParameters().getSamplingInterval()
+            );
+
+            UInteger requestedQueueSize = parameters.getQueueSize();
+
+            Namespace namespace = server.getNamespaceManager().getNamespace(
+                nodeId.getNamespaceIndex()
+            );
+
+            AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
+            AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
+
+            try {
+                namespace.onModifyDataItem(
+                    monitoredItem.getReadValueId(),
+                    requestedSamplingInterval,
+                    requestedQueueSize,
+                    (rsi, rqs) -> {
+                        revisedSamplingInterval.set(rsi);
+                        revisedQueueSize.set(rqs);
+                    }
+                );
+            } catch (Throwable t) {
+                throw new UaException(StatusCodes.Bad_InternalError, t);
+            }
+
+            monitoredItem.modify(
+                timestamps,
+                parameters.getClientHandle(),
+                revisedSamplingInterval.get(),
+                parameters.getFilter(),
+                revisedQueueSize.get(),
+                parameters.getDiscardOldest()
+            );
+        }
+
+        return monitoredItem;
+    }
+
+    private double getSamplingInterval(
+        Subscription subscription,
+        Double minimumSamplingInterval,
+        Double requestedSamplingInterval) {
+
+        double samplingInterval = requestedSamplingInterval;
+        double minSupportedSampleRate = server.getConfig().getLimits().getMinSupportedSampleRate();
+        double maxSupportedSampleRate = server.getConfig().getLimits().getMaxSupportedSampleRate();
+
+        if (samplingInterval < 0) {
+            samplingInterval = subscription.getPublishingInterval();
+        }
+        if (samplingInterval < minimumSamplingInterval) {
+            samplingInterval = minimumSamplingInterval;
+        }
+        if (samplingInterval < minSupportedSampleRate) {
+            samplingInterval = minSupportedSampleRate;
+        }
+        if (samplingInterval > maxSupportedSampleRate) {
+            samplingInterval = maxSupportedSampleRate;
+        }
+        return samplingInterval;
+    }
+
+    private CompletableFuture<Map<NodeId, AttributeGroup>> readMonitoringAttributes(List<NodeId> nodeIds) {
+        List<ReadValueId> attributesToRead = nodeIds.stream()
+            .flatMap(nodeId -> {
+                Function<AttributeId, ReadValueId> f = id -> new ReadValueId(
+                    nodeId,
+                    id.uid(),
+                    null,
+                    QualifiedName.NULL_VALUE
+                );
+
+                return Stream.of(
+                    f.apply(AttributeId.AccessLevel),
+                    f.apply(AttributeId.UserAccessLevel),
+                    f.apply(AttributeId.EventNotifier),
+                    f.apply(AttributeId.MinimumSamplingInterval)
+                );
+            })
+            .collect(toList());
+
+        CompletableFuture<List<DataValue>> future = DefaultAttributeServiceSet.namespaceCollatedRead(
+            server,
+            session,
+            0.0,
+            TimestampsToReturn.Neither,
+            attributesToRead
+        );
+
+        return future.thenApply(attributeValues -> {
+            Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
+
+            for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 4) {
+                monitoringAttributes.put(nodeIds.get(nodeIdx), new AttributeGroup(
+                    attributeValues.get(attrIdx),
+                    attributeValues.get(attrIdx + 1),
+                    attributeValues.get(attrIdx + 2),
+                    attributeValues.get(attrIdx + 3)
+                ));
+            }
+
+            return monitoringAttributes;
+        });
+    }
+
+    public void deleteMonitoredItems(ServiceRequest service) throws UaException {
+        DeleteMonitoredItemsRequest request = (DeleteMonitoredItemsRequest) service.getRequest();
+
+        UInteger subscriptionId = request.getSubscriptionId();
+        Subscription subscription = subscriptions.get(subscriptionId);
+        List<UInteger> itemsToDelete = l(request.getMonitoredItemIds());
+
+        if (subscription == null) {
+            throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+        }
+        if (itemsToDelete.isEmpty()) {
+            throw new UaException(StatusCodes.Bad_NothingToDo);
+        }
+
+        StatusCode[] deleteResults = new StatusCode[itemsToDelete.size()];
+        List<BaseMonitoredItem<?>> deletedItems = newArrayListWithCapacity(itemsToDelete.size());
+
+        synchronized (subscription) {
+            for (int i = 0; i < itemsToDelete.size(); i++) {
+                UInteger itemId = itemsToDelete.get(i);
+                BaseMonitoredItem<?> item = subscription.getMonitoredItems().get(itemId);
+
+                if (item == null) {
+                    deleteResults[i] = new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
+                } else {
+                    deletedItems.add(item);
+
+                    deleteResults[i] = StatusCode.GOOD;
+                }
+            }
+
+            subscription.removeMonitoredItems(deletedItems);
+        }
+
+        /*
+         * Notify namespaces of the items that have been deleted.
+         */
+
+        Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
+            .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+
+        byNamespace.forEach((namespaceIndex, items) -> {
+            List<DataItem> dataItems = Lists.newArrayList();
+            List<EventItem> eventItems = Lists.newArrayList();
+
+            for (BaseMonitoredItem<?> item : items) {
+                if (item instanceof MonitoredDataItem) {
+                    dataItems.add((DataItem) item);
+                } else if (item instanceof MonitoredEventItem) {
+                    eventItems.add((EventItem) item);
+                }
+            }
+
+            try {
+                Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
+
+                if (!dataItems.isEmpty()) {
+                    namespace.onDataItemsDeleted(dataItems);
+                }
+                if (!eventItems.isEmpty()) {
+                    namespace.onEventItemsDeleted(eventItems);
+                }
+            } catch (Throwable t) {
+                logger.error(
+                    "Unexpected error notifying namespaceIndex={} " +
+                        "of MonitoredItems being deleted.", namespaceIndex, t);
+            }
+        });
+
+        /*
+         * Build and return results.
+         */
+        ResponseHeader header = service.createResponseHeader();
+
+        DeleteMonitoredItemsResponse response = new DeleteMonitoredItemsResponse(
+            header,
+            deleteResults,
+            new DiagnosticInfo[0]
+        );
+
+        service.setResponse(response);
+
     }
 
     public void setMonitoringMode(ServiceRequest service) {
@@ -1023,6 +1087,9 @@ public class SubscriptionManager {
             return;
         }
 
+        StatusCode[] addResults;
+        StatusCode[] removeResults;
+
         synchronized (subscription) {
             Map<UInteger, BaseMonitoredItem<?>> itemsById = subscription.getMonitoredItems();
 
@@ -1032,7 +1099,7 @@ public class SubscriptionManager {
                 return;
             }
 
-            List<StatusCode> removeResults = linksToRemove.stream()
+            removeResults = linksToRemove.stream()
                 .map(linkedItemId -> {
                     BaseMonitoredItem<?> item = itemsById.get(linkedItemId);
                     if (item != null) {
@@ -1045,9 +1112,9 @@ public class SubscriptionManager {
                         return new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
                     }
                 })
-                .collect(toList());
+                .toArray(StatusCode[]::new);
 
-            List<StatusCode> addResults = linksToAdd.stream()
+            addResults = linksToAdd.stream()
                 .map(linkedItemId -> {
                     BaseMonitoredItem<?> linkedItem = itemsById.get(linkedItemId);
                     if (linkedItem != null) {
@@ -1057,18 +1124,18 @@ public class SubscriptionManager {
                         return new StatusCode(StatusCodes.Bad_MonitoredItemIdInvalid);
                     }
                 })
-                .collect(toList());
-
-            SetTriggeringResponse response = new SetTriggeringResponse(
-                service.createResponseHeader(),
-                addResults.toArray(new StatusCode[addResults.size()]),
-                new DiagnosticInfo[0],
-                removeResults.toArray(new StatusCode[removeResults.size()]),
-                new DiagnosticInfo[0]
-            );
-
-            service.setResponse(response);
+                .toArray(StatusCode[]::new);
         }
+
+        SetTriggeringResponse response = new SetTriggeringResponse(
+            service.createResponseHeader(),
+            addResults,
+            new DiagnosticInfo[0],
+            removeResults,
+            new DiagnosticInfo[0]
+        );
+
+        service.setResponse(response);
     }
 
     public void sessionClosed(boolean deleteSubscriptions) {
@@ -1117,4 +1184,87 @@ public class SubscriptionManager {
         }
     }
 
+    private static class AttributeGroup {
+        final DataValue accessLevelValue;
+        final DataValue userAccessLevelValue;
+        final DataValue eventNotifierValue;
+        final DataValue minimumSamplingIntervalValue;
+
+        AttributeGroup(
+            DataValue accessLevelValue,
+            DataValue userAccessLevelValue,
+            DataValue eventNotifierValue,
+            DataValue minimumSamplingIntervalValue) {
+
+            this.accessLevelValue = accessLevelValue;
+            this.userAccessLevelValue = userAccessLevelValue;
+            this.eventNotifierValue = eventNotifierValue;
+            this.minimumSamplingIntervalValue = minimumSamplingIntervalValue;
+        }
+
+        @Nullable
+        UByte getAccessLevel() throws UaException {
+            Object value = getValue(accessLevelValue);
+
+            if (value instanceof UByte) {
+                return (UByte) value;
+            } else {
+                return null;
+            }
+        }
+
+        @Nullable
+        UByte getUserAccessLevel() throws UaException {
+            Object value = getValue(userAccessLevelValue);
+
+            if (value instanceof UByte) {
+                return (UByte) value;
+            } else {
+                return null;
+            }
+        }
+
+        @Nullable
+        UByte getEventNotifier() throws UaException {
+            Object value = getValue(eventNotifierValue);
+
+            if (value instanceof UByte) {
+                return (UByte) value;
+            } else {
+                return null;
+            }
+        }
+
+        @Nullable
+        Double getMinimumSamplingInterval() throws UaException {
+            Object value = getValue(minimumSamplingIntervalValue);
+
+            if (value instanceof Double) {
+                return (Double) value;
+            } else {
+                return null;
+            }
+        }
+
+        private Object getValue(DataValue dataValue) throws UaException {
+            StatusCode statusCode = dataValue.getStatusCode();
+
+            if (statusCode == null) {
+                throw new UaException(StatusCode.BAD);
+            }
+
+            if (statusCode.isBad()) {
+                throw new UaException(statusCode);
+            }
+
+            return dataValue.getValue().getValue();
+        }
+    }
+
 }
+
+
+
+
+
+
