@@ -822,12 +822,12 @@ public class SubscriptionManager {
         return future.thenApply(attributeValues -> {
             Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
 
-            for (int i = 0; i < nodeIds.size(); i += 4) {
-                monitoringAttributes.put(nodeIds.get(i), new AttributeGroup(
-                    attributeValues.get(i),
-                    attributeValues.get(i + 1),
-                    attributeValues.get(i + 2),
-                    attributeValues.get(i + 3)
+            for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 4) {
+                monitoringAttributes.put(nodeIds.get(nodeIdx), new AttributeGroup(
+                    attributeValues.get(attrIdx),
+                    attributeValues.get(attrIdx + 1),
+                    attributeValues.get(attrIdx + 2),
+                    attributeValues.get(attrIdx + 3)
                 ));
             }
 
