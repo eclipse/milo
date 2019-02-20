@@ -152,8 +152,17 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (renewFuture != null) renewFuture.cancel(false);
 
-        handshakeFuture.completeExceptionally(
-            new UaException(StatusCodes.Bad_ConnectionClosed, "connection closed"));
+        UaException exception = new UaException(
+            StatusCodes.Bad_ConnectionClosed,
+            "connection closed"
+        );
+
+        handshakeFuture.completeExceptionally(exception);
+
+        pending.values().forEach(request ->
+            request.getFuture()
+                .completeExceptionally(exception)
+        );
 
         super.channelInactive(ctx);
     }
