@@ -63,9 +63,6 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class Subscription {
 
-    private static final double MIN_LIFETIME = 10 * 1000.0;
-    private static final double MAX_LIFETIME = 60 * 60 * 1000.0;
-
     private static final int MAX_NOTIFICATIONS = 0xFFFF;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -216,16 +213,22 @@ public class Subscription {
     }
 
     private void setMaxKeepAliveCount(long maxKeepAliveCount) {
+        OpcUaServerConfigLimits limits = subscriptionManager.getServer()
+            .getConfig()
+            .getLimits();
+
         if (maxKeepAliveCount == 0) maxKeepAliveCount = 3;
 
         double keepAliveInterval = maxKeepAliveCount * publishingInterval;
 
         // keep alive interval cannot be longer than the max subscription lifetime.
-        if (keepAliveInterval > MAX_LIFETIME) {
-            maxKeepAliveCount = (long) (MAX_LIFETIME / publishingInterval);
+        double maxSubscriptionLifetime = limits.getMaxSubscriptionLifetime();
+
+        if (keepAliveInterval > maxSubscriptionLifetime) {
+            maxKeepAliveCount = (long) (maxSubscriptionLifetime / publishingInterval);
 
             if (maxKeepAliveCount < UInteger.MAX_VALUE) {
-                if (MAX_LIFETIME % publishingInterval != 0) {
+                if (maxSubscriptionLifetime % publishingInterval != 0) {
                     maxKeepAliveCount++;
                 }
             }
@@ -234,9 +237,7 @@ public class Subscription {
         }
 
         // the time between publishes cannot exceed the max publishing interval.
-        double maxPublishingInterval = subscriptionManager.getServer()
-            .getConfig()
-            .getLimits()
+        double maxPublishingInterval = limits
             .getMaxPublishingInterval();
 
         if (keepAliveInterval > maxPublishingInterval) {
@@ -253,14 +254,20 @@ public class Subscription {
     }
 
     private void setLifetimeCount(long lifetimeCount) {
+        OpcUaServerConfigLimits limits = subscriptionManager.getServer()
+            .getConfig()
+            .getLimits();
+
         double lifetimeInterval = lifetimeCount * publishingInterval;
 
         // lifetime cannot be longer than the max subscription lifetime.
-        if (lifetimeInterval > MAX_LIFETIME) {
-            lifetimeCount = (long) (MAX_LIFETIME / publishingInterval);
+        double maxSubscriptionLifetime = limits.getMaxSubscriptionLifetime();
+
+        if (lifetimeInterval > maxSubscriptionLifetime) {
+            lifetimeCount = (long) (maxSubscriptionLifetime / publishingInterval);
 
             if (lifetimeCount < UInteger.MAX_VALUE) {
-                if (MAX_LIFETIME % publishingInterval != 0) {
+                if (maxSubscriptionLifetime % publishingInterval != 0) {
                     lifetimeCount++;
                 }
             }
@@ -279,11 +286,13 @@ public class Subscription {
         }
 
         // apply the minimum.
-        if (MIN_LIFETIME > publishingInterval && MIN_LIFETIME > lifetimeInterval) {
-            lifetimeCount = (long) (MIN_LIFETIME / publishingInterval);
+        double minSubscriptionLifetime = limits.getMinSubscriptionLifetime();
+
+        if (minSubscriptionLifetime > publishingInterval && minSubscriptionLifetime > lifetimeInterval) {
+            lifetimeCount = (long) (minSubscriptionLifetime / publishingInterval);
 
             if (lifetimeCount < UInteger.MAX_VALUE) {
-                if (MIN_LIFETIME % publishingInterval != 0) {
+                if (minSubscriptionLifetime % publishingInterval != 0) {
                     lifetimeCount++;
                 }
             }

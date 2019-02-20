@@ -42,7 +42,7 @@ public interface OpcUaServerConfigLimits {
      * @return the maximum allowed publishing interval.
      */
     default Double getMaxPublishingInterval() {
-        return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
+        return (double) TimeUnit.MILLISECONDS.convert(8, TimeUnit.HOURS);
     }
 
     /**
@@ -52,6 +52,28 @@ public interface OpcUaServerConfigLimits {
      */
     default Double getDefaultPublishingInterval() {
         return 250.0;
+    }
+
+    /**
+     * Get the minimum subscription lifetime, in milliseconds.
+     * <p>
+     * This value should be larger than the configured minimum publishing interval.
+     *
+     * @return the minimum subscription lifetime, in milliseconds.
+     */
+    default Double getMinSubscriptionLifetime() {
+        return 10_000.0;
+    }
+
+    /**
+     * Get the maximum subscription lifetime, in milliseconds.
+     * <p>
+     * This value should be larger than the configured maximum publishing interval.
+     *
+     * @return the maximum subscription lifetime, in milliseconds.
+     */
+    default Double getMaxSubscriptionLifetime() {
+        return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
     }
 
     default Double getMinSupportedSampleRate() {
