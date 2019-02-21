@@ -275,12 +275,18 @@ public final class DataValue {
 
             boolean includeServer = timestamps == TimestampsToReturn.Server || timestamps == TimestampsToReturn.Both;
 
+            // Source timestamps can only be removed; they
+            // can't be added because we aren't the source.
             if (!includeSource) {
                 setSourceTime(null);
                 setSourcePicoseconds(null);
             }
+
             if (includeServer) {
                 setServerTime(DateTime.now());
+            } else {
+                setServerTime(null);
+                setServerPicoseconds(null);
             }
 
             return this;
