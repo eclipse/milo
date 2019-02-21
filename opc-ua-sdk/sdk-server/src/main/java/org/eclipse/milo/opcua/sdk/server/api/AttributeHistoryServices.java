@@ -13,11 +13,11 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -46,14 +46,13 @@ public interface AttributeHistoryServices {
                              TimestampsToReturn timestamps,
                              List<HistoryReadValueId> readValueIds) {
 
-        List<HistoryReadResult> results = Lists.newArrayListWithCapacity(readValueIds.size());
+        HistoryReadResult result = new HistoryReadResult(
+            new StatusCode(StatusCodes.Bad_HistoryOperationUnsupported),
+            null,
+            null
+        );
 
-        for (HistoryReadValueId readValueId : readValueIds) {
-
-            results.add(new HistoryReadResult(new StatusCode(StatusCodes.Bad_NotSupported), null, null));
-        }
-
-        context.complete(results);
+        context.complete(Collections.nCopies(readValueIds.size(), result));
     }
 
     /**
@@ -67,14 +66,13 @@ public interface AttributeHistoryServices {
     default void historyUpdate(HistoryUpdateContext context,
                                List<HistoryUpdateDetails> updateDetails) {
 
-        List<HistoryUpdateResult> results = Lists.newArrayListWithCapacity(updateDetails.size());
+        HistoryUpdateResult result = new HistoryUpdateResult(
+            new StatusCode(StatusCodes.Bad_HistoryOperationUnsupported),
+            null,
+            null
+        );
 
-        for (HistoryUpdateDetails details : updateDetails) {
-
-            results.add(new HistoryUpdateResult(new StatusCode(StatusCodes.Bad_NotSupported), null, null));
-        }
-
-        context.complete(results);
+        context.complete(Collections.nCopies(updateDetails.size(), result));
     }
 
     final class HistoryReadContext extends OperationContext<HistoryReadValueId, HistoryReadResult> {
