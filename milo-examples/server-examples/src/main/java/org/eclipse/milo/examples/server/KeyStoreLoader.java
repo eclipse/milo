@@ -74,7 +74,7 @@ class KeyStoreLoader {
             // Get as many hostnames and IP addresses as we can listed in the certificate.
             Set<String> hostnames = Sets.union(
                 Sets.newHashSet(HostnameUtil.getHostname()),
-                HostnameUtil.getHostnames("0.0.0.0")
+                HostnameUtil.getHostnames("0.0.0.0", false)
             );
 
             for (String hostname : hostnames) {
