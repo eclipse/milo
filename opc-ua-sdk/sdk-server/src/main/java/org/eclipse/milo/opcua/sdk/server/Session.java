@@ -151,6 +151,13 @@ public class Session implements SessionServiceSet {
         this.clientAddress = clientAddress;
     }
 
+    /**
+     * Get the {@link InetAddress} of the client that activated this session.
+     * <p>
+     * The address is set or updated when time the session is activated or re-activated.
+     *
+     * @return the {@link InetAddress} of the client that activated this session.
+     */
     public InetAddress getClientAddress() {
         return clientAddress;
     }
