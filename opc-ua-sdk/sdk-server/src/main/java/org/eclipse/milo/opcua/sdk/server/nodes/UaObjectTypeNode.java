@@ -214,7 +214,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
             Preconditions.checkNotNull(browseName, "BrowseName cannot be null");
             Preconditions.checkNotNull(displayName, "DisplayName cannot be null");
 
-            return new UaObjectTypeNode(
+            UaObjectTypeNode node = new UaObjectTypeNode(
                 context,
                 nodeId,
                 browseName,
@@ -224,6 +224,10 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
                 userWriteMask,
                 isAbstract
             );
+
+            node.addReferences(references);
+
+            return node;
         }
     }
 
