@@ -65,7 +65,7 @@ public class GenericStructCodec extends AbstractCodec<Struct, Struct.Member> {
         if (value == null) {
             return null;
         } else if (value instanceof List) {
-            List<Object> list = (List<Object>) value;
+            List<?> list = (List<?>) value;
 
             return list.toArray();
         } else if (value.getClass().isArray()) {
