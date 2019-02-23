@@ -24,8 +24,8 @@ public class BrowsePath {
         new QualifiedName(0, "/")
     );
 
-    BrowsePath parent;
-    QualifiedName browseName;
+    final BrowsePath parent;
+    final QualifiedName browseName;
 
     BrowsePath(BrowsePath parent, QualifiedName browseName) {
         this.parent = parent;

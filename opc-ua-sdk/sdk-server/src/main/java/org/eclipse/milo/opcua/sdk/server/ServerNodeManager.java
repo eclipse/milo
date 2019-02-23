@@ -26,7 +26,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
  */
 public class ServerNodeManager extends DelegatingNodeManager<UaNode> {
 
-    private OpcUaServer server;
+    private final OpcUaServer server;
 
     public ServerNodeManager(OpcUaServer server) {
         this.server = server;

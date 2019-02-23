@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class EmptyNodeManager implements NodeManager<UaNode> {
 
-    public static EmptyNodeManager INSTANCE = new EmptyNodeManager();
+    public static final EmptyNodeManager INSTANCE = new EmptyNodeManager();
 
     private EmptyNodeManager() {}
 
