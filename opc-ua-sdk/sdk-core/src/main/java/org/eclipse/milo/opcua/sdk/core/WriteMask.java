@@ -48,7 +48,7 @@ public enum WriteMask {
 
     private final int value;
 
-    private WriteMask(int value) {
+    WriteMask(int value) {
         this.value = value;
     }
 
