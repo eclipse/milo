@@ -24,7 +24,6 @@ import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -118,29 +117,18 @@ public abstract class UaNode implements Node {
             .thenApply(value -> cast(value, property.getJavaType()));
     }
 
-    protected <T> CompletableFuture<T> getProperty(Property<T> property) {
-        return getPropertyNode(property.getBrowseName())
-            .thenCompose(VariableNode::getValue)
-            .thenApply(value -> cast(value, property.getJavaType()));
-    }
-
     protected <T> CompletableFuture<StatusCode> setProperty(QualifiedProperty<T> property, T value) {
         return getPropertyNode(property)
             .thenCompose(node -> node.setValue(value));
     }
 
-    protected <T> CompletableFuture<StatusCode> setProperty(Property<T> property, T value) {
-        return getPropertyNode(property.getBrowseName())
-            .thenCompose(node -> node.setValue(value));
-    }
-
-    protected CompletableFuture<DataValue> readProperty(Property<?> property) {
-        return getPropertyNode(property.getBrowseName())
+    protected CompletableFuture<DataValue> readProperty(QualifiedProperty<?> property) {
+        return getPropertyNode(property)
             .thenCompose(VariableNode::readValue);
     }
 
-    protected CompletableFuture<StatusCode> writeProperty(Property<?> property, DataValue value) {
-        return getPropertyNode(property.getBrowseName())
+    protected CompletableFuture<StatusCode> writeProperty(QualifiedProperty<?> property, DataValue value) {
+        return getPropertyNode(property)
             .thenCompose(node -> node.writeValue(value));
     }
 

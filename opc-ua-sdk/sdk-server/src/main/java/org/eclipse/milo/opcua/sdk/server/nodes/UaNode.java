@@ -26,7 +26,6 @@ import javax.annotation.Nonnull;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.core.model.Property;
 import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
@@ -247,36 +246,6 @@ public abstract class UaNode implements UaServerNode {
             .map(node -> node.getValue().getValue().getValue());
     }
 
-    public <T> void setProperty(Property<T> property, T value) {
-        VariableNode node = getPropertyNode(property.getBrowseName()).orElseGet(() -> {
-            QualifiedName browseName = property.getBrowseName();
-
-            NodeId propertyNodeId = new NodeId(
-                getNodeId().getNamespaceIndex(),
-                String.format("%s.%s", getNodeId().getIdentifier().toString(), browseName.getName())
-            );
-
-            UaPropertyNode propertyNode = new UaPropertyNode(
-                context,
-                propertyNodeId,
-                browseName,
-                LocalizedText.english(browseName.getName())
-            );
-
-            propertyNode.setDataType(property.getDataType());
-            propertyNode.setValueRank(property.getValueRank());
-            propertyNode.setArrayDimensions(property.getArrayDimensions());
-
-            addProperty(propertyNode);
-
-            context.getNodeManager().addNode(propertyNode);
-
-            return propertyNode;
-        });
-
-        node.setValue(new DataValue(new Variant(value)));
-    }
-
     public <T> void setProperty(QualifiedProperty<T> property, T value) {
         UShort namespaceIndex = context.getNamespaceManager()
             .getNamespaceTable().getIndex(property.getNamespaceUri());
@@ -314,10 +283,6 @@ public abstract class UaNode implements UaServerNode {
         });
 
         node.setValue(new DataValue(new Variant(value)));
-    }
-
-    public Optional<VariableNode> getPropertyNode(Property<?> property) {
-        return getPropertyNode(property.getBrowseName());
     }
 
     public Optional<VariableNode> getPropertyNode(QualifiedProperty<?> property) {
