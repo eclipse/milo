@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
@@ -221,19 +220,16 @@ public class UaObjectNode extends UaNode implements ObjectNode {
 
 
     @Nullable
-    @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
     @Nullable
-    @UaOptional("Icon")
     public ByteString getIcon() {
         return getProperty(Icon).orElse(null);
     }
 
     @Nullable
-    @UaOptional("NamingRule")
     public NamingRuleType getNamingRule() {
         return getProperty(NamingRule).orElse(null);
     }

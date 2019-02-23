@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.DataTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -62,19 +61,16 @@ public class UaDataTypeNode extends UaNode implements DataTypeNode {
     }
 
     @Nullable
-    @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
     @Nullable
-    @UaOptional("EnumStrings")
     public LocalizedText[] getEnumStrings() {
         return getProperty(EnumStrings).orElse(null);
     }
 
     @Nullable
-    @UaOptional("EnumValues")
     public EnumValueType[] getEnumValues() {
         return getProperty(EnumValues).orElse(null);
     }

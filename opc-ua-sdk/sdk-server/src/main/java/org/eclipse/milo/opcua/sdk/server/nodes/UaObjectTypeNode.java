@@ -22,7 +22,6 @@ import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -115,13 +114,11 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     }
 
     @Nullable
-    @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
     @Nullable
-    @UaOptional("Icon")
     public ByteString getIcon() {
         return getProperty(Icon).orElse(null);
     }

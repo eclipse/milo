@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ReferenceTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -92,7 +91,6 @@ public class UaReferenceTypeNode extends UaNode implements ReferenceTypeNode {
     }
 
     @Nullable
-    @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }

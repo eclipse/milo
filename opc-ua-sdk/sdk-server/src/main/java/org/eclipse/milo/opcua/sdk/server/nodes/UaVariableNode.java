@@ -26,7 +26,6 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
@@ -319,49 +318,41 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     @Nullable
-    @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
     @Nullable
-    @UaOptional("LocalTime")
     public TimeZoneDataType getLocalTime() {
         return getProperty(LocalTime).orElse(null);
     }
 
     @Nullable
-    @UaOptional("DataTypeVersion")
     public String getDataTypeVersion() {
         return getProperty(DataTypeVersion).orElse(null);
     }
 
     @Nullable
-    @UaOptional("DictionaryFragment")
     public ByteString getDictionaryFragment() {
         return getProperty(DictionaryFragment).orElse(null);
     }
 
     @Nullable
-    @UaOptional("AllowNulls")
     public Boolean getAllowNulls() {
         return getProperty(AllowNulls).orElse(null);
     }
 
     @Nullable
-    @UaOptional("MaxStringLength")
     public UInteger getMaxStringLength() {
         return getProperty(MaxStringLength).orElse(null);
     }
 
     @Nullable
-    @UaOptional("MaxArrayLength")
     public UInteger getMaxArrayLength() {
         return getProperty(MaxArrayLength).orElse(null);
     }
 
     @Nullable
-    @UaOptional("EngineeringUnits")
     public EUInformation getEngineeringUnits() {
         return getProperty(EngineeringUnits).orElse(null);
     }

@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ViewNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -77,13 +76,11 @@ public class UaViewNode extends UaNode implements ViewNode {
     }
 
     @Nullable
-    @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
     @Nullable
-    @UaOptional("ViewVersion")
     public UInteger getViewVersion() {
         return getProperty(ViewVersion).orElse(null);
     }

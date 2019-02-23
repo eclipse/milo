@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
@@ -126,19 +125,16 @@ public class UaMethodNode extends UaNode implements MethodNode {
     }
 
     @Nullable
-    @UaOptional("NodeVersion")
     public String getNodeVersion() {
         return getProperty(NodeVersion).orElse(null);
     }
 
     @Nullable
-    @UaOptional("InputArguments")
     public Argument[] getInputArguments() {
         return getProperty(InputArguments).orElse(null);
     }
 
     @Nullable
-    @UaOptional("OutputArguments")
     public Argument[] getOutputArguments() {
         return getProperty(OutputArguments).orElse(null);
     }
