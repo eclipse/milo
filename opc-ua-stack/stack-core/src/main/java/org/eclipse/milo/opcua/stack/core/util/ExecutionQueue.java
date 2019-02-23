@@ -103,6 +103,8 @@ public class ExecutionQueue {
                 runnable = queue.poll();
             }
 
+            assert runnable != null;
+
             try {
                 runnable.run();
             } catch (Throwable throwable) {

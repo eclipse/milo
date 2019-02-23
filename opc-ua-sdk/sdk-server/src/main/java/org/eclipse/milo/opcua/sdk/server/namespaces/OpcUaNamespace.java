@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
@@ -322,26 +321,34 @@ public class OpcUaNamespace implements Namespace {
         serverNode.getServerRedundancyNode().setRedundancySupport(RedundancySupport.None);
 
         try {
-            UaMethodNode getMonitoredItems = (UaMethodNode) nodeManager.get(Identifiers.Server_GetMonitoredItems);
+            UaNode node = nodeManager.get(Identifiers.Server_GetMonitoredItems);
 
-            AnnotationBasedInvocationHandler handler =
-                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new GetMonitoredItems(server));
+            if (node instanceof UaMethodNode) {
+                UaMethodNode getMonitoredItems = (UaMethodNode) node;
 
-            getMonitoredItems.setInvocationHandler(handler);
-            getMonitoredItems.setInputArguments(handler.getInputArguments());
-            getMonitoredItems.setOutputArguments(handler.getOutputArguments());
+                AnnotationBasedInvocationHandler handler =
+                    AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new GetMonitoredItems(server));
+
+                getMonitoredItems.setInvocationHandler(handler);
+                getMonitoredItems.setInputArguments(handler.getInputArguments());
+                getMonitoredItems.setOutputArguments(handler.getOutputArguments());
+            }
         } catch (Exception e) {
             logger.error("Error setting up GetMonitoredItems Method.", e);
         }
 
         try {
-            UaMethodNode resendData = (UaMethodNode) nodeManager.get(Identifiers.Server_ResendData);
+            UaNode node = nodeManager.get(Identifiers.Server_ResendData);
 
-            AnnotationBasedInvocationHandler handler =
-                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new ResendData(server));
+            if (node instanceof UaMethodNode) {
+                UaMethodNode resendData = (UaMethodNode) node;
 
-            resendData.setInvocationHandler(handler);
-            resendData.setInputArguments(handler.getInputArguments());
+                AnnotationBasedInvocationHandler handler =
+                    AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new ResendData(server));
+
+                resendData.setInvocationHandler(handler);
+                resendData.setInputArguments(handler.getInputArguments());
+            }
         } catch (Exception e) {
             logger.error("Error setting up ResendData Method.", e);
         }
