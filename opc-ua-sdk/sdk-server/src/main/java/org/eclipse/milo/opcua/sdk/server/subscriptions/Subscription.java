@@ -569,7 +569,7 @@ public class Subscription {
 
     public synchronized UInteger[] getAvailableSequenceNumbers() {
         Set<UInteger> uIntegers = availableMessages.keySet();
-        UInteger[] available = uIntegers.toArray(new UInteger[uIntegers.size()]);
+        UInteger[] available = uIntegers.toArray(new UInteger[0]);
         Arrays.sort(available);
         return available;
     }

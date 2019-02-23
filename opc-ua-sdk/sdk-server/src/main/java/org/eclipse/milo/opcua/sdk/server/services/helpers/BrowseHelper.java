@@ -184,11 +184,11 @@ public class BrowseHelper {
                     server.getBrowseContinuationPoints().put(c.identifier, c);
 
                     return new BrowseResult(
-                        StatusCode.GOOD, c.identifier, current.toArray(new ReferenceDescription[current.size()]));
+                        StatusCode.GOOD, c.identifier, current.toArray(new ReferenceDescription[0]));
                 }
             } else {
                 return new BrowseResult(
-                    StatusCode.GOOD, null, references.toArray(new ReferenceDescription[references.size()]));
+                    StatusCode.GOOD, null, references.toArray(new ReferenceDescription[0]));
             }
         }
 
@@ -347,7 +347,7 @@ public class BrowseHelper {
 
             ResponseHeader header = service.createResponseHeader();
             BrowseNextResponse response = new BrowseNextResponse(
-                header, results.toArray(new BrowseResult[results.size()]), new DiagnosticInfo[0]);
+                header, results.toArray(new BrowseResult[0]), new DiagnosticInfo[0]);
 
             service.setResponse(response);
         }
@@ -377,12 +377,12 @@ public class BrowseHelper {
                     return new BrowseResult(
                         StatusCode.GOOD,
                         c.identifier,
-                        current.toArray(new ReferenceDescription[current.size()]));
+                        current.toArray(new ReferenceDescription[0]));
                 } else {
                     return new BrowseResult(
                         StatusCode.GOOD,
                         null,
-                        references.toArray(new ReferenceDescription[references.size()]));
+                        references.toArray(new ReferenceDescription[0]));
                 }
             } else {
                 return new BrowseResult(BAD_CONTINUATION_POINT_INVALID, null, null);

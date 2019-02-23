@@ -34,7 +34,7 @@ public abstract class CefactEngineeringUnits {
 
     public static EUInformation[] getAll() {
         return BY_UNIT_ID.values()
-            .toArray(new EUInformation[BY_UNIT_ID.size()]);
+            .toArray(new EUInformation[0]);
     }
 
     public static final EUInformation Radian = new EUInformation(CEFACT_NAMESPACE_URI, 4405297, english("rad"), english("radian"));

@@ -65,8 +65,8 @@ public class GetMonitoredItems {
                 clientHandleList.add(uint(item.getClientHandle()));
             }
 
-            serverHandles.set(serverHandleList.toArray(new UInteger[serverHandleList.size()]));
-            clientHandles.set(clientHandleList.toArray(new UInteger[clientHandleList.size()]));
+            serverHandles.set(serverHandleList.toArray(new UInteger[0]));
+            clientHandles.set(clientHandleList.toArray(new UInteger[0]));
         }
     }
 

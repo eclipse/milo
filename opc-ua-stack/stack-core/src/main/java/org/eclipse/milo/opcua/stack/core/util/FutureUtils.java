@@ -35,7 +35,7 @@ public class FutureUtils {
             return CompletableFuture.completedFuture(Collections.emptyList());
         }
 
-        CompletableFuture[] fa = futures.toArray(new CompletableFuture[futures.size()]);
+        CompletableFuture[] fa = futures.toArray(new CompletableFuture[0]);
 
         return CompletableFuture.allOf(fa).thenApply(v -> {
             List<T> results = new ArrayList<>(futures.size());

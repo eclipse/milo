@@ -94,7 +94,7 @@ public class CertificateGenerator {
 
         List<String> args = buildKeyToolArgs(subject, validity, applicationUri, dnsNames, ipAddresses);
 
-        invokeKeyTool(args.toArray(new String[args.size()]));
+        invokeKeyTool(args.toArray(new String[0]));
 
         KeyStore keyStore = KeyStore.getInstance(keyStoreType);
 
