@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
+import java.net.InetAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
@@ -70,6 +71,7 @@ public class Session implements SessionServiceSet {
 
     private volatile EndpointDescription endpoint;
     private volatile SecurityConfiguration securityConfiguration;
+    private volatile InetAddress clientAddress;
 
     private final OpcUaServer server;
     private final NodeId sessionId;
@@ -143,6 +145,21 @@ public class Session implements SessionServiceSet {
 
     public void setSecurityConfiguration(SecurityConfiguration securityConfiguration) {
         this.securityConfiguration = securityConfiguration;
+    }
+
+    public void setClientAddress(InetAddress clientAddress) {
+        this.clientAddress = clientAddress;
+    }
+
+    /**
+     * Get the {@link InetAddress} of the client that activated this session.
+     * <p>
+     * The address is set or updated when time the session is activated or re-activated.
+     *
+     * @return the {@link InetAddress} of the client that activated this session.
+     */
+    public InetAddress getClientAddress() {
+        return clientAddress;
     }
 
     void addLifecycleListener(LifecycleListener listener) {

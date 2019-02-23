@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.server.services;
 
+import java.net.InetAddress;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
@@ -34,6 +35,7 @@ public class ServiceRequest extends DefaultAttributeMap {
     private final UaRequestMessage request;
     private final EndpointDescription endpoint;
     private final long secureChannelId;
+    private final InetAddress clientAddress;
     private final ByteString clientCertificateBytes;
 
     public ServiceRequest(
@@ -41,12 +43,14 @@ public class ServiceRequest extends DefaultAttributeMap {
         UaRequestMessage request,
         EndpointDescription endpoint,
         long secureChannelId,
+        InetAddress clientAddress,
         @Nullable ByteString clientCertificateBytes) {
 
         this.server = server;
         this.request = request;
         this.endpoint = endpoint;
         this.secureChannelId = secureChannelId;
+        this.clientAddress = clientAddress;
         this.clientCertificateBytes = clientCertificateBytes;
     }
 
@@ -56,6 +60,10 @@ public class ServiceRequest extends DefaultAttributeMap {
 
     public EndpointDescription getEndpoint() {
         return endpoint;
+    }
+
+    public InetAddress getClientAddress() {
+        return clientAddress;
     }
 
     /**

@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.server.transport.uasc;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,11 +178,15 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                                         .setBuffer(message)
                                         .readMessage(null);
 
+                                    InetSocketAddress remoteSocketAddress =
+                                        (InetSocketAddress) ctx.channel().remoteAddress();
+
                                     ServiceRequest serviceRequest = new ServiceRequest(
                                         stackServer,
                                         request,
                                         endpoint,
                                         secureChannel.getChannelId(),
+                                        remoteSocketAddress.getAddress(),
                                         secureChannel.getRemoteCertificateBytes()
                                     );
 
