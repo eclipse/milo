@@ -15,6 +15,7 @@ package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.Set;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.WriteMask;
@@ -42,6 +43,7 @@ public class AttributeUtil {
         return new DataValue(new Variant(o), StatusCode.GOOD, null, DateTime.now());
     }
 
+    @Nullable
     @SuppressWarnings("unchecked")
     public static <T> T extract(DataValue value) throws UaException {
         Variant variant = value.getValue();
@@ -67,7 +69,11 @@ public class AttributeUtil {
                 AttributeId.AccessLevel)
         );
 
-        return AccessLevel.fromMask(accessLevel);
+        if (accessLevel != null) {
+            return AccessLevel.fromMask(accessLevel);
+        } else {
+            return AccessLevel.NONE;
+        }
     }
 
     public static Set<AccessLevel> getUserAccessLevels(
@@ -80,7 +86,11 @@ public class AttributeUtil {
                 AttributeId.UserAccessLevel)
         );
 
-        return AccessLevel.fromMask(userAccessLevel);
+        if (userAccessLevel != null) {
+            return AccessLevel.fromMask(userAccessLevel);
+        } else {
+            return AccessLevel.NONE;
+        }
     }
 
     public static Set<WriteMask> getWriteMasks(
@@ -94,7 +104,11 @@ public class AttributeUtil {
             )
         );
 
-        return WriteMask.fromMask(writeMask);
+        if (writeMask != null) {
+            return WriteMask.fromMask(writeMask);
+        } else {
+            return WriteMask.NONE;
+        }
     }
 
     public static Set<WriteMask> getUserWriteMasks(
@@ -108,7 +122,11 @@ public class AttributeUtil {
             )
         );
 
-        return WriteMask.fromMask(userWriteMask);
+        if (userWriteMask != null) {
+            return WriteMask.fromMask(userWriteMask);
+        } else {
+            return WriteMask.NONE;
+        }
     }
 
 }
