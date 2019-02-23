@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
+import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.model.UaOptional;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;

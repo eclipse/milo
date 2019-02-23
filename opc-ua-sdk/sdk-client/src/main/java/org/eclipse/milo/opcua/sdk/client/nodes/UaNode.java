@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.sdk.client.api.NodeCache;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.client.model.nodes.variables.PropertyNode;
-import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
+import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;

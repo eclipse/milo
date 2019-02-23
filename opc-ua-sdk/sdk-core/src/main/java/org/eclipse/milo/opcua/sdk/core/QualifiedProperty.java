@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package org.eclipse.milo.opcua.sdk.core.model;
+package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Objects;
 import java.util.Optional;

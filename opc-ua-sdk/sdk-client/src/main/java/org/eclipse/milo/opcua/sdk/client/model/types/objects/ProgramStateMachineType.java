@@ -19,8 +19,8 @@ import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteStateVariab
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.FiniteTransitionVariableType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.ProgramDiagnosticType;
 import org.eclipse.milo.opcua.sdk.client.model.types.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.core.model.QualifiedProperty;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
