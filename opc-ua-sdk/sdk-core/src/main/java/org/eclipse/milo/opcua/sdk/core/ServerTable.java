@@ -13,9 +13,8 @@
 
 package org.eclipse.milo.opcua.sdk.core;
 
-import java.util.List;
+import java.util.Comparator;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -51,12 +50,10 @@ public class ServerTable {
     }
 
     public synchronized String[] toArray() {
-        List<String> uris = uriTable.entrySet().stream()
-            .sorted((e1, e2) -> e1.getKey() - e2.getKey())
+        return uriTable.entrySet().stream()
+            .sorted(Comparator.comparingInt(Map.Entry::getKey))
             .map(Map.Entry::getValue)
-            .collect(Collectors.toList());
-
-        return uris.toArray(new String[uris.size()]);
+            .toArray(String[]::new);
     }
 
 }

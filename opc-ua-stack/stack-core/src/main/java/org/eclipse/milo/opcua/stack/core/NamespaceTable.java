@@ -13,10 +13,9 @@
 
 package org.eclipse.milo.opcua.stack.core;
 
-import java.util.List;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.BiMap;
@@ -70,12 +69,10 @@ public class NamespaceTable {
     }
 
     public synchronized String[] toArray() {
-        List<String> uris = uriTable.entrySet().stream()
-            .sorted((e1, e2) -> e1.getKey().intValue() - e2.getKey().intValue())
+        return uriTable.entrySet().stream()
+            .sorted(Comparator.comparingInt(e -> e.getKey().intValue()))
             .map(Map.Entry::getValue)
-            .collect(Collectors.toList());
-
-        return uris.toArray(new String[uris.size()]);
+            .toArray(String[]::new);
     }
 
 }
