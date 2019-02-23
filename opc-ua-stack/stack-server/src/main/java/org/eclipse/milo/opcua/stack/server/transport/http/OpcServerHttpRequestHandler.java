@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.server.transport.http;
 
+import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 import java.util.Objects;
@@ -142,11 +143,15 @@ public class OpcServerHttpRequestHandler extends SimpleChannelInboundHandler<Ful
             UaRequestMessage request = (UaRequestMessage) decoder.readMessage(null);
             UInteger requestHandle = request.getRequestHeader().getRequestHandle();
 
+            InetSocketAddress remoteSocketAddress =
+                (InetSocketAddress) ctx.channel().remoteAddress();
+
             ServiceRequest serviceRequest = new ServiceRequest(
                 stackServer,
                 request,
                 endpoint,
                 secureChannel.getChannelId(),
+                remoteSocketAddress.getAddress(),
                 null
             );
 

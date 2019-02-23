@@ -405,6 +405,7 @@ public class SessionManager implements
                     ByteString serverNonce = NonceUtil.generateNonce(32);
 
                     session.setLastNonce(serverNonce);
+                    session.setClientAddress(serviceRequest.getClientAddress());
 
                     ActivateSessionResponse response = new ActivateSessionResponse(
                         serviceRequest.createResponseHeader(),
@@ -465,6 +466,7 @@ public class SessionManager implements
                         ByteString serverNonce = NonceUtil.generateNonce(32);
 
                         session.setLastNonce(serverNonce);
+                        session.setClientAddress(serviceRequest.getClientAddress());
 
                         ActivateSessionResponse response = new ActivateSessionResponse(
                             serviceRequest.createResponseHeader(),
@@ -512,6 +514,7 @@ public class SessionManager implements
             ByteString serverNonce = NonceUtil.generateNonce(32);
 
             session.setLastNonce(serverNonce);
+            session.setClientAddress(serviceRequest.getClientAddress());
 
             ActivateSessionResponse response = new ActivateSessionResponse(
                 serviceRequest.createResponseHeader(),
