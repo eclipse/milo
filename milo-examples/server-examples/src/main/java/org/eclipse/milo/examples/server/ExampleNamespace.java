@@ -69,7 +69,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
@@ -180,7 +179,6 @@ public class ExampleNamespace implements Namespace {
             folderNode.getNodeId(),
             Identifiers.Organizes,
             Identifiers.ObjectsFolder.expanded(),
-            NodeClass.Object,
             false
         ));
 
@@ -599,7 +597,6 @@ public class ExampleNamespace implements Namespace {
                 folderNode.getNodeId(),
                 Identifiers.HasComponent,
                 methodNode.getNodeId().expanded(),
-                methodNode.getNodeClass(),
                 true
             ));
 
@@ -607,7 +604,6 @@ public class ExampleNamespace implements Namespace {
                 methodNode.getNodeId(),
                 Identifiers.HasComponent,
                 folderNode.getNodeId().expanded(),
-                folderNode.getNodeClass(),
                 false
             ));
         } catch (Exception e) {
@@ -639,7 +635,6 @@ public class ExampleNamespace implements Namespace {
                 folderNode.getNodeId(),
                 Identifiers.HasComponent,
                 methodNode.getNodeId().expanded(),
-                methodNode.getNodeClass(),
                 true
             ));
 
@@ -647,7 +642,6 @@ public class ExampleNamespace implements Namespace {
                 methodNode.getNodeId(),
                 Identifiers.HasComponent,
                 folderNode.getNodeId().expanded(),
-                folderNode.getNodeClass(),
                 false
             ));
         } catch (Exception e) {
@@ -678,7 +672,6 @@ public class ExampleNamespace implements Namespace {
             foo.getNodeId(),
             Identifiers.HasModellingRule,
             Identifiers.ModellingRule_Mandatory.expanded(),
-            NodeClass.Object,
             true
         ));
 
@@ -698,7 +691,6 @@ public class ExampleNamespace implements Namespace {
             bar.getNodeId(),
             Identifiers.HasModellingRule,
             Identifiers.ModellingRule_Mandatory.expanded(),
-            NodeClass.Object,
             true
         ));
 
@@ -718,7 +710,6 @@ public class ExampleNamespace implements Namespace {
             objectTypeNode.getNodeId(),
             Identifiers.HasSubtype,
             Identifiers.BaseObjectType.expanded(),
-            NodeClass.ObjectType,
             false
         ));
 
@@ -746,7 +737,6 @@ public class ExampleNamespace implements Namespace {
                 myObject.getNodeId(),
                 Identifiers.Organizes,
                 rootFolder.getNodeId().expanded(),
-                rootFolder.getNodeClass(),
                 false
             ));
         } catch (UaException e) {
@@ -776,7 +766,6 @@ public class ExampleNamespace implements Namespace {
             dataTypeId,
             Identifiers.HasSubtype,
             Identifiers.Structure.expanded(),
-            NodeClass.DataType,
             false
         ));
 
@@ -790,7 +779,6 @@ public class ExampleNamespace implements Namespace {
                 node.getNodeId(),
                 Identifiers.HasSubtype,
                 dataTypeId.expanded(),
-                NodeClass.DataType,
                 true
             ))
         );
@@ -841,7 +829,6 @@ public class ExampleNamespace implements Namespace {
             customDataTypeVariable.getNodeId(),
             Identifiers.Organizes,
             rootFolder.getNodeId().expanded(),
-            rootFolder.getNodeClass(),
             false
         ));
     }

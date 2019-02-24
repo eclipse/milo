@@ -50,7 +50,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
@@ -94,7 +93,6 @@ public class TestNamespace implements Namespace {
             testFolderNodeId,
             Identifiers.Organizes,
             Identifiers.ObjectsFolder.expanded(),
-            NodeClass.Object,
             false
         ));
 
@@ -274,7 +272,6 @@ public class TestNamespace implements Namespace {
                 folder.getNodeId(),
                 Identifiers.Organizes,
                 node.getNodeId().expanded(),
-                node.getNodeClass(),
                 true
             ));
 
@@ -303,7 +300,6 @@ public class TestNamespace implements Namespace {
                 root.getNodeId(),
                 Identifiers.Organizes,
                 firstNode.getNodeId().expanded(),
-                firstNode.getNodeClass(),
                 true
             ));
 
@@ -329,7 +325,6 @@ public class TestNamespace implements Namespace {
                         node.getNodeId(),
                         Identifiers.Organizes,
                         next.getNodeId().expanded(),
-                        next.getNodeClass(),
                         true
                     ));
 

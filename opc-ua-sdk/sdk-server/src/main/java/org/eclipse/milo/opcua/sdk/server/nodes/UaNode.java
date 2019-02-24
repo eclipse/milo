@@ -314,7 +314,6 @@ public abstract class UaNode implements UaServerNode {
             getNodeId(),
             Identifiers.HasProperty,
             node.getNodeId().expanded(),
-            NodeClass.Variable,
             true
         ));
 
@@ -322,7 +321,6 @@ public abstract class UaNode implements UaServerNode {
             node.getNodeId(),
             Identifiers.HasProperty,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }
@@ -332,7 +330,6 @@ public abstract class UaNode implements UaServerNode {
             getNodeId(),
             Identifiers.HasProperty,
             node.getNodeId().expanded(),
-            NodeClass.Variable,
             true
         ));
 
@@ -340,7 +337,6 @@ public abstract class UaNode implements UaServerNode {
             node.getNodeId(),
             Identifiers.HasProperty,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }

@@ -277,7 +277,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             getNodeId(),
             Identifiers.HasComponent,
             node.getNodeId().expanded(),
-            node.getNodeClass(),
             true
         ));
 
@@ -285,7 +284,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             node.getNodeId(),
             Identifiers.HasComponent,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }
@@ -301,7 +299,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             getNodeId(),
             Identifiers.HasComponent,
             node.getNodeId().expanded(),
-            node.getNodeClass(),
             true
         ));
 
@@ -309,7 +306,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             node.getNodeId(),
             Identifiers.HasComponent,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }
@@ -629,7 +625,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
                 nodeId,
                 Identifiers.HasTypeDefinition,
                 new ExpandedNodeId(typeDefinition),
-                NodeClass.VariableType,
                 true
             ));
 

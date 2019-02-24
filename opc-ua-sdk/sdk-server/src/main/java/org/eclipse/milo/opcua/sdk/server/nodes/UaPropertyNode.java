@@ -15,7 +15,6 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaPropertyNode extends UaVariableNode {
 
@@ -31,7 +30,6 @@ public class UaPropertyNode extends UaVariableNode {
             nodeId,
             Identifiers.HasTypeDefinition,
             Identifiers.PropertyType.expanded(),
-            NodeClass.VariableType,
             true
         ));
     }

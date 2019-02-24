@@ -28,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 @Deprecated
 public class NodeFactory {
@@ -234,7 +233,6 @@ public class NodeFactory {
             objectNode.getNodeId(),
             Identifiers.HasTypeDefinition,
             typeDefinitionId.expanded(),
-            NodeClass.ObjectType,
             true
         ));
 
@@ -270,7 +268,6 @@ public class NodeFactory {
             variableNode.getNodeId(),
             Identifiers.HasTypeDefinition,
             typeDefinitionId.expanded(),
-            NodeClass.VariableType,
             true
         ));
 
@@ -282,7 +279,6 @@ public class NodeFactory {
             sourceNode.getNodeId(),
             Identifiers.HasComponent,
             targetNode.getNodeId().expanded(),
-            targetNode.getNodeClass(),
             true
         ));
 
@@ -290,7 +286,6 @@ public class NodeFactory {
             targetNode.getNodeId(),
             Identifiers.HasComponent,
             sourceNode.getNodeId().expanded(),
-            sourceNode.getNodeClass(),
             false
         ));
     }
