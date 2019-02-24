@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -109,6 +110,34 @@ public class Reference {
 
     public boolean isInverse() {
         return direction == Direction.INVERSE;
+    }
+
+    /**
+     * Re-index the source, target, and reference type {@link NodeId}s in this {@link Reference} from their current
+     * namespace index to the index for {@code namespaceUri}.
+     * <p>
+     * If the target namespace URI is not present in the namespace table this {@link Reference} is returned.
+     *
+     * @param namespaceUri   the target namespace URI.
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return a new {@link NodeId} in the namespace index indicated by {@code namespaceUri}.
+     */
+    public Reference reindex(String namespaceUri, NamespaceTable namespaceTable) {
+        NodeId newSourceNodeId = sourceNodeId.reindex(namespaceTable, namespaceUri);
+
+        NodeId newReferenceTypeId = referenceTypeId.reindex(namespaceTable, namespaceUri);
+
+        // re-index targetNodeId only if it's local, otherwise leave it alone.
+        ExpandedNodeId newTargetNodeId = targetNodeId.local()
+            .map(id -> id.reindex(namespaceTable, namespaceUri).expanded())
+            .orElse(targetNodeId);
+
+        return new Reference(
+            newSourceNodeId,
+            newReferenceTypeId,
+            newTargetNodeId,
+            direction
+        );
     }
 
     /**
