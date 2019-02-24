@@ -134,9 +134,9 @@ public class NodeFactory {
 
         List<UaVariableNode> variableComponents = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .filter(reference -> reference.getTargetNodeClass() == NodeClass.Variable)
             .map(r -> nodeManager.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
+            .filter(n -> n instanceof UaVariableNode)
             .map(UaVariableNode.class::cast)
             .collect(Collectors.toList());
 
@@ -173,9 +173,9 @@ public class NodeFactory {
         if (node instanceof ObjectNode) {
             List<UaObjectNode> objectComponents = typeDefinitionNode.getReferences().stream()
                 .filter(Reference.HAS_COMPONENT_PREDICATE)
-                .filter(reference -> reference.getTargetNodeClass() == NodeClass.Object)
                 .map(r -> nodeManager.getNode(r.getTargetNodeId()))
                 .flatMap(StreamUtil::opt2stream)
+                .filter(n -> n instanceof UaObjectNode)
                 .map(UaObjectNode.class::cast)
                 .collect(Collectors.toList());
 

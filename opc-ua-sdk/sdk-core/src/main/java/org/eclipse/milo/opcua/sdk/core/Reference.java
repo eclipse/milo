@@ -33,9 +33,9 @@ public class Reference {
     private final NodeId sourceNodeId;
     private final NodeId referenceTypeId;
     private final ExpandedNodeId targetNodeId;
-    private final NodeClass targetNodeClass;
     private final Direction direction;
 
+    @Deprecated
     public Reference(
         NodeId sourceNodeId,
         NodeId referenceTypeId,
@@ -51,6 +51,7 @@ public class Reference {
             forward ? Direction.FORWARD : Direction.INVERSE);
     }
 
+    @Deprecated
     public Reference(
         NodeId sourceNodeId,
         NodeId referenceTypeId,
@@ -58,10 +59,18 @@ public class Reference {
         NodeClass targetNodeClass,
         Direction direction) {
 
+        this(sourceNodeId, referenceTypeId, targetNodeId, direction);
+    }
+
+    public Reference(
+        NodeId sourceNodeId,
+        NodeId referenceTypeId,
+        ExpandedNodeId targetNodeId,
+        Direction direction) {
+
         this.sourceNodeId = sourceNodeId;
         this.referenceTypeId = referenceTypeId;
         this.targetNodeId = targetNodeId;
-        this.targetNodeClass = targetNodeClass;
         this.direction = direction;
     }
 
@@ -75,10 +84,6 @@ public class Reference {
 
     public ExpandedNodeId getTargetNodeId() {
         return targetNodeId;
-    }
-
-    public NodeClass getTargetNodeClass() {
-        return targetNodeClass;
     }
 
     public Direction getDirection() {
@@ -130,13 +135,12 @@ public class Reference {
         return Objects.equals(sourceNodeId, reference.sourceNodeId) &&
             Objects.equals(referenceTypeId, reference.referenceTypeId) &&
             Objects.equals(targetNodeId, reference.targetNodeId) &&
-            targetNodeClass == reference.targetNodeClass &&
             direction == reference.direction;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceNodeId, referenceTypeId, targetNodeId, targetNodeClass, direction);
+        return Objects.hash(sourceNodeId, referenceTypeId, targetNodeId, direction);
     }
 
     @Override
@@ -145,7 +149,6 @@ public class Reference {
             .add("sourceNodeId", sourceNodeId)
             .add("referenceTypeId", referenceTypeId)
             .add("targetNodeId", targetNodeId)
-            .add("targetNodeClass", targetNodeClass)
             .add("direction", direction)
             .toString();
     }
