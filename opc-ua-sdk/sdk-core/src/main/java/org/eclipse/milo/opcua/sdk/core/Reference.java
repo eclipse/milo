@@ -66,6 +66,19 @@ public class Reference {
         NodeId sourceNodeId,
         NodeId referenceTypeId,
         ExpandedNodeId targetNodeId,
+        boolean forward) {
+
+        this(
+            sourceNodeId,
+            referenceTypeId,
+            targetNodeId,
+            forward ? Direction.FORWARD : Direction.INVERSE);
+    }
+
+    public Reference(
+        NodeId sourceNodeId,
+        NodeId referenceTypeId,
+        ExpandedNodeId targetNodeId,
         Direction direction) {
 
         this.sourceNodeId = sourceNodeId;
