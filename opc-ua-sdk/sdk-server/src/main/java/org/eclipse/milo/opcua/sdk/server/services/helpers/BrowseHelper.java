@@ -198,7 +198,7 @@ public class BrowseHelper {
                 case Forward:
                     return reference.isForward();
                 case Inverse:
-                    return reference.isReverse();
+                    return reference.isInverse();
                 case Both:
                 default:
                     return true;

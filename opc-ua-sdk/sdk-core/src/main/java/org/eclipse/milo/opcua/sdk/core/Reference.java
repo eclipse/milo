@@ -29,7 +29,7 @@ public class Reference {
 
     public enum Direction {
         FORWARD,
-        REVERSE
+        INVERSE
     }
 
     private final NodeId sourceNodeId;
@@ -50,7 +50,7 @@ public class Reference {
             referenceTypeId,
             targetNodeId,
             targetNodeClass,
-            forward ? Direction.FORWARD : Direction.REVERSE);
+            forward ? Direction.FORWARD : Direction.INVERSE);
     }
 
     @Deprecated
@@ -74,7 +74,7 @@ public class Reference {
             sourceNodeId,
             referenceTypeId,
             targetNodeId,
-            forward ? Direction.FORWARD : Direction.REVERSE);
+            forward ? Direction.FORWARD : Direction.INVERSE);
     }
 
     public Reference(
@@ -109,8 +109,8 @@ public class Reference {
         return direction == Direction.FORWARD;
     }
 
-    public boolean isReverse() {
-        return direction == Direction.REVERSE;
+    public boolean isInverse() {
+        return direction == Direction.INVERSE;
     }
 
     /**
@@ -243,6 +243,6 @@ public class Reference {
         (reference) -> reference.isForward() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> SUBTYPE_OF =
-        (reference) -> reference.isReverse() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isInverse() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
 
 }
