@@ -180,7 +180,7 @@ public class BrowsePathsHelper {
                     (includeSubtypes && r.subtypeOf(referenceTypeId, server.getReferenceTypes())))
 
                 /* Filter for reference direction... */
-                .filter(r -> r.isInverse() == element.getIsInverse())
+                .filter(r -> r.isReverse() == element.getIsInverse())
 
                 /* Map to target ExpandedNodeId... */
                 .map(Reference::getTargetNodeId)
@@ -217,7 +217,7 @@ public class BrowsePathsHelper {
                     (includeSubtypes && r.subtypeOf(referenceTypeId, server.getReferenceTypes())))
 
                 /* Filter for reference direction... */
-                .filter(r -> r.isInverse() == element.getIsInverse())
+                .filter(r -> r.isReverse() == element.getIsInverse())
 
                 /* Map to target ExpandedNodeId... */
                 .map(Reference::getTargetNodeId)

@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.google.common.base.MoreObjects;
@@ -28,7 +29,7 @@ public class Reference {
 
     public enum Direction {
         FORWARD,
-        INVERSE
+        REVERSE
     }
 
     private final NodeId sourceNodeId;
@@ -49,7 +50,7 @@ public class Reference {
             referenceTypeId,
             targetNodeId,
             targetNodeClass,
-            forward ? Direction.FORWARD : Direction.INVERSE);
+            forward ? Direction.FORWARD : Direction.REVERSE);
     }
 
     @Deprecated
@@ -73,7 +74,7 @@ public class Reference {
             sourceNodeId,
             referenceTypeId,
             targetNodeId,
-            forward ? Direction.FORWARD : Direction.INVERSE);
+            forward ? Direction.FORWARD : Direction.REVERSE);
     }
 
     public Reference(
@@ -108,8 +109,24 @@ public class Reference {
         return direction == Direction.FORWARD;
     }
 
-    public boolean isInverse() {
-        return direction == Direction.INVERSE;
+    public boolean isReverse() {
+        return direction == Direction.REVERSE;
+    }
+
+    /**
+     * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
+     *
+     * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
+     */
+    public Optional<Reference> invert() {
+        return getTargetNodeId().local().map(
+            sourceNodeId -> new Reference(
+                sourceNodeId,
+                getReferenceTypeId(),
+                getSourceNodeId().expanded(),
+                !isForward()
+            )
+        );
     }
 
     /**
@@ -226,6 +243,6 @@ public class Reference {
         (reference) -> reference.isForward() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
 
     public static final Predicate<Reference> SUBTYPE_OF =
-        (reference) -> reference.isInverse() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
+        (reference) -> reference.isReverse() && Identifiers.HasSubtype.equals(reference.getReferenceTypeId());
 
 }

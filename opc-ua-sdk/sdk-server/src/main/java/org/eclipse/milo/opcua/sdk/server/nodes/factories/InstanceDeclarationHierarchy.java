@@ -87,7 +87,7 @@ public class InstanceDeclarationHierarchy {
 
         public InstanceDeclarationHierarchy build(NodeId typeDefinitionId, boolean includeOptionalNodes) {
             Optional<InstanceDeclarationHierarchy> parentIdh = nodeManager.getReferences(typeDefinitionId).stream()
-                .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
+                .filter(r -> r.isReverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()
                 .flatMap(r -> r.getTargetNodeId().local())
                 .map(parentTypeId -> InstanceDeclarationHierarchy

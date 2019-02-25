@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
@@ -36,24 +34,19 @@ public class NamespaceNodeManager extends AbstractNodeManager<UaNode> {
     public void addReference(Reference reference) {
         super.addReference(reference);
 
-        virtualInverse(reference).ifPresent(virtual -> server.getNodeManager().addVirtualReference(virtual));
+        reference.invert().ifPresent(
+            virtual ->
+                server.getNodeManager().addVirtualReference(virtual)
+        );
     }
 
     @Override
     public void removeReference(Reference reference) {
         super.removeReference(reference);
 
-        virtualInverse(reference).ifPresent(virtual -> server.getNodeManager().removeVirtualReference(virtual));
-    }
-
-    private Optional<Reference> virtualInverse(Reference reference) {
-        return reference.getTargetNodeId().local().map(
-            sourceNodeId -> new Reference(
-                sourceNodeId,
-                reference.getReferenceTypeId(),
-                reference.getSourceNodeId().expanded(),
-                !reference.isForward()
-            )
+        reference.invert().ifPresent(
+            virtual ->
+                server.getNodeManager().removeVirtualReference(virtual)
         );
     }
 
