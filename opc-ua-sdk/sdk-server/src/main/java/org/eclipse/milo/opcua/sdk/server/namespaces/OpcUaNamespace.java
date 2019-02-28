@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler.NotImplementedHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
@@ -227,8 +226,7 @@ public class OpcUaNamespace implements Namespace {
             .filter(n -> n instanceof UaMethodNode)
             .map(n -> {
                 UaMethodNode m = (UaMethodNode) n;
-                return m.getInvocationHandler()
-                    .orElse(new NotImplementedHandler());
+                return m.getInvocationHandler();
             });
     }
 

@@ -948,7 +948,7 @@ public class ExampleNamespace implements Namespace {
 
         return node.flatMap(n -> {
             if (n instanceof UaMethodNode) {
-                return ((UaMethodNode) n).getInvocationHandler();
+                return Optional.of(((UaMethodNode) n).getInvocationHandler());
             } else {
                 return Optional.empty();
             }

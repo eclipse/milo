@@ -22,6 +22,11 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 public interface MethodInvocationHandler {
 
     /**
+     * A shareable instance of {@link NotImplementedHandler}.
+     */
+    NotImplementedHandler NOT_IMPLEMENTED = new NotImplementedHandler();
+
+    /**
      * Invoke the given {@link CallMethodRequest} and complete {@code future} when finished.
      * <p>
      * Under no circumstances should the future be completed exceptionally.
@@ -32,6 +37,10 @@ public interface MethodInvocationHandler {
      */
     void invoke(AccessContext accessContext, CallMethodRequest request, CompletableFuture<CallMethodResult> future);
 
+
+    /**
+     * A {@link MethodInvocationHandler} that always completes with {@link StatusCodes#Bad_NodeIdUnknown}.
+     */
     final class NodeIdUnknownHandler implements MethodInvocationHandler {
         @Override
         public void invoke(
@@ -50,6 +59,9 @@ public interface MethodInvocationHandler {
         }
     }
 
+    /**
+     * A {@link MethodInvocationHandler} that always completes with {@link StatusCodes#Bad_NotImplemented}.
+     */
     final class NotImplementedHandler implements MethodInvocationHandler {
         @Override
         public void invoke(
