@@ -52,6 +52,8 @@ public interface MethodServices {
             } catch (Throwable t) {
                 LoggerFactory.getLogger(getClass())
                     .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
+
+                resultFuture.completeExceptionally(t);
             }
 
             results.add(
