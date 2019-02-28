@@ -32,10 +32,17 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 
+/**
+ * A partial implementation of {@link MethodInvocationHandler} that handles checking the Executable and UserExecutable
+ * attributes as well as validating the supplied input values against the input {@link Argument}s.
+ */
 abstract class AbstractMethodInvocationHandler implements MethodInvocationHandler {
 
     private final UaMethodNode node;
 
+    /**
+     * @param node the {@link UaMethodNode} this handler will be installed on.
+     */
     public AbstractMethodInvocationHandler(UaMethodNode node) {
         this.node = node;
     }
@@ -153,21 +160,62 @@ abstract class AbstractMethodInvocationHandler implements MethodInvocationHandle
         }
     }
 
+    /**
+     * Get the input {@link Argument}s expected by the Method this handler is installed on.
+     *
+     * @return the input {@link Argument}s expected by the Method this handler is installed on.
+     */
     protected abstract Argument[] getInputArguments();
 
+    /**
+     * Get the output {@link Argument}s expected by the Method this handler is installed on.
+     *
+     * @return the output {@link Argument}s expected by the Method this handler is installed on.
+     */
     protected abstract Argument[] getOutputArguments();
 
+    /**
+     * Invoke this method and return the values for its output arguments, if any.
+     * <p>
+     * The Executable and UserExecutable attributes have already been checked to ensure this method is allowed to
+     * execute.
+     *
+     * @param invocationContext the {@link InvocationContext}.
+     * @param inputValues       the user-supplied values for the input arguments. Each value has been verified to be of
+     *                          the type specified by its {@link Argument}.
+     * @return this output values matching this Method's output arguments, if any.
+     * @throws UaException if invocation has failed for some reason.
+     */
     protected abstract Variant[] invoke(
         InvocationContext invocationContext,
-        Variant[] inputArguments
+        Variant[] inputValues
     ) throws UaException;
 
+    /**
+     * Extends {@link AccessContext} to provide additional context to implementations of
+     * {@link AbstractMethodInvocationHandler}.
+     */
     interface InvocationContext extends AccessContext {
 
+        /**
+         * Get the {@link OpcUaServer} instance.
+         *
+         * @return the {@link OpcUaServer} instance.
+         */
         OpcUaServer getServer();
 
+        /**
+         * Get the {@link NodeId} of the ObjectNode the method being invoked belongs to.
+         *
+         * @return the {@link NodeId} of the ObjectNode the method being invoked belongs to.
+         */
         NodeId getObjectId();
 
+        /**
+         * Get the {@link UaMethodNode} being invoked.
+         *
+         * @return the {@link UaMethodNode} being invoked.
+         */
         UaMethodNode getMethodNode();
 
     }

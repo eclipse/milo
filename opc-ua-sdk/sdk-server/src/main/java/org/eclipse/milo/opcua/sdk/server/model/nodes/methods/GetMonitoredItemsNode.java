@@ -127,8 +127,8 @@ public class GetMonitoredItemsNode extends UaMethodNode {
         }
 
         @Override
-        protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputArguments) throws UaException {
-            UInteger subscriptionId = (UInteger) inputArguments[0].getValue();
+        protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) throws UaException {
+            UInteger subscriptionId = (UInteger) inputValues[0].getValue();
             AtomicReference<UInteger[]> serverHandles = new AtomicReference<>();
             AtomicReference<UInteger[]> clientHandles = new AtomicReference<>();
 
