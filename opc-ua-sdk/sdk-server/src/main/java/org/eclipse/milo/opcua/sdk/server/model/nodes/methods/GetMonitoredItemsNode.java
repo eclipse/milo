@@ -15,7 +15,8 @@ import javax.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.methods.AbstractMethodInvocationHandler.InvocationContext;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler.InvocationContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.Identifiers;

@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.server.model.nodes.methods;
+package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -16,8 +16,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeUtil;
@@ -36,7 +34,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
  * A partial implementation of {@link MethodInvocationHandler} that handles checking the Executable and UserExecutable
  * attributes as well as validating the supplied input values against the input {@link Argument}s.
  */
-abstract class AbstractMethodInvocationHandler implements MethodInvocationHandler {
+public abstract class AbstractMethodInvocationHandler implements MethodInvocationHandler {
 
     private final UaMethodNode node;
 
@@ -192,16 +190,13 @@ abstract class AbstractMethodInvocationHandler implements MethodInvocationHandle
      * @return this output values matching this Method's output arguments, if any.
      * @throws UaException if invocation has failed for some reason.
      */
-    protected abstract Variant[] invoke(
-        InvocationContext invocationContext,
-        Variant[] inputValues
-    ) throws UaException;
+    protected abstract Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) throws UaException;
 
     /**
      * Extends {@link AccessContext} to provide additional context to implementations of
      * {@link AbstractMethodInvocationHandler}.
      */
-    interface InvocationContext extends AccessContext {
+    public interface InvocationContext extends AccessContext {
 
         /**
          * Get the {@link OpcUaServer} instance.
