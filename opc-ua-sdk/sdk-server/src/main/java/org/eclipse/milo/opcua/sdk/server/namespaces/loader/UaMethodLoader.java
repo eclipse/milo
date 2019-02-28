@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.methods.GetMonitoredItemsNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -1350,7 +1349,7 @@ public class UaMethodLoader {
     }
 
     private void buildNode123() {
-        GetMonitoredItemsNode node = new GetMonitoredItemsNode(this.context, NodeId.parse("ns=0;i=11492"), new QualifiedName(0, "GetMonitoredItems"), new LocalizedText("en", "GetMonitoredItems"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), true, true);
+        UaMethodNode node = new UaMethodNode(this.context, NodeId.parse("ns=0;i=11492"), new QualifiedName(0, "GetMonitoredItems"), new LocalizedText("en", "GetMonitoredItems"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), true, true);
         node.addReference(new Reference(NodeId.parse("ns=0;i=11492"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2253"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11492"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11493"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11492"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11494"), NodeClass.Variable, true));

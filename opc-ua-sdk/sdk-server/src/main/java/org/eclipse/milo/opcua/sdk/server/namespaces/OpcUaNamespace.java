@@ -15,13 +15,10 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
@@ -31,10 +28,9 @@ import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
+import org.eclipse.milo.opcua.sdk.server.model.methods.GetMonitoredItemsMethod;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ResendDataMethod;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.methods.GetMonitoredItemsNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
@@ -45,7 +41,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
-import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -57,7 +52,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -314,37 +308,15 @@ public class OpcUaNamespace implements Namespace {
     private void configureGetMonitoredItems() {
         UaNode node = nodeManager.get(Identifiers.Server_GetMonitoredItems);
 
-        if (node instanceof GetMonitoredItemsNode) {
-            GetMonitoredItemsNode getMonitoredItemsNode = (GetMonitoredItemsNode) node;
+        if (node instanceof UaMethodNode) {
+            UaMethodNode getMonitoredItemsNode = (UaMethodNode) node;
 
-            getMonitoredItemsNode.setInvocationDelegate(new GetMonitoredItemsNode.InvocationDelegate() {
-                @Override
-                public void invoke(
-                    AbstractMethodInvocationHandler.InvocationContext context,
-                    UInteger subscriptionId,
-                    AtomicReference<UInteger[]> serverHandles,
-                    AtomicReference<UInteger[]> clientHandles) throws UaException {
-
-                    Subscription subscription = server.getSubscriptions().get(subscriptionId);
-
-                    if (subscription != null) {
-                        List<UInteger> serverHandleList = Lists.newArrayList();
-                        List<UInteger> clientHandleList = Lists.newArrayList();
-
-                        for (BaseMonitoredItem<?> item : subscription.getMonitoredItems().values()) {
-                            serverHandleList.add(item.getId());
-                            clientHandleList.add(uint(item.getClientHandle()));
-                        }
-
-                        serverHandles.set(serverHandleList.toArray(new UInteger[0]));
-                        clientHandles.set(clientHandleList.toArray(new UInteger[0]));
-                    } else {
-                        throw new UaException(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid));
-                    }
-                }
-            });
+            GetMonitoredItemsMethod getMonitoredItemsMethod = new GetMonitoredItemsMethod(getMonitoredItemsNode);
+            getMonitoredItemsNode.setInvocationHandler(getMonitoredItemsMethod);
+            getMonitoredItemsNode.setInputArguments(getMonitoredItemsMethod.getInputArguments());
+            getMonitoredItemsNode.setOutputArguments(getMonitoredItemsMethod.getOutputArguments());
         } else {
-            logger.warn("GetMonitoredItemsNode not found.");
+            logger.warn("GetMonitoredItems UaMethodNode not found.");
         }
     }
 
