@@ -15,10 +15,12 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
@@ -311,10 +313,7 @@ public class OpcUaNamespace implements Namespace {
         if (node instanceof UaMethodNode) {
             UaMethodNode getMonitoredItemsNode = (UaMethodNode) node;
 
-            GetMonitoredItemsMethod getMonitoredItemsMethod = new GetMonitoredItemsMethod(getMonitoredItemsNode);
-            getMonitoredItemsNode.setInvocationHandler(getMonitoredItemsMethod);
-            getMonitoredItemsNode.setInputArguments(getMonitoredItemsMethod.getInputArguments());
-            getMonitoredItemsNode.setOutputArguments(getMonitoredItemsMethod.getOutputArguments());
+            configureMethodNode(getMonitoredItemsNode, GetMonitoredItemsMethod::new);
         } else {
             logger.warn("GetMonitoredItems UaMethodNode not found.");
         }
@@ -326,9 +325,7 @@ public class OpcUaNamespace implements Namespace {
         if (node instanceof UaMethodNode) {
             UaMethodNode resendDataNode = (UaMethodNode) node;
 
-            ResendDataMethod resendDataMethod = new ResendDataMethod(resendDataNode);
-            resendDataNode.setInvocationHandler(resendDataMethod);
-            resendDataNode.setInputArguments(resendDataMethod.getInputArguments());
+            configureMethodNode(resendDataNode, ResendDataMethod::new);
         } else {
             logger.warn("ResendData UaMethodNode not found.");
         }
@@ -340,13 +337,22 @@ public class OpcUaNamespace implements Namespace {
         if (node instanceof UaMethodNode) {
             UaMethodNode conditionRefreshNode = (UaMethodNode) node;
 
-            ConditionRefreshMethod conditionRefreshMethod = new ConditionRefreshMethod(conditionRefreshNode);
-            conditionRefreshNode.setInvocationHandler(conditionRefreshMethod);
-            conditionRefreshNode.setInputArguments(conditionRefreshMethod.getInputArguments());
-            conditionRefreshNode.setOutputArguments(conditionRefreshMethod.getOutputArguments());
+            configureMethodNode(conditionRefreshNode, ConditionRefreshMethod::new);
         } else {
             logger.warn("ConditionRefresh UaMethodNode not found.");
         }
+    }
+
+    private static <T extends AbstractMethodInvocationHandler> void configureMethodNode(
+        UaMethodNode node,
+        Function<UaMethodNode, T> f
+    ) {
+
+        T invocationHandler = f.apply(node);
+
+        node.setInvocationHandler(invocationHandler);
+        node.setInputArguments(invocationHandler.getInputArguments());
+        node.setOutputArguments(invocationHandler.getOutputArguments());
     }
 
 }
