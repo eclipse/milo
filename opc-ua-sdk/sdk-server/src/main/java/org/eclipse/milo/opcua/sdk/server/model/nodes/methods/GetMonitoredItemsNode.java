@@ -57,7 +57,6 @@ public class GetMonitoredItemsNode extends UaMethodNode {
         LocalizedText.NULL_VALUE
     );
 
-    private volatile InvocationDelegate invocationDelegate = new InvocationDelegate() {};
 
     public GetMonitoredItemsNode(
         UaNodeContext context,
@@ -82,17 +81,20 @@ public class GetMonitoredItemsNode extends UaMethodNode {
             executable,
             userExecutable
         );
-
-        super.setInvocationHandler(new InvocationHandler(this));
     }
 
+    /**
+     * Set the {@link InvocationDelegate} for this method.
+     *
+     * @param invocationDelegate the {@link InvocationDelegate} for this method.
+     */
     public void setInvocationDelegate(@Nonnull InvocationDelegate invocationDelegate) {
         Preconditions.checkNotNull(invocationDelegate, "invocation delegate must be non-null");
 
-        this.invocationDelegate = invocationDelegate;
+        super.setInvocationHandler(new InvocationHandler(this, invocationDelegate));
     }
 
-    interface InvocationDelegate {
+    public interface InvocationDelegate {
 
         default void invoke(
             InvocationContext context,
@@ -106,10 +108,14 @@ public class GetMonitoredItemsNode extends UaMethodNode {
 
     }
 
-    private class InvocationHandler extends AbstractMethodInvocationHandler {
+    private static class InvocationHandler extends AbstractMethodInvocationHandler {
 
-        public InvocationHandler(GetMonitoredItemsNode node) {
+        private final InvocationDelegate invocationDelegate;
+
+        InvocationHandler(GetMonitoredItemsNode node, InvocationDelegate invocationDelegate) {
             super(node);
+
+            this.invocationDelegate = invocationDelegate;
         }
 
         @Override
