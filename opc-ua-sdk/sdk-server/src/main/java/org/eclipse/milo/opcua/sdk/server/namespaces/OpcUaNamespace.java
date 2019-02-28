@@ -32,8 +32,8 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefresh;
-import org.eclipse.milo.opcua.sdk.server.model.methods.ResendData;
+import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
+import org.eclipse.milo.opcua.sdk.server.model.methods.ResendDataMethod;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.methods.GetMonitoredItemsNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesNode;
@@ -46,7 +46,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
-import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -94,20 +93,7 @@ public class OpcUaNamespace implements Namespace {
     public void initialize() {
         loadNodes();
         configureServerObject();
-
-        try {
-            UaMethodNode conditionRefresh = (UaMethodNode) nodeManager.get(Identifiers.ConditionType_ConditionRefresh);
-            assert conditionRefresh != null;
-
-            AnnotationBasedInvocationHandler handler =
-                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new ConditionRefresh(server));
-
-            conditionRefresh.setInvocationHandler(handler);
-            conditionRefresh.setInputArguments(handler.getInputArguments());
-            conditionRefresh.setOutputArguments(handler.getOutputArguments());
-        } catch (Exception e) {
-            logger.error("Error setting up ConditionRefresh Method.", e);
-        }
+        configureConditionRefresh();
     }
 
     @Override
@@ -322,22 +308,7 @@ public class OpcUaNamespace implements Namespace {
         serverNode.getServerRedundancyNode().setRedundancySupport(RedundancySupport.None);
 
         configureGetMonitoredItems();
-
-        try {
-            UaNode node = nodeManager.get(Identifiers.Server_ResendData);
-
-            if (node instanceof UaMethodNode) {
-                UaMethodNode resendData = (UaMethodNode) node;
-
-                AnnotationBasedInvocationHandler handler =
-                    AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new ResendData(server));
-
-                resendData.setInvocationHandler(handler);
-                resendData.setInputArguments(handler.getInputArguments());
-            }
-        } catch (Exception e) {
-            logger.error("Error setting up ResendData Method.", e);
-        }
+        configureResendData();
     }
 
     private void configureGetMonitoredItems() {
@@ -374,6 +345,35 @@ public class OpcUaNamespace implements Namespace {
             });
         } else {
             logger.warn("GetMonitoredItemsNode not found.");
+        }
+    }
+
+    private void configureResendData() {
+        UaNode node = nodeManager.get(Identifiers.Server_ResendData);
+
+        if (node instanceof UaMethodNode) {
+            UaMethodNode resendDataNode = (UaMethodNode) node;
+
+            ResendDataMethod resendDataMethod = new ResendDataMethod(resendDataNode);
+            resendDataNode.setInvocationHandler(resendDataMethod);
+            resendDataNode.setInputArguments(resendDataMethod.getInputArguments());
+        } else {
+            logger.warn("ResendData UaMethodNode not found.");
+        }
+    }
+
+    private void configureConditionRefresh() {
+        UaNode node = nodeManager.get(Identifiers.ConditionType_ConditionRefresh);
+
+        if (node instanceof UaMethodNode) {
+            UaMethodNode conditionRefreshNode = (UaMethodNode) node;
+
+            ConditionRefreshMethod conditionRefreshMethod = new ConditionRefreshMethod(conditionRefreshNode);
+            conditionRefreshNode.setInvocationHandler(conditionRefreshMethod);
+            conditionRefreshNode.setInputArguments(conditionRefreshMethod.getInputArguments());
+            conditionRefreshNode.setOutputArguments(conditionRefreshMethod.getOutputArguments());
+        } else {
+            logger.warn("ConditionRefresh UaMethodNode not found.");
         }
     }
 

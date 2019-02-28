@@ -91,7 +91,7 @@ public class GetMonitoredItemsNode extends UaMethodNode {
     public void setInvocationDelegate(@Nonnull InvocationDelegate invocationDelegate) {
         Preconditions.checkNotNull(invocationDelegate, "invocation delegate must be non-null");
 
-        super.setInvocationHandler(new InvocationHandler(this, invocationDelegate));
+        super.setInvocationHandler(new GetMonitoredItemsMethod(this, invocationDelegate));
     }
 
     public interface InvocationDelegate {
@@ -108,11 +108,11 @@ public class GetMonitoredItemsNode extends UaMethodNode {
 
     }
 
-    private static class InvocationHandler extends AbstractMethodInvocationHandler {
+    private static class GetMonitoredItemsMethod extends AbstractMethodInvocationHandler {
 
         private final InvocationDelegate invocationDelegate;
 
-        InvocationHandler(GetMonitoredItemsNode node, InvocationDelegate invocationDelegate) {
+        GetMonitoredItemsMethod(GetMonitoredItemsNode node, InvocationDelegate invocationDelegate) {
             super(node);
 
             this.invocationDelegate = invocationDelegate;
