@@ -10,36 +10,58 @@
 
 package org.eclipse.milo.examples.server.methods;
 
-import org.eclipse.milo.opcua.sdk.server.annotations.UaInputArgument;
-import org.eclipse.milo.opcua.sdk.server.annotations.UaMethod;
-import org.eclipse.milo.opcua.sdk.server.annotations.UaOutputArgument;
-import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler.InvocationContext;
-import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler.Out;
+import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SqrtMethod {
+public class SqrtMethod extends AbstractMethodInvocationHandler {
+
+    public static final Argument X = new Argument(
+        "x",
+        Identifiers.Double,
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("A value.")
+    );
+
+    public static final Argument X_SQRT = new Argument(
+        "x_sqrt",
+        Identifiers.Double,
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("A value.")
+    );
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @UaMethod
-    public void invoke(
-        InvocationContext context,
+    public SqrtMethod(UaMethodNode node) {
+        super(node);
+    }
 
-        @UaInputArgument(
-            name = "x",
-            description = "A value.")
-            Double x,
+    @Override
+    public Argument[] getInputArguments() {
+        return new Argument[]{X};
+    }
 
-        @UaOutputArgument(
-            name = "x_sqrt",
-            description = "The positive square root of x. If the argument is NaN or less than zero, the result is NaN.")
-            Out<Double> xSqrt) {
+    @Override
+    public Argument[] getOutputArguments() {
+        return new Argument[]{X_SQRT};
+    }
 
-        System.out.println("sqrt(" + x.toString() + ")");
-        logger.debug("Invoking sqrt() method of Object '{}'", context.getOwnerNode().getBrowseName().getName());
+    @Override
+    protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) {
+        logger.debug("Invoking sqrt() method of objectId={}", invocationContext.getObjectId());
 
-        xSqrt.set(Math.sqrt(x));
+        double x = (double) inputValues[0].getValue();
+        double xSqrt = Math.sqrt(x);
+
+        return new Variant[]{new Variant(xSqrt)};
     }
 
 }
