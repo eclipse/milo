@@ -13,13 +13,17 @@ package org.eclipse.milo.opcua.sdk.server.namespaces;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
+import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
@@ -30,9 +34,12 @@ import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
+import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
+import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ConditionRefreshMethod;
 import org.eclipse.milo.opcua.sdk.server.model.methods.GetMonitoredItemsMethod;
 import org.eclipse.milo.opcua.sdk.server.model.methods.ResendDataMethod;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.OperationLimitsNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerCapabilitiesNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
@@ -43,6 +50,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
+import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
@@ -52,8 +60,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
@@ -61,6 +71,7 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -311,9 +322,9 @@ public class OpcUaNamespace implements Namespace {
         UaNode node = nodeManager.get(Identifiers.Server_GetMonitoredItems);
 
         if (node instanceof UaMethodNode) {
-            UaMethodNode getMonitoredItemsNode = (UaMethodNode) node;
+            UaMethodNode methodNode = (UaMethodNode) node;
 
-            configureMethodNode(getMonitoredItemsNode, GetMonitoredItemsMethod::new);
+            configureMethodNode(methodNode, GetMonitoredItemsMethodImpl::new);
         } else {
             logger.warn("GetMonitoredItems UaMethodNode not found.");
         }
@@ -325,7 +336,7 @@ public class OpcUaNamespace implements Namespace {
         if (node instanceof UaMethodNode) {
             UaMethodNode resendDataNode = (UaMethodNode) node;
 
-            configureMethodNode(resendDataNode, ResendDataMethod::new);
+            configureMethodNode(resendDataNode, ResendDataMethodImpl::new);
         } else {
             logger.warn("ResendData UaMethodNode not found.");
         }
@@ -337,22 +348,150 @@ public class OpcUaNamespace implements Namespace {
         if (node instanceof UaMethodNode) {
             UaMethodNode conditionRefreshNode = (UaMethodNode) node;
 
-            configureMethodNode(conditionRefreshNode, ConditionRefreshMethod::new);
+            configureMethodNode(conditionRefreshNode, ConditionRefreshMethodImpl::new);
         } else {
             logger.warn("ConditionRefresh UaMethodNode not found.");
         }
     }
 
     private static <T extends AbstractMethodInvocationHandler> void configureMethodNode(
-        UaMethodNode node,
+        UaMethodNode methodNode,
         Function<UaMethodNode, T> f
     ) {
 
-        T invocationHandler = f.apply(node);
+        T invocationHandler = f.apply(methodNode);
 
-        node.setInvocationHandler(invocationHandler);
-        node.setInputArguments(invocationHandler.getInputArguments());
-        node.setOutputArguments(invocationHandler.getOutputArguments());
+        methodNode.setInvocationHandler(invocationHandler);
+        methodNode.setInputArguments(invocationHandler.getInputArguments());
+        methodNode.setOutputArguments(invocationHandler.getOutputArguments());
+    }
+
+    private static class ConditionRefreshMethodImpl extends ConditionRefreshMethod {
+
+        private final OpcUaServer server;
+
+        ConditionRefreshMethodImpl(UaMethodNode node) {
+            super(node);
+
+            server = node.getNodeContext().getServer();
+        }
+
+        @Override
+        protected void invoke(InvocationContext context, UInteger subscriptionId) throws UaException {
+            Session session = context.getSession().orElse(null);
+
+            if (session != null) {
+                Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
+
+                if (subscription != null) {
+                    BaseEventNode refreshStart = server.getEventFactory().createEvent(
+                        new NodeId(1, UUID.randomUUID()),
+                        Identifiers.RefreshStartEventType
+                    );
+
+                    refreshStart.setBrowseName(new QualifiedName(1, "RefreshStart"));
+                    refreshStart.setDisplayName(LocalizedText.english("RefreshStart"));
+                    refreshStart.setEventId(NonceUtil.generateNonce(16));
+                    refreshStart.setEventType(Identifiers.RefreshStartEventType);
+                    refreshStart.setSourceNode(Identifiers.Server);
+                    refreshStart.setSourceName("Server");
+                    refreshStart.setTime(DateTime.now());
+                    refreshStart.setReceiveTime(DateTime.NULL_VALUE);
+                    refreshStart.setMessage(LocalizedText.english("RefreshStart"));
+                    refreshStart.setSeverity(ushort(0));
+
+                    BaseEventNode refreshEnd = server.getEventFactory().createEvent(
+                        new NodeId(1, UUID.randomUUID()),
+                        Identifiers.RefreshEndEventType
+                    );
+
+                    refreshEnd.setBrowseName(new QualifiedName(1, "RefreshEnd"));
+                    refreshEnd.setDisplayName(LocalizedText.english("RefreshEnd"));
+                    refreshEnd.setEventId(NonceUtil.generateNonce(16));
+                    refreshEnd.setEventType(Identifiers.RefreshEndEventType);
+                    refreshEnd.setSourceNode(Identifiers.Server);
+                    refreshEnd.setSourceName("Server");
+                    refreshEnd.setTime(DateTime.now());
+                    refreshEnd.setReceiveTime(DateTime.NULL_VALUE);
+                    refreshEnd.setMessage(LocalizedText.english("RefreshEnd"));
+                    refreshEnd.setSeverity(ushort(0));
+
+                    server.getEventBus().post(refreshStart);
+                    server.getEventBus().post(refreshEnd);
+                } else {
+                    throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+                }
+            } else {
+                throw new UaException(StatusCodes.Bad_UserAccessDenied);
+            }
+        }
+
+    }
+
+    private static class GetMonitoredItemsMethodImpl extends GetMonitoredItemsMethod {
+
+        private final OpcUaServer server;
+
+        GetMonitoredItemsMethodImpl(UaMethodNode node) {
+            super(node);
+
+            server = node.getNodeContext().getServer();
+        }
+
+        @Override
+        protected void invoke(
+            InvocationContext context,
+            UInteger subscriptionId,
+            AtomicReference<UInteger[]> serverHandles,
+            AtomicReference<UInteger[]> clientHandles
+        ) throws UaException {
+
+            Subscription subscription = server.getSubscriptions().get(subscriptionId);
+
+            if (subscription != null) {
+                List<UInteger> serverHandleList = Lists.newArrayList();
+                List<UInteger> clientHandleList = Lists.newArrayList();
+
+                for (BaseMonitoredItem<?> item : subscription.getMonitoredItems().values()) {
+                    serverHandleList.add(item.getId());
+                    clientHandleList.add(uint(item.getClientHandle()));
+                }
+
+                serverHandles.set(serverHandleList.toArray(new UInteger[0]));
+                clientHandles.set(clientHandleList.toArray(new UInteger[0]));
+            } else {
+                throw new UaException(new StatusCode(StatusCodes.Bad_SubscriptionIdInvalid));
+            }
+        }
+
+    }
+
+    private static class ResendDataMethodImpl extends ResendDataMethod {
+
+        ResendDataMethodImpl(UaMethodNode node) {
+            super(node);
+        }
+
+        @Override
+        protected void invoke(InvocationContext context, UInteger subscriptionId) throws UaException {
+            Session session = context.getSession().orElse(null);
+
+            if (session != null) {
+                Subscription subscription = session.getSubscriptionManager().getSubscription(subscriptionId);
+
+                if (subscription == null) {
+                    throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
+                } else {
+                    subscription.getMonitoredItems().values().stream()
+                        .filter(item -> item instanceof MonitoredDataItem)
+                        .map(item -> (MonitoredDataItem) item)
+                        .forEach(MonitoredDataItem::clearLastValue);
+                }
+            } else {
+                throw new UaException(StatusCodes.Bad_UserAccessDenied);
+            }
+        }
+
     }
 
 }

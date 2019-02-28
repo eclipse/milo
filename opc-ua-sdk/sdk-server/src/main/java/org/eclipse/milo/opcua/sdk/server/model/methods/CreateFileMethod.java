@@ -20,59 +20,67 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class GetMonitoredItemsMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
+public abstract class CreateFileMethod extends AbstractMethodInvocationHandler {
+    public static final Argument FILE_NAME = new Argument(
+        "FileName",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "")
+    );
+
+    public static final Argument REQUEST_FILE_OPEN = new Argument(
+        "RequestFileOpen",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "")
+    );
+
+    public static final Argument FILE_NODE_ID = new Argument(
+        "FileNodeId",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "")
+    );
+
+    public static final Argument FILE_HANDLE = new Argument(
+        "FileHandle",
         NodeId.parse("ns=0;i=7"),
         ValueRanks.Scalar,
         null,
         new LocalizedText("", "")
     );
 
-    public static final Argument SERVER_HANDLES = new Argument(
-        "ServerHandles",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.OneDimension,
-        new UInteger[]{Unsigned.uint(0)},
-        new LocalizedText("", "")
-    );
-
-    public static final Argument CLIENT_HANDLES = new Argument(
-        "ClientHandles",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.OneDimension,
-        new UInteger[]{Unsigned.uint(0)},
-        new LocalizedText("", "")
-    );
-
-    public GetMonitoredItemsMethod(UaMethodNode node) {
+    public CreateFileMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{FILE_NAME, REQUEST_FILE_OPEN};
     }
 
     @Override
     public Argument[] getOutputArguments() {
-        return new Argument[]{SERVER_HANDLES, CLIENT_HANDLES};
+        return new Argument[]{FILE_NODE_ID, FILE_HANDLE};
     }
 
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        AtomicReference<UInteger[]> serverHandles = new AtomicReference<UInteger[]>();
-        AtomicReference<UInteger[]> clientHandles = new AtomicReference<UInteger[]>();
-        invoke(context, subscriptionId, serverHandles, clientHandles);
-        return new Variant[]{new Variant(serverHandles.get()), new Variant(clientHandles.get())};
+        String fileName = (String) inputValues[0].getValue();
+        Boolean requestFileOpen = (Boolean) inputValues[1].getValue();
+        AtomicReference<NodeId> fileNodeId = new AtomicReference<NodeId>();
+        AtomicReference<UInteger> fileHandle = new AtomicReference<UInteger>();
+        invoke(context, fileName, requestFileOpen, fileNodeId, fileHandle);
+        return new Variant[]{new Variant(fileNodeId.get()), new Variant(fileHandle.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId, AtomicReference<UInteger[]> serverHandles,
-                                   AtomicReference<UInteger[]> clientHandles) throws UaException;
+                                   String fileName, Boolean requestFileOpen, AtomicReference<NodeId> fileNodeId,
+                                   AtomicReference<UInteger> fileHandle) throws UaException;
 }

@@ -20,22 +20,30 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
+public abstract class ConditionRefresh2Method extends AbstractMethodInvocationHandler {
     public static final Argument SUBSCRIPTION_ID = new Argument(
         "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
+        NodeId.parse("ns=0;i=288"),
         ValueRanks.Scalar,
         null,
-        new LocalizedText("", "")
+        new LocalizedText("", "The identifier for the suscription to refresh.")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public static final Argument MONITORED_ITEM_ID = new Argument(
+        "MonitoredItemId",
+        NodeId.parse("ns=0;i=288"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "The identifier for the monitored item to refresh.")
+    );
+
+    public ConditionRefresh2Method(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{SUBSCRIPTION_ID, MONITORED_ITEM_ID};
     }
 
     @Override
@@ -47,10 +55,11 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        UInteger monitoredItemId = (UInteger) inputValues[1].getValue();
+        invoke(context, subscriptionId, monitoredItemId);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   UInteger subscriptionId, UInteger monitoredItemId) throws UaException;
 }

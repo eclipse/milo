@@ -20,22 +20,22 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
+public abstract class CloseMethod extends AbstractMethodInvocationHandler {
+    public static final Argument FILE_HANDLE = new Argument(
+        "FileHandle",
         NodeId.parse("ns=0;i=7"),
         ValueRanks.Scalar,
         null,
         new LocalizedText("", "")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public CloseMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{FILE_HANDLE};
     }
 
     @Override
@@ -46,11 +46,11 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        UInteger fileHandle = (UInteger) inputValues[0].getValue();
+        invoke(context, fileHandle);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   UInteger fileHandle) throws UaException;
 }

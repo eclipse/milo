@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
@@ -18,39 +20,49 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
+public abstract class GetPositionMethod extends AbstractMethodInvocationHandler {
+    public static final Argument FILE_HANDLE = new Argument(
+        "FileHandle",
         NodeId.parse("ns=0;i=7"),
         ValueRanks.Scalar,
         null,
         new LocalizedText("", "")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public static final Argument POSITION = new Argument(
+        "Position",
+        NodeId.parse("ns=0;i=9"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "")
+    );
+
+    public GetPositionMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{FILE_HANDLE};
     }
 
     @Override
     public Argument[] getOutputArguments() {
-        return new Argument[]{};
+        return new Argument[]{POSITION};
     }
 
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
-        return new Variant[]{};
+        UInteger fileHandle = (UInteger) inputValues[0].getValue();
+        AtomicReference<ULong> position = new AtomicReference<ULong>();
+        invoke(context, fileHandle, position);
+        return new Variant[]{new Variant(position.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   UInteger fileHandle, AtomicReference<ULong> position) throws UaException;
 }

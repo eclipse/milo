@@ -17,25 +17,24 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
+public abstract class RespondMethod extends AbstractMethodInvocationHandler {
+    public static final Argument SELECTED_RESPONSE = new Argument(
+        "SelectedResponse",
+        NodeId.parse("ns=0;i=6"),
         ValueRanks.Scalar,
         null,
-        new LocalizedText("", "")
+        new LocalizedText("", "The response to the dialog condition.")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public RespondMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{SELECTED_RESPONSE};
     }
 
     @Override
@@ -46,11 +45,11 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        Integer selectedResponse = (Integer) inputValues[0].getValue();
+        invoke(context, selectedResponse);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   Integer selectedResponse) throws UaException;
 }
