@@ -48,7 +48,7 @@ abstract class AbstractMethodInvocationHandler implements MethodInvocationHandle
     }
 
     @Override
-    public void invoke(
+    public final void invoke(
         AccessContext accessContext,
         CallMethodRequest request,
         CompletableFuture<CallMethodResult> future) {
@@ -131,7 +131,13 @@ abstract class AbstractMethodInvocationHandler implements MethodInvocationHandle
         }
     }
 
-    private void checkExecutableAttributes(AccessContext accessContext) throws UaException {
+    /**
+     * Check that the Executable and UserExecutable attributes are {@code true}.
+     *
+     * @param accessContext the {@link AccessContext}.
+     * @throws UaException if either Executable or UserExecutable attributes are not {@code true}.
+     */
+    protected void checkExecutableAttributes(AccessContext accessContext) throws UaException {
         AttributeContext attributeContext = new AttributeContext(
             node.getNodeContext().getServer(),
             accessContext.getSession().orElse(null)

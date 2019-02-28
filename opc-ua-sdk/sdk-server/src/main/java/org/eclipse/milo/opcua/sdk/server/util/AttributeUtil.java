@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.Set;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -29,9 +28,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AttributeUtil {
-
-    public static final Supplier<UaException> ATTRIBUTE_ID_INVALID_EXCEPTION =
-        () -> new UaException(StatusCodes.Bad_AttributeIdInvalid);
 
     /**
      * DataValue for a non-value attribute; no source timestamp included.
@@ -52,7 +48,10 @@ public class AttributeUtil {
         try {
             return (T) o;
         } catch (ClassCastException e) {
-            throw new UaException(StatusCodes.Bad_TypeMismatch);
+            throw new UaException(
+                StatusCodes.Bad_TypeMismatch,
+                "attribute value was not of the expected type: " + o
+            );
         }
     }
 
