@@ -119,14 +119,14 @@ public class GetMonitoredItemsNode extends UaMethodNode {
         }
 
         @Override
-        protected Argument[] getInputArguments() {
+        public Argument[] getInputArguments() {
             return new Argument[]{
                 SUBSCRIPTION_ID
             };
         }
 
         @Override
-        protected Argument[] getOutputArguments() {
+        public Argument[] getOutputArguments() {
             return new Argument[]{
                 SERVER_HANDLES,
                 CLIENT_HANDLES

@@ -45,6 +45,10 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
         this.node = node;
     }
 
+    public UaMethodNode getNode() {
+        return node;
+    }
+
     @Override
     public final void invoke(
         AccessContext accessContext,
@@ -169,14 +173,14 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
      *
      * @return the input {@link Argument}s expected by the Method this handler is installed on.
      */
-    protected abstract Argument[] getInputArguments();
+    public abstract Argument[] getInputArguments();
 
     /**
      * Get the output {@link Argument}s expected by the Method this handler is installed on.
      *
      * @return the output {@link Argument}s expected by the Method this handler is installed on.
      */
-    protected abstract Argument[] getOutputArguments();
+    public abstract Argument[] getOutputArguments();
 
     /**
      * Invoke this method and return the values for its output arguments, if any.

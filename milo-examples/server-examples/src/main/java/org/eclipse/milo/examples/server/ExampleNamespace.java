@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
-import org.eclipse.milo.examples.server.methods.GenerateEvent;
+import org.eclipse.milo.examples.server.methods.GenerateEventMethod;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
@@ -49,7 +49,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
-import org.eclipse.milo.opcua.sdk.server.util.AnnotationBasedInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -584,35 +583,20 @@ public class ExampleNamespace implements Namespace {
                 LocalizedText.english("Returns the correctly rounded positive square root of a double value."))
             .build();
 
+        SqrtMethod sqrtMethod = new SqrtMethod(methodNode);
+        methodNode.setProperty(UaMethodNode.InputArguments, sqrtMethod.getInputArguments());
+        methodNode.setProperty(UaMethodNode.OutputArguments, sqrtMethod.getOutputArguments());
+        methodNode.setInvocationHandler(sqrtMethod);
 
-        try {
-            AnnotationBasedInvocationHandler invocationHandler =
-                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new SqrtMethod());
+        nodeManager.addNode(methodNode);
 
-            methodNode.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
-            methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
-            methodNode.setInvocationHandler(invocationHandler);
-
-            nodeManager.addNode(methodNode);
-
-            folderNode.addReference(new Reference(
-                folderNode.getNodeId(),
-                Identifiers.HasComponent,
-                methodNode.getNodeId().expanded(),
-                methodNode.getNodeClass(),
-                true
-            ));
-
-            methodNode.addReference(new Reference(
-                methodNode.getNodeId(),
-                Identifiers.HasComponent,
-                folderNode.getNodeId().expanded(),
-                folderNode.getNodeClass(),
-                false
-            ));
-        } catch (Exception e) {
-            logger.error("Error creating sqrt() method.", e);
-        }
+        methodNode.addReference(new Reference(
+            methodNode.getNodeId(),
+            Identifiers.HasComponent,
+            folderNode.getNodeId().expanded(),
+            folderNode.getNodeClass(),
+            false
+        ));
     }
 
     private void addGenerateEventMethod(UaFolderNode folderNode) {
@@ -624,35 +608,20 @@ public class ExampleNamespace implements Namespace {
                 LocalizedText.english("Generate an Event with the TypeDefinition indicated by eventTypeId."))
             .build();
 
+        GenerateEventMethod generateEventMethod = new GenerateEventMethod(methodNode);
+        methodNode.setProperty(UaMethodNode.InputArguments, generateEventMethod.getInputArguments());
+        methodNode.setProperty(UaMethodNode.OutputArguments, generateEventMethod.getOutputArguments());
+        methodNode.setInvocationHandler(generateEventMethod);
 
-        try {
-            AnnotationBasedInvocationHandler invocationHandler =
-                AnnotationBasedInvocationHandler.fromAnnotatedObject(server, new GenerateEvent(server, methodNode));
+        nodeManager.addNode(methodNode);
 
-            methodNode.setProperty(UaMethodNode.InputArguments, invocationHandler.getInputArguments());
-            methodNode.setProperty(UaMethodNode.OutputArguments, invocationHandler.getOutputArguments());
-            methodNode.setInvocationHandler(invocationHandler);
-
-            nodeManager.addNode(methodNode);
-
-            folderNode.addReference(new Reference(
-                folderNode.getNodeId(),
-                Identifiers.HasComponent,
-                methodNode.getNodeId().expanded(),
-                methodNode.getNodeClass(),
-                true
-            ));
-
-            methodNode.addReference(new Reference(
-                methodNode.getNodeId(),
-                Identifiers.HasComponent,
-                folderNode.getNodeId().expanded(),
-                folderNode.getNodeClass(),
-                false
-            ));
-        } catch (Exception e) {
-            logger.error("Error creating generateEvent() method.", e);
-        }
+        methodNode.addReference(new Reference(
+            methodNode.getNodeId(),
+            Identifiers.HasComponent,
+            folderNode.getNodeId().expanded(),
+            folderNode.getNodeClass(),
+            false
+        ));
     }
 
     private void addCustomObjectTypeAndInstance(UaFolderNode rootFolder) {
