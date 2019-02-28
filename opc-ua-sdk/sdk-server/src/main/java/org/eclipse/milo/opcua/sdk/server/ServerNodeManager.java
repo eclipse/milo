@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server;
 
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.DelegatingNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -34,6 +35,22 @@ public class ServerNodeManager extends DelegatingNodeManager<UaNode> {
         return server.getNamespaceManager()
             .getNamespace(nodeId.getNamespaceIndex())
             .getNodeManager();
+    }
+
+    @Override
+    public void addReference(Reference reference) {
+        super.addReference(reference);
+
+        reference.invert()
+            .ifPresent(super::addVirtualReference);
+    }
+
+    @Override
+    public void removeReference(Reference reference) {
+        super.removeReference(reference);
+
+        reference.invert()
+            .ifPresent(super::removeVirtualReference);
     }
 
 }

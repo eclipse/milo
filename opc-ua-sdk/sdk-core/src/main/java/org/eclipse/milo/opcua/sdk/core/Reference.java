@@ -12,11 +12,13 @@ package org.eclipse.milo.opcua.sdk.core;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import com.google.common.base.MoreObjects;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -33,9 +35,9 @@ public class Reference {
     private final NodeId sourceNodeId;
     private final NodeId referenceTypeId;
     private final ExpandedNodeId targetNodeId;
-    private final NodeClass targetNodeClass;
     private final Direction direction;
 
+    @Deprecated
     public Reference(
         NodeId sourceNodeId,
         NodeId referenceTypeId,
@@ -51,6 +53,7 @@ public class Reference {
             forward ? Direction.FORWARD : Direction.INVERSE);
     }
 
+    @Deprecated
     public Reference(
         NodeId sourceNodeId,
         NodeId referenceTypeId,
@@ -58,10 +61,31 @@ public class Reference {
         NodeClass targetNodeClass,
         Direction direction) {
 
+        this(sourceNodeId, referenceTypeId, targetNodeId, direction);
+    }
+
+    public Reference(
+        NodeId sourceNodeId,
+        NodeId referenceTypeId,
+        ExpandedNodeId targetNodeId,
+        boolean forward) {
+
+        this(
+            sourceNodeId,
+            referenceTypeId,
+            targetNodeId,
+            forward ? Direction.FORWARD : Direction.INVERSE);
+    }
+
+    public Reference(
+        NodeId sourceNodeId,
+        NodeId referenceTypeId,
+        ExpandedNodeId targetNodeId,
+        Direction direction) {
+
         this.sourceNodeId = sourceNodeId;
         this.referenceTypeId = referenceTypeId;
         this.targetNodeId = targetNodeId;
-        this.targetNodeClass = targetNodeClass;
         this.direction = direction;
     }
 
@@ -77,10 +101,6 @@ public class Reference {
         return targetNodeId;
     }
 
-    public NodeClass getTargetNodeClass() {
-        return targetNodeClass;
-    }
-
     public Direction getDirection() {
         return direction;
     }
@@ -91,6 +111,50 @@ public class Reference {
 
     public boolean isInverse() {
         return direction == Direction.INVERSE;
+    }
+
+    /**
+     * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
+     *
+     * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
+     */
+    public Optional<Reference> invert() {
+        return getTargetNodeId().local().map(
+            sourceNodeId -> new Reference(
+                sourceNodeId,
+                getReferenceTypeId(),
+                getSourceNodeId().expanded(),
+                !isForward()
+            )
+        );
+    }
+
+    /**
+     * Re-index the source, target, and reference type {@link NodeId}s in this {@link Reference} from their current
+     * namespace index to the index for {@code namespaceUri}.
+     * <p>
+     * If the target namespace URI is not present in the namespace table this {@link Reference} is returned.
+     *
+     * @param namespaceUri   the target namespace URI.
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return a new {@link NodeId} in the namespace index indicated by {@code namespaceUri}.
+     */
+    public Reference reindex(String namespaceUri, NamespaceTable namespaceTable) {
+        NodeId newSourceNodeId = sourceNodeId.reindex(namespaceTable, namespaceUri);
+
+        NodeId newReferenceTypeId = referenceTypeId.reindex(namespaceTable, namespaceUri);
+
+        // re-index targetNodeId only if it's local, otherwise leave it alone.
+        ExpandedNodeId newTargetNodeId = targetNodeId.local()
+            .map(id -> id.reindex(namespaceTable, namespaceUri).expanded())
+            .orElse(targetNodeId);
+
+        return new Reference(
+            newSourceNodeId,
+            newReferenceTypeId,
+            newTargetNodeId,
+            direction
+        );
     }
 
     /**
@@ -130,13 +194,12 @@ public class Reference {
         return Objects.equals(sourceNodeId, reference.sourceNodeId) &&
             Objects.equals(referenceTypeId, reference.referenceTypeId) &&
             Objects.equals(targetNodeId, reference.targetNodeId) &&
-            targetNodeClass == reference.targetNodeClass &&
             direction == reference.direction;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceNodeId, referenceTypeId, targetNodeId, targetNodeClass, direction);
+        return Objects.hash(sourceNodeId, referenceTypeId, targetNodeId, direction);
     }
 
     @Override
@@ -145,7 +208,6 @@ public class Reference {
             .add("sourceNodeId", sourceNodeId)
             .add("referenceTypeId", referenceTypeId)
             .add("targetNodeId", targetNodeId)
-            .add("targetNodeClass", targetNodeClass)
             .add("direction", direction)
             .toString();
     }

@@ -73,7 +73,6 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
             getNodeId(),
             Identifiers.HasComponent,
             node.getNodeId().expanded(),
-            node.getNodeClass(),
             true
         ));
 
@@ -81,7 +80,6 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
             node.getNodeId(),
             Identifiers.HasComponent,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }
@@ -97,7 +95,6 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
             getNodeId(),
             Identifiers.HasSubtype,
             node.getNodeId().expanded(),
-            node.getNodeClass(),
             true
         ));
 
@@ -105,7 +102,6 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
             node.getNodeId(),
             Identifiers.HasSubtype,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }

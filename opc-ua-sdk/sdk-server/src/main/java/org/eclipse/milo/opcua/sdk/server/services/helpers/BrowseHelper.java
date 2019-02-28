@@ -152,8 +152,6 @@ public class BrowseHelper {
             List<CompletableFuture<ReferenceDescription>> fs = references.stream()
                 .filter(this::directionFilter)
                 .filter(this::referenceTypeFilter)
-                .filter(this::nodeClassFilter)
-                .distinct()
                 .map(this::referenceDescription)
                 .collect(toList());
 
@@ -162,11 +160,17 @@ public class BrowseHelper {
                     Integer.MAX_VALUE :
                     Ints.saturatedCast(maxReferencesPerNode.longValue());
 
-                return browseResult(referenceDescriptions, max);
+                return browseResult(
+                    max,
+                    referenceDescriptions
+                        .stream()
+                        .filter(this::nodeClassFilter)
+                        .collect(toList())
+                );
             });
         }
 
-        private BrowseResult browseResult(List<ReferenceDescription> references, int max) {
+        private BrowseResult browseResult(int max, List<ReferenceDescription> references) {
             if (references.size() > max) {
                 if (server.getBrowseContinuationPoints().size() >
                     server.getConfig().getLimits().getMaxBrowseContinuationPoints().intValue()) {
@@ -211,13 +215,13 @@ public class BrowseHelper {
                 (includeSubtypes && reference.subtypeOf(referenceTypeId, server.getReferenceTypes()));
         }
 
-        private boolean nodeClassFilter(Reference reference) {
+        private boolean nodeClassFilter(ReferenceDescription referenceDescription) {
             long mask = browseDescription.getNodeClassMask().longValue();
 
             EnumSet<NodeClass> nodeClasses = (mask == 0L) ?
                 EnumSet.allOf(NodeClass.class) : nodeClasses(mask);
 
-            return nodeClasses.contains(reference.getTargetNodeClass());
+            return nodeClasses.contains(referenceDescription.getNodeClass());
         }
 
         private CompletableFuture<ReferenceDescription> referenceDescription(Reference reference) {
@@ -239,7 +243,8 @@ public class BrowseHelper {
                         as.getBrowseName(),
                         as.getDisplayName(),
                         as.getNodeClass(),
-                        typeDefinition)
+                        typeDefinition
+                    )
                 );
             }).orElse(
                 CompletableFuture.completedFuture(
@@ -250,7 +255,8 @@ public class BrowseHelper {
                         QualifiedName.NULL_VALUE,
                         LocalizedText.NULL_VALUE,
                         NodeClass.Unspecified,
-                        ExpandedNodeId.NULL_VALUE)
+                        ExpandedNodeId.NULL_VALUE
+                    )
                 )
             );
         }

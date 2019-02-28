@@ -314,7 +314,6 @@ public abstract class UaNode implements UaServerNode {
             getNodeId(),
             Identifiers.HasProperty,
             node.getNodeId().expanded(),
-            NodeClass.Variable,
             true
         ));
 
@@ -322,7 +321,6 @@ public abstract class UaNode implements UaServerNode {
             node.getNodeId(),
             Identifiers.HasProperty,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }
@@ -332,7 +330,6 @@ public abstract class UaNode implements UaServerNode {
             getNodeId(),
             Identifiers.HasProperty,
             node.getNodeId().expanded(),
-            NodeClass.Variable,
             true
         ));
 
@@ -340,10 +337,20 @@ public abstract class UaNode implements UaServerNode {
             node.getNodeId(),
             Identifiers.HasProperty,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }
+
+    /**
+     * Find a {@link UaNode} with the specified {@code browseName} referenced by this node.
+     *
+     * @param browseName the Browse Name of the target node.
+     * @return the target node, if one was found.
+     */
+    public Optional<UaNode> findNode(QualifiedName browseName) {
+        return findNode(browseName, uaNode -> true, reference -> true);
+    }
+
 
     /**
      * Find a {@link UaNode} with the specified {@code browseName} referenced by this node.
@@ -353,10 +360,27 @@ public abstract class UaNode implements UaServerNode {
      * @return the target node, if one was found.
      */
     public Optional<UaNode> findNode(QualifiedName browseName, Predicate<Reference> references) {
+        return findNode(browseName, uaNode -> true, references);
+    }
+
+    /**
+     * Find a {@link UaNode} with the specified {@code browseName} referenced by this node.
+     *
+     * @param browseName         the Browse Name of the target node.
+     * @param nodePredicate      a {@link Predicate} used to include/exclude target Nodes.
+     * @param referencePredicate a {@link Predicate} used to include/exclude references to follow.
+     * @return the target node, if one was found.
+     */
+    public Optional<UaNode> findNode(
+        QualifiedName browseName,
+        Predicate<UaNode> nodePredicate,
+        Predicate<Reference> referencePredicate) {
+
         return getNodeManager().getReferences(nodeId)
             .stream()
-            .filter(references)
+            .filter(referencePredicate)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .filter(nodePredicate)
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst();
     }
@@ -378,9 +402,9 @@ public abstract class UaNode implements UaServerNode {
     protected Optional<ObjectNode> getObjectComponent(QualifiedName browseName) {
         ObjectNode node = (ObjectNode) getNodeManager().getReferences(nodeId)
             .stream()
-            .filter(Reference.HAS_COMPONENT_PREDICATE.and(r -> r.getTargetNodeClass() == NodeClass.Object))
+            .filter(Reference.HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
-            .filter(n -> n.getBrowseName().equals(browseName))
+            .filter(n -> n.getNodeClass() == NodeClass.Object && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
         return Optional.ofNullable(node);
@@ -403,9 +427,9 @@ public abstract class UaNode implements UaServerNode {
     protected Optional<VariableNode> getVariableComponent(QualifiedName browseName) {
         VariableNode node = (VariableNode) getNodeManager().getReferences(nodeId)
             .stream()
-            .filter(Reference.HAS_COMPONENT_PREDICATE.and(r -> r.getTargetNodeClass() == NodeClass.Variable))
+            .filter(Reference.HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
-            .filter(n -> n.getBrowseName().equals(browseName))
+            .filter(n -> n.getNodeClass() == NodeClass.Variable && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
         return Optional.ofNullable(node);

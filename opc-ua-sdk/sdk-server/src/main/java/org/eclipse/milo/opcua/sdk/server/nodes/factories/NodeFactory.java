@@ -224,7 +224,6 @@ public class NodeFactory {
                             node.getNodeId(),
                             referenceTypeId,
                             target.targetNodeId,
-                            targetNodeClass,
                             true
                         ));
                     } else {
@@ -237,7 +236,6 @@ public class NodeFactory {
                                 node.getNodeId(),
                                 referenceTypeId,
                                 targetNode.getNodeId().expanded(),
-                                targetNode.getNodeClass(),
                                 true
                             ));
                         }

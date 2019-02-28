@@ -51,8 +51,21 @@ class ReferenceTable {
         table2.references.forEach(row -> {
             BrowsePath browsePath = row.browsePath;
             NodeId referenceTypeId = row.nodeId;
+            RefTarget target = row.target;
 
-            if (Identifiers.HasTypeDefinition.equals(referenceTypeId)) {
+            if (Identifiers.HasProperty.equals(referenceTypeId)) {
+
+                boolean hasPropertyReference = mergedTable.references.stream().anyMatch(
+                    r ->
+                        r.browsePath.equals(browsePath) &&
+                            r.nodeId.equals(Identifiers.HasProperty) &&
+                            r.target.equals(target)
+                );
+
+                if (!hasPropertyReference) {
+                    mergedTable.references.add(row);
+                }
+            } else if (Identifiers.HasTypeDefinition.equals(referenceTypeId)) {
                 // Don't merge a HasTypeDefinition reference if there's already one present
                 // for a given BrowsePath.
                 // This logic may need to be extended to include other Reference types for

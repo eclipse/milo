@@ -15,7 +15,6 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 public class UaFolderNode extends UaObjectNode {
 
@@ -31,7 +30,6 @@ public class UaFolderNode extends UaObjectNode {
             getNodeId(),
             Identifiers.HasTypeDefinition,
             Identifiers.FolderType.expanded(),
-            NodeClass.ObjectType,
             true
         ));
     }
@@ -47,7 +45,6 @@ public class UaFolderNode extends UaObjectNode {
             getNodeId(),
             Identifiers.Organizes,
             node.getNodeId().expanded(),
-            node.getNodeClass(),
             true
         ));
 
@@ -55,7 +52,6 @@ public class UaFolderNode extends UaObjectNode {
             node.getNodeId(),
             Identifiers.Organizes,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }
@@ -71,7 +67,6 @@ public class UaFolderNode extends UaObjectNode {
             getNodeId(),
             Identifiers.Organizes,
             node.getNodeId().expanded(),
-            node.getNodeClass(),
             true
         ));
 
@@ -79,7 +74,6 @@ public class UaFolderNode extends UaObjectNode {
             node.getNodeId(),
             Identifiers.Organizes,
             getNodeId().expanded(),
-            getNodeClass(),
             false
         ));
     }

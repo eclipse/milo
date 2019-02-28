@@ -28,7 +28,6 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
 @Deprecated
 public class NodeFactory {
@@ -134,9 +133,9 @@ public class NodeFactory {
 
         List<UaVariableNode> variableComponents = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .filter(reference -> reference.getTargetNodeClass() == NodeClass.Variable)
             .map(r -> nodeManager.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
+            .filter(n -> n instanceof UaVariableNode)
             .map(UaVariableNode.class::cast)
             .collect(Collectors.toList());
 
@@ -173,9 +172,9 @@ public class NodeFactory {
         if (node instanceof ObjectNode) {
             List<UaObjectNode> objectComponents = typeDefinitionNode.getReferences().stream()
                 .filter(Reference.HAS_COMPONENT_PREDICATE)
-                .filter(reference -> reference.getTargetNodeClass() == NodeClass.Object)
                 .map(r -> nodeManager.getNode(r.getTargetNodeId()))
                 .flatMap(StreamUtil::opt2stream)
+                .filter(n -> n instanceof UaObjectNode)
                 .map(UaObjectNode.class::cast)
                 .collect(Collectors.toList());
 
@@ -234,7 +233,6 @@ public class NodeFactory {
             objectNode.getNodeId(),
             Identifiers.HasTypeDefinition,
             typeDefinitionId.expanded(),
-            NodeClass.ObjectType,
             true
         ));
 
@@ -270,7 +268,6 @@ public class NodeFactory {
             variableNode.getNodeId(),
             Identifiers.HasTypeDefinition,
             typeDefinitionId.expanded(),
-            NodeClass.VariableType,
             true
         ));
 
@@ -282,7 +279,6 @@ public class NodeFactory {
             sourceNode.getNodeId(),
             Identifiers.HasComponent,
             targetNode.getNodeId().expanded(),
-            targetNode.getNodeClass(),
             true
         ));
 
@@ -290,7 +286,6 @@ public class NodeFactory {
             targetNode.getNodeId(),
             Identifiers.HasComponent,
             sourceNode.getNodeId().expanded(),
-            sourceNode.getNodeClass(),
             false
         ));
     }

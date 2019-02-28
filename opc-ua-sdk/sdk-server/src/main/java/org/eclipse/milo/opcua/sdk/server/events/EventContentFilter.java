@@ -178,15 +178,17 @@ public class EventContentFilter {
 
         UaNode relativeNode = startingNode;
 
-        Predicate<Reference> references = r ->
+        Predicate<UaNode> nodePredicate = n ->
+            n.getNodeClass() == NodeClass.Object || n.getNodeClass() == NodeClass.Variable;
+
+        Predicate<Reference> referencePredicate = r ->
             r.isForward() &&
-                r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes()) &&
-                (r.getTargetNodeClass() == NodeClass.Object || r.getTargetNodeClass() == NodeClass.Variable);
+                r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes());
 
         // find the Node relative to eventNode using browsePath.
         for (QualifiedName targetBrowsePath : browsePath) {
             relativeNode = relativeNode
-                .findNode(targetBrowsePath, references)
+                .findNode(targetBrowsePath, nodePredicate, referencePredicate)
                 .orElse(null);
 
             if (relativeNode == null) break;
@@ -354,27 +356,46 @@ public class EventContentFilter {
         //@formatter:off
         switch (filterOperator) {
             // Basic FilterOperators
-            case Equals:                return Operators.EQUALS;
-            case IsNull:                return Operators.IS_NULL;
-            case GreaterThan:           return Operators.GREATER_THAN;
-            case LessThan:              return Operators.LESS_THAN;
-            case GreaterThanOrEqual:    return Operators.GREATER_THAN_OR_EQUAL;
-            case LessThanOrEqual:       return Operators.LESS_THAN_OR_EQUAL;
-            case Like:                  return Operators.UNSUPPORTED;
-            case Not:                   return Operators.NOT;
-            case Between:               return Operators.UNSUPPORTED;
-            case InList:                return Operators.UNSUPPORTED;
-            case And:                   return Operators.UNSUPPORTED;
-            case Or:                    return Operators.UNSUPPORTED;
-            case Cast:                  return Operators.CAST;
-            case BitwiseAnd:            return Operators.UNSUPPORTED;
-            case BitwiseOr:             return Operators.UNSUPPORTED;
+            case Equals:
+                return Operators.EQUALS;
+            case IsNull:
+                return Operators.IS_NULL;
+            case GreaterThan:
+                return Operators.GREATER_THAN;
+            case LessThan:
+                return Operators.LESS_THAN;
+            case GreaterThanOrEqual:
+                return Operators.GREATER_THAN_OR_EQUAL;
+            case LessThanOrEqual:
+                return Operators.LESS_THAN_OR_EQUAL;
+            case Like:
+                return Operators.UNSUPPORTED;
+            case Not:
+                return Operators.NOT;
+            case Between:
+                return Operators.UNSUPPORTED;
+            case InList:
+                return Operators.UNSUPPORTED;
+            case And:
+                return Operators.UNSUPPORTED;
+            case Or:
+                return Operators.UNSUPPORTED;
+            case Cast:
+                return Operators.CAST;
+            case BitwiseAnd:
+                return Operators.UNSUPPORTED;
+            case BitwiseOr:
+                return Operators.UNSUPPORTED;
 
             // Complex FilterOperators
-            case InView:                return Operators.UNSUPPORTED;
-            case OfType:                return Operators.UNSUPPORTED;
-            case RelatedTo:             return Operators.UNSUPPORTED;
-            default:                    return Operators.UNSUPPORTED;
+            case InView:
+                return Operators.UNSUPPORTED;
+            case OfType:
+                return Operators.UNSUPPORTED;
+            case RelatedTo:
+                return Operators.UNSUPPORTED;
+            default:
+                return Operators.UNSUPPORTED;
         }
         //@formatter:on
     }
@@ -414,15 +435,17 @@ public class EventContentFilter {
         UaNode targetNode = eventNode;
 
         if (browsePath != null) {
-            Predicate<Reference> references = r ->
+            Predicate<UaNode> nodePredicate = n ->
+                n.getNodeClass() == NodeClass.Object || n.getNodeClass() == NodeClass.Variable;
+
+            Predicate<Reference> referencePredicate = r ->
                 r.isForward() &&
-                    r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes()) &&
-                    (r.getTargetNodeClass() == NodeClass.Object || r.getTargetNodeClass() == NodeClass.Variable);
+                    r.subtypeOf(Identifiers.HierarchicalReferences, context.getServer().getReferenceTypes());
 
             // find the Node relative to eventNode using browsePath.
             for (QualifiedName targetBrowsePath : browsePath) {
                 targetNode = targetNode
-                    .findNode(targetBrowsePath, references)
+                    .findNode(targetBrowsePath, nodePredicate, referencePredicate)
                     .orElse(null);
 
                 if (targetNode == null) break;
