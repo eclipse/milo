@@ -48,6 +48,7 @@ import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
+@Deprecated
 public class AnnotationBasedInvocationHandler implements MethodInvocationHandler {
 
     private final Method annotatedMethod;
