@@ -1,19 +1,21 @@
 Eclipse Public License - v 2.0
+==============================
 
-    THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE
-    PUBLIC LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION
-    OF THE PROGRAM CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
+THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE
+PUBLIC LICENSE ("AGREEMENT"). ANY USE, REPRODUCTION OR DISTRIBUTION
+OF THE PROGRAM CONSTITUTES RECIPIENT'S ACCEPTANCE OF THIS AGREEMENT.
 
-1. DEFINITIONS
+### 1. DEFINITIONS
 
 "Contribution" means:
 
-  a) in the case of the initial Contributor, the initial content
+* a) in the case of the initial Contributor, the initial content
      Distributed under this Agreement, and
 
-  b) in the case of each subsequent Contributor:
-     i) changes to the Program, and
-     ii) additions to the Program;
+* b) in the case of each subsequent Contributor:
+    * *i)* changes to the Program, and
+    * *ii)* additions to the Program;
+
   where such changes and/or additions to the Program originate from
   and are Distributed by that particular Contributor. A Contribution
   "originates" from a Contributor if it was added to the Program by
@@ -59,15 +61,15 @@ Version 2.0, or any later versions of that license, including any
 exceptions or additional permissions as identified by the initial
 Contributor.
 
-2. GRANT OF RIGHTS
+### 2. GRANT OF RIGHTS
 
-  a) Subject to the terms of this Agreement, each Contributor hereby
+* a) Subject to the terms of this Agreement, each Contributor hereby
   grants Recipient a non-exclusive, worldwide, royalty-free copyright
   license to reproduce, prepare Derivative Works of, publicly display,
   publicly perform, Distribute and sublicense the Contribution of such
   Contributor, if any, and such Derivative Works.
 
-  b) Subject to the terms of this Agreement, each Contributor hereby
+* b) Subject to the terms of this Agreement, each Contributor hereby
   grants Recipient a non-exclusive, worldwide, royalty-free patent
   license under Licensed Patents to make, use, sell, offer to sell,
   import and otherwise transfer the Contribution of such Contributor,
@@ -79,7 +81,7 @@ Contributor.
   combinations which include the Contribution. No hardware per se is
   licensed hereunder.
 
-  c) Recipient understands that although each Contributor grants the
+* c) Recipient understands that although each Contributor grants the
   licenses to its Contributions set forth herein, no assurances are
   provided by any Contributor that the Program does not infringe the
   patent or other intellectual property rights of any other entity.
@@ -93,65 +95,65 @@ Contributor.
   Program, it is Recipient's responsibility to acquire that license
   before distributing the Program.
 
-  d) Each Contributor represents that to its knowledge it has
+* d) Each Contributor represents that to its knowledge it has
   sufficient copyright rights in its Contribution, if any, to grant
   the copyright license set forth in this Agreement.
 
-  e) Notwithstanding the terms of any Secondary License, no
+* e) Notwithstanding the terms of any Secondary License, no
   Contributor makes additional grants to any Recipient (other than
   those set forth in this Agreement) as a result of such Recipient's
   receipt of the Program under the terms of a Secondary License
   (if permitted under the terms of Section 3).
 
-3. REQUIREMENTS
+### 3. REQUIREMENTS
 
-3.1 If a Contributor Distributes the Program in any form, then:
+* 3.1 If a Contributor Distributes the Program in any form, then:
 
-  a) the Program must also be made available as Source Code, in
-  accordance with section 3.2, and the Contributor must accompany
-  the Program with a statement that the Source Code for the Program
-  is available under this Agreement, and informs Recipients how to
-  obtain it in a reasonable manner on or through a medium customarily
-  used for software exchange; and
+    * a) the Program must also be made available as Source Code, in
+    accordance with section 3.2, and the Contributor must accompany
+    the Program with a statement that the Source Code for the Program
+    is available under this Agreement, and informs Recipients how to
+    obtain it in a reasonable manner on or through a medium customarily
+    used for software exchange; and
 
-  b) the Contributor may Distribute the Program under a license
-  different than this Agreement, provided that such license:
-     i) effectively disclaims on behalf of all other Contributors all
-     warranties and conditions, express and implied, including
-     warranties or conditions of title and non-infringement, and
-     implied warranties or conditions of merchantability and fitness
-     for a particular purpose;
+    * b) the Contributor may Distribute the Program under a license
+    different than this Agreement, provided that such license:
+        * *i)* effectively disclaims on behalf of all other Contributors all
+        warranties and conditions, express and implied, including
+        warranties or conditions of title and non-infringement, and
+        implied warranties or conditions of merchantability and fitness
+        for a particular purpose;
 
-     ii) effectively excludes on behalf of all other Contributors all
-     liability for damages, including direct, indirect, special,
-     incidental and consequential damages, such as lost profits;
+        * *ii)* effectively excludes on behalf of all other Contributors all
+        liability for damages, including direct, indirect, special,
+        incidental and consequential damages, such as lost profits;
 
-     iii) does not attempt to limit or alter the recipients' rights
-     in the Source Code under section 3.2; and
+        * *iii)* does not attempt to limit or alter the recipients' rights
+        in the Source Code under section 3.2; and
 
-     iv) requires any subsequent distribution of the Program by any
-     party to be under a license that satisfies the requirements
-     of this section 3.
+        * *iv)* requires any subsequent distribution of the Program by any
+        party to be under a license that satisfies the requirements
+        of this section 3.
 
-3.2 When the Program is Distributed as Source Code:
+* 3.2 When the Program is Distributed as Source Code:
 
-  a) it must be made available under this Agreement, or if the
-  Program (i) is combined with other material in a separate file or
-  files made available under a Secondary License, and (ii) the initial
-  Contributor attached to the Source Code the notice described in
-  Exhibit A of this Agreement, then the Program may be made available
-  under the terms of such Secondary Licenses, and
+    * a) it must be made available under this Agreement, or if the
+    Program (i) is combined with other material in a separate file or
+    files made available under a Secondary License, and (ii) the initial
+    Contributor attached to the Source Code the notice described in
+    Exhibit A of this Agreement, then the Program may be made available
+    under the terms of such Secondary Licenses, and
 
-  b) a copy of this Agreement must be included with each copy of
-  the Program.
+    * b) a copy of this Agreement must be included with each copy of
+    the Program.
 
-3.3 Contributors may not remove or alter any copyright, patent,
+* 3.3 Contributors may not remove or alter any copyright, patent,
 trademark, attribution notices, disclaimers of warranty, or limitations
 of liability ("notices") contained within the Program from any copy of
 the Program which they Distribute, provided that Contributors may add
 their own appropriate notices.
 
-4. COMMERCIAL DISTRIBUTION
+### 4. COMMERCIAL DISTRIBUTION
 
 Commercial distributors of software may accept certain responsibilities
 with respect to end users, business partners and the like. While this
@@ -186,7 +188,7 @@ claims and warranties, and if a court requires any other Contributor to
 pay any damages as a result, the Commercial Contributor must pay
 those damages.
 
-5. NO WARRANTY
+### 5. NO WARRANTY
 
 EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, AND TO THE EXTENT
 PERMITTED BY APPLICABLE LAW, THE PROGRAM IS PROVIDED ON AN "AS IS"
@@ -200,7 +202,7 @@ including but not limited to the risks and costs of program errors,
 compliance with applicable laws, damage to or loss of data, programs
 or equipment, and unavailability or interruption of operations.
 
-6. DISCLAIMER OF LIABILITY
+### 6. DISCLAIMER OF LIABILITY
 
 EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, AND TO THE EXTENT
 PERMITTED BY APPLICABLE LAW, NEITHER RECIPIENT NOR ANY CONTRIBUTORS
@@ -212,7 +214,7 @@ ARISING IN ANY WAY OUT OF THE USE OR DISTRIBUTION OF THE PROGRAM OR THE
 EXERCISE OF ANY RIGHTS GRANTED HEREUNDER, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGES.
 
-7. GENERAL
+### 7. GENERAL
 
 If any provision of this Agreement is invalid or unenforceable under
 applicable law, it shall not affect the validity or enforceability of
@@ -261,17 +263,17 @@ No third-party beneficiary rights are created under this Agreement.
 
 Exhibit A - Form of Secondary Licenses Notice
 
-"This Source Code may also be made available under the following
-Secondary Licenses when the conditions for such availability set forth
-in the Eclipse Public License, v. 2.0 are satisfied: {name license(s),
-version(s), and exceptions or additional permissions here}."
+    "This Source Code may also be made available under the following
+    Secondary Licenses when the conditions for such availability set forth
+    in the Eclipse Public License, v. 2.0 are satisfied: {name license(s),
+    version(s), and exceptions or additional permissions here}."
 
-  Simply including a copy of this Agreement, including this Exhibit A
-  is not sufficient to license the Source Code under Secondary Licenses.
+Simply including a copy of this Agreement, including this Exhibit A
+is not sufficient to license the Source Code under Secondary Licenses.
 
-  If it is not possible or desirable to put the notice in a particular
-  file, then You may include the notice in a location (such as a LICENSE
-  file in a relevant directory) where a recipient would be likely to
-  look for such a notice.
+If it is not possible or desirable to put the notice in a particular
+file, then You may include the notice in a location (such as a LICENSE
+file in a relevant directory) where a recipient would be likely to
+look for such a notice.
 
-  You may add additional accurate notices of copyright ownership.
+You may add additional accurate notices of copyright ownership.

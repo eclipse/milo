@@ -44,11 +44,17 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.util.TypeUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
+@Deprecated
 public class AnnotationBasedInvocationHandler implements MethodInvocationHandler {
+
+    private final Logger logger = LoggerFactory
+        .getLogger(AnnotationBasedInvocationHandler.class);
 
     private final Method annotatedMethod;
 
@@ -177,6 +183,11 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
             } catch (InvocationTargetException e) {
                 Throwable targetException = e.getTargetException();
 
+                logger.error(
+                    "Error invoking annotated method: {} on annotated object: {}",
+                    annotatedMethod, annotatedObject, targetException
+                );
+
                 if (targetException instanceof UaException) {
                     StatusCode statusCode = ((UaException) targetException).getStatusCode();
 
@@ -191,6 +202,11 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
                     ));
                 }
             } catch (Throwable t) {
+                logger.error(
+                    "Error invoking annotated method: {} on annotated object: {}",
+                    annotatedMethod, annotatedObject, t
+                );
+
                 future.complete(new CallMethodResult(
                     new StatusCode(StatusCodes.Bad_InternalError),
                     inputArgumentResults, new DiagnosticInfo[0], new Variant[0]

@@ -40,7 +40,7 @@ import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaMethodNode extends UaNode implements MethodNode {
 
-    private volatile Optional<MethodInvocationHandler> handler = Optional.empty();
+    private volatile MethodInvocationHandler handler = MethodInvocationHandler.NOT_IMPLEMENTED;
 
     private volatile Boolean executable;
     private volatile Boolean userExecutable;
@@ -113,12 +113,12 @@ public class UaMethodNode extends UaNode implements MethodNode {
             .collect(Collectors.toList());
     }
 
-    public Optional<MethodInvocationHandler> getInvocationHandler() {
+    public MethodInvocationHandler getInvocationHandler() {
         return handler;
     }
 
     public void setInvocationHandler(MethodInvocationHandler handler) {
-        this.handler = Optional.of(handler);
+        this.handler = handler;
     }
 
     @Nullable

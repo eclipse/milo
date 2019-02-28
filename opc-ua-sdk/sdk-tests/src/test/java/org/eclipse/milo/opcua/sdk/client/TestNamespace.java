@@ -218,7 +218,7 @@ public class TestNamespace implements Namespace {
         UaServerNode node = nodeManager.get(methodId);
 
         if (node instanceof UaMethodNode) {
-            return ((UaMethodNode) node).getInvocationHandler();
+            return Optional.of(((UaMethodNode) node).getInvocationHandler());
         } else {
             return Optional.empty();
         }
