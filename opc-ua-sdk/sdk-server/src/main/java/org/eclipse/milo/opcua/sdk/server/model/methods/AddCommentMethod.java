@@ -14,28 +14,36 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
+public abstract class AddCommentMethod extends AbstractMethodInvocationHandler {
+    public static final Argument EVENT_ID = new Argument(
+        "EventId",
+        NodeId.parse("ns=0;i=15"),
         ValueRanks.Scalar,
         null,
-        new LocalizedText("", "")
+        new LocalizedText("", "The identifier for the event to comment.")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public static final Argument COMMENT = new Argument(
+        "Comment",
+        NodeId.parse("ns=0;i=21"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "The comment to add to the condition.")
+    );
+
+    public AddCommentMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{EVENT_ID, COMMENT};
     }
 
     @Override
@@ -46,11 +54,12 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        ByteString eventId = (ByteString) inputValues[0].getValue();
+        LocalizedText comment = (LocalizedText) inputValues[1].getValue();
+        invoke(context, eventId, comment);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   ByteString eventId, LocalizedText comment) throws UaException;
 }

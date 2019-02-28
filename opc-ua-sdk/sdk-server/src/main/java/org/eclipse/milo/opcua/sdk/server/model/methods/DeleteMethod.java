@@ -17,25 +17,24 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
+public abstract class DeleteMethod extends AbstractMethodInvocationHandler {
+    public static final Argument OBJECT_TO_DELETE = new Argument(
+        "ObjectToDelete",
+        NodeId.parse("ns=0;i=17"),
         ValueRanks.Scalar,
         null,
         new LocalizedText("", "")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public DeleteMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{OBJECT_TO_DELETE};
     }
 
     @Override
@@ -46,11 +45,11 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        NodeId objectToDelete = (NodeId) inputValues[0].getValue();
+        invoke(context, objectToDelete);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   NodeId objectToDelete) throws UaException;
 }

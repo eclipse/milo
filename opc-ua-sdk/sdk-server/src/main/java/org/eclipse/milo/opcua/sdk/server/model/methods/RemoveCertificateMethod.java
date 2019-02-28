@@ -17,25 +17,32 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
+public abstract class RemoveCertificateMethod extends AbstractMethodInvocationHandler {
+    public static final Argument THUMBPRINT = new Argument(
+        "Thumbprint",
+        NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
         null,
         new LocalizedText("", "")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public static final Argument IS_TRUSTED_CERTIFICATE = new Argument(
+        "IsTrustedCertificate",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "")
+    );
+
+    public RemoveCertificateMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{THUMBPRINT, IS_TRUSTED_CERTIFICATE};
     }
 
     @Override
@@ -46,11 +53,12 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        String thumbprint = (String) inputValues[0].getValue();
+        Boolean isTrustedCertificate = (Boolean) inputValues[1].getValue();
+        invoke(context, thumbprint, isTrustedCertificate);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   String thumbprint, Boolean isTrustedCertificate) throws UaException;
 }

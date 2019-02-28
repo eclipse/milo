@@ -10,32 +10,20 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        null,
-        new LocalizedText("", "")
-    );
-
-    public ResendDataMethod(UaMethodNode node) {
+public abstract class ExportNamespaceMethod extends AbstractMethodInvocationHandler {
+    public ExportNamespaceMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{};
     }
 
     @Override
@@ -46,11 +34,10 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        invoke(context);
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+    protected abstract void invoke(InvocationContext context) throws
+        UaException;
 }

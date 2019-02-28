@@ -17,25 +17,24 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
+public abstract class TimedShelveMethod extends AbstractMethodInvocationHandler {
+    public static final Argument SHELVING_TIME = new Argument(
+        "ShelvingTime",
+        NodeId.parse("ns=0;i=290"),
         ValueRanks.Scalar,
         null,
-        new LocalizedText("", "")
+        new LocalizedText("", "If not 0, this parameter specifies a fixed time for which the Alarm is to be shelved.")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public TimedShelveMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{SHELVING_TIME};
     }
 
     @Override
@@ -46,11 +45,11 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        Double shelvingTime = (Double) inputValues[0].getValue();
+        invoke(context, shelvingTime);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   Double shelvingTime) throws UaException;
 }

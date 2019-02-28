@@ -14,28 +14,36 @@ import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 
-public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
-    public static final Argument SUBSCRIPTION_ID = new Argument(
-        "SubscriptionId",
-        NodeId.parse("ns=0;i=7"),
+public abstract class AddCertificateMethod extends AbstractMethodInvocationHandler {
+    public static final Argument CERTIFICATE = new Argument(
+        "Certificate",
+        NodeId.parse("ns=0;i=15"),
         ValueRanks.Scalar,
         null,
         new LocalizedText("", "")
     );
 
-    public ResendDataMethod(UaMethodNode node) {
+    public static final Argument IS_TRUSTED_CERTIFICATE = new Argument(
+        "IsTrustedCertificate",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        null,
+        new LocalizedText("", "")
+    );
+
+    public AddCertificateMethod(UaMethodNode node) {
         super(node);
     }
 
     @Override
     public Argument[] getInputArguments() {
-        return new Argument[]{SUBSCRIPTION_ID};
+        return new Argument[]{CERTIFICATE, IS_TRUSTED_CERTIFICATE};
     }
 
     @Override
@@ -46,11 +54,12 @@ public abstract class ResendDataMethod extends AbstractMethodInvocationHandler {
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        invoke(context, subscriptionId);
+        ByteString certificate = (ByteString) inputValues[0].getValue();
+        Boolean isTrustedCertificate = (Boolean) inputValues[1].getValue();
+        invoke(context, certificate, isTrustedCertificate);
         return new Variant[]{};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId) throws UaException;
+                                   ByteString certificate, Boolean isTrustedCertificate) throws UaException;
 }
