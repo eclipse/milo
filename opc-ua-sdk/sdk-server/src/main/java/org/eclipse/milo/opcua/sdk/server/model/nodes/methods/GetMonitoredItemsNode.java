@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 
 import com.google.common.base.Preconditions;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.methods.AbstractMethodInvocationHandler.InvocationContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -94,7 +94,7 @@ public class GetMonitoredItemsNode extends UaMethodNode {
     interface InvocationDelegate {
 
         default void invoke(
-            AccessContext context,
+            InvocationContext context,
             UInteger subscriptionId,
             AtomicReference<UInteger[]> serverHandles,
             AtomicReference<UInteger[]> clientHandles
@@ -127,12 +127,12 @@ public class GetMonitoredItemsNode extends UaMethodNode {
         }
 
         @Override
-        protected Variant[] invoke(AccessContext accessContext, Variant[] inputArguments) throws UaException {
+        protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputArguments) throws UaException {
             UInteger subscriptionId = (UInteger) inputArguments[0].getValue();
             AtomicReference<UInteger[]> serverHandles = new AtomicReference<>();
             AtomicReference<UInteger[]> clientHandles = new AtomicReference<>();
 
-            invocationDelegate.invoke(accessContext, subscriptionId, serverHandles, clientHandles);
+            invocationDelegate.invoke(invocationContext, subscriptionId, serverHandles, clientHandles);
 
             return new Variant[]{
                 new Variant(serverHandles.get()),

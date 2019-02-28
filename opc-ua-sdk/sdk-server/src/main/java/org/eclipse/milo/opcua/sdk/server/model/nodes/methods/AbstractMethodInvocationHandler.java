@@ -11,8 +11,11 @@
 package org.eclipse.milo.opcua.sdk.server.model.nodes.methods;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
@@ -22,6 +25,7 @@ import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
@@ -76,7 +80,29 @@ abstract class AbstractMethodInvocationHandler implements MethodInvocationHandle
                 throw new UaException(StatusCodes.Bad_InvalidArgument);
             }
 
-            Variant[] outputValues = invoke(accessContext, inputValues);
+            InvocationContext invocationContext = new InvocationContext() {
+                @Override
+                public OpcUaServer getServer() {
+                    return node.getNodeContext().getServer();
+                }
+
+                @Override
+                public NodeId getObjectId() {
+                    return request.getObjectId();
+                }
+
+                @Override
+                public UaMethodNode getMethodNode() {
+                    return node;
+                }
+
+                @Override
+                public Optional<Session> getSession() {
+                    return accessContext.getSession();
+                }
+            };
+
+            Variant[] outputValues = invoke(invocationContext, inputValues);
 
             CallMethodResult result = new CallMethodResult(
                 StatusCode.GOOD,
@@ -131,6 +157,19 @@ abstract class AbstractMethodInvocationHandler implements MethodInvocationHandle
 
     protected abstract Argument[] getOutputArguments();
 
-    protected abstract Variant[] invoke(AccessContext accessContext, Variant[] inputArguments) throws UaException;
+    protected abstract Variant[] invoke(
+        InvocationContext invocationContext,
+        Variant[] inputArguments
+    ) throws UaException;
+
+    interface InvocationContext extends AccessContext {
+
+        OpcUaServer getServer();
+
+        NodeId getObjectId();
+
+        UaMethodNode getMethodNode();
+
+    }
 
 }
