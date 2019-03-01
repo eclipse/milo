@@ -12,26 +12,42 @@ package org.eclipse.milo.opcua.stack.core.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.security.KeyPair;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.ExtensionsGenerator;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.openssl.MiscPEMGenerator;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
+import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
+import org.bouncycastle.util.io.pem.PemWriter;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 
 public class CertificateUtil {
 
-    public static final int SUBJECT_ALT_NAME_URI = 6;
-    public static final int SUBJECT_ALT_NAME_DNS_NAME = 2;
-    public static final int SUBJECT_ALT_NAME_IP_ADDRESS = 7;
+    public static final int SUBJECT_ALT_NAME_DNS_NAME = GeneralName.dNSName;
+    public static final int SUBJECT_ALT_NAME_IP_ADDRESS = GeneralName.iPAddress;
+    public static final int SUBJECT_ALT_NAME_URI = GeneralName.uniformResourceIdentifier;
 
     /**
      * Decode a DER-encoded X.509 certificate.
@@ -95,6 +111,96 @@ public class CertificateUtil {
                 .collect(Collectors.toList());
         } catch (CertificateException e) {
             throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
+        }
+    }
+
+    /**
+     * Generate a {@link PKCS10CertificationRequest} for the provided {@code certificate} and {@code keyPair}.
+     *
+     * @param certificate the {@link X509Certificate} to request signing for.
+     * @param keyPair     the {@link KeyPair} for {@code certificate}.
+     * @return a {@link PKCS10CertificationRequest}.
+     * @throws Exception if creating the signing request fails for any reason.
+     */
+    public static PKCS10CertificationRequest generateCsr(
+        X509Certificate certificate,
+        KeyPair keyPair
+    ) throws Exception {
+
+        PKCS10CertificationRequestBuilder builder = new JcaPKCS10CertificationRequestBuilder(
+            certificate.getSubjectX500Principal(),
+            certificate.getPublicKey()
+        );
+
+        GeneralNames subjectAltNames = new GeneralNames(
+            getSubjectAltNames(certificate)
+                .toArray(new GeneralName[0])
+        );
+
+        ExtensionsGenerator extGen = new ExtensionsGenerator();
+        extGen.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
+        builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extGen.generate());
+
+        JcaContentSignerBuilder signerBuilder = new JcaContentSignerBuilder(
+            certificate.getSigAlgName()
+        );
+
+        ContentSigner signer = signerBuilder.build(keyPair.getPrivate());
+
+        return builder.build(signer);
+    }
+
+    /**
+     * Generate a PEM-encoded PKCS #10 certificate signing request for the provided {@code certificate} and
+     * {@code keyPair}.
+     *
+     * @param certificate the {@link X509Certificate} to request signing for.
+     * @param keyPair     the {@link KeyPair} for {@code certificate}.
+     * @return a PEM-encoded PKCS #10 CSR.
+     * @throws Exception if creating the signing request fails for any reason.
+     */
+    public static String generateCsrPem(
+        X509Certificate certificate,
+        KeyPair keyPair
+    ) throws Exception {
+
+        PKCS10CertificationRequest csr = generateCsr(certificate, keyPair);
+
+        StringWriter stringWriter = new StringWriter();
+
+        try (PemWriter pemWriter = new PemWriter(stringWriter)) {
+            pemWriter.writeObject(new MiscPEMGenerator(csr));
+            pemWriter.flush();
+        }
+
+        return stringWriter.toString();
+    }
+
+    private static List<GeneralName> getSubjectAltNames(X509Certificate certificate) {
+        try {
+            List<GeneralName> generalNames = new ArrayList<>();
+
+            Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
+            if (subjectAltNames == null) subjectAltNames = Collections.emptyList();
+
+            for (List<?> idAndValue : subjectAltNames) {
+                if (idAndValue != null && idAndValue.size() == 2) {
+                    Object id = idAndValue.get(0);
+                    String value = Objects.toString(idAndValue.get(1));
+
+                    if (Objects.equals(id, SUBJECT_ALT_NAME_DNS_NAME)) {
+                        generalNames.add(new GeneralName(SUBJECT_ALT_NAME_DNS_NAME, value));
+                    } else if (Objects.equals(id, SUBJECT_ALT_NAME_IP_ADDRESS)) {
+                        generalNames.add(new GeneralName(SUBJECT_ALT_NAME_IP_ADDRESS, value));
+                    } else if (Objects.equals(id, SUBJECT_ALT_NAME_URI)) {
+                        generalNames.add(new GeneralName(SUBJECT_ALT_NAME_URI, value));
+                    }
+                }
+            }
+
+            return generalNames;
+        } catch (CertificateParsingException e) {
+            return Collections.emptyList();
         }
     }
 
