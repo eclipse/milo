@@ -119,10 +119,7 @@ public class ExampleServer {
 
         // The configured application URI must match the one in the certificate(s)
         String applicationUri = CertificateUtil
-            .getSubjectAltNameField(
-                certificate,
-                CertificateUtil.SUBJECT_ALT_NAME_URI)
-            .map(Object::toString)
+            .getSanUri(certificate)
             .orElseThrow(() -> new UaRuntimeException(
                 StatusCodes.Bad_ConfigurationError,
                 "certificate is missing the application URI"));

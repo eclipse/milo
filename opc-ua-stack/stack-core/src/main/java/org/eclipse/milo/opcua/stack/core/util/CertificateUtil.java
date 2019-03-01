@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.KeyPair;
@@ -29,10 +30,14 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.asn1.x500.style.RFC4519Style;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.ExtensionsGenerator;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.openssl.MiscPEMGenerator;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
@@ -117,14 +122,14 @@ public class CertificateUtil {
     /**
      * Generate a {@link PKCS10CertificationRequest} for the provided {@code certificate} and {@code keyPair}.
      *
-     * @param certificate the {@link X509Certificate} to request signing for.
      * @param keyPair     the {@link KeyPair} for {@code certificate}.
+     * @param certificate the {@link X509Certificate} to request signing for.
      * @return a {@link PKCS10CertificationRequest}.
      * @throws Exception if creating the signing request fails for any reason.
      */
     public static PKCS10CertificationRequest generateCsr(
-        X509Certificate certificate,
-        KeyPair keyPair
+        KeyPair keyPair,
+        X509Certificate certificate
     ) throws Exception {
 
         PKCS10CertificationRequestBuilder builder = new JcaPKCS10CertificationRequestBuilder(
@@ -151,21 +156,101 @@ public class CertificateUtil {
     }
 
     /**
-     * Generate a PEM-encoded PKCS #10 certificate signing request for the provided {@code certificate} and
-     * {@code keyPair}.
+     * Generate a {@link PKCS10CertificationRequest}.
      *
-     * @param certificate the {@link X509Certificate} to request signing for.
-     * @param keyPair     the {@link KeyPair} for {@code certificate}.
-     * @return a PEM-encoded PKCS #10 CSR.
+     * @param keyPair            the {@link KeyPair} containing Public and Private keys.
+     * @param subjectName        the subject name, in RFC 4519 style. (CN=foo,O=bar)
+     * @param sanUri             the URI to request in the SAN.
+     * @param sanDnsNames        the DNS names to request in the SAN.
+     * @param sanIpAddresses     the IP addresses to request in the SAN.
+     * @param signatureAlgorithm the signature algorithm to use when generating the signature to validate the
+     *                           certificate.
+     * @return a {@link PKCS10CertificationRequest}.
      * @throws Exception if creating the signing request fails for any reason.
      */
-    public static String generateCsrPem(
-        X509Certificate certificate,
-        KeyPair keyPair
+    public static PKCS10CertificationRequest generateCsr(
+        KeyPair keyPair,
+        String subjectName,
+        String sanUri,
+        List<String> sanDnsNames,
+        List<String> sanIpAddresses,
+        String signatureAlgorithm
     ) throws Exception {
 
-        PKCS10CertificationRequest csr = generateCsr(certificate, keyPair);
+        X500Name subject = new X500Name(
+            IETFUtils.rDNsFromString(
+                subjectName,
+                RFC4519Style.INSTANCE
+            )
+        );
 
+        return generateCsr(keyPair, subject, sanUri, sanDnsNames, sanIpAddresses, signatureAlgorithm);
+    }
+
+    /**
+     * Generate a {@link PKCS10CertificationRequest}.
+     *
+     * @param keyPair            the {@link KeyPair} containing Public and Private keys.
+     * @param subject            the subject name {@link X500Name}.
+     * @param sanUri             the URI to request in the SAN.
+     * @param sanDnsNames        the DNS names to request in the SAN.
+     * @param sanIpAddresses     the IP addresses to request in the SAN.
+     * @param signatureAlgorithm the signature algorithm to use when generating the signature to validate the
+     *                           certificate.
+     * @return a {@link PKCS10CertificationRequest}.
+     * @throws Exception if creating the signing request fails for any reason.
+     */
+    public static PKCS10CertificationRequest generateCsr(
+        KeyPair keyPair,
+        X500Name subject,
+        String sanUri,
+        List<String> sanDnsNames,
+        List<String> sanIpAddresses,
+        String signatureAlgorithm
+    ) throws Exception {
+
+        PKCS10CertificationRequestBuilder builder = new PKCS10CertificationRequestBuilder(
+            subject,
+            SubjectPublicKeyInfo.getInstance(keyPair.getPublic().getEncoded())
+        );
+
+        List<GeneralName> generalNames = new ArrayList<>();
+
+        generalNames.add(new GeneralName(SUBJECT_ALT_NAME_URI, sanUri));
+
+        sanDnsNames.stream()
+            .map(n -> new GeneralName(SUBJECT_ALT_NAME_DNS_NAME, n))
+            .forEach(generalNames::add);
+
+        sanIpAddresses.stream()
+            .map(n -> new GeneralName(SUBJECT_ALT_NAME_IP_ADDRESS, n))
+            .forEach(generalNames::add);
+
+        ExtensionsGenerator extGen = new ExtensionsGenerator();
+
+        extGen.addExtension(
+            Extension.subjectAlternativeName,
+            false,
+            new GeneralNames(generalNames.toArray(new GeneralName[0]))
+        );
+
+        builder.addAttribute(PKCSObjectIdentifiers.pkcs_9_at_extensionRequest, extGen.generate());
+
+        JcaContentSignerBuilder signerBuilder = new JcaContentSignerBuilder(signatureAlgorithm);
+
+        ContentSigner signer = signerBuilder.build(keyPair.getPrivate());
+
+        return builder.build(signer);
+    }
+
+    /**
+     * Get a PEM-encoded String containing a PKCS #10 certificate signing request.
+     *
+     * @param csr the {@link X509Certificate} to request signing for.
+     * @return a PEM-encoded String containing a PKCS #10 CSR.
+     * @throws IOException if creating the signing request fails for any reason.
+     */
+    public static String getCsrPem(PKCS10CertificationRequest csr) throws IOException {
         StringWriter stringWriter = new StringWriter();
 
         try (PemWriter pemWriter = new PemWriter(stringWriter)) {
@@ -214,23 +299,71 @@ public class CertificateUtil {
      * @see #SUBJECT_ALT_NAME_DNS_NAME
      * @see #SUBJECT_ALT_NAME_URI
      */
-    public static Optional<Object> getSubjectAltNameField(X509Certificate certificate, int field) {
+    public static List<Object> getSubjectAltNameField(X509Certificate certificate, int field) {
         try {
+            List<Object> values = new ArrayList<>();
+
             Collection<List<?>> subjectAltNames = certificate.getSubjectAlternativeNames();
             if (subjectAltNames == null) subjectAltNames = Collections.emptyList();
 
             for (List<?> idAndValue : subjectAltNames) {
                 if (idAndValue != null && idAndValue.size() == 2) {
                     if (idAndValue.get(0).equals(field)) {
-                        return Optional.ofNullable(idAndValue.get(1));
+                        Object value = idAndValue.get(1);
+                        if (value != null) values.add(value);
                     }
                 }
             }
 
-            return Optional.empty();
+            return values;
         } catch (CertificateParsingException e) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
+    }
+
+    /**
+     * Get the URI from the {@code certificate}'s Subject Alternative Name extension, if it's present.
+     *
+     * @param certificate the certificate to get the URI from.
+     * @return the value of the SAN URI, if present.
+     */
+    public static Optional<String> getSanUri(X509Certificate certificate) {
+        List<Object> values = getSubjectAltNameField(certificate, SUBJECT_ALT_NAME_URI);
+
+        return values.stream()
+            .filter(v -> v instanceof String)
+            .map(String.class::cast)
+            .findFirst();
+    }
+
+    /**
+     * Get the DNS names from the {@code certificate}'s Subject Alternative Name extension, if it's present.
+     *
+     * @param certificate the certificate to get the DNS names from.
+     * @return the values of the SAN DNS names, or empty list if none are present.
+     */
+    public static List<String> getSanDnsNames(X509Certificate certificate) {
+        List<Object> values = getSubjectAltNameField(certificate, SUBJECT_ALT_NAME_DNS_NAME);
+
+        return values.stream()
+            .filter(v -> v instanceof String)
+            .map(String.class::cast)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the IP addresses from the {@code certificate}'s Subject Alternative Name extension, if it's present.
+     *
+     * @param certificate the certificate to get the IP addresses from.
+     * @return the values of the SAN IP addresses, or empty list if none are present.
+     */
+    public static List<String> getSanIpAddresses(X509Certificate certificate) {
+        List<Object> values = getSubjectAltNameField(certificate, SUBJECT_ALT_NAME_IP_ADDRESS);
+
+        return values.stream()
+            .filter(v -> v instanceof String)
+            .map(String.class::cast)
+            .collect(Collectors.toList());
     }
 
 }
