@@ -14,6 +14,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
@@ -32,7 +33,7 @@ public class EndpointConfiguration {
     private final int bindPort;
     private final String hostname;
     private final String path;
-    private final X509Certificate certificate;
+    private final Supplier<X509Certificate> certificateSupplier;
     private final SecurityPolicy securityPolicy;
     private final MessageSecurityMode securityMode;
     private final ImmutableList<UserTokenPolicy> tokenPolicies;
@@ -43,7 +44,7 @@ public class EndpointConfiguration {
         int bindPort,
         String hostname,
         String path,
-        @Nullable X509Certificate certificate,
+        Supplier<X509Certificate> certificateSupplier,
         SecurityPolicy securityPolicy,
         MessageSecurityMode securityMode,
         List<UserTokenPolicy> tokenPolicies) {
@@ -53,7 +54,7 @@ public class EndpointConfiguration {
         this.bindPort = bindPort;
         this.hostname = hostname;
         this.path = path;
-        this.certificate = certificate;
+        this.certificateSupplier = certificateSupplier;
         this.securityPolicy = securityPolicy;
         this.securityMode = securityMode;
         this.tokenPolicies = ImmutableList.copyOf(tokenPolicies);
@@ -81,7 +82,7 @@ public class EndpointConfiguration {
 
     @Nullable
     public X509Certificate getCertificate() {
-        return certificate;
+        return certificateSupplier.get();
     }
 
     public SecurityPolicy getSecurityPolicy() {
@@ -103,6 +104,7 @@ public class EndpointConfiguration {
         return String.format("%s://%s:%s%s", scheme, hostname, bindPort, p);
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -113,7 +115,7 @@ public class EndpointConfiguration {
             Objects.equal(bindAddress, that.bindAddress) &&
             Objects.equal(hostname, that.hostname) &&
             Objects.equal(path, that.path) &&
-            Objects.equal(certificate, that.certificate) &&
+            Objects.equal(getCertificate(), that.getCertificate()) &&
             securityPolicy == that.securityPolicy &&
             securityMode == that.securityMode &&
             Objects.equal(tokenPolicies, that.tokenPolicies);
@@ -127,7 +129,7 @@ public class EndpointConfiguration {
             bindPort,
             hostname,
             path,
-            certificate,
+            getCertificate(),
             securityPolicy,
             securityMode,
             tokenPolicies
@@ -142,7 +144,7 @@ public class EndpointConfiguration {
             .add("bindPort", bindPort)
             .add("hostname", hostname)
             .add("path", path)
-            .add("certificate", certificate)
+            .add("certificate", getCertificate())
             .add("securityPolicy", securityPolicy)
             .add("securityMode", securityMode)
             .add("tokenPolicies", tokenPolicies)
@@ -160,7 +162,7 @@ public class EndpointConfiguration {
         int bindPort = Stack.DEFAULT_TCP_PORT;
         String hostname = "localhost";
         String path = "";
-        X509Certificate certificate = null;
+        Supplier<X509Certificate> certificateSupplier = () -> null;
         SecurityPolicy securityPolicy = SecurityPolicy.None;
         MessageSecurityMode securityMode = MessageSecurityMode.None;
         List<UserTokenPolicy> tokenPolicies = new ArrayList<>();
@@ -191,7 +193,12 @@ public class EndpointConfiguration {
         }
 
         public Builder setCertificate(@Nullable X509Certificate certificate) {
-            this.certificate = certificate;
+            this.certificateSupplier = () -> certificate;
+            return this;
+        }
+
+        public Builder setCertificate(Supplier<X509Certificate> certificateSupplier) {
+            this.certificateSupplier = certificateSupplier;
             return this;
         }
 
@@ -227,7 +234,7 @@ public class EndpointConfiguration {
                 .setBindPort(bindPort)
                 .setHostname(hostname)
                 .setPath(path)
-                .setCertificate(certificate)
+                .setCertificate(certificateSupplier)
                 .setSecurityPolicy(securityPolicy)
                 .setSecurityMode(securityMode)
                 .addTokenPolicies(tokenPolicies);
@@ -243,7 +250,7 @@ public class EndpointConfiguration {
                 if (securityMode == MessageSecurityMode.None) {
                     throw new IllegalArgumentException("securityMode: " + securityMode);
                 }
-                if (certificate == null) {
+                if (certificateSupplier.get() == null) {
                     throw new IllegalStateException("security requires certificate");
                 }
             }
@@ -270,7 +277,7 @@ public class EndpointConfiguration {
                 bindPort,
                 hostname,
                 path,
-                certificate,
+                certificateSupplier,
                 securityPolicy,
                 securityMode,
                 tokenPolicies
