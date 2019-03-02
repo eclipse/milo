@@ -113,17 +113,89 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         fireAttributeChanged(AttributeId.EventNotifier, eventNotifier);
     }
 
-    public List<Node> getComponentNodes() {
+    @Nullable
+    public UaMethodNode findMethodNode(NodeId methodId) {
+        List<UaMethodNode> methodNodes = getMethodNodes();
+
+        for (UaMethodNode methodNode : methodNodes) {
+            if (methodId.equals(methodNode.getNodeId())) {
+                return methodNode;
+            }
+
+            NodeId typeDefinitionId = getTypeDefinitionNode().getNodeId();
+
+            NodeId methodDeclarationId = findMethodDeclarationId(
+                typeDefinitionId,
+                methodNode.getBrowseName()
+            );
+
+            if (methodId.equals(methodDeclarationId)) {
+                return methodNode;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the NodeId of the MethodNode on the type definition with the same name as {@code methodName}.
+     *
+     * @param methodName the name of the MethodNode to search for.
+     * @return the NodeId of the MethodNode on the type definition with the same name as {@code methodName}. Will be
+     * {@link NodeId#NULL_VALUE} if not found.
+     */
+    private NodeId findMethodDeclarationId(NodeId typeDefinitionId, QualifiedName methodName) {
+        NodeId nodeId = getNodeManager()
+            .getReferences(typeDefinitionId)
+            .stream()
+            .filter(HAS_COMPONENT_PREDICATE)
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .filter(n ->
+                (n instanceof UaMethodNode) &&
+                    Objects.equals(n.getBrowseName(), methodName))
+            .findFirst()
+            .map(Node::getNodeId)
+            .orElse(NodeId.NULL_VALUE);
+
+        if (nodeId.isNull()) {
+            NodeId parentTypeId = getNodeManager()
+                .getReferences(typeDefinitionId)
+                .stream()
+                .filter(Reference.SUBTYPE_OF)
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .findFirst()
+                .orElse(null);
+
+            if (parentTypeId != null) {
+                return findMethodDeclarationId(parentTypeId, methodName);
+            } else {
+                return nodeId;
+            }
+        } else {
+            return nodeId;
+        }
+    }
+
+    public List<UaNode> getComponentNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
-    public List<Node> getPropertyNodes() {
+    public List<UaNode> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .collect(Collectors.toList());
+    }
+
+    public List<UaMethodNode> getMethodNodes() {
+        return getReferences().stream()
+            .filter(HAS_COMPONENT_PREDICATE)
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .filter(n -> (n instanceof UaMethodNode))
+            .map(UaMethodNode.class::cast)
             .collect(Collectors.toList());
     }
 

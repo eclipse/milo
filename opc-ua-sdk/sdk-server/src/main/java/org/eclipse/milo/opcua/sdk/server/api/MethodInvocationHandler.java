@@ -10,8 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -22,9 +20,15 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 public interface MethodInvocationHandler {
 
     /**
+     * A shareable instance of {@link NodeIdUnknownHandler}.
+     */
+    NodeIdUnknownHandler NODE_ID_UNKNOWN = new NodeIdUnknownHandler();
+
+    /**
      * A shareable instance of {@link NotImplementedHandler}.
      */
     NotImplementedHandler NOT_IMPLEMENTED = new NotImplementedHandler();
+
 
     /**
      * Invoke the given {@link CallMethodRequest} and complete {@code future} when finished.
@@ -33,9 +37,9 @@ public interface MethodInvocationHandler {
      *
      * @param accessContext the {@link AccessContext}.
      * @param request       the {@link CallMethodRequest}.
-     * @param future        the {@link CompletableFuture} to complete.
+     * @return the {@link CallMethodResult}.
      */
-    void invoke(AccessContext accessContext, CallMethodRequest request, CompletableFuture<CallMethodResult> future);
+    CallMethodResult invoke(AccessContext accessContext, CallMethodRequest request);
 
 
     /**
@@ -43,19 +47,13 @@ public interface MethodInvocationHandler {
      */
     final class NodeIdUnknownHandler implements MethodInvocationHandler {
         @Override
-        public void invoke(
-            AccessContext accessContext,
-            CallMethodRequest request,
-            CompletableFuture<CallMethodResult> future) {
-
-            CallMethodResult nodeIdUnknown = new CallMethodResult(
+        public CallMethodResult invoke(AccessContext accessContext, CallMethodRequest request) {
+            return new CallMethodResult(
                 new StatusCode(StatusCodes.Bad_NodeIdUnknown),
                 new StatusCode[0],
                 new DiagnosticInfo[0],
                 new Variant[0]
             );
-
-            future.complete(nodeIdUnknown);
         }
     }
 
@@ -64,19 +62,13 @@ public interface MethodInvocationHandler {
      */
     final class NotImplementedHandler implements MethodInvocationHandler {
         @Override
-        public void invoke(
-            AccessContext accessContext,
-            CallMethodRequest request,
-            CompletableFuture<CallMethodResult> future) {
-
-            CallMethodResult nodeIdUnknown = new CallMethodResult(
+        public CallMethodResult invoke(AccessContext accessContext, CallMethodRequest request) {
+            return new CallMethodResult(
                 new StatusCode(StatusCodes.Bad_NotImplemented),
                 new StatusCode[0],
                 new DiagnosticInfo[0],
                 new Variant[0]
             );
-
-            future.complete(nodeIdUnknown);
         }
     }
 

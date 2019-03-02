@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.namespaces;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,7 +27,6 @@ import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
-import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
@@ -217,16 +215,6 @@ public class OpcUaNamespace implements Namespace {
     @Override
     public void onEventItemsDeleted(List<EventItem> eventItems) {
         eventItems.forEach(item -> server.getEventBus().unregister(item));
-    }
-
-    @Override
-    public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
-        return Optional.ofNullable(nodeManager.get(methodId))
-            .filter(n -> n instanceof UaMethodNode)
-            .map(n -> {
-                UaMethodNode m = (UaMethodNode) n;
-                return m.getInvocationHandler();
-            });
     }
 
     private void loadNodes() {

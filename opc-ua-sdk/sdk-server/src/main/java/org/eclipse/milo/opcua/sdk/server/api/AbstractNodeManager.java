@@ -95,11 +95,12 @@ public abstract class AbstractNodeManager<T extends Node> implements NodeManager
         LinkedHashSet<Reference> virtualSet = new LinkedHashSet<>(virtualReferences.get(nodeId));
 
         // All virtual refs that do not also have a concrete ref
-        Set<Reference> uniqueVirtualRefs = Sets.difference(virtualSet, concreteSet);
+        Set<Reference> uniqueVirtualSet = Sets.difference(virtualSet, concreteSet);
 
         List<Reference> references = Lists.newArrayList();
-        references.addAll(concreteList);
-        references.addAll(uniqueVirtualRefs);
+        //references.addAll(concreteList);
+        references.addAll(concreteSet);
+        references.addAll(uniqueVirtualSet);
         return references;
     }
 

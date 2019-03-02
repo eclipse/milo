@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.collect.Lists;
@@ -97,21 +98,19 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
     }
 
     @Override
-    public void invoke(
-        AccessContext accessContext,
-        CallMethodRequest request,
-        CompletableFuture<CallMethodResult> future) {
-
+    public CallMethodResult invoke(AccessContext accessContext, CallMethodRequest request) {
         NodeId objectId = request.getObjectId();
 
         List<Variant> inputVariants = l(request.getInputArguments());
 
         if (inputVariants.size() != inputArguments.size()) {
-            future.complete(new CallMethodResult(
+            return new CallMethodResult(
                 new StatusCode(StatusCodes.Bad_ArgumentsMissing),
                 new StatusCode[0], new DiagnosticInfo[0], new Variant[0]
-            ));
+            );
         }
+
+        CompletableFuture<CallMethodResult> future = new CompletableFuture<>();
 
         Object[] inputs = new Object[inputVariants.size()];
         StatusCode[] inputArgumentResults = new StatusCode[inputVariants.size()];
@@ -213,6 +212,20 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
                 ));
             }
         }).start();
+
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            logger.error(
+                "Error invoking annotated method: {} on annotated object: {}",
+                annotatedMethod, annotatedObject, e
+            );
+
+            return new CallMethodResult(
+                new StatusCode(StatusCodes.Bad_InternalError),
+                new StatusCode[0], new DiagnosticInfo[0], new Variant[0]
+            );
+        }
     }
 
 

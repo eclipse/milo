@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
@@ -50,11 +49,7 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
     }
 
     @Override
-    public final void invoke(
-        AccessContext accessContext,
-        CallMethodRequest request,
-        CompletableFuture<CallMethodResult> future) {
-
+    public final CallMethodResult invoke(AccessContext accessContext, CallMethodRequest request) {
         StatusCode[] inputArgumentResults = new StatusCode[0];
 
         try {
@@ -114,23 +109,19 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
 
             Variant[] outputValues = invoke(invocationContext, inputValues);
 
-            CallMethodResult result = new CallMethodResult(
+            return new CallMethodResult(
                 StatusCode.GOOD,
                 inputArgumentResults,
                 new DiagnosticInfo[0],
                 outputValues
             );
-
-            future.complete(result);
         } catch (UaException e) {
-            CallMethodResult result = new CallMethodResult(
+            return new CallMethodResult(
                 e.getStatusCode(),
                 inputArgumentResults,
                 new DiagnosticInfo[0],
                 new Variant[0]
             );
-
-            future.complete(result);
         }
     }
 

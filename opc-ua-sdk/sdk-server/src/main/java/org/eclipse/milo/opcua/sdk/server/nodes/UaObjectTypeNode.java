@@ -11,7 +11,9 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import com.google.common.base.Preconditions;
@@ -29,6 +31,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
+
+import static org.eclipse.milo.opcua.sdk.core.Reference.HAS_COMPONENT_PREDICATE;
+import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 
 public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
@@ -60,6 +65,26 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
         this.isAbstract = isAbstract;
 
         fireAttributeChanged(AttributeId.IsAbstract, isAbstract);
+    }
+
+    @Nullable
+    public UaMethodNode findMethodNode(NodeId methodId) {
+        return getReferences().stream()
+            .filter(HAS_COMPONENT_PREDICATE)
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .filter(n -> (n instanceof UaMethodNode) && Objects.equals(n.getNodeId(), methodId))
+            .map(UaMethodNode.class::cast)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public List<UaMethodNode> getMethodNodes() {
+        return getReferences().stream()
+            .filter(HAS_COMPONENT_PREDICATE)
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .filter(n -> (n instanceof UaMethodNode))
+            .map(UaMethodNode.class::cast)
+            .collect(Collectors.toList());
     }
 
     /**

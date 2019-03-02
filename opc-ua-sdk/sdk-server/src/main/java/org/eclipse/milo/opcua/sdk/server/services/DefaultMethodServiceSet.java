@@ -58,7 +58,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
         // Group by namespace and call asynchronously for each.
 
         Map<UShort, List<PendingCall>> byNamespace = pendingCalls.stream()
-            .collect(Collectors.groupingBy(pending -> pending.getInput().getMethodId().getNamespaceIndex()));
+            .collect(Collectors.groupingBy(pending -> pending.getInput().getObjectId().getNamespaceIndex()));
 
         byNamespace.keySet().forEach(index -> {
             List<PendingCall> pending = byNamespace.get(index);

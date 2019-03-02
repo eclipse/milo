@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,13 +24,11 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
-import org.eclipse.milo.opcua.sdk.server.api.MethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
@@ -211,17 +208,6 @@ public class TestNamespace implements Namespace {
     @Override
     public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
         subscriptionModel.onMonitoringModeChanged(monitoredItems);
-    }
-
-    @Override
-    public Optional<MethodInvocationHandler> getInvocationHandler(NodeId methodId) {
-        UaServerNode node = nodeManager.get(methodId);
-
-        if (node instanceof UaMethodNode) {
-            return Optional.of(((UaMethodNode) node).getInvocationHandler());
-        } else {
-            return Optional.empty();
-        }
     }
 
     private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
