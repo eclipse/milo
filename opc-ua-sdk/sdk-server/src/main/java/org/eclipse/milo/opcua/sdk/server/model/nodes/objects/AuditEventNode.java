@@ -24,85 +24,100 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditEventNode extends BaseEventNode implements AuditEventType {
-  public AuditEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getActionTimeStampNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.ACTION_TIME_STAMP);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getServerIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.SERVER_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public DateTime getActionTimeStamp() {
-    Optional<DateTime> propertyValue = getProperty(AuditEventType.ACTION_TIME_STAMP);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getServerId() {
+        Optional<String> propertyValue = getProperty(AuditEventType.SERVER_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setActionTimeStamp(DateTime value) {
-    setProperty(AuditEventType.ACTION_TIME_STAMP, value);
-  }
+    @Override
+    public void setServerId(String value) {
+        setProperty(AuditEventType.SERVER_ID, value);
+    }
 
-  public PropertyNode getStatusNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.STATUS);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getActionTimeStampNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.ACTION_TIME_STAMP);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Boolean getStatus() {
-    Optional<Boolean> propertyValue = getProperty(AuditEventType.STATUS);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public DateTime getActionTimeStamp() {
+        Optional<DateTime> propertyValue = getProperty(AuditEventType.ACTION_TIME_STAMP);
+        return propertyValue.orElse(null);
+    }
 
-  public void setStatus(Boolean value) {
-    setProperty(AuditEventType.STATUS, value);
-  }
+    @Override
+    public void setActionTimeStamp(DateTime value) {
+        setProperty(AuditEventType.ACTION_TIME_STAMP, value);
+    }
 
-  public PropertyNode getServerIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.SERVER_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getStatusNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.STATUS);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getServerId() {
-    Optional<String> propertyValue = getProperty(AuditEventType.SERVER_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Boolean getStatus() {
+        Optional<Boolean> propertyValue = getProperty(AuditEventType.STATUS);
+        return propertyValue.orElse(null);
+    }
 
-  public void setServerId(String value) {
-    setProperty(AuditEventType.SERVER_ID, value);
-  }
+    @Override
+    public void setStatus(Boolean value) {
+        setProperty(AuditEventType.STATUS, value);
+    }
 
-  public PropertyNode getClientAuditEntryIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.CLIENT_AUDIT_ENTRY_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getClientAuditEntryIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.CLIENT_AUDIT_ENTRY_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getClientAuditEntryId() {
-    Optional<String> propertyValue = getProperty(AuditEventType.CLIENT_AUDIT_ENTRY_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getClientAuditEntryId() {
+        Optional<String> propertyValue = getProperty(AuditEventType.CLIENT_AUDIT_ENTRY_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setClientAuditEntryId(String value) {
-    setProperty(AuditEventType.CLIENT_AUDIT_ENTRY_ID, value);
-  }
+    @Override
+    public void setClientAuditEntryId(String value) {
+        setProperty(AuditEventType.CLIENT_AUDIT_ENTRY_ID, value);
+    }
 
-  public PropertyNode getClientUserIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.CLIENT_USER_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getClientUserIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditEventType.CLIENT_USER_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getClientUserId() {
-    Optional<String> propertyValue = getProperty(AuditEventType.CLIENT_USER_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getClientUserId() {
+        Optional<String> propertyValue = getProperty(AuditEventType.CLIENT_USER_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setClientUserId(String value) {
-    setProperty(AuditEventType.CLIENT_USER_ID, value);
-  }
+    @Override
+    public void setClientUserId(String value) {
+        setProperty(AuditEventType.CLIENT_USER_ID, value);
+    }
 }

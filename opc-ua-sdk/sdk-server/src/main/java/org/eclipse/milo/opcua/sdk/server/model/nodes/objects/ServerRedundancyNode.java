@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 
 public class ServerRedundancyNode extends BaseObjectNode implements ServerRedundancyType {
-  public ServerRedundancyNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                              UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public ServerRedundancyNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public ServerRedundancyNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                              UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public ServerRedundancyNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getRedundancySupportNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(ServerRedundancyType.REDUNDANCY_SUPPORT);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getRedundancySupportNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ServerRedundancyType.REDUNDANCY_SUPPORT);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public RedundancySupport getRedundancySupport() {
-    Optional<RedundancySupport> propertyValue = getProperty(ServerRedundancyType.REDUNDANCY_SUPPORT);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public RedundancySupport getRedundancySupport() {
+        Optional<RedundancySupport> propertyValue = getProperty(ServerRedundancyType.REDUNDANCY_SUPPORT);
+        return propertyValue.orElse(null);
+    }
 
-  public void setRedundancySupport(RedundancySupport value) {
-    setProperty(ServerRedundancyType.REDUNDANCY_SUPPORT, value);
-  }
+    @Override
+    public void setRedundancySupport(RedundancySupport value) {
+        setProperty(ServerRedundancyType.REDUNDANCY_SUPPORT, value);
+    }
 }

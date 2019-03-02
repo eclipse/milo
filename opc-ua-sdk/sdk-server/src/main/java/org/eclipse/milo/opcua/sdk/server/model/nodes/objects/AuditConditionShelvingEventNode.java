@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditConditionShelvingEventNode extends AuditConditionEventNode implements AuditConditionShelvingEventType {
-  public AuditConditionShelvingEventNode(UaNodeContext context, NodeId nodeId,
-                                         QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                         UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditConditionShelvingEventNode(UaNodeContext context, NodeId nodeId,
+                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                           UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditConditionShelvingEventNode(UaNodeContext context, NodeId nodeId,
-                                         QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                         UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditConditionShelvingEventNode(UaNodeContext context, NodeId nodeId,
+                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                           UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getShelvingTimeNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionShelvingEventType.SHELVING_TIME);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getShelvingTimeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionShelvingEventType.SHELVING_TIME);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Double getShelvingTime() {
-    Optional<Double> propertyValue = getProperty(AuditConditionShelvingEventType.SHELVING_TIME);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Double getShelvingTime() {
+        Optional<Double> propertyValue = getProperty(AuditConditionShelvingEventType.SHELVING_TIME);
+        return propertyValue.orElse(null);
+    }
 
-  public void setShelvingTime(Double value) {
-    setProperty(AuditConditionShelvingEventType.SHELVING_TIME, value);
-  }
+    @Override
+    public void setShelvingTime(Double value) {
+        setProperty(AuditConditionShelvingEventType.SHELVING_TIME, value);
+    }
 }

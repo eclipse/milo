@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -30,4 +31,12 @@ public interface TrustListType extends FileType {
     DateTime getLastUpdateTime();
 
     void setLastUpdateTime(DateTime value);
+
+    UaMethodNode getRemoveCertificateMethodNode();
+
+    UaMethodNode getOpenWithMasksMethodNode();
+
+    UaMethodNode getCloseAndUpdateMethodNode();
+
+    UaMethodNode getAddCertificateMethodNode();
 }

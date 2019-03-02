@@ -23,71 +23,83 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AggregateConfigurationNode extends BaseObjectNode implements AggregateConfigurationType {
-  public AggregateConfigurationNode(UaNodeContext context, NodeId nodeId,
-                                    QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                    UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AggregateConfigurationNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AggregateConfigurationNode(UaNodeContext context, NodeId nodeId,
-                                    QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                    UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AggregateConfigurationNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getTreatUncertainAsBadNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getUseSlopedExtrapolationNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Boolean getTreatUncertainAsBad() {
-    Optional<Boolean> propertyValue = getProperty(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Boolean getUseSlopedExtrapolation() {
+        Optional<Boolean> propertyValue = getProperty(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION);
+        return propertyValue.orElse(null);
+    }
 
-  public void setTreatUncertainAsBad(Boolean value) {
-    setProperty(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD, value);
-  }
+    @Override
+    public void setUseSlopedExtrapolation(Boolean value) {
+        setProperty(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION, value);
+    }
 
-  public PropertyNode getPercentDataBadNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.PERCENT_DATA_BAD);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getTreatUncertainAsBadNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public UByte getPercentDataBad() {
-    Optional<UByte> propertyValue = getProperty(AggregateConfigurationType.PERCENT_DATA_BAD);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Boolean getTreatUncertainAsBad() {
+        Optional<Boolean> propertyValue = getProperty(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD);
+        return propertyValue.orElse(null);
+    }
 
-  public void setPercentDataBad(UByte value) {
-    setProperty(AggregateConfigurationType.PERCENT_DATA_BAD, value);
-  }
+    @Override
+    public void setTreatUncertainAsBad(Boolean value) {
+        setProperty(AggregateConfigurationType.TREAT_UNCERTAIN_AS_BAD, value);
+    }
 
-  public PropertyNode getPercentDataGoodNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.PERCENT_DATA_GOOD);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getPercentDataBadNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.PERCENT_DATA_BAD);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public UByte getPercentDataGood() {
-    Optional<UByte> propertyValue = getProperty(AggregateConfigurationType.PERCENT_DATA_GOOD);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public UByte getPercentDataBad() {
+        Optional<UByte> propertyValue = getProperty(AggregateConfigurationType.PERCENT_DATA_BAD);
+        return propertyValue.orElse(null);
+    }
 
-  public void setPercentDataGood(UByte value) {
-    setProperty(AggregateConfigurationType.PERCENT_DATA_GOOD, value);
-  }
+    @Override
+    public void setPercentDataBad(UByte value) {
+        setProperty(AggregateConfigurationType.PERCENT_DATA_BAD, value);
+    }
 
-  public PropertyNode getUseSlopedExtrapolationNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getPercentDataGoodNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AggregateConfigurationType.PERCENT_DATA_GOOD);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Boolean getUseSlopedExtrapolation() {
-    Optional<Boolean> propertyValue = getProperty(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public UByte getPercentDataGood() {
+        Optional<UByte> propertyValue = getProperty(AggregateConfigurationType.PERCENT_DATA_GOOD);
+        return propertyValue.orElse(null);
+    }
 
-  public void setUseSlopedExtrapolation(Boolean value) {
-    setProperty(AggregateConfigurationType.USE_SLOPED_EXTRAPOLATION, value);
-  }
+    @Override
+    public void setPercentDataGood(UByte value) {
+        setProperty(AggregateConfigurationType.PERCENT_DATA_GOOD, value);
+    }
 }

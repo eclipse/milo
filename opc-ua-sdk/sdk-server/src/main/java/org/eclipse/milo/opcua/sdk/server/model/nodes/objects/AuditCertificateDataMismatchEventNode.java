@@ -23,43 +23,49 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditCertificateDataMismatchEventNode extends AuditCertificateEventNode implements AuditCertificateDataMismatchEventType {
-  public AuditCertificateDataMismatchEventNode(UaNodeContext context, NodeId nodeId,
-                                               QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                               UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditCertificateDataMismatchEventNode(UaNodeContext context, NodeId nodeId,
+                                                 QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                                 UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditCertificateDataMismatchEventNode(UaNodeContext context, NodeId nodeId,
-                                               QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                               UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditCertificateDataMismatchEventNode(UaNodeContext context, NodeId nodeId,
+                                                 QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                                 UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getInvalidHostnameNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getInvalidUriNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_URI);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getInvalidHostname() {
-    Optional<String> propertyValue = getProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getInvalidUri() {
+        Optional<String> propertyValue = getProperty(AuditCertificateDataMismatchEventType.INVALID_URI);
+        return propertyValue.orElse(null);
+    }
 
-  public void setInvalidHostname(String value) {
-    setProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME, value);
-  }
+    @Override
+    public void setInvalidUri(String value) {
+        setProperty(AuditCertificateDataMismatchEventType.INVALID_URI, value);
+    }
 
-  public PropertyNode getInvalidUriNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_URI);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getInvalidHostnameNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getInvalidUri() {
-    Optional<String> propertyValue = getProperty(AuditCertificateDataMismatchEventType.INVALID_URI);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getInvalidHostname() {
+        Optional<String> propertyValue = getProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME);
+        return propertyValue.orElse(null);
+    }
 
-  public void setInvalidUri(String value) {
-    setProperty(AuditCertificateDataMismatchEventType.INVALID_URI, value);
-  }
+    @Override
+    public void setInvalidHostname(String value) {
+        setProperty(AuditCertificateDataMismatchEventType.INVALID_HOSTNAME, value);
+    }
 }

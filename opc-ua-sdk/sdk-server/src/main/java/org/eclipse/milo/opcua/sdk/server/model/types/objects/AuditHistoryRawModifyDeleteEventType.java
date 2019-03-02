@@ -18,20 +18,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDeleteEventType {
-    QualifiedProperty<Boolean> IS_DELETE_MODIFIED = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "IsDeleteModified",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
-
     QualifiedProperty<DateTime> START_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "StartTime",
         NodeId.parse("ns=0;i=294"),
         ValueRanks.Scalar,
         DateTime.class
+    );
+
+    QualifiedProperty<Boolean> IS_DELETE_MODIFIED = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "IsDeleteModified",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
     );
 
     QualifiedProperty<DateTime> END_TIME = new QualifiedProperty<>(
@@ -50,17 +50,17 @@ public interface AuditHistoryRawModifyDeleteEventType extends AuditHistoryDelete
         DataValue[].class
     );
 
-    PropertyType getIsDeleteModifiedNode();
-
-    Boolean getIsDeleteModified();
-
-    void setIsDeleteModified(Boolean value);
-
     PropertyType getStartTimeNode();
 
     DateTime getStartTime();
 
     void setStartTime(DateTime value);
+
+    PropertyType getIsDeleteModifiedNode();
+
+    Boolean getIsDeleteModified();
+
+    void setIsDeleteModified(Boolean value);
 
     PropertyType getEndTimeNode();
 

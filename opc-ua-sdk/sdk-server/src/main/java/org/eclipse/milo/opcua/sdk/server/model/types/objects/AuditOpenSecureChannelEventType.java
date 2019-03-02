@@ -27,14 +27,6 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
         ByteString.class
     );
 
-    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ClientCertificateThumbprint",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<SecurityTokenRequestType> REQUEST_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "RequestType",
@@ -43,9 +35,9 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
         SecurityTokenRequestType.class
     );
 
-    QualifiedProperty<String> SECURITY_POLICY_URI = new QualifiedProperty<>(
+    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "SecurityPolicyUri",
+        "ClientCertificateThumbprint",
         NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
         String.class
@@ -67,17 +59,19 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
         Double.class
     );
 
+    QualifiedProperty<String> SECURITY_POLICY_URI = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SecurityPolicyUri",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
+
     PropertyType getClientCertificateNode();
 
     ByteString getClientCertificate();
 
     void setClientCertificate(ByteString value);
-
-    PropertyType getClientCertificateThumbprintNode();
-
-    String getClientCertificateThumbprint();
-
-    void setClientCertificateThumbprint(String value);
 
     PropertyType getRequestTypeNode();
 
@@ -85,11 +79,11 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
 
     void setRequestType(SecurityTokenRequestType value);
 
-    PropertyType getSecurityPolicyUriNode();
+    PropertyType getClientCertificateThumbprintNode();
 
-    String getSecurityPolicyUri();
+    String getClientCertificateThumbprint();
 
-    void setSecurityPolicyUri(String value);
+    void setClientCertificateThumbprint(String value);
 
     PropertyType getSecurityModeNode();
 
@@ -102,4 +96,10 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
     Double getRequestedLifetime();
 
     void setRequestedLifetime(Double value);
+
+    PropertyType getSecurityPolicyUriNode();
+
+    String getSecurityPolicyUri();
+
+    void setSecurityPolicyUri(String value);
 }

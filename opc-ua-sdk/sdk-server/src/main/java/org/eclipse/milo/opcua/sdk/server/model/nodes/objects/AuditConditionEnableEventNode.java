@@ -19,15 +19,15 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditConditionEnableEventNode extends AuditConditionEventNode implements AuditConditionEnableEventType {
-  public AuditConditionEnableEventNode(UaNodeContext context, NodeId nodeId,
-                                       QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                       UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditConditionEnableEventNode(UaNodeContext context, NodeId nodeId,
+                                         QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                         UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditConditionEnableEventNode(UaNodeContext context, NodeId nodeId,
-                                       QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                       UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditConditionEnableEventNode(UaNodeContext context, NodeId nodeId,
+                                         QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                         UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 }

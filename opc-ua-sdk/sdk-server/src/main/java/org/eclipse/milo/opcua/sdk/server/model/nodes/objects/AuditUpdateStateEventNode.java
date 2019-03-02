@@ -23,43 +23,49 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditUpdateStateEventNode extends AuditUpdateMethodEventNode implements AuditUpdateStateEventType {
-  public AuditUpdateStateEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditUpdateStateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditUpdateStateEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditUpdateStateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getOldStateIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateStateEventType.OLD_STATE_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getOldStateIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateStateEventType.OLD_STATE_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Object getOldStateId() {
-    Optional<Object> propertyValue = getProperty(AuditUpdateStateEventType.OLD_STATE_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Object getOldStateId() {
+        Optional<Object> propertyValue = getProperty(AuditUpdateStateEventType.OLD_STATE_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setOldStateId(Object value) {
-    setProperty(AuditUpdateStateEventType.OLD_STATE_ID, value);
-  }
+    @Override
+    public void setOldStateId(Object value) {
+        setProperty(AuditUpdateStateEventType.OLD_STATE_ID, value);
+    }
 
-  public PropertyNode getNewStateIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateStateEventType.NEW_STATE_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getNewStateIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateStateEventType.NEW_STATE_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Object getNewStateId() {
-    Optional<Object> propertyValue = getProperty(AuditUpdateStateEventType.NEW_STATE_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Object getNewStateId() {
+        Optional<Object> propertyValue = getProperty(AuditUpdateStateEventType.NEW_STATE_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setNewStateId(Object value) {
-    setProperty(AuditUpdateStateEventType.NEW_STATE_ID, value);
-  }
+    @Override
+    public void setNewStateId(Object value) {
+        setProperty(AuditUpdateStateEventType.NEW_STATE_ID, value);
+    }
 }

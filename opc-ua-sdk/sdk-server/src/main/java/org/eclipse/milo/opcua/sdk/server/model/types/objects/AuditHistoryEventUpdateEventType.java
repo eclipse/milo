@@ -19,12 +19,12 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryEventFieldList;
 
 public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEventType {
-    QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
+    QualifiedProperty<HistoryEventFieldList[]> NEW_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "UpdatedNode",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
+        "NewValues",
+        NodeId.parse("ns=0;i=920"),
+        ValueRanks.OneDimension,
+        HistoryEventFieldList[].class
     );
 
     QualifiedProperty<PerformUpdateType> PERFORM_INSERT_REPLACE = new QualifiedProperty<>(
@@ -43,14 +43,6 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
         EventFilter.class
     );
 
-    QualifiedProperty<HistoryEventFieldList[]> NEW_VALUES = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "NewValues",
-        NodeId.parse("ns=0;i=920"),
-        ValueRanks.OneDimension,
-        HistoryEventFieldList[].class
-    );
-
     QualifiedProperty<HistoryEventFieldList[]> OLD_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OldValues",
@@ -59,11 +51,19 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
         HistoryEventFieldList[].class
     );
 
-    PropertyType getUpdatedNodeNode();
+    QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UpdatedNode",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        NodeId.class
+    );
 
-    NodeId getUpdatedNode();
+    PropertyType getNewValuesNode();
 
-    void setUpdatedNode(NodeId value);
+    HistoryEventFieldList[] getNewValues();
+
+    void setNewValues(HistoryEventFieldList[] value);
 
     PropertyType getPerformInsertReplaceNode();
 
@@ -77,15 +77,15 @@ public interface AuditHistoryEventUpdateEventType extends AuditHistoryUpdateEven
 
     void setFilter(EventFilter value);
 
-    PropertyType getNewValuesNode();
-
-    HistoryEventFieldList[] getNewValues();
-
-    void setNewValues(HistoryEventFieldList[] value);
-
     PropertyType getOldValuesNode();
 
     HistoryEventFieldList[] getOldValues();
 
     void setOldValues(HistoryEventFieldList[] value);
+
+    PropertyType getUpdatedNodeNode();
+
+    NodeId getUpdatedNode();
+
+    void setUpdatedNode(NodeId value);
 }

@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.NetworkGroupDataType;
 
 public class NonTransparentNetworkRedundancyNode extends NonTransparentRedundancyNode implements NonTransparentNetworkRedundancyType {
-  public NonTransparentNetworkRedundancyNode(UaNodeContext context, NodeId nodeId,
-                                             QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                             UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public NonTransparentNetworkRedundancyNode(UaNodeContext context, NodeId nodeId,
+                                               QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                               UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public NonTransparentNetworkRedundancyNode(UaNodeContext context, NodeId nodeId,
-                                             QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                             UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public NonTransparentNetworkRedundancyNode(UaNodeContext context, NodeId nodeId,
+                                               QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                               UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getServerNetworkGroupsNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(NonTransparentNetworkRedundancyType.SERVER_NETWORK_GROUPS);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getServerNetworkGroupsNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(NonTransparentNetworkRedundancyType.SERVER_NETWORK_GROUPS);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public NetworkGroupDataType[] getServerNetworkGroups() {
-    Optional<NetworkGroupDataType[]> propertyValue = getProperty(NonTransparentNetworkRedundancyType.SERVER_NETWORK_GROUPS);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public NetworkGroupDataType[] getServerNetworkGroups() {
+        Optional<NetworkGroupDataType[]> propertyValue = getProperty(NonTransparentNetworkRedundancyType.SERVER_NETWORK_GROUPS);
+        return propertyValue.orElse(null);
+    }
 
-  public void setServerNetworkGroups(NetworkGroupDataType[] value) {
-    setProperty(NonTransparentNetworkRedundancyType.SERVER_NETWORK_GROUPS, value);
-  }
+    @Override
+    public void setServerNetworkGroups(NetworkGroupDataType[] value) {
+        setProperty(NonTransparentNetworkRedundancyType.SERVER_NETWORK_GROUPS, value);
+    }
 }

@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class ProgramTransitionEventNode extends TransitionEventNode implements ProgramTransitionEventType {
-  public ProgramTransitionEventNode(UaNodeContext context, NodeId nodeId,
-                                    QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                    UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public ProgramTransitionEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public ProgramTransitionEventNode(UaNodeContext context, NodeId nodeId,
-                                    QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                    UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public ProgramTransitionEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getIntermediateResultNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(ProgramTransitionEventType.INTERMEDIATE_RESULT);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getIntermediateResultNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ProgramTransitionEventType.INTERMEDIATE_RESULT);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Object getIntermediateResult() {
-    Optional<Object> propertyValue = getProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Object getIntermediateResult() {
+        Optional<Object> propertyValue = getProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT);
+        return propertyValue.orElse(null);
+    }
 
-  public void setIntermediateResult(Object value) {
-    setProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT, value);
-  }
+    @Override
+    public void setIntermediateResult(Object value) {
+        setProperty(ProgramTransitionEventType.INTERMEDIATE_RESULT, value);
+    }
 }

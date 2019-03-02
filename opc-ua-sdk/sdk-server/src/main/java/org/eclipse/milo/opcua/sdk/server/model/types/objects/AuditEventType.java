@@ -17,20 +17,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditEventType extends BaseEventType {
-    QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
+    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ActionTimeStamp",
-        NodeId.parse("ns=0;i=294"),
+        "ClientUserId",
+        NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
-        DateTime.class
-    );
-
-    QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Status",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
+        String.class
     );
 
     QualifiedProperty<String> SERVER_ID = new QualifiedProperty<>(
@@ -49,25 +41,27 @@ public interface AuditEventType extends BaseEventType {
         String.class
     );
 
-    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
+    QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ClientUserId",
-        NodeId.parse("ns=0;i=12"),
+        "Status",
+        NodeId.parse("ns=0;i=1"),
         ValueRanks.Scalar,
-        String.class
+        Boolean.class
     );
 
-    PropertyType getActionTimeStampNode();
+    QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ActionTimeStamp",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
 
-    DateTime getActionTimeStamp();
+    PropertyType getClientUserIdNode();
 
-    void setActionTimeStamp(DateTime value);
+    String getClientUserId();
 
-    PropertyType getStatusNode();
-
-    Boolean getStatus();
-
-    void setStatus(Boolean value);
+    void setClientUserId(String value);
 
     PropertyType getServerIdNode();
 
@@ -81,9 +75,15 @@ public interface AuditEventType extends BaseEventType {
 
     void setClientAuditEntryId(String value);
 
-    PropertyType getClientUserIdNode();
+    PropertyType getStatusNode();
 
-    String getClientUserId();
+    Boolean getStatus();
 
-    void setClientUserId(String value);
+    void setStatus(Boolean value);
+
+    PropertyType getActionTimeStampNode();
+
+    DateTime getActionTimeStamp();
+
+    void setActionTimeStamp(DateTime value);
 }

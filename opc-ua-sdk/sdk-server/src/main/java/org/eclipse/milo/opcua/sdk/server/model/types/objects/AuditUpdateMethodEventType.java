@@ -16,14 +16,6 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditUpdateMethodEventType extends AuditEventType {
-    QualifiedProperty<NodeId> METHOD_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MethodId",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
     QualifiedProperty<Object[]> INPUT_ARGUMENTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "InputArguments",
@@ -32,15 +24,23 @@ public interface AuditUpdateMethodEventType extends AuditEventType {
         Object[].class
     );
 
-    PropertyType getMethodIdNode();
-
-    NodeId getMethodId();
-
-    void setMethodId(NodeId value);
+    QualifiedProperty<NodeId> METHOD_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MethodId",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        NodeId.class
+    );
 
     PropertyType getInputArgumentsNode();
 
     Object[] getInputArguments();
 
     void setInputArguments(Object[] value);
+
+    PropertyType getMethodIdNode();
+
+    NodeId getMethodId();
+
+    void setMethodId(NodeId value);
 }

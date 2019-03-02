@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditChannelEventNode extends AuditSecurityEventNode implements AuditChannelEventType {
-  public AuditChannelEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                               LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                               UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditChannelEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                 UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditChannelEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                               LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                               UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditChannelEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                 UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getSecureChannelIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditChannelEventType.SECURE_CHANNEL_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getSecureChannelIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditChannelEventType.SECURE_CHANNEL_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getSecureChannelId() {
-    Optional<String> propertyValue = getProperty(AuditChannelEventType.SECURE_CHANNEL_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getSecureChannelId() {
+        Optional<String> propertyValue = getProperty(AuditChannelEventType.SECURE_CHANNEL_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setSecureChannelId(String value) {
-    setProperty(AuditChannelEventType.SECURE_CHANNEL_ID, value);
-  }
+    @Override
+    public void setSecureChannelId(String value) {
+        setProperty(AuditChannelEventType.SECURE_CHANNEL_ID, value);
+    }
 }

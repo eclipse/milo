@@ -68,7 +68,10 @@ public class NodeFactoryTest {
         new UaNodeLoader(context).loadNodes();
 
         ObjectTypeManager objectTypeManager = new ObjectTypeManager();
-        ObjectTypeManagerInitializer.initialize(objectTypeManager);
+        ObjectTypeManagerInitializer.initialize(
+            server.getNamespaceManager().getNamespaceTable(),
+            objectTypeManager
+        );
 
         VariableTypeManager variableTypeManager = new VariableTypeManager();
         VariableTypeManagerInitializer.initialize(variableTypeManager);

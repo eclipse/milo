@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditUrlMismatchEventNode extends AuditCreateSessionEventNode implements AuditUrlMismatchEventType {
-  public AuditUrlMismatchEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditUrlMismatchEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditUrlMismatchEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditUrlMismatchEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getEndpointUrlNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditUrlMismatchEventType.ENDPOINT_URL);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getEndpointUrlNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditUrlMismatchEventType.ENDPOINT_URL);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getEndpointUrl() {
-    Optional<String> propertyValue = getProperty(AuditUrlMismatchEventType.ENDPOINT_URL);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getEndpointUrl() {
+        Optional<String> propertyValue = getProperty(AuditUrlMismatchEventType.ENDPOINT_URL);
+        return propertyValue.orElse(null);
+    }
 
-  public void setEndpointUrl(String value) {
-    setProperty(AuditUrlMismatchEventType.ENDPOINT_URL, value);
-  }
+    @Override
+    public void setEndpointUrl(String value) {
+        setProperty(AuditUrlMismatchEventType.ENDPOINT_URL, value);
+    }
 }

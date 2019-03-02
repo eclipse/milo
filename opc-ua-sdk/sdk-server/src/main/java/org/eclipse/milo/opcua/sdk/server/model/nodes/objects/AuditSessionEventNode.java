@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditSessionEventNode extends AuditSecurityEventNode implements AuditSessionEventType {
-  public AuditSessionEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                               LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                               UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditSessionEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                 UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditSessionEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                               LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                               UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditSessionEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                 UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getSessionIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditSessionEventType.SESSION_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getSessionIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditSessionEventType.SESSION_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public NodeId getSessionId() {
-    Optional<NodeId> propertyValue = getProperty(AuditSessionEventType.SESSION_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public NodeId getSessionId() {
+        Optional<NodeId> propertyValue = getProperty(AuditSessionEventType.SESSION_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setSessionId(NodeId value) {
-    setProperty(AuditSessionEventType.SESSION_ID, value);
-  }
+    @Override
+    public void setSessionId(NodeId value) {
+        setProperty(AuditSessionEventType.SESSION_ID, value);
+    }
 }

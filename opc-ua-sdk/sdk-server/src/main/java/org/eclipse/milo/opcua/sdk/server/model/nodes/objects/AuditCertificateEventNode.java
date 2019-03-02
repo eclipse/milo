@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditCertificateEventNode extends AuditSecurityEventNode implements AuditCertificateEventType {
-  public AuditCertificateEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditCertificateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditCertificateEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditCertificateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getCertificateNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditCertificateEventType.CERTIFICATE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getCertificateNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditCertificateEventType.CERTIFICATE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public ByteString getCertificate() {
-    Optional<ByteString> propertyValue = getProperty(AuditCertificateEventType.CERTIFICATE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public ByteString getCertificate() {
+        Optional<ByteString> propertyValue = getProperty(AuditCertificateEventType.CERTIFICATE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setCertificate(ByteString value) {
-    setProperty(AuditCertificateEventType.CERTIFICATE, value);
-  }
+    @Override
+    public void setCertificate(ByteString value) {
+        setProperty(AuditCertificateEventType.CERTIFICATE, value);
+    }
 }

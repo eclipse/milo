@@ -21,49 +21,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.TimeZoneDataType;
 
 public interface BaseEventType extends BaseObjectType {
-    QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "EventId",
-        NodeId.parse("ns=0;i=15"),
-        ValueRanks.Scalar,
-        ByteString.class
-    );
-
-    QualifiedProperty<NodeId> EVENT_TYPE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "EventType",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
-    QualifiedProperty<NodeId> SOURCE_NODE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "SourceNode",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
-    QualifiedProperty<String> SOURCE_NAME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "SourceName",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<DateTime> TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Time",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
-    QualifiedProperty<DateTime> RECEIVE_TIME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ReceiveTime",
         NodeId.parse("ns=0;i=294"),
         ValueRanks.Scalar,
         DateTime.class
@@ -93,41 +53,51 @@ public interface BaseEventType extends BaseObjectType {
         UShort.class
     );
 
-    PropertyType getEventIdNode();
+    QualifiedProperty<NodeId> EVENT_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EventType",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        NodeId.class
+    );
 
-    ByteString getEventId();
+    QualifiedProperty<ByteString> EVENT_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "EventId",
+        NodeId.parse("ns=0;i=15"),
+        ValueRanks.Scalar,
+        ByteString.class
+    );
 
-    void setEventId(ByteString value);
+    QualifiedProperty<DateTime> RECEIVE_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ReceiveTime",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
 
-    PropertyType getEventTypeNode();
+    QualifiedProperty<NodeId> SOURCE_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SourceNode",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        NodeId.class
+    );
 
-    NodeId getEventType();
-
-    void setEventType(NodeId value);
-
-    PropertyType getSourceNodeNode();
-
-    NodeId getSourceNode();
-
-    void setSourceNode(NodeId value);
-
-    PropertyType getSourceNameNode();
-
-    String getSourceName();
-
-    void setSourceName(String value);
+    QualifiedProperty<String> SOURCE_NAME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SourceName",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
 
     PropertyType getTimeNode();
 
     DateTime getTime();
 
     void setTime(DateTime value);
-
-    PropertyType getReceiveTimeNode();
-
-    DateTime getReceiveTime();
-
-    void setReceiveTime(DateTime value);
 
     PropertyType getLocalTimeNode();
 
@@ -146,4 +116,34 @@ public interface BaseEventType extends BaseObjectType {
     UShort getSeverity();
 
     void setSeverity(UShort value);
+
+    PropertyType getEventTypeNode();
+
+    NodeId getEventType();
+
+    void setEventType(NodeId value);
+
+    PropertyType getEventIdNode();
+
+    ByteString getEventId();
+
+    void setEventId(ByteString value);
+
+    PropertyType getReceiveTimeNode();
+
+    DateTime getReceiveTime();
+
+    void setReceiveTime(DateTime value);
+
+    PropertyType getSourceNodeNode();
+
+    NodeId getSourceNode();
+
+    void setSourceNode(NodeId value);
+
+    PropertyType getSourceNameNode();
+
+    String getSourceName();
+
+    void setSourceName(String value);
 }

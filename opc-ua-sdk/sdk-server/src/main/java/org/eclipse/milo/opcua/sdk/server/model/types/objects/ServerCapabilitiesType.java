@@ -19,28 +19,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.SignedSoftwareCertificate;
 
 public interface ServerCapabilitiesType extends BaseObjectType {
-    QualifiedProperty<String[]> SERVER_PROFILE_ARRAY = new QualifiedProperty<>(
+    QualifiedProperty<UShort> MAX_HISTORY_CONTINUATION_POINTS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ServerProfileArray",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.OneDimension,
-        String[].class
-    );
-
-    QualifiedProperty<String[]> LOCALE_ID_ARRAY = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "LocaleIdArray",
-        NodeId.parse("ns=0;i=295"),
-        ValueRanks.OneDimension,
-        String[].class
-    );
-
-    QualifiedProperty<Double> MIN_SUPPORTED_SAMPLE_RATE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MinSupportedSampleRate",
-        NodeId.parse("ns=0;i=290"),
+        "MaxHistoryContinuationPoints",
+        NodeId.parse("ns=0;i=5"),
         ValueRanks.Scalar,
-        Double.class
+        UShort.class
     );
 
     QualifiedProperty<UShort> MAX_BROWSE_CONTINUATION_POINTS = new QualifiedProperty<>(
@@ -59,12 +43,44 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         UShort.class
     );
 
-    QualifiedProperty<UShort> MAX_HISTORY_CONTINUATION_POINTS = new QualifiedProperty<>(
+    QualifiedProperty<String[]> LOCALE_ID_ARRAY = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "MaxHistoryContinuationPoints",
-        NodeId.parse("ns=0;i=5"),
+        "LocaleIdArray",
+        NodeId.parse("ns=0;i=295"),
+        ValueRanks.OneDimension,
+        String[].class
+    );
+
+    QualifiedProperty<Double> MIN_SUPPORTED_SAMPLE_RATE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MinSupportedSampleRate",
+        NodeId.parse("ns=0;i=290"),
         ValueRanks.Scalar,
-        UShort.class
+        Double.class
+    );
+
+    QualifiedProperty<String[]> SERVER_PROFILE_ARRAY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ServerProfileArray",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.OneDimension,
+        String[].class
+    );
+
+    QualifiedProperty<UInteger> MAX_BYTE_STRING_LENGTH = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxByteStringLength",
+        NodeId.parse("ns=0;i=7"),
+        ValueRanks.Scalar,
+        UInteger.class
+    );
+
+    QualifiedProperty<UInteger> MAX_STRING_LENGTH = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxStringLength",
+        NodeId.parse("ns=0;i=7"),
+        ValueRanks.Scalar,
+        UInteger.class
     );
 
     QualifiedProperty<SignedSoftwareCertificate[]> SOFTWARE_CERTIFICATES = new QualifiedProperty<>(
@@ -83,39 +99,11 @@ public interface ServerCapabilitiesType extends BaseObjectType {
         UInteger.class
     );
 
-    QualifiedProperty<UInteger> MAX_STRING_LENGTH = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MaxStringLength",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        UInteger.class
-    );
+    PropertyType getMaxHistoryContinuationPointsNode();
 
-    QualifiedProperty<UInteger> MAX_BYTE_STRING_LENGTH = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MaxByteStringLength",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        UInteger.class
-    );
+    UShort getMaxHistoryContinuationPoints();
 
-    PropertyType getServerProfileArrayNode();
-
-    String[] getServerProfileArray();
-
-    void setServerProfileArray(String[] value);
-
-    PropertyType getLocaleIdArrayNode();
-
-    String[] getLocaleIdArray();
-
-    void setLocaleIdArray(String[] value);
-
-    PropertyType getMinSupportedSampleRateNode();
-
-    Double getMinSupportedSampleRate();
-
-    void setMinSupportedSampleRate(Double value);
+    void setMaxHistoryContinuationPoints(UShort value);
 
     PropertyType getMaxBrowseContinuationPointsNode();
 
@@ -129,11 +117,35 @@ public interface ServerCapabilitiesType extends BaseObjectType {
 
     void setMaxQueryContinuationPoints(UShort value);
 
-    PropertyType getMaxHistoryContinuationPointsNode();
+    PropertyType getLocaleIdArrayNode();
 
-    UShort getMaxHistoryContinuationPoints();
+    String[] getLocaleIdArray();
 
-    void setMaxHistoryContinuationPoints(UShort value);
+    void setLocaleIdArray(String[] value);
+
+    PropertyType getMinSupportedSampleRateNode();
+
+    Double getMinSupportedSampleRate();
+
+    void setMinSupportedSampleRate(Double value);
+
+    PropertyType getServerProfileArrayNode();
+
+    String[] getServerProfileArray();
+
+    void setServerProfileArray(String[] value);
+
+    PropertyType getMaxByteStringLengthNode();
+
+    UInteger getMaxByteStringLength();
+
+    void setMaxByteStringLength(UInteger value);
+
+    PropertyType getMaxStringLengthNode();
+
+    UInteger getMaxStringLength();
+
+    void setMaxStringLength(UInteger value);
 
     PropertyType getSoftwareCertificatesNode();
 
@@ -147,21 +159,9 @@ public interface ServerCapabilitiesType extends BaseObjectType {
 
     void setMaxArrayLength(UInteger value);
 
-    PropertyType getMaxStringLengthNode();
-
-    UInteger getMaxStringLength();
-
-    void setMaxStringLength(UInteger value);
-
-    PropertyType getMaxByteStringLengthNode();
-
-    UInteger getMaxByteStringLength();
-
-    void setMaxByteStringLength(UInteger value);
+    FolderType getModellingRulesNode();
 
     OperationLimitsType getOperationLimitsNode();
-
-    FolderType getModellingRulesNode();
 
     FolderType getAggregateFunctionsNode();
 }

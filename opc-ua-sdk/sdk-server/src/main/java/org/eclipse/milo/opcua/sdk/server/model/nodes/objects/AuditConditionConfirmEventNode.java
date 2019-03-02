@@ -24,43 +24,49 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditConditionConfirmEventNode extends AuditConditionEventNode implements AuditConditionConfirmEventType {
-  public AuditConditionConfirmEventNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditConditionConfirmEventNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditConditionConfirmEventNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditConditionConfirmEventNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getEventIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionConfirmEventType.EVENT_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getCommentNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionConfirmEventType.COMMENT);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public ByteString getEventId() {
-    Optional<ByteString> propertyValue = getProperty(AuditConditionConfirmEventType.EVENT_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public LocalizedText getComment() {
+        Optional<LocalizedText> propertyValue = getProperty(AuditConditionConfirmEventType.COMMENT);
+        return propertyValue.orElse(null);
+    }
 
-  public void setEventId(ByteString value) {
-    setProperty(AuditConditionConfirmEventType.EVENT_ID, value);
-  }
+    @Override
+    public void setComment(LocalizedText value) {
+        setProperty(AuditConditionConfirmEventType.COMMENT, value);
+    }
 
-  public PropertyNode getCommentNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionConfirmEventType.COMMENT);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getEventIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionConfirmEventType.EVENT_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public LocalizedText getComment() {
-    Optional<LocalizedText> propertyValue = getProperty(AuditConditionConfirmEventType.COMMENT);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public ByteString getEventId() {
+        Optional<ByteString> propertyValue = getProperty(AuditConditionConfirmEventType.EVENT_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setComment(LocalizedText value) {
-    setProperty(AuditConditionConfirmEventType.COMMENT, value);
-  }
+    @Override
+    public void setEventId(ByteString value) {
+        setProperty(AuditConditionConfirmEventType.EVENT_ID, value);
+    }
 }

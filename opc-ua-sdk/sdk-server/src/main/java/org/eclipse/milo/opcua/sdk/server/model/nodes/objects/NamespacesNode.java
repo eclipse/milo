@@ -22,20 +22,21 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class NamespacesNode extends BaseObjectNode implements NamespacesType {
-  public NamespacesNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public NamespacesNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public NamespacesNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                        LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                        UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public NamespacesNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                          LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                          UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public AddressSpaceFileNode getAddressSpaceFileNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "AddressSpaceFile");
-    return (AddressSpaceFileNode) component.orElse(null);
-  }
+    @Override
+    public AddressSpaceFileNode getAddressSpaceFileNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "AddressSpaceFile");
+        return (AddressSpaceFileNode) component.orElse(null);
+    }
 }

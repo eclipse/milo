@@ -26,99 +26,117 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 
 public class AuditOpenSecureChannelEventNode extends AuditChannelEventNode implements AuditOpenSecureChannelEventType {
-  public AuditOpenSecureChannelEventNode(UaNodeContext context, NodeId nodeId,
-                                         QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                         UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditOpenSecureChannelEventNode(UaNodeContext context, NodeId nodeId,
+                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                           UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditOpenSecureChannelEventNode(UaNodeContext context, NodeId nodeId,
-                                         QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                         UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditOpenSecureChannelEventNode(UaNodeContext context, NodeId nodeId,
+                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                           UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getClientCertificateNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getRequestTypeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.REQUEST_TYPE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public ByteString getClientCertificate() {
-    Optional<ByteString> propertyValue = getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public SecurityTokenRequestType getRequestType() {
+        Optional<SecurityTokenRequestType> propertyValue = getProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setClientCertificate(ByteString value) {
-    setProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE, value);
-  }
+    @Override
+    public void setRequestType(SecurityTokenRequestType value) {
+        setProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE, value);
+    }
 
-  public PropertyNode getClientCertificateThumbprintNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getSecurityPolicyUriNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getClientCertificateThumbprint() {
-    Optional<String> propertyValue = getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getSecurityPolicyUri() {
+        Optional<String> propertyValue = getProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI);
+        return propertyValue.orElse(null);
+    }
 
-  public void setClientCertificateThumbprint(String value) {
-    setProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT, value);
-  }
+    @Override
+    public void setSecurityPolicyUri(String value) {
+        setProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI, value);
+    }
 
-  public PropertyNode getRequestTypeNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.REQUEST_TYPE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getClientCertificateNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public SecurityTokenRequestType getRequestType() {
-    Optional<SecurityTokenRequestType> propertyValue = getProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public ByteString getClientCertificate() {
+        Optional<ByteString> propertyValue = getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setRequestType(SecurityTokenRequestType value) {
-    setProperty(AuditOpenSecureChannelEventType.REQUEST_TYPE, value);
-  }
+    @Override
+    public void setClientCertificate(ByteString value) {
+        setProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE, value);
+    }
 
-  public PropertyNode getSecurityPolicyUriNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getClientCertificateThumbprintNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getSecurityPolicyUri() {
-    Optional<String> propertyValue = getProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getClientCertificateThumbprint() {
+        Optional<String> propertyValue = getProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT);
+        return propertyValue.orElse(null);
+    }
 
-  public void setSecurityPolicyUri(String value) {
-    setProperty(AuditOpenSecureChannelEventType.SECURITY_POLICY_URI, value);
-  }
+    @Override
+    public void setClientCertificateThumbprint(String value) {
+        setProperty(AuditOpenSecureChannelEventType.CLIENT_CERTIFICATE_THUMBPRINT, value);
+    }
 
-  public PropertyNode getSecurityModeNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_MODE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getSecurityModeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.SECURITY_MODE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public MessageSecurityMode getSecurityMode() {
-    Optional<MessageSecurityMode> propertyValue = getProperty(AuditOpenSecureChannelEventType.SECURITY_MODE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public MessageSecurityMode getSecurityMode() {
+        Optional<MessageSecurityMode> propertyValue = getProperty(AuditOpenSecureChannelEventType.SECURITY_MODE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setSecurityMode(MessageSecurityMode value) {
-    setProperty(AuditOpenSecureChannelEventType.SECURITY_MODE, value);
-  }
+    @Override
+    public void setSecurityMode(MessageSecurityMode value) {
+        setProperty(AuditOpenSecureChannelEventType.SECURITY_MODE, value);
+    }
 
-  public PropertyNode getRequestedLifetimeNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getRequestedLifetimeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Double getRequestedLifetime() {
-    Optional<Double> propertyValue = getProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Double getRequestedLifetime() {
+        Optional<Double> propertyValue = getProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME);
+        return propertyValue.orElse(null);
+    }
 
-  public void setRequestedLifetime(Double value) {
-    setProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME, value);
-  }
+    @Override
+    public void setRequestedLifetime(Double value) {
+        setProperty(AuditOpenSecureChannelEventType.REQUESTED_LIFETIME, value);
+    }
 }

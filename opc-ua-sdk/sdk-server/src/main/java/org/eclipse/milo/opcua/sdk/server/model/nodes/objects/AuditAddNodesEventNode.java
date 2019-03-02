@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
 
 public class AuditAddNodesEventNode extends AuditNodeManagementEventNode implements AuditAddNodesEventType {
-  public AuditAddNodesEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditAddNodesEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                  LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                  UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditAddNodesEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                                LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditAddNodesEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                  LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                  UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getNodesToAddNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditAddNodesEventType.NODES_TO_ADD);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getNodesToAddNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditAddNodesEventType.NODES_TO_ADD);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public AddNodesItem[] getNodesToAdd() {
-    Optional<AddNodesItem[]> propertyValue = getProperty(AuditAddNodesEventType.NODES_TO_ADD);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public AddNodesItem[] getNodesToAdd() {
+        Optional<AddNodesItem[]> propertyValue = getProperty(AuditAddNodesEventType.NODES_TO_ADD);
+        return propertyValue.orElse(null);
+    }
 
-  public void setNodesToAdd(AddNodesItem[] value) {
-    setProperty(AuditAddNodesEventType.NODES_TO_ADD, value);
-  }
+    @Override
+    public void setNodesToAdd(AddNodesItem[] value) {
+        setProperty(AuditAddNodesEventType.NODES_TO_ADD, value);
+    }
 }

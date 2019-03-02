@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
 
 public class AuditDeleteNodesEventNode extends AuditNodeManagementEventNode implements AuditDeleteNodesEventType {
-  public AuditDeleteNodesEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditDeleteNodesEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditDeleteNodesEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditDeleteNodesEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getNodesToDeleteNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditDeleteNodesEventType.NODES_TO_DELETE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getNodesToDeleteNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditDeleteNodesEventType.NODES_TO_DELETE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public DeleteNodesItem[] getNodesToDelete() {
-    Optional<DeleteNodesItem[]> propertyValue = getProperty(AuditDeleteNodesEventType.NODES_TO_DELETE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public DeleteNodesItem[] getNodesToDelete() {
+        Optional<DeleteNodesItem[]> propertyValue = getProperty(AuditDeleteNodesEventType.NODES_TO_DELETE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setNodesToDelete(DeleteNodesItem[] value) {
-    setProperty(AuditDeleteNodesEventType.NODES_TO_DELETE, value);
-  }
+    @Override
+    public void setNodesToDelete(DeleteNodesItem[] value) {
+        setProperty(AuditDeleteNodesEventType.NODES_TO_DELETE, value);
+    }
 }

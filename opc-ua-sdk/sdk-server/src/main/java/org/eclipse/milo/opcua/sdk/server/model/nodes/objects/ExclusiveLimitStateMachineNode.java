@@ -22,55 +22,63 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class ExclusiveLimitStateMachineNode extends FiniteStateMachineNode implements ExclusiveLimitStateMachineType {
-  public ExclusiveLimitStateMachineNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public ExclusiveLimitStateMachineNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public ExclusiveLimitStateMachineNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public ExclusiveLimitStateMachineNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public StateNode getHighHighNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighHigh");
-    return (StateNode) component.orElse(null);
-  }
+    @Override
+    public StateNode getLowLowNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowLow");
+        return (StateNode) component.orElse(null);
+    }
 
-  public StateNode getHighNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "High");
-    return (StateNode) component.orElse(null);
-  }
+    @Override
+    public TransitionNode getLowToLowLowNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowToLowLow");
+        return (TransitionNode) component.orElse(null);
+    }
 
-  public StateNode getLowNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Low");
-    return (StateNode) component.orElse(null);
-  }
+    @Override
+    public TransitionNode getLowLowToLowNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowLowToLow");
+        return (TransitionNode) component.orElse(null);
+    }
 
-  public StateNode getLowLowNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowLow");
-    return (StateNode) component.orElse(null);
-  }
+    @Override
+    public StateNode getHighNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "High");
+        return (StateNode) component.orElse(null);
+    }
 
-  public TransitionNode getLowLowToLowNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowLowToLow");
-    return (TransitionNode) component.orElse(null);
-  }
+    @Override
+    public StateNode getLowNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "Low");
+        return (StateNode) component.orElse(null);
+    }
 
-  public TransitionNode getLowToLowLowNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LowToLowLow");
-    return (TransitionNode) component.orElse(null);
-  }
+    @Override
+    public StateNode getHighHighNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighHigh");
+        return (StateNode) component.orElse(null);
+    }
 
-  public TransitionNode getHighHighToHighNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighHighToHigh");
-    return (TransitionNode) component.orElse(null);
-  }
+    @Override
+    public TransitionNode getHighHighToHighNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighHighToHigh");
+        return (TransitionNode) component.orElse(null);
+    }
 
-  public TransitionNode getHighToHighHighNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighToHighHigh");
-    return (TransitionNode) component.orElse(null);
-  }
+    @Override
+    public TransitionNode getHighToHighHighNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "HighToHighHigh");
+        return (TransitionNode) component.orElse(null);
+    }
 }

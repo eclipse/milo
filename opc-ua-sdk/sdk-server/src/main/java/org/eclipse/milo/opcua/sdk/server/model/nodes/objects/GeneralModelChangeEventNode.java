@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.ModelChangeStructureDataType;
 
 public class GeneralModelChangeEventNode extends BaseModelChangeEventNode implements GeneralModelChangeEventType {
-  public GeneralModelChangeEventNode(UaNodeContext context, NodeId nodeId,
-                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                     UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public GeneralModelChangeEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public GeneralModelChangeEventNode(UaNodeContext context, NodeId nodeId,
-                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                     UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public GeneralModelChangeEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getChangesNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(GeneralModelChangeEventType.CHANGES);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getChangesNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(GeneralModelChangeEventType.CHANGES);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public ModelChangeStructureDataType[] getChanges() {
-    Optional<ModelChangeStructureDataType[]> propertyValue = getProperty(GeneralModelChangeEventType.CHANGES);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public ModelChangeStructureDataType[] getChanges() {
+        Optional<ModelChangeStructureDataType[]> propertyValue = getProperty(GeneralModelChangeEventType.CHANGES);
+        return propertyValue.orElse(null);
+    }
 
-  public void setChanges(ModelChangeStructureDataType[] value) {
-    setProperty(GeneralModelChangeEventType.CHANGES, value);
-  }
+    @Override
+    public void setChanges(ModelChangeStructureDataType[] value) {
+        setProperty(GeneralModelChangeEventType.CHANGES, value);
+    }
 }

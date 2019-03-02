@@ -116,7 +116,11 @@ public class OpcUaServer implements UaNodeContext {
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        ObjectTypeManagerInitializer.initialize(objectTypeManager);
+        ObjectTypeManagerInitializer.initialize(
+            namespaceManager.getNamespaceTable(),
+            objectTypeManager
+        );
+        
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
         namespaceManager.addNamespace(opcUaNamespace = new OpcUaNamespace(this));

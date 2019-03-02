@@ -25,43 +25,49 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditHistoryAtTimeDeleteEventNode extends AuditHistoryDeleteEventNode implements AuditHistoryAtTimeDeleteEventType {
-  public AuditHistoryAtTimeDeleteEventNode(UaNodeContext context, NodeId nodeId,
-                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                           UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditHistoryAtTimeDeleteEventNode(UaNodeContext context, NodeId nodeId,
+                                             QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                             UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditHistoryAtTimeDeleteEventNode(UaNodeContext context, NodeId nodeId,
-                                           QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                           UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditHistoryAtTimeDeleteEventNode(UaNodeContext context, NodeId nodeId,
+                                             QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                             UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getReqTimesNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getReqTimesNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public DateTime[] getReqTimes() {
-    Optional<DateTime[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public DateTime[] getReqTimes() {
+        Optional<DateTime[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES);
+        return propertyValue.orElse(null);
+    }
 
-  public void setReqTimes(DateTime[] value) {
-    setProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES, value);
-  }
+    @Override
+    public void setReqTimes(DateTime[] value) {
+        setProperty(AuditHistoryAtTimeDeleteEventType.REQ_TIMES, value);
+    }
 
-  public PropertyNode getOldValuesNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getOldValuesNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public DataValue[] getOldValues() {
-    Optional<DataValue[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public DataValue[] getOldValues() {
+        Optional<DataValue[]> propertyValue = getProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES);
+        return propertyValue.orElse(null);
+    }
 
-  public void setOldValues(DataValue[] value) {
-    setProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES, value);
-  }
+    @Override
+    public void setOldValues(DataValue[] value) {
+        setProperty(AuditHistoryAtTimeDeleteEventType.OLD_VALUES, value);
+    }
 }

@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class NonExclusiveDeviationAlarmNode extends NonExclusiveLimitAlarmNode implements NonExclusiveDeviationAlarmType {
-  public NonExclusiveDeviationAlarmNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public NonExclusiveDeviationAlarmNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public NonExclusiveDeviationAlarmNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public NonExclusiveDeviationAlarmNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getSetpointNodeNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(NonExclusiveDeviationAlarmType.SETPOINT_NODE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getSetpointNodeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(NonExclusiveDeviationAlarmType.SETPOINT_NODE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public NodeId getSetpointNode() {
-    Optional<NodeId> propertyValue = getProperty(NonExclusiveDeviationAlarmType.SETPOINT_NODE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public NodeId getSetpointNode() {
+        Optional<NodeId> propertyValue = getProperty(NonExclusiveDeviationAlarmType.SETPOINT_NODE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setSetpointNode(NodeId value) {
-    setProperty(NonExclusiveDeviationAlarmType.SETPOINT_NODE, value);
-  }
+    @Override
+    public void setSetpointNode(NodeId value) {
+        setProperty(NonExclusiveDeviationAlarmType.SETPOINT_NODE, value);
+    }
 }

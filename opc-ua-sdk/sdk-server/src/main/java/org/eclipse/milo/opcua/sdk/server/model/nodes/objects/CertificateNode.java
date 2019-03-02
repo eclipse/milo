@@ -19,15 +19,15 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class CertificateNode extends BaseObjectNode implements CertificateType {
-  public CertificateNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                         UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public CertificateNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                           LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                           UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public CertificateNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                         LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                         UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public CertificateNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                           LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                           UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 }

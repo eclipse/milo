@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class OffNormalAlarmNode extends DiscreteAlarmNode implements OffNormalAlarmType {
-  public OffNormalAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                            LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                            UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public OffNormalAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                              UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public OffNormalAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                            LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                            UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public OffNormalAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                              LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                              UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getNormalStateNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(OffNormalAlarmType.NORMAL_STATE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getNormalStateNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(OffNormalAlarmType.NORMAL_STATE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public NodeId getNormalState() {
-    Optional<NodeId> propertyValue = getProperty(OffNormalAlarmType.NORMAL_STATE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public NodeId getNormalState() {
+        Optional<NodeId> propertyValue = getProperty(OffNormalAlarmType.NORMAL_STATE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setNormalState(NodeId value) {
-    setProperty(OffNormalAlarmType.NORMAL_STATE, value);
-  }
+    @Override
+    public void setNormalState(NodeId value) {
+        setProperty(OffNormalAlarmType.NORMAL_STATE, value);
+    }
 }

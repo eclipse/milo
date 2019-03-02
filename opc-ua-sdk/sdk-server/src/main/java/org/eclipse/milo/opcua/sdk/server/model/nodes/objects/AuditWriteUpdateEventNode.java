@@ -23,71 +23,83 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditWriteUpdateEventNode extends AuditUpdateEventNode implements AuditWriteUpdateEventType {
-  public AuditWriteUpdateEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditWriteUpdateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditWriteUpdateEventNode(UaNodeContext context, NodeId nodeId,
-                                   QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                   UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditWriteUpdateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                     LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                     UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getAttributeIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.ATTRIBUTE_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getAttributeIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.ATTRIBUTE_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public UInteger getAttributeId() {
-    Optional<UInteger> propertyValue = getProperty(AuditWriteUpdateEventType.ATTRIBUTE_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public UInteger getAttributeId() {
+        Optional<UInteger> propertyValue = getProperty(AuditWriteUpdateEventType.ATTRIBUTE_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setAttributeId(UInteger value) {
-    setProperty(AuditWriteUpdateEventType.ATTRIBUTE_ID, value);
-  }
+    @Override
+    public void setAttributeId(UInteger value) {
+        setProperty(AuditWriteUpdateEventType.ATTRIBUTE_ID, value);
+    }
 
-  public PropertyNode getIndexRangeNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.INDEX_RANGE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getNewValueNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.NEW_VALUE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String getIndexRange() {
-    Optional<String> propertyValue = getProperty(AuditWriteUpdateEventType.INDEX_RANGE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Object getNewValue() {
+        Optional<Object> propertyValue = getProperty(AuditWriteUpdateEventType.NEW_VALUE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setIndexRange(String value) {
-    setProperty(AuditWriteUpdateEventType.INDEX_RANGE, value);
-  }
+    @Override
+    public void setNewValue(Object value) {
+        setProperty(AuditWriteUpdateEventType.NEW_VALUE, value);
+    }
 
-  public PropertyNode getOldValueNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.OLD_VALUE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getIndexRangeNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.INDEX_RANGE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Object getOldValue() {
-    Optional<Object> propertyValue = getProperty(AuditWriteUpdateEventType.OLD_VALUE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String getIndexRange() {
+        Optional<String> propertyValue = getProperty(AuditWriteUpdateEventType.INDEX_RANGE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setOldValue(Object value) {
-    setProperty(AuditWriteUpdateEventType.OLD_VALUE, value);
-  }
+    @Override
+    public void setIndexRange(String value) {
+        setProperty(AuditWriteUpdateEventType.INDEX_RANGE, value);
+    }
 
-  public PropertyNode getNewValueNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.NEW_VALUE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getOldValueNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditWriteUpdateEventType.OLD_VALUE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Object getNewValue() {
-    Optional<Object> propertyValue = getProperty(AuditWriteUpdateEventType.NEW_VALUE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Object getOldValue() {
+        Optional<Object> propertyValue = getProperty(AuditWriteUpdateEventType.OLD_VALUE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setNewValue(Object value) {
-    setProperty(AuditWriteUpdateEventType.NEW_VALUE, value);
-  }
+    @Override
+    public void setOldValue(Object value) {
+        setProperty(AuditWriteUpdateEventType.OLD_VALUE, value);
+    }
 }

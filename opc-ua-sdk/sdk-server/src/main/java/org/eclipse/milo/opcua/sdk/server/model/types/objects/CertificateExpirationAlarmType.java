@@ -26,14 +26,6 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
         DateTime.class
     );
 
-    QualifiedProperty<Double> EXPIRATION_LIMIT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ExpirationLimit",
-        NodeId.parse("ns=0;i=290"),
-        ValueRanks.Scalar,
-        Double.class
-    );
-
     QualifiedProperty<NodeId> CERTIFICATE_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CertificateType",
@@ -50,17 +42,19 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
         ByteString.class
     );
 
+    QualifiedProperty<Double> EXPIRATION_LIMIT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ExpirationLimit",
+        NodeId.parse("ns=0;i=290"),
+        ValueRanks.Scalar,
+        Double.class
+    );
+
     PropertyType getExpirationDateNode();
 
     DateTime getExpirationDate();
 
     void setExpirationDate(DateTime value);
-
-    PropertyType getExpirationLimitNode();
-
-    Double getExpirationLimit();
-
-    void setExpirationLimit(Double value);
 
     PropertyType getCertificateTypeNode();
 
@@ -73,4 +67,10 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
     ByteString getCertificate();
 
     void setCertificate(ByteString value);
+
+    PropertyType getExpirationLimitNode();
+
+    Double getExpirationLimit();
+
+    void setExpirationLimit(Double value);
 }

@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 
 public class AuditDeleteReferencesEventNode extends AuditNodeManagementEventNode implements AuditDeleteReferencesEventType {
-  public AuditDeleteReferencesEventNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditDeleteReferencesEventNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditDeleteReferencesEventNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditDeleteReferencesEventNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getReferencesToDeleteNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getReferencesToDeleteNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public DeleteReferencesItem[] getReferencesToDelete() {
-    Optional<DeleteReferencesItem[]> propertyValue = getProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public DeleteReferencesItem[] getReferencesToDelete() {
+        Optional<DeleteReferencesItem[]> propertyValue = getProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setReferencesToDelete(DeleteReferencesItem[] value) {
-    setProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE, value);
-  }
+    @Override
+    public void setReferencesToDelete(DeleteReferencesItem[] value) {
+        setProperty(AuditDeleteReferencesEventType.REFERENCES_TO_DELETE, value);
+    }
 }

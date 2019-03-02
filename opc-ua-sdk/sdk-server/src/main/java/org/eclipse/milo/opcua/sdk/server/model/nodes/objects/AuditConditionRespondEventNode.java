@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditConditionRespondEventNode extends AuditConditionEventNode implements AuditConditionRespondEventType {
-  public AuditConditionRespondEventNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditConditionRespondEventNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditConditionRespondEventNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditConditionRespondEventNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getSelectedResponseNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionRespondEventType.SELECTED_RESPONSE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getSelectedResponseNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditConditionRespondEventType.SELECTED_RESPONSE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Integer getSelectedResponse() {
-    Optional<Integer> propertyValue = getProperty(AuditConditionRespondEventType.SELECTED_RESPONSE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Integer getSelectedResponse() {
+        Optional<Integer> propertyValue = getProperty(AuditConditionRespondEventType.SELECTED_RESPONSE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setSelectedResponse(Integer value) {
-    setProperty(AuditConditionRespondEventType.SELECTED_RESPONSE, value);
-  }
+    @Override
+    public void setSelectedResponse(Integer value) {
+        setProperty(AuditConditionRespondEventType.SELECTED_RESPONSE, value);
+    }
 }

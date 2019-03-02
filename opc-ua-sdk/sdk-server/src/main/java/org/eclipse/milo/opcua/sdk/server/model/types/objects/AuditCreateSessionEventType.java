@@ -17,6 +17,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditCreateSessionEventType extends AuditSessionEventType {
+    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ClientCertificateThumbprint",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
+
     QualifiedProperty<String> SECURE_CHANNEL_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SecureChannelId",
@@ -33,14 +41,6 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
         ByteString.class
     );
 
-    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ClientCertificateThumbprint",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<Double> REVISED_SESSION_TIMEOUT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "RevisedSessionTimeout",
@@ -48,6 +48,12 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
         ValueRanks.Scalar,
         Double.class
     );
+
+    PropertyType getClientCertificateThumbprintNode();
+
+    String getClientCertificateThumbprint();
+
+    void setClientCertificateThumbprint(String value);
 
     PropertyType getSecureChannelIdNode();
 
@@ -60,12 +66,6 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
     ByteString getClientCertificate();
 
     void setClientCertificate(ByteString value);
-
-    PropertyType getClientCertificateThumbprintNode();
-
-    String getClientCertificateThumbprint();
-
-    void setClientCertificateThumbprint(String value);
 
     PropertyType getRevisedSessionTimeoutNode();
 

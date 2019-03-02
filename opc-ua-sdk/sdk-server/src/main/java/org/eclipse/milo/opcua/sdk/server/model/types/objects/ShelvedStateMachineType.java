@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface ShelvedStateMachineType extends FiniteStateMachineType {
@@ -30,6 +31,10 @@ public interface ShelvedStateMachineType extends FiniteStateMachineType {
 
     void setUnshelveTime(Double value);
 
+    TransitionType getTimedShelvedToOneShotShelvedNode();
+
+    TransitionType getTimedShelvedToUnshelvedNode();
+
     StateType getUnshelvedNode();
 
     StateType getTimedShelvedNode();
@@ -40,11 +45,13 @@ public interface ShelvedStateMachineType extends FiniteStateMachineType {
 
     TransitionType getUnshelvedToOneShotShelvedNode();
 
-    TransitionType getTimedShelvedToUnshelvedNode();
-
-    TransitionType getTimedShelvedToOneShotShelvedNode();
+    TransitionType getOneShotShelvedToTimedShelvedNode();
 
     TransitionType getOneShotShelvedToUnshelvedNode();
 
-    TransitionType getOneShotShelvedToTimedShelvedNode();
+    UaMethodNode getTimedShelveMethodNode();
+
+    UaMethodNode getUnshelveMethodNode();
+
+    UaMethodNode getOneShotShelveMethodNode();
 }

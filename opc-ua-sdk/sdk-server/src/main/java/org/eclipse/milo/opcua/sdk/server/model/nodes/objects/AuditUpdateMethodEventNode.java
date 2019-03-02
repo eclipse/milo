@@ -23,43 +23,49 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditUpdateMethodEventNode extends AuditEventNode implements AuditUpdateMethodEventType {
-  public AuditUpdateMethodEventNode(UaNodeContext context, NodeId nodeId,
-                                    QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                    UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditUpdateMethodEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditUpdateMethodEventNode(UaNodeContext context, NodeId nodeId,
-                                    QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                    UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditUpdateMethodEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                      LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                      UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getMethodIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateMethodEventType.METHOD_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getMethodIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateMethodEventType.METHOD_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public NodeId getMethodId() {
-    Optional<NodeId> propertyValue = getProperty(AuditUpdateMethodEventType.METHOD_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public NodeId getMethodId() {
+        Optional<NodeId> propertyValue = getProperty(AuditUpdateMethodEventType.METHOD_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setMethodId(NodeId value) {
-    setProperty(AuditUpdateMethodEventType.METHOD_ID, value);
-  }
+    @Override
+    public void setMethodId(NodeId value) {
+        setProperty(AuditUpdateMethodEventType.METHOD_ID, value);
+    }
 
-  public PropertyNode getInputArgumentsNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateMethodEventType.INPUT_ARGUMENTS);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getInputArgumentsNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditUpdateMethodEventType.INPUT_ARGUMENTS);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public Object[] getInputArguments() {
-    Optional<Object[]> propertyValue = getProperty(AuditUpdateMethodEventType.INPUT_ARGUMENTS);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public Object[] getInputArguments() {
+        Optional<Object[]> propertyValue = getProperty(AuditUpdateMethodEventType.INPUT_ARGUMENTS);
+        return propertyValue.orElse(null);
+    }
 
-  public void setInputArguments(Object[] value) {
-    setProperty(AuditUpdateMethodEventType.INPUT_ARGUMENTS, value);
-  }
+    @Override
+    public void setInputArguments(Object[] value) {
+        setProperty(AuditUpdateMethodEventType.INPUT_ARGUMENTS, value);
+    }
 }

@@ -16,15 +16,15 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 
 public interface SessionsDiagnosticsSummaryType extends BaseObjectType {
-    SessionDiagnosticsArrayType getSessionDiagnosticsArrayNode();
-
-    SessionDiagnosticsDataType[] getSessionDiagnosticsArray();
-
-    void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value);
-
     SessionSecurityDiagnosticsArrayType getSessionSecurityDiagnosticsArrayNode();
 
     SessionSecurityDiagnosticsDataType[] getSessionSecurityDiagnosticsArray();
 
     void setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value);
+
+    SessionDiagnosticsArrayType getSessionDiagnosticsArrayNode();
+
+    SessionDiagnosticsDataType[] getSessionDiagnosticsArray();
+
+    void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value);
 }

@@ -16,14 +16,6 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEventType {
-    QualifiedProperty<NodeId> CERTIFICATE_GROUP = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "CertificateGroup",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
     QualifiedProperty<NodeId> CERTIFICATE_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CertificateType",
@@ -32,15 +24,23 @@ public interface CertificateUpdatedAuditEventType extends AuditUpdateMethodEvent
         NodeId.class
     );
 
-    PropertyType getCertificateGroupNode();
-
-    NodeId getCertificateGroup();
-
-    void setCertificateGroup(NodeId value);
+    QualifiedProperty<NodeId> CERTIFICATE_GROUP = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "CertificateGroup",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        NodeId.class
+    );
 
     PropertyType getCertificateTypeNode();
 
     NodeId getCertificateType();
 
     void setCertificateType(NodeId value);
+
+    PropertyType getCertificateGroupNode();
+
+    NodeId getCertificateGroup();
+
+    void setCertificateGroup(NodeId value);
 }

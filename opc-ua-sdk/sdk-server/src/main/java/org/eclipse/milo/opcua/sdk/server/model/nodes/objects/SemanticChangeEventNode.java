@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.structured.SemanticChangeStructureDataType;
 
 public class SemanticChangeEventNode extends BaseModelChangeEventNode implements SemanticChangeEventType {
-  public SemanticChangeEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public SemanticChangeEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                   LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                   UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public SemanticChangeEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public SemanticChangeEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                   LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                   UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getChangesNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(SemanticChangeEventType.CHANGES);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getChangesNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(SemanticChangeEventType.CHANGES);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public SemanticChangeStructureDataType[] getChanges() {
-    Optional<SemanticChangeStructureDataType[]> propertyValue = getProperty(SemanticChangeEventType.CHANGES);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public SemanticChangeStructureDataType[] getChanges() {
+        Optional<SemanticChangeStructureDataType[]> propertyValue = getProperty(SemanticChangeEventType.CHANGES);
+        return propertyValue.orElse(null);
+    }
 
-  public void setChanges(SemanticChangeStructureDataType[] value) {
-    setProperty(SemanticChangeEventType.CHANGES, value);
-  }
+    @Override
+    public void setChanges(SemanticChangeStructureDataType[] value) {
+        setProperty(SemanticChangeEventType.CHANGES, value);
+    }
 }

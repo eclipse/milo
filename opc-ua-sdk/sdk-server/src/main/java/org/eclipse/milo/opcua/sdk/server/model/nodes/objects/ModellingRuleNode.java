@@ -24,29 +24,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NamingRuleType;
 
 public class ModellingRuleNode extends BaseObjectNode implements ModellingRuleType {
-  public ModellingRuleNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                           LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                           UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public ModellingRuleNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                             UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public ModellingRuleNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                           LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                           UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public ModellingRuleNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                             UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getNamingRuleNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(ModellingRuleType.NAMING_RULE);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getNamingRuleNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(ModellingRuleType.NAMING_RULE);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public NamingRuleType getNamingRule() {
-    Optional<NamingRuleType> propertyValue = getProperty(ModellingRuleType.NAMING_RULE);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public NamingRuleType getNamingRule() {
+        Optional<NamingRuleType> propertyValue = getProperty(ModellingRuleType.NAMING_RULE);
+        return propertyValue.orElse(null);
+    }
 
-  public void setNamingRule(NamingRuleType value) {
-    setProperty(ModellingRuleType.NAMING_RULE, value);
-  }
+    @Override
+    public void setNamingRule(NamingRuleType value) {
+        setProperty(ModellingRuleType.NAMING_RULE, value);
+    }
 }

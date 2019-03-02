@@ -18,12 +18,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AlarmConditionType extends AcknowledgeableConditionType {
-    QualifiedProperty<NodeId> INPUT_NODE = new QualifiedProperty<>(
+    QualifiedProperty<Double> MAX_TIME_SHELVED = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "InputNode",
-        NodeId.parse("ns=0;i=17"),
+        "MaxTimeShelved",
+        NodeId.parse("ns=0;i=290"),
         ValueRanks.Scalar,
-        NodeId.class
+        Double.class
     );
 
     QualifiedProperty<Boolean> SUPPRESSED_OR_SHELVED = new QualifiedProperty<>(
@@ -34,25 +34,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
         Boolean.class
     );
 
-    QualifiedProperty<Double> MAX_TIME_SHELVED = new QualifiedProperty<>(
+    QualifiedProperty<NodeId> INPUT_NODE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "MaxTimeShelved",
-        NodeId.parse("ns=0;i=290"),
+        "InputNode",
+        NodeId.parse("ns=0;i=17"),
         ValueRanks.Scalar,
-        Double.class
+        NodeId.class
     );
-
-    PropertyType getInputNodeNode();
-
-    NodeId getInputNode();
-
-    void setInputNode(NodeId value);
-
-    PropertyType getSuppressedOrShelvedNode();
-
-    Boolean getSuppressedOrShelved();
-
-    void setSuppressedOrShelved(Boolean value);
 
     PropertyType getMaxTimeShelvedNode();
 
@@ -60,11 +48,17 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
 
     void setMaxTimeShelved(Double value);
 
-    TwoStateVariableType getEnabledStateNode();
+    PropertyType getSuppressedOrShelvedNode();
 
-    LocalizedText getEnabledState();
+    Boolean getSuppressedOrShelved();
 
-    void setEnabledState(LocalizedText value);
+    void setSuppressedOrShelved(Boolean value);
+
+    PropertyType getInputNodeNode();
+
+    NodeId getInputNode();
+
+    void setInputNode(NodeId value);
 
     TwoStateVariableType getActiveStateNode();
 
@@ -77,6 +71,12 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
     LocalizedText getSuppressedState();
 
     void setSuppressedState(LocalizedText value);
+
+    TwoStateVariableType getEnabledStateNode();
+
+    LocalizedText getEnabledState();
+
+    void setEnabledState(LocalizedText value);
 
     ShelvedStateMachineType getShelvingStateNode();
 }

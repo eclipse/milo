@@ -13,17 +13,18 @@ package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface FileType extends BaseObjectType {
-    QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
+    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Size",
-        NodeId.parse("ns=0;i=9"),
+        "UserWritable",
+        NodeId.parse("ns=0;i=1"),
         ValueRanks.Scalar,
-        ULong.class
+        Boolean.class
     );
 
     QualifiedProperty<Boolean> WRITABLE = new QualifiedProperty<>(
@@ -34,20 +35,12 @@ public interface FileType extends BaseObjectType {
         Boolean.class
     );
 
-    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
+    QualifiedProperty<ULong> SIZE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "UserWritable",
-        NodeId.parse("ns=0;i=1"),
+        "Size",
+        NodeId.parse("ns=0;i=9"),
         ValueRanks.Scalar,
-        Boolean.class
-    );
-
-    QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "OpenCount",
-        NodeId.parse("ns=0;i=5"),
-        ValueRanks.Scalar,
-        UShort.class
+        ULong.class
     );
 
     QualifiedProperty<String> MIME_TYPE = new QualifiedProperty<>(
@@ -58,17 +51,13 @@ public interface FileType extends BaseObjectType {
         String.class
     );
 
-    PropertyType getSizeNode();
-
-    ULong getSize();
-
-    void setSize(ULong value);
-
-    PropertyType getWritableNode();
-
-    Boolean getWritable();
-
-    void setWritable(Boolean value);
+    QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OpenCount",
+        NodeId.parse("ns=0;i=5"),
+        ValueRanks.Scalar,
+        UShort.class
+    );
 
     PropertyType getUserWritableNode();
 
@@ -76,15 +65,39 @@ public interface FileType extends BaseObjectType {
 
     void setUserWritable(Boolean value);
 
-    PropertyType getOpenCountNode();
+    PropertyType getWritableNode();
 
-    UShort getOpenCount();
+    Boolean getWritable();
 
-    void setOpenCount(UShort value);
+    void setWritable(Boolean value);
+
+    PropertyType getSizeNode();
+
+    ULong getSize();
+
+    void setSize(ULong value);
 
     PropertyType getMimeTypeNode();
 
     String getMimeType();
 
     void setMimeType(String value);
+
+    PropertyType getOpenCountNode();
+
+    UShort getOpenCount();
+
+    void setOpenCount(UShort value);
+
+    UaMethodNode getReadMethodNode();
+
+    UaMethodNode getWriteMethodNode();
+
+    UaMethodNode getGetPositionMethodNode();
+
+    UaMethodNode getCloseMethodNode();
+
+    UaMethodNode getOpenMethodNode();
+
+    UaMethodNode getSetPositionMethodNode();
 }

@@ -18,36 +18,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
 
 public interface HistoricalDataConfigurationType extends BaseObjectType {
-    QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
+    QualifiedProperty<DateTime> START_OF_ARCHIVE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Stepped",
-        NodeId.parse("ns=0;i=1"),
+        "StartOfArchive",
+        NodeId.parse("ns=0;i=294"),
         ValueRanks.Scalar,
-        Boolean.class
+        DateTime.class
     );
 
-    QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
+    QualifiedProperty<DateTime> START_OF_ONLINE_ARCHIVE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Definition",
-        NodeId.parse("ns=0;i=12"),
+        "StartOfOnlineArchive",
+        NodeId.parse("ns=0;i=294"),
         ValueRanks.Scalar,
-        String.class
-    );
-
-    QualifiedProperty<Double> MAX_TIME_INTERVAL = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MaxTimeInterval",
-        NodeId.parse("ns=0;i=290"),
-        ValueRanks.Scalar,
-        Double.class
-    );
-
-    QualifiedProperty<Double> MIN_TIME_INTERVAL = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MinTimeInterval",
-        NodeId.parse("ns=0;i=290"),
-        ValueRanks.Scalar,
-        Double.class
+        DateTime.class
     );
 
     QualifiedProperty<Double> EXCEPTION_DEVIATION = new QualifiedProperty<>(
@@ -66,57 +50,37 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
         ExceptionDeviationFormat.class
     );
 
-    QualifiedProperty<DateTime> START_OF_ARCHIVE = new QualifiedProperty<>(
+    QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "StartOfArchive",
-        NodeId.parse("ns=0;i=294"),
+        "Stepped",
+        NodeId.parse("ns=0;i=1"),
         ValueRanks.Scalar,
-        DateTime.class
+        Boolean.class
     );
 
-    QualifiedProperty<DateTime> START_OF_ONLINE_ARCHIVE = new QualifiedProperty<>(
+    QualifiedProperty<Double> MIN_TIME_INTERVAL = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "StartOfOnlineArchive",
-        NodeId.parse("ns=0;i=294"),
+        "MinTimeInterval",
+        NodeId.parse("ns=0;i=290"),
         ValueRanks.Scalar,
-        DateTime.class
+        Double.class
     );
 
-    PropertyType getSteppedNode();
+    QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Definition",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
 
-    Boolean getStepped();
-
-    void setStepped(Boolean value);
-
-    PropertyType getDefinitionNode();
-
-    String getDefinition();
-
-    void setDefinition(String value);
-
-    PropertyType getMaxTimeIntervalNode();
-
-    Double getMaxTimeInterval();
-
-    void setMaxTimeInterval(Double value);
-
-    PropertyType getMinTimeIntervalNode();
-
-    Double getMinTimeInterval();
-
-    void setMinTimeInterval(Double value);
-
-    PropertyType getExceptionDeviationNode();
-
-    Double getExceptionDeviation();
-
-    void setExceptionDeviation(Double value);
-
-    PropertyType getExceptionDeviationFormatNode();
-
-    ExceptionDeviationFormat getExceptionDeviationFormat();
-
-    void setExceptionDeviationFormat(ExceptionDeviationFormat value);
+    QualifiedProperty<Double> MAX_TIME_INTERVAL = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MaxTimeInterval",
+        NodeId.parse("ns=0;i=290"),
+        ValueRanks.Scalar,
+        Double.class
+    );
 
     PropertyType getStartOfArchiveNode();
 
@@ -130,7 +94,43 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
 
     void setStartOfOnlineArchive(DateTime value);
 
-    AggregateConfigurationType getAggregateConfigurationNode();
+    PropertyType getExceptionDeviationNode();
+
+    Double getExceptionDeviation();
+
+    void setExceptionDeviation(Double value);
+
+    PropertyType getExceptionDeviationFormatNode();
+
+    ExceptionDeviationFormat getExceptionDeviationFormat();
+
+    void setExceptionDeviationFormat(ExceptionDeviationFormat value);
+
+    PropertyType getSteppedNode();
+
+    Boolean getStepped();
+
+    void setStepped(Boolean value);
+
+    PropertyType getMinTimeIntervalNode();
+
+    Double getMinTimeInterval();
+
+    void setMinTimeInterval(Double value);
+
+    PropertyType getDefinitionNode();
+
+    String getDefinition();
+
+    void setDefinition(String value);
+
+    PropertyType getMaxTimeIntervalNode();
+
+    Double getMaxTimeInterval();
+
+    void setMaxTimeInterval(Double value);
 
     FolderType getAggregateFunctionsNode();
+
+    AggregateConfigurationType getAggregateConfigurationNode();
 }

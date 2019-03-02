@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class AuditHistoryUpdateEventNode extends AuditUpdateEventNode implements AuditHistoryUpdateEventType {
-  public AuditHistoryUpdateEventNode(UaNodeContext context, NodeId nodeId,
-                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                     UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public AuditHistoryUpdateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public AuditHistoryUpdateEventNode(UaNodeContext context, NodeId nodeId,
-                                     QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                     UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public AuditHistoryUpdateEventNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                       LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                       UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getParameterDataTypeIdNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getParameterDataTypeIdNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public NodeId getParameterDataTypeId() {
-    Optional<NodeId> propertyValue = getProperty(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public NodeId getParameterDataTypeId() {
+        Optional<NodeId> propertyValue = getProperty(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID);
+        return propertyValue.orElse(null);
+    }
 
-  public void setParameterDataTypeId(NodeId value) {
-    setProperty(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID, value);
-  }
+    @Override
+    public void setParameterDataTypeId(NodeId value) {
+        setProperty(AuditHistoryUpdateEventType.PARAMETER_DATA_TYPE_ID, value);
+    }
 }

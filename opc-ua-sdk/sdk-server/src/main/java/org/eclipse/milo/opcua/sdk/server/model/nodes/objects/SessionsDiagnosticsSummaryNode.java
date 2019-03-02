@@ -28,43 +28,49 @@ import org.eclipse.milo.opcua.stack.core.types.structured.SessionDiagnosticsData
 import org.eclipse.milo.opcua.stack.core.types.structured.SessionSecurityDiagnosticsDataType;
 
 public class SessionsDiagnosticsSummaryNode extends BaseObjectNode implements SessionsDiagnosticsSummaryType {
-  public SessionsDiagnosticsSummaryNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public SessionsDiagnosticsSummaryNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public SessionsDiagnosticsSummaryNode(UaNodeContext context, NodeId nodeId,
-                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public SessionsDiagnosticsSummaryNode(UaNodeContext context, NodeId nodeId,
+                                          QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                          UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public SessionDiagnosticsArrayNode getSessionDiagnosticsArrayNode() {
-    Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnosticsArray");
-    return (SessionDiagnosticsArrayNode) component.orElse(null);
-  }
+    @Override
+    public SessionSecurityDiagnosticsArrayNode getSessionSecurityDiagnosticsArrayNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnosticsArray");
+        return (SessionSecurityDiagnosticsArrayNode) component.orElse(null);
+    }
 
-  public SessionDiagnosticsDataType[] getSessionDiagnosticsArray() {
-    Optional<VariableNode> component = getVariableComponent("SessionDiagnosticsArray");
-    return component.map(node -> (SessionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
-  }
+    @Override
+    public SessionSecurityDiagnosticsDataType[] getSessionSecurityDiagnosticsArray() {
+        Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnosticsArray");
+        return component.map(node -> (SessionSecurityDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
+    }
 
-  public void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value) {
-    getVariableComponent("SessionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
-  }
+    @Override
+    public void setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value) {
+        getVariableComponent("SessionSecurityDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    }
 
-  public SessionSecurityDiagnosticsArrayNode getSessionSecurityDiagnosticsArrayNode() {
-    Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionSecurityDiagnosticsArray");
-    return (SessionSecurityDiagnosticsArrayNode) component.orElse(null);
-  }
+    @Override
+    public SessionDiagnosticsArrayNode getSessionDiagnosticsArrayNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "SessionDiagnosticsArray");
+        return (SessionDiagnosticsArrayNode) component.orElse(null);
+    }
 
-  public SessionSecurityDiagnosticsDataType[] getSessionSecurityDiagnosticsArray() {
-    Optional<VariableNode> component = getVariableComponent("SessionSecurityDiagnosticsArray");
-    return component.map(node -> (SessionSecurityDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
-  }
+    @Override
+    public SessionDiagnosticsDataType[] getSessionDiagnosticsArray() {
+        Optional<VariableNode> component = getVariableComponent("SessionDiagnosticsArray");
+        return component.map(node -> (SessionDiagnosticsDataType[]) node.getValue().getValue().getValue()).orElse(null);
+    }
 
-  public void setSessionSecurityDiagnosticsArray(SessionSecurityDiagnosticsDataType[] value) {
-    getVariableComponent("SessionSecurityDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
-  }
+    @Override
+    public void setSessionDiagnosticsArray(SessionDiagnosticsDataType[] value) {
+        getVariableComponent("SessionDiagnosticsArray").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    }
 }

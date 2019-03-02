@@ -11,20 +11,25 @@
 package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 
 import org.eclipse.milo.opcua.sdk.server.model.types.variables.TwoStateVariableType;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 public interface AcknowledgeableConditionType extends ConditionType {
+    TwoStateVariableType getAckedStateNode();
+
+    LocalizedText getAckedState();
+
+    void setAckedState(LocalizedText value);
+
     TwoStateVariableType getEnabledStateNode();
 
     LocalizedText getEnabledState();
 
     void setEnabledState(LocalizedText value);
 
-    TwoStateVariableType getAckedStateNode();
+    UaMethodNode getAcknowledgeMethodNode();
 
-    LocalizedText getAckedState();
-
-    void setAckedState(LocalizedText value);
+    UaMethodNode getConfirmMethodNode();
 
     TwoStateVariableType getConfirmedStateNode();
 

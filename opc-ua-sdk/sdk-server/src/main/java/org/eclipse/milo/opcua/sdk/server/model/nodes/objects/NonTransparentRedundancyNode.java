@@ -23,29 +23,32 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class NonTransparentRedundancyNode extends ServerRedundancyNode implements NonTransparentRedundancyType {
-  public NonTransparentRedundancyNode(UaNodeContext context, NodeId nodeId,
-                                      QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                      UInteger writeMask, UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public NonTransparentRedundancyNode(UaNodeContext context, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public NonTransparentRedundancyNode(UaNodeContext context, NodeId nodeId,
-                                      QualifiedName browseName, LocalizedText displayName, LocalizedText description,
-                                      UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public NonTransparentRedundancyNode(UaNodeContext context, NodeId nodeId,
+                                        QualifiedName browseName, LocalizedText displayName, LocalizedText description,
+                                        UInteger writeMask, UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public PropertyNode getServerUriArrayNode() {
-    Optional<VariableNode> propertyNode = getPropertyNode(NonTransparentRedundancyType.SERVER_URI_ARRAY);
-    return (PropertyNode) propertyNode.orElse(null);
-  }
+    @Override
+    public PropertyNode getServerUriArrayNode() {
+        Optional<VariableNode> propertyNode = getPropertyNode(NonTransparentRedundancyType.SERVER_URI_ARRAY);
+        return (PropertyNode) propertyNode.orElse(null);
+    }
 
-  public String[] getServerUriArray() {
-    Optional<String[]> propertyValue = getProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY);
-    return propertyValue.orElse(null);
-  }
+    @Override
+    public String[] getServerUriArray() {
+        Optional<String[]> propertyValue = getProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY);
+        return propertyValue.orElse(null);
+    }
 
-  public void setServerUriArray(String[] value) {
-    setProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY, value);
-  }
+    @Override
+    public void setServerUriArray(String[] value) {
+        setProperty(NonTransparentRedundancyType.SERVER_URI_ARRAY, value);
+    }
 }

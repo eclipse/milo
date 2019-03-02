@@ -26,34 +26,38 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public class ExclusiveLimitAlarmNode extends LimitAlarmNode implements ExclusiveLimitAlarmType {
-  public ExclusiveLimitAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
-  }
+    public ExclusiveLimitAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                   LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                   UInteger userWriteMask) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask);
+    }
 
-  public ExclusiveLimitAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
-                                 LocalizedText displayName, LocalizedText description, UInteger writeMask,
-                                 UInteger userWriteMask, UByte eventNotifier) {
-    super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
-  }
+    public ExclusiveLimitAlarmNode(UaNodeContext context, NodeId nodeId, QualifiedName browseName,
+                                   LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                                   UInteger userWriteMask, UByte eventNotifier) {
+        super(context, nodeId, browseName, displayName, description, writeMask, userWriteMask, eventNotifier);
+    }
 
-  public TwoStateVariableNode getActiveStateNode() {
-    Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
-    return (TwoStateVariableNode) component.orElse(null);
-  }
+    @Override
+    public ExclusiveLimitStateMachineNode getLimitStateNode() {
+        Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LimitState");
+        return (ExclusiveLimitStateMachineNode) component.orElse(null);
+    }
 
-  public LocalizedText getActiveState() {
-    Optional<VariableNode> component = getVariableComponent("ActiveState");
-    return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
-  }
+    @Override
+    public TwoStateVariableNode getActiveStateNode() {
+        Optional<VariableNode> component = getVariableComponent("http://opcfoundation.org/UA/", "ActiveState");
+        return (TwoStateVariableNode) component.orElse(null);
+    }
 
-  public void setActiveState(LocalizedText value) {
-    getVariableComponent("ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
-  }
+    @Override
+    public LocalizedText getActiveState() {
+        Optional<VariableNode> component = getVariableComponent("ActiveState");
+        return component.map(node -> (LocalizedText) node.getValue().getValue().getValue()).orElse(null);
+    }
 
-  public ExclusiveLimitStateMachineNode getLimitStateNode() {
-    Optional<ObjectNode> component = getObjectComponent("http://opcfoundation.org/UA/", "LimitState");
-    return (ExclusiveLimitStateMachineNode) component.orElse(null);
-  }
+    @Override
+    public void setActiveState(LocalizedText value) {
+        getVariableComponent("ActiveState").ifPresent(n -> n.setValue(new DataValue(new Variant(value))));
+    }
 }
