@@ -74,9 +74,10 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
 
                 Variant variant = inputValues[i];
 
-                boolean dataTypeMatch = variant.getDataType()
-                    .map(type -> type.equals(argument.getDataType()))
-                    .orElse(false);
+                boolean dataTypeMatch = variant.getValue() == null ||
+                    variant.getDataType()
+                        .map(type -> type.equals(argument.getDataType()))
+                        .orElse(false);
 
                 if (dataTypeMatch) {
                     inputArgumentResults[i] = StatusCode.GOOD;
