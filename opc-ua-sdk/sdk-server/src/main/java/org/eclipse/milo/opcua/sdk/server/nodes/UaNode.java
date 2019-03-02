@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -382,6 +383,37 @@ public abstract class UaNode implements UaServerNode {
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
             .filter(nodePredicate)
             .filter(n -> n.getBrowseName().equals(browseName))
+            .findFirst();
+    }
+
+    /**
+     * Find a {@link UaNode} with a Browse Name of {@code browseName}, in {@code namespaceUri}, referenced by this node.
+     *
+     * @param namespaceUri       the namespace URI of {@code browseName}.
+     * @param browseName         the Browse Name of the target node.
+     * @param nodePredicate      a {@link Predicate} used to include/exclude target Nodes.
+     * @param referencePredicate a {@link Predicate} used to include/exclude references to follow.
+     * @return the target node, if one was found.
+     */
+    public Optional<UaNode> findNode(
+        String namespaceUri,
+        String browseName,
+        Predicate<UaNode> nodePredicate,
+        Predicate<Reference> referencePredicate) {
+
+        return getNodeManager().getReferences(nodeId)
+            .stream()
+            .filter(referencePredicate)
+            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .filter(nodePredicate)
+            .filter(n -> {
+                String nodeBrowseName = n.getBrowseName().getName();
+
+                UShort index = n.getBrowseName().getNamespaceIndex();
+                String nodeBrowseNameUri = context.getNamespaceManager().getNamespaceTable().getUri(index);
+
+                return Objects.equals(browseName, nodeBrowseName) && Objects.equals(namespaceUri, nodeBrowseNameUri);
+            })
             .findFirst();
     }
 
