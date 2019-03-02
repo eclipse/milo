@@ -107,7 +107,6 @@ public class UaStackServer {
     private final ServiceHandlerTable serviceHandlerTable = new ServiceHandlerTable();
 
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
-    private final Lazy<ImmutableList<EndpointDescription>> endpointDescriptions = new Lazy<>();
 
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();
@@ -251,17 +250,14 @@ public class UaStackServer {
     }
 
     public ImmutableList<EndpointDescription> getEndpointDescriptions() {
-        return endpointDescriptions.getOrCompute(
-            () ->
-                ImmutableList.<EndpointDescription>builder()
-                    .addAll(
-                        config.getEndpoints()
-                            .stream()
-                            .map(this::transformEndpoint)
-                            .iterator()
-                    )
-                    .build()
-        );
+        return ImmutableList.<EndpointDescription>builder()
+            .addAll(
+                config.getEndpoints()
+                    .stream()
+                    .map(this::transformEndpoint)
+                    .iterator()
+            )
+            .build();
     }
 
     private EndpointDescription transformEndpoint(EndpointConfiguration endpoint) {
