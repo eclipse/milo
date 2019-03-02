@@ -13,14 +13,12 @@ package org.eclipse.milo.opcua.stack.core.application;
 import java.security.KeyPair;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
@@ -33,77 +31,74 @@ public class DefaultCertificateManager implements CertificateManager {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Map<ByteString, KeyPair> privateKeys = Maps.newConcurrentMap();
-    private final Map<ByteString, X509Certificate[]> certificates = Maps.newConcurrentMap();
+    private final Map<ByteString, KeyPair> privateKeys = new HashMap<>();
+    private final Map<ByteString, X509Certificate[]> certificates = new HashMap<>();
 
     public DefaultCertificateManager() {}
 
-    public DefaultCertificateManager(KeyPair privateKey, X509Certificate certificate) {
-        checkNotNull(privateKey, "privateKey must be non-null");
+    public DefaultCertificateManager(KeyPair keyPair, X509Certificate certificate) {
+        checkNotNull(keyPair, "keyPair must be non-null");
         checkNotNull(certificate, "certificate must be non-null");
 
-        add(privateKey, certificate);
+        add(keyPair, certificate);
     }
 
-    public DefaultCertificateManager(KeyPair privateKey, X509Certificate[] certificateChain) {
-        checkNotNull(privateKey, "privateKey must be non-null");
+    public DefaultCertificateManager(KeyPair keyPair, X509Certificate[] certificateChain) {
+        checkNotNull(keyPair, "keyPair must be non-null");
         checkNotNull(certificateChain, "certificateChain must be non-null");
 
-        add(privateKey, certificateChain);
-    }
-
-    public DefaultCertificateManager(List<KeyPair> privateKeys,
-                                     List<X509Certificate> certificates) {
-
-        Preconditions.checkState(privateKeys.size() == certificates.size(),
-            "privateKeys.size() and certificates.size() must be equal");
-
-        for (int i = 0; i < privateKeys.size(); i++) {
-            KeyPair privateKey = privateKeys.get(i);
-            X509Certificate certificate = certificates.get(i);
-
-            add(privateKey, certificate);
-        }
+        add(keyPair, certificateChain);
     }
 
     /**
      * Add a {@link KeyPair} and associated {@link X509Certificate} to this certificate manager.
      *
-     * @param privateKey  the {@link KeyPair} containing with the public and private key.
+     * @param keyPair     the {@link KeyPair} containing with the public and private key.
      * @param certificate the {@link X509Certificate} the key pair is associated with.
      */
-    public void add(KeyPair privateKey, X509Certificate certificate) {
-        add(privateKey, new X509Certificate[]{certificate});
+    public synchronized void add(KeyPair keyPair, X509Certificate certificate) {
+        add(keyPair, new X509Certificate[]{certificate});
     }
 
     /**
      * Add a {@link KeyPair} and associated {@link X509Certificate} chain to this certificate manager.
      *
-     * @param privateKey       the {@link KeyPair} containing the public and private key.
+     * @param keyPair          the {@link KeyPair} containing the public and private key.
      * @param certificateChain the {@link X509Certificate} chain the key pair is associated with.
      */
-    public void add(KeyPair privateKey, X509Certificate[] certificateChain) {
-        checkNotNull(privateKey, "privateKey must be non-null");
+    public synchronized void add(KeyPair keyPair, X509Certificate[] certificateChain) {
+        checkNotNull(keyPair, "keyPair must be non-null");
         checkNotNull(certificateChain, "certificateChain must be non-null");
 
         try {
             X509Certificate certificate = certificateChain[0];
             ByteString thumbprint = ByteString.of(DigestUtil.sha1(certificate.getEncoded()));
 
-            this.privateKeys.put(thumbprint, privateKey);
+            this.privateKeys.put(thumbprint, keyPair);
             this.certificates.put(thumbprint, certificateChain);
         } catch (CertificateEncodingException e) {
             logger.error("Error getting certificate thumbprint.", e);
         }
     }
 
+    public synchronized void remove(ByteString thumbprint) {
+        privateKeys.remove(thumbprint);
+        certificates.remove(thumbprint);
+    }
+
+    public synchronized void replace(ByteString thumbprint, KeyPair keyPair, X509Certificate[] certificateChain) {
+        remove(thumbprint);
+
+        add(keyPair, certificateChain);
+    }
+
     @Override
-    public Optional<KeyPair> getKeyPair(ByteString thumbprint) {
+    public synchronized Optional<KeyPair> getKeyPair(ByteString thumbprint) {
         return Optional.ofNullable(privateKeys.get(thumbprint));
     }
 
     @Override
-    public Optional<X509Certificate> getCertificate(ByteString thumbprint) {
+    public synchronized Optional<X509Certificate> getCertificate(ByteString thumbprint) {
         X509Certificate[] chain = certificates.get(thumbprint);
 
         if (chain != null && chain.length > 0) {
@@ -114,17 +109,17 @@ public class DefaultCertificateManager implements CertificateManager {
     }
 
     @Override
-    public Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
+    public synchronized Optional<X509Certificate[]> getCertificateChain(ByteString thumbprint) {
         return Optional.ofNullable(certificates.get(thumbprint));
     }
 
     @Override
-    public Set<KeyPair> getKeyPairs() {
+    public synchronized Set<KeyPair> getKeyPairs() {
         return Sets.newHashSet(privateKeys.values());
     }
 
     @Override
-    public Set<X509Certificate> getCertificates() {
+    public synchronized Set<X509Certificate> getCertificates() {
         return certificates.values().stream()
             .map(a -> a[0]).collect(Collectors.toSet());
     }

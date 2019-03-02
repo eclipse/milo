@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DeadbandType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
@@ -183,7 +184,43 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
 
     @Override
     protected MonitoredItemNotification wrapQueueValue(DataValue value) {
-        value = DataValue.derivedValue(value, timestamps);
+        boolean includeSource = timestamps == TimestampsToReturn.Source || timestamps == TimestampsToReturn.Both;
+        boolean includeServer = timestamps == TimestampsToReturn.Server || timestamps == TimestampsToReturn.Both;
+
+        // remove the source timestamp if not requested
+        boolean sourceTimeUpdated = false;
+        DateTime sourceTime = value.getSourceTime();
+        UShort sourcePicoseconds = value.getSourcePicoseconds();
+        if (!includeSource && (sourceTime != null || sourcePicoseconds != null)) {
+            sourceTime = null;
+            sourcePicoseconds = null;
+            sourceTimeUpdated = true;
+        }
+
+        // remove server timestamp if not requested, add if requested but not present
+        boolean serverTimeUpdated = false;
+        DateTime serverTime = value.getServerTime();
+        UShort serverPicoseconds = value.getServerPicoseconds();
+        if (!includeServer && (serverTime != null || serverPicoseconds != null)) {
+            serverTime = null;
+            serverPicoseconds = null;
+            serverTimeUpdated = true;
+        } else if (includeServer && serverTime == null) {
+            serverTime = DateTime.now();
+            serverTimeUpdated = true;
+        }
+
+        // create a new DataValue instance if anything changed
+        if (sourceTimeUpdated || serverTimeUpdated) {
+            value = new DataValue(
+                value.getValue(),
+                value.getStatusCode(),
+                sourceTime,
+                sourcePicoseconds,
+                serverTime,
+                serverPicoseconds
+            );
+        }
 
         return new MonitoredItemNotification(uint(getClientHandle()), value);
     }
