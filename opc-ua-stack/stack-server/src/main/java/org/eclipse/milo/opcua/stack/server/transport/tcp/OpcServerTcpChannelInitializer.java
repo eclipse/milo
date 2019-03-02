@@ -27,6 +27,10 @@ public class OpcServerTcpChannelInitializer extends ChannelInitializer<SocketCha
 
     @Override
     protected void initChannel(SocketChannel channel) {
+        stackServer.registerConnectedChannel(channel);
+
+        channel.closeFuture().addListener(future -> stackServer.unregisterConnectedChannel(channel));
+
         channel.pipeline().addLast(RateLimitingHandler.getInstance());
         channel.pipeline().addLast(new UascServerHelloHandler(stackServer, TransportProfile.TCP_UASC_UABINARY));
     }

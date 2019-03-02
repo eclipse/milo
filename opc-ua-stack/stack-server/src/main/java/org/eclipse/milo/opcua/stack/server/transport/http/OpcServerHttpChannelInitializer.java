@@ -38,8 +38,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import org.eclipse.milo.opcua.stack.server.UaStackServer;
 import org.eclipse.milo.opcua.stack.server.transport.RateLimitingHandler;
@@ -81,6 +79,10 @@ public class OpcServerHttpChannelInitializer extends ChannelInitializer<SocketCh
 
     @Override
     protected void initChannel(SocketChannel channel) {
+        stackServer.registerConnectedChannel(channel);
+
+        channel.closeFuture().addListener(future -> stackServer.unregisterConnectedChannel(channel));
+
         channel.pipeline().addLast(RateLimitingHandler.getInstance());
 
         if (sslContext != null) {

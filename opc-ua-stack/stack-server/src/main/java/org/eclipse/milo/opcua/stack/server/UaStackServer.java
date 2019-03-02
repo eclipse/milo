@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -25,6 +26,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
+import io.netty.channel.Channel;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
@@ -110,6 +112,8 @@ public class UaStackServer {
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();
 
+    private final List<Channel> channels = new CopyOnWriteArrayList<>();
+
     private final ServerChannelManager channelManager;
 
     private final UaStackServerConfig config;
@@ -176,6 +180,18 @@ public class UaStackServer {
 
         return FutureUtils.sequence(futures)
             .thenApply(u -> UaStackServer.this);
+    }
+
+    public void registerConnectedChannel(Channel channel) {
+        channels.add(channel);
+    }
+
+    public void unregisterConnectedChannel(Channel channel) {
+        channels.remove(channel);
+    }
+
+    public List<Channel> getConnectedChannels() {
+        return channels;
     }
 
     public void onServiceRequest(String path, ServiceRequest serviceRequest) {
