@@ -34,36 +34,28 @@ public interface TrustListManager {
      *
      * @param issuerCrls a new list of issuer {@link X509CRL}s.
      */
-    default void setIssuerCrls(List<X509CRL> issuerCrls) {
-        // TODO
-    }
+    void setIssuerCrls(List<X509CRL> issuerCrls);
 
     /**
      * Set a new list of Trusted CRLs. This replaces any existing Trusted CRLs.
      *
      * @param trustedCrls a new list of trusted {@link X509CRL}s.
      */
-    default void setTrustedCrls(List<X509CRL> trustedCrls) {
-        // TODO
-    }
+    void setTrustedCrls(List<X509CRL> trustedCrls);
 
     /**
      * Set a new list of Issuer Certificates. This replaces any existing Issuer Certificates.
      *
      * @param issuerCertificates a new list of issuer {@link X509Certificate}s.
      */
-    default void setIssuerCertificates(List<X509Certificate> issuerCertificates) {
-        // TODO
-    }
+    void setIssuerCertificates(List<X509Certificate> issuerCertificates);
 
     /**
      * Set a new list of Trusted Certificates. This replaces any existing Trusted Certificates.
      *
      * @param trustedCertificates a new list of trusted {@link X509Certificate}s.
      */
-    default void setTrustedCertificates(List<X509Certificate> trustedCertificates) {
-        // TODO
-    }
+    void setTrustedCertificates(List<X509Certificate> trustedCertificates);
 
     void addIssuerCertificate(X509Certificate certificate);
 

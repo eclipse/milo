@@ -40,13 +40,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
 
 public class DefaultTrustListManager implements TrustListManager, AutoCloseable {
 
@@ -162,23 +162,21 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
      * After calling closing {@link CertificateValidator#verifyTrustChain(List)} will fail for all inputs.
      */
     @Override
-    public void close() throws IOException {
-        synchronized (this) {
-            logger.info("Closing DefaultCertificateStore at {}", baseDir.getAbsolutePath());
+    public synchronized void close() throws IOException {
+        logger.info("Closing DefaultCertificateStore at {}", baseDir.getAbsolutePath());
 
-            watchService.close();
+        watchService.close();
 
-            try {
-                watchThread.join(5000);
-            } catch (InterruptedException e) {
-                throw new IOException(e);
-            }
-
-            issuerCertificates.clear();
-            issuerCrls.clear();
-
-            trustedCertificates.clear();
+        try {
+            watchThread.join(5000);
+        } catch (InterruptedException e) {
+            throw new IOException(e);
         }
+
+        issuerCertificates.clear();
+        issuerCrls.clear();
+
+        trustedCertificates.clear();
     }
 
     @Override
@@ -213,6 +211,34 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
                         .map(Stream::of).orElse(Stream.empty()))
                 .collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public synchronized void setIssuerCrls(List<X509CRL> issuerCrls) {
+        replaceCrlsInDir(issuerCrls, issuerCrlsDir);
+
+        synchronizeIssuerCrls();
+    }
+
+    @Override
+    public synchronized void setTrustedCrls(List<X509CRL> trustedCrls) {
+        replaceCrlsInDir(trustedCrls, trustedCrlsDir);
+
+        synchronizeTrustedCrls();
+    }
+
+    @Override
+    public synchronized void setIssuerCertificates(List<X509Certificate> issuerCertificates) {
+        replaceCertificatesInDir(issuerCertificates, issuerCertsDir);
+
+        synchronizeIssuerCerts();
+    }
+
+    @Override
+    public synchronized void setTrustedCertificates(List<X509Certificate> trustedCertificates) {
+        replaceCertificatesInDir(trustedCertificates, trustedCertsDir);
+
+        synchronizeTrustedCerts();
     }
 
     @Override
@@ -259,32 +285,6 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         return deleteCertificateFile(rejectedDir, thumbprint);
     }
 
-    private boolean deleteCertificateFile(File certificateDir, ByteString thumbprint) {
-        File[] files = certificateDir.listFiles();
-        if (files == null) files = new File[0];
-
-        for (File file : files) {
-            boolean matchesThumbprint = decodeCertificateFile(file).map(c -> {
-                try {
-                    ByteString bs = CertificateUtil.thumbprint(c);
-
-                    return bs.equals(thumbprint);
-                } catch (UaException e) {
-                    return false;
-                }
-            }).orElse(false);
-
-            if (matchesThumbprint) {
-                if (!file.delete()) {
-                    logger.warn("Failed to delete issuer certificate: {}", file);
-                }
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public File getBaseDir() {
         return baseDir;
     }
@@ -317,29 +317,48 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         return rejectedDir;
     }
 
-    private static String getFilename(X509Certificate certificate) throws Exception {
-        String[] ss = certificate.getSubjectX500Principal().getName().split(",");
-        String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
-        String thumbprint = ByteBufUtil.hexDump(Unpooled.wrappedBuffer(DigestUtil.sha1(certificate.getEncoded())));
+    private synchronized boolean deleteCertificateFile(File certificateDir, ByteString thumbprint) {
+        File[] files = certificateDir.listFiles();
+        if (files == null) files = new File[0];
 
-        return String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
+        for (File file : files) {
+            boolean matchesThumbprint = decodeCertificateFile(file).map(c -> {
+                try {
+                    ByteString bs = CertificateUtil.thumbprint(c);
+
+                    return bs.equals(thumbprint);
+                } catch (UaException e) {
+                    return false;
+                }
+            }).orElse(false);
+
+            if (matchesThumbprint) {
+                if (!file.delete()) {
+                    logger.warn("Failed to delete issuer certificate: {}", file);
+                }
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    private synchronized void writeCertificateToDir(X509Certificate certificate, File dir) {
-        try {
-            String filename = getFilename(certificate);
+    private synchronized void replaceCrlsInDir(List<X509CRL> crls, File dir) {
+        File[] files = dir.listFiles();
+        if (files == null) files = new File[0];
 
-            File f = new File(dir.getAbsolutePath() + File.separator + filename);
+        Arrays.stream(files).forEach(File::delete);
 
-            try (FileOutputStream fos = new FileOutputStream(f)) {
-                fos.write(certificate.getEncoded());
-                fos.flush();
-            }
+        crls.forEach(crl -> writeCrlToDir(crl, dir));
+    }
 
-            logger.debug("Wrote certificate entry: {}", f.getAbsolutePath());
-        } catch (Exception e) {
-            logger.error("Error adding rejected certificate entry.", e);
-        }
+    private synchronized void replaceCertificatesInDir(List<X509Certificate> certificates, File dir) {
+        File[] files = dir.listFiles();
+        if (files == null) files = new File[0];
+
+        Arrays.stream(files).forEach(File::delete);
+
+        certificates.forEach(certificate -> writeCertificateToDir(certificate, dir));
     }
 
     /**
@@ -419,17 +438,43 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
             .forEach(trustedCrls::add);
     }
 
-    private Optional<X509Certificate> decodeCertificateFile(File f) {
+    private static void writeCrlToDir(X509CRL crl, File dir) {
         try {
-            try (FileInputStream inputStream = new FileInputStream(f)) {
-                return Optional.of(CertificateUtil.decodeCertificate(inputStream));
+            String filename = getFilename(crl);
+            File f = dir.toPath().resolve(filename).toFile();
+
+            try (FileOutputStream fos = new FileOutputStream(f)) {
+                fos.write(crl.getEncoded());
+                fos.flush();
             }
-        } catch (Throwable ignored) {
-            return Optional.empty();
+
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .debug("Wrote CRL entry: {}", f.getAbsolutePath());
+        } catch (Exception e) {
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .error("Error writing CRL", e);
         }
     }
 
-    private Optional<List<X509CRL>> decodeCrlFile(File f) {
+    private static void writeCertificateToDir(X509Certificate certificate, File dir) {
+        try {
+            String filename = getFilename(certificate);
+            File f = dir.toPath().resolve(filename).toFile();
+
+            try (FileOutputStream fos = new FileOutputStream(f)) {
+                fos.write(certificate.getEncoded());
+                fos.flush();
+            }
+
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .debug("Wrote certificate entry: {}", f.getAbsolutePath());
+        } catch (Exception e) {
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .error("Error writing certificate", e);
+        }
+    }
+
+    private static Optional<List<X509CRL>> decodeCrlFile(File f) {
         try {
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             Collection<? extends CRL> crls = factory.generateCRLs(new FileInputStream(f));
@@ -443,6 +488,30 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
         } catch (CertificateException | FileNotFoundException | CRLException e) {
             return Optional.empty();
         }
+    }
+
+    private static Optional<X509Certificate> decodeCertificateFile(File f) {
+        try {
+            try (FileInputStream inputStream = new FileInputStream(f)) {
+                return Optional.of(CertificateUtil.decodeCertificate(inputStream));
+            }
+        } catch (Throwable ignored) {
+            return Optional.empty();
+        }
+    }
+
+    private static String getFilename(X509CRL crl) throws Exception {
+        String thumbprint = ByteBufUtil.hexDump(sha1(crl.getEncoded()));
+
+        return String.format("%s.crl", thumbprint);
+    }
+
+    private static String getFilename(X509Certificate certificate) throws Exception {
+        String[] ss = certificate.getSubjectX500Principal().getName().split(",");
+        String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
+        String thumbprint = ByteBufUtil.hexDump(sha1(certificate.getSignature()));
+
+        return String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
     }
 
     private static void ensureDirectoryExists(File dir) throws IOException {
