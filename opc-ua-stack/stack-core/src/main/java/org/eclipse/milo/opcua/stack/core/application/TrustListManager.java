@@ -34,10 +34,10 @@ public interface TrustListManager {
 
     void addRejectedCertificate(X509Certificate certificate);
 
-    void removeIssuerCertificate(ByteString thumbprint);
+    boolean removeIssuerCertificate(ByteString thumbprint);
 
-    void removeTrustedCertificate(ByteString thumbprint);
+    boolean removeTrustedCertificate(ByteString thumbprint);
 
-    void removeRejectedCertificate(ByteString thumbprint);
+    boolean removeRejectedCertificate(ByteString thumbprint);
 
 }

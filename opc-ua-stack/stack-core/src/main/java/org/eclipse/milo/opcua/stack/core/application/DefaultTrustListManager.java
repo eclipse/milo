@@ -237,25 +237,29 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
     }
 
     @Override
-    public synchronized void removeIssuerCertificate(ByteString thumbprint) {
-        deleteCertificateFile(issuerCertsDir, thumbprint);
+    public synchronized boolean removeIssuerCertificate(ByteString thumbprint) {
+        boolean found = deleteCertificateFile(issuerCertsDir, thumbprint);
 
         synchronizeIssuerCerts();
+
+        return found;
     }
 
     @Override
-    public synchronized void removeTrustedCertificate(ByteString thumbprint) {
-        deleteCertificateFile(trustedCertsDir, thumbprint);
+    public synchronized boolean removeTrustedCertificate(ByteString thumbprint) {
+        boolean found = deleteCertificateFile(trustedCertsDir, thumbprint);
 
         synchronizeTrustedCerts();
+
+        return found;
     }
 
     @Override
-    public synchronized void removeRejectedCertificate(ByteString thumbprint) {
-        deleteCertificateFile(rejectedDir, thumbprint);
+    public synchronized boolean removeRejectedCertificate(ByteString thumbprint) {
+        return deleteCertificateFile(rejectedDir, thumbprint);
     }
 
-    private void deleteCertificateFile(File certificateDir, ByteString thumbprint) {
+    private boolean deleteCertificateFile(File certificateDir, ByteString thumbprint) {
         File[] files = certificateDir.listFiles();
         if (files == null) files = new File[0];
 
@@ -274,9 +278,11 @@ public class DefaultTrustListManager implements TrustListManager, AutoCloseable 
                 if (!file.delete()) {
                     logger.warn("Failed to delete issuer certificate: {}", file);
                 }
-                break;
+                return true;
             }
         }
+
+        return false;
     }
 
     public File getBaseDir() {
