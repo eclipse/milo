@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.stack.core.application;
 
 import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -27,6 +28,42 @@ public interface TrustListManager {
     ImmutableList<X509Certificate> getTrustedCertificates();
 
     ImmutableList<X509Certificate> getRejectedCertificates();
+
+    /**
+     * Set a new list of Issuer CRLs. This replaces any existing Issuer CRLs.
+     *
+     * @param issuerCrls a new list of issuer {@link X509CRL}s.
+     */
+    default void setIssuerCrls(List<X509CRL> issuerCrls) {
+        // TODO
+    }
+
+    /**
+     * Set a new list of Trusted CRLs. This replaces any existing Trusted CRLs.
+     *
+     * @param trustedCrls a new list of trusted {@link X509CRL}s.
+     */
+    default void setTrustedCrls(List<X509CRL> trustedCrls) {
+        // TODO
+    }
+
+    /**
+     * Set a new list of Issuer Certificates. This replaces any existing Issuer Certificates.
+     *
+     * @param issuerCertificates a new list of issuer {@link X509Certificate}s.
+     */
+    default void setIssuerCertificates(List<X509Certificate> issuerCertificates) {
+        // TODO
+    }
+
+    /**
+     * Set a new list of Trusted Certificates. This replaces any existing Trusted Certificates.
+     *
+     * @param trustedCertificates a new list of trusted {@link X509Certificate}s.
+     */
+    default void setTrustedCertificates(List<X509Certificate> trustedCertificates) {
+        // TODO
+    }
 
     void addIssuerCertificate(X509Certificate certificate);
 
