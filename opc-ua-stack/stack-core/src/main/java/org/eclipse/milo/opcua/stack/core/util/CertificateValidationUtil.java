@@ -68,11 +68,13 @@ public class CertificateValidationUtil {
     public static void verifyTrustChain(
         List<X509Certificate> certificateChain,
         Set<X509Certificate> trustedCertificates,
-        Set<X509Certificate> issuerCertificates) throws UaException {
+        Set<X509Certificate> issuerCertificates
+    ) throws UaException {
 
         verifyTrustChain(
             certificateChain,
             trustedCertificates,
+            Collections.emptySet(),
             issuerCertificates,
             Collections.emptySet()
         );
@@ -89,16 +91,19 @@ public class CertificateValidationUtil {
      * {@code issuerCertificates} as the anchors.
      *
      * @param certificateChain    the certificate chain to verify.
-     * @param trustedCertificates the set of known-trusted certificates.
-     * @param issuerCertificates  the set of CA certificates to use as trust anchors.
-     * @param issuerCrls          the set of {@link X509CRL}s, if any, to use while verifying trust.
+     * @param trustedCertificates the collection of known-trusted certificates.
+     * @param issuerCertificates  the collection of CA certificates to use as trust anchors.
+     * @param issuerCrls          the collection of {@link X509CRL}s for issuer certificates, if any.
+     * @param trustedCrls         the collection of {@link X509CRL}s for trusted certificates, if any.
      * @throws UaException if a chain of trust could not be established.
      */
     public static void verifyTrustChain(
         List<X509Certificate> certificateChain,
-        Set<X509Certificate> trustedCertificates,
-        Set<X509Certificate> issuerCertificates,
-        Set<X509CRL> issuerCrls) throws UaException {
+        Collection<X509Certificate> trustedCertificates,
+        Collection<X509CRL> trustedCrls,
+        Collection<X509Certificate> issuerCertificates,
+        Collection<X509CRL> issuerCrls
+    ) throws UaException {
 
         Preconditions.checkArgument(!certificateChain.isEmpty(), "certificateChain must not be empty");
 
@@ -126,6 +131,7 @@ public class CertificateValidationUtil {
                 Collection<Object> collection = Lists.newArrayList();
                 collection.addAll(certificateChain);
                 collection.addAll(issuerCrls);
+                collection.addAll(trustedCrls);
 
                 CertStore certStore = CertStore.getInstance(
                     "Collection",

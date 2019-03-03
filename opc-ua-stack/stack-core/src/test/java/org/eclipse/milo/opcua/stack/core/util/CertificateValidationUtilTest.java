@@ -183,6 +183,7 @@ public class CertificateValidationUtilTest {
                 CertificateValidationUtil.verifyTrustChain(
                     certificateChain,
                     emptySet(),
+                    emptySet(),
                     newHashSet(caIntermediate),
                     newHashSet(
                         generateCrl(
@@ -204,6 +205,7 @@ public class CertificateValidationUtilTest {
             expectThrows(UaException.class, () ->
                 CertificateValidationUtil.verifyTrustChain(
                     certificateChain,
+                    emptySet(),
                     emptySet(),
                     newHashSet(caIntermediate),
                     newHashSet(
@@ -227,6 +229,7 @@ public class CertificateValidationUtilTest {
                 CertificateValidationUtil.verifyTrustChain(
                     certificateChain,
                     emptySet(),
+                    emptySet(),
                     newHashSet(caIntermediate),
                     newHashSet(
                         generateCrl(
@@ -247,6 +250,7 @@ public class CertificateValidationUtilTest {
                 newArrayList(leafSelfSigned),
                 emptySet(),
                 emptySet(),
+                emptySet(),
                 emptySet()
             )
         );
@@ -254,6 +258,7 @@ public class CertificateValidationUtilTest {
         expectThrows(UaException.class, () ->
             CertificateValidationUtil.verifyTrustChain(
                 newArrayList(leafIntermediateSigned),
+                emptySet(),
                 emptySet(),
                 emptySet(),
                 emptySet()
@@ -265,6 +270,7 @@ public class CertificateValidationUtilTest {
                 newArrayList(leafIntermediateSigned, caIntermediate),
                 emptySet(),
                 emptySet(),
+                emptySet(),
                 emptySet()
             )
         );
@@ -272,6 +278,7 @@ public class CertificateValidationUtilTest {
         expectThrows(UaException.class, () ->
             CertificateValidationUtil.verifyTrustChain(
                 newArrayList(leafIntermediateSigned, caIntermediate, caRoot),
+                emptySet(),
                 emptySet(),
                 emptySet(),
                 emptySet()

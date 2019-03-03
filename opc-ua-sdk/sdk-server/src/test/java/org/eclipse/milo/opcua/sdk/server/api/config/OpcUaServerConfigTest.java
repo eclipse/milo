@@ -10,10 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.config;
 
+import java.io.IOException;
+
 import com.google.common.io.Files;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.application.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.testng.annotations.Test;
@@ -23,10 +26,13 @@ import static org.testng.Assert.assertEquals;
 public class OpcUaServerConfigTest {
 
     @Test
-    public void testCopy() {
+    public void testCopy() throws IOException {
+        DefaultTrustListManager trustListManager = new DefaultTrustListManager(Files.createTempDir());
+
         OpcUaServerConfig original = OpcUaServerConfig.builder()
             .setCertificateManager(new DefaultCertificateManager())
-            .setCertificateValidator(new DefaultCertificateValidator(Files.createTempDir()))
+            .setTrustListManager(trustListManager)
+            .setCertificateValidator(new DefaultCertificateValidator(trustListManager))
             .setIdentityValidator(AnonymousIdentityValidator.INSTANCE)
             .setBuildInfo(new BuildInfo("a", "b", "c", "d", "e", DateTime.MIN_VALUE))
             .setLimits(new OpcUaServerConfigLimits() {})

@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
-public class DirectoryCertificateValidatorTest {
+public class DefaultTrustListManagerTest {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -31,23 +31,23 @@ public class DirectoryCertificateValidatorTest {
         }
         logger.info("using {}", securityTestDir);
 
-        DirectoryCertificateValidator validator = new DirectoryCertificateValidator(securityTestDir);
+        DefaultTrustListManager trustListManager = new DefaultTrustListManager(securityTestDir);
 
-        File rejectedDir = validator.getRejectedDir();
+        File rejectedDir = trustListManager.getRejectedDir();
 
-        for (int i = 0; i < DirectoryCertificateValidator.MAX_REJECTED_CERTIFICATES; i++) {
+        for (int i = 0; i < DefaultTrustListManager.MAX_REJECTED_CERTIFICATES; i++) {
             File tmp = File.createTempFile("foo", "bar", rejectedDir);
             tmp.deleteOnExit();
         }
 
         File[] rejectedFiles = rejectedDir.listFiles();
         assertNotNull(rejectedFiles);
-        assertEquals(rejectedFiles.length, DirectoryCertificateValidator.MAX_REJECTED_CERTIFICATES);
+        assertEquals(rejectedFiles.length, DefaultTrustListManager.MAX_REJECTED_CERTIFICATES);
 
-        validator.pruneOldRejectedCertificates();
+        trustListManager.pruneOldRejectedCertificates();
         rejectedFiles = rejectedDir.listFiles();
         assertNotNull(rejectedFiles);
-        assertEquals(rejectedFiles.length, DirectoryCertificateValidator.MAX_REJECTED_CERTIFICATES - 1);
+        assertEquals(rejectedFiles.length, DefaultTrustListManager.MAX_REJECTED_CERTIFICATES - 1);
     }
 
 }

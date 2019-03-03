@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.application.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -76,6 +77,11 @@ public interface UaStackServerConfig {
     CertificateManager getCertificateManager();
 
     /**
+     * @return the {@link TrustListManager} for this server.
+     */
+    TrustListManager getTrustListManager();
+
+    /**
      * @return the {@link CertificateValidator} for this server.
      */
     CertificateValidator getCertificateValidator();
@@ -121,6 +127,7 @@ public interface UaStackServerConfig {
         builder.setMessageLimits(config.getMessageLimits());
         builder.setEncodingLimits(config.getEncodingLimits());
         builder.setCertificateManager(config.getCertificateManager());
+        builder.setTrustListManager(config.getTrustListManager());
         builder.setCertificateValidator(config.getCertificateValidator());
         builder.setHttpsKeyPair(config.getHttpsKeyPair().orElse(null));
         builder.setHttpsCertificate(config.getHttpsCertificate().orElse(null));
