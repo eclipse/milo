@@ -17,7 +17,7 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
 
 public class TestCertificateValidator implements CertificateValidator {

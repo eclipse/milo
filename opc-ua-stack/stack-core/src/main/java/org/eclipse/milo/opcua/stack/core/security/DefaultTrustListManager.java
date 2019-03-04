@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.application;
+package org.eclipse.milo.opcua.stack.core.security;
 
 import java.io.File;
 import java.io.FileInputStream;

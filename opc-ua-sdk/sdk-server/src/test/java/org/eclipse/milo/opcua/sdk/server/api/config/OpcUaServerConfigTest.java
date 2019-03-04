@@ -14,9 +14,9 @@ import java.io.IOException;
 
 import com.google.common.io.Files;
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
-import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateValidator;
-import org.eclipse.milo.opcua.stack.core.application.DefaultTrustListManager;
+import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
 import org.testng.annotations.Test;
