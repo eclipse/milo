@@ -19,14 +19,39 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 public interface TrustListManager {
 
+    /**
+     * Get the list of Issuer CRLs.
+     *
+     * @return the list of Issuer {@link X509CRL}s.
+     */
     ImmutableList<X509CRL> getIssuerCrls();
 
+    /**
+     * Get the list of Trusted CRLs.
+     *
+     * @return the list of Trusted {@link X509CRL}s.
+     */
     ImmutableList<X509CRL> getTrustedCrls();
 
+    /**
+     * Get the list of Issuer Certificates.
+     *
+     * @return the list of Issuer {@link X509Certificate}s.
+     */
     ImmutableList<X509Certificate> getIssuerCertificates();
 
+    /**
+     * Get the list of Trusted Certificates.
+     *
+     * @return the list of Trusted {@link X509Certificate}s.
+     */
     ImmutableList<X509Certificate> getTrustedCertificates();
 
+    /**
+     * Get the list of Rejected Certificates.
+     *
+     * @return the list of Rejected {@link X509Certificate}s.
+     */
     ImmutableList<X509Certificate> getRejectedCertificates();
 
     /**
@@ -57,16 +82,49 @@ public interface TrustListManager {
      */
     void setTrustedCertificates(List<X509Certificate> trustedCertificates);
 
+    /**
+     * Add {@code certificate} to the Issuer Certificates list.
+     *
+     * @param certificate the {@link X509Certificate} to add to the Issuer Certificates list.
+     */
     void addIssuerCertificate(X509Certificate certificate);
 
+    /**
+     * Add {@code certificate} to the Trusted Certificates list.
+     *
+     * @param certificate the {@link X509Certificate} to add to the Trusted Certificates list.
+     */
     void addTrustedCertificate(X509Certificate certificate);
 
+    /**
+     * Add {@code certificate} to the Rejected Certificates list.
+     *
+     * @param certificate the {@link X509Certificate} to add to the Rejected Certificates list.
+     */
     void addRejectedCertificate(X509Certificate certificate);
 
+    /**
+     * Remove the certificate identified by {@code thumbprint} from the Issuer Certificates list.
+     *
+     * @param thumbprint the certificate thumbprint.
+     * @return {@code true} if a certificate with a matching thumbprint was found.
+     */
     boolean removeIssuerCertificate(ByteString thumbprint);
 
+    /**
+     * Remove the certificate identified by {@code thumbprint} from the Trusted Certificates list.
+     *
+     * @param thumbprint the certificate thumbprint.
+     * @return {@code true} if a certificate with a matching thumbprint was found.
+     */
     boolean removeTrustedCertificate(ByteString thumbprint);
 
+    /**
+     * Remove the certificate identified by {@code thumbprint} from the Rejected Certificates list.
+     *
+     * @param thumbprint the certificate thumbprint.
+     * @return {@code true} if a certificate with a matching thumbprint was found.
+     */
     boolean removeRejectedCertificate(ByteString thumbprint);
 
 }
