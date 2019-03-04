@@ -132,7 +132,7 @@ public class OpcUaServer implements UaNodeContext {
         );
         serverNamespace.initialize();
 
-        serverTable.addUri(stackServer.getApplicationDescription().getApplicationUri());
+        serverTable.addUri(stackServer.getConfig().getApplicationUri());
 
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
             referenceTypes.put(referenceType.getNodeId(), referenceType);

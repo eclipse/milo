@@ -222,7 +222,7 @@ public class UaStackServer {
         return tokenIds.incrementAndGet();
     }
 
-    public ApplicationDescription getApplicationDescription() {
+    private ApplicationDescription getApplicationDescription() {
         return applicationDescription.getOrCompute(() -> {
             List<String> discoveryUrls = config.getEndpoints()
                 .stream()
@@ -418,7 +418,13 @@ public class UaStackServer {
                 .collect(toList());
 
             List<EndpointDescription> matchingEndpoints = allEndpoints.stream()
-                .filter(ed -> filterEndpointUrls(ed, request.getEndpointUrl()))
+                .filter(endpoint -> filterEndpointUrls(endpoint, request.getEndpointUrl()))
+                .map(endpoint ->
+                    replaceApplicationDescription(
+                        endpoint,
+                        getFilteredApplicationDescription(request.getEndpointUrl())
+                    )
+                )
                 .collect(toList());
 
             GetEndpointsResponse response = new GetEndpointsResponse(
@@ -445,6 +451,22 @@ public class UaStackServer {
                 logger.debug("Unable to create URI.", e);
                 return false;
             }
+        }
+
+        private EndpointDescription replaceApplicationDescription(
+            EndpointDescription endpoint,
+            ApplicationDescription applicationDescription) {
+
+            return new EndpointDescription(
+                endpoint.getEndpointUrl(),
+                applicationDescription,
+                endpoint.getServerCertificate(),
+                endpoint.getSecurityMode(),
+                endpoint.getSecurityPolicyUri(),
+                endpoint.getUserIdentityTokens(),
+                endpoint.getTransportProfileUri(),
+                endpoint.getSecurityLevel()
+            );
         }
 
         @Override
