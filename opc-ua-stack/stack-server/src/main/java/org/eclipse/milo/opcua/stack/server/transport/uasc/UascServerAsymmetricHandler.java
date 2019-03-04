@@ -392,7 +392,18 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
                     return transportMatch && pathMatch && securityPolicyMatch && securityModeMatch;
                 })
                 .findFirst()
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_SecurityChecksFailed));
+                .orElseThrow(() -> {
+                    String message = String.format(
+                        "no matching endpoint found: transportProfile=%s, " +
+                            "endpointUrl=%s, securityPolicy=%s, securityMode=%s",
+                        transportProfile,
+                        endpointUrl,
+                        secureChannel.getSecurityPolicy(),
+                        request.getSecurityMode()
+                    );
+
+                    return new UaException(StatusCodes.Bad_SecurityChecksFailed, message);
+                });
 
             ctx.channel().attr(ENDPOINT_KEY).set(endpoint);
         }
