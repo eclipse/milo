@@ -28,8 +28,9 @@ import org.eclipse.milo.opcua.sdk.server.identity.X509IdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.util.HostnameUtil;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
-import org.eclipse.milo.opcua.stack.core.application.DefaultCertificateManager;
-import org.eclipse.milo.opcua.stack.core.application.DirectoryCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.DefaultCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.DefaultTrustListManager;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -86,8 +87,10 @@ public class ExampleServer {
         );
 
         File pkiDir = securityTempDir.toPath().resolve("pki").toFile();
-        DirectoryCertificateValidator certificateValidator = new DirectoryCertificateValidator(pkiDir);
+        DefaultTrustListManager trustListManager = new DefaultTrustListManager(pkiDir);
         LoggerFactory.getLogger(getClass()).info("pki dir: {}", pkiDir.getAbsolutePath());
+
+        DefaultCertificateValidator certificateValidator = new DefaultCertificateValidator(trustListManager);
 
         KeyPair httpsKeyPair = SelfSignedCertificateGenerator.generateRsaKeyPair(2048);
 
@@ -138,6 +141,7 @@ public class ExampleServer {
                     OpcUaServer.SDK_VERSION,
                     "", DateTime.now()))
             .setCertificateManager(certificateManager)
+            .setTrustListManager(trustListManager)
             .setCertificateValidator(certificateValidator)
             .setHttpsKeyPair(httpsKeyPair)
             .setHttpsCertificate(httpsCertificate)

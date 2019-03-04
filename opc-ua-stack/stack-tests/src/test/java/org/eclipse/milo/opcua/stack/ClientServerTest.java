@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.InsecureCertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.InsecureCertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;

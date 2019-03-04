@@ -18,8 +18,8 @@ import org.eclipse.milo.opcua.stack.SecurityFixture;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.testng.annotations.Test;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;

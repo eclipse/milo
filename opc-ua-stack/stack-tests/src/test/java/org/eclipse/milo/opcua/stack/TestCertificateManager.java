@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.Sets;
-import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 
 public class TestCertificateManager implements CertificateManager {

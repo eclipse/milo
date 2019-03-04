@@ -19,9 +19,10 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.Stack;
-import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
@@ -40,6 +41,7 @@ public class UaStackServerConfigBuilder {
     private EncodingLimits encodingLimits = EncodingLimits.DEFAULT;
 
     private CertificateManager certificateManager;
+    private TrustListManager trustListManager;
     private CertificateValidator certificateValidator;
 
     private KeyPair httpsKeyPair;
@@ -82,6 +84,11 @@ public class UaStackServerConfigBuilder {
         return this;
     }
 
+    public UaStackServerConfigBuilder setTrustListManager(TrustListManager trustListManager) {
+        this.trustListManager = trustListManager;
+        return this;
+    }
+
     public UaStackServerConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
         this.certificateValidator = certificateValidator;
         return this;
@@ -115,6 +122,7 @@ public class UaStackServerConfigBuilder {
             messageLimits,
             encodingLimits,
             certificateManager,
+            trustListManager,
             certificateValidator,
             httpsKeyPair,
             httpsCertificate,
@@ -136,6 +144,7 @@ public class UaStackServerConfigBuilder {
 
         private final CertificateManager certificateManager;
         private final CertificateValidator certificateValidator;
+        private final TrustListManager trustListManager;
 
         private final KeyPair httpsKeyPair;
         private final X509Certificate httpsCertificate;
@@ -150,6 +159,7 @@ public class UaStackServerConfigBuilder {
             MessageLimits messageLimits,
             EncodingLimits encodingLimits,
             CertificateManager certificateManager,
+            TrustListManager trustListManager,
             CertificateValidator certificateValidator,
             @Nullable KeyPair httpsKeyPair,
             @Nullable X509Certificate httpsCertificate,
@@ -161,6 +171,7 @@ public class UaStackServerConfigBuilder {
             this.productUri = productUri;
             this.messageLimits = messageLimits;
             this.encodingLimits = encodingLimits;
+            this.trustListManager = trustListManager;
             this.certificateManager = certificateManager;
             this.certificateValidator = certificateValidator;
             this.httpsKeyPair = httpsKeyPair;
@@ -201,6 +212,11 @@ public class UaStackServerConfigBuilder {
         @Override
         public CertificateManager getCertificateManager() {
             return certificateManager;
+        }
+
+        @Override
+        public TrustListManager getTrustListManager() {
+            return trustListManager;
         }
 
         @Override

@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfigBuilder;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
 import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.slf4j.Logger;

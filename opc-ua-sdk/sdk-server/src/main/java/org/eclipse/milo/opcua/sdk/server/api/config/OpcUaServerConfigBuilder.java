@@ -18,9 +18,10 @@ import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.sdk.server.identity.AnonymousIdentityValidator;
 import org.eclipse.milo.opcua.sdk.server.identity.IdentityValidator;
-import org.eclipse.milo.opcua.stack.core.application.CertificateManager;
-import org.eclipse.milo.opcua.stack.core.application.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.channel.MessageLimits;
+import org.eclipse.milo.opcua.stack.core.security.CertificateManager;
+import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
+import org.eclipse.milo.opcua.stack.core.security.TrustListManager;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -90,6 +91,12 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
     }
 
     @Override
+    public OpcUaServerConfigBuilder setTrustListManager(TrustListManager trustListManager) {
+        super.setTrustListManager(trustListManager);
+        return this;
+    }
+
+    @Override
     public OpcUaServerConfigBuilder setCertificateValidator(CertificateValidator certificateValidator) {
         super.setCertificateValidator(certificateValidator);
         return this;
@@ -145,10 +152,11 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         private final BuildInfo buildInfo;
         private final OpcUaServerConfigLimits limits;
 
-        public OpcUaServerConfigImpl(UaStackServerConfig stackServerConfig,
-                                     IdentityValidator identityValidator,
-                                     BuildInfo buildInfo,
-                                     OpcUaServerConfigLimits limits) {
+        public OpcUaServerConfigImpl(
+            UaStackServerConfig stackServerConfig,
+            IdentityValidator identityValidator,
+            BuildInfo buildInfo,
+            OpcUaServerConfigLimits limits) {
 
             this.stackServerConfig = stackServerConfig;
             this.identityValidator = identityValidator;
@@ -194,6 +202,11 @@ public class OpcUaServerConfigBuilder extends UaStackServerConfigBuilder {
         @Override
         public CertificateManager getCertificateManager() {
             return stackServerConfig.getCertificateManager();
+        }
+
+        @Override
+        public TrustListManager getTrustListManager() {
+            return stackServerConfig.getTrustListManager();
         }
 
         @Override

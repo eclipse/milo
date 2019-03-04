@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.KeyPair;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
@@ -47,6 +48,9 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.io.pem.PemWriter;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+
+import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
 
 public class CertificateUtil {
 
@@ -364,6 +368,14 @@ public class CertificateUtil {
             .filter(v -> v instanceof String)
             .map(String.class::cast)
             .collect(Collectors.toList());
+    }
+
+    public static ByteString thumbprint(X509Certificate certificate) throws UaException {
+        try {
+            return ByteString.of(sha1(certificate.getEncoded()));
+        } catch (CertificateEncodingException e) {
+            throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
+        }
     }
 
 }

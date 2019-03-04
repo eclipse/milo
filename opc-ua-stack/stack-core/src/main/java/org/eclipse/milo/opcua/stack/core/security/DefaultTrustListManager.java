@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.application;
+package org.eclipse.milo.opcua.stack.core.security;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,19 +36,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.util.CertificateUtil;
-import org.eclipse.milo.opcua.stack.core.util.CertificateValidationUtil;
-import org.eclipse.milo.opcua.stack.core.util.DigestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DirectoryCertificateValidator implements CertificateValidator, AutoCloseable {
+import static org.eclipse.milo.opcua.stack.core.util.DigestUtil.sha1;
+
+public class DefaultTrustListManager implements TrustListManager, AutoCloseable {
 
     /**
      * The maximum number of certificates that can accumulate in the rejected
@@ -59,25 +59,28 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final Set<X509Certificate> trustedCertificates = Sets.newConcurrentHashSet();
-
     private final Set<X509Certificate> issuerCertificates = Sets.newConcurrentHashSet();
     private final Set<X509CRL> issuerCrls = Sets.newConcurrentHashSet();
+
+    private final Set<X509Certificate> trustedCertificates = Sets.newConcurrentHashSet();
+    private final Set<X509CRL> trustedCrls = Sets.newConcurrentHashSet();
 
     private final WatchService watchService;
     private final Thread watchThread;
 
     private final File baseDir;
+
     private final File issuerDir;
     private final File issuerCertsDir;
     private final File issuerCrlsDir;
 
     private final File trustedDir;
     private final File trustedCertsDir;
+    private final File trustedCrlsDir;
 
     private final File rejectedDir;
 
-    public DirectoryCertificateValidator(File baseDir) throws IOException {
+    public DefaultTrustListManager(File baseDir) throws IOException {
         this.baseDir = baseDir;
         ensureDirectoryExists(baseDir);
 
@@ -95,6 +98,9 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
 
         trustedCertsDir = trustedDir.toPath().resolve("certs").toFile();
         ensureDirectoryExists(trustedCertsDir);
+
+        trustedCrlsDir = trustedDir.toPath().resolve("crls").toFile();
+        ensureDirectoryExists(trustedCrlsDir);
 
         rejectedDir = baseDir.toPath().resolve("rejected").toFile();
         ensureDirectoryExists(rejectedDir);
@@ -130,6 +136,15 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
             ),
             this::synchronizeTrustedCerts
         );
+        watchKeys.put(
+            trustedCrlsDir.toPath().register(
+                watchService,
+                StandardWatchEventKinds.ENTRY_CREATE,
+                StandardWatchEventKinds.ENTRY_DELETE,
+                StandardWatchEventKinds.ENTRY_MODIFY
+            ),
+            this::synchronizeTrustedCrls
+        );
 
         watchThread = new Thread(new Watcher(watchService, watchKeys));
         watchThread.setName("certificate-store-watcher");
@@ -147,79 +162,127 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
      * After calling closing {@link CertificateValidator#verifyTrustChain(List)} will fail for all inputs.
      */
     @Override
-    public void close() throws IOException {
-        synchronized (this) {
-            logger.info("Closing DefaultCertificateStore at {}", baseDir.getAbsolutePath());
+    public synchronized void close() throws IOException {
+        logger.info("Closing DefaultCertificateStore at {}", baseDir.getAbsolutePath());
 
-            watchService.close();
+        watchService.close();
 
-            try {
-                watchThread.join(5000);
-            } catch (InterruptedException e) {
-                throw new IOException(e);
-            }
-
-            issuerCertificates.clear();
-            issuerCrls.clear();
-
-            trustedCertificates.clear();
+        try {
+            watchThread.join(5000);
+        } catch (InterruptedException e) {
+            throw new IOException(e);
         }
+
+        issuerCertificates.clear();
+        issuerCrls.clear();
+
+        trustedCertificates.clear();
     }
 
     @Override
-    public synchronized void validate(X509Certificate certificate) throws UaException {
-        try {
-            CertificateValidationUtil.validateCertificateValidity(certificate);
-        } catch (UaException e) {
-            addRejectedCertificate(certificate);
-            throw e;
-        }
+    public synchronized ImmutableList<X509CRL> getIssuerCrls() {
+        return ImmutableList.copyOf(issuerCrls);
     }
 
     @Override
-    public synchronized void verifyTrustChain(List<X509Certificate> certificateChain) throws UaException {
-        try {
-            CertificateValidationUtil.verifyTrustChain(
-                certificateChain,
-                trustedCertificates,
-                issuerCertificates,
-                issuerCrls
-            );
-        } catch (UaException e) {
-            X509Certificate certificate = certificateChain.get(0);
-            addRejectedCertificate(certificate);
-            throw e;
-        }
+    public synchronized ImmutableList<X509CRL> getTrustedCrls() {
+        return ImmutableList.copyOf(trustedCrls);
     }
 
+    @Override
+    public synchronized ImmutableList<X509Certificate> getIssuerCertificates() {
+        return ImmutableList.copyOf(issuerCertificates);
+    }
+
+    @Override
+    public synchronized ImmutableList<X509Certificate> getTrustedCertificates() {
+        return ImmutableList.copyOf(trustedCertificates);
+    }
+
+    @Override
+    public synchronized ImmutableList<X509Certificate> getRejectedCertificates() {
+        File[] files = rejectedDir.listFiles();
+        if (files == null) files = new File[0];
+
+        return ImmutableList.copyOf(
+            Arrays.stream(files)
+                .flatMap(cert ->
+                    decodeCertificateFile(cert)
+                        .map(Stream::of).orElse(Stream.empty()))
+                .collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public synchronized void setIssuerCrls(List<X509CRL> issuerCrls) {
+        replaceCrlsInDir(issuerCrls, issuerCrlsDir);
+
+        synchronizeIssuerCrls();
+    }
+
+    @Override
+    public synchronized void setTrustedCrls(List<X509CRL> trustedCrls) {
+        replaceCrlsInDir(trustedCrls, trustedCrlsDir);
+
+        synchronizeTrustedCrls();
+    }
+
+    @Override
+    public synchronized void setIssuerCertificates(List<X509Certificate> issuerCertificates) {
+        replaceCertificatesInDir(issuerCertificates, issuerCertsDir);
+
+        synchronizeIssuerCerts();
+    }
+
+    @Override
+    public synchronized void setTrustedCertificates(List<X509Certificate> trustedCertificates) {
+        replaceCertificatesInDir(trustedCertificates, trustedCertsDir);
+
+        synchronizeTrustedCerts();
+    }
+
+    @Override
     public synchronized void addIssuerCertificate(X509Certificate certificate) {
         issuerCertificates.add(certificate);
 
         writeCertificateToDir(certificate, issuerCertsDir);
     }
 
+    @Override
     public synchronized void addTrustedCertificate(X509Certificate certificate) {
         trustedCertificates.add(certificate);
 
         writeCertificateToDir(certificate, trustedCertsDir);
     }
 
+    @Override
     public synchronized void addRejectedCertificate(X509Certificate certificate) {
         pruneOldRejectedCertificates();
 
         writeCertificateToDir(certificate, rejectedDir);
     }
 
-    public synchronized ImmutableSet<X509Certificate> getIssuerCertificates() {
-        return ImmutableSet.copyOf(issuerCertificates);
+    @Override
+    public synchronized boolean removeIssuerCertificate(ByteString thumbprint) {
+        boolean found = deleteCertificateFile(issuerCertsDir, thumbprint);
+
+        synchronizeIssuerCerts();
+
+        return found;
     }
 
-    public synchronized ImmutableSet<CRL> getIssuerCrls() {
-        return ImmutableSet.copyOf(issuerCrls);
+    @Override
+    public synchronized boolean removeTrustedCertificate(ByteString thumbprint) {
+        boolean found = deleteCertificateFile(trustedCertsDir, thumbprint);
+
+        synchronizeTrustedCerts();
+
+        return found;
     }
 
-    public synchronized ImmutableSet<X509Certificate> getTrustedCertificates() {
-        return ImmutableSet.copyOf(trustedCertificates);
+    @Override
+    public synchronized boolean removeRejectedCertificate(ByteString thumbprint) {
+        return deleteCertificateFile(rejectedDir, thumbprint);
     }
 
     public File getBaseDir() {
@@ -246,33 +309,56 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         return trustedCertsDir;
     }
 
+    public File getTrustedCrlsDir() {
+        return trustedCrlsDir;
+    }
+
     public File getRejectedDir() {
         return rejectedDir;
     }
 
-    private static String getFilename(X509Certificate certificate) throws Exception {
-        String[] ss = certificate.getSubjectX500Principal().getName().split(",");
-        String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
-        String thumbprint = ByteBufUtil.hexDump(Unpooled.wrappedBuffer(DigestUtil.sha1(certificate.getEncoded())));
+    private synchronized boolean deleteCertificateFile(File certificateDir, ByteString thumbprint) {
+        File[] files = certificateDir.listFiles();
+        if (files == null) files = new File[0];
 
-        return String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
+        for (File file : files) {
+            boolean matchesThumbprint = decodeCertificateFile(file).map(c -> {
+                try {
+                    ByteString bs = CertificateUtil.thumbprint(c);
+
+                    return bs.equals(thumbprint);
+                } catch (UaException e) {
+                    return false;
+                }
+            }).orElse(false);
+
+            if (matchesThumbprint) {
+                if (!file.delete()) {
+                    logger.warn("Failed to delete issuer certificate: {}", file);
+                }
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    private synchronized void writeCertificateToDir(X509Certificate certificate, File dir) {
-        try {
-            String filename = getFilename(certificate);
+    private synchronized void replaceCrlsInDir(List<X509CRL> crls, File dir) {
+        File[] files = dir.listFiles();
+        if (files == null) files = new File[0];
 
-            File f = new File(dir.getAbsolutePath() + File.separator + filename);
+        Arrays.stream(files).forEach(File::delete);
 
-            try (FileOutputStream fos = new FileOutputStream(f)) {
-                fos.write(certificate.getEncoded());
-                fos.flush();
-            }
+        crls.forEach(crl -> writeCrlToDir(crl, dir));
+    }
 
-            logger.debug("Wrote certificate entry: {}", f.getAbsolutePath());
-        } catch (Exception e) {
-            logger.error("Error adding rejected certificate entry.", e);
-        }
+    private synchronized void replaceCertificatesInDir(List<X509Certificate> certificates, File dir) {
+        File[] files = dir.listFiles();
+        if (files == null) files = new File[0];
+
+        Arrays.stream(files).forEach(File::delete);
+
+        certificates.forEach(certificate -> writeCertificateToDir(certificate, dir));
     }
 
     /**
@@ -311,29 +397,6 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
             .forEach(issuerCertificates::add);
     }
 
-    private synchronized void synchronizeTrustedCerts() {
-        File[] files = trustedCertsDir.listFiles();
-        if (files == null) files = new File[0];
-
-        trustedCertificates.clear();
-
-        Arrays.stream(files)
-            .flatMap(cert ->
-                decodeCertificateFile(cert)
-                    .map(Stream::of).orElse(Stream.empty()))
-            .forEach(trustedCertificates::add);
-    }
-
-    private Optional<X509Certificate> decodeCertificateFile(File f) {
-        try {
-            try (FileInputStream inputStream = new FileInputStream(f)) {
-                return Optional.of(CertificateUtil.decodeCertificate(inputStream));
-            }
-        } catch (Throwable ignored) {
-            return Optional.empty();
-        }
-    }
-
     private synchronized void synchronizeIssuerCrls() {
         File[] files = issuerCrlsDir.listFiles();
         if (files == null) files = new File[0];
@@ -348,7 +411,70 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
             .forEach(issuerCrls::add);
     }
 
-    private Optional<List<X509CRL>> decodeCrlFile(File f) {
+    private synchronized void synchronizeTrustedCerts() {
+        File[] files = trustedCertsDir.listFiles();
+        if (files == null) files = new File[0];
+
+        trustedCertificates.clear();
+
+        Arrays.stream(files)
+            .flatMap(cert ->
+                decodeCertificateFile(cert)
+                    .map(Stream::of).orElse(Stream.empty()))
+            .forEach(trustedCertificates::add);
+    }
+
+    private synchronized void synchronizeTrustedCrls() {
+        File[] files = trustedCrlsDir.listFiles();
+        if (files == null) files = new File[0];
+
+        trustedCrls.clear();
+
+        Arrays.stream(files)
+            .flatMap(crl ->
+                decodeCrlFile(crl)
+                    .map(Stream::of).orElse(Stream.empty()))
+            .flatMap(List::stream)
+            .forEach(trustedCrls::add);
+    }
+
+    private static void writeCrlToDir(X509CRL crl, File dir) {
+        try {
+            String filename = getFilename(crl);
+            File f = dir.toPath().resolve(filename).toFile();
+
+            try (FileOutputStream fos = new FileOutputStream(f)) {
+                fos.write(crl.getEncoded());
+                fos.flush();
+            }
+
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .debug("Wrote CRL entry: {}", f.getAbsolutePath());
+        } catch (Exception e) {
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .error("Error writing CRL", e);
+        }
+    }
+
+    private static void writeCertificateToDir(X509Certificate certificate, File dir) {
+        try {
+            String filename = getFilename(certificate);
+            File f = dir.toPath().resolve(filename).toFile();
+
+            try (FileOutputStream fos = new FileOutputStream(f)) {
+                fos.write(certificate.getEncoded());
+                fos.flush();
+            }
+
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .debug("Wrote certificate entry: {}", f.getAbsolutePath());
+        } catch (Exception e) {
+            LoggerFactory.getLogger(DefaultTrustListManager.class)
+                .error("Error writing certificate", e);
+        }
+    }
+
+    private static Optional<List<X509CRL>> decodeCrlFile(File f) {
         try {
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             Collection<? extends CRL> crls = factory.generateCRLs(new FileInputStream(f));
@@ -362,6 +488,30 @@ public class DirectoryCertificateValidator implements CertificateValidator, Auto
         } catch (CertificateException | FileNotFoundException | CRLException e) {
             return Optional.empty();
         }
+    }
+
+    private static Optional<X509Certificate> decodeCertificateFile(File f) {
+        try {
+            try (FileInputStream inputStream = new FileInputStream(f)) {
+                return Optional.of(CertificateUtil.decodeCertificate(inputStream));
+            }
+        } catch (Throwable ignored) {
+            return Optional.empty();
+        }
+    }
+
+    private static String getFilename(X509CRL crl) throws Exception {
+        String thumbprint = ByteBufUtil.hexDump(sha1(crl.getEncoded()));
+
+        return String.format("%s.crl", thumbprint);
+    }
+
+    private static String getFilename(X509Certificate certificate) throws Exception {
+        String[] ss = certificate.getSubjectX500Principal().getName().split(",");
+        String name = ss.length > 0 ? ss[0] : certificate.getSubjectX500Principal().getName();
+        String thumbprint = ByteBufUtil.hexDump(sha1(certificate.getSignature()));
+
+        return String.format("%s [%s].der", thumbprint, URLEncoder.encode(name, "UTF-8"));
     }
 
     private static void ensureDirectoryExists(File dir) throws IOException {
