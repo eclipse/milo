@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -109,17 +110,20 @@ public class CertificateValidationUtil {
 
         X509Certificate certificate = certificateChain.get(0);
 
-        boolean certificateTrusted = trustedCertificates.stream()
-            .anyMatch(c -> Arrays.equals(certificate.getSignature(), c.getSignature()));
+        if (trustedCertificates.stream()
+            .anyMatch(c -> Objects.equals(certificate, c))) {
 
-        if (certificateTrusted) {
             LOGGER.debug("Found certificate in trusted certificates: {}", certificate);
             return;
         }
 
         try {
             Set<TrustAnchor> trustAnchors = new HashSet<>();
-            issuerCertificates.forEach(ca -> trustAnchors.add(new TrustAnchor(ca, null)));
+            issuerCertificates.forEach(c -> {
+                if (c.getKeyUsage()[5]) {
+                    trustAnchors.add(new TrustAnchor(c, null));
+                }
+            });
 
             X509CertSelector selector = new X509CertSelector();
             selector.setCertificate(certificate);
@@ -127,11 +131,11 @@ public class CertificateValidationUtil {
             PKIXBuilderParameters params = new PKIXBuilderParameters(trustAnchors, selector);
 
             // Add a CertStore containing any intermediate certs and CRLs
-            if (certificateChain.size() > 0 || issuerCrls.size() > 0) {
+            if (certificateChain.size() > 0 || trustedCrls.size() > 0 || issuerCrls.size() > 0) {
                 Collection<Object> collection = Lists.newArrayList();
-                collection.addAll(certificateChain);
-                collection.addAll(issuerCrls);
+                collection.addAll(certificateChain.subList(1, certificateChain.size()));
                 collection.addAll(trustedCrls);
+                collection.addAll(issuerCrls);
 
                 CertStore certStore = CertStore.getInstance(
                     "Collection",
@@ -142,7 +146,7 @@ public class CertificateValidationUtil {
             }
 
             // Only enable revocation checking if the CRL list is non-empty
-            params.setRevocationEnabled(!issuerCrls.isEmpty());
+            params.setRevocationEnabled(!trustedCrls.isEmpty() || !issuerCrls.isEmpty());
 
             CertPathBuilder builder = CertPathBuilder.getInstance("PKIX");
 
@@ -159,7 +163,7 @@ public class CertificateValidationUtil {
 
             PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) builder.build(params);
 
-            LOGGER.debug("Validated certificate chain: {}", result.getCertPath());
+            LOGGER.info("Validated certificate path: {}", result.getCertPath());
         } catch (Throwable t) {
             LOGGER.debug("PKIX path validation failed: {}", t.getMessage());
             throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
