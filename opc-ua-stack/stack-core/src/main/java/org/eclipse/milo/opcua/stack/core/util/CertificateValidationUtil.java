@@ -121,7 +121,7 @@ public class CertificateValidationUtil {
 
         try {
             Set<TrustAnchor> trustAnchors = trustedCertificates.stream()
-                .filter(c -> c.getKeyUsage()[5])
+                .filter(CertificateValidationUtil::certificateIsCa)
                 .map(c -> new TrustAnchor(c, null))
                 .collect(Collectors.toSet());
 
@@ -131,20 +131,18 @@ public class CertificateValidationUtil {
             PKIXBuilderParameters params = new PKIXBuilderParameters(trustAnchors, selector);
 
             // Add a CertStore containing any intermediate certs and CRLs
-            if (certificateChain.size() > 0 || trustedCrls.size() > 0 || issuerCrls.size() > 0) {
-                Collection<Object> collection = Lists.newArrayList();
+            Collection<Object> collection = Lists.newArrayList();
 
-                collection.addAll(certificateChain.subList(1, certificateChain.size()));
+            collection.addAll(certificateChain.subList(1, certificateChain.size()));
+            collection.addAll(
+                issuerCertificates.stream()
+                    .filter(CertificateValidationUtil::certificateIsCa)
+                    .collect(Collectors.toList())
+            );
+            collection.addAll(trustedCrls);
+            collection.addAll(issuerCrls);
 
-                collection.addAll(
-                    issuerCertificates.stream()
-                        .filter(c -> c.getKeyUsage()[5])
-                        .collect(Collectors.toList())
-                );
-
-                collection.addAll(trustedCrls);
-                collection.addAll(issuerCrls);
-
+            if (collection.size() > 0) {
                 CertStore certStore = CertStore.getInstance(
                     "Collection",
                     new CollectionCertStoreParameters(collection)
@@ -176,6 +174,16 @@ public class CertificateValidationUtil {
             LOGGER.debug("PKIX path validation failed: {}", t.getMessage());
             throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
         }
+    }
+
+    /**
+     * Check if {@code certificate}'s KeyUsage extension indicates it is a CA.
+     *
+     * @param certificate the {@link X509Certificate} to check.
+     * @return {@code true} if {@code certificate}'s KeyUsage extension indicates it is a CA.
+     */
+    private static boolean certificateIsCa(X509Certificate certificate) {
+        return certificate.getKeyUsage()[5];
     }
 
     public static void validateCertificateValidity(X509Certificate certificate) throws UaException {
