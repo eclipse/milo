@@ -169,7 +169,7 @@ public class CertificateValidationUtil {
 
             PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) builder.build(params);
 
-            LOGGER.info("Validated certificate path: {}", result.getCertPath());
+            LOGGER.debug("Validated certificate path: {}", result.getCertPath());
         } catch (Throwable t) {
             LOGGER.debug("PKIX path validation failed: {}", t.getMessage());
             throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
