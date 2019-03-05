@@ -96,7 +96,7 @@ public class CertificateValidationUtil {
      * @param trustedCertificates a collection of known-trusted certificates and CAs.
      * @param trustedCrls         a collection of {@link X509CRL}s for CAs in {@code trustedCertificates}, if any.
      * @param issuerCertificates  a collection of CA certificates to allow as intermediate CAs when
-     *                            {@code certificateChain}doesn't contain them.
+     *                            {@code certificateChain} doesn't contain them.
      * @param issuerCrls          a collection of {@link X509CRL}s for CAs in {@code issuerCertificates}, if any.
      * @throws UaException if a chain of trust could not be established.
      */
