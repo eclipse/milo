@@ -99,74 +99,74 @@ public class CertificateValidationUtilTest {
     @Test
     public void testVerifyTrustChain_LeafIntermediateSigned() throws Exception {
         // chain: leaf
-        // issuers: ca-intermediate
+        // anchors: ca-intermediate
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
-                emptySet(),
-                newHashSet(caIntermediate)
+                newHashSet(caIntermediate),
+                emptySet()
             );
         }
 
         // chain: leaf, ca-intermediate
-        // issuers: ca-intermediate
+        // anchors: ca-intermediate
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
-                emptySet(),
-                newHashSet(caIntermediate)
+                newHashSet(caIntermediate),
+                emptySet()
             );
         }
 
         // chain: leaf, ca-intermediate
-        // issuers: ca-root
+        // anchors: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
-                emptySet(),
-                newHashSet(caRoot)
+                newHashSet(caRoot),
+                emptySet()
             );
         }
 
         // chain: leaf, ca-intermediate, ca-root
-        // issuers: ca-intermediate
+        // anchors: ca-intermediate
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
-                emptySet(),
-                newHashSet(caIntermediate)
+                newHashSet(caIntermediate),
+                emptySet()
             );
         }
 
         // chain: leaf, ca-intermediate, ca-root
-        // issuers: ca-root
+        // anchors: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
-                emptySet(),
-                newHashSet(caRoot)
+                newHashSet(caRoot),
+                emptySet()
             );
         }
 
         // chain: leaf, ca-intermediate, ca-root
-        // issuers: ca-intermediate, ca-root
+        // anchors: ca-intermediate, ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
-                emptySet(),
-                newHashSet(caIntermediate, caRoot)
+                newHashSet(caIntermediate, caRoot),
+                emptySet()
             );
         }
     }
@@ -174,7 +174,7 @@ public class CertificateValidationUtilTest {
     @Test
     public void testVerifyTrustChain_LeafIntermediateSigned_Revoked() throws Exception {
         // chain: leaf
-        // issuers: ca-intermediate
+        // anchors: ca-intermediate
         // crls: ca-intermediate revokes leaf
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
@@ -182,8 +182,6 @@ public class CertificateValidationUtilTest {
             expectThrows(UaException.class, () ->
                 CertificateValidationUtil.verifyTrustChain(
                     certificateChain,
-                    emptySet(),
-                    emptySet(),
                     newHashSet(caIntermediate),
                     newHashSet(
                         generateCrl(
@@ -191,13 +189,15 @@ public class CertificateValidationUtilTest {
                             (PrivateKey) keyStore.getKey(
                                 ALIAS_CA_INTERMEDIATE, "password".toCharArray()),
                             leafIntermediateSigned)
-                    )
+                    ),
+                    emptySet(),
+                    emptySet()
                 )
             );
         }
 
         // chain: leaf
-        // issuers: ca-intermediate, ca-root
+        // anchors: ca-intermediate, ca-root
         // crls: ca-root revokes ca-leaf
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
@@ -205,8 +205,6 @@ public class CertificateValidationUtilTest {
             expectThrows(UaException.class, () ->
                 CertificateValidationUtil.verifyTrustChain(
                     certificateChain,
-                    emptySet(),
-                    emptySet(),
                     newHashSet(caIntermediate),
                     newHashSet(
                         generateCrl(
@@ -214,13 +212,15 @@ public class CertificateValidationUtilTest {
                             (PrivateKey) keyStore.getKey(
                                 ALIAS_CA_ROOT, "password".toCharArray()),
                             caIntermediate)
-                    )
+                    ),
+                    emptySet(),
+                    emptySet()
                 )
             );
         }
 
         // chain: leaf
-        // issuers: ca-intermediate, ca-root
+        // anchors: ca-intermediate, ca-root
         // crls: ca-root revokes leaf
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
@@ -228,8 +228,6 @@ public class CertificateValidationUtilTest {
             expectThrows(UaException.class, () ->
                 CertificateValidationUtil.verifyTrustChain(
                     certificateChain,
-                    emptySet(),
-                    emptySet(),
                     newHashSet(caIntermediate),
                     newHashSet(
                         generateCrl(
@@ -237,7 +235,9 @@ public class CertificateValidationUtilTest {
                             (PrivateKey) keyStore.getKey(
                                 ALIAS_CA_ROOT, "password".toCharArray()),
                             leafIntermediateSigned)
-                    )
+                    ),
+                    emptySet(),
+                    emptySet()
                 )
             );
         }
@@ -284,6 +284,81 @@ public class CertificateValidationUtilTest {
                 emptySet()
             )
         );
+    }
+
+    @Test
+    public void testVerifyTrustChain_IntermediateIssuer() throws Exception {
+        // chain: leaf
+        // issuers: ca-intermediate
+        // anchors: ca-root
+        {
+            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
+
+            CertificateValidationUtil.verifyTrustChain(
+                certificateChain,
+                newHashSet(caRoot),
+                emptySet(),
+                newHashSet(caIntermediate),
+                emptySet()
+            );
+        }
+
+        // chain: leaf, ca-intermediate
+        // issuers: ca-intermediate
+        // anchors: ca-root
+        {
+            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
+
+            CertificateValidationUtil.verifyTrustChain(
+                certificateChain,
+                newHashSet(caRoot),
+                emptySet(),
+                newHashSet(caIntermediate),
+                emptySet()
+            );
+        }
+
+        // chain: leaf, ca-intermediate, ca-root
+        // issuers: ca-intermediate
+        // anchors: ca-root
+        {
+            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
+
+            CertificateValidationUtil.verifyTrustChain(
+                certificateChain,
+                newHashSet(caRoot),
+                emptySet(),
+                newHashSet(caIntermediate),
+                emptySet()
+            );
+        }
+    }
+
+    @Test
+    public void testVerifyTrustChain_IssuerRevoked() {
+        // chain: leaf
+        // issuers: ca-intermediate
+        // anchors: ca-root
+        // crls: ca-root revokes ca-intermediate
+        {
+            List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
+
+            expectThrows(UaException.class, () ->
+                CertificateValidationUtil.verifyTrustChain(
+                    certificateChain,
+                    newHashSet(caRoot),
+                    newHashSet(
+                        generateCrl(
+                            caRoot,
+                            (PrivateKey) keyStore.getKey(
+                                ALIAS_CA_ROOT, "password".toCharArray()),
+                            caIntermediate)
+                    ),
+                    newHashSet(caIntermediate),
+                    emptySet()
+                )
+            );
+        }
     }
 
     private X509CRL generateCrl(X509Certificate ca, PrivateKey caPrivateKey, X509Certificate... revoked) throws Exception {

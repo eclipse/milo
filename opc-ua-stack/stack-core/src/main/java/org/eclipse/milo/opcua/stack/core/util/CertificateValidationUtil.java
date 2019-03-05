@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -88,14 +89,15 @@ public class CertificateValidationUtil {
      * chain, if any, in the correct order.
      * <p>
      * If the end-entity certificate is present in the {@code trustedCertificates} set then trust is immediately
-     * verified. Otherwise, an attempt to build a path to a trusted anchor is made using the provided
-     * {@code issuerCertificates} as the anchors.
+     * verified. Otherwise, an attempt to build a path to a trusted anchor is made using the CAs in
+     * {@code trustedCertificates} as the trust anchors.
      *
      * @param certificateChain    the certificate chain to verify.
-     * @param trustedCertificates the collection of known-trusted certificates.
-     * @param issuerCertificates  the collection of CA certificates to use as trust anchors.
-     * @param issuerCrls          the collection of {@link X509CRL}s for issuer certificates, if any.
-     * @param trustedCrls         the collection of {@link X509CRL}s for trusted certificates, if any.
+     * @param trustedCertificates a collection of known-trusted certificates and CAs.
+     * @param trustedCrls         a collection of {@link X509CRL}s for CAs in {@code trustedCertificates}, if any.
+     * @param issuerCertificates  a collection of CA certificates to allow as intermediate CAs when
+     *                            {@code certificateChain}doesn't contain them.
+     * @param issuerCrls          a collection of {@link X509CRL}s for CAs in {@code issuerCertificates}, if any.
      * @throws UaException if a chain of trust could not be established.
      */
     public static void verifyTrustChain(
@@ -118,12 +120,10 @@ public class CertificateValidationUtil {
         }
 
         try {
-            Set<TrustAnchor> trustAnchors = new HashSet<>();
-            issuerCertificates.forEach(c -> {
-                if (c.getKeyUsage()[5]) {
-                    trustAnchors.add(new TrustAnchor(c, null));
-                }
-            });
+            Set<TrustAnchor> trustAnchors = trustedCertificates.stream()
+                .filter(c -> c.getKeyUsage()[5])
+                .map(c -> new TrustAnchor(c, null))
+                .collect(Collectors.toSet());
 
             X509CertSelector selector = new X509CertSelector();
             selector.setCertificate(certificate);
@@ -133,7 +133,15 @@ public class CertificateValidationUtil {
             // Add a CertStore containing any intermediate certs and CRLs
             if (certificateChain.size() > 0 || trustedCrls.size() > 0 || issuerCrls.size() > 0) {
                 Collection<Object> collection = Lists.newArrayList();
+
                 collection.addAll(certificateChain.subList(1, certificateChain.size()));
+
+                collection.addAll(
+                    issuerCertificates.stream()
+                        .filter(c -> c.getKeyUsage()[5])
+                        .collect(Collectors.toList())
+                );
+
                 collection.addAll(trustedCrls);
                 collection.addAll(issuerCrls);
 
