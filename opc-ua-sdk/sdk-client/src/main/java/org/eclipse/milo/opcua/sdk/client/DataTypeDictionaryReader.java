@@ -11,6 +11,8 @@
 package org.eclipse.milo.opcua.sdk.client;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.bind.JAXBException;
@@ -49,6 +52,8 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.BrowseResultMask;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.BrowseNextResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
@@ -67,8 +72,6 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.eclipse.milo.opcua.sdk.core.util.StreamUtil.opt2stream;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.s;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.toList;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedFuture;
 
 public class DataTypeDictionaryReader {
@@ -95,7 +98,7 @@ public class DataTypeDictionaryReader {
     }
 
     public CompletableFuture<List<DataTypeDictionary<?>>> readDataTypeDictionaries() {
-        CompletableFuture<BrowseResult> browseFuture = browseNode(new BrowseDescription(
+        CompletableFuture<List<ReferenceDescription>> browseFuture = browseNode(new BrowseDescription(
             Identifiers.OPCBinarySchema_TypeSystem,
             BrowseDirection.Forward,
             Identifiers.HasComponent,
@@ -105,8 +108,8 @@ public class DataTypeDictionaryReader {
         ));
 
         CompletableFuture<Stream<NodeId>> dictionaryNodeIds = browseFuture.thenApply(
-            browseResult ->
-                toList(browseResult.getReferences()).stream()
+            references ->
+                references.stream()
                     .filter(r -> r.getNodeId().getNamespaceIndex().intValue() != 0)
                     .filter(r -> r.getTypeDefinition().equals(Identifiers.DataTypeDictionaryType.expanded()))
                     .flatMap(r -> opt2stream(r.getNodeId().local()))
@@ -196,7 +199,7 @@ public class DataTypeDictionaryReader {
         return valueFuture.thenComposeAsync(value -> {
             StatusCode statusCode = value.getStatusCode();
 
-            if (statusCode.isGood()) {
+            if (statusCode == null || statusCode.isGood()) {
                 ByteString fragmentBytes = (ByteString) value.getValue().getValue();
 
                 if (fragmentBytes != null) {
@@ -261,6 +264,26 @@ public class DataTypeDictionaryReader {
             CompletableFuture<List<String>> descriptionValues =
                 descriptionNodeIds.thenCompose(this::readDataTypeDescriptionValues);
 
+            if (logger.isTraceEnabled()) {
+                try {
+                    List<NodeId> ids = descriptionNodeIds.get();
+                    List<String> values = descriptionValues.get();
+
+                    if (ids.size() != values.size()) {
+                        throw new IllegalStateException("size mismatch");
+                    }
+
+                    for (int i = 0; i < ids.size(); i++) {
+                        NodeId id = ids.get(i);
+                        String value = values.get(i);
+
+                        logger.trace("description NodeId={} value={}", id, value);
+                    }
+                } catch (Exception e) {
+                    logger.error("Error reading description NodeIds", e);
+                }
+            }
+
             CompletableFuture<List<NodeId>> encodingIds =
                 descriptionNodeIds.thenCompose(this::browseDataTypeEncodingNodeIds);
 
@@ -281,6 +304,8 @@ public class DataTypeDictionaryReader {
                     if (encodingId != null && encodingId.isNotNull()) {
                         dictionary.registerStructCodec(cd.getCodec(), description, encodingId);
                         logger.debug("Registered codec description={} encodingId={}", description, encodingId);
+                    } else {
+                        logger.warn("encodingId is null for description={}", description);
                     }
                 });
 
@@ -292,7 +317,7 @@ public class DataTypeDictionaryReader {
     }
 
     private CompletableFuture<List<NodeId>> browseDataTypeDescriptionNodeIds(NodeId dictionaryNodeId) {
-        CompletableFuture<BrowseResult> browseResult = browseNode(
+        CompletableFuture<List<ReferenceDescription>> browseResult = browseNode(
             new BrowseDescription(
                 dictionaryNodeId,
                 BrowseDirection.Forward,
@@ -303,8 +328,8 @@ public class DataTypeDictionaryReader {
             )
         );
 
-        return browseResult.thenApply(result ->
-            s(result.getReferences())
+        return browseResult.thenApply(references ->
+            references.stream()
                 .filter(r -> Identifiers.DataTypeDescriptionType.expanded().equals(r.getTypeDefinition()))
                 .flatMap(r -> opt2stream(r.getNodeId().local()))
                 .collect(Collectors.toList())
@@ -352,9 +377,9 @@ public class DataTypeDictionaryReader {
         });
     }
 
-    private CompletableFuture<List<NodeId>> browseDataTypeEncodingNodeIds(List<NodeId> nodeIds) {
-        Stream<CompletableFuture<NodeId>> futures = nodeIds.stream().map(nodeId -> {
-            CompletableFuture<BrowseResult> browse = browseNode(new BrowseDescription(
+    private CompletableFuture<List<NodeId>> browseDataTypeEncodingNodeIds(List<NodeId> descriptionNodeIds) {
+        Stream<CompletableFuture<NodeId>> futures = descriptionNodeIds.stream().map(nodeId -> {
+            CompletableFuture<List<ReferenceDescription>> browse = browseNode(new BrowseDescription(
                 nodeId,
                 BrowseDirection.Inverse,
                 Identifiers.HasDescription,
@@ -363,8 +388,8 @@ public class DataTypeDictionaryReader {
                 uint(BrowseResultMask.All.getValue())
             ));
 
-            return browse.thenApply(result -> {
-                Optional<ReferenceDescription> ref = s(result.getReferences())
+            return browse.thenApply(references -> {
+                Optional<ReferenceDescription> ref = references.stream()
                     .filter(r -> QN_DEFAULT_BINARY.equals(r.getBrowseName()) &&
                         Identifiers.DataTypeEncodingType.expanded().equals(r.getTypeDefinition()))
                     .findFirst();
@@ -376,7 +401,7 @@ public class DataTypeDictionaryReader {
         return FutureUtils.sequence(futures);
     }
 
-    private CompletableFuture<BrowseResult> browseNode(BrowseDescription browseDescription) {
+    private CompletableFuture<List<ReferenceDescription>> browseNode(BrowseDescription browseDescription) {
         RequestHeader requestHeader = stackClient.newRequestHeader(
             session.getAuthenticationToken(),
             uint(60000)
@@ -391,7 +416,61 @@ public class DataTypeDictionaryReader {
 
         return stackClient.sendRequest(browseRequest)
             .thenApply(BrowseResponse.class::cast)
-            .thenApply(r -> Objects.requireNonNull(r.getResults())[0]);
+            .thenApply(r -> Objects.requireNonNull(r.getResults())[0])
+            .thenCompose(result -> {
+                List<ReferenceDescription> references =
+                    Collections.synchronizedList(new ArrayList<>());
+
+                return maybeBrowseNext(result, references);
+            });
+    }
+
+    private CompletionStage<List<ReferenceDescription>> maybeBrowseNext(
+        BrowseResult result,
+        List<ReferenceDescription> references) {
+
+        if (result.getStatusCode().isGood()) {
+            ReferenceDescription[] rds = result.getReferences();
+            if (rds != null) Collections.addAll(references, rds);
+
+            ByteString continuationPoint = result.getContinuationPoint();
+
+            if (continuationPoint.isNotNull()) {
+                logger.debug("Continuation point was non-null; calling BrowseNext");
+
+                return browseNextAsync(continuationPoint, references);
+            } else {
+                logger.debug("Browse finished with {} references", references.size());
+
+                return CompletableFuture.completedFuture(references);
+            }
+        } else {
+            return CompletableFuture.completedFuture(references);
+        }
+    }
+
+    private CompletableFuture<List<ReferenceDescription>> browseNextAsync(
+        ByteString continuationPoint,
+        List<ReferenceDescription> references) {
+
+        RequestHeader requestHeader = stackClient.newRequestHeader(
+            session.getAuthenticationToken(),
+            uint(60000)
+        );
+
+        BrowseNextRequest request = new BrowseNextRequest(
+            requestHeader,
+            false,
+            new ByteString[]{continuationPoint}
+        );
+
+        return stackClient.sendRequest(request)
+            .thenApply(BrowseNextResponse.class::cast)
+            .thenCompose(response -> {
+                BrowseResult result = l(response.getResults()).get(0);
+
+                return maybeBrowseNext(result, references);
+            });
     }
 
     private CompletableFuture<DataValue> readNode(ReadValueId readValueId) {
