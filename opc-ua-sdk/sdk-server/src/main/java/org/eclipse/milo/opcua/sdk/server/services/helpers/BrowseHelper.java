@@ -99,12 +99,10 @@ public class BrowseHelper {
             browseDescription
         );
 
-        server.getExecutorService().execute(browse);
-
-        return browse.getFuture();
+        return browse.browse();
     }
 
-    private static class Browse implements Runnable {
+    private static class Browse {
 
         private final CompletableFuture<BrowseResult> future = new CompletableFuture<>();
 
@@ -124,12 +122,7 @@ public class BrowseHelper {
             this.server = server;
         }
 
-        public CompletableFuture<BrowseResult> getFuture() {
-            return future;
-        }
-
-        @Override
-        public void run() {
+        public CompletableFuture<BrowseResult> browse() {
             NamespaceManager namespaceManager = server.getNamespaceManager();
             Namespace namespace = namespaceManager.getNamespace(browseDescription.getNodeId().getNamespaceIndex());
 
@@ -146,6 +139,8 @@ public class BrowseHelper {
                     future.complete(NODE_ID_UNKNOWN_RESULT);
                 }
             });
+
+            return future;
         }
 
         private CompletableFuture<BrowseResult> browse(List<Reference> references) {

@@ -37,12 +37,21 @@ public interface ViewServices {
 
         OpcUaServer server = context.getServer();
 
-        List<CompletableFuture<BrowseResult>> futures = nodesToBrowse.stream()
-            .map(browseDescription ->
-                BrowseHelper.browse(context, server, view, maxReferencesPerNode, browseDescription))
+        List<CompletableFuture<BrowseResult>> results = nodesToBrowse
+            .stream()
+            .map(
+                browseDescription ->
+                    BrowseHelper.browse(
+                        context,
+                        server,
+                        view,
+                        maxReferencesPerNode,
+                        browseDescription
+                    )
+            )
             .collect(toList());
 
-        FutureUtils.sequence(futures).thenAccept(context::complete);
+        FutureUtils.sequence(results).thenAccept(context::complete);
     }
 
     /**
