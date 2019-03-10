@@ -279,11 +279,13 @@ public class OpcUaNamespace implements Namespace {
         final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
         ServerCapabilitiesNode serverCapabilities = serverNode.getServerCapabilitiesNode();
         serverCapabilities.setLocaleIdArray(new String[]{Locale.ENGLISH.getLanguage()});
+        serverCapabilities.setServerProfileArray(new String[]{});
         serverCapabilities.setMaxArrayLength(limits.getMaxArrayLength());
+        serverCapabilities.setMaxStringLength(limits.getMaxStringLength());
+        serverCapabilities.setMaxByteStringLength(limits.getMaxByteStringLength());
         serverCapabilities.setMaxBrowseContinuationPoints(limits.getMaxBrowseContinuationPoints());
         serverCapabilities.setMaxHistoryContinuationPoints(limits.getMaxHistoryContinuationPoints());
         serverCapabilities.setMaxQueryContinuationPoints(limits.getMaxQueryContinuationPoints());
-        serverCapabilities.setMaxStringLength(limits.getMaxStringLength());
         serverCapabilities.setMinSupportedSampleRate(limits.getMinSupportedSampleRate());
 
         OperationLimitsNode limitsNode = serverCapabilities.getOperationLimitsNode();

@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.api.config;
 
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
@@ -20,8 +21,13 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public interface OpcUaServerConfigLimits {
 
+    /**
+     * Get the maximum number of sessions that can be open at any given time.
+     *
+     * @return the maximum number of sessions that can be open at any given time.
+     */
     default UInteger getMaxSessionCount() {
-        return uint(550);
+        return uint(100);
     }
 
     /**
@@ -73,80 +79,92 @@ public interface OpcUaServerConfigLimits {
         return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
     }
 
-    default Double getMinSupportedSampleRate() {
-        return 0.0;
-    }
-
     default Double getMaxSupportedSampleRate() {
         return (double) TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
     }
 
-    default UShort getMaxBrowseContinuationPoints() {
-        return ushort(UShort.MAX_VALUE);
-    }
+    //region ServerCapabilities
 
-    default UShort getMaxQueryContinuationPoints() {
-        return ushort(UShort.MAX_VALUE);
-    }
-
-    default UShort getMaxHistoryContinuationPoints() {
-        return ushort(UShort.MAX_VALUE);
+    default Double getMinSupportedSampleRate() {
+        return 0.0;
     }
 
     default UInteger getMaxArrayLength() {
-        return uint(0x1FFFF);
+        return uint(EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH);
     }
 
     default UInteger getMaxStringLength() {
-        return uint(0x1FFFF);
+        return uint(EncodingLimits.DEFAULT_MAX_STRING_LENGTH);
     }
+
+    default UInteger getMaxByteStringLength() {
+        return uint(EncodingLimits.DEFAULT_MAX_ARRAY_LENGTH);
+    }
+
+    default UShort getMaxBrowseContinuationPoints() {
+        return ushort(250);
+    }
+
+    default UShort getMaxQueryContinuationPoints() {
+        return ushort(250);
+    }
+
+    default UShort getMaxHistoryContinuationPoints() {
+        return ushort(250);
+    }
+
+    //endregion
+
+    //region OperationLimits
 
     default UInteger getMaxNodesPerRead() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerHistoryReadData() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerHistoryReadEvents() {
-        return uint(0x1FFFF);
+        return uint(10_000);
     }
 
     default UInteger getMaxNodesPerWrite() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerHistoryUpdateData() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerHistoryUpdateEvents() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerMethodCall() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerBrowse() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerRegisterNodes() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerTranslateBrowsePathsToNodeIds() {
-        return uint(0x1FFFF);
-    }
-
-    default UInteger getMaxNodesPerNodeManagement() {
-        return uint(0x1FFFF);
+        return uint(10_000);
     }
 
     default UInteger getMaxMonitoredItemsPerCall() {
-        return uint(0x1FFFF);
+        return uint(10_000);
     }
+
+    default UInteger getMaxNodesPerRegisterNodes() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerHistoryReadData() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerHistoryReadEvents() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerHistoryUpdateData() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerHistoryUpdateEvents() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerMethodCall() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerBrowse() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerTranslateBrowsePathsToNodeIds() {
+        return uint(250);
+    }
+
+    default UInteger getMaxNodesPerNodeManagement() {
+        return uint(250);
+    }
+
+    //endregion
 
 }
