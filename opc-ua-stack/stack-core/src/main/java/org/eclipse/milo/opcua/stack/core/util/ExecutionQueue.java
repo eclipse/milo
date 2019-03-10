@@ -11,14 +11,20 @@
 package org.eclipse.milo.opcua.stack.core.util;
 
 import java.util.ArrayDeque;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Queues up submitted {@link java.lang.Runnable}s and executes them in serial on an
- * {@link java.util.concurrent.ExecutorService}.
+ * Queues up submitted {@link java.lang.Runnable}s and executes on an {@link java.util.concurrent.Executor}, with
+ * optional concurrency.
+ * <p>
+ * When {@code concurrency = 1} (the default) submitted tasks are guaranteed to run serially and in the order submitted.
+ * <p>
+ * When {@code concurrency > 1} there are no guarantees beyond the fact that tasks are still pulled from a queue to be
+ * executed.
  */
 public class ExecutionQueue {
 
@@ -27,13 +33,19 @@ public class ExecutionQueue {
     private final Object queueLock = new Object();
     private final ArrayDeque<Runnable> queue = new ArrayDeque<>();
 
-    private volatile boolean pollSubmitted = false;
-    private volatile boolean paused = false;
+    private int pending = 0;
+    private boolean paused = false;
 
-    private final ExecutorService service;
+    private final Executor executor;
+    private final int concurrencyLimit;
 
-    public ExecutionQueue(ExecutorService service) {
-        this.service = service;
+    public ExecutionQueue(Executor executor) {
+        this(executor, 1);
+    }
+
+    public ExecutionQueue(Executor executor, int concurrencyLimit) {
+        this.executor = executor;
+        this.concurrencyLimit = concurrencyLimit;
     }
 
     /**
@@ -45,7 +57,7 @@ public class ExecutionQueue {
         synchronized (queueLock) {
             queue.add(runnable);
 
-            maybeSubmitPoll();
+            maybePollAndExecute();
         }
     }
 
@@ -58,7 +70,7 @@ public class ExecutionQueue {
         synchronized (queueLock) {
             queue.addFirst(runnable);
 
-            maybeSubmitPoll();
+            maybePollAndExecute();
         }
     }
 
@@ -78,30 +90,31 @@ public class ExecutionQueue {
         synchronized (queueLock) {
             paused = false;
 
-            maybeSubmitPoll();
+            maybePollAndExecute();
         }
     }
 
-    private void maybeSubmitPoll() {
+    private void maybePollAndExecute() {
         synchronized (queueLock) {
-            if (!pollSubmitted && !paused && !queue.isEmpty()) {
-                service.submit(new PollAndExecute());
-                pollSubmitted = true;
+            if (pending < concurrencyLimit && !paused && !queue.isEmpty()) {
+                executor.execute(new Task(queue.poll()));
+                pending++;
             }
         }
     }
 
-    private class PollAndExecute implements Runnable {
+    private class Task implements Runnable {
+
+        private final Runnable runnable;
+
+        Task(Runnable runnable) {
+            Preconditions.checkNotNull(runnable);
+
+            this.runnable = runnable;
+        }
+
         @Override
         public void run() {
-            Runnable runnable;
-
-            synchronized (queueLock) {
-                runnable = queue.poll();
-            }
-
-            assert runnable != null;
-
             try {
                 runnable.run();
             } catch (Throwable throwable) {
@@ -110,10 +123,10 @@ public class ExecutionQueue {
 
             synchronized (queueLock) {
                 if (queue.isEmpty() || paused) {
-                    pollSubmitted = false;
+                    pending--;
                 } else {
-                    // polling remains true
-                    service.submit(new PollAndExecute());
+                    // pending count remains the same
+                    executor.execute(new Task(queue.poll()));
                 }
             }
         }
