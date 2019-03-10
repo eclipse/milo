@@ -10,6 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.util;
 
+import java.security.InvalidKeyException;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.cert.CertPathBuilder;
 import java.security.cert.CertPathChecker;
 import java.security.cert.CertStore;
@@ -24,6 +27,7 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CertSelector;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +36,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -89,14 +92,18 @@ public class CertificateValidationUtil {
      * chain, if any, in the correct order.
      * <p>
      * If the end-entity certificate is present in the {@code trustedCertificates} set then trust is immediately
-     * verified. Otherwise, an attempt to build a path to a trusted anchor is made using the CAs in
-     * {@code trustedCertificates} as the trust anchors.
+     * verified. Otherwise, an attempt to build a path to a trust anchor is made using the root CAs in
+     * {@code trustedCertificates} and the root CAs in {@code issuerCertificates} as the trust anchors.
+     * <p>
+     * Once a valid certificate path has been established, at least one component of that path must be present in the
+     * {@code trustedCertificates} list.
      *
      * @param certificateChain    the certificate chain to verify.
-     * @param trustedCertificates a collection of known-trusted certificates and CAs.
+     * @param trustedCertificates a collection of known-trusted certificates and CAs. Root CAs are used as Trust
+     *                            Anchors.
      * @param trustedCrls         a collection of {@link X509CRL}s for CAs in {@code trustedCertificates}, if any.
-     * @param issuerCertificates  a collection of CA certificates to allow as intermediate CAs when
-     *                            {@code certificateChain} doesn't contain them.
+     * @param issuerCertificates  a collection of intermediate and root CA certificates used the purpose of path
+     *                            validation, but that aren't trusted issuers. Root CAs are used as Trust Anchors.
      * @param issuerCrls          a collection of {@link X509CRL}s for CAs in {@code issuerCertificates}, if any.
      * @throws UaException if a chain of trust could not be established.
      */
@@ -120,10 +127,17 @@ public class CertificateValidationUtil {
         }
 
         try {
-            Set<TrustAnchor> trustAnchors = trustedCertificates.stream()
-                .filter(CertificateValidationUtil::certificateIsCa)
-                .map(c -> new TrustAnchor(c, null))
-                .collect(Collectors.toSet());
+            Set<TrustAnchor> trustAnchors = new HashSet<>();
+            for (X509Certificate c : trustedCertificates) {
+                if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
+                    trustAnchors.add(new TrustAnchor(c, null));
+                }
+            }
+            for (X509Certificate c : issuerCertificates) {
+                if (certificateIsCa(c) && certificateIsSelfSigned(c)) {
+                    trustAnchors.add(new TrustAnchor(c, null));
+                }
+            }
 
             X509CertSelector selector = new X509CertSelector();
             selector.setCertificate(certificate);
@@ -132,13 +146,19 @@ public class CertificateValidationUtil {
 
             // Add a CertStore containing any intermediate certs and CRLs
             Collection<Object> collection = Lists.newArrayList();
-
             collection.addAll(certificateChain.subList(1, certificateChain.size()));
-            collection.addAll(
-                issuerCertificates.stream()
-                    .filter(CertificateValidationUtil::certificateIsCa)
-                    .collect(Collectors.toList())
-            );
+
+            for (X509Certificate c : trustedCertificates) {
+                if (certificateIsCa(c) && !certificateIsSelfSigned(c)) {
+                    collection.add(c);
+                }
+            }
+            for (X509Certificate c : issuerCertificates) {
+                if (certificateIsCa(c) && !certificateIsSelfSigned(c)) {
+                    collection.add(c);
+                }
+            }
+
             collection.addAll(trustedCrls);
             collection.addAll(issuerCrls);
 
@@ -169,10 +189,27 @@ public class CertificateValidationUtil {
 
             PKIXCertPathBuilderResult result = (PKIXCertPathBuilderResult) builder.build(params);
 
-            LOGGER.debug("Validated certificate path: {}", result.getCertPath());
+            List<X509Certificate> certificatePath = new ArrayList<>();
+
+            result.getCertPath().getCertificates()
+                .stream()
+                .map(X509Certificate.class::cast)
+                .forEach(certificatePath::add);
+
+            certificatePath.add(result.getTrustAnchor().getTrustedCert());
+
+            LOGGER.debug("certificate path: {}", certificatePath);
+
+            if (certificatePath.stream().noneMatch(trustedCertificates::contains)) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
+                    "certificate path did not contain a trusted certificate");
+            }
         } catch (Throwable t) {
-            LOGGER.debug("PKIX path validation failed: {}", t.getMessage());
-            throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
+            LOGGER.debug("PKIX certificate path validation failed: {}", t.getMessage());
+
+            throw new UaException(
+                StatusCodes.Bad_SecurityChecksFailed,
+                "PKIX certificate path validation failed");
         }
     }
 
@@ -184,6 +221,25 @@ public class CertificateValidationUtil {
      */
     private static boolean certificateIsCa(X509Certificate certificate) {
         return certificate.getKeyUsage()[5];
+    }
+
+    /**
+     * Return {@code true} if a given {@link X509Certificate} is self-signed.
+     *
+     * @return {@code true} if a given {@link X509Certificate} is self-signed.
+     */
+    private static boolean certificateIsSelfSigned(X509Certificate cert) throws UaException {
+        try {
+            // verify certificate signature with its own public key
+            PublicKey key = cert.getPublicKey();
+            cert.verify(key);
+            return true;
+        } catch (SignatureException | InvalidKeyException sigEx) {
+            // invalid signature or key: not self-signed
+            return false;
+        } catch (Exception e) {
+            throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
+        }
     }
 
     public static void validateCertificateValidity(X509Certificate certificate) throws UaException {

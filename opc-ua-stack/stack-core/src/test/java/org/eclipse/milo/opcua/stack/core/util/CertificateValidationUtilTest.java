@@ -99,31 +99,33 @@ public class CertificateValidationUtilTest {
     @Test
     public void testVerifyTrustChain_LeafIntermediateSigned() throws Exception {
         // chain: leaf
-        // anchors: ca-intermediate
+        // trusted: ca-intermedate
+        // issuers: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
                 newHashSet(caIntermediate),
-                emptySet()
+                newHashSet(caRoot)
             );
         }
 
         // chain: leaf, ca-intermediate
-        // anchors: ca-intermediate
+        // trusted: ca-intermediate
+        // issuers: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
                 newHashSet(caIntermediate),
-                emptySet()
+                newHashSet(caRoot)
             );
         }
 
         // chain: leaf, ca-intermediate
-        // anchors: ca-root
+        // trusted: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
 
@@ -135,19 +137,20 @@ public class CertificateValidationUtilTest {
         }
 
         // chain: leaf, ca-intermediate, ca-root
-        // anchors: ca-intermediate
+        // trusted: ca-intermediate
+        // issuers: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
 
             CertificateValidationUtil.verifyTrustChain(
                 certificateChain,
                 newHashSet(caIntermediate),
-                emptySet()
+                newHashSet(caRoot)
             );
         }
 
         // chain: leaf, ca-intermediate, ca-root
-        // anchors: ca-root
+        // trusted: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
 
@@ -159,7 +162,7 @@ public class CertificateValidationUtilTest {
         }
 
         // chain: leaf, ca-intermediate, ca-root
-        // anchors: ca-intermediate, ca-root
+        // trusted: ca-intermediate, ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
 
@@ -174,7 +177,8 @@ public class CertificateValidationUtilTest {
     @Test
     public void testVerifyTrustChain_LeafIntermediateSigned_Revoked() throws Exception {
         // chain: leaf
-        // anchors: ca-intermediate
+        // trusted: ca-intermediate
+        // issuers: ca--root
         // crls: ca-intermediate revokes leaf
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
@@ -190,15 +194,16 @@ public class CertificateValidationUtilTest {
                                 ALIAS_CA_INTERMEDIATE, "password".toCharArray()),
                             leafIntermediateSigned)
                     ),
-                    emptySet(),
+                    newHashSet(caRoot),
                     emptySet()
                 )
             );
         }
 
         // chain: leaf
-        // anchors: ca-intermediate, ca-root
-        // crls: ca-root revokes ca-leaf
+        // trusted: ca-intermediate
+        // issuers: ca-root
+        // crls: ca-root revokes ca-intermediate
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
@@ -213,14 +218,15 @@ public class CertificateValidationUtilTest {
                                 ALIAS_CA_ROOT, "password".toCharArray()),
                             caIntermediate)
                     ),
-                    emptySet(),
+                    newHashSet(caRoot),
                     emptySet()
                 )
             );
         }
 
         // chain: leaf
-        // anchors: ca-intermediate, ca-root
+        // trusted: ca-intermediate
+        // issuers: ca-root
         // crls: ca-root revokes leaf
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
@@ -236,7 +242,7 @@ public class CertificateValidationUtilTest {
                                 ALIAS_CA_ROOT, "password".toCharArray()),
                             leafIntermediateSigned)
                     ),
-                    emptySet(),
+                    newHashSet(caRoot),
                     emptySet()
                 )
             );
@@ -289,8 +295,8 @@ public class CertificateValidationUtilTest {
     @Test
     public void testVerifyTrustChain_IntermediateIssuer() throws Exception {
         // chain: leaf
+        // trusted: ca-root
         // issuers: ca-intermediate
-        // anchors: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
 
@@ -304,8 +310,8 @@ public class CertificateValidationUtilTest {
         }
 
         // chain: leaf, ca-intermediate
+        // trusted: ca-root
         // issuers: ca-intermediate
-        // anchors: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate);
 
@@ -319,8 +325,8 @@ public class CertificateValidationUtilTest {
         }
 
         // chain: leaf, ca-intermediate, ca-root
+        // trusted: ca-root
         // issuers: ca-intermediate
-        // anchors: ca-root
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned, caIntermediate, caRoot);
 
@@ -337,8 +343,8 @@ public class CertificateValidationUtilTest {
     @Test
     public void testVerifyTrustChain_IssuerRevoked() {
         // chain: leaf
+        // trusted: ca-root
         // issuers: ca-intermediate
-        // anchors: ca-root
         // crls: ca-root revokes ca-intermediate
         {
             List<X509Certificate> certificateChain = newArrayList(leafIntermediateSigned);
