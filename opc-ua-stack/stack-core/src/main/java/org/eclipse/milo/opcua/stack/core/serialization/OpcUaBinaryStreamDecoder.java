@@ -106,7 +106,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             T[] array = (T[]) Array.newInstance(clazz, length);
 
             for (int i = 0; i < length; i++) {
-                Array.set(array, i, read.get());
+                array[i] = read.get();
             }
 
             return array;
@@ -699,7 +699,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             T[] array = (T[]) Array.newInstance(clazz, length);
 
             for (int i = 0; i < length; i++) {
-                Array.set(array, i, decoder.apply(field));
+                array[i] = decoder.apply(field);
             }
 
             return array;
