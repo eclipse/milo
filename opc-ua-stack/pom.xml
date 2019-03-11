@@ -14,7 +14,7 @@
     <properties>
         <bouncycastle.version>1.61</bouncycastle.version>
         <guava.version>26.0-jre</guava.version>
-        <javassist.version>3.20.0-GA</javassist.version>
+        <javassist.version>3.23.1-GA</javassist.version>
         <jsr305.version>3.0.2</jsr305.version>
         <netty.version>4.1.34.Final</netty.version>
         <slf4j.version>1.7.25</slf4j.version>
