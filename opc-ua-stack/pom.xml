@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <bouncycastle.version>1.60</bouncycastle.version>
+        <bouncycastle.version>1.61</bouncycastle.version>
         <guava.version>26.0-jre</guava.version>
         <javassist.version>3.20.0-GA</javassist.version>
         <jsr305.version>3.0.2</jsr305.version>
