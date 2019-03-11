@@ -121,6 +121,41 @@ public class ExecutionQueue {
                 log.warn("Uncaught Throwable during execution.", throwable);
             }
 
+            InlineTask inlineTask = null;
+
+            synchronized (queueLock) {
+                if (queue.isEmpty() || paused) {
+                    pending--;
+                } else {
+                    // pending count remains the same
+                    inlineTask = new InlineTask(queue.poll());
+                }
+            }
+
+            if (inlineTask != null) {
+                inlineTask.run();
+            }
+        }
+    }
+
+    private class InlineTask implements Runnable {
+
+        private final Runnable runnable;
+
+        InlineTask(Runnable runnable) {
+            Preconditions.checkNotNull(runnable);
+
+            this.runnable = runnable;
+        }
+
+        @Override
+        public void run() {
+            try {
+                runnable.run();
+            } catch (Throwable throwable) {
+                log.warn("Uncaught Throwable during execution.", throwable);
+            }
+
             synchronized (queueLock) {
                 if (queue.isEmpty() || paused) {
                     pending--;
