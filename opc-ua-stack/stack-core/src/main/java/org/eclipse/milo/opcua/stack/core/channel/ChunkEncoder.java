@@ -210,7 +210,7 @@ public final class ChunkEncoder {
                         ByteBuf copyBuffer = chunkBuffer.copy();
                         ByteBuffer plainTextNioBuffer = copyBuffer.nioBuffer();
 
-                        Cipher cipher = getAndInitializeCipher(channel);
+                        Cipher cipher = getCipher(channel);
 
                         if (isAsymmetric()) {
                             for (int blockNumber = 0; blockNumber < blockCount; blockNumber++) {
@@ -262,7 +262,7 @@ public final class ChunkEncoder {
 
         protected abstract void encodeSecurityHeader(SecureChannel channel, ByteBuf buffer) throws UaException;
 
-        protected abstract Cipher getAndInitializeCipher(SecureChannel channel) throws UaException;
+        protected abstract Cipher getCipher(SecureChannel channel) throws UaException;
 
         protected abstract int getSecurityHeaderSize(SecureChannel channel) throws UaException;
 
@@ -292,7 +292,7 @@ public final class ChunkEncoder {
         }
 
         @Override
-        public Cipher getAndInitializeCipher(SecureChannel channel) throws UaException {
+        public Cipher getCipher(SecureChannel channel) throws UaException {
             Certificate remoteCertificate = channel.getRemoteCertificate();
 
             assert (remoteCertificate != null);
@@ -365,15 +365,22 @@ public final class ChunkEncoder {
     private class SymmetricEncoder extends AbstractEncoder {
 
         private volatile ChannelSecurity.SecurityKeys securityKeys;
+        private volatile Cipher cipher = null;
+        private volatile long cipherId = -1;
 
         @Override
-        public void encodeSecurityHeader(SecureChannel channel, ByteBuf buffer) {
+        public void encodeSecurityHeader(SecureChannel channel, ByteBuf buffer) throws UaException {
             ChannelSecurity channelSecurity = channel.getChannelSecurity();
             long tokenId = channelSecurity != null ? channelSecurity.getCurrentToken().getTokenId().longValue() : 0L;
 
             SymmetricSecurityHeader.encode(new SymmetricSecurityHeader(tokenId), buffer);
 
             securityKeys = channelSecurity != null ? channelSecurity.getCurrentKeys() : null;
+
+            if (cipherId != tokenId && channel.isSymmetricEncryptionEnabled()) {
+                cipher = initCipher(channel);
+                cipherId = tokenId;
+            }
         }
 
         @Override
@@ -389,24 +396,9 @@ public final class ChunkEncoder {
         }
 
         @Override
-        public Cipher getAndInitializeCipher(SecureChannel channel) throws UaException {
-            try {
-                String transformation = channel.getSecurityPolicy()
-                    .getSymmetricEncryptionAlgorithm().getTransformation();
-                ChannelSecurity.SecretKeys secretKeys = channel.getEncryptionKeys(securityKeys);
-
-                SecretKeySpec keySpec = new SecretKeySpec(secretKeys.getEncryptionKey(), "AES");
-                IvParameterSpec ivSpec = new IvParameterSpec(secretKeys.getInitializationVector());
-
-                Cipher cipher = Cipher.getInstance(transformation);
-                cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-
-                assert (cipher.getBlockSize() == channel.getSymmetricBlockSize());
-
-                return cipher;
-            } catch (GeneralSecurityException e) {
-                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
-            }
+        public Cipher getCipher(SecureChannel channel) {
+            assert cipher != null;
+            return cipher;
         }
 
         @Override
@@ -442,6 +434,26 @@ public final class ChunkEncoder {
         @Override
         public boolean isSigningEnabled(SecureChannel channel) {
             return channel.isSymmetricSigningEnabled();
+        }
+
+        private Cipher initCipher(SecureChannel channel) throws UaException {
+            try {
+                String transformation = channel.getSecurityPolicy()
+                    .getSymmetricEncryptionAlgorithm().getTransformation();
+                ChannelSecurity.SecretKeys secretKeys = channel.getEncryptionKeys(securityKeys);
+
+                SecretKeySpec keySpec = new SecretKeySpec(secretKeys.getEncryptionKey(), "AES");
+                IvParameterSpec ivSpec = new IvParameterSpec(secretKeys.getInitializationVector());
+
+                Cipher cipher = Cipher.getInstance(transformation);
+                cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
+
+                assert (cipher.getBlockSize() == channel.getSymmetricBlockSize());
+
+                return cipher;
+            } catch (GeneralSecurityException e) {
+                throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
+            }
         }
 
     }
