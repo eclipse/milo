@@ -346,6 +346,8 @@ public final class ChunkDecoder {
     private final class SymmetricDecoder extends AbstractDecoder {
 
         private volatile ChannelSecurity.SecurityKeys securityKeys;
+        private volatile Cipher cipher = null;
+        private volatile long cipherId = -1;
 
         @Override
         public void readSecurityHeader(SecureChannel channel, ByteBuf chunkBuffer) throws UaException {
@@ -383,27 +385,18 @@ public final class ChunkDecoder {
                         securityKeys = channelSecurity.getPreviousKeys().get();
                     }
                 }
+
+                if (cipherId != receivedTokenId && channel.isSymmetricEncryptionEnabled()) {
+                    cipher = initCipher(channel);
+                    cipherId = receivedTokenId;
+                }
             }
         }
 
         @Override
-        public Cipher getCipher(SecureChannel channel) throws UaException {
-            try {
-                String transformation = channel.getSecurityPolicy()
-                    .getSymmetricEncryptionAlgorithm().getTransformation();
-
-                ChannelSecurity.SecretKeys decryptionKeys = channel.getDecryptionKeys(securityKeys);
-
-                SecretKeySpec keySpec = new SecretKeySpec(decryptionKeys.getEncryptionKey(), "AES");
-                IvParameterSpec ivSpec = new IvParameterSpec(decryptionKeys.getInitializationVector());
-
-                Cipher cipher = Cipher.getInstance(transformation);
-                cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-
-                return cipher;
-            } catch (GeneralSecurityException e) {
-                throw new UaException(StatusCodes.Bad_InternalError, e);
-            }
+        public Cipher getCipher(SecureChannel channel) {
+            assert cipher != null;
+            return cipher;
         }
 
         @Override
@@ -450,6 +443,25 @@ public final class ChunkDecoder {
         @Override
         public boolean isSigningEnabled(SecureChannel channel) {
             return channel.isSymmetricSigningEnabled();
+        }
+
+        private Cipher initCipher(SecureChannel channel) throws UaException {
+            try {
+                String transformation = channel.getSecurityPolicy()
+                    .getSymmetricEncryptionAlgorithm().getTransformation();
+
+                ChannelSecurity.SecretKeys decryptionKeys = channel.getDecryptionKeys(securityKeys);
+
+                SecretKeySpec keySpec = new SecretKeySpec(decryptionKeys.getEncryptionKey(), "AES");
+                IvParameterSpec ivSpec = new IvParameterSpec(decryptionKeys.getInitializationVector());
+
+                Cipher cipher = Cipher.getInstance(transformation);
+                cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
+
+                return cipher;
+            } catch (GeneralSecurityException e) {
+                throw new UaException(StatusCodes.Bad_InternalError, e);
+            }
         }
 
     }
