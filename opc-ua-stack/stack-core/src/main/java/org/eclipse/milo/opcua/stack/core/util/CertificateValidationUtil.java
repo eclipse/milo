@@ -119,13 +119,6 @@ public class CertificateValidationUtil {
 
         X509Certificate certificate = certificateChain.get(0);
 
-        if (trustedCertificates.stream()
-            .anyMatch(c -> Objects.equals(certificate, c))) {
-
-            LOGGER.debug("Found certificate in trusted certificates: {}", certificate);
-            return;
-        }
-
         try {
             Set<TrustAnchor> trustAnchors = new HashSet<>();
             for (X509Certificate c : trustedCertificates) {
@@ -220,7 +213,13 @@ public class CertificateValidationUtil {
      * @return {@code true} if {@code certificate}'s KeyUsage extension indicates it is a CA.
      */
     private static boolean certificateIsCa(X509Certificate certificate) {
-        return certificate.getKeyUsage()[5];
+        boolean[] keyUsage = certificate.getKeyUsage();
+
+        try {
+            return keyUsage != null && keyUsage[5];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return false;
+        }
     }
 
     /**
@@ -230,12 +229,14 @@ public class CertificateValidationUtil {
      */
     private static boolean certificateIsSelfSigned(X509Certificate cert) throws UaException {
         try {
-            // verify certificate signature with its own public key
+            // Verify certificate signature with its own public key
             PublicKey key = cert.getPublicKey();
             cert.verify(key);
-            return true;
+
+            // Check that subject and issuer are the same
+            return Objects.equals(cert.getSubjectX500Principal(), cert.getIssuerX500Principal());
         } catch (SignatureException | InvalidKeyException sigEx) {
-            // invalid signature or key: not self-signed
+            // Invalid signature or key: not self-signed
             return false;
         } catch (Exception e) {
             throw new UaException(StatusCodes.Bad_CertificateInvalid, e);
@@ -296,7 +297,8 @@ public class CertificateValidationUtil {
      * @param applicationUri the URI to validate.
      * @throws UaException if the certificate is invalid, does not contain a uri, or contains a uri that does not match.
      */
-    public static void validateApplicationUri(X509Certificate certificate, String applicationUri) throws UaException {
+    public static void validateApplicationUri(X509Certificate certificate, String applicationUri) throws
+        UaException {
         if (!validateSubjectAltNameField(certificate, SUBJECT_ALT_NAME_URI, applicationUri::equals)) {
             throw new UaException(StatusCodes.Bad_CertificateUriInvalid);
         }
