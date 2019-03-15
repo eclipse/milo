@@ -96,6 +96,12 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
         referencesBySource.remove(reference.getSourceNodeId(), reference);
 
         reference.getTargetNodeId().local().ifPresent(id -> referencesByTarget.remove(id, reference));
+
+        reference.invert().ifPresent(inverted -> {
+            referencesBySource.remove(inverted.getSourceNodeId(), inverted);
+
+            inverted.getTargetNodeId().local().ifPresent(id -> referencesByTarget.remove(id, inverted));
+        });
     }
 
     @Override
