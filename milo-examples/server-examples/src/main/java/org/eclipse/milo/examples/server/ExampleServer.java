@@ -158,7 +158,7 @@ public class ExampleServer {
 
         server.getAddressSpaceManager().register(exampleNamespace);
 
-        exampleNamespace.initialize();
+        exampleNamespace.startup();
     }
 
     private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {

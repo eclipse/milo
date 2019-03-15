@@ -10,17 +10,10 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractNodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -97,45 +90,45 @@ public class EventFactory {
 
     }
 
-    private static class EventNodeManager extends AbstractNodeManager<UaNode> {
-
-        private final AddressSpaceManager addressSpaceManager;
-
-        private EventNodeManager(AddressSpaceManager addressSpaceManager) {
-            this.addressSpaceManager = addressSpaceManager;
-        }
-
-        @Override
-        public boolean containsNode(NodeId nodeId) {
-            return super.containsNode(nodeId) ||
-                addressSpaceManager.getNodeManager(nodeId)
-                    .map(n -> n.containsNode(nodeId))
-                    .orElse(false);
-        }
-
-        @Override
-        public Optional<UaNode> getNode(NodeId nodeId) {
-            Optional<UaNode> node = super.getNode(nodeId);
-
-            if (node.isPresent()) {
-                return node;
-            } else {
-                return addressSpaceManager.getNodeManager(nodeId)
-                    .flatMap(n -> n.getNode(nodeId));
-            }
-        }
-
-        @Override
-        public List<Reference> getReferences(NodeId nodeId) {
-            if (super.containsNode(nodeId)) {
-                return super.getReferences(nodeId);
-            } else {
-                return addressSpaceManager.getNodeManager(nodeId)
-                    .map(n -> n.getReferences(nodeId))
-                    .orElse(Collections.emptyList());
-            }
-        }
-
-    }
+//    private static class EventNodeManager extends AbstractNodeManager<UaNode> {
+//
+//        private final AddressSpaceManager addressSpaceManager;
+//
+//        private EventNodeManager(AddressSpaceManager addressSpaceManager) {
+//            this.addressSpaceManager = addressSpaceManager;
+//        }
+//
+//        @Override
+//        public boolean containsNode(NodeId nodeId) {
+//            return super.containsNode(nodeId) ||
+//                addressSpaceManager.getNodeManager(nodeId)
+//                    .map(n -> n.containsNode(nodeId))
+//                    .orElse(false);
+//        }
+//
+//        @Override
+//        public Optional<UaNode> getNode(NodeId nodeId) {
+//            Optional<UaNode> node = super.getNode(nodeId);
+//
+//            if (node.isPresent()) {
+//                return node;
+//            } else {
+//                return addressSpaceManager.getNodeManager(nodeId)
+//                    .flatMap(n -> n.getNode(nodeId));
+//            }
+//        }
+//
+//        @Override
+//        public List<Reference> getReferences(NodeId nodeId) {
+//            if (super.containsNode(nodeId)) {
+//                return super.getReferences(nodeId);
+//            } else {
+//                return addressSpaceManager.getNodeManager(nodeId)
+//                    .map(n -> n.getReferences(nodeId))
+//                    .orElse(Collections.emptyList());
+//            }
+//        }
+//
+//    }
 
 }

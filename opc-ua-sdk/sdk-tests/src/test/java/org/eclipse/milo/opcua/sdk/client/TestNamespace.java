@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.client;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import com.google.common.collect.Iterators;
@@ -23,33 +22,25 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +49,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class TestNamespace implements Namespace {
+public class TestNamespace extends ManagedNamespace {
 
     public static final String NAMESPACE_URI = "urn:eclipse:milo:opcua:test-namespace";
 
@@ -73,6 +64,8 @@ public class TestNamespace implements Namespace {
     private final UShort namespaceIndex;
 
     public TestNamespace(OpcUaServer server, UShort namespaceIndex) {
+        super(server, namespaceIndex);
+
         this.server = server;
         this.namespaceIndex = namespaceIndex;
 
@@ -112,82 +105,8 @@ public class TestNamespace implements Namespace {
     }
 
     @Override
-    public UShort getNamespaceIndex() {
-        return namespaceIndex;
-    }
-
-    @Override
     public String getNamespaceUri() {
         return NAMESPACE_URI;
-    }
-
-    @Override
-    public Optional<NodeManager<UaNode>> getNodeManager() {
-        return Optional.of(nodeManager);
-    }
-
-    @Override
-    public void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds) {
-        List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
-
-        for (ReadValueId id : readValueIds) {
-            UaServerNode node = nodeManager.get(id.getNodeId());
-
-            if (node != null) {
-                DataValue value = node.readAttribute(
-                    new AttributeContext(context),
-                    id.getAttributeId(),
-                    timestamps,
-                    id.getIndexRange(),
-                    id.getDataEncoding()
-                );
-
-                if (logger.isTraceEnabled()) {
-                    Variant variant = value.getValue();
-                    Object o = variant != null ? variant.getValue() : null;
-                    logger.trace("Read value={} from attributeId={} of {}",
-                        o, id.getAttributeId(), id.getNodeId());
-                }
-
-                results.add(value);
-            } else {
-                results.add(new DataValue(new StatusCode(StatusCodes.Bad_NodeIdUnknown)));
-            }
-        }
-
-        context.complete(results);
-    }
-
-    @Override
-    public void write(WriteContext context, List<WriteValue> writeValues) {
-        List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
-
-        for (WriteValue writeValue : writeValues) {
-            try {
-                UaServerNode node = nodeManager.getNode(writeValue.getNodeId())
-                    .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
-
-                node.writeAttribute(
-                    new AttributeContext(context),
-                    writeValue.getAttributeId(),
-                    writeValue.getValue(),
-                    writeValue.getIndexRange()
-                );
-
-                if (logger.isTraceEnabled()) {
-                    Variant variant = writeValue.getValue().getValue();
-                    Object o = variant != null ? variant.getValue() : null;
-                    logger.trace("Wrote value={} to attributeId={} of {}",
-                        o, writeValue.getAttributeId(), writeValue.getNodeId());
-                }
-
-                results.add(StatusCode.GOOD);
-            } catch (UaException e) {
-                results.add(e.getStatusCode());
-            }
-        }
-
-        context.complete(results);
     }
 
     @Override

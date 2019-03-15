@@ -45,11 +45,11 @@ public interface ViewServices {
      * <p>
      * The Node identified by {@code sourceNodeId} may be managed by another AddressSpace.
      *
-     * @param context      TODO
-     * @param view         TODO
-     * @param sourceNodeId TODO
+     * @param context TODO
+     * @param view    TODO
+     * @param nodeId  TODO
      */
-    void getReferences(BrowseContext context, ViewDescription view, NodeId sourceNodeId);
+    void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
 
     final class BrowseContext extends AsyncOperationContextImpl<List<Reference>> implements AccessContext {

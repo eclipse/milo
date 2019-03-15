@@ -342,9 +342,7 @@ public class BrowseHelper {
 
         private CompletableFuture<ExpandedNodeId> getTypeDefinition(NodeId nodeId) {
             Optional<ExpandedNodeId> typeDefinitionId = server.getAddressSpaceManager()
-                .getNodeManager(nodeId)
-                .map(n -> n.getReferences(nodeId, Reference.HAS_TYPE_DEFINITION_PREDICATE))
-                .orElse(Collections.emptyList())
+                .getManagedReferences(nodeId, Reference.HAS_TYPE_DEFINITION_PREDICATE)
                 .stream()
                 .findFirst()
                 .map(Reference::getTargetNodeId);

@@ -180,11 +180,6 @@ public abstract class UaNode implements UaServerNode {
         fireAttributeChanged(AttributeId.UserWriteMask, userWriteMask);
     }
 
-    @Override
-    public final UaNodeContext getNodeContext() {
-        return context;
-    }
-
     /**
      * Delete this Node, its References, and all its child Nodes and their References, recursively.
      */
@@ -202,6 +197,15 @@ public abstract class UaNode implements UaServerNode {
         }
     }
 
+    @Override
+    public final UaNodeContext getNodeContext() {
+        return context;
+    }
+
+    public final NodeManager<UaNode> getNodeManager() {
+        return context.getNodeManager();
+    }
+
     protected Optional<UaNode> getManagedNode(NodeId nodeId) {
         //return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
         return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
@@ -212,22 +216,12 @@ public abstract class UaNode implements UaServerNode {
         return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
     }
 
-    public ImmutableList<Reference> getManagedReferences() {
-        // TODO should this be *all* references or just references tracked by this Node's LegacyNodeManager?
-        //  Getting all references like this is dangerous because a Namespace/AddressSpace would naturally answer
-        //  getReferencesFrom/To by calling node.getReferences()...
-
+    public ImmutableList<Reference> getReferences() {
         return ImmutableList.copyOf(
             context.getServer()
                 .getAddressSpaceManager()
                 .getManagedReferences(nodeId)
         );
-
-//        return ImmutableList.copyOf(
-//            getNodeManager(nodeId)
-//                .map(n -> n.getReferences(nodeId))
-//                .orElse(Collections.emptyList())
-//        );
     }
 
     public void addReference(Reference reference) {
@@ -304,8 +298,7 @@ public abstract class UaNode implements UaServerNode {
 
             addProperty(propertyNode);
 
-            context.getNodeManager(propertyNodeId)
-                .ifPresent(n -> n.addNode(propertyNode));
+            context.getNodeManager().addNode(propertyNode);
 
             return propertyNode;
         });
@@ -326,7 +319,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public Optional<VariableNode> getPropertyNode(QualifiedName browseName) {
-        Node node = getManagedReferences()
+        Node node = getReferences()
             .stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
@@ -407,7 +400,7 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getManagedReferences()
+        return getReferences()
             .stream()
             .filter(referencePredicate)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
@@ -431,7 +424,7 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getManagedReferences()
+        return getReferences()
             .stream()
             .filter(referencePredicate)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
@@ -462,7 +455,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<ObjectNode> getObjectComponent(QualifiedName browseName) {
-        ObjectNode node = (ObjectNode) getManagedReferences()
+        ObjectNode node = (ObjectNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
@@ -487,7 +480,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<VariableNode> getVariableComponent(QualifiedName browseName) {
-        VariableNode node = (VariableNode) getManagedReferences()
+        VariableNode node = (VariableNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))

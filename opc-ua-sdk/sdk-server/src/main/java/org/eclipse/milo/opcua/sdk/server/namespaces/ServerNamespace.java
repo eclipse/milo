@@ -14,69 +14,40 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.List;
-import java.util.Optional;
 
-import com.google.common.collect.Lists;
 import com.sun.management.UnixOperatingSystemMXBean;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
-import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 @SuppressWarnings("restriction")
-public class ServerNamespace implements Namespace {
+public class ServerNamespace extends ManagedNamespace {
 
     public static final UShort NAMESPACE_INDEX = ushort(1);
 
-    private final UaNodeManager nodeManager = new UaNodeManager();
-
     private final SubscriptionModel subscriptionModel;
-    private final UaNodeContext nodeContext;
 
-    private final OpcUaServer server;
     private final String namespaceUri;
 
     public ServerNamespace(OpcUaServer server, String namespaceUri) {
-        this.server = server;
+        super(server, NAMESPACE_INDEX);
+
         this.namespaceUri = namespaceUri;
 
         subscriptionModel = new SubscriptionModel(server, this);
-
-        nodeContext = new UaNodeContext() {
-            @Override
-            public OpcUaServer getServer() {
-                return server;
-            }
-
-            @Override
-            public NodeManager<UaNode> getNodeManager() {
-                return nodeManager;
-            }
-        };
     }
 
     public void initialize() {
@@ -84,55 +55,8 @@ public class ServerNamespace implements Namespace {
     }
 
     @Override
-    public UShort getNamespaceIndex() {
-        return NAMESPACE_INDEX;
-    }
-
-    @Override
     public String getNamespaceUri() {
         return namespaceUri;
-    }
-
-    @Override
-    public Optional<NodeManager<UaNode>> getNodeManager() {
-        return Optional.of(nodeManager);
-    }
-
-    @Override
-    public void read(
-        ReadContext context,
-        Double maxAge,
-        TimestampsToReturn timestamps,
-        List<ReadValueId> readValueIds) {
-
-        List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
-
-        for (ReadValueId id : readValueIds) {
-            UaServerNode node = nodeManager.get(id.getNodeId());
-
-            DataValue value = (node != null) ?
-                node.readAttribute(new AttributeContext(context), id.getAttributeId()) :
-                new DataValue(StatusCodes.Bad_NodeIdUnknown);
-
-            results.add(value);
-        }
-
-        context.complete(results);
-    }
-
-    @Override
-    public void write(WriteContext context, List<WriteValue> writeValues) {
-        List<StatusCode> results = writeValues.stream()
-            .map(value -> {
-                if (nodeManager.containsNode(value.getNodeId())) {
-                    return new StatusCode(StatusCodes.Bad_NotWritable);
-                } else {
-                    return new StatusCode(StatusCodes.Bad_NodeIdUnknown);
-                }
-            })
-            .collect(toList());
-
-        context.complete(results);
     }
 
     @Override
@@ -156,7 +80,7 @@ public class ServerNamespace implements Namespace {
     }
 
     private void addVendorServerInfoNodes() {
-        nodeManager.getNode(Identifiers.Server_VendorServerInfo).ifPresent(node -> {
+        getNodeManager().getNode(Identifiers.Server_VendorServerInfo).ifPresent(node -> {
             UaObjectNode vendorServerInfo = (UaObjectNode) node;
 
             // standard Java API
@@ -168,12 +92,11 @@ public class ServerNamespace implements Namespace {
             // com.sun API
             addVendorInfoSunJmx(vendorServerInfo);
         });
-
     }
 
     private void addVendorInfoPlainJava(UaObjectNode vendorServerInfo) {
         UaVariableNode availableProcessors = new UaVariableNode(
-            nodeContext,
+            getNodeContext(),
             new NodeId(1, "VendorServerInfo/AvailableProcessors"),
             new QualifiedName(1, "AvailableProcessors"),
             LocalizedText.english("AvailableProcessors")) {
@@ -184,7 +107,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         availableProcessors.setDataType(Identifiers.Int32);
-        nodeManager.addNode(availableProcessors);
+        getNodeManager().addNode(availableProcessors);
 
         vendorServerInfo.addComponent(availableProcessors);
     }
@@ -194,7 +117,7 @@ public class ServerNamespace implements Namespace {
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
         UaVariableNode usedMemory = new UaVariableNode(
-            nodeContext,
+            getNodeContext(),
             new NodeId(1, "VendorServerInfo/UsedMemory"),
             new QualifiedName(1, "UsedMemory"),
             LocalizedText.english("UsedMemory")) {
@@ -204,10 +127,10 @@ public class ServerNamespace implements Namespace {
             }
         };
         usedMemory.setDataType(Identifiers.Int64);
-        nodeManager.addNode(usedMemory);
+        getNodeManager().addNode(usedMemory);
 
         UaVariableNode maxMemory = new UaVariableNode(
-            nodeContext,
+            getNodeContext(),
             new NodeId(1, "VendorServerInfo/MaxMemory"),
             new QualifiedName(1, "MaxMemory"),
             LocalizedText.english("MaxMemory")) {
@@ -217,10 +140,10 @@ public class ServerNamespace implements Namespace {
             }
         };
         maxMemory.setDataType(Identifiers.Int64);
-        nodeManager.addNode(maxMemory);
+        getNodeManager().addNode(maxMemory);
 
         UaVariableNode osName = new UaVariableNode(
-            nodeContext,
+            getNodeContext(),
             new NodeId(1, "VendorServerInfo/OsName"),
             new QualifiedName(1, "OsName"),
             LocalizedText.english("OsName")) {
@@ -230,10 +153,10 @@ public class ServerNamespace implements Namespace {
             }
         };
         osName.setDataType(Identifiers.String);
-        nodeManager.addNode(osName);
+        getNodeManager().addNode(osName);
 
         UaVariableNode osArch = new UaVariableNode(
-            nodeContext,
+            getNodeContext(),
             new NodeId(1, "VendorServerInfo/OsArch"),
             new QualifiedName(1, "OsArch"),
             LocalizedText.english("OsArch")) {
@@ -243,10 +166,10 @@ public class ServerNamespace implements Namespace {
             }
         };
         osArch.setDataType(Identifiers.String);
-        nodeManager.addNode(osArch);
+        getNodeManager().addNode(osArch);
 
         UaVariableNode osVersion = new UaVariableNode(
-            nodeContext,
+            getNodeContext(),
             new NodeId(1, "VendorServerInfo/OsVersion"),
             new QualifiedName(1, "OsVersion"),
             LocalizedText.english("OsVersion")) {
@@ -256,7 +179,7 @@ public class ServerNamespace implements Namespace {
             }
         };
         osVersion.setDataType(Identifiers.String);
-        nodeManager.addNode(osVersion);
+        getNodeManager().addNode(osVersion);
 
         vendorServerInfo.addComponent(usedMemory);
         vendorServerInfo.addComponent(maxMemory);
@@ -273,7 +196,7 @@ public class ServerNamespace implements Namespace {
                 (com.sun.management.OperatingSystemMXBean) osMxBean;
 
             UaVariableNode processCpuLoad = new UaVariableNode(
-                nodeContext,
+                getNodeContext(),
                 new NodeId(1, "VendorServerInfo/ProcessCpuLoad"),
                 new QualifiedName(1, "ProcessCpuLoad"),
                 LocalizedText.english("ProcessCpuLoad")) {
@@ -284,10 +207,10 @@ public class ServerNamespace implements Namespace {
                 }
             };
             processCpuLoad.setDataType(Identifiers.Double);
-            nodeManager.addNode(processCpuLoad);
+            getNodeManager().addNode(processCpuLoad);
 
             UaVariableNode systemCpuLoad = new UaVariableNode(
-                nodeContext,
+                getNodeContext(),
                 new NodeId(1, "VendorServerInfo/SystemCpuLoad"),
                 new QualifiedName(1, "SystemCpuLoad"),
                 LocalizedText.english("SystemCpuLoad")) {
@@ -297,7 +220,7 @@ public class ServerNamespace implements Namespace {
                 }
             };
             systemCpuLoad.setDataType(Identifiers.Double);
-            nodeManager.addNode(systemCpuLoad);
+            getNodeManager().addNode(systemCpuLoad);
 
             vendorServerInfo.addComponent(processCpuLoad);
             vendorServerInfo.addComponent(systemCpuLoad);
@@ -306,7 +229,7 @@ public class ServerNamespace implements Namespace {
                 UnixOperatingSystemMXBean unixBean = (UnixOperatingSystemMXBean) sunOsMxBean;
 
                 UaVariableNode openFileDescriptors = new UaVariableNode(
-                    nodeContext,
+                    getNodeContext(),
                     new NodeId(1, "VendorServerInfo/OpenFileDescriptors"),
                     new QualifiedName(1, "OpenFileDescriptors"),
                     LocalizedText.english("OpenFileDescriptors")) {
@@ -316,10 +239,10 @@ public class ServerNamespace implements Namespace {
                     }
                 };
                 openFileDescriptors.setDataType(Identifiers.Int64);
-                nodeManager.addNode(openFileDescriptors);
+                getNodeManager().addNode(openFileDescriptors);
 
                 UaVariableNode maxFileDescriptors = new UaVariableNode(
-                    nodeContext,
+                    getNodeContext(),
                     new NodeId(1, "VendorServerInfo/MaxFileDescriptors"),
                     new QualifiedName(1, "MaxFileDescriptors"),
                     LocalizedText.english("MaxFileDescriptors")) {
@@ -329,7 +252,7 @@ public class ServerNamespace implements Namespace {
                     }
                 };
                 maxFileDescriptors.setDataType(Identifiers.Int64);
-                nodeManager.addNode(maxFileDescriptors);
+                getNodeManager().addNode(maxFileDescriptors);
 
                 vendorServerInfo.addComponent(openFileDescriptors);
                 vendorServerInfo.addComponent(maxFileDescriptors);

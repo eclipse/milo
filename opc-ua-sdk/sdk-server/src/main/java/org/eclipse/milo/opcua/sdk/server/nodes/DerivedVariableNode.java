@@ -37,7 +37,7 @@ public abstract class DerivedVariableNode extends UaVariableNode {
             variableNode.getMinimumSamplingInterval(),
             variableNode.getHistorizing());
 
-        addReferences(variableNode.getManagedReferences());
+        addReferences(variableNode.getReferences());
     }
 
 }

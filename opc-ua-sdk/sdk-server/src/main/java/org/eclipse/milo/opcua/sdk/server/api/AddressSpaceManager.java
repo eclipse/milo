@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -29,12 +30,16 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class AddressSpaceManager {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
     private final List<NodeManager<UaNode>> nodeManagers = new CopyOnWriteArrayList<>();
@@ -45,30 +50,39 @@ public class AddressSpaceManager {
         this.server = server;
     }
 
-    public void register(AddressSpace addressSpace) {
-        addressSpaces.add(addressSpace);
-
-        addressSpace.getNodeManager().ifPresent(this::register);
+    public synchronized void register(AddressSpace addressSpace) {
+        if (!addressSpaces.contains(addressSpace)) {
+            addressSpaces.add(addressSpace);
+        } else {
+            logger.warn("AddressSpace already registered: {}", addressSpace);
+        }
     }
 
-    public void unregister(AddressSpace addressSpace) {
-        addressSpaces.remove(addressSpace);
-
-        addressSpace.getNodeManager().ifPresent(this::unregister);
+    public synchronized void unregister(AddressSpace addressSpace) {
+        if (addressSpaces.contains(addressSpace)) {
+            addressSpaces.remove(addressSpace);
+        } else {
+            logger.warn("AddressSpace not registered: {}", addressSpace);
+        }
     }
 
-    public void register(NodeManager<UaNode> nodeManager) {
-        nodeManagers.add(nodeManager);
+    public synchronized void register(NodeManager<UaNode> nodeManager) {
+        if (!nodeManagers.contains(nodeManager)) {
+            nodeManagers.add(nodeManager);
+        } else {
+            logger.warn("NodeManager already registered: {}", nodeManager);
+        }
     }
 
-    public void unregister(NodeManager<UaNode> nodeManager) {
-        nodeManagers.remove(nodeManager);
+    public synchronized void unregister(NodeManager<UaNode> nodeManager) {
+        if (nodeManagers.contains(nodeManager)) {
+            nodeManagers.remove(nodeManager);
+        } else {
+            logger.warn("NodeManager not registered: {}", nodeManager);
+        }
     }
 
-    public List<AddressSpace> getAddressSpaces() {
-        return new ArrayList<>(addressSpaces);
-    }
-
+    @Nullable
     public AddressSpace getAddressSpace(NodeId nodeId) {
         return addressSpaces.stream()
             .filter(asx -> asx.filter(nodeId))
@@ -76,35 +90,14 @@ public class AddressSpaceManager {
             .orElse(null); // TODO "empty" AddressSpace?
     }
 
+    @Nullable
     public AddressSpace getAddressSpace(ExpandedNodeId nodeId) {
         return nodeId.local()
             .map(this::getAddressSpace)
             .orElse(null);
     }
 
-    public Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
-        AddressSpace addressSpace = getAddressSpace(nodeId);
-
-        if (addressSpace != null) {
-            return addressSpace.getNodeManager();
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<NodeManager<UaNode>> getNodeManager(ExpandedNodeId nodeId) {
-        AddressSpace addressSpace = getAddressSpace(nodeId);
-
-        if (addressSpace != null) {
-            return addressSpace.getNodeManager();
-        } else {
-            return Optional.empty();
-        }
-    }
-
     public Optional<UaNode> getManagedNode(NodeId nodeId) {
-//        return getNodeManager(nodeId)
-//            .flatMap(n -> n.getNode(nodeId));
         return nodeManagers.stream()
             .filter(n -> n.containsNode(nodeId))
             .findFirst()
@@ -123,15 +116,6 @@ public class AddressSpaceManager {
      * @return TODO
      */
     public List<Reference> getManagedReferences(NodeId sourceNodeId) {
-//        return addressSpaces.stream()
-//            .map(asx ->
-//                asx.getNodeManager()
-//                    .map(n -> n.getReferences(sourceNodeId))
-//                    .orElse(Collections.emptyList())
-//            )
-//            .flatMap(Collection::stream)
-//            .collect(Collectors.toList());
-
         return nodeManagers.stream()
             .map(n -> n.getReferences(sourceNodeId))
             .flatMap(Collection::stream)
@@ -139,15 +123,6 @@ public class AddressSpaceManager {
     }
 
     public List<Reference> getManagedReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
-//        return addressSpaces.stream()
-//            .map(asx ->
-//                asx.getNodeManager()
-//                    .map(n -> n.getReferences(sourceNodeId, filter))
-//                    .orElse(Collections.emptyList())
-//            )
-//            .flatMap(Collection::stream)
-//            .collect(Collectors.toList());
-
         return nodeManagers.stream()
             .map(n -> n.getReferences(sourceNodeId, filter))
             .flatMap(Collection::stream)

@@ -10,12 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import java.util.Optional;
-
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface UaNodeContext {
 
@@ -32,16 +29,6 @@ public interface UaNodeContext {
      */
     default NamespaceManager getNamespaceManager() {
         return getServer().getNamespaceManager();
-    }
-
-    /**
-     * Get the {@link NodeManager} managing the {@link UaNode} identified by {@code nodeId}, if it exists.
-     *
-     * @param nodeId the {@link NodeId} of a {@link UaNode}.
-     * @return the {@link NodeManager} managing the {@link UaNode} identified by {@code nodeId}, if it exists.
-     */
-    default Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
-        return getServer().getAddressSpaceManager().getAddressSpace(nodeId).getNodeManager();
     }
 
 }

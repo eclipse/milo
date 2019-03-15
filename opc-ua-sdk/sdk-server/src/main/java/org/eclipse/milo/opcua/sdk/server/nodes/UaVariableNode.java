@@ -231,7 +231,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     public Optional<ObjectNode> getModellingRuleNode() {
-        Node node = getManagedReferences().stream()
+        Node node = getReferences().stream()
             .filter(HAS_MODELLING_RULE_PREDICATE)
             .findFirst()
             .flatMap(r -> getManagedNode(r.getTargetNodeId()))
@@ -243,21 +243,21 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     public List<Node> getPropertyNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getComponentNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public VariableTypeNode getTypeDefinitionNode() {
-        Node node = getManagedReferences().stream()
+        Node node = getReferences().stream()
             .filter(HAS_TYPE_DEFINITION_PREDICATE)
             .findFirst()
             .flatMap(r -> getManagedNode(r.getTargetNodeId()))

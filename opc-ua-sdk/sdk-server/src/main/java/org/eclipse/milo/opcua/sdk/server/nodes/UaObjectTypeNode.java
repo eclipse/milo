@@ -69,7 +69,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
 
     @Nullable
     public UaMethodNode findMethodNode(NodeId methodId) {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode) && Objects.equals(n.getNodeId(), methodId))
@@ -79,7 +79,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     }
 
     public List<UaMethodNode> getMethodNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode))

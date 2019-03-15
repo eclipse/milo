@@ -180,21 +180,21 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     public List<UaNode> getComponentNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<UaNode> getPropertyNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<UaMethodNode> getMethodNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode))
@@ -203,7 +203,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     public ObjectTypeNode getTypeDefinitionNode() {
-        Node node = getManagedReferences().stream()
+        Node node = getReferences().stream()
             .filter(HAS_TYPE_DEFINITION_PREDICATE)
             .findFirst()
             .flatMap(r -> getManagedNode(r.getTargetNodeId()))
@@ -213,28 +213,28 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     public List<Node> getEventSourceNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_EVENT_SOURCE_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getNotifierNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(HAS_NOTIFIER_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getOrganizesNodes() {
-        return getManagedReferences().stream()
+        return getReferences().stream()
             .filter(ORGANIZES_PREDICATE)
             .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public Optional<Node> getDescriptionNode() {
-        Optional<UaNode> node = getManagedReferences().stream()
+        Optional<UaNode> node = getReferences().stream()
             .filter(HAS_DESCRIPTION_PREDICATE)
             .findFirst()
             .flatMap(r -> getManagedNode(r.getTargetNodeId()));
