@@ -13,20 +13,21 @@ package org.eclipse.milo.opcua.sdk.server.services.helpers;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -48,16 +49,27 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReferenceDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.ResponseHeader;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
+import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
+import org.slf4j.LoggerFactory;
 
+import static java.util.concurrent.CompletableFuture.completedFuture;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.browseResultMasks;
 import static org.eclipse.milo.opcua.sdk.server.util.UaEnumUtil.nodeClasses;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class BrowseHelper {
+
+    /**
+     * Browsing is a relatively expensive operation, so limit the concurrency based on the available CPU cores.
+     */
+    private static final ExecutionQueue BROWSE_EXECUTION_QUEUE = new ExecutionQueue(
+        Stack.sharedExecutor(),
+        Runtime.getRuntime().availableProcessors()
+    );
 
     private static final StatusCode BAD_CONTINUATION_POINT_INVALID =
         new StatusCode(StatusCodes.Bad_ContinuationPointInvalid);
@@ -88,13 +100,14 @@ public class BrowseHelper {
     public static CompletableFuture<BrowseResult> browse(
         AccessContext context,
         OpcUaServer server,
-        ViewDescription view,
+        ViewDescription viewDescription,
         UInteger maxReferencesPerNode,
         BrowseDescription browseDescription) {
 
         Browse browse = new Browse(
             context,
             server,
+            viewDescription,
             maxReferencesPerNode,
             browseDescription
         );
@@ -108,39 +121,46 @@ public class BrowseHelper {
 
         private final AccessContext context;
         private final OpcUaServer server;
+        private final ViewDescription view;
         private final UInteger maxReferencesPerNode;
         private final BrowseDescription browseDescription;
 
         private Browse(AccessContext context,
                        OpcUaServer server,
+                       ViewDescription view,
                        UInteger maxReferencesPerNode,
                        BrowseDescription browseDescription) {
 
             this.context = context;
+            this.server = server;
+            this.view = view;
             this.browseDescription = browseDescription;
             this.maxReferencesPerNode = maxReferencesPerNode;
-            this.server = server;
         }
 
         public CompletableFuture<BrowseResult> browse() {
-            NamespaceManager namespaceManager = server.getNamespaceManager();
-            Namespace namespace = namespaceManager.getNamespace(browseDescription.getNodeId().getNamespaceIndex());
+            AddressSpaceManager addressSpaceManager = server.getAddressSpaceManager();
 
-            CompletableFuture<List<Reference>> referencesFuture =
-                namespace.browse(context, browseDescription.getNodeId());
-
-            referencesFuture.whenComplete((references, ex) -> {
-                if (references != null) {
-                    browse(references).whenComplete((result, ex2) -> {
-                        if (result != null) future.complete(result);
-                        else future.complete(NODE_ID_UNKNOWN_RESULT);
-                    });
-                } else {
-                    future.complete(NODE_ID_UNKNOWN_RESULT);
-                }
-            });
+            BROWSE_EXECUTION_QUEUE.submit(
+                () ->
+                    browse(addressSpaceManager)
+            );
 
             return future;
+        }
+
+        private void browse(AddressSpaceManager addressSpaceManager) {
+            addressSpaceManager.browse(context, view, browseDescription.getNodeId())
+                .whenComplete((references, ex) -> {
+                    if (references != null) {
+                        browse(references).whenComplete((result, ex2) -> {
+                            if (result != null) future.complete(result);
+                            else future.complete(NODE_ID_UNKNOWN_RESULT);
+                        });
+                    } else {
+                        future.complete(NODE_ID_UNKNOWN_RESULT);
+                    }
+                });
         }
 
         private CompletableFuture<BrowseResult> browse(List<Reference> references) {
@@ -228,21 +248,39 @@ public class BrowseHelper {
                 reference.getReferenceTypeId() : NodeId.NULL_VALUE;
 
             return targetNodeId.local().map(nodeId -> {
-                CompletableFuture<BrowseAttributes> af = browseAttributes(nodeId, masks);
+                CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId, masks);
 
-                return af.thenCombine(getTypeDefinition(nodeId), (as, typeDefinition) ->
-                    new ReferenceDescription(
-                        referenceTypeId,
-                        reference.isForward(),
-                        targetNodeId,
-                        as.getBrowseName(),
-                        as.getDisplayName(),
-                        as.getNodeClass(),
-                        typeDefinition
-                    )
-                );
+                return attributesFuture.thenCompose(attributes -> {
+                    if (attributes.nodeClass == NodeClass.Object || attributes.nodeClass == NodeClass.Variable) {
+                        // If this is an Object or Variable then we
+                        // need to browse for the TypeDefinitionId...
+                        return getTypeDefinition(nodeId).thenApply(
+                            typeDefinition ->
+                                new ReferenceDescription(
+                                    referenceTypeId,
+                                    reference.isForward(),
+                                    targetNodeId,
+                                    attributes.getBrowseName(),
+                                    attributes.getDisplayName(),
+                                    attributes.getNodeClass(),
+                                    typeDefinition
+                                )
+                        );
+                    } else {
+                        // Not an Object or Variable; we're done.
+                        return completedFuture(new ReferenceDescription(
+                            referenceTypeId,
+                            reference.isForward(),
+                            targetNodeId,
+                            attributes.getBrowseName(),
+                            attributes.getDisplayName(),
+                            attributes.getNodeClass(),
+                            ExpandedNodeId.NULL_VALUE
+                        ));
+                    }
+                });
             }).orElse(
-                CompletableFuture.completedFuture(
+                completedFuture(
                     new ReferenceDescription(
                         referenceTypeId,
                         reference.isForward(),
@@ -279,21 +317,21 @@ public class BrowseHelper {
 
                 if (masks.contains(BrowseResultMask.BrowseName)) {
                     DataValue value0 = values.get(0);
-                    if (value0.getStatusCode().isGood()) {
+                    if (value0.getStatusCode() == null || value0.getStatusCode().isGood()) {
                         browseName = (QualifiedName) value0.getValue().getValue();
                     }
                 }
 
                 if (masks.contains(BrowseResultMask.DisplayName)) {
                     DataValue value1 = values.get(1);
-                    if (value1.getStatusCode().isGood()) {
+                    if (value1.getStatusCode() == null || value1.getStatusCode().isGood()) {
                         displayName = (LocalizedText) value1.getValue().getValue();
                     }
                 }
 
                 if (masks.contains(BrowseResultMask.NodeClass)) {
                     DataValue value2 = values.get(2);
-                    if (value2.getStatusCode().isGood()) {
+                    if (value2.getStatusCode() == null || value2.getStatusCode().isGood()) {
                         nodeClass = (NodeClass) value2.getValue().getValue();
                     }
                 }
@@ -303,14 +341,31 @@ public class BrowseHelper {
         }
 
         private CompletableFuture<ExpandedNodeId> getTypeDefinition(NodeId nodeId) {
-            Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
+            Optional<ExpandedNodeId> typeDefinitionId = server.getAddressSpaceManager()
+                .getNodeManager(nodeId)
+                .map(n -> n.getReferences(nodeId, Reference.HAS_TYPE_DEFINITION_PREDICATE))
+                .orElse(Collections.emptyList())
+                .stream()
+                .findFirst()
+                .map(Reference::getTargetNodeId);
 
-            return namespace.browse(context, nodeId).thenApply(references ->
-                references.stream()
-                    .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId()))
-                    .findFirst()
-                    .map(Reference::getTargetNodeId)
-                    .orElse(ExpandedNodeId.NULL_VALUE));
+            return typeDefinitionId.map(CompletableFuture::completedFuture).orElseGet(() -> {
+                LoggerFactory.getLogger(BrowseHelper.class)
+                    .trace("No managed TypeDefinition for nodeId={}, browsing...", nodeId);
+
+                CompletableFuture<List<Reference>> browseFuture =
+                    server.getAddressSpaceManager().browse(context, nodeId);
+
+                return browseFuture.thenApply(
+                    references ->
+                        references.stream()
+                            .filter(r -> Identifiers.HasTypeDefinition.equals(r.getReferenceTypeId()))
+                            .findFirst()
+                            .map(Reference::getTargetNodeId)
+                            .orElse(ExpandedNodeId.NULL_VALUE)
+                );
+            });
+
         }
 
     }

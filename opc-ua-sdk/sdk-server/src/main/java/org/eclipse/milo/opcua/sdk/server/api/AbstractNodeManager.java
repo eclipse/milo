@@ -10,32 +10,32 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
 import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public abstract class AbstractNodeManager<T extends Node> implements NodeManager<T> {
+public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     private final ConcurrentMap<NodeId, T> nodeMap;
-    private final ListMultimap<NodeId, Reference> concreteReferences;
-    private final ListMultimap<NodeId, Reference> virtualReferences;
+    private final ListMultimap<NodeId, Reference> referencesBySource;
+    private final ListMultimap<NodeId, Reference> referencesByTarget;
 
     public AbstractNodeManager() {
         nodeMap = makeNodeMap(new MapMaker());
-        concreteReferences = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
-        virtualReferences = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
+        referencesBySource = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
+        referencesByTarget = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
     }
 
     /**
@@ -49,13 +49,13 @@ public abstract class AbstractNodeManager<T extends Node> implements NodeManager
     }
 
     @Override
-    public void addNode(T node) {
-        nodeMap.put(node.getNodeId(), node);
+    public boolean containsNode(NodeId nodeId) {
+        return nodeMap.containsKey(nodeId);
     }
 
     @Override
-    public boolean containsNode(NodeId nodeId) {
-        return nodeMap.containsKey(nodeId);
+    public Optional<T> addNode(T node) {
+        return Optional.ofNullable(nodeMap.put(node.getNodeId(), node));
     }
 
     @Override
@@ -64,44 +64,56 @@ public abstract class AbstractNodeManager<T extends Node> implements NodeManager
     }
 
     @Override
+    public Optional<T> getNode(ExpandedNodeId nodeId) {
+        return nodeId.local().flatMap(this::getNode);
+    }
+
+    @Override
     public Optional<T> removeNode(NodeId nodeId) {
         return Optional.ofNullable(nodeMap.remove(nodeId));
     }
 
     @Override
-    public void addReference(Reference reference) {
-        concreteReferences.put(reference.getSourceNodeId(), reference);
+    public Optional<T> removeNode(ExpandedNodeId nodeId) {
+        return nodeId.local().flatMap(this::removeNode);
     }
 
     @Override
-    public void addVirtualReference(Reference reference) {
-        virtualReferences.put(reference.getSourceNodeId(), reference);
+    public void addReference(Reference reference) {
+        referencesBySource.put(reference.getSourceNodeId(), reference);
+
+        reference.getTargetNodeId().local().ifPresent(id -> referencesByTarget.put(id, reference));
+
+        reference.invert().ifPresent(inverted -> {
+            referencesBySource.put(inverted.getSourceNodeId(), inverted);
+
+            inverted.getTargetNodeId().local().ifPresent(id -> referencesByTarget.put(id, inverted));
+        });
     }
 
     @Override
     public void removeReference(Reference reference) {
-        concreteReferences.remove(reference.getSourceNodeId(), reference);
+        referencesBySource.remove(reference.getSourceNodeId(), reference);
+
+        reference.getTargetNodeId().local().ifPresent(id -> referencesByTarget.remove(id, reference));
     }
 
     @Override
-    public void removeVirtualReference(Reference reference) {
-        virtualReferences.remove(reference.getSourceNodeId(), reference);
+    public List<Reference> getReferences(NodeId sourceNodeId) {
+        return new ArrayList<>(referencesBySource.get(sourceNodeId));
     }
 
     @Override
-    public List<Reference> getReferences(NodeId nodeId) {
-        List<Reference> concreteList = concreteReferences.get(nodeId);
-        LinkedHashSet<Reference> concreteSet = new LinkedHashSet<>(concreteList);
-        LinkedHashSet<Reference> virtualSet = new LinkedHashSet<>(virtualReferences.get(nodeId));
+    public List<Reference> getReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
+        return referencesBySource.get(sourceNodeId)
+            .stream()
+            .filter(filter)
+            .collect(Collectors.toList());
+    }
 
-        // All virtual refs that do not also have a concrete ref
-        Set<Reference> uniqueVirtualSet = Sets.difference(virtualSet, concreteSet);
-
-        List<Reference> references = Lists.newArrayList();
-        //references.addAll(concreteList);
-        references.addAll(concreteSet);
-        references.addAll(uniqueVirtualSet);
-        return references;
+    @Override
+    public List<Reference> getReferencesTo(NodeId targetNodeId) {
+        return new ArrayList<>(referencesByTarget.get(targetNodeId));
     }
 
 }

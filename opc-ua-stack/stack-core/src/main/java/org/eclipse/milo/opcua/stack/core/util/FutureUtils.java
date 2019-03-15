@@ -45,7 +45,7 @@ public class FutureUtils {
         });
     }
 
-    public static <T> CompletableFuture<List<T>> sequence(CompletableFuture<T>[] futures) {
+    public static <T> CompletableFuture<List<T>> sequence(CompletableFuture<T>... futures) {
         if (futures.length == 0) {
             return CompletableFuture.completedFuture(Collections.emptyList());
         }

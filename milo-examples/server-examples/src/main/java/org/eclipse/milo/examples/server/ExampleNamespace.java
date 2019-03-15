@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
@@ -25,12 +24,12 @@ import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
-import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
@@ -71,7 +70,6 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,7 +136,7 @@ public class ExampleNamespace implements Namespace {
 
     private final Random random = new Random();
 
-    private final NamespaceNodeManager nodeManager;
+    private final UaNodeManager nodeManager;
     private final SubscriptionModel subscriptionModel;
 
     private final EventFactory eventFactory;
@@ -151,7 +149,7 @@ public class ExampleNamespace implements Namespace {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
 
-        nodeManager = new NamespaceNodeManager(server);
+        nodeManager = new UaNodeManager();
         subscriptionModel = new SubscriptionModel(server, this);
 
         eventFactory = server.getEventFactory();
@@ -192,8 +190,7 @@ public class ExampleNamespace implements Namespace {
         addCustomObjectTypeAndInstance(folderNode);
 
         // Set the EventNotifier bit on Server Node for Events.
-        // Use the server NodeManager to get nodes in other namespaces.
-        UaNode serverNode = server.getNodeManager().get(Identifiers.Server);
+        UaNode serverNode = server.getAddressSpaceManager().getManagedNode(Identifiers.Server).orElse(null);
 
         if (serverNode instanceof ServerNode) {
             ((ServerNode) serverNode).setEventNotifier(ubyte(1));
@@ -236,9 +233,10 @@ public class ExampleNamespace implements Namespace {
         return NAMESPACE_URI;
     }
 
+
     @Override
-    public NamespaceNodeManager getNodeManager() {
-        return nodeManager;
+    public Optional<NodeManager<UaNode>> getNodeManager() {
+        return Optional.of(nodeManager);
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {
@@ -591,7 +589,6 @@ public class ExampleNamespace implements Namespace {
             methodNode.getNodeId(),
             Identifiers.HasComponent,
             folderNode.getNodeId().expanded(),
-            folderNode.getNodeClass(),
             false
         ));
     }
@@ -616,7 +613,6 @@ public class ExampleNamespace implements Namespace {
             methodNode.getNodeId(),
             Identifiers.HasComponent,
             folderNode.getNodeId().expanded(),
-            folderNode.getNodeClass(),
             false
         ));
     }
@@ -805,16 +801,16 @@ public class ExampleNamespace implements Namespace {
         ));
     }
 
-    @Override
-    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaServerNode node = nodeManager.get(nodeId);
-
-        if (node != null) {
-            return CompletableFuture.completedFuture(node.getReferences());
-        } else {
-            return FutureUtils.failedFuture(new UaException(StatusCodes.Bad_NodeIdUnknown));
-        }
-    }
+//    @Override
+//    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
+//        UaServerNode node = nodeManager.get(nodeId);
+//
+//        if (node != null) {
+//            return CompletableFuture.completedFuture(node.getReferences());
+//        } else {
+//            return FutureUtils.failedFuture(new UaException(StatusCodes.Bad_NodeIdUnknown));
+//        }
+//    }
 
     @Override
     public void read(

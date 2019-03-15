@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
@@ -145,8 +146,11 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * {@link NodeId#NULL_VALUE} if not found.
      */
     private NodeId findMethodDeclarationId(NodeId typeDefinitionId, QualifiedName methodName) {
-        NodeId nodeId = getNodeManager()
-            .getReferences(typeDefinitionId)
+        AddressSpaceManager asm = getNodeContext()
+            .getServer()
+            .getAddressSpaceManager();
+
+        NodeId nodeId = asm.getManagedReferences(typeDefinitionId)
             .stream()
             .filter(HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
@@ -158,8 +162,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             .orElse(NodeId.NULL_VALUE);
 
         if (nodeId.isNull()) {
-            NodeId parentTypeId = getNodeManager()
-                .getReferences(typeDefinitionId)
+            NodeId parentTypeId = asm.getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
                 .flatMap(r -> opt2stream(r.getTargetNodeId().local()))

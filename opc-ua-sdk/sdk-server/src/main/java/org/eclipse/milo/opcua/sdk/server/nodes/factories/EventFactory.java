@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
@@ -58,14 +60,14 @@ public class EventFactory {
 
     private static class EventNodeContext implements UaNodeContext {
 
-        private final EventNodeManager nodeManager;
+        private final UaNodeManager nodeManager;
 
         private final OpcUaServer server;
 
         EventNodeContext(OpcUaServer server) {
             this.server = server;
 
-            nodeManager = new EventNodeManager(server.getNodeManager());
+            nodeManager = new EventNodeManager(server.getAddressSpaceManager());
         }
 
         @Override
@@ -74,23 +76,26 @@ public class EventFactory {
         }
 
         @Override
-        public NodeManager<UaNode> getNodeManager() {
-            return nodeManager;
+        public Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
+            return Optional.of(nodeManager);
         }
 
     }
 
     private static class EventNodeManager extends UaNodeManager {
 
-        private final NodeManager<UaNode> delegate;
+        private final AddressSpaceManager addressSpaceManager;
 
-        EventNodeManager(NodeManager<UaNode> delegate) {
-            this.delegate = delegate;
+        private EventNodeManager(AddressSpaceManager addressSpaceManager) {
+            this.addressSpaceManager = addressSpaceManager;
         }
 
         @Override
         public boolean containsNode(NodeId nodeId) {
-            return super.containsNode(nodeId) || delegate.containsNode(nodeId);
+            return super.containsNode(nodeId) ||
+                addressSpaceManager.getNodeManager(nodeId)
+                    .map(n -> n.containsNode(nodeId))
+                    .orElse(false);
         }
 
         @Override
@@ -100,7 +105,8 @@ public class EventFactory {
             if (node.isPresent()) {
                 return node;
             } else {
-                return delegate.getNode(nodeId);
+                return addressSpaceManager.getNodeManager(nodeId)
+                    .flatMap(n -> n.getNode(nodeId));
             }
         }
 
@@ -109,7 +115,9 @@ public class EventFactory {
             if (super.containsNode(nodeId)) {
                 return super.getReferences(nodeId);
             } else {
-                return delegate.getReferences(nodeId);
+                return addressSpaceManager.getNodeManager(nodeId)
+                    .map(n -> n.getReferences(nodeId))
+                    .orElse(Collections.emptyList());
             }
         }
 

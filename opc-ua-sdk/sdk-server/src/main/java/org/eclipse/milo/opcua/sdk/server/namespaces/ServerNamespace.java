@@ -14,15 +14,12 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import com.sun.management.UnixOperatingSystemMXBean;
-import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.api.Namespace;
@@ -35,7 +32,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -55,7 +51,7 @@ public class ServerNamespace implements Namespace {
 
     public static final UShort NAMESPACE_INDEX = ushort(1);
 
-    private final NamespaceNodeManager nodeManager;
+    private final UaNodeManager nodeManager;
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -65,7 +61,7 @@ public class ServerNamespace implements Namespace {
         this.server = server;
         this.namespaceUri = namespaceUri;
 
-        nodeManager = new NamespaceNodeManager(server);
+        nodeManager = new UaNodeManager();
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
@@ -84,22 +80,22 @@ public class ServerNamespace implements Namespace {
     }
 
     @Override
-    public NodeManager<UaNode> getNodeManager() {
-        return nodeManager;
+    public Optional<NodeManager<UaNode>> getNodeManager() {
+        return Optional.of(nodeManager);
     }
 
-    @Override
-    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaServerNode node = nodeManager.get(nodeId);
-
-        if (node != null) {
-            return CompletableFuture.completedFuture(node.getReferences());
-        } else {
-            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
-            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
-            return f;
-        }
-    }
+//    @Override
+//    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
+//        UaServerNode node = nodeManager.get(nodeId);
+//
+//        if (node != null) {
+//            return CompletableFuture.completedFuture(node.getReferences());
+//        } else {
+//            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
+//            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
+//            return f;
+//        }
+//    }
 
     @Override
     public void read(

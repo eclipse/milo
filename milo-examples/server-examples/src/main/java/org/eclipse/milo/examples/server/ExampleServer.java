@@ -156,6 +156,8 @@ public class ExampleServer {
             idx -> new ExampleNamespace(server, idx)
         );
 
+        server.getAddressSpaceManager().register(exampleNamespace);
+
         exampleNamespace.initialize();
     }
 

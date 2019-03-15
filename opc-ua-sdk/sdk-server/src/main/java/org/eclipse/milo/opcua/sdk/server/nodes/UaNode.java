@@ -12,6 +12,7 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -185,36 +186,54 @@ public abstract class UaNode implements UaServerNode {
         return context;
     }
 
-    public final NodeManager<UaNode> getNodeManager() {
-        return context.getNodeManager();
+    protected final Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
+        return context.getNodeManager(nodeId);
+    }
+
+    protected final Optional<NodeManager<UaNode>> getNodeManager(ExpandedNodeId nodeId) {
+        return nodeId.local().flatMap(this::getNodeManager);
     }
 
     protected Optional<UaNode> getNode(NodeId nodeId) {
-        return getNodeManager().getNode(nodeId);
+        return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
     }
 
     protected Optional<UaNode> getNode(ExpandedNodeId nodeId) {
-        return getNodeManager().getNode(nodeId);
+        return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
     }
 
     public ImmutableList<Reference> getReferences() {
-        return ImmutableList.copyOf(getNodeManager().getReferences(nodeId));
+        // TODO should this be *all* references or just references tracked by this Node's LegacyNodeManager?
+        //  Getting all references like this is dangerous because a Namespace/AddressSpace would naturally answer
+        //  getReferencesFrom/To by calling node.getReferences()...
+
+//        return ImmutableList.copyOf(
+//            context.getServer()
+//                .getAddressSpaceManager()
+//                .getManagedReferences(nodeId)
+//        );
+
+        return ImmutableList.copyOf(
+            getNodeManager(nodeId)
+                .map(n -> n.getReferences(nodeId))
+                .orElse(Collections.emptyList())
+        );
     }
 
     public synchronized void addReference(Reference reference) {
-        getNodeManager().addReference(reference);
+        getNodeManager(nodeId).ifPresent(n -> n.addReference(reference));
     }
 
     public synchronized void addReferences(Collection<Reference> c) {
-        c.forEach(this::addReference);
+        getNodeManager(nodeId).ifPresent(n -> c.forEach(n::addReference));
     }
 
     public synchronized void removeReference(Reference reference) {
-        getNodeManager().removeReference(reference);
+        getNodeManager(nodeId).ifPresent(n -> n.removeReference(reference));
     }
 
     public synchronized void removeReferences(Collection<Reference> c) {
-        c.forEach(this::removeReference);
+        getNodeManager(nodeId).ifPresent(n -> c.forEach(n::removeReference));
     }
 
     public <T> Optional<T> getProperty(QualifiedProperty<T> property) {
@@ -275,7 +294,8 @@ public abstract class UaNode implements UaServerNode {
 
             addProperty(propertyNode);
 
-            context.getNodeManager().addNode(propertyNode);
+            context.getNodeManager(propertyNodeId)
+                .ifPresent(n -> n.addNode(propertyNode));
 
             return propertyNode;
         });
@@ -296,7 +316,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public Optional<VariableNode> getPropertyNode(QualifiedName browseName) {
-        Node node = getNodeManager().getReferences(nodeId)
+        Node node = getReferences()
             .stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
@@ -377,7 +397,7 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getNodeManager().getReferences(nodeId)
+        return getReferences()
             .stream()
             .filter(referencePredicate)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
@@ -401,7 +421,7 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getNodeManager().getReferences(nodeId)
+        return getReferences()
             .stream()
             .filter(referencePredicate)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
@@ -432,7 +452,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<ObjectNode> getObjectComponent(QualifiedName browseName) {
-        ObjectNode node = (ObjectNode) getNodeManager().getReferences(nodeId)
+        ObjectNode node = (ObjectNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
@@ -457,7 +477,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<VariableNode> getVariableComponent(QualifiedName browseName) {
-        VariableNode node = (VariableNode) getNodeManager().getReferences(nodeId)
+        VariableNode node = (VariableNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
             .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))

@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.MethodNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
@@ -34,7 +34,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 import org.eclipse.milo.opcua.stack.core.util.Tree;
 
 public class NodeFactory {
@@ -89,16 +88,19 @@ public class NodeFactory {
         NodeId typeDefinitionId,
         boolean includeOptionalNodes) throws UaException {
 
-        NodeManager<UaNode> nodeManager = context.getNodeManager();
+        AddressSpaceManager addressSpaceManager = context.getServer().getAddressSpaceManager();
 
-        if (!nodeManager.containsNode(typeDefinitionId)) {
+        if (!addressSpaceManager.getManagedNode(typeDefinitionId).isPresent()) {
             throw new UaException(
                 StatusCodes.Bad_NodeIdUnknown,
                 "unknown type definition: " + typeDefinitionId);
         }
 
-        InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy
-            .create(nodeManager, typeDefinitionId, includeOptionalNodes);
+        InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy.create(
+            addressSpaceManager,
+            typeDefinitionId,
+            includeOptionalNodes
+        );
 
         NodeTable nodeTable = idh.getNodeTable();
         ReferenceTable referenceTable = idh.getReferenceTable();
@@ -109,7 +111,7 @@ public class NodeFactory {
             BrowsePath browsePath = entry.getKey();
             NodeId nodeId = entry.getValue();
 
-            UaNode node = nodeManager.get(nodeId);
+            UaNode node = addressSpaceManager.getManagedNode(nodeId).orElse(null);
 
             if (browsePath.parent == null) {
                 // Root Node of hierarchy will be the ObjectType or VariableType to be instantiated
@@ -151,7 +153,7 @@ public class NodeFactory {
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
 
-                    UaNode typeDefinitionNode = nodeManager.get(instanceTypeDefinitionId);
+                    UaNode typeDefinitionNode = addressSpaceManager.getManagedNode(instanceTypeDefinitionId).orElse(null);
 
                     if (typeDefinitionNode instanceof ObjectTypeNode) {
                         UaObjectNode instance = instanceFromTypeDefinition(
@@ -176,7 +178,7 @@ public class NodeFactory {
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
 
-                    UaNode typeDefinitionNode = nodeManager.get(instanceTypeDefinitionId);
+                    UaNode typeDefinitionNode = addressSpaceManager.getManagedNode(instanceTypeDefinitionId).orElse(null);
 
                     if (typeDefinitionNode instanceof VariableTypeNode) {
                         UaVariableNode instance = instanceFromTypeDefinition(
@@ -215,11 +217,6 @@ public class NodeFactory {
 
                 if (!Identifiers.HasModellingRule.equals(referenceTypeId)) {
                     if (target.targetNodeId != null) {
-                        NodeClass targetNodeClass = nodeManager
-                            .getNode(target.targetNodeId)
-                            .map(UaNode::getNodeClass)
-                            .orElse(NodeClass.Unspecified);
-
                         node.addReference(new Reference(
                             node.getNodeId(),
                             referenceTypeId,
@@ -243,7 +240,7 @@ public class NodeFactory {
                 }
             });
 
-            nodeManager.addNode(node);
+            context.getNodeManager(node.getNodeId()).ifPresent(n -> n.addNode(node));
         });
 
         return nodeTable.getBrowsePathTree().map(nodes::get);

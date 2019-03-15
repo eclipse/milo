@@ -80,7 +80,7 @@ public interface MethodServices {
         NodeId methodId
     ) {
 
-        return server.getNodeManager().getNode(objectId).flatMap(node -> {
+        return server.getAddressSpaceManager().getManagedNode(objectId).flatMap(node -> {
             UaMethodNode methodNode = null;
 
             if (node instanceof UaObjectNode) {

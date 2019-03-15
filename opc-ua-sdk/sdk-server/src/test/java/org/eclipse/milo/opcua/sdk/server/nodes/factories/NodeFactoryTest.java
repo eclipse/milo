@@ -10,14 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
+import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
@@ -30,8 +34,10 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -49,23 +55,48 @@ public class NodeFactoryTest {
         server = Mockito.mock(OpcUaServer.class);
 
         nodeManager = new UaNodeManager();
+
         NamespaceManager namespaceManager = new NamespaceManager();
 
-        UaNodeContext context = new UaNodeContext() {
-            @Override
-            public NodeManager<UaNode> getNodeManager() {
-                return nodeManager;
-            }
+        AddressSpaceManager addressSpaceManager = Mockito.mock(AddressSpaceManager.class);
 
+        Mockito
+            .when(addressSpaceManager.getManagedNode(Mockito.any(NodeId.class)))
+            .then(
+                (Answer<Optional<UaNode>>) invocationOnMock ->
+                    nodeManager.getNode((NodeId) invocationOnMock.getArgument(0))
+            );
+
+        Mockito
+            .when(addressSpaceManager.getManagedNode(Mockito.any(ExpandedNodeId.class)))
+            .then(
+                (Answer<Optional<UaNode>>) invocationOnMock ->
+                    nodeManager.getNode((ExpandedNodeId) invocationOnMock.getArgument(0))
+            );
+
+        Mockito
+            .when(addressSpaceManager.getManagedReferences(Mockito.any(NodeId.class)))
+            .then(
+                (Answer<List<Reference>>) invocationOnMock ->
+                    nodeManager.getReferences(invocationOnMock.getArgument(0))
+            );
+
+        UaNodeContext context = new UaNodeContext() {
             @Override
             public OpcUaServer getServer() {
                 return server;
             }
+
+            @Override
+            public Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
+                return Optional.of(nodeManager);
+            }
         };
 
         Mockito.when(server.getNamespaceManager()).thenReturn(namespaceManager);
+        Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
 
-        new UaNodeLoader(context).loadNodes();
+        new UaNodeLoader(context, nodeManager).loadNodes();
 
         ObjectTypeManager objectTypeManager = new ObjectTypeManager();
         ObjectTypeManagerInitializer.initialize(
@@ -102,7 +133,7 @@ public class NodeFactoryTest {
         final AtomicBoolean variableAdded = new AtomicBoolean(false);
 
         ServerNode serverNode = (ServerNode) nodeFactory.createNode(
-            new NodeId(1, "Server"),
+            new NodeId(0, "Server"),
             Identifiers.ServerType,
             true,
             new NodeFactory.InstanceListener() {

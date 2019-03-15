@@ -11,78 +11,62 @@
 package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Optional;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
-import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResult;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
-
-import static java.util.stream.Collectors.toList;
 
 public interface ViewServices {
 
-    default void browse(BrowseContext context,
-                        ViewDescription view,
-                        UInteger maxReferencesPerNode,
-                        List<BrowseDescription> nodesToBrowse) {
-
-        OpcUaServer server = context.getServer();
-
-        List<CompletableFuture<BrowseResult>> results = nodesToBrowse
-            .stream()
-            .map(
-                browseDescription ->
-                    BrowseHelper.browse(
-                        context,
-                        server,
-                        view,
-                        maxReferencesPerNode,
-                        browseDescription
-                    )
-            )
-            .collect(toList());
-
-        FutureUtils.sequence(results).thenAccept(context::complete);
-    }
+    /**
+     * Get all References for which {@code nodeId} is the source.
+     * <p>
+     * The Node identified by {@code nodeId} is managed by this AddressSpace according to
+     * {@link AddressSpace#filter(NodeId)}.
+     * <p>
+     * If a Node instance for {@code nodeId} does not exist then {@link BrowseContext#failure(StatusCode)} should be
+     * invoked with {@link StatusCodes#Bad_NodeIdUnknown}.
+     *
+     * @param context TODO
+     * @param view    TODO
+     * @param nodeId  TODO
+     */
+    void browse(BrowseContext context, ViewDescription view, NodeId nodeId);
 
     /**
-     * If the node identified by {@code nodeId} exists return all {@link Reference}s.
+     * References for which {@code sourceNodeId} is the source are being collected from all AddressSpace instances.
+     * Return any References where {@code sourceNodeId} is the source this AddressSpace may have to contribute.
      * <p>
-     * The {@link AccessContext} can be ignored unless the server wishes to impose some restriction upon which users
-     * can browse which nodes. Note that this only obscures what is returned in the browse; nothing prevents a client
-     * from addressing a {@link NodeId} in other service requests, whether they browsed it or not.
+     * The Node identified by {@code sourceNodeId} may be managed by another AddressSpace.
      *
-     * @param context the {@link AccessContext} this request is being made under.
-     * @param nodeId  the {@link NodeId} identifying the node.
-     * @return a {@link CompletableFuture} containing the {@link Reference}s. If the node is unknown, complete the
-     * future exceptionally.
+     * @param context      TODO
+     * @param view         TODO
+     * @param sourceNodeId TODO
      */
-    CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId);
+    void getReferences(BrowseContext context, ViewDescription view, NodeId sourceNodeId);
 
-    final class BrowseContext extends OperationContext<BrowseDescription, BrowseResult> implements AccessContext {
-        public BrowseContext(OpcUaServer server,
-                             @Nullable Session session,
-                             DiagnosticsContext<BrowseDescription> diagnosticsContext) {
 
-            super(server, session, diagnosticsContext);
+    final class BrowseContext extends AsyncOperationContextImpl<List<Reference>> implements AccessContext {
+
+        private final Session session;
+
+        public BrowseContext(OpcUaServer server, @Nullable Session session) {
+            super(server);
+
+            this.session = session;
         }
 
-        public BrowseContext(OpcUaServer server,
-                             @Nullable Session session,
-                             CompletableFuture<List<BrowseResult>> future,
-                             DiagnosticsContext<BrowseDescription> diagnosticsContext) {
-
-            super(server, session, future, diagnosticsContext);
+        @Override
+        public Optional<Session> getSession() {
+            return Optional.ofNullable(session);
         }
+
     }
 
 }

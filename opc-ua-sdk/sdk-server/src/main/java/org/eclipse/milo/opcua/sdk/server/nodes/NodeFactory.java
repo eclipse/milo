@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.util.StreamUtil;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
@@ -32,9 +31,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 @Deprecated
 public class NodeFactory {
 
-    private final OpcUaServer server;
-    private final NodeManager<UaNode> nodeManager;
-
+    private final UaNodeContext context;
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
@@ -43,11 +40,9 @@ public class NodeFactory {
         ObjectTypeManager objectTypeManager,
         VariableTypeManager variableTypeManager) {
 
+        this.context = context;
         this.objectTypeManager = objectTypeManager;
         this.variableTypeManager = variableTypeManager;
-
-        server = context.getServer();
-        nodeManager = context.getNodeManager();
     }
 
     public UaObjectNode createObject(
@@ -81,11 +76,21 @@ public class NodeFactory {
     private UaNode createNode(NodeId nodeId,
                               NodeId typeDefinitionId) throws UaRuntimeException {
 
-        UaNode typeDefinitionNode = nodeManager.getNode(typeDefinitionId)
+        NodeManager<UaNode> nodeManager = context.getNodeManager(nodeId)
+            .orElseThrow(() ->
+                new UaRuntimeException(
+                    StatusCodes.Bad_InternalError,
+                    "no LegacyNodeManager for NodeId: " + nodeId)
+            );
+
+        UaNode typeDefinitionNode = context.getServer()
+            .getAddressSpaceManager()
+            .getManagedNode(typeDefinitionId)
             .orElseThrow(() ->
                 new UaRuntimeException(
                     StatusCodes.Bad_NodeIdUnknown,
-                    "unknown type definition: " + typeDefinitionId));
+                    "unknown type definition: " + typeDefinitionId)
+            );
 
         UaNode node;
 
@@ -220,7 +225,7 @@ public class NodeFactory {
             );
 
         UaObjectNode objectNode = ctor.apply(
-            server,
+            context,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),
@@ -250,7 +255,7 @@ public class NodeFactory {
             );
 
         UaVariableNode variableNode = ctor.apply(
-            server,
+            context,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),

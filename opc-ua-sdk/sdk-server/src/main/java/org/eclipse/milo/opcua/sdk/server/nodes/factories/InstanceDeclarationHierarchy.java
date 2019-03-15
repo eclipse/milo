@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -55,19 +55,12 @@ public class InstanceDeclarationHierarchy {
         return new InstanceDeclarationHierarchy(typeId, mergedNodeTable, mergedReferenceTable);
     }
 
-    @Override
-    public String toString() {
-        return "=== Type " + typeId + " ===\n" +
-            nodeTable +
-            referenceTable;
-    }
-
     public static InstanceDeclarationHierarchy create(
-        NodeManager<UaNode> nodeManager,
+        AddressSpaceManager addressSpaceManager,
         NodeId typeDefinitionId,
         boolean includeOptionalNodes) {
 
-        Builder builder = new Builder(nodeManager, includeOptionalNodes);
+        Builder builder = new Builder(addressSpaceManager, includeOptionalNodes);
 
         return builder.build(typeDefinitionId, includeOptionalNodes);
     }
@@ -77,21 +70,22 @@ public class InstanceDeclarationHierarchy {
         private final NodeTable nodeTable = new NodeTable();
         private final ReferenceTable referenceTable = new ReferenceTable();
 
-        private final NodeManager<UaNode> nodeManager;
+        private final AddressSpaceManager addressSpaceManager;
         private final boolean includeOptionalNodes;
 
-        Builder(NodeManager<UaNode> nodeManager, boolean includeOptionalNodes) {
-            this.nodeManager = nodeManager;
+        Builder(AddressSpaceManager addressSpaceManager, boolean includeOptionalNodes) {
+            this.addressSpaceManager = addressSpaceManager;
             this.includeOptionalNodes = includeOptionalNodes;
         }
 
         public InstanceDeclarationHierarchy build(NodeId typeDefinitionId, boolean includeOptionalNodes) {
-            Optional<InstanceDeclarationHierarchy> parentIdh = nodeManager.getReferences(typeDefinitionId).stream()
+            Optional<InstanceDeclarationHierarchy> parentIdh = addressSpaceManager.getManagedReferences(typeDefinitionId)
+                .stream()
                 .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()
                 .flatMap(r -> r.getTargetNodeId().local())
                 .map(parentTypeId -> InstanceDeclarationHierarchy
-                    .create(nodeManager, parentTypeId, includeOptionalNodes));
+                    .create(addressSpaceManager, parentTypeId, includeOptionalNodes));
 
             final InstanceDeclarationHierarchy idh = buildHierarchyForType(typeDefinitionId);
 
@@ -110,13 +104,13 @@ public class InstanceDeclarationHierarchy {
         }
 
         private void addModeledNodes(NodeId nodeId, BrowsePath parentPath) {
-            List<Reference> forwardReferences = nodeManager.getReferences(nodeId)
+            List<Reference> forwardReferences = addressSpaceManager.getManagedReferences(nodeId)
                 .stream()
                 .filter(Reference::isForward)
                 .collect(Collectors.toList());
 
             forwardReferences.forEach(reference ->
-                nodeManager.getNode(reference.getTargetNodeId()).ifPresent(node -> {
+                addressSpaceManager.getManagedNode(reference.getTargetNodeId()).ifPresent(node -> {
                     // All InstanceDeclarations of the InstanceDeclarationHierarchy and all Nodes referenced with a
                     // non-hierarchical Reference from such an InstanceDeclaration are added to the table.
                     // Hierarchical References to Nodes without a ModellingRule are not considered.

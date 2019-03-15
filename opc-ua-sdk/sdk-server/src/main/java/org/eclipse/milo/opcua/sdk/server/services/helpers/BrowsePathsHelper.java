@@ -168,9 +168,7 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
-
-        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
+        CompletableFuture<List<Reference>> future = server.getAddressSpaceManager().browse(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -205,9 +203,7 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
-
-        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
+        CompletableFuture<List<Reference>> future = server.getAddressSpaceManager().browse(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()

@@ -24,11 +24,14 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
@@ -76,8 +79,8 @@ public class OpcUaServer implements UaNodeContext {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
+    private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
     private final NamespaceManager namespaceManager = new NamespaceManager();
-    private final ServerNodeManager nodeManager = new ServerNodeManager(this);
     private final SessionManager sessionManager = new SessionManager(this);
     private final ServerTable serverTable = new ServerTable();
 
@@ -120,16 +123,18 @@ public class OpcUaServer implements UaNodeContext {
             namespaceManager.getNamespaceTable(),
             objectTypeManager
         );
-        
+
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
         namespaceManager.addNamespace(opcUaNamespace = new OpcUaNamespace(this));
+        addressSpaceManager.register(opcUaNamespace);
         opcUaNamespace.initialize();
 
         serverNamespace = namespaceManager.registerAndAdd(
             config.getApplicationUri(),
             index -> new ServerNamespace(OpcUaServer.this, config.getApplicationUri())
         );
+        addressSpaceManager.register(serverNamespace);
         serverNamespace.initialize();
 
         serverTable.addUri(stackServer.getConfig().getApplicationUri());
@@ -170,12 +175,41 @@ public class OpcUaServer implements UaNodeContext {
         return stackServer;
     }
 
+    public AddressSpaceManager getAddressSpaceManager() {
+//        List<AddressSpace> addressSpaces = addressSpaceManager.getAddressSpaces();
+//
+//        Optional<AddressSpace> first = addressSpaces.stream()
+//            .filter(as -> as.filter(NodeId.NULL_VALUE))
+//            .findFirst();
+//
+//
+//        List<CompletableFuture<List<Reference>>> referenceFutures = new ArrayList<>();
+//
+//        for (AddressSpace as : addressSpaces) {
+//            if (as != first.orElse(null)) {
+//                ViewServices.BrowseContext c1 = null;
+//                as.getReferences(c1, null, NodeId.NULL_VALUE);
+//                referenceFutures.add(c1.getFuture());
+//            }
+//        }
+//
+//        CompletableFuture<List<Reference>> referencesFuture = FutureUtils.sequence(referenceFutures).thenApply(
+//            refs ->
+//                refs.stream()
+//                    .flatMap(Collection::stream)
+//                    .collect(toList())
+//        );
+
+        return addressSpaceManager;
+    }
+
     public NamespaceManager getNamespaceManager() {
         return namespaceManager;
     }
 
-    public ServerNodeManager getNodeManager() {
-        return nodeManager;
+    @Override
+    public Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
+        return getAddressSpaceManager().getAddressSpace(nodeId).getNodeManager();
     }
 
     public SessionManager getSessionManager() {

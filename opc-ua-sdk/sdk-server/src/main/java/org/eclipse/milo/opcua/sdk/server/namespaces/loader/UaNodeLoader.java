@@ -10,25 +10,29 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 
 public class UaNodeLoader {
 
     private final UaNodeContext context;
+    private final NodeManager<UaNode> nodeManager;
 
-    public UaNodeLoader(UaNodeContext context) {
+    public UaNodeLoader(UaNodeContext context, NodeManager<UaNode> nodeManager) {
         this.context = context;
+        this.nodeManager = nodeManager;
     }
 
     public void loadNodes() throws Exception {
-        new UaDataTypeLoader(context).buildNodes();
-        new UaMethodLoader(context).buildNodes();
-        new UaObjectLoader(context).buildNodes();
-        new UaObjectTypeLoader(context).buildNodes();
-        new UaReferenceTypeLoader(context).buildNodes();
-        new UaVariableLoader(context).buildNodes();
-        new UaVariableTypeLoader(context).buildNodes();
-        new UaViewLoader(context).buildNodes();
+        new UaDataTypeLoader(context, nodeManager).buildNodes();
+        new UaMethodLoader(context, nodeManager).buildNodes();
+        new UaObjectLoader(context, nodeManager).buildNodes();
+        new UaObjectTypeLoader(context, nodeManager).buildNodes();
+        new UaReferenceTypeLoader(context, nodeManager).buildNodes();
+        new UaVariableLoader(context, nodeManager).buildNodes();
+        new UaVariableTypeLoader(context, nodeManager).buildNodes();
+        new UaViewLoader(context, nodeManager).buildNodes();
     }
 
 }

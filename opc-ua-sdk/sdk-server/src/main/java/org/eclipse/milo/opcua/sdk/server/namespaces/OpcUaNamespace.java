@@ -12,19 +12,17 @@ package org.eclipse.milo.opcua.sdk.server.namespaces;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import com.google.common.collect.Lists;
-import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -83,7 +81,7 @@ public class OpcUaNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final NamespaceNodeManager nodeManager;
+    private final UaNodeManager nodeManager = new UaNodeManager();
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
@@ -91,7 +89,6 @@ public class OpcUaNamespace implements Namespace {
     public OpcUaNamespace(OpcUaServer server) {
         this.server = server;
 
-        nodeManager = new NamespaceNodeManager(server);
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
@@ -112,22 +109,22 @@ public class OpcUaNamespace implements Namespace {
     }
 
     @Override
-    public NodeManager<UaNode> getNodeManager() {
-        return nodeManager;
+    public Optional<NodeManager<UaNode>> getNodeManager() {
+        return Optional.of(nodeManager);
     }
 
-    @Override
-    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaNode node = nodeManager.get(nodeId);
-
-        if (node != null) {
-            return CompletableFuture.completedFuture(node.getReferences());
-        } else {
-            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
-            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
-            return f;
-        }
-    }
+//    @Override
+//    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
+//        UaNode node = nodeManager.get(nodeId);
+//
+//        if (node != null) {
+//            return CompletableFuture.completedFuture(node.getReferences());
+//        } else {
+//            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
+//            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
+//            return f;
+//        }
+//    }
 
     @Override
     public void read(ReadContext context, Double maxAge,
@@ -221,7 +218,7 @@ public class OpcUaNamespace implements Namespace {
         try {
             long startTime = System.nanoTime();
 
-            new UaNodeLoader(server).loadNodes();
+            new UaNodeLoader(server, nodeManager).loadNodes();
 
             long endTime = System.nanoTime();
             long deltaMs = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);

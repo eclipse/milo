@@ -10,10 +10,13 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-public interface Namespace extends NamespaceServices {
+/**
+ * A Namespace is an {@link AddressSpace} that manages all nodes for a given namespace index.
+ */
+public interface Namespace extends AddressSpace {
 
     /**
      * @return the index of this {@link Namespace} in the server's namespace array.
@@ -25,11 +28,9 @@ public interface Namespace extends NamespaceServices {
      */
     String getNamespaceUri();
 
-    /**
-     * Get the {@link NodeManager} for {@link UaNode}s in this Namespace.
-     *
-     * @return the {@link NodeManager} for {@link UaNode}s in this Namespace.
-     */
-    NodeManager<UaNode> getNodeManager();
+    @Override
+    default boolean filter(NodeId nodeId) {
+        return nodeId.getNamespaceIndex().equals(getNamespaceIndex());
+    }
 
 }

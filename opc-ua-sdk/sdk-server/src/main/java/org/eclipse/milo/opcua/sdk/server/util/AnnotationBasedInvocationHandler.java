@@ -147,8 +147,8 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
             try {
                 Object[] parameters = new Object[1 + inputs.length + outputs.length];
 
-                UaNode ownerNode = server.getNodeManager()
-                    .getNode(objectId)
+                UaNode ownerNode = server.getAddressSpaceManager()
+                    .getManagedNode(objectId)
                     .orElseThrow(() -> new Exception("owner node found"));
 
                 InvocationContext context = new InvocationContextImpl(

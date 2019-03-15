@@ -21,7 +21,7 @@ package org.eclipse.milo.opcua.sdk.server.api;
  * <li>{@link ViewServices}</li>
  * </ul>
  */
-public interface NamespaceServices extends
+public interface AddressSpaceServices extends
     AttributeServices,
     AttributeHistoryServices,
     MethodServices,

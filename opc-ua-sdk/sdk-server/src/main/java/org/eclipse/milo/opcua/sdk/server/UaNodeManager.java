@@ -11,10 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server;
 
 import org.eclipse.milo.opcua.sdk.server.api.AbstractNodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 
-/**
- * A {@link NodeManager} that manages {@link UaNode} instances.
- */
 public class UaNodeManager extends AbstractNodeManager<UaNode> {}
