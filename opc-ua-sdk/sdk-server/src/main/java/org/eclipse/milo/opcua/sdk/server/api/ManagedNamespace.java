@@ -25,6 +25,20 @@ public abstract class ManagedNamespace extends ManagedAddressSpace implements Na
     }
 
     @Override
+    protected void onStartup() {
+        super.onStartup();
+
+        getServer().getAddressSpaceManager().register(this);
+    }
+
+    @Override
+    protected void onShutdown() {
+        super.onShutdown();
+
+        getServer().getAddressSpaceManager().unregister(this);
+    }
+
+    @Override
     public final boolean filter(NodeId nodeId) {
         return nodeId.getNamespaceIndex().equals(namespaceIndex);
     }
@@ -33,5 +47,5 @@ public abstract class ManagedNamespace extends ManagedAddressSpace implements Na
     public final UShort getNamespaceIndex() {
         return namespaceIndex;
     }
-    
+
 }

@@ -83,7 +83,10 @@ public class OpcUaNamespace extends ManagedNamespace {
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
-    public void initialize() {
+    @Override
+    protected void onStartup() {
+        super.onStartup();
+
         loadNodes();
         configureServerObject();
         configureConditionRefresh();

@@ -121,15 +121,13 @@ public class OpcUaServer {
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
         namespaceManager.addNamespace(opcUaNamespace = new OpcUaNamespace(this));
-        addressSpaceManager.register(opcUaNamespace);
-        opcUaNamespace.initialize();
+        opcUaNamespace.startup();
 
         serverNamespace = namespaceManager.registerAndAdd(
             config.getApplicationUri(),
             index -> new ServerNamespace(OpcUaServer.this, config.getApplicationUri())
         );
-        addressSpaceManager.register(serverNamespace);
-        serverNamespace.initialize();
+        serverNamespace.startup();
 
         serverTable.addUri(stackServer.getConfig().getApplicationUri());
 
