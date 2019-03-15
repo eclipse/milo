@@ -44,6 +44,7 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
@@ -82,7 +83,9 @@ public class OpcUaNamespace implements Namespace {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final UaNodeManager nodeManager = new UaNodeManager();
+
     private final SubscriptionModel subscriptionModel;
+    private final UaNodeContext nodeContext;
 
     private final OpcUaServer server;
 
@@ -90,6 +93,18 @@ public class OpcUaNamespace implements Namespace {
         this.server = server;
 
         subscriptionModel = new SubscriptionModel(server, this);
+
+        nodeContext = new UaNodeContext() {
+            @Override
+            public OpcUaServer getServer() {
+                return server;
+            }
+
+            @Override
+            public NodeManager<UaNode> getNodeManager() {
+                return nodeManager;
+            }
+        };
     }
 
     public void initialize() {
@@ -112,19 +127,6 @@ public class OpcUaNamespace implements Namespace {
     public Optional<NodeManager<UaNode>> getNodeManager() {
         return Optional.of(nodeManager);
     }
-
-//    @Override
-//    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-//        UaNode node = nodeManager.get(nodeId);
-//
-//        if (node != null) {
-//            return CompletableFuture.completedFuture(node.getReferences());
-//        } else {
-//            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
-//            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
-//            return f;
-//        }
-//    }
 
     @Override
     public void read(ReadContext context, Double maxAge,
@@ -218,7 +220,7 @@ public class OpcUaNamespace implements Namespace {
         try {
             long startTime = System.nanoTime();
 
-            new UaNodeLoader(server, nodeManager).loadNodes();
+            new UaNodeLoader(nodeContext, nodeManager).loadNodes();
 
             long endTime = System.nanoTime();
             long deltaMs = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
@@ -405,6 +407,9 @@ public class OpcUaNamespace implements Namespace {
 
                     server.getEventBus().post(refreshStart);
                     server.getEventBus().post(refreshEnd);
+
+                    refreshStart.delete();
+                    refreshEnd.delete();
                 } else {
                     throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
                 }

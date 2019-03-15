@@ -29,6 +29,7 @@ import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
@@ -66,6 +67,7 @@ public class TestNamespace implements Namespace {
     private final UaNodeManager nodeManager = new UaNodeManager();
     private final UaFolderNode testFolder;
     private final SubscriptionModel subscriptionModel;
+    private final UaNodeContext nodeContext;
 
     private final OpcUaServer server;
     private final UShort namespaceIndex;
@@ -74,10 +76,22 @@ public class TestNamespace implements Namespace {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
 
+        nodeContext = new UaNodeContext() {
+            @Override
+            public OpcUaServer getServer() {
+                return server;
+            }
+
+            @Override
+            public NodeManager<UaNode> getNodeManager() {
+                return nodeManager;
+            }
+        };
+
         NodeId testFolderNodeId = new NodeId(namespaceIndex, "Test");
 
         testFolder = new UaFolderNode(
-            server,
+            nodeContext,
             testFolderNodeId,
             new QualifiedName(namespaceIndex, "Test"),
             LocalizedText.english("Test")
@@ -111,19 +125,6 @@ public class TestNamespace implements Namespace {
     public Optional<NodeManager<UaNode>> getNodeManager() {
         return Optional.of(nodeManager);
     }
-
-//    @Override
-//    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-//        UaNode node = nodeManager.get(nodeId);
-//
-//        if (node != null) {
-//            return CompletableFuture.completedFuture(node.getReferences());
-//        } else {
-//            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
-//            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
-//            return f;
-//        }
-//    }
 
     @Override
     public void read(ReadContext context, Double maxAge, TimestampsToReturn timestamps, List<ReadValueId> readValueIds) {
@@ -241,7 +242,7 @@ public class TestNamespace implements Namespace {
             NodeId typeId = (NodeId) os[1];
             Variant variant = (Variant) os[2];
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(nodeContext)
                 .setNodeId(new NodeId(namespaceIndex, "/Static/AllProfiles/Scalar/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
@@ -267,7 +268,7 @@ public class TestNamespace implements Namespace {
     }
 
     private UaObjectNode addFoldersToRoot(UaNode root, String path) {
-        if (path.startsWith("/")) path = path.substring(1, path.length());
+        if (path.startsWith("/")) path = path.substring(1);
         String[] elements = path.split("/");
 
         LinkedList<UaObjectNode> folderNodes = processPathElements(
@@ -327,7 +328,7 @@ public class TestNamespace implements Namespace {
             String prefix = String.join("/", path) + "/";
             if (!prefix.startsWith("/")) prefix = "/" + prefix;
 
-            UaObjectNode node = UaObjectNode.builder(server)
+            UaObjectNode node = UaObjectNode.builder(nodeContext)
                 .setNodeId(new NodeId(namespaceIndex, prefix + name))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))
@@ -342,7 +343,7 @@ public class TestNamespace implements Namespace {
             String prefix = String.join("/", path) + "/";
             if (!prefix.startsWith("/")) prefix = "/" + prefix;
 
-            UaObjectNode node = UaObjectNode.builder(server)
+            UaObjectNode node = UaObjectNode.builder(nodeContext)
                 .setNodeId(new NodeId(namespaceIndex, prefix + name))
                 .setBrowseName(new QualifiedName(namespaceIndex, name))
                 .setDisplayName(LocalizedText.english(name))

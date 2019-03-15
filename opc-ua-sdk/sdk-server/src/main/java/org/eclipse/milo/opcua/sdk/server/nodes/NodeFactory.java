@@ -76,12 +76,7 @@ public class NodeFactory {
     private UaNode createNode(NodeId nodeId,
                               NodeId typeDefinitionId) throws UaRuntimeException {
 
-        NodeManager<UaNode> nodeManager = context.getNodeManager(nodeId)
-            .orElseThrow(() ->
-                new UaRuntimeException(
-                    StatusCodes.Bad_InternalError,
-                    "no LegacyNodeManager for NodeId: " + nodeId)
-            );
+        NodeManager<UaNode> nodeManager = context.getNodeManager();
 
         UaNode typeDefinitionNode = context.getServer()
             .getAddressSpaceManager()
@@ -104,14 +99,14 @@ public class NodeFactory {
             throw new UaRuntimeException(StatusCodes.Bad_UnexpectedError, "typeDefinitionNode: " + typeDefinitionNode);
         }
 
-        List<UaVariableNode> propertyDeclarations = typeDefinitionNode.getReferences().stream()
+        List<UaVariableNode> propertyDeclarations = typeDefinitionNode.getManagedReferences().stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
             .distinct()
             .map(r -> nodeManager.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
             .map(UaVariableNode.class::cast)
             .filter(vn ->
-                vn.getReferences().stream().anyMatch(r ->
+                vn.getManagedReferences().stream().anyMatch(r ->
                     Identifiers.HasModellingRule.equals(r.getReferenceTypeId()) &&
                         Identifiers.ModellingRule_Mandatory.expanded().equals(r.getTargetNodeId())))
             .collect(Collectors.toList());
@@ -136,7 +131,7 @@ public class NodeFactory {
             nodeManager.addNode(instance);
         }
 
-        List<UaVariableNode> variableComponents = typeDefinitionNode.getReferences().stream()
+        List<UaVariableNode> variableComponents = typeDefinitionNode.getManagedReferences().stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
             .map(r -> nodeManager.getNode(r.getTargetNodeId()))
             .flatMap(StreamUtil::opt2stream)
@@ -145,7 +140,7 @@ public class NodeFactory {
             .collect(Collectors.toList());
 
         for (UaVariableNode declaration : variableComponents) {
-            boolean placeholder = declaration.getReferences().stream()
+            boolean placeholder = declaration.getManagedReferences().stream()
                 .anyMatch(r -> r.isForward() &&
                     r.getReferenceTypeId().equals(Identifiers.HasModellingRule) &&
                     (Identifiers.ModellingRule_OptionalPlaceholder.expanded().equals(r.getTargetNodeId()) ||
@@ -175,7 +170,7 @@ public class NodeFactory {
         }
 
         if (node instanceof ObjectNode) {
-            List<UaObjectNode> objectComponents = typeDefinitionNode.getReferences().stream()
+            List<UaObjectNode> objectComponents = typeDefinitionNode.getManagedReferences().stream()
                 .filter(Reference.HAS_COMPONENT_PREDICATE)
                 .map(r -> nodeManager.getNode(r.getTargetNodeId()))
                 .flatMap(StreamUtil::opt2stream)
@@ -184,7 +179,7 @@ public class NodeFactory {
                 .collect(Collectors.toList());
 
             for (UaObjectNode declaration : objectComponents) {
-                boolean placeholder = declaration.getReferences().stream()
+                boolean placeholder = declaration.getManagedReferences().stream()
                     .anyMatch(r -> r.isForward() &&
                         r.getReferenceTypeId().equals(Identifiers.HasModellingRule) &&
                         (Identifiers.ModellingRule_OptionalPlaceholder.expanded().equals(r.getTargetNodeId()) ||

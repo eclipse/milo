@@ -47,6 +47,9 @@ public interface NodeManager<T extends Node> {
     default boolean containsNode(Node node) {
         return containsNode(node.getNodeId());
     }
+    default boolean containsNode(ExpandedNodeId nodeId) {
+        return nodeId.local().map(this::containsNode).orElse(false);
+    }
 
     @Nullable
     default T get(NodeId nodeId) {

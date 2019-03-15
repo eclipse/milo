@@ -73,7 +73,7 @@ public interface UaServerNode extends Node {
     /**
      * @return this node's {@link Reference}s.
      */
-    ImmutableList<Reference> getReferences();
+    ImmutableList<Reference> getManagedReferences();
 
     /**
      * Read the specified attribute.

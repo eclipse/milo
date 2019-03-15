@@ -100,20 +100,26 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     @Override
     public List<Reference> getReferences(NodeId sourceNodeId) {
-        return new ArrayList<>(referencesBySource.get(sourceNodeId));
+        synchronized (referencesBySource) {
+            return new ArrayList<>(referencesBySource.get(sourceNodeId));
+        }
     }
 
     @Override
     public List<Reference> getReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
-        return referencesBySource.get(sourceNodeId)
-            .stream()
-            .filter(filter)
-            .collect(Collectors.toList());
+        synchronized (referencesBySource) {
+            return referencesBySource.get(sourceNodeId)
+                .stream()
+                .filter(filter)
+                .collect(Collectors.toList());
+        }
     }
 
     @Override
     public List<Reference> getReferencesTo(NodeId targetNodeId) {
-        return new ArrayList<>(referencesByTarget.get(targetNodeId));
+        synchronized (referencesByTarget) {
+            return new ArrayList<>(referencesByTarget.get(targetNodeId));
+        }
     }
 
 }

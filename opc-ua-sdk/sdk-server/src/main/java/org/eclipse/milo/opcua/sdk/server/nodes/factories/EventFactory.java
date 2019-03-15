@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
+import org.eclipse.milo.opcua.sdk.server.api.AbstractNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
@@ -29,45 +30,59 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class EventFactory {
 
-    private final OpcUaServer server;
+    private final NodeManager<UaNode> nodeManager;
+    private final NodeFactory nodeFactory;
 
+    private final OpcUaServer server;
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
-    public EventFactory(
-        UaNodeContext context,
-        ObjectTypeManager objectTypeManager,
-        VariableTypeManager variableTypeManager) {
+    public EventFactory(OpcUaServer server) {
+        this(
+            server,
+            server.getObjectTypeManager(),
+            server.getVariableTypeManager()
+        );
+    }
 
+    public EventFactory(
+        OpcUaServer server,
+        ObjectTypeManager objectTypeManager,
+        VariableTypeManager variableTypeManager
+    ) {
+
+        this.server = server;
         this.objectTypeManager = objectTypeManager;
         this.variableTypeManager = variableTypeManager;
 
-        server = context.getServer();
-    }
+//        nodeManager = new EventNodeManager(server.getAddressSpaceManager());
+        nodeManager = new UaNodeManager();
 
-    public BaseEventNode createEvent(
-        NodeId nodeId,
-        NodeId typeDefinitionId) throws UaException {
-
-        NodeFactory nodeFactory = new NodeFactory(
-            new EventNodeContext(server),
+        nodeFactory = new NodeFactory(
+            new EventNodeContext(server, nodeManager),
             objectTypeManager,
             variableTypeManager
         );
 
-        return (BaseEventNode) nodeFactory.createNode(nodeId, typeDefinitionId, true);
+        server.getAddressSpaceManager().register(nodeManager);
+    }
+
+    public BaseEventNode createEvent(NodeId nodeId, NodeId typeDefinitionId) throws UaException {
+        return (BaseEventNode) nodeFactory.createNode(
+            nodeId,
+            typeDefinitionId,
+            true
+        );
     }
 
     private static class EventNodeContext implements UaNodeContext {
 
-        private final UaNodeManager nodeManager;
-
         private final OpcUaServer server;
+        private final NodeManager<UaNode> nodeManager;
 
-        EventNodeContext(OpcUaServer server) {
+        EventNodeContext(OpcUaServer server, NodeManager<UaNode> nodeManager) {
             this.server = server;
-
-            nodeManager = new EventNodeManager(server.getAddressSpaceManager());
+            this.nodeManager = nodeManager;
         }
 
         @Override
@@ -76,13 +91,13 @@ public class EventFactory {
         }
 
         @Override
-        public Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
-            return Optional.of(nodeManager);
+        public NodeManager<UaNode> getNodeManager() {
+            return nodeManager;
         }
 
     }
 
-    private static class EventNodeManager extends UaNodeManager {
+    private static class EventNodeManager extends AbstractNodeManager<UaNode> {
 
         private final AddressSpaceManager addressSpaceManager;
 

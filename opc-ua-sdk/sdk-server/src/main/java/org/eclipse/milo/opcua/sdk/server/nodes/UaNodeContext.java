@@ -24,6 +24,9 @@ public interface UaNodeContext {
      */
     OpcUaServer getServer();
 
+
+    NodeManager<UaNode> getNodeManager();
+
     /**
      * @return the {@link NamespaceManager} from the server.
      */

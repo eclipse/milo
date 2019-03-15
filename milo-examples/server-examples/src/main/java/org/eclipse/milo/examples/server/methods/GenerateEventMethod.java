@@ -17,7 +17,6 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -62,9 +61,7 @@ public class GenerateEventMethod extends AbstractMethodInvocationHandler {
     protected Variant[] invoke(InvocationContext invocationContext, Variant[] inputValues) throws UaException {
         NodeId eventTypeId = (NodeId) inputValues[0].getValue();
 
-        EventFactory eventFactory = server.getEventFactory();
-
-        BaseEventNode eventNode = eventFactory.createEvent(
+        BaseEventNode eventNode = server.getEventFactory().createEvent(
             new NodeId(1, UUID.randomUUID()),
             eventTypeId
         );
@@ -81,6 +78,8 @@ public class GenerateEventMethod extends AbstractMethodInvocationHandler {
         eventNode.setSeverity(ushort(2));
 
         server.getEventBus().post(eventNode);
+
+        eventNode.delete();
 
         return new Variant[0];
     }

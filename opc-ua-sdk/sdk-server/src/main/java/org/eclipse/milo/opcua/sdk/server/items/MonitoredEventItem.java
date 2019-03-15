@@ -168,10 +168,12 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Nonnull
     private Variant[] generateOverflowEventFields() {
+        BaseEventNode overflowEvent = null;
+
         try {
             UUID eventId = UUID.randomUUID();
 
-            BaseEventNode overflowEvent = server.getEventFactory().createEvent(
+            overflowEvent = server.getEventFactory().createEvent(
                 new NodeId(1, eventId),
                 Identifiers.EventQueueOverflowEventType
             );
@@ -197,6 +199,10 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
             logger.error("Error creating overflow event: {}", e.getMessage(), e);
 
             return new Variant[0];
+        } finally {
+            if (overflowEvent != null) {
+                overflowEvent.delete();
+            }
         }
     }
 

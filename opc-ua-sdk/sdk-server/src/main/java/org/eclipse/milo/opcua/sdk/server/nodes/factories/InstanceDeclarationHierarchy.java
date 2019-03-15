@@ -121,7 +121,7 @@ public class InstanceDeclarationHierarchy {
                         nodeTable.addNode(browsePath, node.getNodeId());
                         referenceTable.addReference(parentPath, reference.getReferenceTypeId(), browsePath);
 
-                        node.getReferences().stream()
+                        node.getManagedReferences().stream()
                             .filter(r -> r.subtypeOf(Identifiers.NonHierarchicalReferences))
                             .forEach(r -> referenceTable
                                 .addReference(browsePath, r.getReferenceTypeId(), r.getTargetNodeId()));
@@ -144,7 +144,7 @@ public class InstanceDeclarationHierarchy {
         }
 
         private static boolean hasModellingRule(UaNode node, boolean includeOptionalNodes) {
-            return node.getReferences().stream()
+            return node.getManagedReferences().stream()
                 .anyMatch(r -> {
                     boolean rule =
                         Identifiers.ModellingRule_Mandatory.expanded().equals(r.getTargetNodeId()) ||

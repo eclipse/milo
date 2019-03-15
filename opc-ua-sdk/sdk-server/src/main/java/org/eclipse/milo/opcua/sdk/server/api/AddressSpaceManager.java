@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +37,7 @@ import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 public class AddressSpaceManager {
 
     private final List<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
+    private final List<NodeManager<UaNode>> nodeManagers = new CopyOnWriteArrayList<>();
 
     private final OpcUaServer server;
 
@@ -47,10 +47,22 @@ public class AddressSpaceManager {
 
     public void register(AddressSpace addressSpace) {
         addressSpaces.add(addressSpace);
+
+        addressSpace.getNodeManager().ifPresent(this::register);
     }
 
     public void unregister(AddressSpace addressSpace) {
         addressSpaces.remove(addressSpace);
+
+        addressSpace.getNodeManager().ifPresent(this::unregister);
+    }
+
+    public void register(NodeManager<UaNode> nodeManager) {
+        nodeManagers.add(nodeManager);
+    }
+
+    public void unregister(NodeManager<UaNode> nodeManager) {
+        nodeManagers.remove(nodeManager);
     }
 
     public List<AddressSpace> getAddressSpaces() {
@@ -91,13 +103,16 @@ public class AddressSpaceManager {
     }
 
     public Optional<UaNode> getManagedNode(NodeId nodeId) {
-        return getNodeManager(nodeId)
+//        return getNodeManager(nodeId)
+//            .flatMap(n -> n.getNode(nodeId));
+        return nodeManagers.stream()
+            .filter(n -> n.containsNode(nodeId))
+            .findFirst()
             .flatMap(n -> n.getNode(nodeId));
     }
 
     public Optional<UaNode> getManagedNode(ExpandedNodeId nodeId) {
-        return getNodeManager(nodeId)
-            .flatMap(n -> n.getNode(nodeId));
+        return nodeId.local().flatMap(this::getManagedNode);
     }
 
     /**
@@ -108,23 +123,33 @@ public class AddressSpaceManager {
      * @return TODO
      */
     public List<Reference> getManagedReferences(NodeId sourceNodeId) {
-        return addressSpaces.stream()
-            .map(asx ->
-                asx.getNodeManager()
-                    .map(n -> n.getReferences(sourceNodeId))
-                    .orElse(Collections.emptyList())
-            )
+//        return addressSpaces.stream()
+//            .map(asx ->
+//                asx.getNodeManager()
+//                    .map(n -> n.getReferences(sourceNodeId))
+//                    .orElse(Collections.emptyList())
+//            )
+//            .flatMap(Collection::stream)
+//            .collect(Collectors.toList());
+
+        return nodeManagers.stream()
+            .map(n -> n.getReferences(sourceNodeId))
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     }
 
     public List<Reference> getManagedReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
-        return addressSpaces.stream()
-            .map(asx ->
-                asx.getNodeManager()
-                    .map(n -> n.getReferences(sourceNodeId, filter))
-                    .orElse(Collections.emptyList())
-            )
+//        return addressSpaces.stream()
+//            .map(asx ->
+//                asx.getNodeManager()
+//                    .map(n -> n.getReferences(sourceNodeId, filter))
+//                    .orElse(Collections.emptyList())
+//            )
+//            .flatMap(Collection::stream)
+//            .collect(Collectors.toList());
+
+        return nodeManagers.stream()
+            .map(n -> n.getReferences(sourceNodeId, filter))
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     }

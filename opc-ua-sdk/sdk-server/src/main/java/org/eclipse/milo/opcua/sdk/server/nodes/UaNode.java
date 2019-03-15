@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.lang.ref.WeakReference;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -186,54 +185,65 @@ public abstract class UaNode implements UaServerNode {
         return context;
     }
 
-    protected final Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
-        return context.getNodeManager(nodeId);
+    /**
+     * Delete this Node, its References, and all its child Nodes and their References, recursively.
+     */
+    public final void delete() {
+        NodeManager<UaNode> nodeManager = context.getNodeManager();
+
+        nodeManager.removeNode(nodeId);
+
+        for (Reference reference : nodeManager.getReferences(nodeId)) {
+            if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
+                nodeManager.getNode(reference.getTargetNodeId()).ifPresent(UaNode::delete);
+            }
+
+            nodeManager.removeReference(reference);
+        }
     }
 
-    protected final Optional<NodeManager<UaNode>> getNodeManager(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(this::getNodeManager);
+    protected Optional<UaNode> getManagedNode(NodeId nodeId) {
+        //return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
+        return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
     }
 
-    protected Optional<UaNode> getNode(NodeId nodeId) {
-        return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
+    protected Optional<UaNode> getManagedNode(ExpandedNodeId nodeId) {
+        //return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
+        return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
     }
 
-    protected Optional<UaNode> getNode(ExpandedNodeId nodeId) {
-        return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
-    }
-
-    public ImmutableList<Reference> getReferences() {
+    public ImmutableList<Reference> getManagedReferences() {
         // TODO should this be *all* references or just references tracked by this Node's LegacyNodeManager?
         //  Getting all references like this is dangerous because a Namespace/AddressSpace would naturally answer
         //  getReferencesFrom/To by calling node.getReferences()...
 
-//        return ImmutableList.copyOf(
-//            context.getServer()
-//                .getAddressSpaceManager()
-//                .getManagedReferences(nodeId)
-//        );
-
         return ImmutableList.copyOf(
-            getNodeManager(nodeId)
-                .map(n -> n.getReferences(nodeId))
-                .orElse(Collections.emptyList())
+            context.getServer()
+                .getAddressSpaceManager()
+                .getManagedReferences(nodeId)
         );
+
+//        return ImmutableList.copyOf(
+//            getNodeManager(nodeId)
+//                .map(n -> n.getReferences(nodeId))
+//                .orElse(Collections.emptyList())
+//        );
     }
 
-    public synchronized void addReference(Reference reference) {
-        getNodeManager(nodeId).ifPresent(n -> n.addReference(reference));
+    public void addReference(Reference reference) {
+        context.getNodeManager().addReference(reference);
     }
 
-    public synchronized void addReferences(Collection<Reference> c) {
-        getNodeManager(nodeId).ifPresent(n -> c.forEach(n::addReference));
+    public void addReferences(Collection<Reference> c) {
+        c.forEach(r -> context.getNodeManager().addReference(r));
     }
 
-    public synchronized void removeReference(Reference reference) {
-        getNodeManager(nodeId).ifPresent(n -> n.removeReference(reference));
+    public void removeReference(Reference reference) {
+        context.getNodeManager().removeReference(reference);
     }
 
-    public synchronized void removeReferences(Collection<Reference> c) {
-        getNodeManager(nodeId).ifPresent(n -> c.forEach(n::removeReference));
+    public void removeReferences(Collection<Reference> c) {
+        c.forEach(r -> context.getNodeManager().removeReference(r));
     }
 
     public <T> Optional<T> getProperty(QualifiedProperty<T> property) {
@@ -316,10 +326,10 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public Optional<VariableNode> getPropertyNode(QualifiedName browseName) {
-        Node node = getReferences()
+        Node node = getManagedReferences()
             .stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -397,10 +407,10 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getReferences()
+        return getManagedReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(nodePredicate)
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst();
@@ -421,10 +431,10 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getReferences()
+        return getManagedReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(nodePredicate)
             .filter(n -> {
                 String nodeBrowseName = n.getBrowseName().getName();
@@ -452,10 +462,10 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<ObjectNode> getObjectComponent(QualifiedName browseName) {
-        ObjectNode node = (ObjectNode) getReferences()
+        ObjectNode node = (ObjectNode) getManagedReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> n.getNodeClass() == NodeClass.Object && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -477,10 +487,10 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<VariableNode> getVariableComponent(QualifiedName browseName) {
-        VariableNode node = (VariableNode) getReferences()
+        VariableNode node = (VariableNode) getManagedReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> n.getNodeClass() == NodeClass.Variable && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 

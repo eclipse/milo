@@ -153,7 +153,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         NodeId nodeId = asm.getManagedReferences(typeDefinitionId)
             .stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n ->
                 (n instanceof UaMethodNode) &&
                     Objects.equals(n.getBrowseName(), methodName))
@@ -180,64 +180,64 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     }
 
     public List<UaNode> getComponentNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<UaNode> getPropertyNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<UaMethodNode> getMethodNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode))
             .map(UaMethodNode.class::cast)
             .collect(Collectors.toList());
     }
 
     public ObjectTypeNode getTypeDefinitionNode() {
-        Node node = getReferences().stream()
+        Node node = getManagedReferences().stream()
             .filter(HAS_TYPE_DEFINITION_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()))
             .orElse(null);
 
         return (node instanceof ObjectTypeNode) ? (ObjectTypeNode) node : null;
     }
 
     public List<Node> getEventSourceNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(HAS_EVENT_SOURCE_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getNotifierNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(HAS_NOTIFIER_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getOrganizesNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(ORGANIZES_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public Optional<Node> getDescriptionNode() {
-        Optional<UaNode> node = getReferences().stream()
+        Optional<UaNode> node = getManagedReferences().stream()
             .filter(HAS_DESCRIPTION_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()));
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()));
 
         return node.map(n -> n);
     }

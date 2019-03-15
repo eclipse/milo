@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 
 /**
@@ -20,9 +19,9 @@ import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 @Deprecated
 public abstract class DerivedVariableNode extends UaVariableNode {
 
-    public DerivedVariableNode(OpcUaServer server, UaVariableNode variableNode) {
+    public DerivedVariableNode(UaNodeContext context, UaVariableNode variableNode) {
 
-        super(server,
+        super(context,
             variableNode.getNodeId(),
             variableNode.getBrowseName(),
             variableNode.getDisplayName(),
@@ -38,7 +37,7 @@ public abstract class DerivedVariableNode extends UaVariableNode {
             variableNode.getMinimumSamplingInterval(),
             variableNode.getHistorizing());
 
-        addReferences(variableNode.getReferences());
+        addReferences(variableNode.getManagedReferences());
     }
 
 }

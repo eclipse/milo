@@ -88,8 +88,8 @@ public class NodeFactoryTest {
             }
 
             @Override
-            public Optional<NodeManager<UaNode>> getNodeManager(NodeId nodeId) {
-                return Optional.of(nodeManager);
+            public NodeManager<UaNode> getNodeManager() {
+                return nodeManager;
             }
         };
 

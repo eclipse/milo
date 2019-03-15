@@ -415,7 +415,7 @@ public class AttributeWriter {
             .orElse(null);
 
         if (dataTypeNode != null) {
-            return dataTypeNode.getReferences()
+            return dataTypeNode.getManagedReferences()
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
                 .flatMap(r -> opt2stream(r.getTargetNodeId().local()))

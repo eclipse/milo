@@ -231,10 +231,10 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     public Optional<ObjectNode> getModellingRuleNode() {
-        Node node = getReferences().stream()
+        Node node = getManagedReferences().stream()
             .filter(HAS_MODELLING_RULE_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()))
             .orElse(null);
 
         ObjectNode objectNode = (node instanceof ObjectNode) ? (ObjectNode) node : null;
@@ -243,24 +243,24 @@ public class UaVariableNode extends UaNode implements VariableNode {
     }
 
     public List<Node> getPropertyNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getComponentNodes() {
-        return getReferences().stream()
+        return getManagedReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public VariableTypeNode getTypeDefinitionNode() {
-        Node node = getReferences().stream()
+        Node node = getManagedReferences().stream()
             .filter(HAS_TYPE_DEFINITION_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()))
             .orElse(null);
 
         return (node instanceof VariableTypeNode) ? (VariableTypeNode) node : null;

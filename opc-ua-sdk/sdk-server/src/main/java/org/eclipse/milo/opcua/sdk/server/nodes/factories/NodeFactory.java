@@ -42,6 +42,14 @@ public class NodeFactory {
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
+    public NodeFactory(UaNodeContext context) {
+        this(
+            context,
+            context.getServer().getObjectTypeManager(),
+            context.getServer().getVariableTypeManager()
+        );
+    }
+
     public NodeFactory(
         UaNodeContext context,
         ObjectTypeManager objectTypeManager,
@@ -240,7 +248,7 @@ public class NodeFactory {
                 }
             });
 
-            context.getNodeManager(node.getNodeId()).ifPresent(n -> n.addNode(node));
+            context.getNodeManager().addNode(node);
         });
 
         return nodeTable.getBrowsePathTree().map(nodes::get);

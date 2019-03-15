@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
@@ -51,8 +52,10 @@ public class ServerNamespace implements Namespace {
 
     public static final UShort NAMESPACE_INDEX = ushort(1);
 
-    private final UaNodeManager nodeManager;
+    private final UaNodeManager nodeManager = new UaNodeManager();
+
     private final SubscriptionModel subscriptionModel;
+    private final UaNodeContext nodeContext;
 
     private final OpcUaServer server;
     private final String namespaceUri;
@@ -61,8 +64,19 @@ public class ServerNamespace implements Namespace {
         this.server = server;
         this.namespaceUri = namespaceUri;
 
-        nodeManager = new UaNodeManager();
         subscriptionModel = new SubscriptionModel(server, this);
+
+        nodeContext = new UaNodeContext() {
+            @Override
+            public OpcUaServer getServer() {
+                return server;
+            }
+
+            @Override
+            public NodeManager<UaNode> getNodeManager() {
+                return nodeManager;
+            }
+        };
     }
 
     public void initialize() {
@@ -83,19 +97,6 @@ public class ServerNamespace implements Namespace {
     public Optional<NodeManager<UaNode>> getNodeManager() {
         return Optional.of(nodeManager);
     }
-
-//    @Override
-//    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-//        UaServerNode node = nodeManager.get(nodeId);
-//
-//        if (node != null) {
-//            return CompletableFuture.completedFuture(node.getReferences());
-//        } else {
-//            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
-//            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
-//            return f;
-//        }
-//    }
 
     @Override
     public void read(
@@ -172,7 +173,7 @@ public class ServerNamespace implements Namespace {
 
     private void addVendorInfoPlainJava(UaObjectNode vendorServerInfo) {
         UaVariableNode availableProcessors = new UaVariableNode(
-            server,
+            nodeContext,
             new NodeId(1, "VendorServerInfo/AvailableProcessors"),
             new QualifiedName(1, "AvailableProcessors"),
             LocalizedText.english("AvailableProcessors")) {
@@ -193,7 +194,7 @@ public class ServerNamespace implements Namespace {
         MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
 
         UaVariableNode usedMemory = new UaVariableNode(
-            server,
+            nodeContext,
             new NodeId(1, "VendorServerInfo/UsedMemory"),
             new QualifiedName(1, "UsedMemory"),
             LocalizedText.english("UsedMemory")) {
@@ -206,7 +207,7 @@ public class ServerNamespace implements Namespace {
         nodeManager.addNode(usedMemory);
 
         UaVariableNode maxMemory = new UaVariableNode(
-            server,
+            nodeContext,
             new NodeId(1, "VendorServerInfo/MaxMemory"),
             new QualifiedName(1, "MaxMemory"),
             LocalizedText.english("MaxMemory")) {
@@ -219,7 +220,7 @@ public class ServerNamespace implements Namespace {
         nodeManager.addNode(maxMemory);
 
         UaVariableNode osName = new UaVariableNode(
-            server,
+            nodeContext,
             new NodeId(1, "VendorServerInfo/OsName"),
             new QualifiedName(1, "OsName"),
             LocalizedText.english("OsName")) {
@@ -232,7 +233,7 @@ public class ServerNamespace implements Namespace {
         nodeManager.addNode(osName);
 
         UaVariableNode osArch = new UaVariableNode(
-            server,
+            nodeContext,
             new NodeId(1, "VendorServerInfo/OsArch"),
             new QualifiedName(1, "OsArch"),
             LocalizedText.english("OsArch")) {
@@ -245,7 +246,7 @@ public class ServerNamespace implements Namespace {
         nodeManager.addNode(osArch);
 
         UaVariableNode osVersion = new UaVariableNode(
-            server,
+            nodeContext,
             new NodeId(1, "VendorServerInfo/OsVersion"),
             new QualifiedName(1, "OsVersion"),
             LocalizedText.english("OsVersion")) {
@@ -272,7 +273,7 @@ public class ServerNamespace implements Namespace {
                 (com.sun.management.OperatingSystemMXBean) osMxBean;
 
             UaVariableNode processCpuLoad = new UaVariableNode(
-                server,
+                nodeContext,
                 new NodeId(1, "VendorServerInfo/ProcessCpuLoad"),
                 new QualifiedName(1, "ProcessCpuLoad"),
                 LocalizedText.english("ProcessCpuLoad")) {
@@ -286,7 +287,7 @@ public class ServerNamespace implements Namespace {
             nodeManager.addNode(processCpuLoad);
 
             UaVariableNode systemCpuLoad = new UaVariableNode(
-                server,
+                nodeContext,
                 new NodeId(1, "VendorServerInfo/SystemCpuLoad"),
                 new QualifiedName(1, "SystemCpuLoad"),
                 LocalizedText.english("SystemCpuLoad")) {
@@ -305,7 +306,7 @@ public class ServerNamespace implements Namespace {
                 UnixOperatingSystemMXBean unixBean = (UnixOperatingSystemMXBean) sunOsMxBean;
 
                 UaVariableNode openFileDescriptors = new UaVariableNode(
-                    server,
+                    nodeContext,
                     new NodeId(1, "VendorServerInfo/OpenFileDescriptors"),
                     new QualifiedName(1, "OpenFileDescriptors"),
                     LocalizedText.english("OpenFileDescriptors")) {
@@ -318,7 +319,7 @@ public class ServerNamespace implements Namespace {
                 nodeManager.addNode(openFileDescriptors);
 
                 UaVariableNode maxFileDescriptors = new UaVariableNode(
-                    server,
+                    nodeContext,
                     new NodeId(1, "VendorServerInfo/MaxFileDescriptors"),
                     new QualifiedName(1, "MaxFileDescriptors"),
                     LocalizedText.english("MaxFileDescriptors")) {

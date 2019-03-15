@@ -146,7 +146,7 @@ public class AttributeReader {
             .orElse(null);
 
         if (dataTypeNode != null) {
-            Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
+            Optional<NodeId> superTypeId = dataTypeNode.getManagedReferences().stream()
                 .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(Identifiers.HasSubtype))
                 .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
                 .findFirst();
@@ -215,7 +215,7 @@ public class AttributeReader {
         UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
 
         if (dataTypeNode != null) {
-            return dataTypeNode.getReferences().stream()
+            return dataTypeNode.getManagedReferences().stream()
                 .filter(r -> r.isForward() && Identifiers.HasEncoding.equals(r.getReferenceTypeId()))
                 .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
                 .filter(n -> encodingName.equals(n.getBrowseName()))
