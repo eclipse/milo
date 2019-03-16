@@ -27,17 +27,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
+import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceServices;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredEventItem;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription.State;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -86,7 +85,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -224,39 +222,27 @@ public class SubscriptionManager {
                  * Notify AddressSpaces of the items we just deleted.
                  */
 
-                Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = deletedItems
-                    .stream()
-                    .collect(groupingBy(item -> {
-                        NodeId nodeId = item.getReadValueId().getNodeId();
+                List<DataItem> dataItems = Lists.newArrayList();
+                List<EventItem> eventItems = Lists.newArrayList();
 
-                        return server.getAddressSpaceManager().getAddressSpace(nodeId);
-                    }));
-
-                byAddressSpace.forEach((asx, items) -> {
-                    List<DataItem> dataItems = Lists.newArrayList();
-                    List<EventItem> eventItems = Lists.newArrayList();
-
-                    for (BaseMonitoredItem<?> item : items) {
-                        if (item instanceof MonitoredDataItem) {
-                            dataItems.add((DataItem) item);
-                        } else if (item instanceof MonitoredEventItem) {
-                            eventItems.add((EventItem) item);
-                        }
+                for (BaseMonitoredItem<?> item : deletedItems) {
+                    if (item instanceof MonitoredDataItem) {
+                        dataItems.add((DataItem) item);
+                    } else if (item instanceof MonitoredEventItem) {
+                        eventItems.add((EventItem) item);
                     }
+                }
 
-                    try {
-                        if (!dataItems.isEmpty()) {
-                            asx.onDataItemsDeleted(dataItems);
-                        }
-                        if (!eventItems.isEmpty()) {
-                            asx.onEventItemsDeleted(eventItems);
-                        }
-                    } catch (Throwable t) {
-                        logger.error(
-                            "Unexpected error notifying AddressSpace={} " +
-                                "of MonitoredItems being deleted.", asx, t);
+                try {
+                    if (!dataItems.isEmpty()) {
+                        server.getAddressSpaceManager().onDataItemsDeleted(dataItems);
                     }
-                });
+                    if (!eventItems.isEmpty()) {
+                        server.getAddressSpaceManager().onEventItemsDeleted(eventItems);
+                    }
+                } catch (Throwable t) {
+                    logger.error("Unexpected error notifying AddressSpace of MonitoredItems being deleted.", t);
+                }
 
                 results[i] = StatusCode.GOOD;
             } else {
@@ -374,39 +360,27 @@ public class SubscriptionManager {
 
             // Notify AddressSpaces of the items we just created.
 
-            Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = monitoredItems
-                .stream()
-                .collect(groupingBy(item -> {
-                    NodeId nodeId = item.getReadValueId().getNodeId();
+            List<DataItem> dataItems = Lists.newArrayList();
+            List<EventItem> eventItems = Lists.newArrayList();
 
-                    return server.getAddressSpaceManager().getAddressSpace(nodeId);
-                }));
-
-            byAddressSpace.forEach((asx, items) -> {
-                List<DataItem> dataItems = Lists.newArrayList();
-                List<EventItem> eventItems = Lists.newArrayList();
-
-                for (BaseMonitoredItem<?> item : items) {
-                    if (item instanceof MonitoredDataItem) {
-                        dataItems.add((DataItem) item);
-                    } else if (item instanceof MonitoredEventItem) {
-                        eventItems.add((EventItem) item);
-                    }
+            for (BaseMonitoredItem<?> item : monitoredItems) {
+                if (item instanceof MonitoredDataItem) {
+                    dataItems.add((DataItem) item);
+                } else if (item instanceof MonitoredEventItem) {
+                    eventItems.add((EventItem) item);
                 }
+            }
 
-                try {
-                    if (!dataItems.isEmpty()) {
-                        asx.onDataItemsCreated(dataItems);
-                    }
-                    if (!eventItems.isEmpty()) {
-                        asx.onEventItemsCreated(eventItems);
-                    }
-                } catch (Throwable t) {
-                    logger.error(
-                        "Unexpected error notifying AddressSpace={} " +
-                            "of MonitoredItems being created.", asx, t);
+            try {
+                if (!dataItems.isEmpty()) {
+                    server.getAddressSpaceManager().onDataItemsCreated(dataItems);
                 }
-            });
+                if (!eventItems.isEmpty()) {
+                    server.getAddressSpaceManager().onEventItemsCreated(eventItems);
+                }
+            } catch (Throwable t) {
+                logger.error("Unexpected error notifying AddressSpace of MonitoredItems being created.", t);
+            }
 
             ResponseHeader header = service.createResponseHeader();
 
@@ -460,10 +434,8 @@ public class SubscriptionManager {
             UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
-            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
-
             try {
-                addressSpace.onCreateEventItem(
+                server.getAddressSpaceManager().onCreateEventItem(
                     request.getItemToMonitor(),
                     requestedQueueSize,
                     revisedQueueSize::set
@@ -529,13 +501,11 @@ public class SubscriptionManager {
 
             UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
 
-            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
-
             AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                addressSpace.onCreateDataItem(
+                server.getAddressSpaceManager().onCreateDataItem(
                     request.getItemToMonitor(),
                     requestedSamplingInterval,
                     requestedQueueSize,
@@ -635,39 +605,27 @@ public class SubscriptionManager {
              * Notify AddressSpaces of the items we just modified.
              */
 
-            Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = monitoredItems
-                .stream()
-                .collect(groupingBy(item -> {
-                    NodeId nodeId = item.getReadValueId().getNodeId();
+            List<DataItem> dataItems = Lists.newArrayList();
+            List<EventItem> eventItems = Lists.newArrayList();
 
-                    return server.getAddressSpaceManager().getAddressSpace(nodeId);
-                }));
-
-            byAddressSpace.forEach((addressSpace, items) -> {
-                List<DataItem> dataItems = Lists.newArrayList();
-                List<EventItem> eventItems = Lists.newArrayList();
-
-                for (BaseMonitoredItem<?> item : items) {
-                    if (item instanceof MonitoredDataItem) {
-                        dataItems.add((DataItem) item);
-                    } else if (item instanceof MonitoredEventItem) {
-                        eventItems.add((EventItem) item);
-                    }
+            for (BaseMonitoredItem<?> item : monitoredItems) {
+                if (item instanceof MonitoredDataItem) {
+                    dataItems.add((DataItem) item);
+                } else if (item instanceof MonitoredEventItem) {
+                    eventItems.add((EventItem) item);
                 }
+            }
 
-                try {
-                    if (!dataItems.isEmpty()) {
-                        addressSpace.onDataItemsModified(dataItems);
-                    }
-                    if (!eventItems.isEmpty()) {
-                        addressSpace.onEventItemsModified(eventItems);
-                    }
-                } catch (Throwable t) {
-                    logger.error(
-                        "Unexpected error notifying AddressSpace={} " +
-                            "of MonitoredItems being modified.", addressSpace, t);
+            try {
+                if (!dataItems.isEmpty()) {
+                    server.getAddressSpaceManager().onDataItemsModified(dataItems);
                 }
-            });
+                if (!eventItems.isEmpty()) {
+                    server.getAddressSpaceManager().onEventItemsModified(eventItems);
+                }
+            } catch (Throwable t) {
+                logger.error("Unexpected error notifying AddressSpace of MonitoredItems being modified.", t);
+            }
 
             /*
              * AddressSpaces have been notified; send response.
@@ -708,12 +666,10 @@ public class SubscriptionManager {
         if (attributeId.equals(AttributeId.EventNotifier.uid())) {
             UInteger requestedQueueSize = parameters.getQueueSize();
 
-            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
-
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                addressSpace.onModifyEventItem(
+                server.getAddressSpaceManager().onModifyEventItem(
                     monitoredItem.getReadValueId(),
                     requestedQueueSize,
                     revisedQueueSize::set
@@ -751,13 +707,11 @@ public class SubscriptionManager {
 
             UInteger requestedQueueSize = parameters.getQueueSize();
 
-            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
-
             AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                addressSpace.onModifyDataItem(
+                server.getAddressSpaceManager().onModifyDataItem(
                     monitoredItem.getReadValueId(),
                     requestedSamplingInterval,
                     requestedQueueSize,
@@ -826,9 +780,17 @@ public class SubscriptionManager {
             })
             .collect(toList());
 
-        CompletableFuture<List<DataValue>> future = DefaultAttributeServiceSet.addressSpaceRead(
+        CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
+
+        ReadContext context = new ReadContext(
             server,
-            session,
+            null,
+            future,
+            new DiagnosticsContext<>()
+        );
+
+        server.getAddressSpaceManager().read(
+            context,
             0.0,
             TimestampsToReturn.Neither,
             attributesToRead
@@ -888,39 +850,27 @@ public class SubscriptionManager {
          * Notify AddressSpaces of the items that have been deleted.
          */
 
-        Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = deletedItems
-            .stream()
-            .collect(groupingBy(item -> {
-                NodeId nodeId = item.getReadValueId().getNodeId();
+        List<DataItem> dataItems = Lists.newArrayList();
+        List<EventItem> eventItems = Lists.newArrayList();
 
-                return server.getAddressSpaceManager().getAddressSpace(nodeId);
-            }));
-
-        byAddressSpace.forEach((addressSpace, items) -> {
-            List<DataItem> dataItems = Lists.newArrayList();
-            List<EventItem> eventItems = Lists.newArrayList();
-
-            for (BaseMonitoredItem<?> item : items) {
-                if (item instanceof MonitoredDataItem) {
-                    dataItems.add((DataItem) item);
-                } else if (item instanceof MonitoredEventItem) {
-                    eventItems.add((EventItem) item);
-                }
+        for (BaseMonitoredItem<?> item : deletedItems) {
+            if (item instanceof MonitoredDataItem) {
+                dataItems.add((DataItem) item);
+            } else if (item instanceof MonitoredEventItem) {
+                eventItems.add((EventItem) item);
             }
+        }
 
-            try {
-                if (!dataItems.isEmpty()) {
-                    addressSpace.onDataItemsDeleted(dataItems);
-                }
-                if (!eventItems.isEmpty()) {
-                    addressSpace.onEventItemsDeleted(eventItems);
-                }
-            } catch (Throwable t) {
-                logger.error(
-                    "Unexpected error notifying AddressSpace={} " +
-                        "of MonitoredItems being deleted.", addressSpace, t);
+        try {
+            if (!dataItems.isEmpty()) {
+                server.getAddressSpaceManager().onDataItemsDeleted(dataItems);
             }
-        });
+            if (!eventItems.isEmpty()) {
+                server.getAddressSpaceManager().onEventItemsDeleted(eventItems);
+            }
+        } catch (Throwable t) {
+            logger.error("Unexpected error notifying AddressSpace of MonitoredItems being deleted.", t);
+        }
 
         /*
          * Build and return results.
@@ -958,7 +908,7 @@ public class SubscriptionManager {
 
             MonitoringMode monitoringMode = request.getMonitoringMode();
             StatusCode[] results = new StatusCode[itemsToModify.size()];
-            List<BaseMonitoredItem<?>> modified = newArrayListWithCapacity(itemsToModify.size());
+            List<MonitoredItem> modified = newArrayListWithCapacity(itemsToModify.size());
 
             for (int i = 0; i < itemsToModify.size(); i++) {
                 UInteger itemId = itemsToModify.get(i);
@@ -976,18 +926,10 @@ public class SubscriptionManager {
             }
 
             /*
-             * Notify AddressSpaces of the items whose MonitoringMode has been modified.
+             * Notify AddressSpace of the items whose MonitoringMode has been modified.
              */
 
-            Map<AddressSpaceServices, List<MonitoredItem>> byAddressSpace = modified
-                .stream()
-                .collect(groupingBy(item -> {
-                    NodeId nodeId = item.getReadValueId().getNodeId();
-
-                    return server.getAddressSpaceManager().getAddressSpace(nodeId);
-                }));
-
-            byAddressSpace.forEach(MonitoredItemServices::onMonitoringModeChanged);
+            server.getAddressSpaceManager().onMonitoringModeChanged(modified);
 
             /*
              * Build and return results.

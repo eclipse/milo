@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -37,33 +36,14 @@ import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
-public class AddressSpaceManager {
+public class AddressSpaceManager extends AddressSpaceComposite {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
     private final List<NodeManager<UaNode>> nodeManagers = new CopyOnWriteArrayList<>();
 
-    private final OpcUaServer server;
-
     public AddressSpaceManager(OpcUaServer server) {
-        this.server = server;
-    }
-
-    public synchronized void register(AddressSpace addressSpace) {
-        if (!addressSpaces.contains(addressSpace)) {
-            addressSpaces.add(addressSpace);
-        } else {
-            logger.warn("AddressSpace already registered: {}", addressSpace);
-        }
-    }
-
-    public synchronized void unregister(AddressSpace addressSpace) {
-        if (addressSpaces.contains(addressSpace)) {
-            addressSpaces.remove(addressSpace);
-        } else {
-            logger.warn("AddressSpace not registered: {}", addressSpace);
-        }
+        super(server);
     }
 
     public synchronized void register(NodeManager<UaNode> nodeManager) {
@@ -82,19 +62,52 @@ public class AddressSpaceManager {
         }
     }
 
-    public AddressSpaceServices getAddressSpace(NodeId nodeId) {
-        Optional<AddressSpaceServices> addressSpace = addressSpaces.stream()
-            .filter(asx -> asx.filter(nodeId))
-            .map(AddressSpaceServices.class::cast)
-            .findFirst();
+    public CompletableFuture<List<Reference>> browseAll(AccessContext context, NodeId nodeId) {
+        ViewDescription view = new ViewDescription(
+            NodeId.NULL_VALUE,
+            DateTime.NULL_VALUE,
+            uint(0)
+        );
 
-        return addressSpace.orElse(new EmptyAddressSpaceServices(server));
+        return browseAll(context, view, nodeId);
     }
 
-    public AddressSpaceServices getAddressSpace(ExpandedNodeId nodeId) {
-        return nodeId.local()
-            .map(this::getAddressSpace)
-            .orElse(new EmptyAddressSpaceServices(server));
+    public CompletableFuture<List<Reference>> browseAll(AccessContext context, ViewDescription view, NodeId nodeId) {
+        List<AddressSpace> addressSpaces = getAddressSpaces();
+
+        try {
+            addressSpaces.stream()
+                .filter(asx -> asx.filter(nodeId))
+                .findFirst()
+                .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
+        } catch (UaException e) {
+            return failedUaFuture(e.getStatusCode());
+        }
+
+        List<CompletableFuture<List<Reference>>> futures = new ArrayList<>();
+
+        for (AddressSpace asx : addressSpaces) {
+            BrowseContext browseContext = new BrowseContext(
+                getServer(),
+                context.getSession().orElse(null)
+            );
+
+            if (asx.filter(nodeId)) {
+                asx.browse(browseContext, view, nodeId);
+            } else {
+                asx.getReferences(browseContext, view, nodeId);
+            }
+
+            futures.add(browseContext.getFuture());
+        }
+
+        return FutureUtils.sequence(futures).thenApply(
+            refs ->
+                refs.stream()
+                    .flatMap(Collection::stream)
+                    .distinct()
+                    .collect(toList())
+        );
     }
 
     public Optional<UaNode> getManagedNode(NodeId nodeId) {
@@ -127,72 +140,6 @@ public class AddressSpaceManager {
             .map(n -> n.getReferences(sourceNodeId, filter))
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
-    }
-
-    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        ViewDescription view = new ViewDescription(
-            NodeId.NULL_VALUE,
-            DateTime.NULL_VALUE,
-            uint(0)
-        );
-
-        return browse(context, view, nodeId);
-    }
-
-    public CompletableFuture<List<Reference>> browse(AccessContext context, ViewDescription view, NodeId nodeId) {
-        try {
-            addressSpaces.stream()
-                .filter(asx -> asx.filter(nodeId))
-                .findFirst()
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
-        } catch (UaException e) {
-            return failedUaFuture(e.getStatusCode());
-        }
-
-        List<CompletableFuture<List<Reference>>> futures = new ArrayList<>();
-
-        for (AddressSpace asx : addressSpaces) {
-            ViewServices.BrowseContext browseContext = new ViewServices.BrowseContext(
-                server,
-                context.getSession().orElse(null)
-            );
-
-            if (asx.filter(nodeId)) {
-                asx.browse(browseContext, view, nodeId);
-            } else {
-                asx.getReferences(browseContext, view, nodeId);
-            }
-
-            futures.add(browseContext.getFuture());
-        }
-
-        return FutureUtils.sequence(futures).thenApply(
-            refs ->
-                refs.stream()
-                    .flatMap(Collection::stream)
-                    .distinct()
-                    .collect(toList())
-        );
-    }
-
-    private static class EmptyAddressSpaceServices extends ManagedAddressSpaceServices {
-
-        public EmptyAddressSpaceServices(OpcUaServer server) {
-            super(server);
-        }
-
-        @Override
-        public void onDataItemsCreated(List<DataItem> dataItems) {}
-
-        @Override
-        public void onDataItemsModified(List<DataItem> dataItems) {}
-
-        @Override
-        public void onDataItemsDeleted(List<DataItem> dataItems) {}
-
-        @Override
-        public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {}
-
     }
 
 }

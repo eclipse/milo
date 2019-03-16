@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceServices;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -168,7 +167,8 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        CompletableFuture<List<Reference>> future = server.getAddressSpaceManager().browse(context, nodeId);
+        CompletableFuture<List<Reference>> future =
+            server.getAddressSpaceManager().browseAll(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -203,7 +203,8 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        CompletableFuture<List<Reference>> future = server.getAddressSpaceManager().browse(context, nodeId);
+        CompletableFuture<List<Reference>> future =
+            server.getAddressSpaceManager().browseAll(context, nodeId);
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -241,8 +242,6 @@ public class BrowsePathsHelper {
         for (ExpandedNodeId xni : targetNodeIds) {
             CompletableFuture<List<DataValue>> future = xni.local()
                 .map(nodeId -> {
-                    AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
-
                     ReadValueId readValueId = new ReadValueId(
                         nodeId,
                         AttributeId.BrowseName.uid(),
@@ -259,7 +258,12 @@ public class BrowsePathsHelper {
                         new DiagnosticsContext<>()
                     );
 
-                    addressSpace.read(context, 0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
+                    server.getAddressSpaceManager().read(
+                        context,
+                        0.0,
+                        TimestampsToReturn.Neither,
+                        newArrayList(readValueId)
+                    );
 
                     return readFuture;
                 })

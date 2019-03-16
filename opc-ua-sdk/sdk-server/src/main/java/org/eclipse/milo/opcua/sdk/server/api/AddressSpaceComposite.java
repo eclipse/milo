@@ -78,6 +78,14 @@ public abstract class AddressSpaceComposite implements AddressSpace {
         }
     }
 
+    protected OpcUaServer getServer() {
+        return server;
+    }
+
+    protected List<AddressSpace> getAddressSpaces() {
+        return new ArrayList<>(addressSpaces);
+    }
+
     private AddressSpace getAddressSpace(NodeId nodeId) {
         Optional<AddressSpace> addressSpace = addressSpaces.stream()
             .filter(asx -> asx.filter(nodeId))

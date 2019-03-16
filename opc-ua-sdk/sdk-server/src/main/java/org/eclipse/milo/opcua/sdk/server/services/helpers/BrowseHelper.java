@@ -22,7 +22,6 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -139,19 +138,11 @@ public class BrowseHelper {
         }
 
         public CompletableFuture<BrowseResult> browse() {
-            AddressSpaceManager addressSpaceManager = server.getAddressSpaceManager();
+            BROWSE_EXECUTION_QUEUE.submit(() -> {
+                CompletableFuture<List<Reference>> referencesFuture =
+                    server.getAddressSpaceManager().browseAll(context, view, browseDescription.getNodeId());
 
-            BROWSE_EXECUTION_QUEUE.submit(
-                () ->
-                    browse(addressSpaceManager)
-            );
-
-            return future;
-        }
-
-        private void browse(AddressSpaceManager addressSpaceManager) {
-            addressSpaceManager.browse(context, view, browseDescription.getNodeId())
-                .whenComplete((references, ex) -> {
+                referencesFuture.whenComplete((references, ex) -> {
                     if (references != null) {
                         browse(references).whenComplete((result, ex2) -> {
                             if (result != null) future.complete(result);
@@ -161,6 +152,9 @@ public class BrowseHelper {
                         future.complete(NODE_ID_UNKNOWN_RESULT);
                     }
                 });
+            });
+
+            return future;
         }
 
         private CompletableFuture<BrowseResult> browse(List<Reference> references) {
@@ -325,8 +319,7 @@ public class BrowseHelper {
                 new DiagnosticsContext<>()
             );
 
-            // TODO AS is nullable
-            server.getAddressSpaceManager().getAddressSpace(nodeId).read(
+            server.getAddressSpaceManager().read(
                 context,
                 0.0,
                 TimestampsToReturn.Neither,
@@ -375,7 +368,7 @@ public class BrowseHelper {
                     .trace("No managed TypeDefinition for nodeId={}, browsing...", nodeId);
 
                 CompletableFuture<List<Reference>> browseFuture =
-                    server.getAddressSpaceManager().browse(context, nodeId);
+                    server.getAddressSpaceManager().browseAll(context, nodeId);
 
                 return browseFuture.thenApply(
                     references ->
