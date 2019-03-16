@@ -18,8 +18,14 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.OperationContext;
+import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+
+import static java.util.Collections.nCopies;
 
 public interface MethodServices {
 
@@ -29,7 +35,16 @@ public interface MethodServices {
      * @param context  the {@link CallContext}.
      * @param requests The {@link CallMethodRequest}s for the methods to invoke.
      */
-    void call(CallContext context, List<CallMethodRequest> requests);
+    default void call(CallContext context, List<CallMethodRequest> requests) {
+        CallMethodResult result = new CallMethodResult(
+            new StatusCode(StatusCodes.Bad_NotImplemented),
+            new StatusCode[0],
+            new DiagnosticInfo[0],
+            new Variant[0]
+        );
+
+        context.complete(nCopies(requests.size(), result));
+    }
 
     final class CallContext extends OperationContext<CallMethodRequest, CallMethodResult> {
         public CallContext(OpcUaServer server,

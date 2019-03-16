@@ -22,7 +22,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -50,7 +52,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate.groupMapCollate;
 
-public abstract class AddressSpaceComposite implements AddressSpace {
+public abstract class AddressSpaceComposite extends AbstractLifecycle implements AddressSpace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,9 +64,22 @@ public abstract class AddressSpaceComposite implements AddressSpace {
         this.server = server;
     }
 
+    @Override
+    protected void onStartup() {}
+
+    @Override
+    protected void onShutdown() {}
+
+    @Override
+    public boolean filter(NodeId nodeId) {
+        return addressSpaces.stream()
+            .anyMatch(asx -> asx.filter(nodeId));
+    }
+
     public synchronized void register(AddressSpace addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(addressSpace);
+            logger.info("registered {}", addressSpace);
         } else {
             logger.warn("AddressSpace already registered: {}", addressSpace);
         }
@@ -73,6 +88,7 @@ public abstract class AddressSpaceComposite implements AddressSpace {
     public synchronized void unregister(AddressSpace addressSpace) {
         if (addressSpaces.contains(addressSpace)) {
             addressSpaces.remove(addressSpace);
+            logger.info("unregistered {}", addressSpace);
         } else {
             logger.warn("AddressSpace not registered: {}", addressSpace);
         }
@@ -100,12 +116,6 @@ public abstract class AddressSpaceComposite implements AddressSpace {
 
             return getAddressSpace(nodeId);
         }));
-    }
-
-    @Override
-    public boolean filter(NodeId nodeId) {
-        return addressSpaces.stream()
-            .anyMatch(asx -> asx.filter(nodeId));
     }
 
     //region ViewServices
@@ -466,6 +476,18 @@ public abstract class AddressSpaceComposite implements AddressSpace {
         protected void onShutdown() {
             throw new IllegalStateException("EmptyAddressSpace onShutdown()");
         }
+
+        @Override
+        protected void registerAddressSpace(AddressSpace addressSpace) {}
+
+        @Override
+        protected void unregisterAddressSpace(AddressSpace addressSpace) {}
+
+        @Override
+        protected void registerNodeManager(UaNodeManager nodeManager) {}
+
+        @Override
+        protected void unregisterNodeManager(UaNodeManager nodeManager) {}
 
         @Override
         public boolean filter(NodeId nodeId) {

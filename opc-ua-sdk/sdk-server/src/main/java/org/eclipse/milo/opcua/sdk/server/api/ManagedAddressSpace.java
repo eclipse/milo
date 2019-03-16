@@ -22,14 +22,18 @@ public abstract class ManagedAddressSpace extends ManagedAddressSpaceServices im
     protected void onStartup() {
         super.onStartup();
 
-        getServer().getAddressSpaceManager().register(this);
+        registerAddressSpace(this);
     }
 
     @Override
     protected void onShutdown() {
         super.onShutdown();
 
-        getServer().getAddressSpaceManager().unregister(this);
+        unregisterAddressSpace(this);
     }
+
+    protected abstract void registerAddressSpace(AddressSpace addressSpace);
+
+    protected abstract void unregisterAddressSpace(AddressSpace addressSpace);
 
 }
