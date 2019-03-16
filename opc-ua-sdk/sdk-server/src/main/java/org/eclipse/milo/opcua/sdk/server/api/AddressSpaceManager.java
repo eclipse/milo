@@ -18,7 +18,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -83,7 +82,6 @@ public class AddressSpaceManager {
         }
     }
 
-    @Nullable
     public AddressSpaceServices getAddressSpace(NodeId nodeId) {
         Optional<AddressSpaceServices> addressSpace = addressSpaces.stream()
             .filter(asx -> asx.filter(nodeId))
@@ -93,7 +91,6 @@ public class AddressSpaceManager {
         return addressSpace.orElse(new EmptyAddressSpaceServices(server));
     }
 
-    @Nullable
     public AddressSpaceServices getAddressSpace(ExpandedNodeId nodeId) {
         return nodeId.local()
             .map(this::getAddressSpace)

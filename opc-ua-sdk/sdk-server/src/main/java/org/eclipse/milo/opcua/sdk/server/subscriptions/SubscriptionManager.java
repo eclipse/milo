@@ -20,7 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 
@@ -30,10 +29,11 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceServices;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredDataItem;
 import org.eclipse.milo.opcua.sdk.server.items.MonitoredEventItem;
@@ -49,7 +49,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.CreateMonitoredItemsRequest;
@@ -87,6 +86,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -221,13 +221,18 @@ public class SubscriptionManager {
                 List<BaseMonitoredItem<?>> deletedItems = subscription.deleteSubscription();
 
                 /*
-                 * Notify namespaces of the items we just deleted.
+                 * Notify AddressSpaces of the items we just deleted.
                  */
 
-                Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
-                    .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+                Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = deletedItems
+                    .stream()
+                    .collect(groupingBy(item -> {
+                        NodeId nodeId = item.getReadValueId().getNodeId();
 
-                byNamespace.forEach((namespaceIndex, items) -> {
+                        return server.getAddressSpaceManager().getAddressSpace(nodeId);
+                    }));
+
+                byAddressSpace.forEach((asx, items) -> {
                     List<DataItem> dataItems = Lists.newArrayList();
                     List<EventItem> eventItems = Lists.newArrayList();
 
@@ -240,18 +245,16 @@ public class SubscriptionManager {
                     }
 
                     try {
-                        Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
-
                         if (!dataItems.isEmpty()) {
-                            namespace.onDataItemsDeleted(dataItems);
+                            asx.onDataItemsDeleted(dataItems);
                         }
                         if (!eventItems.isEmpty()) {
-                            namespace.onEventItemsDeleted(eventItems);
+                            asx.onEventItemsDeleted(eventItems);
                         }
                     } catch (Throwable t) {
                         logger.error(
-                            "Unexpected error notifying namespaceIndex={} " +
-                                "of MonitoredItems being deleted.", namespaceIndex, t);
+                            "Unexpected error notifying AddressSpace={} " +
+                                "of MonitoredItems being deleted.", asx, t);
                     }
                 });
 
@@ -369,11 +372,17 @@ public class SubscriptionManager {
 
             subscription.addMonitoredItems(monitoredItems);
 
-            // Notify namespaces of the items we just created.
-            Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = monitoredItems.stream()
-                .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+            // Notify AddressSpaces of the items we just created.
 
-            byNamespace.forEach((namespaceIndex, items) -> {
+            Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = monitoredItems
+                .stream()
+                .collect(groupingBy(item -> {
+                    NodeId nodeId = item.getReadValueId().getNodeId();
+
+                    return server.getAddressSpaceManager().getAddressSpace(nodeId);
+                }));
+
+            byAddressSpace.forEach((asx, items) -> {
                 List<DataItem> dataItems = Lists.newArrayList();
                 List<EventItem> eventItems = Lists.newArrayList();
 
@@ -386,18 +395,16 @@ public class SubscriptionManager {
                 }
 
                 try {
-                    Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
-
                     if (!dataItems.isEmpty()) {
-                        namespace.onDataItemsCreated(dataItems);
+                        asx.onDataItemsCreated(dataItems);
                     }
                     if (!eventItems.isEmpty()) {
-                        namespace.onEventItemsCreated(eventItems);
+                        asx.onEventItemsCreated(eventItems);
                     }
                 } catch (Throwable t) {
                     logger.error(
-                        "Unexpected error notifying namespaceIndex={} " +
-                            "of MonitoredItems being created.", namespaceIndex, t);
+                        "Unexpected error notifying AddressSpace={} " +
+                            "of MonitoredItems being created.", asx, t);
                 }
             });
 
@@ -453,10 +460,10 @@ public class SubscriptionManager {
             UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
-            Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
+            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
 
             try {
-                namespace.onCreateEventItem(
+                addressSpace.onCreateEventItem(
                     request.getItemToMonitor(),
                     requestedQueueSize,
                     revisedQueueSize::set
@@ -522,13 +529,13 @@ public class SubscriptionManager {
 
             UInteger requestedQueueSize = request.getRequestedParameters().getQueueSize();
 
-            Namespace namespace = server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex());
+            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
 
             AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                namespace.onCreateDataItem(
+                addressSpace.onCreateDataItem(
                     request.getItemToMonitor(),
                     requestedSamplingInterval,
                     requestedQueueSize,
@@ -625,13 +632,18 @@ public class SubscriptionManager {
             subscription.resetLifetimeCounter();
 
             /*
-             * Notify namespaces of the items we just modified.
+             * Notify AddressSpaces of the items we just modified.
              */
 
-            Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = monitoredItems.stream()
-                .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+            Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = monitoredItems
+                .stream()
+                .collect(groupingBy(item -> {
+                    NodeId nodeId = item.getReadValueId().getNodeId();
 
-            byNamespace.forEach((namespaceIndex, items) -> {
+                    return server.getAddressSpaceManager().getAddressSpace(nodeId);
+                }));
+
+            byAddressSpace.forEach((addressSpace, items) -> {
                 List<DataItem> dataItems = Lists.newArrayList();
                 List<EventItem> eventItems = Lists.newArrayList();
 
@@ -644,23 +656,21 @@ public class SubscriptionManager {
                 }
 
                 try {
-                    Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
-
                     if (!dataItems.isEmpty()) {
-                        namespace.onDataItemsModified(dataItems);
+                        addressSpace.onDataItemsModified(dataItems);
                     }
                     if (!eventItems.isEmpty()) {
-                        namespace.onEventItemsModified(eventItems);
+                        addressSpace.onEventItemsModified(eventItems);
                     }
                 } catch (Throwable t) {
                     logger.error(
-                        "Unexpected error notifying namespaceIndex={} " +
-                            "of MonitoredItems being modified.", namespaceIndex, t);
+                        "Unexpected error notifying AddressSpace={} " +
+                            "of MonitoredItems being modified.", addressSpace, t);
                 }
             });
 
             /*
-             * Namespaces have been notified; send response.
+             * AddressSpaces have been notified; send response.
              */
 
             ResponseHeader header = service.createResponseHeader();
@@ -698,14 +708,12 @@ public class SubscriptionManager {
         if (attributeId.equals(AttributeId.EventNotifier.uid())) {
             UInteger requestedQueueSize = parameters.getQueueSize();
 
-            Namespace namespace = server.getNamespaceManager().getNamespace(
-                nodeId.getNamespaceIndex()
-            );
+            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
 
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                namespace.onModifyEventItem(
+                addressSpace.onModifyEventItem(
                     monitoredItem.getReadValueId(),
                     requestedQueueSize,
                     revisedQueueSize::set
@@ -743,15 +751,13 @@ public class SubscriptionManager {
 
             UInteger requestedQueueSize = parameters.getQueueSize();
 
-            Namespace namespace = server.getNamespaceManager().getNamespace(
-                nodeId.getNamespaceIndex()
-            );
+            AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
 
             AtomicReference<Double> revisedSamplingInterval = new AtomicReference<>(requestedSamplingInterval);
             AtomicReference<UInteger> revisedQueueSize = new AtomicReference<>(requestedQueueSize);
 
             try {
-                namespace.onModifyDataItem(
+                addressSpace.onModifyDataItem(
                     monitoredItem.getReadValueId(),
                     requestedSamplingInterval,
                     requestedQueueSize,
@@ -879,13 +885,18 @@ public class SubscriptionManager {
         }
 
         /*
-         * Notify namespaces of the items that have been deleted.
+         * Notify AddressSpaces of the items that have been deleted.
          */
 
-        Map<UShort, List<BaseMonitoredItem<?>>> byNamespace = deletedItems.stream()
-            .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+        Map<AddressSpaceServices, List<BaseMonitoredItem<?>>> byAddressSpace = deletedItems
+            .stream()
+            .collect(groupingBy(item -> {
+                NodeId nodeId = item.getReadValueId().getNodeId();
 
-        byNamespace.forEach((namespaceIndex, items) -> {
+                return server.getAddressSpaceManager().getAddressSpace(nodeId);
+            }));
+
+        byAddressSpace.forEach((addressSpace, items) -> {
             List<DataItem> dataItems = Lists.newArrayList();
             List<EventItem> eventItems = Lists.newArrayList();
 
@@ -898,18 +909,16 @@ public class SubscriptionManager {
             }
 
             try {
-                Namespace namespace = server.getNamespaceManager().getNamespace(namespaceIndex);
-
                 if (!dataItems.isEmpty()) {
-                    namespace.onDataItemsDeleted(dataItems);
+                    addressSpace.onDataItemsDeleted(dataItems);
                 }
                 if (!eventItems.isEmpty()) {
-                    namespace.onEventItemsDeleted(eventItems);
+                    addressSpace.onEventItemsDeleted(eventItems);
                 }
             } catch (Throwable t) {
                 logger.error(
-                    "Unexpected error notifying namespaceIndex={} " +
-                        "of MonitoredItems being deleted.", namespaceIndex, t);
+                    "Unexpected error notifying AddressSpace={} " +
+                        "of MonitoredItems being deleted.", addressSpace, t);
             }
         });
 
@@ -967,16 +976,18 @@ public class SubscriptionManager {
             }
 
             /*
-             * Notify namespaces of the items whose MonitoringMode has been modified.
+             * Notify AddressSpaces of the items whose MonitoringMode has been modified.
              */
 
-            Map<UShort, List<MonitoredItem>> byNamespace = modified.stream()
-                .collect(Collectors.groupingBy(item -> item.getReadValueId().getNodeId().getNamespaceIndex()));
+            Map<AddressSpaceServices, List<MonitoredItem>> byAddressSpace = modified
+                .stream()
+                .collect(groupingBy(item -> {
+                    NodeId nodeId = item.getReadValueId().getNodeId();
 
-            byNamespace.keySet().forEach(namespaceIndex -> {
-                List<MonitoredItem> items = byNamespace.get(namespaceIndex);
-                server.getNamespaceManager().getNamespace(namespaceIndex).onMonitoringModeChanged(items);
-            });
+                    return server.getAddressSpaceManager().getAddressSpace(nodeId);
+                }));
+
+            byAddressSpace.forEach(MonitoredItemServices::onMonitoringModeChanged);
 
             /*
              * Build and return results.

@@ -250,7 +250,7 @@ public class BrowseHelper {
             return targetNodeId.local().map(nodeId -> {
                 CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId, masks);
 
-                return attributesFuture.thenCompose(attributes -> {
+                CompletableFuture<ReferenceDescription> referenceFuture = attributesFuture.thenCompose(attributes -> {
                     if (attributes.nodeClass == NodeClass.Object || attributes.nodeClass == NodeClass.Variable) {
                         // If this is an Object or Variable then we
                         // need to browse for the TypeDefinitionId...
@@ -279,8 +279,23 @@ public class BrowseHelper {
                         ));
                     }
                 });
-            }).orElse(
-                completedFuture(
+
+                return referenceFuture.whenComplete((r, ex) -> {
+                    if (ex != null) {
+                        LoggerFactory.getLogger(BrowseHelper.class).warn(
+                            "failed to get browse attributes for: {}",
+                            reference.getSourceNodeId(), ex
+                        );
+                    }
+                });
+            }).orElseGet(() -> {
+                LoggerFactory.getLogger(BrowseHelper.class).warn(
+                    "reference target not local: {} -> {}",
+                    reference.getSourceNodeId(),
+                    targetNodeId
+                );
+
+                return completedFuture(
                     new ReferenceDescription(
                         referenceTypeId,
                         reference.isForward(),
@@ -290,8 +305,8 @@ public class BrowseHelper {
                         NodeClass.Unspecified,
                         ExpandedNodeId.NULL_VALUE
                     )
-                )
-            );
+                );
+            });
         }
 
         private CompletableFuture<BrowseAttributes> browseAttributes(NodeId nodeId, EnumSet<BrowseResultMask> masks) {

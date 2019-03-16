@@ -20,7 +20,7 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceServices;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
@@ -241,17 +241,25 @@ public class BrowsePathsHelper {
         for (ExpandedNodeId xni : targetNodeIds) {
             CompletableFuture<List<DataValue>> future = xni.local()
                 .map(nodeId -> {
-                    Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
+                    AddressSpaceServices addressSpace = server.getAddressSpaceManager().getAddressSpace(nodeId);
 
                     ReadValueId readValueId = new ReadValueId(
-                        nodeId, AttributeId.BrowseName.uid(), null, QualifiedName.NULL_VALUE);
+                        nodeId,
+                        AttributeId.BrowseName.uid(),
+                        null,
+                        QualifiedName.NULL_VALUE
+                    );
 
                     CompletableFuture<List<DataValue>> readFuture = new CompletableFuture<>();
 
                     ReadContext context = new ReadContext(
-                        server, null, readFuture, new DiagnosticsContext<>());
+                        server,
+                        null,
+                        readFuture,
+                        new DiagnosticsContext<>()
+                    );
 
-                    namespace.read(context, 0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
+                    addressSpace.read(context, 0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
 
                     return readFuture;
                 })
