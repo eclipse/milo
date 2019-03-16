@@ -87,14 +87,14 @@ public class AddressSpaceManager {
         return addressSpaces.stream()
             .filter(asx -> asx.filter(nodeId))
             .findFirst()
-            .orElse(null); // TODO "empty" AddressSpace?
+            .orElse(new EmptyAddressSpace(server));
     }
 
     @Nullable
     public AddressSpace getAddressSpace(ExpandedNodeId nodeId) {
         return nodeId.local()
             .map(this::getAddressSpace)
-            .orElse(null);
+            .orElse(new EmptyAddressSpace(server));
     }
 
     public Optional<UaNode> getManagedNode(NodeId nodeId) {
@@ -173,6 +173,31 @@ public class AddressSpaceManager {
                     .distinct()
                     .collect(toList())
         );
+    }
+
+    private static class EmptyAddressSpace extends ManagedAddressSpace {
+
+        public EmptyAddressSpace(OpcUaServer server) {
+            super(server);
+        }
+
+        @Override
+        public boolean filter(NodeId nodeId) {
+            return false;
+        }
+
+        @Override
+        public void onDataItemsCreated(List<DataItem> dataItems) {}
+
+        @Override
+        public void onDataItemsModified(List<DataItem> dataItems) {}
+
+        @Override
+        public void onDataItemsDeleted(List<DataItem> dataItems) {}
+
+        @Override
+        public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {}
+
     }
 
 }
