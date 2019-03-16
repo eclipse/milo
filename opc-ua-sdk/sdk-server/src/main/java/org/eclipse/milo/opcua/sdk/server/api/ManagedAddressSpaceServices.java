@@ -11,24 +11,33 @@
 package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.services.MethodServices;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
@@ -189,6 +198,68 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
         }
 
         context.complete(results);
+    }
+
+    /**
+     * Invoke one or more methods belonging to this {@link MethodServices}.
+     *
+     * @param context  the {@link CallContext}.
+     * @param requests The {@link CallMethodRequest}s for the methods to invoke.
+     */
+    @Override
+    public void call(CallContext context, List<CallMethodRequest> requests) {
+        List<CallMethodResult> results = Lists.newArrayListWithCapacity(requests.size());
+
+        for (CallMethodRequest request : requests) {
+            MethodInvocationHandler handler = getInvocationHandler(
+                request.getObjectId(),
+                request.getMethodId()
+            ).orElse(MethodInvocationHandler.NODE_ID_UNKNOWN);
+
+            try {
+                results.add(handler.invoke(context, request));
+            } catch (Throwable t) {
+                LoggerFactory.getLogger(getClass())
+                    .error("Uncaught Throwable invoking method handler for methodId={}.", request.getMethodId(), t);
+
+                results.add(
+                    new CallMethodResult(
+                        new StatusCode(StatusCodes.Bad_InternalError),
+                        new StatusCode[0], new DiagnosticInfo[0], new Variant[0])
+                );
+            }
+        }
+
+        context.complete(results);
+    }
+
+    /**
+     * Get the {@link MethodInvocationHandler} for the method identified by {@code methodId}, if it exists.
+     *
+     * @param objectId the {@link NodeId} identifying the object the method will be invoked on.
+     * @param methodId the {@link NodeId} identifying the method.
+     * @return the {@link MethodInvocationHandler} for {@code methodId}, if it exists.
+     */
+    protected Optional<MethodInvocationHandler> getInvocationHandler(NodeId objectId, NodeId methodId) {
+        return nodeManager.getNode(objectId).flatMap(node -> {
+            UaMethodNode methodNode = null;
+
+            if (node instanceof UaObjectNode) {
+                UaObjectNode objectNode = (UaObjectNode) node;
+
+                methodNode = objectNode.findMethodNode(methodId);
+            } else if (node instanceof UaObjectTypeNode) {
+                UaObjectTypeNode objectTypeNode = (UaObjectTypeNode) node;
+
+                methodNode = objectTypeNode.findMethodNode(methodId);
+            }
+
+            if (methodNode != null) {
+                return Optional.of(methodNode.getInvocationHandler());
+            } else {
+                return Optional.empty();
+            }
+        });
     }
 
 }

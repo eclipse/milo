@@ -13,28 +13,46 @@ package org.eclipse.milo.opcua.sdk.server.api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.services.DefaultAttributeServiceSet;
+import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
+import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateDetails;
+import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static org.eclipse.milo.opcua.sdk.server.api.GroupMapCollate.groupMapCollate;
 
 public abstract class AddressSpaceComposite implements AddressSpace {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
 
@@ -44,6 +62,22 @@ public abstract class AddressSpaceComposite implements AddressSpace {
         this.server = server;
     }
 
+    public synchronized void register(AddressSpace addressSpace) {
+        if (!addressSpaces.contains(addressSpace)) {
+            addressSpaces.add(addressSpace);
+        } else {
+            logger.warn("AddressSpace already registered: {}", addressSpace);
+        }
+    }
+
+    public synchronized void unregister(AddressSpace addressSpace) {
+        if (addressSpaces.contains(addressSpace)) {
+            addressSpaces.remove(addressSpace);
+        } else {
+            logger.warn("AddressSpace not registered: {}", addressSpace);
+        }
+    }
+
     private AddressSpace getAddressSpace(NodeId nodeId) {
         Optional<AddressSpace> addressSpace = addressSpaces.stream()
             .filter(asx -> asx.filter(nodeId))
@@ -51,6 +85,22 @@ public abstract class AddressSpaceComposite implements AddressSpace {
 
         return addressSpace.orElse(new EmptyAddressSpace(server));
     }
+
+    private <T> Map<AddressSpace, List<T>> groupedBy(List<T> items, Function<T, NodeId> getNodeId) {
+        return items.stream().collect(groupingBy(item -> {
+            NodeId nodeId = getNodeId.apply(item);
+
+            return getAddressSpace(nodeId);
+        }));
+    }
+
+    @Override
+    public boolean filter(NodeId nodeId) {
+        return addressSpaces.stream()
+            .anyMatch(asx -> asx.filter(nodeId));
+    }
+
+    //region ViewServices
 
     @Override
     public void browse(BrowseContext context, ViewDescription view, NodeId nodeId) {
@@ -94,6 +144,10 @@ public abstract class AddressSpaceComposite implements AddressSpace {
             .thenAccept(context::success);
     }
 
+    //endregion
+
+    //region AttributeServices
+
     @Override
     public void read(
         ReadContext context,
@@ -102,52 +156,307 @@ public abstract class AddressSpaceComposite implements AddressSpace {
         List<ReadValueId> readValueIds
     ) {
 
-        CompletableFuture<List<DataValue>> valuesFuture = DefaultAttributeServiceSet.addressSpaceRead(
-            server,
-            context.getSession().orElse(null),
-            maxAge,
-            timestamps,
-            readValueIds
+        CompletableFuture<List<DataValue>> values = groupMapCollate(
+            readValueIds,
+            readValueId -> getAddressSpace(readValueId.getNodeId()),
+            (AddressSpace asx) -> group -> {
+                CompletableFuture<List<DataValue>> resultsFuture = new CompletableFuture<>();
+
+                ReadContext ctx = new ReadContext(
+                    server,
+                    context.getSession().orElse(null),
+                    resultsFuture,
+                    context.getDiagnostics()
+                );
+
+                asx.read(ctx, maxAge, timestamps, group);
+
+                return resultsFuture;
+            }
         );
 
-        valuesFuture.thenAccept(context::complete);
+        values.thenAccept(context::complete);
     }
 
     @Override
-    public void write(WriteContext context, List<WriteValue> writeValues) {
-        CompletableFuture<List<StatusCode>> resultsFuture = DefaultAttributeServiceSet.addressSpaceWrite(
-            server,
-            context.getSession().orElse(null),
-            writeValues
+    public void write(
+        WriteContext context,
+        List<WriteValue> writeValues
+    ) {
+
+        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+            writeValues,
+            writeValue -> getAddressSpace(writeValue.getNodeId()),
+            (AddressSpace asx) -> group -> {
+                CompletableFuture<List<StatusCode>> resultsFuture = new CompletableFuture<>();
+
+                WriteContext ctx = new WriteContext(
+                    server,
+                    context.getSession().orElse(null),
+                    resultsFuture,
+                    context.getDiagnostics()
+                );
+
+                asx.write(ctx, group);
+
+                return resultsFuture;
+            }
         );
 
-        resultsFuture.thenAccept(context::complete);
+        results.thenAccept(context::complete);
+    }
+
+    //endregion
+
+    //region AttributeHistoryServices
+
+    @Override
+    public void historyRead(
+        HistoryReadContext context,
+        HistoryReadDetails details,
+        TimestampsToReturn timestamps,
+        List<HistoryReadValueId> readValueIds
+    ) {
+
+        CompletableFuture<List<HistoryReadResult>> results = groupMapCollate(
+            readValueIds,
+            readValueId -> getAddressSpace(readValueId.getNodeId()),
+            (AddressSpace asx) -> group -> {
+                CompletableFuture<List<HistoryReadResult>> resultsFuture = new CompletableFuture<>();
+
+                HistoryReadContext ctx = new HistoryReadContext(
+                    server,
+                    context.getSession().orElse(null),
+                    resultsFuture,
+                    context.getDiagnostics()
+                );
+
+                asx.historyRead(
+                    ctx,
+                    details,
+                    timestamps,
+                    group
+                );
+
+                return resultsFuture;
+            }
+        );
+
+        results.thenAccept(context::complete);
+    }
+
+    @Override
+    public void historyUpdate(
+        HistoryUpdateContext context,
+        List<HistoryUpdateDetails> updateDetailsList
+    ) {
+
+        CompletableFuture<List<HistoryUpdateResult>> results = groupMapCollate(
+            updateDetailsList,
+            updateDetails -> getAddressSpace(updateDetails.getNodeId()),
+            (AddressSpace asx) -> group -> {
+                CompletableFuture<List<HistoryUpdateResult>> resultsFuture = new CompletableFuture<>();
+
+                HistoryUpdateContext ctx = new HistoryUpdateContext(
+                    server,
+                    context.getSession().orElse(null),
+                    resultsFuture,
+                    context.getDiagnostics()
+                );
+
+                asx.historyUpdate(ctx, group);
+
+                return resultsFuture;
+            }
+        );
+
+        results.thenAccept(context::complete);
+    }
+
+    //endregion
+
+    //region MethodServices
+
+    @Override
+    public void call(
+        CallContext context,
+        List<CallMethodRequest> requests
+    ) {
+
+        CompletableFuture<List<CallMethodResult>> results = groupMapCollate(
+            requests,
+            request -> getAddressSpace(request.getObjectId()),
+            (AddressSpace asx) -> group -> {
+                CompletableFuture<List<CallMethodResult>> resultsFuture = new CompletableFuture<>();
+
+                CallContext ctx = new CallContext(
+                    server,
+                    context.getSession().orElse(null),
+                    resultsFuture,
+                    context.getDiagnostics()
+                );
+
+                asx.call(ctx, group);
+
+                return resultsFuture;
+            }
+        );
+
+        results.thenAccept(context::complete);
+    }
+
+    //endregion
+
+    //region MonitoredItemServices
+
+    @Override
+    public void onCreateDataItem(
+        ReadValueId itemToMonitor,
+        Double requestedSamplingInterval,
+        UInteger requestedQueueSize,
+        BiConsumer<Double, UInteger> revisionCallback
+    ) {
+
+        getAddressSpace(itemToMonitor.getNodeId()).onCreateDataItem(
+            itemToMonitor,
+            requestedSamplingInterval,
+            requestedQueueSize,
+            revisionCallback
+        );
+    }
+
+    @Override
+    public void onModifyDataItem(
+        ReadValueId itemToModify,
+        Double requestedSamplingInterval,
+        UInteger requestedQueueSize,
+        BiConsumer<Double, UInteger> revisionCallback
+    ) {
+
+        getAddressSpace(itemToModify.getNodeId()).onModifyDataItem(
+            itemToModify,
+            requestedSamplingInterval,
+            requestedQueueSize,
+            revisionCallback
+        );
+    }
+
+    @Override
+    public void onCreateEventItem(
+        ReadValueId itemToMonitor,
+        UInteger requestedQueueSize,
+        Consumer<UInteger> revisionCallback
+    ) {
+
+        getAddressSpace(itemToMonitor.getNodeId()).onCreateEventItem(
+            itemToMonitor,
+            requestedQueueSize,
+            revisionCallback
+        );
+    }
+
+    @Override
+    public void onModifyEventItem(
+        ReadValueId itemToModify,
+        UInteger requestedQueueSize,
+        Consumer<UInteger> revisionCallback
+    ) {
+
+        getAddressSpace(itemToModify.getNodeId()).onModifyEventItem(
+            itemToModify,
+            requestedQueueSize,
+            revisionCallback
+        );
     }
 
     @Override
     public void onDataItemsCreated(List<DataItem> dataItems) {
+        Map<AddressSpace, List<DataItem>> byAddressSpace = groupedBy(
+            dataItems,
+            dataItem -> dataItem.getReadValueId().getNodeId()
+        );
 
+        byAddressSpace.forEach(MonitoredItemServices::onDataItemsCreated);
     }
 
     @Override
     public void onDataItemsModified(List<DataItem> dataItems) {
+        Map<AddressSpace, List<DataItem>> byAddressSpace = groupedBy(
+            dataItems,
+            dataItem -> dataItem.getReadValueId().getNodeId()
+        );
 
+        byAddressSpace.forEach(MonitoredItemServices::onDataItemsModified);
     }
 
     @Override
     public void onDataItemsDeleted(List<DataItem> dataItems) {
+        Map<AddressSpace, List<DataItem>> byAddressSpace = groupedBy(
+            dataItems,
+            dataItem -> dataItem.getReadValueId().getNodeId()
+        );
 
+        byAddressSpace.forEach(MonitoredItemServices::onDataItemsDeleted);
+    }
+
+    @Override
+    public void onEventItemsCreated(List<EventItem> eventItems) {
+        Map<AddressSpace, List<EventItem>> byAddressSpace = groupedBy(
+            eventItems,
+            eventItem -> eventItem.getReadValueId().getNodeId()
+        );
+
+        byAddressSpace.forEach(MonitoredItemServices::onEventItemsCreated);
+    }
+
+    @Override
+    public void onEventItemsModified(List<EventItem> eventItems) {
+        Map<AddressSpace, List<EventItem>> byAddressSpace = groupedBy(
+            eventItems,
+            eventItem -> eventItem.getReadValueId().getNodeId()
+        );
+
+        byAddressSpace.forEach(MonitoredItemServices::onEventItemsModified);
+    }
+
+    @Override
+    public void onEventItemsDeleted(List<EventItem> eventItems) {
+        Map<AddressSpace, List<EventItem>> byAddressSpace = groupedBy(
+            eventItems,
+            eventItem -> eventItem.getReadValueId().getNodeId()
+        );
+
+        byAddressSpace.forEach(MonitoredItemServices::onEventItemsDeleted);
     }
 
     @Override
     public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
+        Map<AddressSpace, List<MonitoredItem>> byAddressSpace = groupedBy(
+            monitoredItems,
+            monitoredItem -> monitoredItem.getReadValueId().getNodeId()
+        );
 
+        byAddressSpace.forEach(MonitoredItemServices::onMonitoringModeChanged);
     }
+
+    //endregion
 
     private static class EmptyAddressSpace extends ManagedAddressSpace {
 
-        public EmptyAddressSpace(OpcUaServer server) {
+        EmptyAddressSpace(OpcUaServer server) {
             super(server);
+        }
+
+        // EmptyAddressSpace is used ephemerally and should never be started/registered
+
+        @Override
+        protected void onStartup() {
+            throw new IllegalStateException("EmptyAddressSpace onStartup()");
+        }
+
+        @Override
+        protected void onShutdown() {
+            throw new IllegalStateException("EmptyAddressSpace onShutdown()");
         }
 
         @Override
@@ -168,4 +477,5 @@ public abstract class AddressSpaceComposite implements AddressSpace {
         public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {}
 
     }
+
 }
