@@ -17,9 +17,9 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.WriteContext;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.WriteContext;
 import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
@@ -168,7 +168,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
         // Group PendingReads by AddressSpace and call read for each.
 
-        Map<AddressSpace, List<PendingRead>> byAddressSpace = pendingReads
+        Map<AddressSpaceServices, List<PendingRead>> byAddressSpace = pendingReads
             .stream()
             .collect(groupingBy(pending -> {
                 NodeId nodeId = pending.getInput().getNodeId();
@@ -221,7 +221,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
         // Group PendingWrites by AddressSpace and call write for each.
 
-        Map<AddressSpace, List<PendingWrite>> byAddressSpace = pendingWrites
+        Map<AddressSpaceServices, List<PendingWrite>> byAddressSpace = pendingWrites
             .stream()
             .collect(groupingBy(pending -> {
                 NodeId nodeId = pending.getInput().getNodeId();

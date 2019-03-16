@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -83,18 +84,20 @@ public class AddressSpaceManager {
     }
 
     @Nullable
-    public AddressSpace getAddressSpace(NodeId nodeId) {
-        return addressSpaces.stream()
+    public AddressSpaceServices getAddressSpace(NodeId nodeId) {
+        Optional<AddressSpaceServices> addressSpace = addressSpaces.stream()
             .filter(asx -> asx.filter(nodeId))
-            .findFirst()
-            .orElse(new EmptyAddressSpace(server));
+            .map(AddressSpaceServices.class::cast)
+            .findFirst();
+
+        return addressSpace.orElse(new EmptyAddressSpaceServices(server));
     }
 
     @Nullable
-    public AddressSpace getAddressSpace(ExpandedNodeId nodeId) {
+    public AddressSpaceServices getAddressSpace(ExpandedNodeId nodeId) {
         return nodeId.local()
             .map(this::getAddressSpace)
-            .orElse(new EmptyAddressSpace(server));
+            .orElse(new EmptyAddressSpaceServices(server));
     }
 
     public Optional<UaNode> getManagedNode(NodeId nodeId) {
@@ -175,15 +178,10 @@ public class AddressSpaceManager {
         );
     }
 
-    private static class EmptyAddressSpace extends ManagedAddressSpace {
+    private static class EmptyAddressSpaceServices extends ManagedAddressSpaceServices {
 
-        public EmptyAddressSpace(OpcUaServer server) {
+        public EmptyAddressSpaceServices(OpcUaServer server) {
             super(server);
-        }
-
-        @Override
-        public boolean filter(NodeId nodeId) {
-            return false;
         }
 
         @Override

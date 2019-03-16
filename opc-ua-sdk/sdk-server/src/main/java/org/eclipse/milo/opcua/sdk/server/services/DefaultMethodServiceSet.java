@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.server.api.MethodServices.CallContext;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.MethodServices.CallContext;
 import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingCall;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
@@ -59,7 +59,7 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
 
         // Group by AddressSpace and call asynchronously for each.
 
-        Map<AddressSpace, List<PendingCall>> byAddressSpace = pendingCalls
+        Map<AddressSpaceServices, List<PendingCall>> byAddressSpace = pendingCalls
             .stream()
             .collect(groupingBy(pending -> {
                 NodeId nodeId = pending.getInput().getObjectId();

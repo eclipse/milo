@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeHistoryServices.HistoryReadContext;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeHistoryServices.HistoryUpdateContext;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.HistoryReadContext;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.HistoryUpdateContext;
 import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryUpdate;
@@ -95,7 +95,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
         // Group PendingHistoryReads by namespace and call historyRead for each.
 
-        Map<AddressSpace, List<PendingHistoryRead>> byAddressSpace = pendingReads
+        Map<AddressSpaceServices, List<PendingHistoryRead>> byAddressSpace = pendingReads
             .stream()
             .collect(groupingBy(pending -> {
                 NodeId nodeId = pending.getInput().getNodeId();
@@ -188,7 +188,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
         // Group PendingHistoryUpdates by namespace and call historyUpdate for each.
 
-        Map<AddressSpace, List<PendingHistoryUpdate>> byAddressSpace = pendingUpdates
+        Map<AddressSpaceServices, List<PendingHistoryUpdate>> byAddressSpace = pendingUpdates
             .stream()
             .collect(groupingBy(pending -> {
                 NodeId nodeId = pending.getInput().getNodeId();
