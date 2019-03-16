@@ -30,12 +30,10 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     private final ConcurrentMap<NodeId, T> nodeMap;
     private final ListMultimap<NodeId, Reference> referencesBySource;
-    private final ListMultimap<NodeId, Reference> referencesByTarget;
 
     public AbstractNodeManager() {
         nodeMap = makeNodeMap(new MapMaker());
         referencesBySource = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
-        referencesByTarget = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
     }
 
     /**
@@ -82,26 +80,20 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     public void addReference(Reference reference) {
         referencesBySource.put(reference.getSourceNodeId(), reference);
 
-        reference.getTargetNodeId().local().ifPresent(id -> referencesByTarget.put(id, reference));
-
-        reference.invert().ifPresent(inverted -> {
-            referencesBySource.put(inverted.getSourceNodeId(), inverted);
-
-            inverted.getTargetNodeId().local().ifPresent(id -> referencesByTarget.put(id, inverted));
-        });
+        reference.invert().ifPresent(
+            inverted ->
+                referencesBySource.put(inverted.getSourceNodeId(), inverted)
+        );
     }
 
     @Override
     public void removeReference(Reference reference) {
         referencesBySource.remove(reference.getSourceNodeId(), reference);
 
-        reference.getTargetNodeId().local().ifPresent(id -> referencesByTarget.remove(id, reference));
-
-        reference.invert().ifPresent(inverted -> {
-            referencesBySource.remove(inverted.getSourceNodeId(), inverted);
-
-            inverted.getTargetNodeId().local().ifPresent(id -> referencesByTarget.remove(id, inverted));
-        });
+        reference.invert().ifPresent(
+            inverted ->
+                referencesBySource.remove(inverted.getSourceNodeId(), inverted)
+        );
     }
 
     @Override
@@ -118,13 +110,6 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
                 .stream()
                 .filter(filter)
                 .collect(Collectors.toList());
-        }
-    }
-
-    @Override
-    public List<Reference> getReferencesTo(NodeId targetNodeId) {
-        synchronized (referencesByTarget) {
-            return new ArrayList<>(referencesByTarget.get(targetNodeId));
         }
     }
 

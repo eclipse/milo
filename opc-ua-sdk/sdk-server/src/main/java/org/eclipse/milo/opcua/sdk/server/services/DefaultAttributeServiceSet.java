@@ -43,7 +43,6 @@ import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 import static com.google.common.collect.Lists.newArrayListWithCapacity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class DefaultAttributeServiceSet implements AttributeServiceSet {
@@ -100,7 +99,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
             ReadResponse response = new ReadResponse(
                 header,
-                a(values, DataValue.class),
+                values.toArray(new DataValue[0]),
                 diagnosticInfos
             );
 
@@ -141,7 +140,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
 
             WriteResponse response = new WriteResponse(
                 header,
-                a(values, StatusCode.class),
+                values.toArray(new StatusCode[0]),
                 diagnosticInfos
             );
 

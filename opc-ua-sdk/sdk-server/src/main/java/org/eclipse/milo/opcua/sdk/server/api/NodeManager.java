@@ -42,11 +42,10 @@ public interface NodeManager<T extends Node> {
 
     List<Reference> getReferences(NodeId sourceNodeId, Predicate<Reference> filter);
 
-    List<Reference> getReferencesTo(NodeId targetNodeId);
-
     default boolean containsNode(Node node) {
         return containsNode(node.getNodeId());
     }
+
     default boolean containsNode(ExpandedNodeId nodeId) {
         return nodeId.local().map(this::containsNode).orElse(false);
     }
