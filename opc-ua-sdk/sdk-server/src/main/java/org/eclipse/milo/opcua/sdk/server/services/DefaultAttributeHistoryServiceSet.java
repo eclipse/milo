@@ -18,16 +18,17 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeHistoryServices.HistoryReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeHistoryServices.HistoryUpdateContext;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingHistoryUpdate;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResponse;
@@ -92,27 +93,32 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             futures.add(pending.getFuture());
         }
 
-        // Group PendingReads by namespace and call read for each.
+        // Group PendingHistoryReads by namespace and call historyRead for each.
 
-        Map<UShort, List<PendingHistoryRead>> byNamespace = pendingReads.stream()
-            .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
+        Map<AddressSpace, List<PendingHistoryRead>> byAddressSpace = pendingReads
+            .stream()
+            .collect(groupingBy(pending -> {
+                NodeId nodeId = pending.getInput().getNodeId();
 
-        byNamespace.keySet().forEach(index -> {
-            List<PendingHistoryRead> pending = byNamespace.get(index);
+                return server.getAddressSpaceManager().getAddressSpace(nodeId);
+            }));
 
-            CompletableFuture<List<HistoryReadResult>> future = new CompletableFuture<>();
+        byAddressSpace.keySet().forEach(addressSpace -> {
+            List<PendingHistoryRead> pending = byAddressSpace.get(addressSpace);
 
             HistoryReadContext context = new HistoryReadContext(
-                server, session, future, diagnosticsContext);
+                server,
+                session,
+                Pending.callback(pending),
+                diagnosticsContext
+            );
 
             server.getExecutorService().execute(() -> {
-                Namespace namespace = server.getNamespaceManager().getNamespace(index);
-
                 List<HistoryReadValueId> readValueIds = pending.stream()
                     .map(PendingHistoryRead::getInput)
                     .collect(toList());
 
-                namespace.historyRead(
+                addressSpace.historyRead(
                     context,
                     (HistoryReadDetails)
                         request.getHistoryReadDetails().decode(
@@ -122,27 +128,24 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
                     readValueIds
                 );
             });
-
-            future.thenAccept(values -> {
-                for (int i = 0; i < values.size(); i++) {
-                    pending.get(i).getFuture().complete(values.get(i));
-                }
-            });
         });
 
         // When all PendingReads have been completed send a HistoryReadResponse with the values.
 
-        FutureUtils.sequence(futures).thenAcceptAsync(values -> {
+        FutureUtils.sequence(futures).thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToRead);
 
             HistoryReadResponse response = new HistoryReadResponse(
-                header, a(values, HistoryReadResult.class), diagnosticInfos);
+                header,
+                a(values, HistoryReadResult.class),
+                diagnosticInfos
+            );
 
             service.setResponse(response);
-        }, server.getExecutorService());
+        });
     }
 
     @Override
@@ -183,45 +186,48 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             futures.add(pending.getFuture());
         }
 
-        Map<UShort, List<PendingHistoryUpdate>> byNamespace = pendingUpdates.stream()
-            .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
+        // Group PendingHistoryUpdates by namespace and call historyUpdate for each.
 
-        byNamespace.keySet().forEach(index -> {
-            List<PendingHistoryUpdate> pending = byNamespace.get(index);
+        Map<AddressSpace, List<PendingHistoryUpdate>> byAddressSpace = pendingUpdates
+            .stream()
+            .collect(groupingBy(pending -> {
+                NodeId nodeId = pending.getInput().getNodeId();
 
-            CompletableFuture<List<HistoryUpdateResult>> future = new CompletableFuture<>();
+                return server.getAddressSpaceManager().getAddressSpace(nodeId);
+            }));
+
+        byAddressSpace.keySet().forEach(addressSpace -> {
+            List<PendingHistoryUpdate> pending = byAddressSpace.get(addressSpace);
 
             HistoryUpdateContext context = new HistoryUpdateContext(
-                server, session, future, diagnosticsContext);
+                server,
+                session,
+                Pending.callback(pending),
+                diagnosticsContext
+            );
 
             server.getExecutorService().execute(() -> {
-                Namespace namespace = server.getNamespaceManager().getNamespace(index);
-
                 List<HistoryUpdateDetails> updateDetails = pending.stream()
                     .map(PendingHistoryUpdate::getInput)
                     .collect(toList());
 
-                namespace.historyUpdate(context, updateDetails);
-            });
-
-            future.thenAccept(statusCodes -> {
-                for (int i = 0; i < statusCodes.size(); i++) {
-                    pending.get(i).getFuture().complete(statusCodes.get(i));
-                }
+                addressSpace.historyUpdate(context, updateDetails);
             });
         });
 
-        FutureUtils.sequence(futures).thenAcceptAsync(values -> {
+        FutureUtils.sequence(futures).thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
                 diagnosticsContext.getDiagnosticInfos(nodesToUpdate);
 
             HistoryUpdateResponse response = new HistoryUpdateResponse(
-                header, a(values, HistoryUpdateResult.class), diagnosticInfos);
+                header,
+                a(values, HistoryUpdateResult.class),
+                diagnosticInfos
+            );
 
             service.setResponse(response);
-        }, server.getExecutorService());
-
+        });
     }
 }

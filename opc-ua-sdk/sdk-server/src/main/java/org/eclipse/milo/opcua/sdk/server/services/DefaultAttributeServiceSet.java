@@ -17,17 +17,17 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
 import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.WriteContext;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingRead;
 import org.eclipse.milo.opcua.sdk.server.util.PendingWrite;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadResponse;
@@ -84,7 +84,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
-        CompletableFuture<List<DataValue>> readFuture = namespaceCollatedRead(
+        CompletableFuture<List<DataValue>> readFuture = addressSpaceRead(
             server,
             session,
             request.getMaxAge(),
@@ -92,7 +92,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             nodesToRead
         );
 
-        readFuture.thenAcceptAsync(values -> {
+        readFuture.thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -105,57 +105,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             );
 
             service.setResponse(response);
-        }, server.getExecutorService());
-    }
-
-    public static CompletableFuture<List<DataValue>> namespaceCollatedRead(
-        OpcUaServer server,
-        Session session,
-        double maxAge,
-        TimestampsToReturn timestamps,
-        List<ReadValueId> nodesToRead
-    ) {
-
-        List<PendingRead> pendingReads = nodesToRead.stream()
-            .map(PendingRead::new)
-            .collect(toList());
-
-        List<CompletableFuture<DataValue>> futures = pendingReads.stream()
-            .map(PendingRead::getFuture)
-            .collect(toList());
-
-        // Group PendingReads by namespace and call read for each.
-
-        Map<UShort, List<PendingRead>> byNamespace = pendingReads.stream()
-            .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
-
-        byNamespace.keySet().forEach(index -> {
-            List<PendingRead> pending = byNamespace.get(index);
-
-            ReadContext context = new ReadContext(
-                server,
-                session,
-                Pending.callback(pending),
-                new DiagnosticsContext<>()
-            );
-
-            server.getExecutorService().execute(() -> {
-                Namespace namespace = server.getNamespaceManager().getNamespace(index);
-
-                List<ReadValueId> readValueIds = pending.stream()
-                    .map(PendingRead::getInput)
-                    .collect(toList());
-
-                namespace.read(
-                    context,
-                    maxAge,
-                    timestamps,
-                    readValueIds
-                );
-            });
         });
-
-        return FutureUtils.sequence(futures);
     }
 
     @Override
@@ -181,9 +131,9 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
-        CompletableFuture<List<StatusCode>> writeFuture = namespaceCollatedWrite(server, session, nodesToWrite);
+        CompletableFuture<List<StatusCode>> writeFuture = addressSpaceWrite(server, session, nodesToWrite);
 
-        writeFuture.thenAcceptAsync(values -> {
+        writeFuture.thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -196,10 +146,65 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             );
 
             service.setResponse(response);
-        }, server.getExecutorService());
+        });
     }
 
-    public static CompletableFuture<List<StatusCode>> namespaceCollatedWrite(
+    public static CompletableFuture<List<DataValue>> addressSpaceRead(
+        OpcUaServer server,
+        Session session,
+        double maxAge,
+        TimestampsToReturn timestamps,
+        List<ReadValueId> nodesToRead
+    ) {
+
+        List<PendingRead> pendingReads = newArrayListWithCapacity(nodesToRead.size());
+        List<CompletableFuture<DataValue>> futures = newArrayListWithCapacity(nodesToRead.size());
+
+        for (ReadValueId readValueId : nodesToRead) {
+            PendingRead pendingRead = new PendingRead(readValueId);
+
+            pendingReads.add(pendingRead);
+            futures.add(pendingRead.getFuture());
+        }
+
+        // Group PendingReads by AddressSpace and call read for each.
+
+        Map<AddressSpace, List<PendingRead>> byAddressSpace = pendingReads
+            .stream()
+            .collect(groupingBy(pending -> {
+                NodeId nodeId = pending.getInput().getNodeId();
+
+                return server.getAddressSpaceManager().getAddressSpace(nodeId);
+            }));
+
+        byAddressSpace.keySet().forEach(addressSpace -> {
+            List<PendingRead> pending = byAddressSpace.get(addressSpace);
+
+            ReadContext context = new ReadContext(
+                server,
+                session,
+                Pending.callback(pending),
+                new DiagnosticsContext<>()
+            );
+
+            server.getExecutorService().execute(() -> {
+                List<ReadValueId> readValueIds = pending.stream()
+                    .map(PendingRead::getInput)
+                    .collect(toList());
+
+                addressSpace.read(
+                    context,
+                    maxAge,
+                    timestamps,
+                    readValueIds
+                );
+            });
+        });
+
+        return FutureUtils.sequence(futures);
+    }
+
+    public static CompletableFuture<List<StatusCode>> addressSpaceWrite(
         OpcUaServer server,
         Session session,
         List<WriteValue> nodesToWrite
@@ -215,11 +220,18 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             futures.add(pending.getFuture());
         }
 
-        Map<UShort, List<PendingWrite>> byNamespace = pendingWrites.stream()
-            .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
+        // Group PendingWrites by AddressSpace and call write for each.
 
-        byNamespace.keySet().forEach(index -> {
-            List<PendingWrite> pending = byNamespace.get(index);
+        Map<AddressSpace, List<PendingWrite>> byAddressSpace = pendingWrites
+            .stream()
+            .collect(groupingBy(pending -> {
+                NodeId nodeId = pending.getInput().getNodeId();
+
+                return server.getAddressSpaceManager().getAddressSpace(nodeId);
+            }));
+
+        byAddressSpace.keySet().forEach(addressSpace -> {
+            List<PendingWrite> pending = byAddressSpace.get(addressSpace);
 
             WriteContext context = new WriteContext(
                 server,
@@ -229,13 +241,11 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             );
 
             server.getExecutorService().execute(() -> {
-                Namespace namespace = server.getNamespaceManager().getNamespace(index);
-
                 List<WriteValue> writeValues = pending.stream()
                     .map(PendingWrite::getInput)
                     .collect(toList());
 
-                namespace.write(context, writeValues);
+                addressSpace.write(context, writeValues);
             });
         });
 

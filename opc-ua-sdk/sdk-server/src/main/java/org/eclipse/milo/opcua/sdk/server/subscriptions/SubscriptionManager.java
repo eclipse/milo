@@ -820,7 +820,7 @@ public class SubscriptionManager {
             })
             .collect(toList());
 
-        CompletableFuture<List<DataValue>> future = DefaultAttributeServiceSet.namespaceCollatedRead(
+        CompletableFuture<List<DataValue>> future = DefaultAttributeServiceSet.addressSpaceRead(
             server,
             session,
             0.0,

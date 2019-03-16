@@ -18,11 +18,12 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.MethodServices.CallContext;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.util.Pending;
 import org.eclipse.milo.opcua.sdk.server.util.PendingCall;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallRequest;
@@ -32,6 +33,7 @@ import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.eclipse.milo.opcua.stack.server.services.MethodServiceSet;
 import org.eclipse.milo.opcua.stack.server.services.ServiceRequest;
 
+import static java.util.stream.Collectors.groupingBy;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
@@ -55,31 +57,32 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             .map(PendingCall::new)
             .collect(Collectors.toList());
 
-        // Group by namespace and call asynchronously for each.
+        // Group by AddressSpace and call asynchronously for each.
 
-        Map<UShort, List<PendingCall>> byNamespace = pendingCalls.stream()
-            .collect(Collectors.groupingBy(pending -> pending.getInput().getObjectId().getNamespaceIndex()));
+        Map<AddressSpace, List<PendingCall>> byAddressSpace = pendingCalls
+            .stream()
+            .collect(groupingBy(pending -> {
+                NodeId nodeId = pending.getInput().getObjectId();
 
-        byNamespace.keySet().forEach(index -> {
-            List<PendingCall> pending = byNamespace.get(index);
+                return server.getAddressSpaceManager().getAddressSpace(nodeId);
+            }));
 
-            List<CallMethodRequest> requests = pending.stream()
-                .map(PendingCall::getInput)
-                .collect(Collectors.toList());
-
-            Namespace namespace = server.getNamespaceManager().getNamespace(index);
-
-            CompletableFuture<List<CallMethodResult>> future = new CompletableFuture<>();
+        byAddressSpace.keySet().forEach(addressSpace -> {
+            List<PendingCall> pending = byAddressSpace.get(addressSpace);
 
             CallContext context = new CallContext(
-                server, session, future, diagnosticsContext);
+                server,
+                session,
+                Pending.callback(pending),
+                diagnosticsContext
+            );
 
-            server.getExecutorService().execute(() -> namespace.call(context, requests));
+            server.getExecutorService().execute(() -> {
+                List<CallMethodRequest> requests = pending.stream()
+                    .map(PendingCall::getInput)
+                    .collect(Collectors.toList());
 
-            future.thenAccept(values -> {
-                for (int i = 0; i < values.size(); i++) {
-                    pending.get(i).getFuture().complete(values.get(i));
-                }
+                addressSpace.call(context, requests);
             });
         });
 
@@ -89,13 +92,13 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             .map(PendingCall::getFuture)
             .collect(Collectors.toList());
 
-        FutureUtils.sequence(futures).thenAcceptAsync(values -> {
+        FutureUtils.sequence(futures).thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
             CallResponse response = new CallResponse(
                 header, a(values, CallMethodResult.class), new DiagnosticInfo[0]);
 
             service.setResponse(response);
-        }, server.getExecutorService());
+        });
     }
 
 }

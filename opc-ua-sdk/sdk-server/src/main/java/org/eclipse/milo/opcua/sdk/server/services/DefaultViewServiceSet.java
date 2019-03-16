@@ -79,39 +79,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
                 )
         );
 
-//        Map<UShort, List<PendingBrowse>> byNamespace = pendingBrowses.stream()
-//            .collect(groupingBy(pending -> pending.getInput().getNodeId().getNamespaceIndex()));
-//
-//        byNamespace.keySet().forEach(index -> {
-//            List<PendingBrowse> pending = byNamespace.get(index);
-//
-//            CompletableFuture<List<BrowseResult>> future = new CompletableFuture<>();
-//
-//            IBrowseContext context = new IBrowseContext(
-//                server, session, future, diagnosticsContext);
-//
-//            server.getExecutorService().execute(() -> {
-//                Namespace namespace = server.getNamespaceManager().getNamespace(index);
-//
-//                List<BrowseDescription> browseDescriptions = pending.stream()
-//                    .map(PendingBrowse::getInput)
-//                    .collect(toList());
-//
-//                namespace.browse(
-//                    context,
-//                    request.getView(),
-//                    request.getRequestedMaxReferencesPerNode(),
-//                    browseDescriptions);
-//            });
-//
-//            future.thenAccept(results -> {
-//                for (int i = 0; i < results.size(); i++) {
-//                    pending.get(i).getFuture().complete(results.get(i));
-//                }
-//            });
-//        });
-
-        FutureUtils.sequence(futures).thenAcceptAsync(results -> {
+        FutureUtils.sequence(futures).thenAccept(results -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -121,7 +89,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
                 header, a(results, BrowseResult.class), diagnosticInfos);
 
             service.setResponse(response);
-        }, server.getExecutorService());
+        });
     }
 
     @Override
