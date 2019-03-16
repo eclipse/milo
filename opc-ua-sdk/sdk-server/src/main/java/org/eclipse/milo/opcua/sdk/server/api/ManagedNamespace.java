@@ -14,7 +14,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
-public abstract class ManagedNamespace extends ManagedAddressSpace implements Namespace {
+public abstract class ManagedNamespace extends ManagedAddressSpaceServices implements Namespace {
 
     private final UShort namespaceIndex;
 
@@ -22,20 +22,6 @@ public abstract class ManagedNamespace extends ManagedAddressSpace implements Na
         super(server);
 
         this.namespaceIndex = namespaceIndex;
-    }
-
-    @Override
-    protected void onStartup() {
-        super.onStartup();
-
-        getServer().getAddressSpaceManager().register(this);
-    }
-
-    @Override
-    protected void onShutdown() {
-        super.onShutdown();
-
-        getServer().getAddressSpaceManager().unregister(this);
     }
 
     @Override

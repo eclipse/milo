@@ -16,7 +16,6 @@ import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
@@ -50,18 +49,8 @@ public abstract class DelegatingNodeManager<T extends Node> implements NodeManag
     }
 
     @Override
-    public Optional<T> getNode(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(id -> getNodeManager(id).getNode(id));
-    }
-
-    @Override
     public Optional<T> removeNode(NodeId nodeId) {
         return getNodeManager(nodeId).removeNode(nodeId);
-    }
-
-    @Override
-    public Optional<T> removeNode(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(id -> getNodeManager(id).removeNode(id));
     }
 
     @Override

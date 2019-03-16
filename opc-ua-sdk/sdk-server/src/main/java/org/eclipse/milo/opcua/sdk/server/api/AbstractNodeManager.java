@@ -23,17 +23,16 @@ import com.google.common.collect.MapMaker;
 import com.google.common.collect.Multimaps;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
 
     private final ConcurrentMap<NodeId, T> nodeMap;
-    private final ListMultimap<NodeId, Reference> referencesBySource;
+    private final ListMultimap<NodeId, Reference> referenceMultimap;
 
     public AbstractNodeManager() {
         nodeMap = makeNodeMap(new MapMaker());
-        referencesBySource = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
+        referenceMultimap = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
     }
 
     /**
@@ -44,6 +43,14 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
      */
     protected ConcurrentMap<NodeId, T> makeNodeMap(MapMaker mapMaker) {
         return mapMaker.makeMap();
+    }
+
+    protected ConcurrentMap<NodeId, T> getNodeMap() {
+        return nodeMap;
+    }
+
+    protected ListMultimap<NodeId, Reference> getReferenceMultimap() {
+        return referenceMultimap;
     }
 
     @Override
@@ -62,51 +69,41 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
-    public Optional<T> getNode(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(this::getNode);
-    }
-
-    @Override
     public Optional<T> removeNode(NodeId nodeId) {
         return Optional.ofNullable(nodeMap.remove(nodeId));
     }
 
     @Override
-    public Optional<T> removeNode(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(this::removeNode);
-    }
-
-    @Override
     public void addReference(Reference reference) {
-        referencesBySource.put(reference.getSourceNodeId(), reference);
+        referenceMultimap.put(reference.getSourceNodeId(), reference);
 
         reference.invert().ifPresent(
             inverted ->
-                referencesBySource.put(inverted.getSourceNodeId(), inverted)
+                referenceMultimap.put(inverted.getSourceNodeId(), inverted)
         );
     }
 
     @Override
     public void removeReference(Reference reference) {
-        referencesBySource.remove(reference.getSourceNodeId(), reference);
+        referenceMultimap.remove(reference.getSourceNodeId(), reference);
 
         reference.invert().ifPresent(
             inverted ->
-                referencesBySource.remove(inverted.getSourceNodeId(), inverted)
+                referenceMultimap.remove(inverted.getSourceNodeId(), inverted)
         );
     }
 
     @Override
     public List<Reference> getReferences(NodeId sourceNodeId) {
-        synchronized (referencesBySource) {
-            return new ArrayList<>(referencesBySource.get(sourceNodeId));
+        synchronized (referenceMultimap) {
+            return new ArrayList<>(referenceMultimap.get(sourceNodeId));
         }
     }
 
     @Override
     public List<Reference> getReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
-        synchronized (referencesBySource) {
-            return referencesBySource.get(sourceNodeId)
+        synchronized (referenceMultimap) {
+            return referenceMultimap.get(sourceNodeId)
                 .stream()
                 .filter(filter)
                 .collect(Collectors.toList());

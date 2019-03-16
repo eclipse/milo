@@ -28,11 +28,7 @@ public interface NodeManager<T extends Node> {
 
     Optional<T> getNode(NodeId nodeId);
 
-    Optional<T> getNode(ExpandedNodeId nodeId);
-
     Optional<T> removeNode(NodeId nodeId);
-
-    Optional<T> removeNode(ExpandedNodeId nodeId);
 
     void addReference(Reference reference);
 
@@ -58,6 +54,18 @@ public interface NodeManager<T extends Node> {
     @Nullable
     default T get(ExpandedNodeId nodeId) {
         return getNode(nodeId).orElse(null);
+    }
+
+    default Optional<T> getNode(ExpandedNodeId nodeId) {
+        return nodeId.local().flatMap(this::getNode);
+    }
+
+    default Optional<T> removeNode(T node) {
+        return removeNode(node.getNodeId());
+    }
+
+    default Optional<T> removeNode(ExpandedNodeId nodeId) {
+        return nodeId.local().flatMap(this::removeNode);
     }
 
 }

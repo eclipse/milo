@@ -304,11 +304,19 @@ public class BrowseHelper {
             CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
 
             ReadContext context = new ReadContext(
-                server, null, future,
-                new DiagnosticsContext<>());
+                server,
+                null,
+                future,
+                new DiagnosticsContext<>()
+            );
 
-            server.getNamespaceManager().getNamespace(nodeId.getNamespaceIndex()).read(
-                context, 0.0, TimestampsToReturn.Neither, readValueIds);
+            // TODO AS is nullable
+            server.getAddressSpaceManager().getAddressSpace(nodeId).read(
+                context,
+                0.0,
+                TimestampsToReturn.Neither,
+                readValueIds
+            );
 
             return future.thenApply(values -> {
                 QualifiedName browseName = QualifiedName.NULL_VALUE;
