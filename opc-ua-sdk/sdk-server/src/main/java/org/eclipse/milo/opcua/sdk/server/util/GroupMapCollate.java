@@ -1,4 +1,4 @@
-package org.eclipse.milo.opcua.sdk.server.api;
+package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
