@@ -79,7 +79,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(addressSpace);
 
-            logger.info("registered {}", addressSpace);
+            logger.debug("registered {}", addressSpace);
         } else {
             logger.warn("AddressSpace already registered: {}", addressSpace);
         }
@@ -89,7 +89,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(0, addressSpace);
 
-            logger.info("registered {} at index 0", addressSpace);
+            logger.debug("registered {} at index 0", addressSpace);
         } else {
             logger.warn("AddressSpace already registered: {}", addressSpace);
         }
@@ -99,7 +99,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         if (addressSpaces.contains(addressSpace)) {
             addressSpaces.remove(addressSpace);
 
-            logger.info("unregistered {}", addressSpace);
+            logger.debug("unregistered {}", addressSpace);
         } else {
             logger.warn("AddressSpace not registered: {}", addressSpace);
         }
