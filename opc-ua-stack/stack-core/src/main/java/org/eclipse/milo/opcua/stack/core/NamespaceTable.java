@@ -48,6 +48,10 @@ public class NamespaceTable {
         uriTable.put(index, uri);
     }
 
+    public synchronized String getUri(int index) {
+        return getUri(ushort(index));
+    }
+
     public synchronized String getUri(UShort index) {
         return uriTable.get(index);
     }
