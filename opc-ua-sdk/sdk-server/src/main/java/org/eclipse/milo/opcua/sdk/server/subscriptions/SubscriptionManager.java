@@ -27,7 +27,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
@@ -780,14 +779,7 @@ public class SubscriptionManager {
             })
             .collect(toList());
 
-        CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
-
-        ReadContext context = new ReadContext(
-            server,
-            null,
-            future,
-            new DiagnosticsContext<>()
-        );
+        ReadContext context = new ReadContext(server, null);
 
         server.getAddressSpaceManager().read(
             context,
@@ -796,7 +788,7 @@ public class SubscriptionManager {
             attributesToRead
         );
 
-        return future.thenApply(attributeValues -> {
+        return context.getFuture().thenApply(attributeValues -> {
             Map<NodeId, AttributeGroup> monitoringAttributes = new HashMap<>();
 
             for (int nodeIdx = 0, attrIdx = 0; nodeIdx < nodeIds.size(); nodeIdx++, attrIdx += 4) {

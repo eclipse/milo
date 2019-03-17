@@ -10,21 +10,43 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public interface AsyncOperationContext<T> {
+public class AsyncOperationContext<R> {
 
-    OpcUaServer getServer();
+    private final CompletableFuture<R> future = new CompletableFuture<>();
 
-    void success(T result);
+    private final OpcUaServer server;
 
-    void failure(UaException failure);
+    public AsyncOperationContext(OpcUaServer server) {
+        this.server = server;
+    }
 
-    void failure(StatusCode statusCode);
+    public CompletableFuture<R> getFuture() {
+        return future;
+    }
 
-    default void failure(long statusCode) {
+    public OpcUaServer getServer() {
+        return server;
+    }
+
+    public void success(R result) {
+        future.complete(result);
+    }
+
+    public void failure(UaException failure) {
+        future.completeExceptionally(failure);
+    }
+
+    public void failure(StatusCode statusCode) {
+        failure(new UaException(statusCode));
+    }
+
+    public void failure(long statusCode) {
         failure(new StatusCode(statusCode));
     }
 

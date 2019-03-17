@@ -18,15 +18,24 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 
-public class ServiceOperationContext<T> extends AsyncOperationContextImpl<List<T>> implements AccessContext {
+public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>> implements AccessContext {
 
     private final Session session;
-    private final DiagnosticsContext<?> diagnosticsContext;
+    private final DiagnosticsContext<T> diagnosticsContext;
+
+    public ServiceOperationContext(
+        OpcUaServer server,
+        @Nullable Session session
+    ) {
+
+        this(server, session, new DiagnosticsContext<>());
+    }
 
     public ServiceOperationContext(
         OpcUaServer server,
         @Nullable Session session,
-        DiagnosticsContext<?> diagnosticsContext) {
+        DiagnosticsContext<T> diagnosticsContext
+    ) {
 
         super(server);
 
@@ -39,7 +48,7 @@ public class ServiceOperationContext<T> extends AsyncOperationContextImpl<List<T
         return Optional.ofNullable(session);
     }
 
-    public DiagnosticsContext<?> getDiagnosticsContext() {
+    public DiagnosticsContext<T> getDiagnosticsContext() {
         return diagnosticsContext;
     }
 

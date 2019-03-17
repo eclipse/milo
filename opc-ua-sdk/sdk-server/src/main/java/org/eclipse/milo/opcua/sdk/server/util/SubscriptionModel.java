@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.math.DoubleMath;
-import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -129,12 +127,9 @@ public class SubscriptionModel {
                 .map(PendingRead::getInput)
                 .collect(Collectors.toList());
 
-            CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
+            ReadContext context = new ReadContext(server, null);
 
-            ReadContext context = new ReadContext(
-                server, null, future, new DiagnosticsContext<>());
-
-            future.thenAcceptAsync(values -> {
+            context.getFuture().thenAcceptAsync(values -> {
                 Iterator<DataItem> ii = items.iterator();
                 Iterator<DataValue> vi = values.iterator();
 

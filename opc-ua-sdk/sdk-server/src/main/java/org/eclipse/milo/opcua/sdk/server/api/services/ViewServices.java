@@ -19,7 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
-import org.eclipse.milo.opcua.sdk.server.api.AsyncOperationContextImpl;
+import org.eclipse.milo.opcua.sdk.server.api.AsyncOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -74,7 +74,7 @@ public interface ViewServices {
     void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
 
-    final class BrowseContext extends AsyncOperationContextImpl<List<Reference>> implements AccessContext {
+    final class BrowseContext extends AsyncOperationContext<List<Reference>> implements AccessContext {
 
         private final Session session;
 

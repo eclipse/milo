@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
@@ -262,14 +261,7 @@ public class BrowsePathsHelper {
                         QualifiedName.NULL_VALUE
                     );
 
-                    CompletableFuture<List<DataValue>> readFuture = new CompletableFuture<>();
-
-                    ReadContext context = new ReadContext(
-                        server,
-                        null,
-                        readFuture,
-                        new DiagnosticsContext<>()
-                    );
+                    ReadContext context = new ReadContext(server, null);
 
                     server.getAddressSpaceManager().read(
                         context,
@@ -278,7 +270,7 @@ public class BrowsePathsHelper {
                         newArrayList(readValueId)
                     );
 
-                    return readFuture;
+                    return context.getFuture();
                 })
                 .orElse(completedFuture(newArrayList(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
 

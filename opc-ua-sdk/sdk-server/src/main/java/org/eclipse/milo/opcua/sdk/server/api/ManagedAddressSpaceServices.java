@@ -178,7 +178,7 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
             }
         }
 
-        context.complete(results);
+        context.success(results);
     }
 
     @Override
@@ -219,7 +219,7 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
             }
         }
 
-        context.complete(results);
+        context.success(results);
     }
 
     /**

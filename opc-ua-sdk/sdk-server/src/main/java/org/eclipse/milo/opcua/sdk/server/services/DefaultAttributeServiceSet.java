@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -70,15 +69,9 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
-        CompletableFuture<List<DataValue>> serviceFuture = new CompletableFuture<>();
         DiagnosticsContext<ReadValueId> diagnosticsContext = new DiagnosticsContext<>();
 
-        ReadContext context = new ReadContext(
-            server,
-            session,
-            serviceFuture,
-            new DiagnosticsContext<>()
-        );
+        ReadContext context = new ReadContext(server, session, diagnosticsContext);
 
         server.getAddressSpaceManager().read(
             context,
@@ -87,7 +80,7 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             nodesToRead
         );
 
-        serviceFuture.thenAccept(values -> {
+        context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -124,19 +117,17 @@ public class DefaultAttributeServiceSet implements AttributeServiceSet {
             return;
         }
 
-        CompletableFuture<List<StatusCode>> serviceFuture = new CompletableFuture<>();
         DiagnosticsContext<WriteValue> diagnosticsContext = new DiagnosticsContext<>();
 
         WriteContext context = new WriteContext(
             server,
             session,
-            serviceFuture,
             new DiagnosticsContext<>()
         );
 
         server.getAddressSpaceManager().write(context, nodesToWrite);
 
-        serviceFuture.thenAccept(values -> {
+        context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =

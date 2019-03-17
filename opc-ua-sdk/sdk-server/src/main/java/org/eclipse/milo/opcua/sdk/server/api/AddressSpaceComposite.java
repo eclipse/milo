@@ -259,22 +259,19 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             readValueIds,
             readValueId -> getAddressSpace(readValueId.getNodeId()),
             (AddressSpace asx) -> group -> {
-                CompletableFuture<List<DataValue>> resultsFuture = new CompletableFuture<>();
-
                 ReadContext ctx = new ReadContext(
                     server,
                     context.getSession().orElse(null),
-                    resultsFuture,
-                    context.getDiagnostics()
+                    context.getDiagnosticsContext()
                 );
 
                 asx.read(ctx, maxAge, timestamps, group);
 
-                return resultsFuture;
+                return ctx.getFuture();
             }
         );
 
-        values.thenAccept(context::complete);
+        values.thenAccept(context::success);
     }
 
     @Override
@@ -287,22 +284,20 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             writeValues,
             writeValue -> getAddressSpace(writeValue.getNodeId()),
             (AddressSpace asx) -> group -> {
-                CompletableFuture<List<StatusCode>> resultsFuture = new CompletableFuture<>();
 
                 WriteContext ctx = new WriteContext(
                     server,
                     context.getSession().orElse(null),
-                    resultsFuture,
-                    context.getDiagnostics()
+                    context.getDiagnosticsContext()
                 );
 
                 asx.write(ctx, group);
 
-                return resultsFuture;
+                return ctx.getFuture();
             }
         );
 
-        results.thenAccept(context::complete);
+        results.thenAccept(context::success);
     }
 
     //endregion

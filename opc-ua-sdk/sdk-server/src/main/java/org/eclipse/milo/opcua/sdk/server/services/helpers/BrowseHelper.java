@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
@@ -318,14 +317,7 @@ public class BrowseHelper {
             readValueIds.add(new ReadValueId(nodeId, AttributeId.DisplayName.uid(), null, QualifiedName.NULL_VALUE));
             readValueIds.add(new ReadValueId(nodeId, AttributeId.NodeClass.uid(), null, QualifiedName.NULL_VALUE));
 
-            CompletableFuture<List<DataValue>> future = new CompletableFuture<>();
-
-            ReadContext context = new ReadContext(
-                server,
-                null,
-                future,
-                new DiagnosticsContext<>()
-            );
+            ReadContext context = new ReadContext(server, null);
 
             server.getAddressSpaceManager().read(
                 context,
@@ -334,7 +326,7 @@ public class BrowseHelper {
                 readValueIds
             );
 
-            return future.thenApply(values -> {
+            return context.getFuture().thenApply(values -> {
                 QualifiedName browseName = QualifiedName.NULL_VALUE;
                 LocalizedText displayName = LocalizedText.NULL_VALUE;
                 NodeClass nodeClass = NodeClass.Unspecified;
