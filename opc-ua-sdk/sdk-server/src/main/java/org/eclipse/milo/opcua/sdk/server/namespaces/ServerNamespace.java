@@ -17,8 +17,6 @@ import java.util.List;
 
 import com.sun.management.UnixOperatingSystemMXBean;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -57,26 +55,6 @@ public class ServerNamespace extends ManagedNamespace {
         super.onStartup();
 
         addVendorServerInfoNodes();
-    }
-
-    @Override
-    protected void registerAddressSpace(AddressSpace addressSpace) {
-        getServer().getAddressSpaceManager().register(addressSpace);
-    }
-
-    @Override
-    protected void unregisterAddressSpace(AddressSpace addressSpace) {
-        getServer().getAddressSpaceManager().unregister(addressSpace);
-    }
-
-    @Override
-    protected void registerNodeManager(UaNodeManager nodeManager) {
-        getServer().getAddressSpaceManager().register(nodeManager);
-    }
-
-    @Override
-    protected void unregisterNodeManager(UaNodeManager nodeManager) {
-        getServer().getAddressSpaceManager().unregister(nodeManager);
     }
 
     @Override

@@ -20,9 +20,7 @@ import java.util.function.Function;
 import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
@@ -92,26 +90,6 @@ public class OpcUaNamespace extends ManagedNamespace {
         loadNodes();
         configureServerObject();
         configureConditionRefresh();
-    }
-
-    @Override
-    protected void registerAddressSpace(AddressSpace addressSpace) {
-        server.getAddressSpaceManager().register(addressSpace);
-    }
-
-    @Override
-    protected void unregisterAddressSpace(AddressSpace addressSpace) {
-        server.getAddressSpaceManager().unregister(addressSpace);
-    }
-
-    @Override
-    protected void registerNodeManager(UaNodeManager nodeManager) {
-        server.getAddressSpaceManager().register(nodeManager);
-    }
-
-    @Override
-    protected void unregisterNodeManager(UaNodeManager nodeManager) {
-        server.getAddressSpaceManager().unregister(nodeManager);
     }
 
     @Override

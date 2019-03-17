@@ -24,7 +24,6 @@ import java.util.function.Function;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -56,7 +55,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final List<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
 
     private final OpcUaServer server;
 
@@ -79,7 +78,18 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public synchronized void register(AddressSpace addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(addressSpace);
+
             logger.info("registered {}", addressSpace);
+        } else {
+            logger.warn("AddressSpace already registered: {}", addressSpace);
+        }
+    }
+
+    public synchronized void registerFirst(AddressSpace addressSpace) {
+        if (!addressSpaces.contains(addressSpace)) {
+            addressSpaces.add(0, addressSpace);
+
+            logger.info("registered {} at index 0", addressSpace);
         } else {
             logger.warn("AddressSpace already registered: {}", addressSpace);
         }
@@ -88,6 +98,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public synchronized void unregister(AddressSpace addressSpace) {
         if (addressSpaces.contains(addressSpace)) {
             addressSpaces.remove(addressSpace);
+
             logger.info("unregistered {}", addressSpace);
         } else {
             logger.warn("AddressSpace not registered: {}", addressSpace);
@@ -122,16 +133,43 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
     @Override
     public void browse(BrowseContext context, ViewDescription view, NodeId nodeId) {
+        List<AddressSpace> addressSpaces = getAddressSpaces();
+
         try {
-            AddressSpace addressSpace = addressSpaces.stream()
+            addressSpaces.stream()
                 .filter(asx -> asx.filter(nodeId))
                 .findFirst()
                 .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
-
-            addressSpace.browse(context, view, nodeId);
         } catch (UaException e) {
             context.failure(e);
         }
+
+        List<CompletableFuture<List<Reference>>> futures = new ArrayList<>();
+
+        for (AddressSpace asx : addressSpaces) {
+            BrowseContext browseContext = new BrowseContext(
+                getServer(),
+                context.getSession().orElse(null)
+            );
+
+            if (asx.filter(nodeId)) {
+                asx.browse(browseContext, view, nodeId);
+            } else {
+                asx.getReferences(browseContext, view, nodeId);
+            }
+
+            futures.add(browseContext.getFuture());
+        }
+
+        CompletableFuture<List<Reference>> future = FutureUtils.sequence(futures).thenApply(
+            refs ->
+                refs.stream()
+                    .flatMap(Collection::stream)
+                    .distinct()
+                    .collect(toList())
+        );
+
+        future.thenAccept(context::success);
     }
 
     @Override
@@ -476,18 +514,6 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         protected void onShutdown() {
             throw new IllegalStateException("EmptyAddressSpace onShutdown()");
         }
-
-        @Override
-        protected void registerAddressSpace(AddressSpace addressSpace) {}
-
-        @Override
-        protected void unregisterAddressSpace(AddressSpace addressSpace) {}
-
-        @Override
-        protected void registerNodeManager(UaNodeManager nodeManager) {}
-
-        @Override
-        protected void unregisterNodeManager(UaNodeManager nodeManager) {}
 
         @Override
         public boolean filter(NodeId nodeId) {

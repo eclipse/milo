@@ -32,8 +32,12 @@ public abstract class ManagedAddressSpace extends ManagedAddressSpaceServices im
         unregisterAddressSpace(this);
     }
 
-    protected abstract void registerAddressSpace(AddressSpace addressSpace);
+    protected void registerAddressSpace(AddressSpace addressSpace) {
+        getServer().getAddressSpaceManager().register(addressSpace);
+    }
 
-    protected abstract void unregisterAddressSpace(AddressSpace addressSpace);
+    protected void unregisterAddressSpace(AddressSpace addressSpace) {
+        getServer().getAddressSpaceManager().unregister(addressSpace);
+    }
 
 }

@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
-import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
@@ -103,26 +102,6 @@ public class TestNamespace extends ManagedNamespace {
         subscriptionModel = new SubscriptionModel(server, this);
 
         addStaticScalarNodes();
-    }
-
-    @Override
-    protected void registerAddressSpace(AddressSpace addressSpace) {
-        server.getAddressSpaceManager().register(addressSpace);
-    }
-
-    @Override
-    protected void unregisterAddressSpace(AddressSpace addressSpace) {
-        server.getAddressSpaceManager().unregister(addressSpace);
-    }
-
-    @Override
-    protected void registerNodeManager(UaNodeManager nodeManager) {
-        server.getAddressSpaceManager().register(nodeManager);
-    }
-
-    @Override
-    protected void unregisterNodeManager(UaNodeManager nodeManager) {
-        server.getAddressSpaceManager().unregister(nodeManager);
     }
 
     @Override

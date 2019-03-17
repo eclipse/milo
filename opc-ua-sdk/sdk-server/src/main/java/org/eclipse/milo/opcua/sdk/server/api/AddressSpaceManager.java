@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -22,19 +21,14 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
-import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
-import static org.eclipse.milo.opcua.stack.core.util.FutureUtils.failedUaFuture;
 
 public class AddressSpaceManager extends AddressSpaceComposite {
 
@@ -73,41 +67,14 @@ public class AddressSpaceManager extends AddressSpaceComposite {
     }
 
     public CompletableFuture<List<Reference>> browseAll(AccessContext context, ViewDescription view, NodeId nodeId) {
-        List<AddressSpace> addressSpaces = getAddressSpaces();
-
-        try {
-            addressSpaces.stream()
-                .filter(asx -> asx.filter(nodeId))
-                .findFirst()
-                .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
-        } catch (UaException e) {
-            return failedUaFuture(e.getStatusCode());
-        }
-
-        List<CompletableFuture<List<Reference>>> futures = new ArrayList<>();
-
-        for (AddressSpace asx : addressSpaces) {
-            BrowseContext browseContext = new BrowseContext(
-                getServer(),
-                context.getSession().orElse(null)
-            );
-
-            if (asx.filter(nodeId)) {
-                asx.browse(browseContext, view, nodeId);
-            } else {
-                asx.getReferences(browseContext, view, nodeId);
-            }
-
-            futures.add(browseContext.getFuture());
-        }
-
-        return FutureUtils.sequence(futures).thenApply(
-            refs ->
-                refs.stream()
-                    .flatMap(Collection::stream)
-                    .distinct()
-                    .collect(toList())
+        BrowseContext browseContext = new BrowseContext(
+            getServer(),
+            context.getSession().orElse(null)
         );
+
+        browse(browseContext, view, nodeId);
+
+        return browseContext.getFuture();
     }
 
     public Optional<UaNode> getManagedNode(NodeId nodeId) {

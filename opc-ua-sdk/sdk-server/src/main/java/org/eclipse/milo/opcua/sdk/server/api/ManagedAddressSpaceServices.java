@@ -99,9 +99,13 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
         unregisterNodeManager(nodeManager);
     }
 
-    protected abstract void registerNodeManager(UaNodeManager nodeManager);
+    protected void registerNodeManager(UaNodeManager nodeManager) {
+        server.getAddressSpaceManager().register(nodeManager);
+    }
 
-    protected abstract void unregisterNodeManager(UaNodeManager nodeManager);
+    protected void unregisterNodeManager(UaNodeManager nodeManager) {
+        server.getAddressSpaceManager().unregister(nodeManager);
+    }
 
     @Override
     public void browse(BrowseContext context, ViewDescription viewDescription, NodeId nodeId) {
