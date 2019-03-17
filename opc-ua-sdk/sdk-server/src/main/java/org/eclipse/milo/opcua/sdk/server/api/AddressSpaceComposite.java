@@ -169,28 +169,37 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void browse(BrowseContext context, ViewDescription view, NodeId nodeId) {
         List<AddressSpace> addressSpaces = getAddressSpaces();
 
+        AddressSpace firstMatch;
         try {
-            addressSpaces.stream()
+            firstMatch = addressSpaces.stream()
                 .filter(asx -> asx.filter(nodeId))
                 .findFirst()
                 .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
+
+            addressSpaces.remove(firstMatch);
         } catch (UaException e) {
             context.failure(e);
+            return;
         }
 
         List<CompletableFuture<List<Reference>>> futures = new ArrayList<>();
 
+        BrowseContext browseContext = new BrowseContext(
+            getServer(),
+            context.getSession().orElse(null)
+        );
+
+        firstMatch.browse(browseContext, view, nodeId);
+
+        futures.add(browseContext.getFuture());
+
         for (AddressSpace asx : addressSpaces) {
-            BrowseContext browseContext = new BrowseContext(
+            browseContext = new BrowseContext(
                 getServer(),
                 context.getSession().orElse(null)
             );
 
-            if (asx.filter(nodeId)) {
-                asx.browse(browseContext, view, nodeId);
-            } else {
-                asx.getReferences(browseContext, view, nodeId);
-            }
+            asx.getReferences(browseContext, view, nodeId);
 
             futures.add(browseContext.getFuture());
         }
