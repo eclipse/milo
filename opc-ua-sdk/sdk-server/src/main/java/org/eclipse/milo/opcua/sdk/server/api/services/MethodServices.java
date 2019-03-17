@@ -11,13 +11,12 @@
 package org.eclipse.milo.opcua.sdk.server.api.services;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.OperationContext;
+import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -43,24 +42,24 @@ public interface MethodServices {
             new Variant[0]
         );
 
-        context.complete(nCopies(requests.size(), result));
+        context.success(nCopies(requests.size(), result));
     }
 
-    final class CallContext extends OperationContext<CallMethodRequest, CallMethodResult> {
-        public CallContext(OpcUaServer server,
-                           @Nullable Session session,
-                           DiagnosticsContext<CallMethodRequest> diagnosticsContext) {
+    final class CallContext extends ServiceOperationContext<CallMethodRequest, CallMethodResult> {
+
+        public CallContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public CallContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<CallMethodRequest> diagnosticsContext
+        ) {
 
             super(server, session, diagnosticsContext);
         }
 
-        public CallContext(OpcUaServer server,
-                           @Nullable Session session,
-                           CompletableFuture<List<CallMethodResult>> future,
-                           DiagnosticsContext<CallMethodRequest> diagnosticsContext) {
-
-            super(server, session, future, diagnosticsContext);
-        }
     }
 
 }

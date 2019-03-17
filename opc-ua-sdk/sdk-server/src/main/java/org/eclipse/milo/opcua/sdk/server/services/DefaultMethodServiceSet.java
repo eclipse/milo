@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
@@ -50,22 +49,24 @@ public class DefaultMethodServiceSet implements MethodServiceSet {
             return;
         }
 
-        CompletableFuture<List<CallMethodResult>> serviceFuture = new CompletableFuture<>();
         DiagnosticsContext<CallMethodRequest> diagnosticsContext = new DiagnosticsContext<>();
 
         CallContext context = new CallContext(
             server,
             session,
-            serviceFuture,
             diagnosticsContext
         );
 
         server.getAddressSpaceManager().call(context, methodsToCall);
 
-        serviceFuture.thenAccept(values -> {
+        context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
+
             CallResponse response = new CallResponse(
-                header, a(values, CallMethodResult.class), new DiagnosticInfo[0]);
+                header,
+                a(values, CallMethodResult.class),
+                new DiagnosticInfo[0]
+            );
 
             service.setResponse(response);
         });

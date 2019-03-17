@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.services;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
@@ -70,13 +69,11 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             return;
         }
 
-        CompletableFuture<List<HistoryReadResult>> resultsFuture = new CompletableFuture<>();
         DiagnosticsContext<HistoryReadValueId> diagnosticsContext = new DiagnosticsContext<>();
 
         HistoryReadContext context = new HistoryReadContext(
             server,
             session,
-            resultsFuture,
             diagnosticsContext
         );
 
@@ -92,7 +89,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             nodesToRead
         );
 
-        resultsFuture.thenAccept(values -> {
+        context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -134,19 +131,17 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             return;
         }
 
-        CompletableFuture<List<HistoryUpdateResult>> serviceFuture = new CompletableFuture<>();
         DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext = new DiagnosticsContext<>();
 
         HistoryUpdateContext context = new HistoryUpdateContext(
             server,
             session,
-            serviceFuture,
             diagnosticsContext
         );
 
         server.getAddressSpaceManager().historyUpdate(context, historyUpdateDetailsList);
 
-        serviceFuture.thenAccept(values -> {
+        context.getFuture().thenAccept(values -> {
             ResponseHeader header = service.createResponseHeader();
 
             DiagnosticInfo[] diagnosticInfos =
@@ -161,5 +156,5 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
             service.setResponse(response);
         });
     }
-    
+
 }

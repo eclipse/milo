@@ -316,13 +316,11 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             readValueIds,
             readValueId -> getAddressSpace(readValueId.getNodeId()),
             (AddressSpace asx) -> group -> {
-                CompletableFuture<List<HistoryReadResult>> resultsFuture = new CompletableFuture<>();
 
                 HistoryReadContext ctx = new HistoryReadContext(
                     server,
                     context.getSession().orElse(null),
-                    resultsFuture,
-                    context.getDiagnostics()
+                    context.getDiagnosticsContext()
                 );
 
                 asx.historyRead(
@@ -332,11 +330,11 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
                     group
                 );
 
-                return resultsFuture;
+                return ctx.getFuture();
             }
         );
 
-        results.thenAccept(context::complete);
+        results.thenAccept(context::success);
     }
 
     @Override
@@ -349,22 +347,20 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             updateDetailsList,
             updateDetails -> getAddressSpace(updateDetails.getNodeId()),
             (AddressSpace asx) -> group -> {
-                CompletableFuture<List<HistoryUpdateResult>> resultsFuture = new CompletableFuture<>();
 
                 HistoryUpdateContext ctx = new HistoryUpdateContext(
                     server,
                     context.getSession().orElse(null),
-                    resultsFuture,
-                    context.getDiagnostics()
+                    context.getDiagnosticsContext()
                 );
 
                 asx.historyUpdate(ctx, group);
 
-                return resultsFuture;
+                return ctx.getFuture();
             }
         );
 
-        results.thenAccept(context::complete);
+        results.thenAccept(context::success);
     }
 
     //endregion
@@ -381,22 +377,20 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             requests,
             request -> getAddressSpace(request.getObjectId()),
             (AddressSpace asx) -> group -> {
-                CompletableFuture<List<CallMethodResult>> resultsFuture = new CompletableFuture<>();
 
                 CallContext ctx = new CallContext(
                     server,
                     context.getSession().orElse(null),
-                    resultsFuture,
-                    context.getDiagnostics()
+                    context.getDiagnosticsContext()
                 );
 
                 asx.call(ctx, group);
 
-                return resultsFuture;
+                return ctx.getFuture();
             }
         );
 
-        results.thenAccept(context::complete);
+        results.thenAccept(context::success);
     }
 
     //endregion

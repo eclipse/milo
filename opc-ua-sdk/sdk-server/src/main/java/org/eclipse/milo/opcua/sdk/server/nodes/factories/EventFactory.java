@@ -16,6 +16,8 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
+import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
@@ -63,6 +65,17 @@ public class EventFactory extends AbstractLifecycle {
         server.getAddressSpaceManager().unregister(nodeManager);
     }
 
+    /**
+     * Create an Event instance of the type identified by {@code typeDefinitionId}.
+     * <p>
+     * Event Nodes must be deleted by the caller when once they have been posted to the event bus or their lifetime
+     * has otherwise expired.
+     *
+     * @param nodeId           the {@link NodeId} to use for the Event {@link ObjectNode}.
+     * @param typeDefinitionId the {@link NodeId} of the {@link ObjectTypeNode} representing the type definition.
+     * @return an Event {@link ObjectNode} instance.
+     * @throws UaException if an error occurs creating the Event instance.
+     */
     public BaseEventNode createEvent(NodeId nodeId, NodeId typeDefinitionId) throws UaException {
         return (BaseEventNode) nodeFactory.createNode(
             nodeId,

@@ -149,7 +149,7 @@ public class OpcUaServer {
 
     public CompletableFuture<OpcUaServer> shutdown() {
         eventFactory.shutdown();
-        
+
         subscriptions.values()
             .forEach(Subscription::deleteSubscription);
 
@@ -186,9 +186,7 @@ public class OpcUaServer {
     }
 
     /**
-     * Get the Server-wide EventBus.
-     * <p>
-     * This EventBus is intended for delivery of OPC UA Events to interested subscribers.
+     * Get the Server-wide {@link EventBus}.
      * <p>
      * Events posted to the EventBus are delivered synchronously to registered subscribers.
      *
@@ -198,6 +196,11 @@ public class OpcUaServer {
         return eventBus;
     }
 
+    /**
+     * Get the shared {@link EventFactory}.
+     *
+     * @return the shared {@link EventFactory}.
+     */
     public EventFactory getEventFactory() {
         return eventFactory;
     }

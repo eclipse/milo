@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.OperationContext;
+import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -34,58 +34,92 @@ public interface NodeManagementServices {
             new StatusCode(StatusCodes.Bad_NotSupported),
             NodeId.NULL_VALUE);
 
-        context.complete(Collections.nCopies(nodesToAdd.size(), result));
+        context.success(Collections.nCopies(nodesToAdd.size(), result));
     }
 
 
     default void deleteNode(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
-        context.complete(Collections.nCopies(nodesToDelete.size(), statusCode));
+        context.success(Collections.nCopies(nodesToDelete.size(), statusCode));
     }
 
     default void addReference(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
-        context.complete(Collections.nCopies(referencesToAdd.size(), statusCode));
+        context.success(Collections.nCopies(referencesToAdd.size(), statusCode));
     }
 
     default void deleteReference(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
-        context.complete(Collections.nCopies(referencesToDelete.size(), statusCode));
+        context.success(Collections.nCopies(referencesToDelete.size(), statusCode));
     }
 
-    final class AddNodesContext extends OperationContext<AddNodesItem, AddNodesResult> {
-        public AddNodesContext(OpcUaServer server, @Nullable Session session,
-                               DiagnosticsContext<AddNodesItem> diagnosticsContext) {
+    final class AddNodesContext extends ServiceOperationContext<AddNodesItem, AddNodesResult> {
+
+        public AddNodesContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public AddNodesContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<AddNodesItem> diagnosticsContext
+        ) {
 
             super(server, session, diagnosticsContext);
         }
+
     }
 
-    final class DeleteNodesContext extends OperationContext<DeleteNodesItem, StatusCode> {
-        public DeleteNodesContext(OpcUaServer server, @Nullable Session session,
-                                  DiagnosticsContext<DeleteNodesItem> diagnosticsContext) {
+    final class DeleteNodesContext extends ServiceOperationContext<DeleteNodesItem, StatusCode> {
+
+        public DeleteNodesContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public DeleteNodesContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<DeleteNodesItem> diagnosticsContext) {
 
             super(server, session, diagnosticsContext);
         }
+
     }
 
-    final class AddReferencesContext extends OperationContext<AddReferencesItem, StatusCode> {
-        public AddReferencesContext(OpcUaServer server, @Nullable Session session,
-                                    DiagnosticsContext<AddReferencesItem> diagnosticsContext) {
+    final class AddReferencesContext extends ServiceOperationContext<AddReferencesItem, StatusCode> {
+
+        public AddReferencesContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public AddReferencesContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<AddReferencesItem> diagnosticsContext
+        ) {
 
             super(server, session, diagnosticsContext);
         }
+
     }
 
-    final class DeleteReferencesContext extends OperationContext<DeleteReferencesItem, StatusCode> {
-        public DeleteReferencesContext(OpcUaServer server, @Nullable Session session,
-                                       DiagnosticsContext<DeleteReferencesItem> diagnosticsContext) {
+    final class DeleteReferencesContext extends ServiceOperationContext<DeleteReferencesItem, StatusCode> {
+
+        public DeleteReferencesContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public DeleteReferencesContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<DeleteReferencesItem> diagnosticsContext) {
 
             super(server, session, diagnosticsContext);
         }
+
     }
 
 }

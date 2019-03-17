@@ -252,7 +252,7 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
             }
         }
 
-        context.complete(results);
+        context.success(results);
     }
 
     /**

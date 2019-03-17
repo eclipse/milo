@@ -12,13 +12,12 @@ package org.eclipse.milo.opcua.sdk.server.api.services;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.OperationContext;
+import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
@@ -33,7 +32,7 @@ public interface AttributeHistoryServices {
     /**
      * Read history values from nodes belonging to this {@link AttributeHistoryServices}.
      * <p>
-     * Complete the operation with {@link HistoryReadContext#complete(List)}.
+     * Complete the operation with {@link HistoryReadContext#success(Object)}.
      *
      * @param context      the {@link HistoryReadContext}.
      * @param timestamps   requested timestamp values.
@@ -50,13 +49,13 @@ public interface AttributeHistoryServices {
             null
         );
 
-        context.complete(Collections.nCopies(readValueIds.size(), result));
+        context.success(Collections.nCopies(readValueIds.size(), result));
     }
 
     /**
      * Update history values in nodes belonging to this {@link AttributeHistoryServices}.
      * <p>
-     * Complete the operation with {@link HistoryUpdateContext#complete(List)}.
+     * Complete the operation with {@link HistoryUpdateContext#success(Object)}.
      *
      * @param context       the {@link HistoryUpdateContext}.
      * @param updateDetails the values to read.
@@ -70,40 +69,39 @@ public interface AttributeHistoryServices {
             null
         );
 
-        context.complete(Collections.nCopies(updateDetails.size(), result));
+        context.success(Collections.nCopies(updateDetails.size(), result));
     }
 
-    final class HistoryReadContext extends OperationContext<HistoryReadValueId, HistoryReadResult> {
-        public HistoryReadContext(OpcUaServer server,
-                                  @Nullable Session session,
-                                  DiagnosticsContext<HistoryReadValueId> diagnosticsContext) {
+    final class HistoryReadContext extends ServiceOperationContext<HistoryReadValueId, HistoryReadResult> {
+
+        public HistoryReadContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public HistoryReadContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<HistoryReadValueId> diagnosticsContext) {
 
             super(server, session, diagnosticsContext);
         }
 
-        public HistoryReadContext(OpcUaServer server,
-                                  @Nullable Session session,
-                                  CompletableFuture<List<HistoryReadResult>> future,
-                                  DiagnosticsContext<HistoryReadValueId> diagnosticsContext) {
-
-            super(server, session, future, diagnosticsContext);
-        }
     }
 
-    final class HistoryUpdateContext extends OperationContext<HistoryUpdateDetails, HistoryUpdateResult> {
-        public HistoryUpdateContext(OpcUaServer server,
-                                    @Nullable Session session,
-                                    DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext) {
+    final class HistoryUpdateContext extends ServiceOperationContext<HistoryUpdateDetails, HistoryUpdateResult> {
+
+        public HistoryUpdateContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public HistoryUpdateContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext
+        ) {
 
             super(server, session, diagnosticsContext);
         }
 
-        public HistoryUpdateContext(OpcUaServer server,
-                                    @Nullable Session session,
-                                    CompletableFuture<List<HistoryUpdateResult>> future,
-                                    DiagnosticsContext<HistoryUpdateDetails> diagnosticsContext) {
-
-            super(server, session, future, diagnosticsContext);
-        }
     }
 }
