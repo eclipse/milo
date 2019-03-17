@@ -21,11 +21,30 @@ import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.AsyncOperationContextImpl;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 
+import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
+
 public interface ViewServices {
+
+    /**
+     * Like {@link #browse(BrowseContext, ViewDescription, NodeId)} but with a null/empty {@link ViewDescription}.
+     *
+     * @param context the {@link BrowseContext}.
+     * @param nodeId  the {@link NodeId} to browse.
+     */
+    default void browse(BrowseContext context, NodeId nodeId) {
+        ViewDescription view = new ViewDescription(
+            NodeId.NULL_VALUE,
+            DateTime.NULL_VALUE,
+            uint(0)
+        );
+
+        browse(context, view, nodeId);
+    }
 
     /**
      * Get all References for which {@code nodeId} is the source.
@@ -36,9 +55,9 @@ public interface ViewServices {
      * If a Node instance for {@code nodeId} does not exist then {@link BrowseContext#failure(StatusCode)} should be
      * invoked with {@link StatusCodes#Bad_NodeIdUnknown}.
      *
-     * @param context TODO
-     * @param view    TODO
-     * @param nodeId  TODO
+     * @param context the {@link BrowseContext}.
+     * @param view    the {@link ViewDescription}.
+     * @param nodeId  the {@link NodeId} to browse.
      */
     void browse(BrowseContext context, ViewDescription view, NodeId nodeId);
 

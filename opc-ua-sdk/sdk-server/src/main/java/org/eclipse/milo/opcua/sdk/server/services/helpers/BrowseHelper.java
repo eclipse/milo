@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -139,8 +140,15 @@ public class BrowseHelper {
 
         public CompletableFuture<BrowseResult> browse() {
             BROWSE_EXECUTION_QUEUE.submit(() -> {
-                CompletableFuture<List<Reference>> referencesFuture =
-                    server.getAddressSpaceManager().browseAll(context, view, browseDescription.getNodeId());
+
+                BrowseContext browseContext = new BrowseContext(
+                    server,
+                    context.getSession().orElse(null)
+                );
+
+                server.getAddressSpaceManager().browse(browseContext, view, browseDescription.getNodeId());
+
+                CompletableFuture<List<Reference>> referencesFuture = browseContext.getFuture();
 
                 referencesFuture.whenComplete((references, ex) -> {
                     if (references != null) {
@@ -367,8 +375,14 @@ public class BrowseHelper {
                 LoggerFactory.getLogger(BrowseHelper.class)
                     .trace("No managed TypeDefinition for nodeId={}, browsing...", nodeId);
 
-                CompletableFuture<List<Reference>> browseFuture =
-                    server.getAddressSpaceManager().browseAll(context, nodeId);
+                BrowseContext browseContext = new BrowseContext(
+                    server,
+                    context.getSession().orElse(null)
+                );
+
+                server.getAddressSpaceManager().browse(browseContext, nodeId);
+
+                CompletableFuture<List<Reference>> browseFuture = browseContext.getFuture();
 
                 return browseFuture.thenApply(
                     references ->

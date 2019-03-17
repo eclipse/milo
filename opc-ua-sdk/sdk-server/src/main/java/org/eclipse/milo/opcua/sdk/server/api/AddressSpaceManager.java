@@ -13,7 +13,6 @@ package org.eclipse.milo.opcua.sdk.server.api;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -21,14 +20,10 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
 public class AddressSpaceManager extends AddressSpaceComposite {
 
@@ -64,27 +59,6 @@ public class AddressSpaceManager extends AddressSpaceComposite {
         } else {
             logger.warn("NodeManager not registered: {}", nodeManager);
         }
-    }
-
-    public CompletableFuture<List<Reference>> browseAll(AccessContext context, NodeId nodeId) {
-        ViewDescription view = new ViewDescription(
-            NodeId.NULL_VALUE,
-            DateTime.NULL_VALUE,
-            uint(0)
-        );
-
-        return browseAll(context, view, nodeId);
-    }
-
-    public CompletableFuture<List<Reference>> browseAll(AccessContext context, ViewDescription view, NodeId nodeId) {
-        BrowseContext browseContext = new BrowseContext(
-            getServer(),
-            context.getSession().orElse(null)
-        );
-
-        browse(browseContext, view, nodeId);
-
-        return browseContext.getFuture();
     }
 
     /**

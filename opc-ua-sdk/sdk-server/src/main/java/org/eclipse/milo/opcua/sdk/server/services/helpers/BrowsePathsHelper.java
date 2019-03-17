@@ -21,6 +21,7 @@ import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -167,8 +168,14 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        CompletableFuture<List<Reference>> future =
-            server.getAddressSpaceManager().browseAll(context, nodeId);
+        BrowseContext browseContext = new BrowseContext(
+            server,
+            context.getSession().orElse(null)
+        );
+
+        server.getAddressSpaceManager().browse(browseContext, nodeId);
+
+        CompletableFuture<List<Reference>> future = browseContext.getFuture();
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -203,8 +210,14 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        CompletableFuture<List<Reference>> future =
-            server.getAddressSpaceManager().browseAll(context, nodeId);
+        BrowseContext browseContext = new BrowseContext(
+            server,
+            context.getSession().orElse(null)
+        );
+
+        server.getAddressSpaceManager().browse(browseContext, nodeId);
+
+        CompletableFuture<List<Reference>> future = browseContext.getFuture();
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
