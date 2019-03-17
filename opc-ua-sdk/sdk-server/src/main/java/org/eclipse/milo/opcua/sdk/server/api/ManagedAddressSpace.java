@@ -32,10 +32,30 @@ public abstract class ManagedAddressSpace extends ManagedAddressSpaceServices im
         unregisterAddressSpace(this);
     }
 
+    /**
+     * Register this {@link ManagedAddressSpace} with its managing entity.
+     * <p>
+     * The default implementation registers it with the Server's {@link AddressSpaceManager}.
+     * <p>
+     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
+     * should override this to register with that composite.
+     *
+     * @param addressSpace the {@link AddressSpace} to register.
+     */
     protected void registerAddressSpace(AddressSpace addressSpace) {
         getServer().getAddressSpaceManager().register(addressSpace);
     }
 
+    /**
+     * Unregister this {@link ManagedAddressSpace} with its managing entity.
+     * <p>
+     * The default implementation unregisters it with the Server's {@link AddressSpaceManager}.
+     * <p>
+     * ManagedAddressSpaces that belong to a {@link AddressSpaceComposite} other than Server's AddressSpaceManager
+     * should override this to unregister with that composite.
+     *
+     * @param addressSpace the {@link AddressSpace} to unregister.
+     */
     protected void unregisterAddressSpace(AddressSpace addressSpace) {
         getServer().getAddressSpaceManager().unregister(addressSpace);
     }

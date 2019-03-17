@@ -22,21 +22,74 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface NodeManager<T extends Node> {
 
+    /**
+     * Return {@code true} if this {@link NodeManager} contains the Node identified by {@code nodeId}.
+     *
+     * @param nodeId the {@link NodeId}.
+     * @return {@code true} if this {@link NodeManager} contains the Node identified by {@code nodeId}.
+     */
     boolean containsNode(NodeId nodeId);
 
+    /**
+     * Add {@code node} to this {@link NodeManager}, replacing a previous Node identified by the same {@link NodeId}
+     * if it exists.
+     *
+     * @param node the {@link Node} to add.
+     * @return the previous Node identified by the {@link NodeId} of {@code node}, if it exists.
+     */
     Optional<T> addNode(T node);
 
+    /**
+     * Get the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
+     *
+     * @param nodeId the {@link NodeId} identifying the Node to get.
+     * @return the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
+     */
     Optional<T> getNode(NodeId nodeId);
 
+    /**
+     * Remove the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
+     *
+     * @param nodeId the {@link NodeId} identifying the Node to remove.
+     * @return the Node removed from this {@link NodeManager}, if it exists.
+     */
     Optional<T> removeNode(NodeId nodeId);
 
+    /**
+     * Add a {@link Reference} to this {@link NodeManager}.
+     * <p>
+     * An inverse Reference of {@code reference} will also be added.
+     *
+     * @param reference the {@link Reference} to add.
+     */
     void addReference(Reference reference);
 
+    /**
+     * Remove a {@link Reference} from this {@link NodeManager}.
+     * <p>
+     * The inverse Reference of {@code reference} will also be removed.
+     *
+     * @param reference the {@link Reference} to remove.
+     */
     void removeReference(Reference reference);
 
-    List<Reference> getReferences(NodeId sourceNodeId);
+    /**
+     * Get all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}.
+     *
+     * @param nodeId the source {@link NodeId}.
+     * @return all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}.
+     */
+    List<Reference> getReferences(NodeId nodeId);
 
-    List<Reference> getReferences(NodeId sourceNodeId, Predicate<Reference> filter);
+    /**
+     * Get all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}, filtered by {@code filter}.
+     *
+     * @param nodeId the source {@link NodeId}.
+     * @param filter a {@link Predicate} to filter {@link Reference}s.
+     * @return all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}, filtered by
+     * {@code filter}.
+     */
+    List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter);
 
     default boolean containsNode(Node node) {
         return containsNode(node.getNodeId());

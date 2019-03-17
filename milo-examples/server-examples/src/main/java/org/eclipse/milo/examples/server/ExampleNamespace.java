@@ -186,7 +186,6 @@ public class ExampleNamespace extends ManagedNamespace {
 
                     eventNode.setBrowseName(new QualifiedName(1, "foo"));
                     eventNode.setDisplayName(LocalizedText.english("foo"));
-
                     eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
                     eventNode.setEventType(Identifiers.BaseEventType);
                     eventNode.setSourceNode(serverNode.getNodeId());

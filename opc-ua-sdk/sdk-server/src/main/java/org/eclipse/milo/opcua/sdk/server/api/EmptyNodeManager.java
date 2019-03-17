@@ -20,11 +20,21 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
+/**
+ * An empty {@link NodeManager}.
+ * <p>
+ * Gets are empty, Add and remove operations are no-ops, and {@link #containsNode(NodeId)} returns {@code false}.
+ *
+ * @param <T> the type of {@link Node}.
+ */
 public class EmptyNodeManager<T extends Node> implements NodeManager<T> {
 
+    /**
+     * An {@link EmptyNodeManager} for {@link UaNode}s.
+     */
     public static EmptyNodeManager<UaNode> INSTANCE = new EmptyNodeManager<>();
 
-    private EmptyNodeManager() {}
+    public EmptyNodeManager() {}
 
     @Override
     public boolean containsNode(NodeId nodeId) {
@@ -53,12 +63,12 @@ public class EmptyNodeManager<T extends Node> implements NodeManager<T> {
     public void removeReference(Reference reference) {}
 
     @Override
-    public List<Reference> getReferences(NodeId sourceNodeId) {
+    public List<Reference> getReferences(NodeId nodeId) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<Reference> getReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
+    public List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter) {
         return Collections.emptyList();
     }
 

@@ -40,6 +40,11 @@ public class AddressSpaceManager extends AddressSpaceComposite {
         super(server);
     }
 
+    /**
+     * Register a {@link NodeManager} with this {@link AddressSpaceManager}.
+     *
+     * @param nodeManager the {@link NodeManager} to register.
+     */
     public synchronized void register(NodeManager<UaNode> nodeManager) {
         if (!nodeManagers.contains(nodeManager)) {
             nodeManagers.add(nodeManager);
@@ -48,6 +53,11 @@ public class AddressSpaceManager extends AddressSpaceComposite {
         }
     }
 
+    /**
+     * Unregister a {@link NodeManager} with this {@link AddressSpaceManager}.
+     *
+     * @param nodeManager the {@link NodeManager} to register.
+     */
     public synchronized void unregister(NodeManager<UaNode> nodeManager) {
         if (nodeManagers.contains(nodeManager)) {
             nodeManagers.remove(nodeManager);
@@ -77,6 +87,13 @@ public class AddressSpaceManager extends AddressSpaceComposite {
         return browseContext.getFuture();
     }
 
+    /**
+     * Get the managed {@link UaNode} identified by {@code nodeId} from the first registered {@link NodeManager} that
+     * has it, if there is one.
+     *
+     * @param nodeId the {@link NodeId} identifying the managed {@link UaNode}.
+     * @return the managed {@link UaNode} identified by {@code nodeId}, if there is one.
+     */
     public Optional<UaNode> getManagedNode(NodeId nodeId) {
         return nodeManagers.stream()
             .filter(n -> n.containsNode(nodeId))
@@ -84,27 +101,44 @@ public class AddressSpaceManager extends AddressSpaceComposite {
             .flatMap(n -> n.getNode(nodeId));
     }
 
+    /**
+     * Get the managed {@link UaNode} identified by {@code nodeId} from the first registered {@link NodeManager} that
+     * has it, if there is one.
+     *
+     * @param nodeId the {@link ExpandedNodeId} identifying the managed {@link UaNode}.
+     * @return the managed {@link UaNode} identified by {@code nodeId}, if there is one.
+     */
     public Optional<UaNode> getManagedNode(ExpandedNodeId nodeId) {
         return nodeId.local().flatMap(this::getManagedNode);
     }
 
     /**
-     * Get all References from {@code sourceNodeId}, collected from the {@link NodeManager}, if present, of all
-     * registered {@link AddressSpace}s.
+     * Collect all {@link Reference}s from all registered {@link NodeManager}s where {@code nodeId} is the source
+     * {@link NodeId} in the Reference.
      *
-     * @param sourceNodeId TODO
-     * @return TODO
+     * @param nodeId the {@link NodeId} of the source NodeId in the {@link Reference}.
+     * @return all {@link Reference}s from all registered {@link NodeManager}s where {@code nodeId} is the source
+     * {@link NodeId} in the Reference.
      */
-    public List<Reference> getManagedReferences(NodeId sourceNodeId) {
+    public List<Reference> getManagedReferences(NodeId nodeId) {
         return nodeManagers.stream()
-            .map(n -> n.getReferences(sourceNodeId))
+            .map(n -> n.getReferences(nodeId))
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     }
 
-    public List<Reference> getManagedReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
+    /**
+     * Collect all {@link Reference}s from all registered {@link NodeManager}s where {@code nodeId} is the source
+     * {@link NodeId} in the Reference and the Reference passes {@code filter}.
+     *
+     * @param nodeId the {@link NodeId} of the source NodeId in the {@link Reference}.
+     * @param filter a {@link Predicate} to apply to the collected {@link Reference}s.
+     * @return all {@link Reference}s from all registered {@link NodeManager}s where {@code nodeId} is the source
+     * {@link NodeId} in the Reference.
+     */
+    public List<Reference> getManagedReferences(NodeId nodeId, Predicate<Reference> filter) {
         return nodeManagers.stream()
-            .map(n -> n.getReferences(sourceNodeId, filter))
+            .map(n -> n.getReferences(nodeId, filter))
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
     }

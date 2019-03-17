@@ -99,10 +99,24 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
         unregisterNodeManager(nodeManager);
     }
 
+    /**
+     * Register this {@link ManagedAddressSpaceServices}'s {@link UaNodeManager} with its managing entity.
+     * <p>
+     * The default implementation registers it with the Server's {@link AddressSpaceManager}.
+     *
+     * @param nodeManager the {@link UaNodeManager} to register.
+     */
     protected void registerNodeManager(UaNodeManager nodeManager) {
         server.getAddressSpaceManager().register(nodeManager);
     }
 
+    /**
+     * Unregister this {@link ManagedAddressSpaceServices}'s {@link UaNodeManager} with its managing entity.
+     * <p>
+     * The default implementation unregisters it with the Server's {@link AddressSpaceManager}.
+     *
+     * @param nodeManager the {@link UaNodeManager} to unregister.
+     */
     protected void unregisterNodeManager(UaNodeManager nodeManager) {
         server.getAddressSpaceManager().unregister(nodeManager);
     }

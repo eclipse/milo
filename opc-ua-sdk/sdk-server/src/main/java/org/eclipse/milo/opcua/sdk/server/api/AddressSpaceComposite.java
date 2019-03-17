@@ -51,6 +51,11 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.sdk.server.util.GroupMapCollate.groupMapCollate;
 
+/**
+ * An {@link AddressSpace} that is composed of one or more registered sub-AddressSpaces.
+ * <p>
+ * Service call operations are executed by the first sub-AddressSpace that matches on the NodeId in the operation.
+ */
 public abstract class AddressSpaceComposite extends AbstractLifecycle implements AddressSpace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -75,6 +80,13 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             .anyMatch(asx -> asx.filter(nodeId));
     }
 
+    /**
+     * Register an {@link AddressSpace} with this composite.
+     * <p>
+     * The AddressSpace is inserted at the end of the list.
+     *
+     * @param addressSpace the {@link AddressSpace} to register.
+     */
     public synchronized void register(AddressSpace addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(addressSpace);
@@ -85,6 +97,13 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         }
     }
 
+    /**
+     * Register an {@link AddressSpace} with this composite.
+     * <p>
+     * The AddressSpace is inserted at the front of the list.
+     *
+     * @param addressSpace the {@link AddressSpace} to register.
+     */
     public synchronized void registerFirst(AddressSpace addressSpace) {
         if (!addressSpaces.contains(addressSpace)) {
             addressSpaces.add(0, addressSpace);
@@ -95,6 +114,11 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         }
     }
 
+    /**
+     * Unregister an {@link AddressSpace} with this composite.
+     *
+     * @param addressSpace the {@link AddressSpace} to unregister.
+     */
     public synchronized void unregister(AddressSpace addressSpace) {
         if (addressSpaces.contains(addressSpace)) {
             addressSpaces.remove(addressSpace);
@@ -105,10 +129,20 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         }
     }
 
+    /**
+     * Get the {@link OpcUaServer} instance.
+     *
+     * @return the {@link OpcUaServer} instance.
+     */
     protected OpcUaServer getServer() {
         return server;
     }
 
+    /**
+     * Get a copy of the current {@link AddressSpace} list.
+     *
+     * @return a copy of the current {@link AddressSpace} list.
+     */
     protected List<AddressSpace> getAddressSpaces() {
         return new ArrayList<>(addressSpaces);
     }

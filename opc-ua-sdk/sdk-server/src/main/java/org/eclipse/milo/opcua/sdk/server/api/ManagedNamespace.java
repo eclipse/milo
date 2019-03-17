@@ -14,6 +14,9 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
+/**
+ * A {@link ManagedAddressSpace} for all Nodes belonging to a namespace index / URI.
+ */
 public abstract class ManagedNamespace extends ManagedAddressSpace implements Namespace {
 
     private final UShort namespaceIndex;

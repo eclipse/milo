@@ -94,16 +94,16 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
-    public List<Reference> getReferences(NodeId sourceNodeId) {
+    public List<Reference> getReferences(NodeId nodeId) {
         synchronized (referenceMultimap) {
-            return new ArrayList<>(referenceMultimap.get(sourceNodeId));
+            return new ArrayList<>(referenceMultimap.get(nodeId));
         }
     }
 
     @Override
-    public List<Reference> getReferences(NodeId sourceNodeId, Predicate<Reference> filter) {
+    public List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter) {
         synchronized (referenceMultimap) {
-            return referenceMultimap.get(sourceNodeId)
+            return referenceMultimap.get(nodeId)
                 .stream()
                 .filter(filter)
                 .collect(Collectors.toList());
