@@ -79,7 +79,8 @@ public class InstanceDeclarationHierarchy {
         }
 
         public InstanceDeclarationHierarchy build(NodeId typeDefinitionId, boolean includeOptionalNodes) {
-            Optional<InstanceDeclarationHierarchy> parentIdh = addressSpaceManager.getManagedReferences(typeDefinitionId)
+            Optional<InstanceDeclarationHierarchy> parentIdh = addressSpaceManager
+                .getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()

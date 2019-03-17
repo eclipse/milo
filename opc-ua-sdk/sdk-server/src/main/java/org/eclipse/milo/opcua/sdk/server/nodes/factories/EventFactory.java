@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes.factories;
 
+import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
@@ -21,14 +22,11 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class EventFactory {
-
-    private final NodeManager<UaNode> nodeManager;
-    private final NodeFactory nodeFactory;
+public class EventFactory extends AbstractLifecycle {
 
     private final OpcUaServer server;
-    private final ObjectTypeManager objectTypeManager;
-    private final VariableTypeManager variableTypeManager;
+    private final NodeManager<UaNode> nodeManager;
+    private final NodeFactory nodeFactory;
 
     public EventFactory(OpcUaServer server) {
         this(
@@ -45,10 +43,7 @@ public class EventFactory {
     ) {
 
         this.server = server;
-        this.objectTypeManager = objectTypeManager;
-        this.variableTypeManager = variableTypeManager;
 
-//        nodeManager = new EventNodeManager(server.getAddressSpaceManager());
         nodeManager = new UaNodeManager();
 
         nodeFactory = new NodeFactory(
@@ -56,8 +51,16 @@ public class EventFactory {
             objectTypeManager,
             variableTypeManager
         );
+    }
 
+    @Override
+    protected void onStartup() {
         server.getAddressSpaceManager().register(nodeManager);
+    }
+
+    @Override
+    protected void onShutdown() {
+        server.getAddressSpaceManager().unregister(nodeManager);
     }
 
     public BaseEventNode createEvent(NodeId nodeId, NodeId typeDefinitionId) throws UaException {
@@ -89,46 +92,5 @@ public class EventFactory {
         }
 
     }
-
-//    private static class EventNodeManager extends AbstractNodeManager<UaNode> {
-//
-//        private final AddressSpaceManager addressSpaceManager;
-//
-//        private EventNodeManager(AddressSpaceManager addressSpaceManager) {
-//            this.addressSpaceManager = addressSpaceManager;
-//        }
-//
-//        @Override
-//        public boolean containsNode(NodeId nodeId) {
-//            return super.containsNode(nodeId) ||
-//                addressSpaceManager.getNodeManager(nodeId)
-//                    .map(n -> n.containsNode(nodeId))
-//                    .orElse(false);
-//        }
-//
-//        @Override
-//        public Optional<UaNode> getNode(NodeId nodeId) {
-//            Optional<UaNode> node = super.getNode(nodeId);
-//
-//            if (node.isPresent()) {
-//                return node;
-//            } else {
-//                return addressSpaceManager.getNodeManager(nodeId)
-//                    .flatMap(n -> n.getNode(nodeId));
-//            }
-//        }
-//
-//        @Override
-//        public List<Reference> getReferences(NodeId nodeId) {
-//            if (super.containsNode(nodeId)) {
-//                return super.getReferences(nodeId);
-//            } else {
-//                return addressSpaceManager.getNodeManager(nodeId)
-//                    .map(n -> n.getReferences(nodeId))
-//                    .orElse(Collections.emptyList());
-//            }
-//        }
-//
-//    }
 
 }

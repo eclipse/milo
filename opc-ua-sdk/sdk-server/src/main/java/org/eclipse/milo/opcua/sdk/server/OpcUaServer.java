@@ -141,11 +141,15 @@ public class OpcUaServer {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
+        eventFactory.startup();
+
         return stackServer.startup()
             .thenApply(s -> OpcUaServer.this);
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        eventFactory.shutdown();
+        
         subscriptions.values()
             .forEach(Subscription::deleteSubscription);
 

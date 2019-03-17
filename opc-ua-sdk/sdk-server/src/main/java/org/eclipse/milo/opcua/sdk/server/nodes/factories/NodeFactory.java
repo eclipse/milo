@@ -161,7 +161,9 @@ public class NodeFactory {
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
 
-                    UaNode typeDefinitionNode = addressSpaceManager.getManagedNode(instanceTypeDefinitionId).orElse(null);
+                    UaNode typeDefinitionNode = addressSpaceManager
+                        .getManagedNode(instanceTypeDefinitionId)
+                        .orElse(null);
 
                     if (typeDefinitionNode instanceof ObjectTypeNode) {
                         UaObjectNode instance = instanceFromTypeDefinition(
@@ -186,7 +188,9 @@ public class NodeFactory {
                     ExpandedNodeId instanceTypeDefinitionId =
                         getTypeDefinition(referenceTable, browsePath);
 
-                    UaNode typeDefinitionNode = addressSpaceManager.getManagedNode(instanceTypeDefinitionId).orElse(null);
+                    UaNode typeDefinitionNode = addressSpaceManager
+                        .getManagedNode(instanceTypeDefinitionId)
+                        .orElse(null);
 
                     if (typeDefinitionNode instanceof VariableTypeNode) {
                         UaVariableNode instance = instanceFromTypeDefinition(
