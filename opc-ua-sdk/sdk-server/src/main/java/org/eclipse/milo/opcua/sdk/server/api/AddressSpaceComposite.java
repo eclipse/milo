@@ -28,12 +28,18 @@ import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddNodesResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.AddReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteNodesItem;
+import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadValueId;
@@ -153,6 +159,12 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
             .findFirst();
 
         return addressSpace.orElse(new EmptyAddressSpace(server));
+    }
+
+    private AddressSpace getAddressSpace(ExpandedNodeId nodeId) {
+        return nodeId.local()
+            .map(this::getAddressSpace)
+            .orElse(new EmptyAddressSpace(server));
     }
 
     private <T> Map<AddressSpace, List<T>> groupedBy(List<T> items, Function<T, NodeId> getNodeId) {
@@ -525,6 +537,107 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         );
 
         byAddressSpace.forEach(MonitoredItemServices::onMonitoringModeChanged);
+    }
+
+    //endregion
+
+    //region NodeManagementServices
+
+    @Override
+    public void addNodes(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
+        CompletableFuture<List<AddNodesResult>> results = groupMapCollate(
+            nodesToAdd,
+            addNodesItem -> {
+                ExpandedNodeId requestedNewNodeId =
+                    addNodesItem.getRequestedNewNodeId();
+
+                if (requestedNewNodeId.isNotNull()) {
+                    return getAddressSpace(requestedNewNodeId);
+                } else {
+                    return getAddressSpace(addNodesItem.getParentNodeId());
+                }
+            },
+            (AddressSpace asx) -> group -> {
+
+                AddNodesContext ctx = new AddNodesContext(
+                    server,
+                    context.getSession().orElse(null),
+                    context.getDiagnosticsContext()
+                );
+
+                asx.addNodes(ctx, group);
+
+                return ctx.getFuture();
+            }
+        );
+
+        results.thenAccept(context::success);
+    }
+
+    @Override
+    public void deleteNodes(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
+        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+            nodesToDelete,
+            deleteNodesItem -> getAddressSpace(deleteNodesItem.getNodeId()),
+            (AddressSpace asx) -> group -> {
+
+                DeleteNodesContext ctx = new DeleteNodesContext(
+                    server,
+                    context.getSession().orElse(null),
+                    context.getDiagnosticsContext()
+                );
+
+                asx.deleteNodes(ctx, group);
+
+                return ctx.getFuture();
+            }
+        );
+
+        results.thenAccept(context::success);
+    }
+
+    @Override
+    public void addReferences(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
+        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+            referencesToAdd,
+            addReferencesItem -> getAddressSpace(addReferencesItem.getSourceNodeId()),
+            (AddressSpace asx) -> group -> {
+
+                AddReferencesContext ctx = new AddReferencesContext(
+                    server,
+                    context.getSession().orElse(null),
+                    context.getDiagnosticsContext()
+                );
+
+                asx.addReferences(ctx, group);
+
+                return ctx.getFuture();
+            }
+        );
+
+        results.thenAccept(context::success);
+    }
+
+    @Override
+    public void deleteReferences(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
+        CompletableFuture<List<StatusCode>> results = groupMapCollate(
+            referencesToDelete,
+            deleteReferencesItem -> getAddressSpace(deleteReferencesItem.getSourceNodeId()),
+            (AddressSpace asx) -> group -> {
+
+                DeleteReferencesContext ctx = new DeleteReferencesContext(
+                    server,
+                    context.getSession().orElse(null),
+                    context.getDiagnosticsContext()
+                );
+
+                asx.deleteReferences(ctx, group);
+
+                return ctx.getFuture();
+            }
+        );
+
+        results.thenAccept(context::success);
     }
 
     //endregion

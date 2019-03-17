@@ -29,28 +29,28 @@ import org.eclipse.milo.opcua.stack.core.types.structured.DeleteReferencesItem;
 
 public interface NodeManagementServices {
 
-    default void addNode(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
+    default void addNodes(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
         AddNodesResult result = new AddNodesResult(
             new StatusCode(StatusCodes.Bad_NotSupported),
-            NodeId.NULL_VALUE);
+            NodeId.NULL_VALUE
+        );
 
         context.success(Collections.nCopies(nodesToAdd.size(), result));
     }
 
-
-    default void deleteNode(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
+    default void deleteNodes(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
         context.success(Collections.nCopies(nodesToDelete.size(), statusCode));
     }
 
-    default void addReference(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
+    default void addReferences(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
         context.success(Collections.nCopies(referencesToAdd.size(), statusCode));
     }
 
-    default void deleteReference(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
+    default void deleteReferences(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
         StatusCode statusCode = new StatusCode(StatusCodes.Bad_NotSupported);
 
         context.success(Collections.nCopies(referencesToDelete.size(), statusCode));
