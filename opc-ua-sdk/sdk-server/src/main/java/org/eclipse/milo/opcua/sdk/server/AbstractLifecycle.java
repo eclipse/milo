@@ -12,14 +12,14 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public abstract class AbstractLifecycle {
+public abstract class AbstractLifecycle implements Lifecycle {
 
     private final AtomicReference<LifecycleState> state = new AtomicReference<>(LifecycleState.NEW);
 
     /**
-     * Call to start this thing up. The first time this is called, {@link #onStartup()} will be called. Subsequent
-     * invocations will throw an {@link IllegalStateException}.
+     * {@inheritDoc}
      */
+    @Override
     public final void startup() {
         LifecycleState previous =
             state.getAndUpdate(prev -> prev == LifecycleState.NEW ? LifecycleState.RUNNING : prev);
@@ -32,8 +32,9 @@ public abstract class AbstractLifecycle {
     }
 
     /**
-     * Call to shut this thing down. Must have called startup first for this to have an effect.
+     * {@inheritDoc}
      */
+    @Override
     public final void shutdown() {
         LifecycleState previous =
             state.getAndUpdate(prev -> prev == LifecycleState.RUNNING ? LifecycleState.STOPPED : prev);
@@ -43,12 +44,12 @@ public abstract class AbstractLifecycle {
         } else if (previous == LifecycleState.NEW) {
             throw new IllegalStateException("Cannot call shutdown, never started.");
         }
-        // else if previous == STOPPED, calling shutdown() multiple times is OK, just treat as no-op
     }
 
     /**
-     * @return true after {@link #startup()} is called and before {@link #shutdown()} is called.
+     * {@inheritDoc}
      */
+    @Override
     public final boolean isRunning() {
         return this.state.get() == LifecycleState.RUNNING;
     }
