@@ -19,6 +19,9 @@ import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SerializationQueue {
 
+    private final OpcUaBinaryStreamEncoder binaryEncoder;
+    private final OpcUaBinaryStreamDecoder binaryDecoder;
+
     private final ChunkEncoder chunkEncoder;
     private final ChunkDecoder chunkDecoder;
 
@@ -26,14 +29,14 @@ public class SerializationQueue {
     private final ExecutionQueue decodingQueue;
 
     private final ChannelParameters parameters;
-    private final EncodingLimits encodingLimits;
 
-    public SerializationQueue(ExecutorService executor,
-                              ChannelParameters parameters,
-                              EncodingLimits encodingLimits) {
+    public SerializationQueue(
+        ExecutorService executor,
+        ChannelParameters parameters,
+        EncodingLimits encodingLimits
+    ) {
 
         this.parameters = parameters;
-        this.encodingLimits = encodingLimits;
 
         chunkEncoder = new ChunkEncoder(parameters);
 
@@ -43,26 +46,19 @@ public class SerializationQueue {
             encodingLimits.getMaxStringLength()
         );
 
+        binaryEncoder = new OpcUaBinaryStreamEncoder(encodingLimits);
+        binaryDecoder = new OpcUaBinaryStreamDecoder(encodingLimits);
+
         encodingQueue = new ExecutionQueue(executor);
         decodingQueue = new ExecutionQueue(executor);
     }
 
     public void encode(Encoder encoder) {
-        encodingQueue.submit(() -> {
-            OpcUaBinaryStreamEncoder binaryEncoder =
-                new OpcUaBinaryStreamEncoder(encodingLimits);
-
-            encoder.encode(binaryEncoder, chunkEncoder);
-        });
+        encodingQueue.submit(() -> encoder.encode(binaryEncoder, chunkEncoder));
     }
 
     public void decode(Decoder decoder) {
-        decodingQueue.submit(() -> {
-            OpcUaBinaryStreamDecoder binaryDecoder =
-                new OpcUaBinaryStreamDecoder(encodingLimits);
-
-            decoder.decode(binaryDecoder, chunkDecoder);
-        });
+        decodingQueue.submit(() -> decoder.decode(binaryDecoder, chunkDecoder));
     }
 
     public void pause() {

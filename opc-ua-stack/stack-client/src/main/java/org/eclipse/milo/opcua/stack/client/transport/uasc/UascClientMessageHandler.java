@@ -618,7 +618,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
             final List<ByteBuf> buffersToDecode = chunkBuffers;
             chunkBuffers = new ArrayList<>(maxChunkCount);
 
-            serializationQueue.decode((decoder, chunkDecoder) -> {
+            serializationQueue.decode((binaryDecoder, chunkDecoder) -> {
                 try {
                     validateChunkHeaders(buffersToDecode);
                 } catch (UaException e) {
@@ -660,7 +660,7 @@ public class UascClientMessageHandler extends ByteToMessageCodec<UaTransportRequ
 
                         try {
                             if (request != null) {
-                                UaResponseMessage response = (UaResponseMessage) decoder
+                                UaResponseMessage response = (UaResponseMessage) binaryDecoder
                                     .setBuffer(message)
                                     .readMessage(null);
 

@@ -72,6 +72,7 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertThrows;
 import static org.testng.Assert.fail;
 
 public class ClientServerTest extends SecurityFixture {
@@ -368,18 +369,9 @@ public class ClientServerTest extends SecurityFixture {
         UaResponseMessage response0 = client.sendRequest(request).get();
         logger.info("got response: {}", response0);
 
-        // client doesn't wait for server to close the channel, it
-        // closes after flushing the message, so we need to delay
-        // here for the purpose of testing. we close the secure
-        // channel and sleep to give the server time to act, then
-        // assert that the server no longer knows about it.
-
-        // TODO how to test this now?
-        // long secureChannelId = client.getChannelFuture().get().getChannelId();
         client.disconnect().get();
-        Thread.sleep(100);
-        // logger.info("asserting channel closed...");
-        // assertNull(server.getSecureChannel(secureChannelId));
+
+        assertThrows(() -> client.sendRequest(request).get());
     }
 
     @Test
@@ -422,69 +414,19 @@ public class ClientServerTest extends SecurityFixture {
         logger.info("got response: {}", response0);
 
         logger.info("initiating a reconnect by closing channel in server...");
-        // TODO how to test this now?
-        // long secureChannelId = client.getChannelFuture().get().getChannelId();
-        // server.getSecureChannel(secureChannelId).attr(UaTcpStackServer.BoundChannelKey).get().close().await();
+        server.getConnectedChannels().forEach(c -> {
+            try {
+                c.close().await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
         logger.info("sending request: {}", request);
         UaResponseMessage response1 = client.sendRequest(request).get();
         logger.info("got response: {}", response1);
 
         client.disconnect().get();
-    }
-
-    @Test
-    public void testClientReconnect_InvalidSecureChannel() throws Exception {
-        EndpointDescription endpoint = endpoints[0];
-        Variant input = new Variant(42);
-
-        logger.info("SecurityPolicy={}, MessageSecurityMode={}, input={}",
-            SecurityPolicy.fromUri(endpoint.getSecurityPolicyUri()), endpoint.getSecurityMode(), input);
-
-        UaStackClient client = createClient(endpoint);
-
-        client.connect().get();
-
-        RequestHeader header = new RequestHeader(
-            NodeId.NULL_VALUE,
-            DateTime.now(),
-            uint(0),
-            uint(0),
-            null,
-            DEFAULT_TIMEOUT_HINT,
-            null
-        );
-
-        ReadRequest request = new ReadRequest(
-            header,
-            0.0,
-            TimestampsToReturn.Neither,
-            new ReadValueId[]{
-                new ReadValueId(
-                    NodeId.NULL_VALUE,
-                    AttributeId.Value.uid(),
-                    null,
-                    null)
-            }
-        );
-
-        logger.info("sending request: {}", request);
-        UaResponseMessage response0 = client.sendRequest(request).get();
-        logger.info("got response: {}", response0);
-
-        // Get our original valid secure channel, then sabotage it, then cause a disconnect.
-        // The end effect is that we reconnect with an invalid secure channel id.
-
-        // TODO how to test this now?
-        // ClientSecureChannel secureChannel = client.getChannelFuture().get();
-        // long secureChannelId = secureChannel.getChannelId();
-        // secureChannel.setChannelId(Long.MAX_VALUE);
-        // server.getSecureChannel(secureChannelId).attr(UaTcpStackServer.BoundChannelKey).get().close().await();
-        Thread.sleep(500);
-
-        logger.info("sending request: {}", request);
-        UaResponseMessage response1 = client.sendRequest(request).get();
-        logger.info("got response: {}", response1);
     }
 
     @Test

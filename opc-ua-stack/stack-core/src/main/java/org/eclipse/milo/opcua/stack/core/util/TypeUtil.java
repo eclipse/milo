@@ -13,8 +13,8 @@ package org.eclipse.milo.opcua.stack.core.util;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -34,45 +34,55 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public class TypeUtil {
 
-    private static final BiMap<Class<?>, Integer> PRIMITIVE_BUILTIN_TYPES =
-        ImmutableBiMap.<Class<?>, Integer>builder()
-            .put(boolean.class, 1)
-            .put(byte.class, 2)
-            .put(short.class, 4)
-            .put(int.class, 6)
-            .put(long.class, 8)
-            .put(float.class, 10)
-            .put(double.class, 11)
-            .build();
+    private static final ImmutableMap<Integer, Class<?>> BUILTIN_TYPES;
+    private static final ImmutableMap<Class<?>, Integer> BUILTIN_TYPES_INVERSE;
 
-    private static final BiMap<Integer, Class<?>> BUILTIN_TYPES =
-        ImmutableBiMap.<Integer, Class<?>>builder()
-            .put(1, Boolean.class)      // Boolean
-            .put(2, Byte.class)         // SByte
-            .put(3, UByte.class)        // UByte
-            .put(4, Short.class)        // Int16
-            .put(5, UShort.class)       // UInt16
-            .put(6, Integer.class)      // Int32
-            .put(7, UInteger.class)     // UInt32
-            .put(8, Long.class)         // Int64
-            .put(9, ULong.class)        // UInt64
-            .put(10, Float.class)
-            .put(11, Double.class)
-            .put(12, String.class)
-            .put(13, DateTime.class)
-            .put(14, UUID.class)
-            .put(15, ByteString.class)
-            .put(16, XmlElement.class)
-            .put(17, NodeId.class)
-            .put(18, ExpandedNodeId.class)
-            .put(19, StatusCode.class)
-            .put(20, QualifiedName.class)
-            .put(21, LocalizedText.class)
-            .put(22, ExtensionObject.class)
-            .put(23, DataValue.class)
-            .put(24, Variant.class)
-            .put(25, DiagnosticInfo.class)
-            .build();
+    private static final ImmutableMap<Class<?>, Integer> PRIMITIVE_BUILTIN_TYPES;
+    private static final ImmutableMap<Integer, Class<?>> PRIMITIVE_BUILTIN_TYPES_INVERSE;
+
+    static {
+        HashBiMap<Integer, Class<?>> builtinTypes = HashBiMap.create();
+        builtinTypes.put(1, Boolean.class);
+        builtinTypes.put(2, Byte.class);
+        builtinTypes.put(3, UByte.class);
+        builtinTypes.put(4, Short.class);
+        builtinTypes.put(5, UShort.class);
+        builtinTypes.put(6, Integer.class);
+        builtinTypes.put(7, UInteger.class);
+        builtinTypes.put(8, Long.class);
+        builtinTypes.put(9, ULong.class);
+        builtinTypes.put(10, Float.class);
+        builtinTypes.put(11, Double.class);
+        builtinTypes.put(12, String.class);
+        builtinTypes.put(13, DateTime.class);
+        builtinTypes.put(14, UUID.class);
+        builtinTypes.put(15, ByteString.class);
+        builtinTypes.put(16, XmlElement.class);
+        builtinTypes.put(17, NodeId.class);
+        builtinTypes.put(18, ExpandedNodeId.class);
+        builtinTypes.put(19, StatusCode.class);
+        builtinTypes.put(20, QualifiedName.class);
+        builtinTypes.put(21, LocalizedText.class);
+        builtinTypes.put(22, ExtensionObject.class);
+        builtinTypes.put(23, DataValue.class);
+        builtinTypes.put(24, Variant.class);
+        builtinTypes.put(25, DiagnosticInfo.class);
+
+        BUILTIN_TYPES = ImmutableMap.copyOf(builtinTypes);
+        BUILTIN_TYPES_INVERSE = ImmutableMap.copyOf(builtinTypes.inverse());
+
+        HashBiMap<Class<?>, Integer> primitiveBuiltinTypes = HashBiMap.create();
+        primitiveBuiltinTypes.put(boolean.class, 1);
+        primitiveBuiltinTypes.put(byte.class, 2);
+        primitiveBuiltinTypes.put(short.class, 4);
+        primitiveBuiltinTypes.put(int.class, 6);
+        primitiveBuiltinTypes.put(long.class, 8);
+        primitiveBuiltinTypes.put(float.class, 10);
+        primitiveBuiltinTypes.put(double.class, 11);
+
+        PRIMITIVE_BUILTIN_TYPES = ImmutableMap.copyOf(primitiveBuiltinTypes);
+        PRIMITIVE_BUILTIN_TYPES_INVERSE = ImmutableMap.copyOf(primitiveBuiltinTypes.inverse());
+    }
 
     /**
      * @param backingType the backing {@link Class} of the builtin type.
@@ -82,7 +92,7 @@ public class TypeUtil {
         if (backingType.isPrimitive()) {
             return PRIMITIVE_BUILTIN_TYPES.getOrDefault(backingType, -1);
         } else {
-            return BUILTIN_TYPES.inverse().getOrDefault(backingType, -1);
+            return BUILTIN_TYPES_INVERSE.getOrDefault(backingType, -1);
         }
     }
 
@@ -118,6 +128,24 @@ public class TypeUtil {
     @Nullable
     public static Class<?> getBackingClass(NodeId typeId) {
         return getBackingClass(id(typeId));
+    }
+
+    /**
+     * @param id the id of the builtin type.
+     * @return the {@link Class} backing the builtin type, favoring the primitive version, if applicable.
+     */
+    @Nullable
+    public static Class<?> getPrimitiveBackingClass(int id) {
+        return PRIMITIVE_BUILTIN_TYPES_INVERSE.getOrDefault(id, getBackingClass(id));
+    }
+
+    /**
+     * @param typeId the id of the builtin type.
+     * @return the {@link Class} backing the builtin type, favoring the primitive version, if applicable.
+     */
+    @Nullable
+    public static Class<?> getPrimitiveBackingClass(NodeId typeId) {
+        return getPrimitiveBackingClass(id(typeId));
     }
 
     private static int id(NodeId nodeId) {

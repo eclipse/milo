@@ -160,6 +160,10 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
 
                         @Override
                         public void onMessageDecoded(ByteBuf message, long requestId) {
+                            UaRequestMessage request = (UaRequestMessage) binaryDecoder
+                                .setBuffer(message)
+                                .readMessage(null);
+                            
                             stackServer.getConfig().getExecutor().execute(() -> {
                                 try {
                                     String endpointUrl = ctx
@@ -173,10 +177,6 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                                         .get();
 
                                     String path = EndpointUtil.getPath(endpointUrl);
-
-                                    UaRequestMessage request = (UaRequestMessage) binaryDecoder
-                                        .setBuffer(message)
-                                        .readMessage(null);
 
                                     InetSocketAddress remoteSocketAddress =
                                         (InetSocketAddress) ctx.channel().remoteAddress();
