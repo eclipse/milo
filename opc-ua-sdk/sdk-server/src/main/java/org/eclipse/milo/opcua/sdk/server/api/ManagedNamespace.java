@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.sdk.server.api;
 import java.util.UUID;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -29,6 +30,14 @@ public abstract class ManagedNamespace extends ManagedAddressSpace implements Na
     private final String namespaceUri;
     private final UShort namespaceIndex;
 
+    /**
+     * Create a {@link ManagedNamespace} at {@code namespaceUri}.
+     * <p>
+     * The URI will be registered with the Server's {@link NamespaceTable} and assigned a namespace index.
+     *
+     * @param server       the {@link OpcUaServer}.
+     * @param namespaceUri the URI assigned to this namespace.
+     */
     public ManagedNamespace(OpcUaServer server, String namespaceUri) {
         super(server);
 
