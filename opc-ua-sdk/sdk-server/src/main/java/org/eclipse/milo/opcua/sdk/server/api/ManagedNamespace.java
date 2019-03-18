@@ -26,17 +26,24 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
  */
 public abstract class ManagedNamespace extends ManagedAddressSpace implements Namespace {
 
+    private final String namespaceUri;
     private final UShort namespaceIndex;
 
-    public ManagedNamespace(OpcUaServer server, UShort namespaceIndex) {
+    public ManagedNamespace(OpcUaServer server, String namespaceUri) {
         super(server);
 
-        this.namespaceIndex = namespaceIndex;
+        this.namespaceUri = namespaceUri;
+        this.namespaceIndex = server.getNamespaceTable().addUri(namespaceUri);
     }
 
     @Override
     public final boolean filter(NodeId nodeId) {
         return nodeId.getNamespaceIndex().equals(namespaceIndex);
+    }
+
+    @Override
+    public final String getNamespaceUri() {
+        return namespaceUri;
     }
 
     @Override

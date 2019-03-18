@@ -33,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -74,8 +75,8 @@ public class OpcUaServer {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
+    private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
-    private final NamespaceManager namespaceManager = new NamespaceManager();
 
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
     private final SessionManager sessionManager = new SessionManager(this);
@@ -113,20 +114,14 @@ public class OpcUaServer {
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        ObjectTypeManagerInitializer.initialize(
-            namespaceManager.getNamespaceTable(),
-            objectTypeManager
-        );
+        ObjectTypeManagerInitializer.initialize(namespaceTable, objectTypeManager);
 
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
-        namespaceManager.addNamespace(opcUaNamespace = new OpcUaNamespace(this));
+        opcUaNamespace = new OpcUaNamespace(this);
         opcUaNamespace.startup();
 
-        serverNamespace = namespaceManager.registerAndAdd(
-            config.getApplicationUri(),
-            index -> new ServerNamespace(OpcUaServer.this, config.getApplicationUri())
-        );
+        serverNamespace = new ServerNamespace(this);
         serverNamespace.startup();
 
         serverTable.addUri(stackServer.getConfig().getApplicationUri());
@@ -165,10 +160,6 @@ public class OpcUaServer {
         return addressSpaceManager;
     }
 
-    public NamespaceManager getNamespaceManager() {
-        return namespaceManager;
-    }
-
     public SessionManager getSessionManager() {
         return sessionManager;
     }
@@ -179,6 +170,10 @@ public class OpcUaServer {
 
     public ServerNamespace getServerNamespace() {
         return serverNamespace;
+    }
+
+    public NamespaceTable getNamespaceTable() {
+        return namespaceTable;
     }
 
     public ServerTable getServerTable() {

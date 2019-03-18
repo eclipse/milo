@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
@@ -137,7 +136,7 @@ public interface UaServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param context    the {@link NamespaceManager}.
+     * @param context    the {@link AttributeContext}.
      * @param attribute  the id of the attribute to write.
      * @param value      the {@link DataValue} write.
      * @param indexRange the index range to write. Must be a parseable by {@link NumericRange}.
@@ -161,7 +160,7 @@ public interface UaServerNode extends Node {
     /**
      * Write to the specified attribute.
      *
-     * @param context     the {@link NamespaceManager}.
+     * @param context     the {@link AttributeContext}.
      * @param attributeId the {@link AttributeId} of the attribute to write.
      * @param value       the {@link DataValue} write.
      * @param indexRange  the index range to write. Must be a parseable by {@link NumericRange}.

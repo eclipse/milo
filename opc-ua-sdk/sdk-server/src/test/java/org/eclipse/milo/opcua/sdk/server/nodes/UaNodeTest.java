@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
@@ -24,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManag
 import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -45,11 +45,11 @@ public class UaNodeTest {
         server = Mockito.mock(OpcUaServer.class);
 
         AddressSpaceManager addressSpaceManager = new AddressSpaceManager(server);
-        NamespaceManager namespaceManager = new NamespaceManager();
+        NamespaceTable namespaceTable = new NamespaceTable();
         ObjectTypeManager objectTypeManager = new ObjectTypeManager();
         VariableTypeManager variableTypeManager = new VariableTypeManager();
 
-        Mockito.when(server.getNamespaceManager()).thenReturn(namespaceManager);
+        Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
         Mockito.when(server.getObjectTypeManager()).thenReturn(objectTypeManager);
         Mockito.when(server.getVariableTypeManager()).thenReturn(variableTypeManager);
@@ -72,7 +72,7 @@ public class UaNodeTest {
         new UaNodeLoader(nodeContext, nodeManager).loadNodes();
 
         ObjectTypeManagerInitializer.initialize(
-            server.getNamespaceManager().getNamespaceTable(),
+            server.getNamespaceTable(),
             objectTypeManager
         );
 

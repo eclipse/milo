@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 
@@ -21,14 +20,9 @@ public interface UaNodeContext {
      */
     OpcUaServer getServer();
 
-
-    NodeManager<UaNode> getNodeManager();
-
     /**
-     * @return the {@link NamespaceManager} from the server.
+     * @return the {@link NodeManager} for this context.
      */
-    default NamespaceManager getNamespaceManager() {
-        return getServer().getNamespaceManager();
-    }
+    NodeManager<UaNode> getNodeManager();
 
 }

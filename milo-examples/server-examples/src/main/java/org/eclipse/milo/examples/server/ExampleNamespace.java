@@ -56,7 +56,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,8 +125,8 @@ public class ExampleNamespace extends ManagedNamespace {
 
     private final SubscriptionModel subscriptionModel;
 
-    ExampleNamespace(OpcUaServer server, UShort namespaceIndex) {
-        super(server, namespaceIndex);
+    ExampleNamespace(OpcUaServer server) {
+        super(server, NAMESPACE_URI);
 
         subscriptionModel = new SubscriptionModel(server, this);
     }
@@ -203,11 +202,6 @@ public class ExampleNamespace extends ManagedNamespace {
                 }
             }, 0, 2, TimeUnit.SECONDS);
         }
-    }
-
-    @Override
-    public String getNamespaceUri() {
-        return NAMESPACE_URI;
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {

@@ -151,11 +151,7 @@ public class ExampleServer {
 
         server = new OpcUaServer(serverConfig);
 
-        ExampleNamespace exampleNamespace = server.getNamespaceManager().registerAndAdd(
-            ExampleNamespace.NAMESPACE_URI,
-            idx -> new ExampleNamespace(server, idx)
-        );
-
+        ExampleNamespace exampleNamespace = new ExampleNamespace(server);
         exampleNamespace.startup();
     }
 

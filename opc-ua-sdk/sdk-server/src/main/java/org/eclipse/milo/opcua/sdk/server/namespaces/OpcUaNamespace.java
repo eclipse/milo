@@ -45,7 +45,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -59,6 +58,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public class OpcUaNamespace extends ManagedNamespace {
     private final OpcUaServer server;
 
     public OpcUaNamespace(OpcUaServer server) {
-        super(server, ushort(0));
+        super(server, Namespaces.OPC_UA);
 
         this.server = server;
 
@@ -90,11 +90,6 @@ public class OpcUaNamespace extends ManagedNamespace {
         loadNodes();
         configureServerObject();
         configureConditionRefresh();
-    }
-
-    @Override
-    public String getNamespaceUri() {
-        return NamespaceTable.OPC_UA_NAMESPACE;
     }
 
     @Override
@@ -163,7 +158,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         serverNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) {
-                return new DataValue(new Variant(server.getNamespaceManager().getNamespaceTable().toArray()));
+                return new DataValue(new Variant(server.getNamespaceTable().toArray()));
             }
         });
         serverNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {

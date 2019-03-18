@@ -16,7 +16,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
@@ -105,12 +104,10 @@ public class DefaultViewServiceSet implements ViewServiceSet {
 
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
         Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
-        NamespaceManager namespaceManager = server.getNamespaceManager();
 
         BrowsePathsHelper browsePathsHelper = new BrowsePathsHelper(
             () -> Optional.ofNullable(session),
-            server,
-            namespaceManager
+            server
         );
 
         browsePathsHelper.onTranslateBrowsePaths(service);

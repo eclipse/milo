@@ -61,13 +61,11 @@ public class TestNamespace extends ManagedNamespace {
     private final UaNodeContext nodeContext;
 
     private final OpcUaServer server;
-    private final UShort namespaceIndex;
 
     public TestNamespace(OpcUaServer server, UShort namespaceIndex) {
-        super(server, namespaceIndex);
+        super(server, NAMESPACE_URI);
 
         this.server = server;
-        this.namespaceIndex = namespaceIndex;
 
         nodeContext = new UaNodeContext() {
             @Override
@@ -102,11 +100,6 @@ public class TestNamespace extends ManagedNamespace {
         subscriptionModel = new SubscriptionModel(server, this);
 
         addStaticScalarNodes();
-    }
-
-    @Override
-    public String getNamespaceUri() {
-        return NAMESPACE_URI;
     }
 
     @Override
@@ -162,10 +155,10 @@ public class TestNamespace extends ManagedNamespace {
             Variant variant = (Variant) os[2];
 
             UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(nodeContext)
-                .setNodeId(new NodeId(namespaceIndex, "/Static/AllProfiles/Scalar/" + name))
+                .setNodeId(new NodeId(getNamespaceIndex(), "/Static/AllProfiles/Scalar/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setBrowseName(new QualifiedName(getNamespaceIndex(), name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -248,8 +241,8 @@ public class TestNamespace extends ManagedNamespace {
             if (!prefix.startsWith("/")) prefix = "/" + prefix;
 
             UaObjectNode node = UaObjectNode.builder(nodeContext)
-                .setNodeId(new NodeId(namespaceIndex, prefix + name))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setNodeId(new NodeId(getNamespaceIndex(), prefix + name))
+                .setBrowseName(new QualifiedName(getNamespaceIndex(), name))
                 .setDisplayName(LocalizedText.english(name))
                 .setTypeDefinition(Identifiers.FolderType)
                 .build();
@@ -263,8 +256,8 @@ public class TestNamespace extends ManagedNamespace {
             if (!prefix.startsWith("/")) prefix = "/" + prefix;
 
             UaObjectNode node = UaObjectNode.builder(nodeContext)
-                .setNodeId(new NodeId(namespaceIndex, prefix + name))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setNodeId(new NodeId(getNamespaceIndex(), prefix + name))
+                .setBrowseName(new QualifiedName(getNamespaceIndex(), name))
                 .setDisplayName(LocalizedText.english(name))
                 .setTypeDefinition(Identifiers.FolderType)
                 .build();

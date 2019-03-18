@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
@@ -57,12 +56,10 @@ public class BrowsePathsHelper {
 
     private final AccessContext context;
     private final OpcUaServer server;
-    private final NamespaceManager namespaceManager;
 
-    public BrowsePathsHelper(AccessContext context, OpcUaServer server, NamespaceManager namespaceManager) {
+    public BrowsePathsHelper(AccessContext context, OpcUaServer server) {
         this.context = context;
         this.server = server;
-        this.namespaceManager = namespaceManager;
     }
 
     public void onTranslateBrowsePaths(ServiceRequest service) {
@@ -145,7 +142,7 @@ public class BrowsePathsHelper {
             return next(nodeId, e).thenCompose(nextExId -> {
                 List<RelativePathElement> nextElements = elements.subList(1, elements.size());
 
-                Optional<NodeId> nextId = namespaceManager.toNodeId(nextExId);
+                Optional<NodeId> nextId = nextExId.local(server.getNamespaceTable());
 
                 if (nextId.isPresent()) {
                     return follow(nextId.get(), nextElements);

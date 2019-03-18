@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.UaNodeManager;
@@ -34,6 +33,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.mockito.Mockito;
@@ -56,7 +56,7 @@ public class NodeFactoryTest {
 
         nodeManager = new UaNodeManager();
 
-        NamespaceManager namespaceManager = new NamespaceManager();
+        NamespaceTable namespaceTable = new NamespaceTable();
 
         AddressSpaceManager addressSpaceManager = Mockito.mock(AddressSpaceManager.class);
 
@@ -93,14 +93,14 @@ public class NodeFactoryTest {
             }
         };
 
-        Mockito.when(server.getNamespaceManager()).thenReturn(namespaceManager);
+        Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
 
         new UaNodeLoader(context, nodeManager).loadNodes();
 
         ObjectTypeManager objectTypeManager = new ObjectTypeManager();
         ObjectTypeManagerInitializer.initialize(
-            server.getNamespaceManager().getNamespaceTable(),
+            server.getNamespaceTable(),
             objectTypeManager
         );
 

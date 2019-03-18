@@ -243,7 +243,7 @@ public abstract class UaNode implements UaServerNode {
     public <T> Optional<T> getProperty(QualifiedProperty<T> property) {
         String namespaceUri = property.getNamespaceUri();
 
-        UShort namespaceIndex = context.getNamespaceManager().getNamespaceTable().getIndex(namespaceUri);
+        UShort namespaceIndex = context.getServer().getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
             QualifiedName browseName = new QualifiedName(
@@ -268,7 +268,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public <T> void setProperty(QualifiedProperty<T> property, T value) {
-        UShort namespaceIndex = context.getNamespaceManager()
+        UShort namespaceIndex = context.getServer()
             .getNamespaceTable().getIndex(property.getNamespaceUri());
 
         if (namespaceIndex == null) {
@@ -308,7 +308,7 @@ public abstract class UaNode implements UaServerNode {
 
     public Optional<VariableNode> getPropertyNode(QualifiedProperty<?> property) {
         Optional<QualifiedName> qualifiedName = property
-            .getQualifiedName(context.getNamespaceManager().getNamespaceTable());
+            .getQualifiedName(context.getServer().getNamespaceTable());
 
         return qualifiedName.map(this::getPropertyNode)
             .orElseGet(() -> getPropertyNode(property.getBrowseName()));
@@ -433,7 +433,7 @@ public abstract class UaNode implements UaServerNode {
                 String nodeBrowseName = n.getBrowseName().getName();
 
                 UShort index = n.getBrowseName().getNamespaceIndex();
-                String nodeBrowseNameUri = context.getNamespaceManager().getNamespaceTable().getUri(index);
+                String nodeBrowseNameUri = context.getServer().getNamespaceTable().getUri(index);
 
                 return Objects.equals(browseName, nodeBrowseName) && Objects.equals(namespaceUri, nodeBrowseNameUri);
             })
@@ -441,7 +441,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<ObjectNode> getObjectComponent(String namespaceUri, String name) {
-        UShort namespaceIndex = context.getNamespaceManager().getNamespaceTable().getIndex(namespaceUri);
+        UShort namespaceIndex = context.getServer().getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
             return getObjectComponent(new QualifiedName(namespaceIndex, name));
@@ -466,7 +466,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<VariableNode> getVariableComponent(String namespaceUri, String name) {
-        UShort namespaceIndex = context.getNamespaceManager().getNamespaceTable().getIndex(namespaceUri);
+        UShort namespaceIndex = context.getServer().getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
             return getVariableComponent(new QualifiedName(namespaceIndex, name));

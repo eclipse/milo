@@ -17,23 +17,14 @@ import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-
-import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 @SuppressWarnings("restriction")
 public class ServerNamespace extends ManagedNamespace {
 
-    public static final UShort NAMESPACE_INDEX = ushort(1);
-
     private final SubscriptionModel subscriptionModel;
 
-    private final String namespaceUri;
-
-    public ServerNamespace(OpcUaServer server, String namespaceUri) {
-        super(server, NAMESPACE_INDEX);
-
-        this.namespaceUri = namespaceUri;
+    public ServerNamespace(OpcUaServer server) {
+        super(server, server.getConfig().getApplicationUri());
 
         subscriptionModel = new SubscriptionModel(server, this);
     }
@@ -43,11 +34,6 @@ public class ServerNamespace extends ManagedNamespace {
         super.onStartup();
 
         VendorServerInfoNodes.add(getNodeContext());
-    }
-
-    @Override
-    public String getNamespaceUri() {
-        return namespaceUri;
     }
 
     @Override
