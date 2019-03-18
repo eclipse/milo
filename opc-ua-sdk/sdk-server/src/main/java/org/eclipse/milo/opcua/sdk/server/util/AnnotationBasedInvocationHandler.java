@@ -141,8 +141,6 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
             outputs[i] = new OutImpl<>(latch);
         }
 
-        // TODO Implement an AsyncCountDownLatch and ditch this thread
-
         new Thread(() -> {
             try {
                 Object[] parameters = new Object[1 + inputs.length + outputs.length];
@@ -231,7 +229,6 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
 
     public static AnnotationBasedInvocationHandler fromAnnotatedObject(
         OpcUaServer server, Object annotatedObject) throws Exception {
-        // TODO Make this work when parameter types are not built-in types
 
         Method annotatedMethod = Arrays.stream(annotatedObject.getClass().getMethods())
             .filter(m -> m.isAnnotationPresent(UaMethod.class))
