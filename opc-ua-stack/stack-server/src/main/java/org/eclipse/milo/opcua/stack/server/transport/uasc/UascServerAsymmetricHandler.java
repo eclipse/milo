@@ -292,14 +292,14 @@ public class UascServerAsymmetricHandler extends ByteToMessageDecoder implements
         OpenSecureChannelRequest request
     ) {
 
-        serializationQueue.encode((writer, chunkEncoder) -> {
+        serializationQueue.encode((binaryEncoder, chunkEncoder) -> {
             ByteBuf messageBuffer = BufferUtil.pooledBuffer();
 
             try {
                 OpenSecureChannelResponse response = openSecureChannel(ctx, request);
 
-                writer.setBuffer(messageBuffer);
-                writer.writeMessage(null, response);
+                binaryEncoder.setBuffer(messageBuffer);
+                binaryEncoder.writeMessage(null, response);
 
                 checkMessageSize(messageBuffer);
 
