@@ -14,27 +14,12 @@ public interface Lifecycle {
 
     /**
      * Call to start this Lifecycle.
-     * <p>
-     * Subsequent invocations throw {@link IllegalStateException}.
-     *
-     * @throws IllegalStateException on subsequent invocations.
      */
-    void startup() throws IllegalStateException;
+    void startup();
 
     /**
      * Call to stop this Lifecycle.
-     * <p>
-     * If {@link #startup()} hasn't been called yet {@link IllegalStateException} is thrown.
-     * <p>
-     * Subsequent invocations have no effect.
-     *
-     * @throws IllegalStateException if not started yet.
      */
-    void shutdown() throws IllegalStateException;
-
-    /**
-     * @return {@code true} after {@link #startup()} is called and before {@link #shutdown()} is called.
-     */
-    boolean isRunning();
+    void shutdown();
 
 }

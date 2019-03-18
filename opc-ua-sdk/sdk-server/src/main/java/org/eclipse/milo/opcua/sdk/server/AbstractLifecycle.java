@@ -18,9 +18,13 @@ public abstract class AbstractLifecycle implements Lifecycle {
 
     /**
      * {@inheritDoc}
+     * <p>
+     * Subsequent invocations throw {@link IllegalStateException}.
+     *
+     * @throws IllegalStateException on subsequent invocations.
      */
     @Override
-    public final void startup() {
+    public final void startup() throws IllegalStateException {
         LifecycleState previous =
             state.getAndUpdate(prev -> prev == LifecycleState.NEW ? LifecycleState.RUNNING : prev);
 
@@ -33,9 +37,15 @@ public abstract class AbstractLifecycle implements Lifecycle {
 
     /**
      * {@inheritDoc}
+     * <p>
+     * If {@link #startup()} hasn't been called yet {@link IllegalStateException} is thrown.
+     * <p>
+     * Subsequent invocations have no effect.
+     *
+     * @throws IllegalStateException if not started yet.
      */
     @Override
-    public final void shutdown() {
+    public final void shutdown() throws IllegalStateException {
         LifecycleState previous =
             state.getAndUpdate(prev -> prev == LifecycleState.RUNNING ? LifecycleState.STOPPED : prev);
 
@@ -47,9 +57,8 @@ public abstract class AbstractLifecycle implements Lifecycle {
     }
 
     /**
-     * {@inheritDoc}
+     * @return {@code true} after {@link #startup()} is called and before {@link #shutdown()} is called.
      */
-    @Override
     public final boolean isRunning() {
         return this.state.get() == LifecycleState.RUNNING;
     }
