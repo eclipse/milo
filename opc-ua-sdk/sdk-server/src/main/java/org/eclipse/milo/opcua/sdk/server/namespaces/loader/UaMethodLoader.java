@@ -11,7 +11,9 @@
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -23,9 +25,11 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 public class UaMethodLoader {
 
     private final UaNodeContext context;
+    private final NodeManager<UaNode> nodeManager;
 
-    public UaMethodLoader(UaNodeContext context) {
+    public UaMethodLoader(UaNodeContext context, NodeManager<UaNode> nodeManager) {
         this.context = context;
+        this.nodeManager = nodeManager;
     }
 
     private void buildNode0() {
@@ -37,7 +41,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12543"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12522"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12543"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12544"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12543"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12545"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode1() {
@@ -49,7 +53,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12546"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12522"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12546"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12705"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12546"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12547"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode2() {
@@ -59,7 +63,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12548"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12548"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12522"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12548"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12549"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode3() {
@@ -69,7 +73,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12550"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12550"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12522"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12550"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12551"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode4() {
@@ -81,7 +85,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12616"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12581"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12616"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12617"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12616"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12618"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode5() {
@@ -92,7 +96,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12647"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12647"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12648"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12647"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12649"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode6() {
@@ -101,7 +105,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12650"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12651"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12650"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12650"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12651"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode7() {
@@ -112,7 +116,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12652"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12652"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12653"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12652"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12654"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode8() {
@@ -121,7 +125,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12655"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12656"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12655"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12655"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12656"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode9() {
@@ -132,7 +136,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12657"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12657"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12658"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12657"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12659"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode10() {
@@ -141,7 +145,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12660"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12661"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12660"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12660"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12661"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode11() {
@@ -152,7 +156,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12663"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12663"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12664"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12663"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12665"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode12() {
@@ -163,7 +167,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12666"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12666"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14160"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12666"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12667"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode13() {
@@ -172,7 +176,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12668"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12669"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12668"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12668"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12669"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode14() {
@@ -181,7 +185,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12670"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12671"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12670"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12642"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12670"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12671"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode15() {
@@ -193,7 +197,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12731"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12581"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12731"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12732"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12731"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12733"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode16() {
@@ -201,7 +205,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12734"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12581"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12734"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12734"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12581"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode17() {
@@ -212,14 +216,14 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12737"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12637"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12737"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12738"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12737"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12739"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode18() {
         UaMethodNode node = new UaMethodNode(this.context, NodeId.parse("ns=0;i=12740"), new QualifiedName(0, "ApplyChanges"), new LocalizedText("en", "ApplyChanges"), LocalizedText.NULL_VALUE, UInteger.valueOf(0L), UInteger.valueOf(0L), true, true);
         node.addReference(new Reference(NodeId.parse("ns=0;i=12740"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12637"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12740"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12637"), NodeClass.Object, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode19() {
@@ -231,7 +235,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12746"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2004"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12746"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12747"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12746"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12748"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode20() {
@@ -242,7 +246,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12749"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2253"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12749"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12750"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12749"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12751"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode21() {
@@ -252,7 +256,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12775"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12775"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12581"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12775"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12776"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode22() {
@@ -261,7 +265,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12777"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12778"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12777"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12637"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12777"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12778"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode23() {
@@ -271,7 +275,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12871"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12871"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2004"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12871"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12872"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode24() {
@@ -280,7 +284,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12873"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12874"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12873"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2253"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12873"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12874"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode25() {
@@ -290,7 +294,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12883"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12883"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2004"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12883"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12884"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode26() {
@@ -299,7 +303,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12886"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12887"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12886"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2253"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12886"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12887"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode27() {
@@ -310,7 +314,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=12912"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=2788"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12912"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2782"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=12912"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=12913"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode28() {
@@ -319,7 +323,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9027"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=2803"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9027"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9027"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2782"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode29() {
@@ -328,7 +332,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9028"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=2803"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9028"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9028"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2782"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode30() {
@@ -339,7 +343,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9029"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9029"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2782"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9029"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9030"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode31() {
@@ -350,7 +354,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9069"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9069"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2830"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9069"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9070"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode32() {
@@ -361,7 +365,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9111"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9111"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2881"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9111"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9112"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode33() {
@@ -372,7 +376,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9113"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9113"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2881"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9113"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9114"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode34() {
@@ -381,7 +385,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9211"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=11093"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9211"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9211"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=9178"), NodeClass.Object, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode35() {
@@ -390,7 +394,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9212"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=11093"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9212"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9212"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=9178"), NodeClass.Object, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode36() {
@@ -401,7 +405,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=9213"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9213"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=9178"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=9213"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=9214"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode37() {
@@ -413,7 +417,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13355"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13354"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13355"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13356"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13355"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13357"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode38() {
@@ -425,7 +429,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13358"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13354"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13358"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13359"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13358"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13360"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode39() {
@@ -435,7 +439,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13361"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13361"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13354"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13361"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13362"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode40() {
@@ -447,7 +451,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13363"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13354"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13363"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13364"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13363"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13365"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode41() {
@@ -459,7 +463,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13372"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13366"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13372"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13373"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13372"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13374"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode42() {
@@ -469,7 +473,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13375"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13375"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13366"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13375"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13376"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode43() {
@@ -481,7 +485,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13377"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13366"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13377"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13378"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13377"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13379"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode44() {
@@ -491,7 +495,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13380"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13380"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13366"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13380"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13381"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode45() {
@@ -503,7 +507,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13382"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13366"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13382"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13383"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13382"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13384"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode46() {
@@ -513,7 +517,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13385"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13385"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13366"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13385"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13386"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode47() {
@@ -525,7 +529,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13387"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13353"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13387"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13388"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13387"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13389"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode48() {
@@ -537,7 +541,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13390"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13353"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13390"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13391"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13390"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13392"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode49() {
@@ -547,7 +551,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13393"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13393"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13353"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13393"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13394"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode50() {
@@ -559,7 +563,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13395"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13353"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13395"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13396"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13395"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13397"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode51() {
@@ -571,7 +575,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13605"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13599"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13605"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13606"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13605"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13607"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode52() {
@@ -581,7 +585,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13608"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13608"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13599"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13608"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13609"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode53() {
@@ -593,7 +597,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13610"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13599"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13610"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13611"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13610"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13612"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode54() {
@@ -603,7 +607,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13613"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13613"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13599"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13613"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13614"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode55() {
@@ -615,7 +619,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13615"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13599"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13615"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13616"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13615"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13617"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode56() {
@@ -625,7 +629,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13618"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13618"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13599"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13618"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13619"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode57() {
@@ -637,7 +641,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13621"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13599"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13621"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13622"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13621"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13623"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode58() {
@@ -648,7 +652,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13737"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=12637"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13737"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13738"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13737"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13739"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode59() {
@@ -660,7 +664,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13821"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13815"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13821"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13822"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13821"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13823"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode60() {
@@ -670,7 +674,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13824"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13824"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13815"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13824"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13825"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode61() {
@@ -682,7 +686,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13826"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13815"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13826"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13827"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13826"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13828"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode62() {
@@ -692,7 +696,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13829"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13829"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13815"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13829"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13830"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode63() {
@@ -704,7 +708,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13831"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13815"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13831"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13832"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13831"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13833"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode64() {
@@ -714,7 +718,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13834"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13834"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13815"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13834"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13835"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode65() {
@@ -726,7 +730,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13837"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13815"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13837"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13838"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13837"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13839"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode66() {
@@ -738,7 +742,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13855"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13849"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13855"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13856"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13855"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13857"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode67() {
@@ -748,7 +752,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13858"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13858"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13849"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13858"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13859"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode68() {
@@ -760,7 +764,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13860"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13849"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13860"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13861"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13860"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13862"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode69() {
@@ -770,7 +774,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13863"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13863"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13849"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13863"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13864"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode70() {
@@ -782,7 +786,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13865"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13849"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13865"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13866"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13865"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13867"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode71() {
@@ -792,7 +796,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13868"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13868"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13849"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13868"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13869"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode72() {
@@ -804,7 +808,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13871"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13849"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13871"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13872"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13871"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13873"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode73() {
@@ -816,7 +820,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13889"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13883"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13889"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13890"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13889"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13891"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode74() {
@@ -826,7 +830,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13892"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13892"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13883"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13892"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13893"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode75() {
@@ -838,7 +842,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13894"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13883"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13894"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13895"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13894"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13896"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode76() {
@@ -848,7 +852,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13897"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13897"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13883"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13897"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13898"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode77() {
@@ -860,7 +864,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13899"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13883"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13899"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13900"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13899"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13901"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode78() {
@@ -870,7 +874,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13902"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13902"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13883"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13902"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13903"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode79() {
@@ -882,7 +886,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13905"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13883"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13905"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13906"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13905"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13907"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode80() {
@@ -894,7 +898,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13923"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13917"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13923"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13924"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13923"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13925"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode81() {
@@ -904,7 +908,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13926"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13926"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13917"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13926"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13927"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode82() {
@@ -916,7 +920,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13928"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13917"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13928"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13929"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13928"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13930"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode83() {
@@ -926,7 +930,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13931"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13931"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13917"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13931"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13932"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode84() {
@@ -938,7 +942,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13933"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13917"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13933"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13934"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13933"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13935"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode85() {
@@ -948,7 +952,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13936"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13936"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13917"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13936"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13937"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode86() {
@@ -960,7 +964,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13939"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13917"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13939"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13940"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13939"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13941"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode87() {
@@ -972,7 +976,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13958"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13952"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13958"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13959"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13958"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13960"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode88() {
@@ -982,7 +986,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13961"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13961"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13952"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13961"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13962"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode89() {
@@ -994,7 +998,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13963"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13952"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13963"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13964"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13963"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13965"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode90() {
@@ -1004,7 +1008,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13966"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13966"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13952"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13966"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13967"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode91() {
@@ -1016,7 +1020,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13968"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13952"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13968"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13969"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13968"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13970"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode92() {
@@ -1026,7 +1030,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13971"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13971"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13952"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13971"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13972"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode93() {
@@ -1038,7 +1042,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=13974"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=13952"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13974"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13975"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=13974"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=13976"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode94() {
@@ -1049,7 +1053,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14095"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14095"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14096"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14095"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14097"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode95() {
@@ -1058,7 +1062,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14098"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14099"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14098"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14098"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14099"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode96() {
@@ -1069,7 +1073,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14100"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14100"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14101"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14100"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14102"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode97() {
@@ -1078,7 +1082,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14103"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14104"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14103"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14103"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14104"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode98() {
@@ -1089,7 +1093,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14105"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14105"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14106"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14105"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14107"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode99() {
@@ -1098,7 +1102,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14108"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14109"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14108"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14108"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14109"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode100() {
@@ -1109,7 +1113,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14111"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14111"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14112"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14111"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14113"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode101() {
@@ -1120,7 +1124,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14114"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14114"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14115"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14114"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14116"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode102() {
@@ -1129,7 +1133,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14117"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14118"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14117"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14117"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14118"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode103() {
@@ -1138,7 +1142,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14119"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14120"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14119"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14089"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14119"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14120"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode104() {
@@ -1149,7 +1153,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14129"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14129"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14130"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14129"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14131"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode105() {
@@ -1158,7 +1162,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14132"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14133"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14132"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14132"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14133"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode106() {
@@ -1169,7 +1173,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14134"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14134"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14135"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14134"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14136"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode107() {
@@ -1178,7 +1182,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14137"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14138"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14137"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14137"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14138"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode108() {
@@ -1189,7 +1193,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14139"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14139"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14140"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14139"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14141"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode109() {
@@ -1198,7 +1202,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14142"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14143"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14142"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14142"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14143"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode110() {
@@ -1209,7 +1213,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14145"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14145"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14146"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14145"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14147"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode111() {
@@ -1220,7 +1224,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14148"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14148"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14149"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14148"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14150"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode112() {
@@ -1229,7 +1233,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14151"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14152"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14151"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14151"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14152"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode113() {
@@ -1238,7 +1242,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=14153"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14154"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14153"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=14123"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=14153"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=14154"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode114() {
@@ -1248,7 +1252,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2426"), NodeId.parse("ns=0;i=53"), ExpandedNodeId.parse("svr=0;i=2410"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2426"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2426"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2391"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode115() {
@@ -1258,7 +1262,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2427"), NodeId.parse("ns=0;i=53"), ExpandedNodeId.parse("svr=0;i=2416"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2427"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2427"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2391"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode116() {
@@ -1268,7 +1272,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2428"), NodeId.parse("ns=0;i=53"), ExpandedNodeId.parse("svr=0;i=2418"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2428"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2428"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2391"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode117() {
@@ -1282,7 +1286,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2429"), NodeId.parse("ns=0;i=53"), ExpandedNodeId.parse("svr=0;i=2424"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2429"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2429"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2391"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode118() {
@@ -1292,7 +1296,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2430"), NodeId.parse("ns=0;i=53"), ExpandedNodeId.parse("svr=0;i=2408"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2430"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2430"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2391"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode119() {
@@ -1305,7 +1309,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2947"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=11093"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2947"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2947"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2929"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode120() {
@@ -1318,7 +1322,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2948"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=11093"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2948"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2948"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2929"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode121() {
@@ -1333,7 +1337,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=2949"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2949"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2929"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=2949"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=2991"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode122() {
@@ -1345,7 +1349,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11489"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2004"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11489"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11490"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11489"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11491"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode123() {
@@ -1356,7 +1360,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11492"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2253"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11492"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11493"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11492"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11494"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode124() {
@@ -1368,7 +1372,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11580"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11575"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11580"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11581"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11580"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11582"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode125() {
@@ -1378,7 +1382,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11583"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11583"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11575"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11583"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11584"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode126() {
@@ -1390,7 +1394,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11585"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11575"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11585"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11586"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11585"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11587"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode127() {
@@ -1400,7 +1404,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11588"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11588"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11575"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11588"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11589"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode128() {
@@ -1412,7 +1416,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11590"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11575"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11590"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11591"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11590"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11592"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode129() {
@@ -1422,7 +1426,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11593"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11593"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11575"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11593"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11594"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode130() {
@@ -1430,7 +1434,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11615"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11595"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11615"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=80"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11615"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11595"), NodeClass.ObjectType, false));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode131() {
@@ -1442,7 +1446,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11629"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11624"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11629"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11630"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11629"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11631"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode132() {
@@ -1452,7 +1456,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11632"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11632"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11624"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11632"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11633"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode133() {
@@ -1464,7 +1468,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11634"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11624"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11634"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11635"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11634"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11636"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode134() {
@@ -1474,7 +1478,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11637"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11637"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11624"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11637"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11638"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode135() {
@@ -1486,7 +1490,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11639"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11624"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11639"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11640"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11639"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11641"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode136() {
@@ -1496,7 +1500,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11642"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11642"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11624"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11642"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11643"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode137() {
@@ -1508,7 +1512,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11680"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11675"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11680"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11681"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11680"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11682"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode138() {
@@ -1518,7 +1522,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11683"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11683"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11675"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11683"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11684"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode139() {
@@ -1530,7 +1534,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11685"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11675"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11685"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11686"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11685"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11687"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode140() {
@@ -1540,7 +1544,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11688"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11688"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11675"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11688"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11689"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode141() {
@@ -1552,7 +1556,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11690"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11675"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11690"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11691"), NodeClass.Variable, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11690"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11692"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode142() {
@@ -1562,7 +1566,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=11693"), NodeId.parse("ns=0;i=37"), ExpandedNodeId.parse("svr=0;i=78"), NodeClass.Object, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11693"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=11675"), NodeClass.Object, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=11693"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=11694"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     private void buildNode143() {
@@ -1573,7 +1577,7 @@ public class UaMethodLoader {
         node.addReference(new Reference(NodeId.parse("ns=0;i=3875"), NodeId.parse("ns=0;i=3065"), ExpandedNodeId.parse("svr=0;i=2788"), NodeClass.ObjectType, true));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3875"), NodeId.parse("ns=0;i=47"), ExpandedNodeId.parse("svr=0;i=2782"), NodeClass.ObjectType, false));
         node.addReference(new Reference(NodeId.parse("ns=0;i=3875"), NodeId.parse("ns=0;i=46"), ExpandedNodeId.parse("svr=0;i=3876"), NodeClass.Variable, true));
-        this.context.getNodeManager().addNode(node);
+        this.nodeManager.addNode(node);
     }
 
     public void buildNodes() {

@@ -234,7 +234,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         Node node = getReferences().stream()
             .filter(HAS_MODELLING_RULE_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()))
             .orElse(null);
 
         ObjectNode objectNode = (node instanceof ObjectNode) ? (ObjectNode) node : null;
@@ -245,14 +245,14 @@ public class UaVariableNode extends UaNode implements VariableNode {
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getComponentNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
@@ -260,7 +260,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
         Node node = getReferences().stream()
             .filter(HAS_TYPE_DEFINITION_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()))
             .orElse(null);
 
         return (node instanceof VariableTypeNode) ? (VariableTypeNode) node : null;
@@ -279,13 +279,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             node.getNodeId().expanded(),
             true
         ));
-
-        node.addReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
-        ));
     }
 
     /**
@@ -300,13 +293,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             Identifiers.HasComponent,
             node.getNodeId().expanded(),
             true
-        ));
-
-        node.removeReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
         ));
     }
 
@@ -530,7 +516,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
                 historizing
             );
 
-            node.addReferences(references);
+            references.forEach(node::addReference);
 
             return node;
         }

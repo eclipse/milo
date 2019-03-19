@@ -423,8 +423,14 @@ public class ClientServerTest extends SecurityFixture {
         });
 
         logger.info("sending request: {}", request);
-        UaResponseMessage response1 = client.sendRequest(request).get();
-        logger.info("got response: {}", response1);
+        try {
+            UaResponseMessage response1 = client.sendRequest(request).get();
+            logger.info("got response: {}", response1);
+        } catch (Exception e) {
+            // try again because close() above is a race condition
+            UaResponseMessage response1 = client.sendRequest(request).get();
+            logger.info("got response: {}", response1);
+        }
 
         client.disconnect().get();
     }

@@ -21,20 +21,19 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import org.eclipse.milo.opcua.sdk.core.ServerTable;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfig;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ObjectTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.variables.VariableTypeManagerInitializer;
 import org.eclipse.milo.opcua.sdk.server.namespaces.OpcUaNamespace;
 import org.eclipse.milo.opcua.sdk.server.namespaces.ServerNamespace;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
-import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper.BrowseContinuationPoint;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -55,7 +54,7 @@ import org.eclipse.milo.opcua.stack.server.services.ViewServiceSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpcUaServer implements UaNodeContext {
+public class OpcUaServer {
 
     public static final String SDK_VERSION =
         ManifestUtil.read("X-SDK-Version").orElse("dev");
@@ -76,17 +75,16 @@ public class OpcUaServer implements UaNodeContext {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
-    private final NamespaceManager namespaceManager = new NamespaceManager();
-    private final ServerNodeManager nodeManager = new ServerNodeManager(this);
-    private final SessionManager sessionManager = new SessionManager(this);
+    private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
 
-    private final EventBus eventBus;
-    private final EventFactory eventFactory;
-    private final NodeFactory nodeFactory;
-
+    private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
+    private final SessionManager sessionManager = new SessionManager(this);
     private final ObjectTypeManager objectTypeManager = new ObjectTypeManager();
     private final VariableTypeManager variableTypeManager = new VariableTypeManager();
+
+    private final EventBus eventBus = new EventBus("server");
+    private final EventFactory eventFactory = new EventFactory(this);
 
     private final UaStackServer stackServer;
 
@@ -116,32 +114,21 @@ public class OpcUaServer implements UaNodeContext {
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        ObjectTypeManagerInitializer.initialize(
-            namespaceManager.getNamespaceTable(),
-            objectTypeManager
-        );
-        
+        ObjectTypeManagerInitializer.initialize(namespaceTable, objectTypeManager);
+
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
-        namespaceManager.addNamespace(opcUaNamespace = new OpcUaNamespace(this));
-        opcUaNamespace.initialize();
+        opcUaNamespace = new OpcUaNamespace(this);
+        opcUaNamespace.startup();
 
-        serverNamespace = namespaceManager.registerAndAdd(
-            config.getApplicationUri(),
-            index -> new ServerNamespace(OpcUaServer.this, config.getApplicationUri())
-        );
-        serverNamespace.initialize();
+        serverNamespace = new ServerNamespace(this);
+        serverNamespace.startup();
 
         serverTable.addUri(stackServer.getConfig().getApplicationUri());
 
         for (ReferenceType referenceType : BuiltinReferenceType.values()) {
             referenceTypes.put(referenceType.getNodeId(), referenceType);
         }
-
-        nodeFactory = new NodeFactory(this, objectTypeManager, variableTypeManager);
-        eventFactory = new EventFactory(this, objectTypeManager, variableTypeManager);
-
-        eventBus = new AsyncEventBus("server", stackServer.getConfig().getExecutor());
     }
 
     public OpcUaServerConfig getConfig() {
@@ -149,11 +136,15 @@ public class OpcUaServer implements UaNodeContext {
     }
 
     public CompletableFuture<OpcUaServer> startup() {
+        eventFactory.startup();
+
         return stackServer.startup()
             .thenApply(s -> OpcUaServer.this);
     }
 
     public CompletableFuture<OpcUaServer> shutdown() {
+        eventFactory.shutdown();
+
         subscriptions.values()
             .forEach(Subscription::deleteSubscription);
 
@@ -161,21 +152,12 @@ public class OpcUaServer implements UaNodeContext {
             .thenApply(s -> OpcUaServer.this);
     }
 
-    @Override
-    public OpcUaServer getServer() {
-        return this;
-    }
-
     public UaStackServer getStackServer() {
         return stackServer;
     }
 
-    public NamespaceManager getNamespaceManager() {
-        return namespaceManager;
-    }
-
-    public ServerNodeManager getNodeManager() {
-        return nodeManager;
+    public AddressSpaceManager getAddressSpaceManager() {
+        return addressSpaceManager;
     }
 
     public SessionManager getSessionManager() {
@@ -190,20 +172,32 @@ public class OpcUaServer implements UaNodeContext {
         return serverNamespace;
     }
 
+    public NamespaceTable getNamespaceTable() {
+        return namespaceTable;
+    }
+
     public ServerTable getServerTable() {
         return serverTable;
     }
 
+    /**
+     * Get the Server-wide {@link EventBus}.
+     * <p>
+     * Events posted to the EventBus are delivered synchronously to registered subscribers.
+     *
+     * @return the Server-wide {@link EventBus}.
+     */
     public EventBus getEventBus() {
         return eventBus;
     }
 
+    /**
+     * Get the shared {@link EventFactory}.
+     *
+     * @return the shared {@link EventFactory}.
+     */
     public EventFactory getEventFactory() {
         return eventFactory;
-    }
-
-    public NodeFactory getNodeFactory() {
-        return nodeFactory;
     }
 
     public ObjectTypeManager getObjectTypeManager() {

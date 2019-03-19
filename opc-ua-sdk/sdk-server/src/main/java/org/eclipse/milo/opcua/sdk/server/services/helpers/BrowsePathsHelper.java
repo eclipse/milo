@@ -16,12 +16,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
-import org.eclipse.milo.opcua.sdk.server.NamespaceManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
-import org.eclipse.milo.opcua.sdk.server.api.AttributeServices.ReadContext;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices.ReadContext;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.BrowseContext;
 import org.eclipse.milo.opcua.sdk.server.services.ServiceAttributes;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -58,12 +56,10 @@ public class BrowsePathsHelper {
 
     private final AccessContext context;
     private final OpcUaServer server;
-    private final NamespaceManager namespaceManager;
 
-    public BrowsePathsHelper(AccessContext context, OpcUaServer server, NamespaceManager namespaceManager) {
+    public BrowsePathsHelper(AccessContext context, OpcUaServer server) {
         this.context = context;
         this.server = server;
-        this.namespaceManager = namespaceManager;
     }
 
     public void onTranslateBrowsePaths(ServiceRequest service) {
@@ -146,7 +142,7 @@ public class BrowsePathsHelper {
             return next(nodeId, e).thenCompose(nextExId -> {
                 List<RelativePathElement> nextElements = elements.subList(1, elements.size());
 
-                Optional<NodeId> nextId = namespaceManager.toNodeId(nextExId);
+                Optional<NodeId> nextId = nextExId.local(server.getNamespaceTable());
 
                 if (nextId.isPresent()) {
                     return follow(nextId.get(), nextElements);
@@ -168,9 +164,14 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
+        BrowseContext browseContext = new BrowseContext(
+            server,
+            context.getSession().orElse(null)
+        );
 
-        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
+        server.getAddressSpaceManager().browse(browseContext, nodeId);
+
+        CompletableFuture<List<Reference>> future = browseContext.getFuture();
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -205,9 +206,14 @@ public class BrowsePathsHelper {
         boolean includeSubtypes = element.getIncludeSubtypes();
         QualifiedName targetName = element.getTargetName();
 
-        Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
+        BrowseContext browseContext = new BrowseContext(
+            server,
+            context.getSession().orElse(null)
+        );
 
-        CompletableFuture<List<Reference>> future = namespace.browse(context, nodeId);
+        server.getAddressSpaceManager().browse(browseContext, nodeId);
+
+        CompletableFuture<List<Reference>> future = browseContext.getFuture();
 
         return future.thenCompose(references -> {
             List<ExpandedNodeId> targetNodeIds = references.stream()
@@ -243,21 +249,25 @@ public class BrowsePathsHelper {
         List<CompletableFuture<List<DataValue>>> futures = newArrayListWithCapacity(targetNodeIds.size());
 
         for (ExpandedNodeId xni : targetNodeIds) {
-            CompletableFuture<List<DataValue>> future = xni.local()
+            CompletableFuture<List<DataValue>> future = xni.local(server.getNamespaceTable())
                 .map(nodeId -> {
-                    Namespace namespace = namespaceManager.getNamespace(nodeId.getNamespaceIndex());
-
                     ReadValueId readValueId = new ReadValueId(
-                        nodeId, AttributeId.BrowseName.uid(), null, QualifiedName.NULL_VALUE);
+                        nodeId,
+                        AttributeId.BrowseName.uid(),
+                        null,
+                        QualifiedName.NULL_VALUE
+                    );
 
-                    CompletableFuture<List<DataValue>> readFuture = new CompletableFuture<>();
+                    ReadContext context = new ReadContext(server, null);
 
-                    ReadContext context = new ReadContext(
-                        server, null, readFuture, new DiagnosticsContext<>());
+                    server.getAddressSpaceManager().read(
+                        context,
+                        0.0,
+                        TimestampsToReturn.Neither,
+                        newArrayList(readValueId)
+                    );
 
-                    namespace.read(context, 0.0, TimestampsToReturn.Neither, newArrayList(readValueId));
-
-                    return readFuture;
+                    return context.getFuture();
                 })
                 .orElse(completedFuture(newArrayList(new DataValue(StatusCodes.Bad_NodeIdUnknown))));
 

@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.util.StreamUtil;
 import org.eclipse.milo.opcua.sdk.server.ObjectTypeManager;
-import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -32,9 +32,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 @Deprecated
 public class NodeFactory {
 
-    private final OpcUaServer server;
-    private final NodeManager<UaNode> nodeManager;
-
+    private final UaNodeContext context;
     private final ObjectTypeManager objectTypeManager;
     private final VariableTypeManager variableTypeManager;
 
@@ -43,11 +41,9 @@ public class NodeFactory {
         ObjectTypeManager objectTypeManager,
         VariableTypeManager variableTypeManager) {
 
+        this.context = context;
         this.objectTypeManager = objectTypeManager;
         this.variableTypeManager = variableTypeManager;
-
-        server = context.getServer();
-        nodeManager = context.getNodeManager();
     }
 
     public UaObjectNode createObject(
@@ -81,11 +77,18 @@ public class NodeFactory {
     private UaNode createNode(NodeId nodeId,
                               NodeId typeDefinitionId) throws UaRuntimeException {
 
-        UaNode typeDefinitionNode = nodeManager.getNode(typeDefinitionId)
+        NodeManager<UaNode> nodeManager = context.getNodeManager();
+
+        NamespaceTable namespaceTable = context.getServer().getNamespaceTable();
+
+        UaNode typeDefinitionNode = context.getServer()
+            .getAddressSpaceManager()
+            .getManagedNode(typeDefinitionId)
             .orElseThrow(() ->
                 new UaRuntimeException(
                     StatusCodes.Bad_NodeIdUnknown,
-                    "unknown type definition: " + typeDefinitionId));
+                    "unknown type definition: " + typeDefinitionId)
+            );
 
         UaNode node;
 
@@ -102,7 +105,7 @@ public class NodeFactory {
         List<UaVariableNode> propertyDeclarations = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
             .distinct()
-            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+            .map(r -> nodeManager.getNode(r.getTargetNodeId(), namespaceTable))
             .flatMap(StreamUtil::opt2stream)
             .map(UaVariableNode.class::cast)
             .filter(vn ->
@@ -133,7 +136,7 @@ public class NodeFactory {
 
         List<UaVariableNode> variableComponents = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+            .map(r -> nodeManager.getNode(r.getTargetNodeId(), namespaceTable))
             .flatMap(StreamUtil::opt2stream)
             .filter(n -> n instanceof UaVariableNode)
             .map(UaVariableNode.class::cast)
@@ -172,7 +175,7 @@ public class NodeFactory {
         if (node instanceof ObjectNode) {
             List<UaObjectNode> objectComponents = typeDefinitionNode.getReferences().stream()
                 .filter(Reference.HAS_COMPONENT_PREDICATE)
-                .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+                .map(r -> nodeManager.getNode(r.getTargetNodeId(), namespaceTable))
                 .flatMap(StreamUtil::opt2stream)
                 .filter(n -> n instanceof UaObjectNode)
                 .map(UaObjectNode.class::cast)
@@ -220,7 +223,7 @@ public class NodeFactory {
             );
 
         UaObjectNode objectNode = ctor.apply(
-            server,
+            context,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),
@@ -250,7 +253,7 @@ public class NodeFactory {
             );
 
         UaVariableNode variableNode = ctor.apply(
-            server,
+            context,
             nodeId,
             typeDefinitionNode.getBrowseName(),
             typeDefinitionNode.getDisplayName(),

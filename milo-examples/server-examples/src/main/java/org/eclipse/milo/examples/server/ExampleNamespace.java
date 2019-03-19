@@ -15,22 +15,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Lists;
 import org.eclipse.milo.examples.server.methods.GenerateEventMethod;
 import org.eclipse.milo.examples.server.methods.SqrtMethod;
 import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRank;
-import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
 import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.ServerNode;
@@ -42,16 +38,11 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
-import org.eclipse.milo.opcua.sdk.server.nodes.factories.EventFactory;
-import org.eclipse.milo.opcua.sdk.server.nodes.factories.NodeFactory;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
-import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -62,16 +53,10 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.XmlElement;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
-import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +65,9 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ulong;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class ExampleNamespace implements Namespace {
+public class ExampleNamespace extends ManagedNamespace {
 
-    public static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
+    static final String NAMESPACE_URI = "urn:eclipse:milo:hello-world";
 
     private static final Object[][] STATIC_SCALAR_NODES = new Object[][]{
         {"Boolean", Identifiers.Boolean, new Variant(false)},
@@ -138,39 +123,29 @@ public class ExampleNamespace implements Namespace {
 
     private final Random random = new Random();
 
-    private final NamespaceNodeManager nodeManager;
     private final SubscriptionModel subscriptionModel;
 
-    private final EventFactory eventFactory;
-    private final NodeFactory nodeFactory;
+    ExampleNamespace(OpcUaServer server) {
+        super(server, NAMESPACE_URI);
 
-    private final OpcUaServer server;
-    private final UShort namespaceIndex;
-
-    public ExampleNamespace(OpcUaServer server, UShort namespaceIndex) {
-        this.server = server;
-        this.namespaceIndex = namespaceIndex;
-
-        nodeManager = new NamespaceNodeManager(server);
         subscriptionModel = new SubscriptionModel(server, this);
-
-        eventFactory = server.getEventFactory();
-        nodeFactory = server.getNodeFactory();
     }
 
-    public void initialize() {
+    @Override
+    protected void onStartup() {
+        super.onStartup();
 
         // Create a "HelloWorld" folder and add it to the node manager
-        NodeId folderNodeId = new NodeId(namespaceIndex, "HelloWorld");
+        NodeId folderNodeId = newNodeId("HelloWorld");
 
         UaFolderNode folderNode = new UaFolderNode(
-            server,
+            getNodeContext(),
             folderNodeId,
-            new QualifiedName(namespaceIndex, "HelloWorld"),
+            newQualifiedName("HelloWorld"),
             LocalizedText.english("HelloWorld")
         );
 
-        nodeManager.addNode(folderNode);
+        getNodeManager().addNode(folderNode);
 
         // Make sure our new folder shows up under the server's Objects folder.
         folderNode.addReference(new Reference(
@@ -192,23 +167,24 @@ public class ExampleNamespace implements Namespace {
         addCustomObjectTypeAndInstance(folderNode);
 
         // Set the EventNotifier bit on Server Node for Events.
-        // Use the server NodeManager to get nodes in other namespaces.
-        UaNode serverNode = server.getNodeManager().get(Identifiers.Server);
+        UaNode serverNode = getServer()
+            .getAddressSpaceManager()
+            .getManagedNode(Identifiers.Server)
+            .orElse(null);
 
         if (serverNode instanceof ServerNode) {
             ((ServerNode) serverNode).setEventNotifier(ubyte(1));
 
             // Post a bogus Event every couple seconds
-            server.getScheduledExecutorService().scheduleAtFixedRate(() -> {
+            getServer().getScheduledExecutorService().scheduleAtFixedRate(() -> {
                 try {
-                    BaseEventNode eventNode = eventFactory.createEvent(
-                        new NodeId(1, UUID.randomUUID()),
+                    BaseEventNode eventNode = getServer().getEventFactory().createEvent(
+                        newNodeId(UUID.randomUUID()),
                         Identifiers.BaseEventType
                     );
 
                     eventNode.setBrowseName(new QualifiedName(1, "foo"));
                     eventNode.setDisplayName(LocalizedText.english("foo"));
-
                     eventNode.setEventId(ByteString.of(new byte[]{0, 1, 2, 3}));
                     eventNode.setEventType(Identifiers.BaseEventType);
                     eventNode.setSourceNode(serverNode.getNodeId());
@@ -218,27 +194,14 @@ public class ExampleNamespace implements Namespace {
                     eventNode.setMessage(LocalizedText.english("event message!"));
                     eventNode.setSeverity(ushort(2));
 
-                    server.getEventBus().post(eventNode);
+                    getServer().getEventBus().post(eventNode);
+
+                    eventNode.delete();
                 } catch (Throwable e) {
                     logger.error("Error creating EventNode: {}", e.getMessage(), e);
                 }
             }, 0, 2, TimeUnit.SECONDS);
         }
-    }
-
-    @Override
-    public UShort getNamespaceIndex() {
-        return namespaceIndex;
-    }
-
-    @Override
-    public String getNamespaceUri() {
-        return NAMESPACE_URI;
-    }
-
-    @Override
-    public NamespaceNodeManager getNodeManager() {
-        return nodeManager;
     }
 
     private void addVariableNodes(UaFolderNode rootNode) {
@@ -253,13 +216,13 @@ public class ExampleNamespace implements Namespace {
 
     private void addArrayNodes(UaFolderNode rootNode) {
         UaFolderNode arrayTypesFolder = new UaFolderNode(
-            server,
-            new NodeId(namespaceIndex, "HelloWorld/ArrayTypes"),
-            new QualifiedName(namespaceIndex, "ArrayTypes"),
+            getNodeContext(),
+            newNodeId("HelloWorld/ArrayTypes"),
+            newQualifiedName("ArrayTypes"),
             LocalizedText.english("ArrayTypes")
         );
 
-        nodeManager.addNode(arrayTypesFolder);
+        getNodeManager().addNode(arrayTypesFolder);
         rootNode.addOrganizes(arrayTypesFolder);
 
         for (Object[] os : STATIC_ARRAY_NODES) {
@@ -272,11 +235,11 @@ public class ExampleNamespace implements Namespace {
             }
             Variant variant = new Variant(array);
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/ArrayTypes/" + name))
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+                .setNodeId(newNodeId("HelloWorld/ArrayTypes/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -288,20 +251,20 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(new ValueLoggingDelegate());
 
-            nodeManager.addNode(node);
+            getNodeManager().addNode(node);
             arrayTypesFolder.addOrganizes(node);
         }
     }
 
     private void addScalarNodes(UaFolderNode rootNode) {
         UaFolderNode scalarTypesFolder = new UaFolderNode(
-            server,
-            new NodeId(namespaceIndex, "HelloWorld/ScalarTypes"),
-            new QualifiedName(namespaceIndex, "ScalarTypes"),
+            getNodeContext(),
+            newNodeId("HelloWorld/ScalarTypes"),
+            newQualifiedName("ScalarTypes"),
             LocalizedText.english("ScalarTypes")
         );
 
-        nodeManager.addNode(scalarTypesFolder);
+        getNodeManager().addNode(scalarTypesFolder);
         rootNode.addOrganizes(scalarTypesFolder);
 
         for (Object[] os : STATIC_SCALAR_NODES) {
@@ -309,11 +272,11 @@ public class ExampleNamespace implements Namespace {
             NodeId typeId = (NodeId) os[1];
             Variant variant = (Variant) os[2];
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/ScalarTypes/" + name))
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+                .setNodeId(newNodeId("HelloWorld/ScalarTypes/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                 .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -323,28 +286,28 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(new ValueLoggingDelegate());
 
-            nodeManager.addNode(node);
+            getNodeManager().addNode(node);
             scalarTypesFolder.addOrganizes(node);
         }
     }
 
     private void addWriteOnlyNodes(UaFolderNode rootNode) {
         UaFolderNode writeOnlyFolder = new UaFolderNode(
-            server,
-            new NodeId(namespaceIndex, "HelloWorld/WriteOnly"),
-            new QualifiedName(namespaceIndex, "WriteOnly"),
+            getNodeContext(),
+            newNodeId("HelloWorld/WriteOnly"),
+            newQualifiedName("WriteOnly"),
             LocalizedText.english("WriteOnly")
         );
 
-        nodeManager.addNode(writeOnlyFolder);
+        getNodeManager().addNode(writeOnlyFolder);
         rootNode.addOrganizes(writeOnlyFolder);
 
         String name = "String";
-        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/WriteOnly/" + name))
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/WriteOnly/" + name))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
             .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.WRITE_ONLY)))
-            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -352,26 +315,26 @@ public class ExampleNamespace implements Namespace {
 
         node.setValue(new DataValue(new Variant("can't read this")));
 
-        nodeManager.addNode(node);
+        getNodeManager().addNode(node);
         writeOnlyFolder.addOrganizes(node);
     }
 
     private void addAdminReadableNodes(UaFolderNode rootNode) {
         UaFolderNode adminFolder = new UaFolderNode(
-            server,
-            new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanRead"),
-            new QualifiedName(namespaceIndex, "OnlyAdminCanRead"),
+            getNodeContext(),
+            newNodeId("HelloWorld/OnlyAdminCanRead"),
+            newQualifiedName("OnlyAdminCanRead"),
             LocalizedText.english("OnlyAdminCanRead")
         );
 
-        nodeManager.addNode(adminFolder);
+        getNodeManager().addNode(adminFolder);
         rootNode.addOrganizes(adminFolder);
 
         String name = "String";
-        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanRead/" + name))
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/OnlyAdminCanRead/" + name))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -387,26 +350,26 @@ public class ExampleNamespace implements Namespace {
             }
         }));
 
-        nodeManager.addNode(node);
+        getNodeManager().addNode(node);
         adminFolder.addOrganizes(node);
     }
 
     private void addAdminWritableNodes(UaFolderNode rootNode) {
         UaFolderNode adminFolder = new UaFolderNode(
-            server,
-            new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanWrite"),
-            new QualifiedName(namespaceIndex, "OnlyAdminCanWrite"),
+            getNodeContext(),
+            newNodeId("HelloWorld/OnlyAdminCanWrite"),
+            newQualifiedName("OnlyAdminCanWrite"),
             LocalizedText.english("OnlyAdminCanWrite")
         );
 
-        nodeManager.addNode(adminFolder);
+        getNodeManager().addNode(adminFolder);
         rootNode.addOrganizes(adminFolder);
 
         String name = "String";
-        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/OnlyAdminCanWrite/" + name))
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/OnlyAdminCanWrite/" + name))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setBrowseName(new QualifiedName(namespaceIndex, name))
+            .setBrowseName(newQualifiedName(name))
             .setDisplayName(LocalizedText.english(name))
             .setDataType(Identifiers.String)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -422,19 +385,19 @@ public class ExampleNamespace implements Namespace {
             }
         }));
 
-        nodeManager.addNode(node);
+        getNodeManager().addNode(node);
         adminFolder.addOrganizes(node);
     }
 
     private void addDynamicNodes(UaFolderNode rootNode) {
         UaFolderNode dynamicFolder = new UaFolderNode(
-            server,
-            new NodeId(namespaceIndex, "HelloWorld/Dynamic"),
-            new QualifiedName(namespaceIndex, "Dynamic"),
+            getNodeContext(),
+            newNodeId("HelloWorld/Dynamic"),
+            newQualifiedName("Dynamic"),
             LocalizedText.english("Dynamic")
         );
 
-        nodeManager.addNode(dynamicFolder);
+        getNodeManager().addNode(dynamicFolder);
         rootNode.addOrganizes(dynamicFolder);
 
         // Dynamic Boolean
@@ -443,10 +406,10 @@ public class ExampleNamespace implements Namespace {
             NodeId typeId = Identifiers.Boolean;
             Variant variant = new Variant(false);
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/Dynamic/" + name))
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+                .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -466,7 +429,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(delegate);
 
-            nodeManager.addNode(node);
+            getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
         }
 
@@ -476,10 +439,10 @@ public class ExampleNamespace implements Namespace {
             NodeId typeId = Identifiers.Int32;
             Variant variant = new Variant(0);
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/Dynamic/" + name))
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+                .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -499,7 +462,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(delegate);
 
-            nodeManager.addNode(node);
+            getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
         }
 
@@ -509,10 +472,10 @@ public class ExampleNamespace implements Namespace {
             NodeId typeId = Identifiers.Double;
             Variant variant = new Variant(0.0);
 
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server)
-                .setNodeId(new NodeId(namespaceIndex, "HelloWorld/Dynamic/" + name))
+            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(getNodeContext())
+                .setNodeId(newNodeId("HelloWorld/Dynamic/" + name))
                 .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-                .setBrowseName(new QualifiedName(namespaceIndex, name))
+                .setBrowseName(newQualifiedName(name))
                 .setDisplayName(LocalizedText.english(name))
                 .setDataType(typeId)
                 .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -532,7 +495,7 @@ public class ExampleNamespace implements Namespace {
 
             node.setAttributeDelegate(delegate);
 
-            nodeManager.addNode(node);
+            getNodeManager().addNode(node);
             dynamicFolder.addOrganizes(node);
         }
     }
@@ -540,31 +503,31 @@ public class ExampleNamespace implements Namespace {
     private void addDataAccessNodes(UaFolderNode rootNode) {
         // DataAccess folder
         UaFolderNode dataAccessFolder = new UaFolderNode(
-            server,
-            new NodeId(namespaceIndex, "HelloWorld/DataAccess"),
-            new QualifiedName(namespaceIndex, "DataAccess"),
+            getNodeContext(),
+            newNodeId("HelloWorld/DataAccess"),
+            newQualifiedName("DataAccess"),
             LocalizedText.english("DataAccess")
         );
 
-        nodeManager.addNode(dataAccessFolder);
+        getNodeManager().addNode(dataAccessFolder);
         rootNode.addOrganizes(dataAccessFolder);
 
         // AnalogItemType node
         try {
-            AnalogItemNode node = (AnalogItemNode) nodeFactory.createNode(
-                new NodeId(namespaceIndex, "HelloWorld/DataAccess/AnalogValue"),
+            AnalogItemNode node = (AnalogItemNode) getNodeFactory().createNode(
+                newNodeId("HelloWorld/DataAccess/AnalogValue"),
                 Identifiers.AnalogItemType,
                 true
             );
 
-            node.setBrowseName(new QualifiedName(namespaceIndex, "AnalogValue"));
+            node.setBrowseName(newQualifiedName("AnalogValue"));
             node.setDisplayName(LocalizedText.english("AnalogValue"));
             node.setDataType(Identifiers.Double);
             node.setValue(new DataValue(new Variant(3.14d)));
 
             node.setEURange(new Range(0.0, 100.0));
 
-            nodeManager.addNode(node);
+            getNodeManager().addNode(node);
             dataAccessFolder.addOrganizes(node);
         } catch (UaException e) {
             logger.error("Error creating AnalogItemType instance: {}", e.getMessage(), e);
@@ -572,9 +535,9 @@ public class ExampleNamespace implements Namespace {
     }
 
     private void addSqrtMethod(UaFolderNode folderNode) {
-        UaMethodNode methodNode = UaMethodNode.builder(server)
-            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/sqrt(x)"))
-            .setBrowseName(new QualifiedName(namespaceIndex, "sqrt(x)"))
+        UaMethodNode methodNode = UaMethodNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/sqrt(x)"))
+            .setBrowseName(newQualifiedName("sqrt(x)"))
             .setDisplayName(new LocalizedText(null, "sqrt(x)"))
             .setDescription(
                 LocalizedText.english("Returns the correctly rounded positive square root of a double value."))
@@ -585,21 +548,20 @@ public class ExampleNamespace implements Namespace {
         methodNode.setProperty(UaMethodNode.OutputArguments, sqrtMethod.getOutputArguments());
         methodNode.setInvocationHandler(sqrtMethod);
 
-        nodeManager.addNode(methodNode);
+        getNodeManager().addNode(methodNode);
 
         methodNode.addReference(new Reference(
             methodNode.getNodeId(),
             Identifiers.HasComponent,
             folderNode.getNodeId().expanded(),
-            folderNode.getNodeClass(),
             false
         ));
     }
 
     private void addGenerateEventMethod(UaFolderNode folderNode) {
-        UaMethodNode methodNode = UaMethodNode.builder(server)
-            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/generateEvent(eventTypeId)"))
-            .setBrowseName(new QualifiedName(namespaceIndex, "generateEvent(eventTypeId)"))
+        UaMethodNode methodNode = UaMethodNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/generateEvent(eventTypeId)"))
+            .setBrowseName(newQualifiedName("generateEvent(eventTypeId)"))
             .setDisplayName(new LocalizedText(null, "generateEvent(eventTypeId)"))
             .setDescription(
                 LocalizedText.english("Generate an Event with the TypeDefinition indicated by eventTypeId."))
@@ -610,31 +572,30 @@ public class ExampleNamespace implements Namespace {
         methodNode.setProperty(UaMethodNode.OutputArguments, generateEventMethod.getOutputArguments());
         methodNode.setInvocationHandler(generateEventMethod);
 
-        nodeManager.addNode(methodNode);
+        getNodeManager().addNode(methodNode);
 
         methodNode.addReference(new Reference(
             methodNode.getNodeId(),
             Identifiers.HasComponent,
             folderNode.getNodeId().expanded(),
-            folderNode.getNodeClass(),
             false
         ));
     }
 
     private void addCustomObjectTypeAndInstance(UaFolderNode rootFolder) {
         // Define a new ObjectType called "MyObjectType".
-        UaObjectTypeNode objectTypeNode = UaObjectTypeNode.builder(server)
-            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType"))
-            .setBrowseName(new QualifiedName(namespaceIndex, "MyObjectType"))
+        UaObjectTypeNode objectTypeNode = UaObjectTypeNode.builder(getNodeContext())
+            .setNodeId(newNodeId("ObjectTypes/MyObjectType"))
+            .setBrowseName(newQualifiedName("MyObjectType"))
             .setDisplayName(LocalizedText.english("MyObjectType"))
             .setIsAbstract(false)
             .build();
 
         // "Foo" and "Bar" are members. These nodes are what are called "instance declarations" by the spec.
-        UaVariableNode foo = UaVariableNode.builder(server)
-            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType.Foo"))
+        UaVariableNode foo = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("ObjectTypes/MyObjectType.Foo"))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setBrowseName(new QualifiedName(namespaceIndex, "Foo"))
+            .setBrowseName(newQualifiedName("Foo"))
             .setDisplayName(LocalizedText.english("Foo"))
             .setDataType(Identifiers.Int16)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -650,10 +611,10 @@ public class ExampleNamespace implements Namespace {
         foo.setValue(new DataValue(new Variant(0)));
         objectTypeNode.addComponent(foo);
 
-        UaVariableNode bar = UaVariableNode.builder(server)
-            .setNodeId(new NodeId(namespaceIndex, "ObjectTypes/MyObjectType.Bar"))
+        UaVariableNode bar = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("ObjectTypes/MyObjectType.Bar"))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setBrowseName(new QualifiedName(namespaceIndex, "Bar"))
+            .setBrowseName(newQualifiedName("Bar"))
             .setDisplayName(LocalizedText.english("Bar"))
             .setDataType(Identifiers.String)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
@@ -671,7 +632,7 @@ public class ExampleNamespace implements Namespace {
 
         // Tell the ObjectTypeManager about our new type.
         // This let's us use NodeFactory to instantiate instances of the type.
-        server.getObjectTypeManager().registerObjectType(
+        getServer().getObjectTypeManager().registerObjectType(
             objectTypeNode.getNodeId(),
             UaObjectNode.class,
             UaObjectNode::new
@@ -686,20 +647,20 @@ public class ExampleNamespace implements Namespace {
         ));
 
         // Add type definition and declarations to address space.
-        nodeManager.addNode(objectTypeNode);
-        nodeManager.addNode(foo);
-        nodeManager.addNode(bar);
+        getNodeManager().addNode(objectTypeNode);
+        getNodeManager().addNode(foo);
+        getNodeManager().addNode(bar);
 
         // Use NodeFactory to create instance of MyObjectType called "MyObject".
         // NodeFactory takes care of recursively instantiating MyObject member nodes
         // as well as adding all nodes to the address space.
         try {
-            UaObjectNode myObject = (UaObjectNode) nodeFactory.createNode(
-                new NodeId(namespaceIndex, "HelloWorld/MyObject"),
+            UaObjectNode myObject = (UaObjectNode) getNodeFactory().createNode(
+                newNodeId("HelloWorld/MyObject"),
                 objectTypeNode.getNodeId(),
                 false
             );
-            myObject.setBrowseName(new QualifiedName(namespaceIndex, "MyObject"));
+            myObject.setBrowseName(newQualifiedName("MyObject"));
             myObject.setDisplayName(LocalizedText.english("MyObject"));
 
             // Add forward and inverse references from the root folder.
@@ -718,12 +679,12 @@ public class ExampleNamespace implements Namespace {
 
     private void addCustomDataTypeVariable(UaFolderNode rootFolder) {
         // add a custom DataTypeNode as a subtype of the built-in Structure DataTypeNode
-        NodeId dataTypeId = new NodeId(namespaceIndex, "DataType.CustomDataType");
+        NodeId dataTypeId = newNodeId("DataType.CustomDataType");
 
         UaDataTypeNode dataTypeNode = new UaDataTypeNode(
-            server,
+            getNodeContext(),
             dataTypeId,
-            new QualifiedName(namespaceIndex, "CustomDataType"),
+            newQualifiedName("CustomDataType"),
             LocalizedText.english("CustomDataType"),
             LocalizedText.english("CustomDataType"),
             uint(0),
@@ -731,7 +692,7 @@ public class ExampleNamespace implements Namespace {
             false
         );
 
-        nodeManager.addNode(dataTypeNode);
+        getNodeManager().addNode(dataTypeNode);
 
         // Inverse ref to Structure
         dataTypeNode.addReference(new Reference(
@@ -742,7 +703,7 @@ public class ExampleNamespace implements Namespace {
         ));
 
         // Forward ref from Structure
-        Optional<UaDataTypeNode> structureDataTypeNode = nodeManager
+        Optional<UaDataTypeNode> structureDataTypeNode = getNodeManager()
             .getNode(Identifiers.Structure)
             .map(UaDataTypeNode.class::cast);
 
@@ -760,7 +721,7 @@ public class ExampleNamespace implements Namespace {
             "urn:eclipse:milo:example:custom-data-type"
         );
 
-        NodeId binaryEncodingId = new NodeId(namespaceIndex, "DataType.CustomDataType.BinaryEncoding");
+        NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
 
         dictionary.registerStructCodec(
             new CustomDataType.Codec().asBinaryCodec(),
@@ -772,17 +733,17 @@ public class ExampleNamespace implements Namespace {
         OpcUaDataTypeManager.getInstance().registerTypeDictionary(dictionary);
 
 
-        UaVariableNode customDataTypeVariable = UaVariableNode.builder(server)
-            .setNodeId(new NodeId(namespaceIndex, "HelloWorld/CustomDataTypeVariable"))
+        UaVariableNode customDataTypeVariable = UaVariableNode.builder(getNodeContext())
+            .setNodeId(newNodeId("HelloWorld/CustomDataTypeVariable"))
             .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
             .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
-            .setBrowseName(new QualifiedName(namespaceIndex, "CustomDataTypeVariable"))
+            .setBrowseName(newQualifiedName("CustomDataTypeVariable"))
             .setDisplayName(LocalizedText.english("CustomDataTypeVariable"))
             .setDataType(dataTypeId)
             .setTypeDefinition(Identifiers.BaseDataVariableType)
             .build();
 
-        nodeManager.addNode(customDataTypeVariable);
+        getNodeManager().addNode(customDataTypeVariable);
 
         CustomDataType value = new CustomDataType(
             "foo",
@@ -803,82 +764,6 @@ public class ExampleNamespace implements Namespace {
             rootFolder.getNodeId().expanded(),
             false
         ));
-    }
-
-    @Override
-    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaServerNode node = nodeManager.get(nodeId);
-
-        if (node != null) {
-            return CompletableFuture.completedFuture(node.getReferences());
-        } else {
-            return FutureUtils.failedFuture(new UaException(StatusCodes.Bad_NodeIdUnknown));
-        }
-    }
-
-    @Override
-    public void read(
-        ReadContext context,
-        Double maxAge,
-        TimestampsToReturn timestamps,
-        List<ReadValueId> readValueIds) {
-
-        List<DataValue> results = Lists.newArrayListWithCapacity(readValueIds.size());
-
-        for (ReadValueId readValueId : readValueIds) {
-            UaServerNode node = nodeManager.get(readValueId.getNodeId());
-
-            if (node != null) {
-                DataValue value = node.readAttribute(
-                    new AttributeContext(context),
-                    readValueId.getAttributeId(),
-                    timestamps,
-                    readValueId.getIndexRange(),
-                    readValueId.getDataEncoding()
-                );
-
-                results.add(value);
-            } else {
-                results.add(new DataValue(StatusCodes.Bad_NodeIdUnknown));
-            }
-        }
-
-        context.complete(results);
-    }
-
-    @Override
-    public void write(WriteContext context, List<WriteValue> writeValues) {
-        List<StatusCode> results = Lists.newArrayListWithCapacity(writeValues.size());
-
-        for (WriteValue writeValue : writeValues) {
-            UaServerNode node = nodeManager.get(writeValue.getNodeId());
-
-            if (node != null) {
-                try {
-                    node.writeAttribute(
-                        new AttributeContext(context),
-                        writeValue.getAttributeId(),
-                        writeValue.getValue(),
-                        writeValue.getIndexRange()
-                    );
-
-                    results.add(StatusCode.GOOD);
-
-                    logger.info(
-                        "Wrote value {} to {} attribute of {}",
-                        writeValue.getValue().getValue(),
-                        AttributeId.from(writeValue.getAttributeId()).map(Object::toString).orElse("unknown"),
-                        node.getNodeId());
-                } catch (UaException e) {
-                    logger.error("Unable to write value={}", writeValue.getValue(), e);
-                    results.add(e.getStatusCode());
-                }
-            } else {
-                results.add(new StatusCode(StatusCodes.Bad_NodeIdUnknown));
-            }
-        }
-
-        context.complete(results);
     }
 
     @Override

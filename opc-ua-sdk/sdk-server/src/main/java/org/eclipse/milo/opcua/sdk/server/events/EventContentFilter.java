@@ -24,7 +24,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -124,7 +125,7 @@ public class EventContentFilter {
         NodeId eventTypeId = select.getTypeDefinitionId();
 
         if (eventTypeId != null && !eventTypeId.equals(Identifiers.BaseEventType)) {
-            UaNode node = context.getServer().getNodeManager().get(eventTypeId);
+            UaNode node = context.getServer().getAddressSpaceManager().getManagedNode(eventTypeId).orElse(null);
 
             if (node == null || node.getNodeClass() != NodeClass.ObjectType) {
                 throw new ValidationException(StatusCodes.Bad_TypeDefinitionInvalid);
@@ -423,7 +424,7 @@ public class EventContentFilter {
             NodeId eventTypeDefinitionId = eventNode.getTypeDefinitionNode().getNodeId();
 
             boolean sameOrSubtype = typeDefinitionId.equals(eventTypeDefinitionId) ||
-                subtypeOf(eventTypeDefinitionId, typeDefinitionId, context.getServer().getNodeManager());
+                subtypeOf(eventTypeDefinitionId, typeDefinitionId, context.getServer());
 
             if (!sameOrSubtype) {
                 return null;
@@ -479,26 +480,29 @@ public class EventContentFilter {
         }
     }
 
-    private static boolean subtypeOf(NodeId typeId, NodeId superTypeId, NodeManager<UaNode> nodeManager) {
-        UaNode node = nodeManager.get(typeId);
+    private static boolean subtypeOf(NodeId typeId, NodeId superTypeId, OpcUaServer server) {
+        UaNode node = server.getAddressSpaceManager().getManagedNode(typeId).orElse(null);
 
         if (node instanceof ObjectTypeNode) {
-            return getParentTypeDefinition(node, nodeManager)
+            return getParentTypeDefinition(node, server)
                 .map(Node::getNodeId)
-                .map(id -> id.equals(superTypeId) || subtypeOf(id, superTypeId, nodeManager))
+                .map(id -> id.equals(superTypeId) || subtypeOf(id, superTypeId, server))
                 .orElse(false);
         } else {
             return false;
         }
     }
 
-    private static Optional<UaNode> getParentTypeDefinition(UaNode node, NodeManager<UaNode> nodeManager) {
-        return nodeManager.getReferences(node.getNodeId())
+    private static Optional<UaNode> getParentTypeDefinition(UaNode node, OpcUaServer server) {
+        AddressSpaceManager addressSpaceManager = server.getAddressSpaceManager();
+        NamespaceTable namespaceTable = server.getNamespaceTable();
+
+        return addressSpaceManager.getManagedReferences(node.getNodeId())
             .stream()
             .filter(Reference.SUBTYPE_OF)
-            .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+            .flatMap(r -> opt2stream(r.getTargetNodeId().local(namespaceTable)))
             .findFirst()
-            .flatMap(nodeManager::getNode);
+            .flatMap(addressSpaceManager::getManagedNode);
     }
 
     static class DefaultOperatorContext implements OperatorContext {

@@ -22,11 +22,13 @@ import com.google.common.collect.Lists;
 import org.eclipse.milo.opcua.sdk.core.QualifiedProperty;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -145,11 +147,18 @@ public class UaObjectNode extends UaNode implements ObjectNode {
      * {@link NodeId#NULL_VALUE} if not found.
      */
     private NodeId findMethodDeclarationId(NodeId typeDefinitionId, QualifiedName methodName) {
-        NodeId nodeId = getNodeManager()
-            .getReferences(typeDefinitionId)
+        AddressSpaceManager asm = getNodeContext()
+            .getServer()
+            .getAddressSpaceManager();
+
+        NamespaceTable namespaceTable = getNodeContext()
+            .getServer()
+            .getNamespaceTable();
+
+        NodeId nodeId = asm.getManagedReferences(typeDefinitionId)
             .stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n ->
                 (n instanceof UaMethodNode) &&
                     Objects.equals(n.getBrowseName(), methodName))
@@ -158,11 +167,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             .orElse(NodeId.NULL_VALUE);
 
         if (nodeId.isNull()) {
-            NodeId parentTypeId = getNodeManager()
-                .getReferences(typeDefinitionId)
+            NodeId parentTypeId = asm.getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local(namespaceTable)))
                 .findFirst()
                 .orElse(null);
 
@@ -179,21 +187,21 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public List<UaNode> getComponentNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<UaNode> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<UaMethodNode> getMethodNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode))
             .map(UaMethodNode.class::cast)
             .collect(Collectors.toList());
@@ -203,7 +211,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         Node node = getReferences().stream()
             .filter(HAS_TYPE_DEFINITION_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()))
             .orElse(null);
 
         return (node instanceof ObjectTypeNode) ? (ObjectTypeNode) node : null;
@@ -212,21 +220,21 @@ public class UaObjectNode extends UaNode implements ObjectNode {
     public List<Node> getEventSourceNodes() {
         return getReferences().stream()
             .filter(HAS_EVENT_SOURCE_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getNotifierNodes() {
         return getReferences().stream()
             .filter(HAS_NOTIFIER_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
     public List<Node> getOrganizesNodes() {
         return getReferences().stream()
             .filter(ORGANIZES_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
@@ -234,7 +242,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
         Optional<UaNode> node = getReferences().stream()
             .filter(HAS_DESCRIPTION_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()));
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()));
 
         return node.map(n -> n);
     }
@@ -252,13 +260,6 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             node.getNodeId().expanded(),
             true
         ));
-
-        node.addReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
-        ));
     }
 
     /**
@@ -274,15 +275,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             node.getNodeId().expanded(),
             true
         ));
-
-        node.removeReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
-        ));
     }
-
 
     @Nullable
     public String getNodeVersion() {
@@ -398,7 +391,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
                 eventNotifier
             );
 
-            node.addReferences(references);
+            references.forEach(node::addReference);
 
             return node;
         }

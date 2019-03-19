@@ -10,8 +10,15 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.AttributeServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.MethodServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.NodeManagementServices;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices;
+
 /**
- * A composite interface composed of service sub-interfaces a {@link Namespace} must implement:
+ * A composite interface composed of service sub-interfaces an {@link AddressSpace} must implement:
  * <ul>
  * <li>{@link AttributeServices}</li>
  * <li>{@link AttributeHistoryServices}</li>
@@ -21,7 +28,7 @@ package org.eclipse.milo.opcua.sdk.server.api;
  * <li>{@link ViewServices}</li>
  * </ul>
  */
-public interface NamespaceServices extends
+public interface AddressSpaceServices extends
     AttributeServices,
     AttributeHistoryServices,
     MethodServices,

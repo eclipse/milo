@@ -12,126 +12,177 @@ package org.eclipse.milo.opcua.sdk.server.api;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface NodeManager<T extends Node> {
 
     /**
-     * Add a {@link Node} to the {@link NodeManager}.
+     * Return {@code true} if this {@link NodeManager} contains the Node identified by {@code nodeId}.
      *
-     * @param node the {@link Node} to add.
-     */
-    void addNode(T node);
-
-    /**
-     * Check if a {@link Node} identified by {@link NodeId} exists in this {@link NodeManager}.
-     *
-     * @param nodeId the {@link NodeId} of the {@link Node} in question.
-     * @return {@code true} if this {@link NodeManager} contains the {@link Node} identified by {@code nodeId}.
+     * @param nodeId the {@link NodeId}.
+     * @return {@code true} if this {@link NodeManager} contains the Node identified by {@code nodeId}.
      */
     boolean containsNode(NodeId nodeId);
 
     /**
-     * Check if a {@link Node} exists in this {@link NodeManager}.
+     * Return {@code true} if this {@link NodeManager} contains {@code nodeId}.
+     * <p>
+     * Returns {@code false} if {@code nodeId} is non-local.
      *
-     * @param node the {@link Node} in question.
-     * @return {@code true} if this {@link NodeManager} contains the {@link Node}.
+     * @param nodeId         the {@link ExpandedNodeId} to check.
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return {@code true} if this {@link NodeManager} contains {@code nodeId}.
      */
-    default boolean containsNode(T node) {
-        return containsNode(node.getNodeId());
-    }
+    boolean containsNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable);
 
     /**
-     * Get the {@link Node} identified by {@code nodeId}, or {@code null} if non exists.
+     * Add {@code node} to this {@link NodeManager}, replacing a previous Node identified by the same {@link NodeId}
+     * if it exists.
      *
-     * @param nodeId the {@link NodeId} identifying the {@link Node}.
-     * @return the {@link Node} identified by {@code nodeId}, or {@code null} if non exists.
+     * @param node the {@link Node} to add.
+     * @return the previous Node identified by the {@link NodeId} of {@code node}, if it exists.
      */
-    @Nullable
-    default T get(NodeId nodeId) {
-        return getNode(nodeId).orElse(null);
-    }
-
-    @Nullable
-    default T get(ExpandedNodeId nodeId) {
-        return getNode(nodeId).orElse(null);
-    }
+    Optional<T> addNode(T node);
 
     /**
-     * Get the {@link Node} identified by the provided {@link NodeId}, if it exists.
+     * Get the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
      *
-     * @param nodeId the {@link NodeId} of the {@link Node}.
-     * @return an {@link Optional} containing the {@link Node}, if present.
+     * @param nodeId the {@link NodeId} identifying the Node to get.
+     * @return the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
      */
     Optional<T> getNode(NodeId nodeId);
 
     /**
-     * Get the {@link Node} identified by the provided {@link ExpandedNodeId}, if it exists.
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, or {@code null} if it does not
+     * exist.
+     * <p>
+     * Returns {@code false} if {@code nodeId} is non-local.
      *
-     * @param nodeId the {@link ExpandedNodeId} of the {@link Node}.
-     * @return an {@link Optional} containing the {@link Node}, if present.
+     * @param nodeId         the {@link ExpandedNodeId} identifying the {@link Node} to get.
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does
+     * not exist.
      */
-    default Optional<T> getNode(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(this::getNode);
-    }
+    Optional<T> getNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable);
 
     /**
-     * Remove the {@link Node} identified by the provided {@link NodeId}, if it exists.
+     * Remove the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
      *
-     * @param nodeId the {@link NodeId} of the {@link Node}.
-     * @return an {@link Optional} containing the {@link Node}, if removed.
+     * @param nodeId the {@link NodeId} identifying the Node to remove.
+     * @return the Node removed from this {@link NodeManager}, if it exists.
      */
     Optional<T> removeNode(NodeId nodeId);
 
     /**
-     * Remove the provided {@link Node} if it matches the entry in this map for its {@link NodeId}.
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, if it exists.
+     * <p>
+     * Returns {@link Optional#empty()} if {@code nodeId} is non-local.
      *
-     * @param node the {@link Node} to remove.
-     * @return {@code true} if the node was removed.
+     * @param nodeId         the {@link ExpandedNodeId} identifying the Node to get.
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, if it exists.
      */
-    default boolean removeNode(T node) {
-        return removeNode(node.getNodeId()).isPresent();
-    }
+    Optional<T> removeNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable);
 
     /**
-     * Add a {@link Reference} to this {@link NodeManager}.
+     * Add {@code reference} to this {@link NodeManager}.
      *
      * @param reference the {@link Reference} to add.
      */
     void addReference(Reference reference);
 
     /**
-     * Add a virtual {@link Reference} to this {@link NodeManager}.
+     * Add {@code reference} and its inverse to this {@link NodeManager}.
      *
-     * @param reference the virtual {@link Reference} to add.
+     * @param reference      the {@link Reference} to add.
+     * @param namespaceTable the {@link NamespaceTable}.
      */
-    void addVirtualReference(Reference reference);
+    void addReferences(Reference reference, NamespaceTable namespaceTable);
 
     /**
-     * Remove a {@link Reference} from this {@link NodeManager}.
+     * Remove {@code reference} from this {@link NodeManager}.
      *
      * @param reference the {@link Reference} to remove.
      */
     void removeReference(Reference reference);
 
     /**
-     * Remove a virtual {@link Reference} from this {@link NodeManager}.
+     * Remove {@code reference} and its inverse from this {@link NodeManager}.
      *
-     * @param reference the virtual {@link Reference} to remove.
+     * @param reference      the {@link Reference} to remove.
+     * @param namespaceTable the {@link NamespaceTable}.
      */
-    void removeVirtualReference(Reference reference);
+    void removeReferences(Reference reference, NamespaceTable namespaceTable);
 
     /**
-     * Get all {@link Reference}s where {@code nodeId} is the source.
+     * Get all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}.
      *
-     * @param nodeId the {@link NodeId} of the source node.
-     * @return all {@link Reference}s where {@code nodeId} is the source.
+     * @param nodeId the source {@link NodeId}.
+     * @return all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}.
      */
     List<Reference> getReferences(NodeId nodeId);
+
+    /**
+     * Get all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}, filtered by {@code filter}.
+     *
+     * @param nodeId the source {@link NodeId}.
+     * @param filter a {@link Predicate} to filter {@link Reference}s.
+     * @return all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}, filtered by
+     * {@code filter}.
+     */
+    List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter);
+
+    /**
+     * Return {@code true} if this {@link NodeManager} contains {@code node}.
+     *
+     * @param node the {@link Node} to check.
+     * @return {@code true} if this {@link NodeManager} contains {@code node}.
+     */
+    default boolean containsNode(Node node) {
+        return containsNode(node.getNodeId());
+    }
+
+    /**
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, or {@code null} if it does not
+     * exist.
+     *
+     * @param nodeId the {@link NodeId} identifying the {@link Node} to get.
+     * @return the Node identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does not exist.
+     */
+    @Nullable
+    default T get(NodeId nodeId) {
+        return getNode(nodeId).orElse(null);
+    }
+
+    /**
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, or {@code null} if it does not
+     * exist.
+     *
+     * @param nodeId         the {@link NodeId} identifying the Node to get.
+     * @param namespaceTable the {@link NamespaceTable}.
+     * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does
+     * not exist.
+     */
+    @Nullable
+    default T get(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
+        return getNode(nodeId, namespaceTable).orElse(null);
+    }
+
+    /**
+     * Remove {@code node} from this {@link NodeManager}, if it exists.
+     *
+     * @param node the {@link Node} to remove.
+     * @return the {@link Node} removed from this {@link NodeManager}, if it exists.
+     */
+    default Optional<T> removeNode(T node) {
+        return removeNode(node.getNodeId());
+    }
 
 }

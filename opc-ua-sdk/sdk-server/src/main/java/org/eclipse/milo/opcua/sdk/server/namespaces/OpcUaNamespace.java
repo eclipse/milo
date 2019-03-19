@@ -13,23 +13,18 @@ package org.eclipse.milo.opcua.sdk.server.namespaces;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import com.google.common.collect.Lists;
-import org.eclipse.milo.opcua.sdk.core.Reference;
-import org.eclipse.milo.opcua.sdk.server.NamespaceNodeManager;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
-import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.DataItem;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
+import org.eclipse.milo.opcua.sdk.server.api.ManagedNamespace;
 import org.eclipse.milo.opcua.sdk.server.api.MonitoredItem;
-import org.eclipse.milo.opcua.sdk.server.api.Namespace;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.config.OpcUaServerConfigLimits;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.items.BaseMonitoredItem;
@@ -46,12 +41,10 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.AttributeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaServerNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegate;
 import org.eclipse.milo.opcua.sdk.server.subscriptions.Subscription;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -62,116 +55,41 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
-import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
-import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.google.common.collect.Lists.newArrayListWithCapacity;
-import static java.util.stream.Collectors.toList;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
-public class OpcUaNamespace implements Namespace {
+public class OpcUaNamespace extends ManagedNamespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final NamespaceNodeManager nodeManager;
     private final SubscriptionModel subscriptionModel;
 
     private final OpcUaServer server;
 
     public OpcUaNamespace(OpcUaServer server) {
+        super(server, Namespaces.OPC_UA);
+
         this.server = server;
 
-        nodeManager = new NamespaceNodeManager(server);
         subscriptionModel = new SubscriptionModel(server, this);
     }
 
-    public void initialize() {
+    @Override
+    protected void onStartup() {
+        super.onStartup();
+
         loadNodes();
         configureServerObject();
         configureConditionRefresh();
-    }
-
-    @Override
-    public UShort getNamespaceIndex() {
-        return ushort(0);
-    }
-
-    @Override
-    public String getNamespaceUri() {
-        return NamespaceTable.OPC_UA_NAMESPACE;
-    }
-
-    @Override
-    public NodeManager<UaNode> getNodeManager() {
-        return nodeManager;
-    }
-
-    @Override
-    public CompletableFuture<List<Reference>> browse(AccessContext context, NodeId nodeId) {
-        UaNode node = nodeManager.get(nodeId);
-
-        if (node != null) {
-            return CompletableFuture.completedFuture(node.getReferences());
-        } else {
-            CompletableFuture<List<Reference>> f = new CompletableFuture<>();
-            f.completeExceptionally(new UaException(StatusCodes.Bad_NodeIdUnknown));
-            return f;
-        }
-    }
-
-    @Override
-    public void read(ReadContext context, Double maxAge,
-                     TimestampsToReturn timestamps,
-                     List<ReadValueId> readValueIds) {
-
-        List<DataValue> results = newArrayListWithCapacity(readValueIds.size());
-
-        for (ReadValueId id : readValueIds) {
-            DataValue value;
-
-            UaServerNode node = nodeManager.get(id.getNodeId());
-
-            if (node != null) {
-                value = node.readAttribute(
-                    new AttributeContext(context),
-                    id.getAttributeId(),
-                    timestamps,
-                    id.getIndexRange(),
-                    id.getDataEncoding()
-                );
-            } else {
-                value = new DataValue(new StatusCode(StatusCodes.Bad_NodeIdUnknown));
-            }
-
-            results.add(value);
-        }
-
-        context.complete(results);
-    }
-
-    @Override
-    public void write(WriteContext context, List<WriteValue> writeValues) {
-        List<StatusCode> results = writeValues.stream()
-            .map(value -> {
-                if (nodeManager.containsNode(value.getNodeId())) {
-                    return new StatusCode(StatusCodes.Bad_NotWritable);
-                } else {
-                    return new StatusCode(StatusCodes.Bad_NodeIdUnknown);
-                }
-            })
-            .collect(toList());
-
-        context.complete(results);
     }
 
     @Override
@@ -221,7 +139,7 @@ public class OpcUaNamespace implements Namespace {
         try {
             long startTime = System.nanoTime();
 
-            new UaNodeLoader(server).loadNodes();
+            new UaNodeLoader(getNodeContext(), getNodeManager()).loadNodes();
 
             long endTime = System.nanoTime();
             long deltaMs = TimeUnit.MILLISECONDS.convert(endTime - startTime, TimeUnit.NANOSECONDS);
@@ -233,14 +151,14 @@ public class OpcUaNamespace implements Namespace {
     }
 
     private void configureServerObject() {
-        ServerNode serverNode = (ServerNode) nodeManager.get(Identifiers.Server);
+        ServerNode serverNode = (ServerNode) getNodeManager().get(Identifiers.Server);
 
         assert serverNode != null;
 
         serverNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) {
-                return new DataValue(new Variant(server.getNamespaceManager().getNamespaceTable().toArray()));
+                return new DataValue(new Variant(server.getNamespaceTable().toArray()));
             }
         });
         serverNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {
@@ -309,7 +227,7 @@ public class OpcUaNamespace implements Namespace {
     }
 
     private void configureGetMonitoredItems() {
-        UaNode node = nodeManager.get(Identifiers.Server_GetMonitoredItems);
+        UaNode node = getNodeManager().get(Identifiers.Server_GetMonitoredItems);
 
         if (node instanceof UaMethodNode) {
             UaMethodNode methodNode = (UaMethodNode) node;
@@ -321,7 +239,7 @@ public class OpcUaNamespace implements Namespace {
     }
 
     private void configureResendData() {
-        UaNode node = nodeManager.get(Identifiers.Server_ResendData);
+        UaNode node = getNodeManager().get(Identifiers.Server_ResendData);
 
         if (node instanceof UaMethodNode) {
             UaMethodNode resendDataNode = (UaMethodNode) node;
@@ -333,7 +251,7 @@ public class OpcUaNamespace implements Namespace {
     }
 
     private void configureConditionRefresh() {
-        UaNode node = nodeManager.get(Identifiers.ConditionType_ConditionRefresh);
+        UaNode node = getNodeManager().get(Identifiers.ConditionType_ConditionRefresh);
 
         if (node instanceof UaMethodNode) {
             UaMethodNode conditionRefreshNode = (UaMethodNode) node;
@@ -408,6 +326,9 @@ public class OpcUaNamespace implements Namespace {
 
                     server.getEventBus().post(refreshStart);
                     server.getEventBus().post(refreshEnd);
+
+                    refreshStart.delete();
+                    refreshEnd.delete();
                 } else {
                     throw new UaException(StatusCodes.Bad_SubscriptionIdInvalid);
                 }

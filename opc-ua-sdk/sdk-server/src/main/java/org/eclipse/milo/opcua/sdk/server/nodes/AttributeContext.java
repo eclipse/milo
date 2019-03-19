@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
-import org.eclipse.milo.opcua.sdk.server.api.OperationContext;
+import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 
 public class AttributeContext {
 
@@ -26,7 +26,7 @@ public class AttributeContext {
         this(server, null);
     }
 
-    public AttributeContext(OperationContext<?, ?> operationContext) {
+    public AttributeContext(ServiceOperationContext<?, ?> operationContext) {
         this(operationContext.getServer(), operationContext.getSession().orElse(null));
     }
 

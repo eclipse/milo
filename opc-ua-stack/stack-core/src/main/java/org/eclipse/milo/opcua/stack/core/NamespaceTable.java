@@ -18,30 +18,44 @@ import javax.annotation.Nullable;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
 
 public class NamespaceTable {
 
-    public static final String OPC_UA_NAMESPACE = "http://opcfoundation.org/UA/";
-
     private final BiMap<UShort, String> uriTable = HashBiMap.create();
 
     public NamespaceTable() {
-        uriTable.put(ushort(0), OPC_UA_NAMESPACE);
+        uriTable.put(ushort(0), Namespaces.OPC_UA);
     }
 
+    /**
+     * Add a URI to the NamespaceTable and return the index.
+     * <p>
+     * If the URI is not present in the table the next available index is assigned.
+     * <p>
+     * If the table already contains the URI the current index is returned.
+     *
+     * @param uri the namespace URI to add.
+     * @return the index assigned to the URI.
+     */
     public synchronized UShort addUri(String uri) {
-        UShort index = ushort(1);
-        while (uriTable.containsKey(index)) {
-            index = ushort(index.intValue() + 1);
-            if (index.intValue() == 65535) {
-                throw new UaRuntimeException(StatusCodes.Bad_InternalError, "uri table full");
-            }
-        }
-        uriTable.put(index, uri);
+        if (uriTable.containsValue(uri)) {
+            return uriTable.inverse().get(uri);
+        } else {
+            UShort index = ushort(1);
 
-        return index;
+            while (uriTable.containsKey(index)) {
+                index = ushort(index.intValue() + 1);
+                if (index.intValue() == 65535) {
+                    throw new UaRuntimeException(StatusCodes.Bad_InternalError, "uri table full");
+                }
+            }
+            uriTable.put(index, uri);
+
+            return index;
+        }
     }
 
     public synchronized void putUri(String uri, UShort index) {

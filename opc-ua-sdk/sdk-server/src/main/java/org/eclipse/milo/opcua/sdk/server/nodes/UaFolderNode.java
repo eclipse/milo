@@ -47,13 +47,6 @@ public class UaFolderNode extends UaObjectNode {
             node.getNodeId().expanded(),
             true
         ));
-
-        node.addReference(new Reference(
-            node.getNodeId(),
-            Identifiers.Organizes,
-            getNodeId().expanded(),
-            false
-        ));
     }
 
     /**
@@ -68,13 +61,6 @@ public class UaFolderNode extends UaObjectNode {
             Identifiers.Organizes,
             node.getNodeId().expanded(),
             true
-        ));
-
-        node.removeReference(new Reference(
-            node.getNodeId(),
-            Identifiers.Organizes,
-            getNodeId().expanded(),
-            false
         ));
     }
 

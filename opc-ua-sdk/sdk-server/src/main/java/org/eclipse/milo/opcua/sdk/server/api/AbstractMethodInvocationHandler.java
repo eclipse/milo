@@ -69,6 +69,8 @@ public abstract class AbstractMethodInvocationHandler implements MethodInvocatio
 
                 Variant variant = inputValues[i];
 
+                // TODO this needs to be able to match when argument DataType is an alias type
+                //  extract subtype logic from AttributeWriter...
                 boolean dataTypeMatch = variant.getValue() == null ||
                     variant.getDataType()
                         .map(type -> type.equals(argument.getDataType()))

@@ -10,14 +10,18 @@
 
 package org.eclipse.milo.opcua.sdk.server.namespaces.loader;
 
+import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 
 public class UaViewLoader {
 
     private final UaNodeContext context;
+    private final NodeManager<UaNode> nodeManager;
 
-    public UaViewLoader(UaNodeContext context) {
+    public UaViewLoader(UaNodeContext context, NodeManager<UaNode> nodeManager) {
         this.context = context;
+        this.nodeManager = nodeManager;
     }
 
     public void buildNodes() {}

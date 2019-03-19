@@ -16,7 +16,8 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.AccessLevel;
 import org.eclipse.milo.opcua.sdk.core.NumericRange;
-import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
+import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
@@ -86,7 +87,7 @@ public class AttributeReader {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
                 }
 
-                boolean structured = isStructureSubtype(context.getServer().getNodeManager(), dataTypeId);
+                boolean structured = isStructureSubtype(context.getServer(), dataTypeId);
 
                 if (!structured) {
                     throw new UaException(StatusCodes.Bad_DataEncodingInvalid);
@@ -137,17 +138,19 @@ public class AttributeReader {
         }
     }
 
-    private static boolean isStructureSubtype(NodeManager<UaNode> nodeManager, NodeId dataTypeId) {
-        UaNode dataTypeNode = nodeManager.get(dataTypeId);
+    private static boolean isStructureSubtype(OpcUaServer server, NodeId dataTypeId) {
+        UaNode dataTypeNode = server.getAddressSpaceManager()
+            .getManagedNode(dataTypeId)
+            .orElse(null);
 
         if (dataTypeNode != null) {
             Optional<NodeId> superTypeId = dataTypeNode.getReferences().stream()
                 .filter(r -> r.isInverse() && r.getReferenceTypeId().equals(Identifiers.HasSubtype))
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local(server.getNamespaceTable())))
                 .findFirst();
 
             return superTypeId
-                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(nodeManager, id))
+                .map(id -> id.equals(Identifiers.Structure) || isStructureSubtype(server, id))
                 .orElse(false);
         } else {
             return false;
@@ -205,14 +208,14 @@ public class AttributeReader {
             return null;
         }
 
-        NodeManager<UaNode> nodeManager = context.getServer().getNodeManager();
+        AddressSpaceManager addressSpaceManager = context.getServer().getAddressSpaceManager();
 
-        UaNode dataTypeNode = nodeManager.get(dataTypeId);
+        UaNode dataTypeNode = addressSpaceManager.getManagedNode(dataTypeId).orElse(null);
 
         if (dataTypeNode != null) {
             return dataTypeNode.getReferences().stream()
                 .filter(r -> r.isForward() && Identifiers.HasEncoding.equals(r.getReferenceTypeId()))
-                .flatMap(r -> opt2stream(nodeManager.getNode(r.getTargetNodeId())))
+                .flatMap(r -> opt2stream(addressSpaceManager.getManagedNode(r.getTargetNodeId())))
                 .filter(n -> encodingName.equals(n.getBrowseName()))
                 .map(Node::getNodeId)
                 .findFirst()

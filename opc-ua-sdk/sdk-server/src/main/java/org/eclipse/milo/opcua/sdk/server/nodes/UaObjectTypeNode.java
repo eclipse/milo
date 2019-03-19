@@ -71,7 +71,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public UaMethodNode findMethodNode(NodeId methodId) {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode) && Objects.equals(n.getNodeId(), methodId))
             .map(UaMethodNode.class::cast)
             .findFirst()
@@ -81,7 +81,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
     public List<UaMethodNode> getMethodNodes() {
         return getReferences().stream()
             .filter(HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> (n instanceof UaMethodNode))
             .map(UaMethodNode.class::cast)
             .collect(Collectors.toList());
@@ -240,7 +240,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
                 isAbstract
             );
 
-            node.addReferences(references);
+            references.forEach(node::addReference);
 
             return node;
         }

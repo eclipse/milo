@@ -23,6 +23,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -71,15 +72,22 @@ public class AttributeDelegateChainTest {
             }
         );
 
-        UaNodeContext context = new UaNodeContext() {
-            @Override
-            public NodeManager<UaNode> getNodeManager() {
-                return new UaNodeManager();
-            }
+        UaNodeManager nodeManager = new UaNodeManager();
 
+        UaNodeContext context = new UaNodeContext() {
             @Override
             public OpcUaServer getServer() {
                 return null;
+            }
+
+            @Override
+            public NodeManager<UaNode> getNodeManager() {
+                return nodeManager;
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return new NamespaceTable();
             }
         };
 

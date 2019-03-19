@@ -151,12 +151,8 @@ public class ExampleServer {
 
         server = new OpcUaServer(serverConfig);
 
-        ExampleNamespace exampleNamespace = server.getNamespaceManager().registerAndAdd(
-            ExampleNamespace.NAMESPACE_URI,
-            idx -> new ExampleNamespace(server, idx)
-        );
-
-        exampleNamespace.initialize();
+        ExampleNamespace exampleNamespace = new ExampleNamespace(server);
+        exampleNamespace.startup();
     }
 
     private Set<EndpointConfiguration> createEndpointConfigurations(X509Certificate certificate) {

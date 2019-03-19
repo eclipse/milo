@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.lang.ref.WeakReference;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -180,6 +179,28 @@ public abstract class UaNode implements UaServerNode {
         fireAttributeChanged(AttributeId.UserWriteMask, userWriteMask);
     }
 
+    /**
+     * Delete this Node, its References, and all its child Nodes and their References, recursively.
+     */
+    public final void delete() {
+        NodeManager<UaNode> nodeManager = context.getNodeManager();
+
+        nodeManager.removeNode(nodeId);
+
+        for (Reference reference : nodeManager.getReferences(nodeId)) {
+            if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
+                Optional<UaNode> targetNode = nodeManager.getNode(
+                    reference.getTargetNodeId(),
+                    getNodeContext().getServer().getNamespaceTable()
+                );
+
+                targetNode.ifPresent(UaNode::delete);
+            }
+
+            nodeManager.removeReferences(reference, context.getNamespaceTable());
+        }
+    }
+
     @Override
     public final UaNodeContext getNodeContext() {
         return context;
@@ -189,38 +210,46 @@ public abstract class UaNode implements UaServerNode {
         return context.getNodeManager();
     }
 
-    protected Optional<UaNode> getNode(NodeId nodeId) {
-        return getNodeManager().getNode(nodeId);
+    protected Optional<UaNode> getManagedNode(NodeId nodeId) {
+        //return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
+        return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
     }
 
-    protected Optional<UaNode> getNode(ExpandedNodeId nodeId) {
-        return getNodeManager().getNode(nodeId);
+    protected Optional<UaNode> getManagedNode(ExpandedNodeId nodeId) {
+        //return getNodeManager(nodeId).flatMap(n -> n.getNode(nodeId));
+        return context.getServer().getAddressSpaceManager().getManagedNode(nodeId);
     }
 
     public ImmutableList<Reference> getReferences() {
-        return ImmutableList.copyOf(getNodeManager().getReferences(nodeId));
+        return ImmutableList.copyOf(
+            context.getServer()
+                .getAddressSpaceManager()
+                .getManagedReferences(nodeId)
+        );
     }
 
-    public synchronized void addReference(Reference reference) {
-        getNodeManager().addReference(reference);
+    /**
+     * Add {@code reference} and its inverse.
+     *
+     * @param reference the {@link Reference} to add.
+     */
+    public void addReference(Reference reference) {
+        context.getNodeManager().addReferences(reference, context.getNamespaceTable());
     }
 
-    public synchronized void addReferences(Collection<Reference> c) {
-        c.forEach(this::addReference);
-    }
-
-    public synchronized void removeReference(Reference reference) {
-        getNodeManager().removeReference(reference);
-    }
-
-    public synchronized void removeReferences(Collection<Reference> c) {
-        c.forEach(this::removeReference);
+    /**
+     * Remove {@code reference} and its inverse.
+     *
+     * @param reference the {@link Reference} to remove.
+     */
+    public void removeReference(Reference reference) {
+        context.getNodeManager().removeReferences(reference, context.getNamespaceTable());
     }
 
     public <T> Optional<T> getProperty(QualifiedProperty<T> property) {
         String namespaceUri = property.getNamespaceUri();
 
-        UShort namespaceIndex = context.getNamespaceManager().getNamespaceTable().getIndex(namespaceUri);
+        UShort namespaceIndex = context.getServer().getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
             QualifiedName browseName = new QualifiedName(
@@ -245,7 +274,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public <T> void setProperty(QualifiedProperty<T> property, T value) {
-        UShort namespaceIndex = context.getNamespaceManager()
+        UShort namespaceIndex = context.getServer()
             .getNamespaceTable().getIndex(property.getNamespaceUri());
 
         if (namespaceIndex == null) {
@@ -285,7 +314,7 @@ public abstract class UaNode implements UaServerNode {
 
     public Optional<VariableNode> getPropertyNode(QualifiedProperty<?> property) {
         Optional<QualifiedName> qualifiedName = property
-            .getQualifiedName(context.getNamespaceManager().getNamespaceTable());
+            .getQualifiedName(context.getServer().getNamespaceTable());
 
         return qualifiedName.map(this::getPropertyNode)
             .orElseGet(() -> getPropertyNode(property.getBrowseName()));
@@ -296,10 +325,10 @@ public abstract class UaNode implements UaServerNode {
     }
 
     public Optional<VariableNode> getPropertyNode(QualifiedName browseName) {
-        Node node = getNodeManager().getReferences(nodeId)
+        Node node = getReferences()
             .stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -377,10 +406,10 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getNodeManager().getReferences(nodeId)
+        return getReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(nodePredicate)
             .filter(n -> n.getBrowseName().equals(browseName))
             .findFirst();
@@ -401,16 +430,16 @@ public abstract class UaNode implements UaServerNode {
         Predicate<UaNode> nodePredicate,
         Predicate<Reference> referencePredicate) {
 
-        return getNodeManager().getReferences(nodeId)
+        return getReferences()
             .stream()
             .filter(referencePredicate)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(nodePredicate)
             .filter(n -> {
                 String nodeBrowseName = n.getBrowseName().getName();
 
                 UShort index = n.getBrowseName().getNamespaceIndex();
-                String nodeBrowseNameUri = context.getNamespaceManager().getNamespaceTable().getUri(index);
+                String nodeBrowseNameUri = context.getServer().getNamespaceTable().getUri(index);
 
                 return Objects.equals(browseName, nodeBrowseName) && Objects.equals(namespaceUri, nodeBrowseNameUri);
             })
@@ -418,7 +447,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<ObjectNode> getObjectComponent(String namespaceUri, String name) {
-        UShort namespaceIndex = context.getNamespaceManager().getNamespaceTable().getIndex(namespaceUri);
+        UShort namespaceIndex = context.getServer().getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
             return getObjectComponent(new QualifiedName(namespaceIndex, name));
@@ -432,10 +461,10 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<ObjectNode> getObjectComponent(QualifiedName browseName) {
-        ObjectNode node = (ObjectNode) getNodeManager().getReferences(nodeId)
+        ObjectNode node = (ObjectNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> n.getNodeClass() == NodeClass.Object && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 
@@ -443,7 +472,7 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<VariableNode> getVariableComponent(String namespaceUri, String name) {
-        UShort namespaceIndex = context.getNamespaceManager().getNamespaceTable().getIndex(namespaceUri);
+        UShort namespaceIndex = context.getServer().getNamespaceTable().getIndex(namespaceUri);
 
         if (namespaceIndex != null) {
             return getVariableComponent(new QualifiedName(namespaceIndex, name));
@@ -457,10 +486,10 @@ public abstract class UaNode implements UaServerNode {
     }
 
     protected Optional<VariableNode> getVariableComponent(QualifiedName browseName) {
-        VariableNode node = (VariableNode) getNodeManager().getReferences(nodeId)
+        VariableNode node = (VariableNode) getReferences()
             .stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .filter(n -> n.getNodeClass() == NodeClass.Variable && n.getBrowseName().equals(browseName))
             .findFirst().orElse(null);
 

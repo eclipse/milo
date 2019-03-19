@@ -90,7 +90,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     public List<Node> getPropertyNodes() {
         return getReferences().stream()
             .filter(HAS_PROPERTY_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 
@@ -98,7 +98,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
         Node node = getReferences().stream()
             .filter(HAS_MODELLING_RULE_PREDICATE)
             .findFirst()
-            .flatMap(r -> getNode(r.getTargetNodeId()))
+            .flatMap(r -> getManagedNode(r.getTargetNodeId()))
             .orElse(null);
 
         ObjectNode objectNode = (node instanceof ObjectNode) ? (ObjectNode) node : null;
@@ -109,7 +109,7 @@ public class UaMethodNode extends UaNode implements MethodNode {
     public List<Node> getAlwaysGeneratesEventNodes() {
         return getReferences().stream()
             .filter(ALWAYS_GENERATES_EVENT_PREDICATE)
-            .flatMap(r -> opt2stream(getNode(r.getTargetNodeId())))
+            .flatMap(r -> opt2stream(getManagedNode(r.getTargetNodeId())))
             .collect(Collectors.toList());
     }
 

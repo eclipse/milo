@@ -79,9 +79,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
             Optional<CompletableFuture<VariableNode>> node = references.stream()
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
-                    Optional<CompletableFuture<VariableNode>> opt = r.getNodeId().local().map(
-                        id -> client.getAddressSpace().getVariableNode(id)
-                    );
+                    Optional<CompletableFuture<VariableNode>> opt = r.getNodeId()
+                        .local(client.getNamespaceTable())
+                        .map(id -> client.getAddressSpace().getVariableNode(id));
 
                     return opt2stream(opt);
                 })
@@ -111,8 +111,9 @@ public class UaVariableNode extends UaNode implements VariableNode {
 
             Optional<VariableTypeNode> node = references.stream()
                 .flatMap(r -> {
-                    Optional<VariableTypeNode> opt = r.getNodeId().local().map(
-                        id -> client.getAddressSpace().createVariableTypeNode(id));
+                    Optional<VariableTypeNode> opt = r.getNodeId()
+                        .local(client.getNamespaceTable())
+                        .map(id -> client.getAddressSpace().createVariableTypeNode(id));
 
                     return opt2stream(opt);
                 })

@@ -33,11 +33,13 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
+import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilter;
+import org.eclipse.milo.opcua.stack.core.types.structured.ContentFilterElementResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFieldList;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilter;
 import org.eclipse.milo.opcua.stack.core.types.structured.EventFilterResult;
@@ -48,6 +50,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ushort;
+import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.l;
 
 public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements EventItem {
 
@@ -55,6 +58,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     private volatile EventFilter filter;
     private volatile EventFilterResult filterResult;
+    private volatile boolean filterResultGood;
 
     private final AtomicBoolean eventOverflow = new AtomicBoolean(false);
 
@@ -95,16 +99,18 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
     @Override
     public void onEvent(BaseEventNode eventNode) {
         try {
-            ContentFilter whereClause = filter.getWhereClause();
+            if (filterResultGood) {
+                ContentFilter whereClause = filter.getWhereClause();
 
-            boolean matches = EventContentFilter.evaluate(
-                filterContext,
-                whereClause,
-                eventNode
-            );
+                boolean matches = EventContentFilter.evaluate(
+                    filterContext,
+                    whereClause,
+                    eventNode
+                );
 
-            if (matches) {
-                enqueue(selectEventFields(eventNode));
+                if (matches) {
+                    enqueue(selectEventFields(eventNode));
+                }
             }
         } catch (UaException e) {
             logger.error("Filter evaluation failed: {}", e.getMessage(), e);
@@ -168,10 +174,12 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Nonnull
     private Variant[] generateOverflowEventFields() {
+        BaseEventNode overflowEvent = null;
+
         try {
             UUID eventId = UUID.randomUUID();
 
-            BaseEventNode overflowEvent = server.getEventFactory().createEvent(
+            overflowEvent = server.getEventFactory().createEvent(
                 new NodeId(1, eventId),
                 Identifiers.EventQueueOverflowEventType
             );
@@ -197,6 +205,10 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
             logger.error("Error creating overflow event: {}", e.getMessage(), e);
 
             return new Variant[0];
+        } finally {
+            if (overflowEvent != null) {
+                overflowEvent.delete();
+            }
         }
     }
 
@@ -213,7 +225,20 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
             this.filter = (EventFilter) filterObject;
 
             filterResult = EventContentFilter.validate(filterContext, filter);
+
+            boolean selectClauseGood = l(filterResult.getSelectClauseResults())
+                .stream()
+                .allMatch(StatusCode::isGood);
+
+            boolean whereClauseGood = l(filterResult.getWhereClauseResult().getElementResults())
+                .stream()
+                .map(ContentFilterElementResult::getStatusCode)
+                .allMatch(StatusCode::isGood);
+
+            filterResultGood = selectClauseGood && whereClauseGood;
         } else {
+            filterResultGood = false;
+
             throw new UaException(StatusCodes.Bad_MonitoredItemFilterInvalid);
         }
     }
