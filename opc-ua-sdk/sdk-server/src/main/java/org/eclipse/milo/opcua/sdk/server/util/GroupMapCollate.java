@@ -11,11 +11,9 @@
 package org.eclipse.milo.opcua.sdk.server.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,8 +26,8 @@ public class GroupMapCollate {
     public static <T, K, R> CompletableFuture<List<R>> groupMapCollate(
         List<T> items,
         Function<T, K> grouper,
-        Function<K, Mapper<T, R>> mappers) {
-
+        Function<K, Mapper<T, R>> mappers
+    ) {
 
         List<Pending<T, R>> pending = new ArrayList<>();
 
@@ -61,11 +59,8 @@ public class GroupMapCollate {
                     throw new RuntimeException(message);
                 }
 
-                Iterator<Pending<T, R>> pi = pendingForKey.iterator();
-                Iterator<R> ri = results.iterator();
-
-                while (pi.hasNext() && ri.hasNext()) {
-                    pi.next().result.set(ri.next());
+                for (int i = 0; i < pendingForKey.size(); i++) {
+                    pendingForKey.get(i).result = results.get(i);
                 }
             });
         });
@@ -73,7 +68,7 @@ public class GroupMapCollate {
         return allOf(futures).thenApply(
             v ->
                 pending.stream()
-                    .map(p -> p.result.get())
+                    .map(p -> p.result)
                     .collect(Collectors.toList())
         );
     }
@@ -85,12 +80,20 @@ public class GroupMapCollate {
     }
 
     public interface Mapper<T, R> {
+
+        /**
+         * Map {@code items} into a List of results type {@code R}.
+         *
+         * @param items the items to map.
+         * @return a CompletableFuture containing the List of results.
+         */
         CompletableFuture<List<R>> map(List<T> items);
+
     }
 
 
     private static class Pending<T, R> {
-        final AtomicReference<R> result = new AtomicReference<>();
+        volatile R result;
 
         final T item;
         final int index;
