@@ -40,17 +40,19 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
     private String productUri = "client product uri not configured";
 
     private Supplier<String> sessionName;
+    private String[] sessionLocaleIds = new String[0];
     private UInteger sessionTimeout = uint(120000);
+
     private IdentityProvider identityProvider = new AnonymousProvider();
 
     private UInteger maxResponseMessageSize = uint(0);
     private UInteger maxPendingPublishRequests = uint(UInteger.MAX_VALUE);
 
     private BsdParser bsdParser = new GenericBsdParser();
+
     private UInteger keepAliveFailuresAllowed = uint(1);
     private UInteger keepAliveInterval = uint(5000);
     private UInteger keepAliveTimeout = uint(5000);
-
 
     public OpcUaClientConfigBuilder setApplicationName(LocalizedText applicationName) {
         this.applicationName = applicationName;
@@ -69,6 +71,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
 
     public OpcUaClientConfigBuilder setSessionName(Supplier<String> sessionName) {
         this.sessionName = sessionName;
+        return this;
+    }
+
+    public OpcUaClientConfigBuilder setSessionLocaleIds(String[] sessionLocaleIds) {
+        this.sessionLocaleIds = sessionLocaleIds;
         return this;
     }
 
@@ -212,6 +219,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             applicationUri,
             productUri,
             sessionName,
+            sessionLocaleIds,
             sessionTimeout,
             maxResponseMessageSize,
             maxPendingPublishRequests,
@@ -230,6 +238,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         private final String applicationUri;
         private final String productUri;
         private final Supplier<String> sessionName;
+        private final String[] sessionLocaleIds;
         private final UInteger sessionTimeout;
         private final UInteger maxResponseMessageSize;
         private final UInteger maxPendingPublishRequests;
@@ -245,6 +254,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             String applicationUri,
             String productUri,
             Supplier<String> sessionName,
+            String[] sessionLocaleIds,
             UInteger sessionTimeout,
             UInteger maxResponseMessageSize,
             UInteger maxPendingPublishRequests,
@@ -259,6 +269,7 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
             this.applicationUri = applicationUri;
             this.productUri = productUri;
             this.sessionName = sessionName;
+            this.sessionLocaleIds = sessionLocaleIds;
             this.sessionTimeout = sessionTimeout;
             this.maxResponseMessageSize = maxResponseMessageSize;
             this.maxPendingPublishRequests = maxPendingPublishRequests;
@@ -287,6 +298,11 @@ public class OpcUaClientConfigBuilder extends UaStackClientConfigBuilder {
         @Override
         public Supplier<String> getSessionName() {
             return sessionName;
+        }
+
+        @Override
+        public String[] getSessionLocaleIds() {
+            return sessionLocaleIds;
         }
 
         @Override

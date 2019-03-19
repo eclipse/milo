@@ -44,6 +44,11 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
     Supplier<String> getSessionName();
 
     /**
+     * @return the list of locale ids in priority order for localized strings
+     */
+    String[] getSessionLocaleIds();
+
+    /**
      * @return the session timeout, in milliseconds, to request.
      */
     UInteger getSessionTimeout();
@@ -131,6 +136,7 @@ public interface OpcUaClientConfig extends UaStackClientConfig {
         builder.setKeepAliveFailuresAllowed(config.getKeepAliveFailuresAllowed());
         builder.setKeepAliveInterval(config.getKeepAliveInterval());
         builder.setKeepAliveTimeout(config.getKeepAliveTimeout());
+        builder.setSessionLocaleIds(config.getSessionLocaleIds());
 
         return builder;
     }

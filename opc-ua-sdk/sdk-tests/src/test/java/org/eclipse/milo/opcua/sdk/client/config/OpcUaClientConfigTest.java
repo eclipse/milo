@@ -32,6 +32,7 @@ public class OpcUaClientConfigTest {
             .setMaxPendingPublishRequests(uint(2))
             .setIdentityProvider(new AnonymousProvider())
             .setBsdParser(new GenericBsdParser())
+            .setSessionLocaleIds(new String[]{"en", "es"})
             .build();
 
         OpcUaClientConfig copy = OpcUaClientConfig.copy(original).build();
@@ -46,6 +47,7 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getKeepAliveFailuresAllowed(), original.getKeepAliveFailuresAllowed());
         assertEquals(copy.getKeepAliveInterval(), original.getKeepAliveInterval());
         assertEquals(copy.getKeepAliveTimeout(), original.getKeepAliveTimeout());
+        assertEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
     }
 
     @Test
@@ -71,11 +73,13 @@ public class OpcUaClientConfigTest {
                     .setKeepAliveFailuresAllowed(uint(2))
                     .setKeepAliveInterval(uint(10000))
                     .setKeepAliveTimeout(uint(15000))
+                    .setSessionLocaleIds(new String[]{"en", "es"})
         );
 
         assertNotEquals(copy.getSessionName(), original.getSessionName());
         assertNotEquals(copy.getIdentityProvider(), original.getIdentityProvider());
         assertNotEquals(copy.getBsdParser(), original.getBsdParser());
+        assertNotEquals(copy.getSessionLocaleIds(), original.getSessionLocaleIds());
 
         assertEquals(copy.getSessionTimeout(), uint(0));
         assertEquals(copy.getRequestTimeout(), uint(0));
@@ -84,6 +88,7 @@ public class OpcUaClientConfigTest {
         assertEquals(copy.getKeepAliveFailuresAllowed(), uint(2));
         assertEquals(copy.getKeepAliveInterval(), uint(10000));
         assertEquals(copy.getKeepAliveTimeout(), uint(15000));
+        assertEquals(copy.getSessionLocaleIds(), new String[]{"en", "es"});
     }
 
 }

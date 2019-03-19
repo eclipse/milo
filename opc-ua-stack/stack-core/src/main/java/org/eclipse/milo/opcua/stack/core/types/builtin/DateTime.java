@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types.builtin;
 
+import java.time.Instant;
 import java.util.Date;
 
 import com.google.common.base.MoreObjects;
@@ -39,6 +40,10 @@ public final class DateTime {
         this(javaToUtc(date.getTime()));
     }
 
+    public DateTime(Instant instant) {
+        this(javaToUtc(instant.toEpochMilli()) + (instant.getNano() % 1_000_000) / 100);
+    }
+
     /**
      * @return this time as 100 nanosecond intervals since UTC epoch.
      */
@@ -58,6 +63,13 @@ public final class DateTime {
      */
     public Date getJavaDate() {
         return new Date(utcToJava(utcTime));
+    }
+
+    /**
+     * @return this time as an {@link Instant}.
+     */
+    public Instant getJavaInstant() {
+        return Instant.ofEpochSecond(utcToJava(utcTime) / 1_000, (utcTime % 10_000_000) * 100);
     }
 
     public boolean isNull() {
@@ -94,12 +106,19 @@ public final class DateTime {
         return new DateTime();
     }
 
+    /**
+     * @return a {@link DateTime} initialized to now, considering nanoseconds
+     */
+    public static DateTime nowNanos() {
+        return new DateTime(Instant.now());
+    }
+
     private static long javaToUtc(long javaTime) {
-        return (javaTime * 10000L) + EPOCH_DELTA;
+        return (javaTime * 10_000) + EPOCH_DELTA;
     }
 
     private static long utcToJava(long utcTime) {
-        return (utcTime - EPOCH_DELTA) / 10000L;
+        return (utcTime - EPOCH_DELTA) / 10_000;
     }
 
 }
