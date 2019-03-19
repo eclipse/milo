@@ -209,6 +209,8 @@ public class NodeFactory {
                         instance.setDataType(declaration.getDataType());
                         instance.setValueRank(declaration.getValueRank());
                         instance.setArrayDimensions(declaration.getArrayDimensions());
+                        instance.setAccessLevel(declaration.getAccessLevel());
+                        instance.setUserAccessLevel(declaration.getUserAccessLevel());
 
                         nodes.put(browsePath, instance);
                     } else {
