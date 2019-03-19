@@ -47,8 +47,10 @@ import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -58,6 +60,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.RedundancySupport;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 import org.eclipse.milo.opcua.stack.core.types.structured.BuildInfo;
+import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.eclipse.milo.opcua.stack.core.util.NonceUtil;
 import org.slf4j.Logger;
@@ -190,7 +193,39 @@ public class OpcUaNamespace extends ManagedNamespace {
         serverStatus.getCurrentTimeNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) {
-                return new DataValue(new Variant(DateTime.now()));
+                DataValue value = new DataValue(new Variant(DateTime.now()));
+
+                node.setValue(value);
+
+                return value;
+            }
+        });
+
+        serverStatus.setAttributeDelegate(new AttributeDelegate() {
+            @Override
+            public DataValue getValue(AttributeContext context, VariableNode node) throws UaException {
+                ServerStatusNode serverStatusNode = (ServerStatusNode) node;
+
+                ServerStatusDataType serverStatus = new ServerStatusDataType(
+                    serverStatusNode.getStartTime(),
+                    DateTime.now(),
+                    serverStatusNode.getState(),
+                    serverStatusNode.getBuildInfo(),
+                    serverStatusNode.getSecondsTillShutdown(),
+                    serverStatusNode.getShutdownReason()
+                );
+
+                try {
+                    ExtensionObject xo = ExtensionObject.encode(serverStatus);
+
+                    DataValue value = new DataValue(new Variant(xo));
+
+                    node.setValue(value);
+
+                    return value;
+                } catch (UaSerializationException e) {
+                    throw new UaException(e);
+                }
             }
         });
 

@@ -194,7 +194,7 @@ public final class ExtensionObject {
         }
     }
 
-    public static ExtensionObject encode(UaStructure struct) {
+    public static ExtensionObject encode(UaStructure struct) throws UaSerializationException {
         NodeId encodingId = struct.getBinaryEncodingId();
 
         return encodeDefaultBinary(struct, encodingId, OpcUaDataTypeManager.getInstance());
