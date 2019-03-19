@@ -26,26 +26,59 @@ public class AsyncOperationContext<R> {
         this.server = server;
     }
 
-    public CompletableFuture<R> getFuture() {
-        return future;
-    }
-
+    /**
+     * Get the {@link OpcUaServer} instance this operation is taking place in.
+     *
+     * @return the {@link OpcUaServer} instance this operation is taking place in.
+     */
     public OpcUaServer getServer() {
         return server;
     }
 
+    /**
+     * Get the {@link CompletableFuture} backing this operation.
+     * <p>
+     * Do not use this future to complete the operation; use {@link #success(Object)}} or {@link #failure(UaException)}
+     * overrides instead.
+     *
+     * @return the {@link CompletableFuture} backing this operation.
+     */
+    public CompletableFuture<R> getFuture() {
+        return future;
+    }
+
+    /**
+     * Complete this operation successfully with {@code result}.
+     *
+     * @param result the operation result.
+     */
     public void success(R result) {
         future.complete(result);
     }
 
+    /**
+     * Fail this operation with {@code failure}.
+     *
+     * @param failure a {@link UaException} representing the failure.
+     */
     public void failure(UaException failure) {
         future.completeExceptionally(failure);
     }
 
+    /**
+     * Fail this operation with {@code statusCode}.
+     *
+     * @param statusCode the {@link StatusCode} representing the failure.
+     */
     public void failure(StatusCode statusCode) {
         failure(new UaException(statusCode));
     }
 
+    /**
+     * Fail this operation with {@code statusCode}.
+     *
+     * @param statusCode the status code representing the failure.
+     */
     public void failure(long statusCode) {
         failure(new StatusCode(statusCode));
     }

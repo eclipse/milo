@@ -18,6 +18,7 @@ import java.util.function.Predicate;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 /**
@@ -42,6 +43,11 @@ public class EmptyNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
+    public boolean containsNode(ExpandedNodeId nodeId) {
+        return false;
+    }
+
+    @Override
     public Optional<T> addNode(T node) {
         return Optional.empty();
     }
@@ -52,7 +58,17 @@ public class EmptyNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
+    public Optional<T> getNode(ExpandedNodeId nodeId) {
+        return Optional.empty();
+    }
+
+    @Override
     public Optional<T> removeNode(NodeId nodeId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<T> removeNode(ExpandedNodeId nodeId) {
         return Optional.empty();
     }
 

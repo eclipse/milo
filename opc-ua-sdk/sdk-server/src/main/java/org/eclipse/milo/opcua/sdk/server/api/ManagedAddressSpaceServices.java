@@ -48,8 +48,8 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final UaNodeManager nodeManager = new UaNodeManager();
 
+    private final UaNodeManager nodeManager;
     private final UaNodeContext nodeContext;
     private final NodeFactory nodeFactory;
 
@@ -57,6 +57,8 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
 
     public ManagedAddressSpaceServices(OpcUaServer server) {
         this.server = server;
+
+        nodeManager = new UaNodeManager(server.getNamespaceTable());
 
         nodeContext = new UaNodeContext() {
             @Override

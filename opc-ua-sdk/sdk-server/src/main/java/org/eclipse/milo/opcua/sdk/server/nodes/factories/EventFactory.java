@@ -46,7 +46,7 @@ public class EventFactory extends AbstractLifecycle {
 
         this.server = server;
 
-        nodeManager = new UaNodeManager();
+        nodeManager = new UaNodeManager(server.getNamespaceTable());
 
         nodeFactory = new NodeFactory(
             new EventNodeContext(server, nodeManager),

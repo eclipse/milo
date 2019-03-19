@@ -54,7 +54,7 @@ public class UaNodeTest {
         Mockito.when(server.getObjectTypeManager()).thenReturn(objectTypeManager);
         Mockito.when(server.getVariableTypeManager()).thenReturn(variableTypeManager);
 
-        UaNodeManager nodeManager = new UaNodeManager();
+        UaNodeManager nodeManager = new UaNodeManager(server.getNamespaceTable());
         addressSpaceManager.register(nodeManager);
 
         UaNodeContext nodeContext = new UaNodeContext() {
@@ -83,7 +83,7 @@ public class UaNodeTest {
     public void testCreateDelete() {
         NodeId nodeId = new NodeId(1, "TestObject");
 
-        UaNodeManager nodeManager = new UaNodeManager();
+        UaNodeManager nodeManager = new UaNodeManager(server.getNamespaceTable());
         server.getAddressSpaceManager().register(nodeManager);
 
         UaNodeContext nodeContext = new UaNodeContext() {
@@ -132,7 +132,7 @@ public class UaNodeTest {
     public void testCreateDeleteComplexInstance() throws UaException {
         NodeId nodeId = new NodeId(1, "TestAnalog");
 
-        UaNodeManager nodeManager = new UaNodeManager();
+        UaNodeManager nodeManager = new UaNodeManager(server.getNamespaceTable());
         server.getAddressSpaceManager().register(nodeManager);
 
         assertFalse(nodeManager.containsNode(nodeId));

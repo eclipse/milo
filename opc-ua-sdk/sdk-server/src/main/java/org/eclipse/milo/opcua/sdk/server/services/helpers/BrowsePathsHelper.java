@@ -249,7 +249,7 @@ public class BrowsePathsHelper {
         List<CompletableFuture<List<DataValue>>> futures = newArrayListWithCapacity(targetNodeIds.size());
 
         for (ExpandedNodeId xni : targetNodeIds) {
-            CompletableFuture<List<DataValue>> future = xni.local()
+            CompletableFuture<List<DataValue>> future = xni.local(server.getNamespaceTable())
                 .map(nodeId -> {
                     ReadValueId readValueId = new ReadValueId(
                         nodeId,

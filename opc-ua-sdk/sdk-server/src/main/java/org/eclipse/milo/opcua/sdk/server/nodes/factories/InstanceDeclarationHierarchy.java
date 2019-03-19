@@ -18,6 +18,7 @@ import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
@@ -57,10 +58,11 @@ public class InstanceDeclarationHierarchy {
 
     public static InstanceDeclarationHierarchy create(
         AddressSpaceManager addressSpaceManager,
+        NamespaceTable namespaceTable,
         NodeId typeDefinitionId,
         boolean includeOptionalNodes) {
 
-        Builder builder = new Builder(addressSpaceManager, includeOptionalNodes);
+        Builder builder = new Builder(addressSpaceManager, namespaceTable, includeOptionalNodes);
 
         return builder.build(typeDefinitionId, includeOptionalNodes);
     }
@@ -71,10 +73,17 @@ public class InstanceDeclarationHierarchy {
         private final ReferenceTable referenceTable = new ReferenceTable();
 
         private final AddressSpaceManager addressSpaceManager;
+        private final NamespaceTable namespaceTable;
         private final boolean includeOptionalNodes;
 
-        Builder(AddressSpaceManager addressSpaceManager, boolean includeOptionalNodes) {
+        Builder(
+            AddressSpaceManager addressSpaceManager,
+            NamespaceTable namespaceTable,
+            boolean includeOptionalNodes
+        ) {
+
             this.addressSpaceManager = addressSpaceManager;
+            this.namespaceTable = namespaceTable;
             this.includeOptionalNodes = includeOptionalNodes;
         }
 
@@ -84,9 +93,9 @@ public class InstanceDeclarationHierarchy {
                 .stream()
                 .filter(r -> r.isInverse() && Identifiers.HasSubtype.equals(r.getReferenceTypeId()))
                 .findFirst()
-                .flatMap(r -> r.getTargetNodeId().local())
+                .flatMap(r -> r.getTargetNodeId().local(namespaceTable))
                 .map(parentTypeId -> InstanceDeclarationHierarchy
-                    .create(addressSpaceManager, parentTypeId, includeOptionalNodes));
+                    .create(addressSpaceManager, namespaceTable, parentTypeId, includeOptionalNodes));
 
             final InstanceDeclarationHierarchy idh = buildHierarchyForType(typeDefinitionId);
 

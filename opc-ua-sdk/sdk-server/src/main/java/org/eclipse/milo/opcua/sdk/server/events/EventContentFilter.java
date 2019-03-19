@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.util.AttributeReader;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -494,11 +495,12 @@ public class EventContentFilter {
 
     private static Optional<UaNode> getParentTypeDefinition(UaNode node, OpcUaServer server) {
         AddressSpaceManager addressSpaceManager = server.getAddressSpaceManager();
+        NamespaceTable namespaceTable = server.getNamespaceTable();
 
         return addressSpaceManager.getManagedReferences(node.getNodeId())
             .stream()
             .filter(Reference.SUBTYPE_OF)
-            .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+            .flatMap(r -> opt2stream(r.getTargetNodeId().local(namespaceTable)))
             .findFirst()
             .flatMap(addressSpaceManager::getManagedNode);
     }

@@ -20,9 +20,12 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MapMaker;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
@@ -30,7 +33,11 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     private final ConcurrentMap<NodeId, T> nodeMap;
     private final ListMultimap<NodeId, Reference> referenceMultimap;
 
-    public AbstractNodeManager() {
+    private final NamespaceTable namespaceTable;
+
+    public AbstractNodeManager(NamespaceTable namespaceTable) {
+        this.namespaceTable = namespaceTable;
+
         nodeMap = makeNodeMap(new MapMaker());
         referenceMultimap = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
     }
@@ -45,10 +52,23 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
         return mapMaker.makeMap();
     }
 
+    /**
+     * Get the backing {@link ConcurrentMap} holding this {@link NodeManager}'s Nodes.
+     *
+     * @return the backing {@link ConcurrentMap} holding this {@link NodeManager}'s Nodes.
+     */
     protected ConcurrentMap<NodeId, T> getNodeMap() {
         return nodeMap;
     }
 
+    /**
+     * Get the backing {@link ListMultimap} holding this {@link NodeManager}'s References.
+     * <p>
+     * The backing ListMultimap is synchronized and should be treated with caution as described by
+     * {@link Multimaps#synchronizedMultimap(Multimap)}.
+     *
+     * @return the backing {@link ListMultimap} holding this {@link NodeManager}'s References.
+     */
     protected ListMultimap<NodeId, Reference> getReferenceMultimap() {
         return referenceMultimap;
     }
@@ -56,6 +76,13 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     @Override
     public boolean containsNode(NodeId nodeId) {
         return nodeMap.containsKey(nodeId);
+    }
+
+    @Override
+    public boolean containsNode(ExpandedNodeId nodeId) {
+        return nodeId.local(namespaceTable)
+            .map(this::containsNode)
+            .orElse(false);
     }
 
     @Override
@@ -69,25 +96,50 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
+    public Optional<T> getNode(ExpandedNodeId nodeId) {
+        return nodeId.local(namespaceTable).flatMap(this::getNode);
+    }
+
+    @Override
     public Optional<T> removeNode(NodeId nodeId) {
         return Optional.ofNullable(nodeMap.remove(nodeId));
     }
 
     @Override
+    public Optional<T> removeNode(ExpandedNodeId nodeId) {
+        return nodeId.local(namespaceTable).flatMap(this::removeNode);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The inverse {@link Reference} of {@code reference} will also be added.
+     *
+     * @param reference the {@link Reference} to add.
+     */
+    @Override
     public void addReference(Reference reference) {
         referenceMultimap.put(reference.getSourceNodeId(), reference);
 
-        reference.invert().ifPresent(
+        reference.invert(namespaceTable).ifPresent(
             inverted ->
                 referenceMultimap.put(inverted.getSourceNodeId(), inverted)
         );
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The inverse {@link Reference} of {@code reference} will also be removed.
+     *
+     * @param reference the {@link Reference} to remove.
+     * @see {@link Reference#invert(org.eclipse.milo.opcua.stack.core.NamespaceTable)}
+     */
     @Override
     public void removeReference(Reference reference) {
         referenceMultimap.remove(reference.getSourceNodeId(), reference);
 
-        reference.invert().ifPresent(
+        reference.invert(namespaceTable).ifPresent(
             inverted ->
                 referenceMultimap.remove(inverted.getSourceNodeId(), inverted)
         );

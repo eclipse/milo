@@ -95,7 +95,8 @@ public abstract class UaNode implements Node {
             Optional<PropertyNode> node = references.stream()
                 .filter(r -> browseName.equals(r.getBrowseName()))
                 .flatMap(r -> {
-                    Optional<PropertyNode> opt = r.getNodeId().local()
+                    Optional<PropertyNode> opt = r.getNodeId()
+                        .local(client.getNamespaceTable())
                         .map(id -> new PropertyNode(client, id));
 
                     return opt2stream(opt);

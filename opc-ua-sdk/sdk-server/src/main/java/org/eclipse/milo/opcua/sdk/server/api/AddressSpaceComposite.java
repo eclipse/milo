@@ -162,7 +162,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     }
 
     private AddressSpace getAddressSpace(ExpandedNodeId nodeId) {
-        return nodeId.local()
+        return nodeId.local(getServer().getNamespaceTable())
             .map(this::getAddressSpace)
             .orElse(new EmptyAddressSpace(server));
     }

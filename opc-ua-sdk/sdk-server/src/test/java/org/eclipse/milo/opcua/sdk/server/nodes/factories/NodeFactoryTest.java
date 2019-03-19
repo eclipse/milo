@@ -54,9 +54,10 @@ public class NodeFactoryTest {
     public void setup() throws Exception {
         server = Mockito.mock(OpcUaServer.class);
 
-        nodeManager = new UaNodeManager();
-
         NamespaceTable namespaceTable = new NamespaceTable();
+        Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
+
+        nodeManager = new UaNodeManager(server.getNamespaceTable());
 
         AddressSpaceManager addressSpaceManager = Mockito.mock(AddressSpaceManager.class);
 
@@ -93,7 +94,6 @@ public class NodeFactoryTest {
             }
         };
 
-        Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
 
         new UaNodeLoader(context, nodeManager).loadNodes();

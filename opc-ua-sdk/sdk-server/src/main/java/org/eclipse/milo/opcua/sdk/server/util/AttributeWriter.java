@@ -418,7 +418,7 @@ public class AttributeWriter {
             return dataTypeNode.getReferences()
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local(server.getNamespaceTable())))
                 .findFirst()
                 .orElse(null);
         } else {

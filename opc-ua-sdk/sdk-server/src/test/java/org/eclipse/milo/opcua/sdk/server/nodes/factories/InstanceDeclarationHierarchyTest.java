@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.namespaces.loader.UaNodeLoader;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.mockito.Mockito;
@@ -35,7 +36,9 @@ public class InstanceDeclarationHierarchyTest {
 
     @Test
     public void test() throws Exception {
-        UaNodeManager nodeManager = new UaNodeManager();
+        NamespaceTable namespaceTable = new NamespaceTable();
+
+        UaNodeManager nodeManager = new UaNodeManager(namespaceTable);
 
         AddressSpaceManager addressSpaceManager = Mockito.mock(AddressSpaceManager.class);
 
@@ -63,6 +66,7 @@ public class InstanceDeclarationHierarchyTest {
         OpcUaServer server = Mockito.mock(OpcUaServer.class);
 
         Mockito.when(server.getAddressSpaceManager()).thenReturn(addressSpaceManager);
+        Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
 
         UaNodeContext context = new UaNodeContext() {
             @Override
@@ -80,6 +84,7 @@ public class InstanceDeclarationHierarchyTest {
 
         InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy.create(
             addressSpaceManager,
+            namespaceTable,
             Identifiers.AnalogItemType,
             true
         );

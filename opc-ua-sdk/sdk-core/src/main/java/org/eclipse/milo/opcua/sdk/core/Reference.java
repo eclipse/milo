@@ -117,9 +117,27 @@ public class Reference {
      * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
      *
      * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
+     * @deprecated use {@link #invert(NamespaceTable)}
      */
+    @Deprecated
     public Optional<Reference> invert() {
         return getTargetNodeId().local().map(
+            sourceNodeId -> new Reference(
+                sourceNodeId,
+                getReferenceTypeId(),
+                getSourceNodeId().expanded(),
+                !isForward()
+            )
+        );
+    }
+
+    /**
+     * Return an inverted instance of this Reference so long as the target NodeId resides within this server.
+     *
+     * @return an inverted instance of this Reference so long as the target NodeId resides within this server.
+     */
+    public Optional<Reference> invert(NamespaceTable namespaceTable) {
+        return getTargetNodeId().local(namespaceTable).map(
             sourceNodeId -> new Reference(
                 sourceNodeId,
                 getReferenceTypeId(),
@@ -145,7 +163,7 @@ public class Reference {
         NodeId newReferenceTypeId = referenceTypeId.reindex(namespaceTable, namespaceUri);
 
         // re-index targetNodeId only if it's local, otherwise leave it alone.
-        ExpandedNodeId newTargetNodeId = targetNodeId.local()
+        ExpandedNodeId newTargetNodeId = targetNodeId.local(namespaceTable)
             .map(id -> id.reindex(namespaceTable, namespaceUri).expanded())
             .orElse(targetNodeId);
 

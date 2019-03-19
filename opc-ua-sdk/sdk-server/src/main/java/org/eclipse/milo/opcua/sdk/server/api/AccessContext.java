@@ -17,11 +17,11 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 public interface AccessContext {
 
     /**
-     * Get the {@link Session} associated with this access request, if present.
+     * Get the {@link Session} associated with this operation, if present.
      * <p>
-     * If empty, the access request is internal and no user- or session-related restrictions should be applied.
+     * If empty, the operation is internal and no user- or session-related restrictions should be applied.
      *
-     * @return the {@link Session} associated with this access request, if present.
+     * @return the {@link Session} associated with this operation, if present.
      */
     Optional<Session> getSession();
 

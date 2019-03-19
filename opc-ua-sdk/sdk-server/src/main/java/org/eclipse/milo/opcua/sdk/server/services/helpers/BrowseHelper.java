@@ -248,7 +248,7 @@ public class BrowseHelper {
             NodeId referenceTypeId = masks.contains(BrowseResultMask.ReferenceTypeId) ?
                 reference.getReferenceTypeId() : NodeId.NULL_VALUE;
 
-            return targetNodeId.local().map(nodeId -> {
+            return targetNodeId.local(server.getNamespaceTable()).map(nodeId -> {
                 CompletableFuture<BrowseAttributes> attributesFuture = browseAttributes(nodeId, masks);
 
                 CompletableFuture<ReferenceDescription> referenceFuture = attributesFuture.thenCompose(attributes -> {

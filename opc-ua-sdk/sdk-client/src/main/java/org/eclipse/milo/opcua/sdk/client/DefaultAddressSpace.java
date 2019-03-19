@@ -254,8 +254,10 @@ public class DefaultAddressSpace implements AddressSpace {
 
                 return references.stream()
                     .flatMap(r -> opt2stream(
-                        r.getNodeId().local().map(
-                            id -> createNode(id, r.getNodeClass()))))
+                        r.getNodeId()
+                            .local(client.getNamespaceTable())
+                            .map(id -> createNode(id, r.getNodeClass()))
+                    ))
                     .collect(toList());
             }
         );

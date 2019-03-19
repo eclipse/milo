@@ -31,6 +31,16 @@ public interface NodeManager<T extends Node> {
     boolean containsNode(NodeId nodeId);
 
     /**
+     * Return {@code true} if this {@link NodeManager} contains {@code nodeId}.
+     * <p>
+     * Returns {@code false} if {@code nodeId} is non-local.
+     *
+     * @param nodeId the {@link ExpandedNodeId} to check.
+     * @return {@code true} if this {@link NodeManager} contains {@code nodeId}.
+     */
+    boolean containsNode(ExpandedNodeId nodeId);
+
+    /**
      * Add {@code node} to this {@link NodeManager}, replacing a previous Node identified by the same {@link NodeId}
      * if it exists.
      *
@@ -48,6 +58,18 @@ public interface NodeManager<T extends Node> {
     Optional<T> getNode(NodeId nodeId);
 
     /**
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, or {@code null} if it does not
+     * exist.
+     * <p>
+     * Returns {@code false} if {@code nodeId} is non-local.
+     *
+     * @param nodeId the {@link ExpandedNodeId} identifying the {@link Node} to get.
+     * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does
+     * not exist.
+     */
+    Optional<T> getNode(ExpandedNodeId nodeId);
+
+    /**
      * Remove the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
      *
      * @param nodeId the {@link NodeId} identifying the Node to remove.
@@ -56,9 +78,17 @@ public interface NodeManager<T extends Node> {
     Optional<T> removeNode(NodeId nodeId);
 
     /**
-     * Add a {@link Reference} to this {@link NodeManager}.
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, if it exists.
      * <p>
-     * An inverse Reference of {@code reference} will also be added.
+     * Returns {@link Optional#empty()} if {@code nodeId} is non-local.
+     *
+     * @param nodeId the {@link ExpandedNodeId} identifying the Node to get.
+     * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, if it exists.
+     */
+    Optional<T> removeNode(ExpandedNodeId nodeId);
+
+    /**
+     * Add a {@link Reference} to this {@link NodeManager}.
      *
      * @param reference the {@link Reference} to add.
      */
@@ -66,8 +96,6 @@ public interface NodeManager<T extends Node> {
 
     /**
      * Remove a {@link Reference} from this {@link NodeManager}.
-     * <p>
-     * The inverse Reference of {@code reference} will also be removed.
      *
      * @param reference the {@link Reference} to remove.
      */
@@ -91,34 +119,49 @@ public interface NodeManager<T extends Node> {
      */
     List<Reference> getReferences(NodeId nodeId, Predicate<Reference> filter);
 
+    /**
+     * Return {@code true} if this {@link NodeManager} contains {@code node}.
+     *
+     * @param node the {@link Node} to check.
+     * @return {@code true} if this {@link NodeManager} contains {@code node}.
+     */
     default boolean containsNode(Node node) {
         return containsNode(node.getNodeId());
     }
 
-    default boolean containsNode(ExpandedNodeId nodeId) {
-        return nodeId.local().map(this::containsNode).orElse(false);
-    }
-
+    /**
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, or {@code null} if it does not
+     * exist.
+     *
+     * @param nodeId the {@link NodeId} identifying the {@link Node} to get.
+     * @return the Node identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does not exist.
+     */
     @Nullable
     default T get(NodeId nodeId) {
         return getNode(nodeId).orElse(null);
     }
 
+    /**
+     * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, or {@code null} if it does not
+     * exist.
+     *
+     * @param nodeId the {@link NodeId} identifying the Node to get.
+     * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does
+     * not exist.
+     */
     @Nullable
     default T get(ExpandedNodeId nodeId) {
         return getNode(nodeId).orElse(null);
     }
 
-    default Optional<T> getNode(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(this::getNode);
-    }
-
+    /**
+     * Remove {@code node} from this {@link NodeManager}, if it exists.
+     *
+     * @param node the {@link Node} to remove.
+     * @return the {@link Node} removed from this {@link NodeManager}, if it exists.
+     */
     default Optional<T> removeNode(T node) {
         return removeNode(node.getNodeId());
-    }
-
-    default Optional<T> removeNode(ExpandedNodeId nodeId) {
-        return nodeId.local().flatMap(this::removeNode);
     }
 
 }

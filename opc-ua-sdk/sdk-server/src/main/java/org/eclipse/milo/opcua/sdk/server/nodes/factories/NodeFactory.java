@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaObjectNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -104,8 +105,11 @@ public class NodeFactory {
                 "unknown type definition: " + typeDefinitionId);
         }
 
+        NamespaceTable namespaceTable = context.getServer().getNamespaceTable();
+
         InstanceDeclarationHierarchy idh = InstanceDeclarationHierarchy.create(
             addressSpaceManager,
+            namespaceTable,
             typeDefinitionId,
             includeOptionalNodes
         );

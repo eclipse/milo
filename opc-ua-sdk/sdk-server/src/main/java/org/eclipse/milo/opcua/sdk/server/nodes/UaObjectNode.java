@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.stack.core.AttributeId;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -150,6 +151,10 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             .getServer()
             .getAddressSpaceManager();
 
+        NamespaceTable namespaceTable = getNodeContext()
+            .getServer()
+            .getNamespaceTable();
+
         NodeId nodeId = asm.getManagedReferences(typeDefinitionId)
             .stream()
             .filter(HAS_COMPONENT_PREDICATE)
@@ -165,7 +170,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             NodeId parentTypeId = asm.getManagedReferences(typeDefinitionId)
                 .stream()
                 .filter(Reference.SUBTYPE_OF)
-                .flatMap(r -> opt2stream(r.getTargetNodeId().local()))
+                .flatMap(r -> opt2stream(r.getTargetNodeId().local(namespaceTable)))
                 .findFirst()
                 .orElse(null);
 

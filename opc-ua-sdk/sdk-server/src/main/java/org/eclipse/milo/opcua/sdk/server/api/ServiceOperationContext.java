@@ -43,6 +43,9 @@ public class ServiceOperationContext<T, R> extends AsyncOperationContext<List<R>
         this.diagnosticsContext = diagnosticsContext;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<Session> getSession() {
         return Optional.ofNullable(session);
