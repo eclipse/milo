@@ -28,7 +28,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>0.2.4</version>
+    <version>0.2.5</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-server</artifactId>
-    <version>0.2.4</version>
+    <version>0.2.5</version>
 </dependency>
 ```
 
@@ -48,7 +48,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-client</artifactId>
-    <version>0.2.4</version>
+    <version>0.2.5</version>
 </dependency>
 ```
 
@@ -56,7 +56,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>stack-server</artifactId>
-    <version>0.2.4</version>
+    <version>0.2.5</version>
 </dependency>
 ```
 
@@ -71,15 +71,6 @@ If you want to reference a `SNAPSHOT` release a reference to the Sonatype snapsh
 ```
 
 ## High Level Roadmap
-### Version 0.3
-#### Stack
-- HTTPS transport
-
-#### Server
-- Events
-- Instantiation of Complex Object and Variable instances (NodeFactory)
-
-
 ### Version 0.4
 #### Server
 - Diagnostic Nodes
