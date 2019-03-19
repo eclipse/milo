@@ -57,7 +57,7 @@ public class NodeFactoryTest {
         NamespaceTable namespaceTable = new NamespaceTable();
         Mockito.when(server.getNamespaceTable()).thenReturn(namespaceTable);
 
-        nodeManager = new UaNodeManager(server.getNamespaceTable());
+        nodeManager = new UaNodeManager();
 
         AddressSpaceManager addressSpaceManager = Mockito.mock(AddressSpaceManager.class);
 
@@ -65,14 +65,14 @@ public class NodeFactoryTest {
             .when(addressSpaceManager.getManagedNode(Mockito.any(NodeId.class)))
             .then(
                 (Answer<Optional<UaNode>>) invocationOnMock ->
-                    nodeManager.getNode((NodeId) invocationOnMock.getArgument(0))
+                    nodeManager.getNode(invocationOnMock.getArgument(0))
             );
 
         Mockito
             .when(addressSpaceManager.getManagedNode(Mockito.any(ExpandedNodeId.class)))
             .then(
                 (Answer<Optional<UaNode>>) invocationOnMock ->
-                    nodeManager.getNode((ExpandedNodeId) invocationOnMock.getArgument(0))
+                    nodeManager.getNode(invocationOnMock.getArgument(0), namespaceTable)
             );
 
         Mockito

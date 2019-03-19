@@ -260,13 +260,6 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             node.getNodeId().expanded(),
             true
         ));
-
-        node.addReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
-        ));
     }
 
     /**
@@ -282,15 +275,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
             node.getNodeId().expanded(),
             true
         ));
-
-        node.removeReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
-        ));
     }
-
 
     @Nullable
     public String getNodeVersion() {
@@ -406,7 +391,7 @@ public class UaObjectNode extends UaNode implements ObjectNode {
                 eventNotifier
             );
 
-            node.addReferences(references);
+            references.forEach(node::addReference);
 
             return node;
         }

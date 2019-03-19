@@ -22,6 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.VariableTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -78,6 +79,8 @@ public class NodeFactory {
 
         NodeManager<UaNode> nodeManager = context.getNodeManager();
 
+        NamespaceTable namespaceTable = context.getServer().getNamespaceTable();
+
         UaNode typeDefinitionNode = context.getServer()
             .getAddressSpaceManager()
             .getManagedNode(typeDefinitionId)
@@ -102,7 +105,7 @@ public class NodeFactory {
         List<UaVariableNode> propertyDeclarations = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_PROPERTY_PREDICATE)
             .distinct()
-            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+            .map(r -> nodeManager.getNode(r.getTargetNodeId(), namespaceTable))
             .flatMap(StreamUtil::opt2stream)
             .map(UaVariableNode.class::cast)
             .filter(vn ->
@@ -133,7 +136,7 @@ public class NodeFactory {
 
         List<UaVariableNode> variableComponents = typeDefinitionNode.getReferences().stream()
             .filter(Reference.HAS_COMPONENT_PREDICATE)
-            .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+            .map(r -> nodeManager.getNode(r.getTargetNodeId(), namespaceTable))
             .flatMap(StreamUtil::opt2stream)
             .filter(n -> n instanceof UaVariableNode)
             .map(UaVariableNode.class::cast)
@@ -172,7 +175,7 @@ public class NodeFactory {
         if (node instanceof ObjectNode) {
             List<UaObjectNode> objectComponents = typeDefinitionNode.getReferences().stream()
                 .filter(Reference.HAS_COMPONENT_PREDICATE)
-                .map(r -> nodeManager.getNode(r.getTargetNodeId()))
+                .map(r -> nodeManager.getNode(r.getTargetNodeId(), namespaceTable))
                 .flatMap(StreamUtil::opt2stream)
                 .filter(n -> n instanceof UaObjectNode)
                 .map(UaObjectNode.class::cast)

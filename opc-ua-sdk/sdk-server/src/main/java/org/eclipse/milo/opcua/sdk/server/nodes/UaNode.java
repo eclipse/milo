@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
 import java.lang.ref.WeakReference;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -190,10 +189,15 @@ public abstract class UaNode implements UaServerNode {
 
         for (Reference reference : nodeManager.getReferences(nodeId)) {
             if (reference.isForward() && reference.subtypeOf(Identifiers.HasChild)) {
-                nodeManager.getNode(reference.getTargetNodeId()).ifPresent(UaNode::delete);
+                Optional<UaNode> targetNode = nodeManager.getNode(
+                    reference.getTargetNodeId(),
+                    getNodeContext().getServer().getNamespaceTable()
+                );
+
+                targetNode.ifPresent(UaNode::delete);
             }
 
-            nodeManager.removeReference(reference);
+            nodeManager.removeReferences(reference, context.getNamespaceTable());
         }
     }
 
@@ -224,20 +228,22 @@ public abstract class UaNode implements UaServerNode {
         );
     }
 
+    /**
+     * Add {@code reference} and its inverse.
+     *
+     * @param reference the {@link Reference} to add.
+     */
     public void addReference(Reference reference) {
-        context.getNodeManager().addReference(reference);
+        context.getNodeManager().addReferences(reference, context.getNamespaceTable());
     }
 
-    public void addReferences(Collection<Reference> c) {
-        c.forEach(r -> context.getNodeManager().addReference(r));
-    }
-
+    /**
+     * Remove {@code reference} and its inverse.
+     *
+     * @param reference the {@link Reference} to remove.
+     */
     public void removeReference(Reference reference) {
-        context.getNodeManager().removeReference(reference);
-    }
-
-    public void removeReferences(Collection<Reference> c) {
-        c.forEach(r -> context.getNodeManager().removeReference(r));
+        context.getNodeManager().removeReferences(reference, context.getNamespaceTable());
     }
 
     public <T> Optional<T> getProperty(QualifiedProperty<T> property) {

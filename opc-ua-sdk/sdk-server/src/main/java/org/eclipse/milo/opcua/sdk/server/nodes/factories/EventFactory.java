@@ -26,8 +26,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public class EventFactory extends AbstractLifecycle {
 
+    private final NodeManager<UaNode> nodeManager = new UaNodeManager();
+    
     private final OpcUaServer server;
-    private final NodeManager<UaNode> nodeManager;
     private final NodeFactory nodeFactory;
 
     public EventFactory(OpcUaServer server) {
@@ -45,8 +46,6 @@ public class EventFactory extends AbstractLifecycle {
     ) {
 
         this.server = server;
-
-        nodeManager = new UaNodeManager(server.getNamespaceTable());
 
         nodeFactory = new NodeFactory(
             new EventNodeContext(server, nodeManager),

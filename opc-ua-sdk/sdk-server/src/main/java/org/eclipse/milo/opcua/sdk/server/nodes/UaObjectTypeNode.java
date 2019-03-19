@@ -240,7 +240,7 @@ public class UaObjectTypeNode extends UaNode implements ObjectTypeNode {
                 isAbstract
             );
 
-            node.addReferences(references);
+            references.forEach(node::addReference);
 
             return node;
         }

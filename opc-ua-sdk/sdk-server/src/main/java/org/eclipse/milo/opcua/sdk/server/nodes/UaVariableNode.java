@@ -279,13 +279,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             node.getNodeId().expanded(),
             true
         ));
-
-        node.addReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
-        ));
     }
 
     /**
@@ -300,13 +293,6 @@ public class UaVariableNode extends UaNode implements VariableNode {
             Identifiers.HasComponent,
             node.getNodeId().expanded(),
             true
-        ));
-
-        node.removeReference(new Reference(
-            node.getNodeId(),
-            Identifiers.HasComponent,
-            getNodeId().expanded(),
-            false
         ));
     }
 
@@ -530,7 +516,7 @@ public class UaVariableNode extends UaNode implements VariableNode {
                 historizing
             );
 
-            node.addReferences(references);
+            references.forEach(node::addReference);
 
             return node;
         }

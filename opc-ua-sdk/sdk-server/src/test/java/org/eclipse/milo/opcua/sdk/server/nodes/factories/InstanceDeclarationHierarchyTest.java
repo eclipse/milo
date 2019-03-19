@@ -38,7 +38,7 @@ public class InstanceDeclarationHierarchyTest {
     public void test() throws Exception {
         NamespaceTable namespaceTable = new NamespaceTable();
 
-        UaNodeManager nodeManager = new UaNodeManager(namespaceTable);
+        UaNodeManager nodeManager = new UaNodeManager();
 
         AddressSpaceManager addressSpaceManager = Mockito.mock(AddressSpaceManager.class);
 
@@ -46,14 +46,14 @@ public class InstanceDeclarationHierarchyTest {
             .when(addressSpaceManager.getManagedNode(Mockito.any(NodeId.class)))
             .then(
                 (Answer<Optional<UaNode>>) invocationOnMock ->
-                    nodeManager.getNode((NodeId) invocationOnMock.getArgument(0))
+                    nodeManager.getNode(invocationOnMock.getArgument(0))
             );
 
         Mockito
             .when(addressSpaceManager.getManagedNode(Mockito.any(ExpandedNodeId.class)))
             .then(
                 (Answer<Optional<UaNode>>) invocationOnMock ->
-                    nodeManager.getNode((ExpandedNodeId) invocationOnMock.getArgument(0))
+                    nodeManager.getNode(invocationOnMock.getArgument(0), namespaceTable)
             );
 
         Mockito

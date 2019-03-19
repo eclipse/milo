@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.nodes;
 
-import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
@@ -45,29 +44,11 @@ public interface UaServerNode extends Node {
     void addReference(Reference reference);
 
     /**
-     * Add {@link Reference}s to this node.
-     *
-     * @param c the {@link Reference}s to add.
-     */
-    default void addReferences(Collection<Reference> c) {
-        c.forEach(this::addReference);
-    }
-
-    /**
      * Remove a {@link Reference} from this node.
      *
      * @param reference to remove.
      */
     void removeReference(Reference reference);
-
-    /**
-     * Remove {@link Reference}s from this node.
-     *
-     * @param c the {@link Reference}s to remove.
-     */
-    default void removeReferences(Collection<Reference> c) {
-        c.forEach(this::removeReference);
-    }
 
     /**
      * @return this node's {@link Reference}s.

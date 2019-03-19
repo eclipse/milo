@@ -72,7 +72,7 @@ public class AttributeDelegateChainTest {
             }
         );
 
-        UaNodeManager nodeManager = new UaNodeManager(new NamespaceTable());
+        UaNodeManager nodeManager = new UaNodeManager();
 
         UaNodeContext context = new UaNodeContext() {
             @Override
@@ -83,6 +83,11 @@ public class AttributeDelegateChainTest {
             @Override
             public NodeManager<UaNode> getNodeManager() {
                 return nodeManager;
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return new NamespaceTable();
             }
         };
 

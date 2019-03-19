@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.Node;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
@@ -35,10 +36,11 @@ public interface NodeManager<T extends Node> {
      * <p>
      * Returns {@code false} if {@code nodeId} is non-local.
      *
-     * @param nodeId the {@link ExpandedNodeId} to check.
+     * @param nodeId         the {@link ExpandedNodeId} to check.
+     * @param namespaceTable the {@link NamespaceTable}.
      * @return {@code true} if this {@link NodeManager} contains {@code nodeId}.
      */
-    boolean containsNode(ExpandedNodeId nodeId);
+    boolean containsNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable);
 
     /**
      * Add {@code node} to this {@link NodeManager}, replacing a previous Node identified by the same {@link NodeId}
@@ -63,11 +65,12 @@ public interface NodeManager<T extends Node> {
      * <p>
      * Returns {@code false} if {@code nodeId} is non-local.
      *
-     * @param nodeId the {@link ExpandedNodeId} identifying the {@link Node} to get.
+     * @param nodeId         the {@link ExpandedNodeId} identifying the {@link Node} to get.
+     * @param namespaceTable the {@link NamespaceTable}.
      * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does
      * not exist.
      */
-    Optional<T> getNode(ExpandedNodeId nodeId);
+    Optional<T> getNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable);
 
     /**
      * Remove the Node identified by {@code nodeId} from this {@link NodeManager}, if it exists.
@@ -82,24 +85,41 @@ public interface NodeManager<T extends Node> {
      * <p>
      * Returns {@link Optional#empty()} if {@code nodeId} is non-local.
      *
-     * @param nodeId the {@link ExpandedNodeId} identifying the Node to get.
+     * @param nodeId         the {@link ExpandedNodeId} identifying the Node to get.
+     * @param namespaceTable the {@link NamespaceTable}.
      * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, if it exists.
      */
-    Optional<T> removeNode(ExpandedNodeId nodeId);
+    Optional<T> removeNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable);
 
     /**
-     * Add a {@link Reference} to this {@link NodeManager}.
+     * Add {@code reference} to this {@link NodeManager}.
      *
      * @param reference the {@link Reference} to add.
      */
     void addReference(Reference reference);
 
     /**
-     * Remove a {@link Reference} from this {@link NodeManager}.
+     * Add {@code reference} and its inverse to this {@link NodeManager}.
+     *
+     * @param reference      the {@link Reference} to add.
+     * @param namespaceTable the {@link NamespaceTable}.
+     */
+    void addReferences(Reference reference, NamespaceTable namespaceTable);
+
+    /**
+     * Remove {@code reference} from this {@link NodeManager}.
      *
      * @param reference the {@link Reference} to remove.
      */
     void removeReference(Reference reference);
+
+    /**
+     * Remove {@code reference} and its inverse from this {@link NodeManager}.
+     *
+     * @param reference      the {@link Reference} to remove.
+     * @param namespaceTable the {@link NamespaceTable}.
+     */
+    void removeReferences(Reference reference, NamespaceTable namespaceTable);
 
     /**
      * Get all {@link Reference}s that have {@code nodeId} as their source {@link NodeId}.
@@ -145,13 +165,14 @@ public interface NodeManager<T extends Node> {
      * Get the {@link Node} identified by {@code nodeId} from this {@link NodeManager}, or {@code null} if it does not
      * exist.
      *
-     * @param nodeId the {@link NodeId} identifying the Node to get.
+     * @param nodeId         the {@link NodeId} identifying the Node to get.
+     * @param namespaceTable the {@link NamespaceTable}.
      * @return the {@link Node} identified by {@code nodeId} from this {@link NodeManager} or {@code null} if it does
      * not exist.
      */
     @Nullable
-    default T get(ExpandedNodeId nodeId) {
-        return getNode(nodeId).orElse(null);
+    default T get(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
+        return getNode(nodeId, namespaceTable).orElse(null);
     }
 
     /**

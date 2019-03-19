@@ -33,11 +33,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     private final ConcurrentMap<NodeId, T> nodeMap;
     private final ListMultimap<NodeId, Reference> referenceMultimap;
 
-    private final NamespaceTable namespaceTable;
-
-    public AbstractNodeManager(NamespaceTable namespaceTable) {
-        this.namespaceTable = namespaceTable;
-
+    public AbstractNodeManager() {
         nodeMap = makeNodeMap(new MapMaker());
         referenceMultimap = Multimaps.synchronizedListMultimap(ArrayListMultimap.create());
     }
@@ -79,7 +75,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
-    public boolean containsNode(ExpandedNodeId nodeId) {
+    public boolean containsNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
         return nodeId.local(namespaceTable)
             .map(this::containsNode)
             .orElse(false);
@@ -96,7 +92,7 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
-    public Optional<T> getNode(ExpandedNodeId nodeId) {
+    public Optional<T> getNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
         return nodeId.local(namespaceTable).flatMap(this::getNode);
     }
 
@@ -106,19 +102,17 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
     }
 
     @Override
-    public Optional<T> removeNode(ExpandedNodeId nodeId) {
+    public Optional<T> removeNode(ExpandedNodeId nodeId, NamespaceTable namespaceTable) {
         return nodeId.local(namespaceTable).flatMap(this::removeNode);
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The inverse {@link Reference} of {@code reference} will also be added.
-     *
-     * @param reference the {@link Reference} to add.
-     */
     @Override
     public void addReference(Reference reference) {
+        referenceMultimap.put(reference.getSourceNodeId(), reference);
+    }
+
+    @Override
+    public void addReferences(Reference reference, NamespaceTable namespaceTable) {
         referenceMultimap.put(reference.getSourceNodeId(), reference);
 
         reference.invert(namespaceTable).ifPresent(
@@ -127,16 +121,13 @@ public class AbstractNodeManager<T extends Node> implements NodeManager<T> {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The inverse {@link Reference} of {@code reference} will also be removed.
-     *
-     * @param reference the {@link Reference} to remove.
-     * @see {@link Reference#invert(org.eclipse.milo.opcua.stack.core.NamespaceTable)}
-     */
     @Override
     public void removeReference(Reference reference) {
+        referenceMultimap.remove(reference.getSourceNodeId(), reference);
+    }
+
+    @Override
+    public void removeReferences(Reference reference, NamespaceTable namespaceTable) {
         referenceMultimap.remove(reference.getSourceNodeId(), reference);
 
         reference.invert(namespaceTable).ifPresent(

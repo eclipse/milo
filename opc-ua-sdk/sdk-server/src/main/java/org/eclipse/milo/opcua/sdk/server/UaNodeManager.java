@@ -12,17 +12,5 @@ package org.eclipse.milo.opcua.sdk.server;
 
 import org.eclipse.milo.opcua.sdk.server.api.AbstractNodeManager;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 
-public class UaNodeManager extends AbstractNodeManager<UaNode> {
-
-    /**
-     * Create a {@link UaNodeManager}.
-     *
-     * @param namespaceTable the {@link NamespaceTable}.
-     */
-    public UaNodeManager(NamespaceTable namespaceTable) {
-        super(namespaceTable);
-    }
-
-}
+public class UaNodeManager extends AbstractNodeManager<UaNode> {}
