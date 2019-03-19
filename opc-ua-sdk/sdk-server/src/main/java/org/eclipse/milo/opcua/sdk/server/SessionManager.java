@@ -394,15 +394,15 @@ public class SessionManager implements
                         request.getUserTokenSignature()
                     );
 
-                    session.setIdentityObject(identityObject);
-
                     StatusCode[] results = new StatusCode[clientSoftwareCertificates.size()];
                     Arrays.fill(results, StatusCode.GOOD);
 
                     ByteString serverNonce = NonceUtil.generateNonce(32);
 
-                    session.setLastNonce(serverNonce);
                     session.setClientAddress(serviceRequest.getClientAddress());
+                    session.setIdentityObject(identityObject);
+                    session.setLastNonce(serverNonce);
+                    session.setLocaleIds(request.getLocaleIds());
 
                     ActivateSessionResponse response = new ActivateSessionResponse(
                         serviceRequest.createResponseHeader(),
@@ -444,14 +444,13 @@ public class SessionManager implements
                     );
 
                     if (sameIdentity && sameCertificate) {
-                        session.setSecureChannelId(secureChannelId);
-
                         SecurityConfiguration newSecurityConfiguration = createSecurityConfiguration(
                             serviceRequest.getEndpoint(),
                             clientCertificateBytes
                         );
 
                         session.setEndpoint(serviceRequest.getEndpoint());
+                        session.setSecureChannelId(secureChannelId);
                         session.setSecurityConfiguration(newSecurityConfiguration);
 
                         logger.debug("Session id={} is now associated with secureChannelId={}",
@@ -462,8 +461,9 @@ public class SessionManager implements
 
                         ByteString serverNonce = NonceUtil.generateNonce(32);
 
-                        session.setLastNonce(serverNonce);
                         session.setClientAddress(serviceRequest.getClientAddress());
+                        session.setLastNonce(serverNonce);
+                        session.setLocaleIds(request.getLocaleIds());
 
                         ActivateSessionResponse response = new ActivateSessionResponse(
                             serviceRequest.createResponseHeader(),
@@ -499,9 +499,7 @@ public class SessionManager implements
                 tokenObject,
                 request.getUserTokenSignature()
             );
-
-            session.setIdentityObject(identityObject);
-
+            
             createdSessions.remove(authToken);
             activeSessions.put(authToken, session);
 
@@ -510,8 +508,10 @@ public class SessionManager implements
 
             ByteString serverNonce = NonceUtil.generateNonce(32);
 
-            session.setLastNonce(serverNonce);
             session.setClientAddress(serviceRequest.getClientAddress());
+            session.setIdentityObject(identityObject);
+            session.setLocaleIds(request.getLocaleIds());
+            session.setLastNonce(serverNonce);
 
             ActivateSessionResponse response = new ActivateSessionResponse(
                 serviceRequest.createResponseHeader(),

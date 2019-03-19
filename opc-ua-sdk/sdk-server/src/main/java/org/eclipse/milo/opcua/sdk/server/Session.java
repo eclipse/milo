@@ -72,6 +72,7 @@ public class Session implements SessionServiceSet {
     private volatile EndpointDescription endpoint;
     private volatile SecurityConfiguration securityConfiguration;
     private volatile InetAddress clientAddress;
+    private volatile String[] localeIds;
 
     private final OpcUaServer server;
     private final NodeId sessionId;
@@ -203,6 +204,15 @@ public class Session implements SessionServiceSet {
 
     public String getSessionName() {
         return sessionName;
+    }
+
+    @Nullable
+    public String[] getLocaleIds() {
+        return localeIds;
+    }
+
+    public void setLocaleIds(@Nullable String[] localeIds) {
+        this.localeIds = localeIds;
     }
 
     public DefaultAttributeServiceSet getAttributeServiceSet() {
