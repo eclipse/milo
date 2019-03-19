@@ -20,7 +20,7 @@ Mailing list: https://dev.eclipse.org/mailman/listinfo/milo-dev
 
 ### Releases
 
-Releases are published to Maven Central. 
+Releases are published to Maven Central and snapshots to Sonatype.
 
 #### OPC UA Client SDK
 
@@ -28,7 +28,7 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-client</artifactId>
-    <version>0.2.5</version>
+    <version>0.3.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -38,29 +38,11 @@ Releases are published to Maven Central.
 <dependency>
     <groupId>org.eclipse.milo</groupId>
     <artifactId>sdk-server</artifactId>
-    <version>0.2.5</version>
+    <version>0.3.0-SNAPSHOT</version>
 </dependency>
 ```
 
-#### OPC UA Stack
-
-```xml
-<dependency>
-    <groupId>org.eclipse.milo</groupId>
-    <artifactId>stack-client</artifactId>
-    <version>0.2.5</version>
-</dependency>
-```
-
-```xml
-<dependency>
-    <groupId>org.eclipse.milo</groupId>
-    <artifactId>stack-server</artifactId>
-    <version>0.2.5</version>
-</dependency>
-```
-
-If you want to reference a `SNAPSHOT` release a reference to the Sonatype snapshot repository must be added to your pom file:
+Referencing a `SNAPSHOT` release requires the Sonatype snapshot repository be added to your pom file:
 
 ```xml
 <repository>
