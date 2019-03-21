@@ -153,18 +153,26 @@ public class Reference {
      * <p>
      * If the target namespace URI is not present in the namespace table this {@link Reference} is returned.
      *
-     * @param namespaceUri   the target namespace URI.
-     * @param namespaceTable the {@link NamespaceTable}.
+     * @param namespaceTable        the {@link NamespaceTable}.
+     * @param sourceNamespaceUri    the target namespace URI for the source NodeId.
+     * @param referenceNamespaceUri the target namespace URI for the reference type NodeId.
+     * @param targetNamespaceUri    the target namespace URI for the target NodeId.
      * @return a new {@link NodeId} in the namespace index indicated by {@code namespaceUri}.
      */
-    public Reference reindex(String namespaceUri, NamespaceTable namespaceTable) {
-        NodeId newSourceNodeId = sourceNodeId.reindex(namespaceTable, namespaceUri);
+    public Reference reindex(
+        NamespaceTable namespaceTable,
+        String sourceNamespaceUri,
+        String referenceNamespaceUri,
+        String targetNamespaceUri
+    ) {
 
-        NodeId newReferenceTypeId = referenceTypeId.reindex(namespaceTable, namespaceUri);
+        NodeId newSourceNodeId = sourceNodeId.reindex(namespaceTable, sourceNamespaceUri);
+
+        NodeId newReferenceTypeId = referenceTypeId.reindex(namespaceTable, referenceNamespaceUri);
 
         // re-index targetNodeId only if it's local, otherwise leave it alone.
         ExpandedNodeId newTargetNodeId = targetNodeId.local(namespaceTable)
-            .map(id -> id.reindex(namespaceTable, namespaceUri).expanded())
+            .map(id -> id.reindex(namespaceTable, targetNamespaceUri).expanded())
             .orElse(targetNodeId);
 
         return new Reference(
