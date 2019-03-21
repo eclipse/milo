@@ -43,21 +43,40 @@ public abstract class AbstractIdentityValidator implements IdentityValidator {
         UserTokenPolicy tokenPolicy,
         SignatureData tokenSignature) throws UaException {
 
-        if (token instanceof AnonymousIdentityToken) {
-            return validateAnonymousToken(
-                session, (AnonymousIdentityToken) token, tokenPolicy, tokenSignature);
-        } else if (token instanceof UserNameIdentityToken) {
-            return validateUsernameToken(
-                session, (UserNameIdentityToken) token, tokenPolicy, tokenSignature);
-        } else if (token instanceof X509IdentityToken) {
-            return validateX509Token(
-                session, (X509IdentityToken) token, tokenPolicy, tokenSignature);
-        } else if (token instanceof IssuedIdentityToken) {
-            return validateIssuedIdentityToken(
-                session, (IssuedIdentityToken) token, tokenPolicy, tokenSignature);
-        } else {
-            throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
+        switch (tokenPolicy.getTokenType()) {
+            case Anonymous: {
+                if (token instanceof AnonymousIdentityToken) {
+                    return validateAnonymousToken(
+                        session, (AnonymousIdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            case UserName: {
+                if (token instanceof UserNameIdentityToken) {
+                    return validateUsernameToken(
+                        session, (UserNameIdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            case Certificate: {
+                if (token instanceof X509IdentityToken) {
+                    return validateX509Token(
+                        session, (X509IdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            case IssuedToken: {
+                if (token instanceof IssuedIdentityToken) {
+                    return validateIssuedIdentityToken(
+                        session, (IssuedIdentityToken) token, tokenPolicy, tokenSignature);
+                }
+                break;
+            }
+            default:
+                throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
         }
+
+        throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
     }
 
     /**

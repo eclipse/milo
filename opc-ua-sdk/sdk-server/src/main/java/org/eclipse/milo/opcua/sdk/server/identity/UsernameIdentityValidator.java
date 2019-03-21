@@ -50,12 +50,7 @@ public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator
     }
 
     @Override
-    protected boolean isAnonymousAccessAllowed() {
-        return anonymousAccessAllowed;
-    }
-
-    @Override
-    protected String createAnonymousIdentityObject(Session session) {
+    protected String authenticateAnonymous(Session session) {
         return String.format(
             "anonymous_%s_%s",
             session.getSessionName(),
@@ -65,7 +60,7 @@ public class UsernameIdentityValidator extends AbstractUsernameIdentityValidator
 
     @Nullable
     @Override
-    protected String authenticate(Session session, String username, String password) {
+    protected String authenticateUsernamePassword(Session session, String username, String password) {
         AuthenticationChallenge challenge =
             new AuthenticationChallenge(username, password);
 

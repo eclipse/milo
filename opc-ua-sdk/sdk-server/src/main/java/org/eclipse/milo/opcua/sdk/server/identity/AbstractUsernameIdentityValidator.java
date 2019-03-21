@@ -12,7 +12,6 @@ package org.eclipse.milo.opcua.sdk.server.identity;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
-import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -35,11 +34,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         SignatureData tokenSignature
     ) throws UaException {
 
-        if (isAnonymousAccessAllowed()) {
-            return createAnonymousIdentityObject(session);
-        } else {
-            throw new UaException(StatusCodes.Bad_IdentityTokenInvalid);
-        }
+        return authenticateAnonymous(session);
     }
 
     @Override
@@ -51,7 +46,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
     ) throws UaException {
 
         try {
-            return validateUserNameIdentityToken(session, token);
+            return authenticateUserNameIdentityToken(session, token);
         } catch (UaException e) {
             throw e;
         } catch (Throwable t) {
@@ -59,7 +54,7 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
         }
     }
 
-    private T validateUserNameIdentityToken(
+    private T authenticateUserNameIdentityToken(
         Session session,
         UserNameIdentityToken token
     ) throws UaException {
@@ -116,19 +111,19 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
             if (Arrays.equals(lastNonce.bytes(), nonceBytes)) {
                 String password = new String(passwordBytes, Charset.forName("UTF-8"));
 
-                return authenticateOrThrow(session, username, password);
+                return authenticateUsernameOrThrow(session, username, password);
             } else {
                 throw new UaException(StatusCodes.Bad_UserAccessDenied);
             }
         } else {
             String password = new String(tokenBytes, Charset.forName("UTF-8"));
 
-            return authenticateOrThrow(session, username, password);
+            return authenticateUsernameOrThrow(session, username, password);
         }
     }
 
-    private T authenticateOrThrow(Session session, String username, String password) throws UaException {
-        T identityObject = authenticate(session, username, password);
+    private T authenticateUsernameOrThrow(Session session, String username, String password) throws UaException {
+        T identityObject = authenticateUsernamePassword(session, username, password);
 
         if (identityObject != null) {
             return identityObject;
@@ -138,29 +133,22 @@ public abstract class AbstractUsernameIdentityValidator<T> extends AbstractIdent
     }
 
     /**
+     * Create and return an identity object for an anonymous user.
+     *
+     * @param session the {@link Session} being activated.
+     * @return an identity object for an anonymous user.
+     */
+    protected abstract T authenticateAnonymous(Session session);
+
+    /**
      * Authenticate {@code username} with {@code password}, returning an identity object of type {@code T} if the
      * authentication succeeded, or {@code null} if the authentication failed.
      *
      * @param session  the {@link Session} being activated.
      * @param username the username to authenticate.
      * @param password the password to authenticate the user with.
-     * @return an identity object of type {@code T} if the authentication succeeded, or {@code null} if the
-     * authentication failed.
+     * @return an identity object of type {@code T} if the authentication succeeded, {@code null} if it failed.
      */
-    @Nullable
-    protected abstract T authenticate(Session session, String username, String password) throws UaException;
-
-    /**
-     * @return {@code true} if anonymous access is allowed.
-     */
-    protected abstract boolean isAnonymousAccessAllowed();
-
-    /**
-     * Create and return an identity object for an anonymous user.
-     *
-     * @param session the {@link Session} being activated.
-     * @return an identity object for an anonymous user.
-     */
-    protected abstract T createAnonymousIdentityObject(Session session) throws UaException;
+    protected abstract T authenticateUsernamePassword(Session session, String username, String password);
 
 }
