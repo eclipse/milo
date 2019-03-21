@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -67,11 +66,11 @@ public abstract class ReadMethod extends AbstractMethodInvocationHandler {
                                Variant[] inputValues) throws UaException {
         UInteger fileHandle = (UInteger) inputValues[0].getValue();
         Integer length = (Integer) inputValues[1].getValue();
-        AtomicReference<ByteString> data = new AtomicReference<ByteString>();
+        Out<ByteString> data = new Out<ByteString>();
         invoke(context, fileHandle, length, data);
         return new Variant[]{new Variant(data.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger fileHandle, Integer length, AtomicReference<ByteString> data) throws UaException;
+                                   UInteger fileHandle, Integer length, Out<ByteString> data) throws UaException;
 }

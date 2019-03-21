@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -93,13 +92,13 @@ public abstract class CreateSigningRequestMethod extends AbstractMethodInvocatio
         String subjectName = (String) inputValues[2].getValue();
         Boolean regeneratePrivateKey = (Boolean) inputValues[3].getValue();
         ByteString nonce = (ByteString) inputValues[4].getValue();
-        AtomicReference<ByteString> certificateRequest = new AtomicReference<ByteString>();
+        Out<ByteString> certificateRequest = new Out<ByteString>();
         invoke(context, certificateGroupId, certificateTypeId, subjectName, regeneratePrivateKey, nonce, certificateRequest);
         return new Variant[]{new Variant(certificateRequest.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
                                    NodeId certificateGroupId, NodeId certificateTypeId, String subjectName,
-                                   Boolean regeneratePrivateKey, ByteString nonce,
-                                   AtomicReference<ByteString> certificateRequest) throws UaException;
+                                   Boolean regeneratePrivateKey, ByteString nonce, Out<ByteString> certificateRequest) throws
+        UaException;
 }

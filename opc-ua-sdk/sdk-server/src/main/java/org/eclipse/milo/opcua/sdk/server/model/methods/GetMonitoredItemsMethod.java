@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -66,13 +65,13 @@ public abstract class GetMonitoredItemsMethod extends AbstractMethodInvocationHa
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger subscriptionId = (UInteger) inputValues[0].getValue();
-        AtomicReference<UInteger[]> serverHandles = new AtomicReference<UInteger[]>();
-        AtomicReference<UInteger[]> clientHandles = new AtomicReference<UInteger[]>();
+        Out<UInteger[]> serverHandles = new Out<UInteger[]>();
+        Out<UInteger[]> clientHandles = new Out<UInteger[]>();
         invoke(context, subscriptionId, serverHandles, clientHandles);
         return new Variant[]{new Variant(serverHandles.get()), new Variant(clientHandles.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId, AtomicReference<UInteger[]> serverHandles,
-                                   AtomicReference<UInteger[]> clientHandles) throws UaException;
+                                   UInteger subscriptionId, Out<UInteger[]> serverHandles, Out<UInteger[]> clientHandles) throws
+        UaException;
 }
