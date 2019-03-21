@@ -18,6 +18,8 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.Map;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -106,7 +108,8 @@ public class SignatureUtil {
         String transformation = securityAlgorithm.getTransformation();
 
         try {
-            Mac mac = Mac.getInstance(transformation);
+            Mac mac = getMacInstance(transformation);
+
             mac.init(new SecretKeySpec(secretKey, transformation));
 
             for (ByteBuffer buffer : buffers) {
@@ -119,6 +122,23 @@ public class SignatureUtil {
         } catch (GeneralSecurityException e) {
             throw new UaException(StatusCodes.Bad_SecurityChecksFailed, e);
         }
+    }
+
+    private static final ThreadLocal<Map<String, Mac>> MAC_INSTANCES = new ThreadLocal<>();
+
+    private static Mac getMacInstance(String transformation) throws NoSuchAlgorithmException {
+        Map<String, Mac> macs = MAC_INSTANCES.get();
+        if (macs == null) {
+            macs = new HashMap<>();
+            MAC_INSTANCES.set(macs);
+        }
+
+        Mac mac = macs.get(transformation);
+        if (mac == null) {
+            mac = Mac.getInstance(transformation);
+            macs.put(transformation, mac);
+        }
+        return mac;
     }
 
 }
