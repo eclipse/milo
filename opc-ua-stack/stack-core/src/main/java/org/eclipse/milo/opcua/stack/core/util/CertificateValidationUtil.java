@@ -197,12 +197,14 @@ public class CertificateValidationUtil {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed,
                     "certificate path did not contain a trusted certificate");
             }
+        } catch (UaException e) {
+            throw e;
         } catch (Throwable t) {
-            LOGGER.debug("PKIX certificate path validation failed: {}", t.getMessage());
+            LOGGER.debug("certificate path validation failed: {}", t.getMessage());
 
             throw new UaException(
                 StatusCodes.Bad_SecurityChecksFailed,
-                "PKIX certificate path validation failed");
+                "certificate path validation failed");
         }
     }
 
