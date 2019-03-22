@@ -10,7 +10,6 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 /**
@@ -27,10 +26,5 @@ public interface Namespace extends AddressSpace {
      * @return the URI identifying this {@link Namespace}.
      */
     String getNamespaceUri();
-
-    @Override
-    default boolean filter(NodeId nodeId) {
-        return nodeId.getNamespaceIndex().equals(getNamespaceIndex());
-    }
 
 }
