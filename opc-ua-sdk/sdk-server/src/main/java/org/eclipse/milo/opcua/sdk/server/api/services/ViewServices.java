@@ -19,6 +19,7 @@ import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
+import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFilter;
 import org.eclipse.milo.opcua.sdk.server.api.AsyncOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -49,8 +50,8 @@ public interface ViewServices {
     /**
      * Get all References for which {@code nodeId} is the source.
      * <p>
-     * The Node identified by {@code nodeId} is managed by this AddressSpace according to
-     * {@link AddressSpace#filter(NodeId)}.
+     * The Node identified by {@code nodeId} is managed by this AddressSpace according to {@link AddressSpaceFilter}
+     * from {@link AddressSpace#getFilter()}.
      * <p>
      * If a Node instance for {@code nodeId} does not exist then {@link BrowseContext#failure(StatusCode)} should be
      * invoked with {@link StatusCodes#Bad_NodeIdUnknown}.

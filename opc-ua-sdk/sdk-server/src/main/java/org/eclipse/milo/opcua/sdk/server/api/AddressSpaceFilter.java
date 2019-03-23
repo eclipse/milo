@@ -130,12 +130,48 @@ public interface AddressSpaceFilter {
 
     //region NodeManagementServices
 
+    /**
+     * Return {@code true} if the add nodes operation for {@code addNodesItem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server       the {@link OpcUaServer}.
+     * @param addNodesItem the {@link AddNodesItem} from the add nodes operation.
+     * @return {@code true} if the add nodes operation for {@code addNodesItem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
     boolean filterAddNodes(OpcUaServer server, AddNodesItem addNodesItem);
 
+    /**
+     * Return {@code true} if the delete nodes operation for {@code deleteNodesItem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server          the {@link OpcUaServer}.
+     * @param deleteNodesItem the {@link DeleteNodesItem} from the delete nodes operation.
+     * @return Return {@code true} if the delete nodes operation for {@code deleteNodesItem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
     boolean filterDeleteNodes(OpcUaServer server, DeleteNodesItem deleteNodesItem);
 
+    /**
+     * Return {@code true} if the add references operation for {@code addReferencesItem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server            the {@link OpcUaServer}.
+     * @param addReferencesItem the {@link AddReferencesItem} from the add references operation.
+     * @return {@code true} if the add references operation for {@code addReferencesItem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
     boolean filterAddReferences(OpcUaServer server, AddReferencesItem addReferencesItem);
 
+    /**
+     * Return {@code true} if the delete references operation for {@code deleteReferencesITem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server               the {@link OpcUaServer}.
+     * @param deleteReferencesItem the {@link DeleteReferencesItem} from the delete references operation.
+     * @return {@code true} if the delete references operation for {@code deleteReferencesITem} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
     boolean filterDeleteReferences(OpcUaServer server, DeleteReferencesItem deleteReferencesItem);
 
     //endregion
