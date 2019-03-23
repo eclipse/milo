@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -66,12 +65,12 @@ public abstract class SetSubscriptionDurableMethod extends AbstractMethodInvocat
                                Variant[] inputValues) throws UaException {
         UInteger subscriptionId = (UInteger) inputValues[0].getValue();
         UInteger lifetimeInHours = (UInteger) inputValues[1].getValue();
-        AtomicReference<UInteger> revisedLifetimeInHours = new AtomicReference<UInteger>();
+        Out<UInteger> revisedLifetimeInHours = new Out<UInteger>();
         invoke(context, subscriptionId, lifetimeInHours, revisedLifetimeInHours);
         return new Variant[]{new Variant(revisedLifetimeInHours.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger subscriptionId, UInteger lifetimeInHours,
-                                   AtomicReference<UInteger> revisedLifetimeInHours) throws UaException;
+                                   UInteger subscriptionId, UInteger lifetimeInHours, Out<UInteger> revisedLifetimeInHours)
+        throws UaException;
 }

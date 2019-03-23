@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -83,12 +82,12 @@ public abstract class MoveOrCopyMethod extends AbstractMethodInvocationHandler {
         NodeId targetDirectory = (NodeId) inputValues[1].getValue();
         Boolean createCopy = (Boolean) inputValues[2].getValue();
         String newName = (String) inputValues[3].getValue();
-        AtomicReference<NodeId> newNodeId = new AtomicReference<NodeId>();
+        Out<NodeId> newNodeId = new Out<NodeId>();
         invoke(context, objectToMoveOrCopy, targetDirectory, createCopy, newName, newNodeId);
         return new Variant[]{new Variant(newNodeId.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
                                    NodeId objectToMoveOrCopy, NodeId targetDirectory, Boolean createCopy, String newName,
-                                   AtomicReference<NodeId> newNodeId) throws UaException;
+                                   Out<NodeId> newNodeId) throws UaException;
 }

@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -58,11 +57,11 @@ public abstract class OpenMethod extends AbstractMethodInvocationHandler {
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UByte mode = (UByte) inputValues[0].getValue();
-        AtomicReference<UInteger> fileHandle = new AtomicReference<UInteger>();
+        Out<UInteger> fileHandle = new Out<UInteger>();
         invoke(context, mode, fileHandle);
         return new Variant[]{new Variant(fileHandle.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UByte mode, AtomicReference<UInteger> fileHandle) throws UaException;
+                                   UByte mode, Out<UInteger> fileHandle) throws UaException;
 }

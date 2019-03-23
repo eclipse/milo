@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -50,11 +49,11 @@ public abstract class GetRejectedListMethod extends AbstractMethodInvocationHand
     @Override
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
-        AtomicReference<ByteString[]> certificates = new AtomicReference<ByteString[]>();
+        Out<ByteString[]> certificates = new Out<ByteString[]>();
         invoke(context, certificates);
         return new Variant[]{new Variant(certificates.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   AtomicReference<ByteString[]> certificates) throws UaException;
+                                   Out<ByteString[]> certificates) throws UaException;
 }

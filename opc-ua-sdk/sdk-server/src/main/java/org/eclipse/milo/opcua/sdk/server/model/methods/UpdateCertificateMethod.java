@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
@@ -104,7 +103,7 @@ public abstract class UpdateCertificateMethod extends AbstractMethodInvocationHa
         ByteString[] issuerCertificates = (ByteString[]) inputValues[3].getValue();
         String privateKeyFormat = (String) inputValues[4].getValue();
         ByteString privateKey = (ByteString) inputValues[5].getValue();
-        AtomicReference<Boolean> applyChangesRequired = new AtomicReference<Boolean>();
+        Out<Boolean> applyChangesRequired = new Out<Boolean>();
         invoke(context, certificateGroupId, certificateTypeId, certificate, issuerCertificates, privateKeyFormat, privateKey, applyChangesRequired);
         return new Variant[]{new Variant(applyChangesRequired.get())};
     }
@@ -112,5 +111,5 @@ public abstract class UpdateCertificateMethod extends AbstractMethodInvocationHa
     protected abstract void invoke(InvocationContext context,
                                    NodeId certificateGroupId, NodeId certificateTypeId, ByteString certificate,
                                    ByteString[] issuerCertificates, String privateKeyFormat, ByteString privateKey,
-                                   AtomicReference<Boolean> applyChangesRequired) throws UaException;
+                                   Out<Boolean> applyChangesRequired) throws UaException;
 }

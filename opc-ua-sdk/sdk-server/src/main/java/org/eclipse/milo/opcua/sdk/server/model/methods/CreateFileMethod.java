@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -74,13 +73,13 @@ public abstract class CreateFileMethod extends AbstractMethodInvocationHandler {
                                Variant[] inputValues) throws UaException {
         String fileName = (String) inputValues[0].getValue();
         Boolean requestFileOpen = (Boolean) inputValues[1].getValue();
-        AtomicReference<NodeId> fileNodeId = new AtomicReference<NodeId>();
-        AtomicReference<UInteger> fileHandle = new AtomicReference<UInteger>();
+        Out<NodeId> fileNodeId = new Out<NodeId>();
+        Out<UInteger> fileHandle = new Out<UInteger>();
         invoke(context, fileName, requestFileOpen, fileNodeId, fileHandle);
         return new Variant[]{new Variant(fileNodeId.get()), new Variant(fileHandle.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   String fileName, Boolean requestFileOpen, AtomicReference<NodeId> fileNodeId,
-                                   AtomicReference<UInteger> fileHandle) throws UaException;
+                                   String fileName, Boolean requestFileOpen, Out<NodeId> fileNodeId, Out<UInteger> fileHandle)
+        throws UaException;
 }
