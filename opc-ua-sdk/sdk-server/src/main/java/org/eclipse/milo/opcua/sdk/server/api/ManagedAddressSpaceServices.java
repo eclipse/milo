@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +43,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,6 +144,16 @@ public abstract class ManagedAddressSpaceServices extends AbstractLifecycle impl
         logger.debug("Got {} references for {}", references.size(), nodeId);
 
         context.success(references);
+    }
+
+    @Override
+    public void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
+        context.success(nodeIds);
+    }
+
+    @Override
+    public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
+        context.success(Collections.nCopies(nodeIds.size(), Unit.VALUE));
     }
 
     @Override
