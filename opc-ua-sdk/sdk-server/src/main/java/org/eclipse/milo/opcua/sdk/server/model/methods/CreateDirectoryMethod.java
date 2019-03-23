@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -56,11 +55,11 @@ public abstract class CreateDirectoryMethod extends AbstractMethodInvocationHand
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
         String directoryName = (String) inputValues[0].getValue();
-        AtomicReference<NodeId> directoryNodeId = new AtomicReference<NodeId>();
+        Out<NodeId> directoryNodeId = new Out<NodeId>();
         invoke(context, directoryName, directoryNodeId);
         return new Variant[]{new Variant(directoryNodeId.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   String directoryName, AtomicReference<NodeId> directoryNodeId) throws UaException;
+                                   String directoryName, Out<NodeId> directoryNodeId) throws UaException;
 }

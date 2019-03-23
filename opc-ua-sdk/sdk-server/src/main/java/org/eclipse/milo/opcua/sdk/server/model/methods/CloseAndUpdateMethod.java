@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.model.methods;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.eclipse.milo.opcua.sdk.core.ValueRanks;
-import org.eclipse.milo.opcua.sdk.server.api.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.AbstractMethodInvocationHandler;
+import org.eclipse.milo.opcua.sdk.server.api.methods.Out;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
@@ -57,11 +56,11 @@ public abstract class CloseAndUpdateMethod extends AbstractMethodInvocationHandl
     protected Variant[] invoke(InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger fileHandle = (UInteger) inputValues[0].getValue();
-        AtomicReference<Boolean> applyChangesRequired = new AtomicReference<Boolean>();
+        Out<Boolean> applyChangesRequired = new Out<Boolean>();
         invoke(context, fileHandle, applyChangesRequired);
         return new Variant[]{new Variant(applyChangesRequired.get())};
     }
 
     protected abstract void invoke(InvocationContext context,
-                                   UInteger fileHandle, AtomicReference<Boolean> applyChangesRequired) throws UaException;
+                                   UInteger fileHandle, Out<Boolean> applyChangesRequired) throws UaException;
 }
