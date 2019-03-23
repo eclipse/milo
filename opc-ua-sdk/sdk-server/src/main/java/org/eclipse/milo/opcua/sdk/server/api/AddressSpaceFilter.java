@@ -27,11 +27,11 @@ public interface AddressSpaceFilter {
     //region ViewServices
 
     /**
-     * Return {@code true} if the browse operation for {@code nodeId} should be handled the the {@link AddressSpace}
+     * Return {@code true} if the browse operation for {@code nodeId} should be handled by the {@link AddressSpace}
      * this filter belongs to.
      *
      * @param server the {@link OpcUaServer}.
-     * @param nodeId the {@link NodeId} being browsed.
+     * @param nodeId the {@link NodeId} from the browse operation.
      * @return {@code true} if the browse operation for {@code nodeId} should be handled the the {@link AddressSpace}
      * this filter belongs to.
      */
@@ -41,18 +41,63 @@ public interface AddressSpaceFilter {
 
     //region AttributeServices
 
+    /**
+     * Return {@code true} if the read operation for {@code readValueId} should be handled by the {@link AddressSpace}
+     * this filter belongs to.
+     *
+     * @param server      the {@link OpcUaServer}.
+     * @param readValueId the {@link ReadValueId} from the read operation.
+     * @return {@code true} if the read operation for {@code readValueId} should be handled by the {@link AddressSpace}
+     * this filter belongs to.
+     */
     boolean filterRead(OpcUaServer server, ReadValueId readValueId);
 
+    /**
+     * Return {@code true} if the write operation for {@code writeValue} should be handled by the {@link AddressSpace}
+     * this filter belongs to.
+     *
+     * @param server     the {@link OpcUaServer}.
+     * @param writeValue the {@link WriteValue} from the write operation.
+     * @return {@code true} if the write operation for {@code writeValue} should be handled by the {@link AddressSpace}
+     * this filter belongs to.
+     */
     boolean filterWrite(OpcUaServer server, WriteValue writeValue);
 
+    /**
+     * Return {@code true} if the history read operation for {@code historyReadValueId} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server             the {@link OpcUaServer}.
+     * @param historyReadValueId the {@link HistoryReadValueId} from the history read operation.
+     * @return {@code true} if the history read operation for {@code historyReadValueId} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
     boolean filterHistoryRead(OpcUaServer server, HistoryReadValueId historyReadValueId);
 
+    /**
+     * Return {@code true} if the history update operation for {@code historyUpdateDetails} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server               the {@link OpcUaServer}.
+     * @param historyUpdateDetails the {@link HistoryUpdateDetails} from the history update operation.
+     * @return {@code true} if the history update operation for {@code historyUpdateDetails} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
     boolean filterHistoryUpdate(OpcUaServer server, HistoryUpdateDetails historyUpdateDetails);
 
     //endregion
 
     //region MethodServices
 
+    /**
+     * Return {@code true} if the call method operation for {@code callMethodRequest} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server            the {@link OpcUaServer}.
+     * @param callMethodRequest the {@link CallMethodRequest} from the call method operation.
+     * @return {@code true} if the call method operation for {@code callMethodRequest} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
     boolean filterCall(OpcUaServer server, CallMethodRequest callMethodRequest);
 
     //endregion
