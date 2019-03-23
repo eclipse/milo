@@ -10,6 +10,8 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
+import java.util.function.Predicate;
+
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
@@ -25,6 +27,21 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
 public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
+
+    /**
+     * Create a new {@link SimpleAddressSpaceFilter} that uses a {@link Predicate} on {@link NodeId}.
+     *
+     * @param filter a {@link Predicate} that tests a {@link NodeId}.
+     * @return a new {@link SimpleAddressSpaceFilter} that uses a {@link Predicate} on {@link NodeId}.
+     */
+    public static SimpleAddressSpaceFilter create(Predicate<NodeId> filter) {
+        return new SimpleAddressSpaceFilter() {
+            @Override
+            protected boolean filter(NodeId nodeId) {
+                return filter.test(nodeId);
+            }
+        };
+    }
 
     /**
      * Return {@code true} if {@code nodeId} belongs to this {@link AddressSpace}.
