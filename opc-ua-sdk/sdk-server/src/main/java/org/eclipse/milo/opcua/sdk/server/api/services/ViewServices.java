@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.sdk.server.api.services;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
@@ -82,7 +83,9 @@ public interface ViewServices {
      * @param context the {@link RegisterNodesContext}.
      * @param nodeIds the {@link NodeId}s to register.
      */
-    void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds);
+    default void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
+        context.success(nodeIds);
+    }
 
     /**
      * Unregister one or more previously registered {@link NodeId}s.
@@ -90,7 +93,9 @@ public interface ViewServices {
      * @param context the {@link UnregisterNodesContext}.
      * @param nodeIds the {@link NodeId}s to unregister.
      */
-    void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds);
+    default void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
+        context.success(Collections.nCopies(nodeIds.size(), Unit.VALUE));
+    }
 
 
     final class BrowseContext extends AsyncOperationContext<List<Reference>> implements AccessContext {
