@@ -15,17 +15,20 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
+import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.AccessContext;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpace;
 import org.eclipse.milo.opcua.sdk.server.api.AddressSpaceFilter;
 import org.eclipse.milo.opcua.sdk.server.api.AsyncOperationContext;
+import org.eclipse.milo.opcua.sdk.server.api.ServiceOperationContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
 
@@ -74,6 +77,22 @@ public interface ViewServices {
      */
     void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
+    /**
+     * Register one or more {@link NodeId}s.
+     *
+     * @param context the {@link RegisterNodesContext}.
+     * @param nodeIds the {@link NodeId}s to register.
+     */
+    void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds);
+
+    /**
+     * Unregister one or more previously registered {@link NodeId}s.
+     *
+     * @param context the {@link UnregisterNodesContext}.
+     * @param nodeIds the {@link NodeId}s to unregister.
+     */
+    void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds);
+
 
     final class BrowseContext extends AsyncOperationContext<List<Reference>> implements AccessContext {
 
@@ -88,6 +107,40 @@ public interface ViewServices {
         @Override
         public Optional<Session> getSession() {
             return Optional.ofNullable(session);
+        }
+
+    }
+
+    final class RegisterNodesContext extends ServiceOperationContext<NodeId, NodeId> implements AccessContext {
+
+        public RegisterNodesContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public RegisterNodesContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<NodeId> diagnosticsContext
+        ) {
+
+            super(server, session, diagnosticsContext);
+        }
+
+    }
+
+    final class UnregisterNodesContext extends ServiceOperationContext<NodeId, Unit> implements AccessContext {
+
+        public UnregisterNodesContext(OpcUaServer server, @Nullable Session session) {
+            super(server, session);
+        }
+
+        public UnregisterNodesContext(
+            OpcUaServer server,
+            @Nullable Session session,
+            DiagnosticsContext<NodeId> diagnosticsContext
+        ) {
+
+            super(server, session, diagnosticsContext);
         }
 
     }

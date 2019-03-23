@@ -18,13 +18,14 @@ import java.util.stream.Stream;
 import org.eclipse.milo.opcua.sdk.server.DiagnosticsContext;
 import org.eclipse.milo.opcua.sdk.server.OpcUaServer;
 import org.eclipse.milo.opcua.sdk.server.Session;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.RegisterNodesContext;
+import org.eclipse.milo.opcua.sdk.server.api.services.ViewServices.UnregisterNodesContext;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowseHelper;
 import org.eclipse.milo.opcua.sdk.server.services.helpers.BrowsePathsHelper;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseRequest;
 import org.eclipse.milo.opcua.stack.core.types.structured.BrowseResponse;
@@ -116,6 +117,7 @@ public class DefaultViewServiceSet implements ViewServiceSet {
     @Override
     public void onRegisterNodes(ServiceRequest service) throws UaException {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
+        Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
         RegisterNodesRequest request = (RegisterNodesRequest) service.getRequest();
 
@@ -129,15 +131,26 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        service.setResponse(new RegisterNodesResponse(
-            service.createResponseHeader(StatusCode.GOOD),
-            a(nodeIds, NodeId.class)
-        ));
+        RegisterNodesContext context = new RegisterNodesContext(server, session);
+
+        server.getAddressSpaceManager().registerNodes(context, nodeIds);
+
+        context.getFuture().thenAccept(registeredNodeIds -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            RegisterNodesResponse response = new RegisterNodesResponse(
+                header,
+                registeredNodeIds.toArray(new NodeId[0])
+            );
+
+            service.setResponse(response);
+        });
     }
 
     @Override
     public void onUnregisterNodes(ServiceRequest service) throws UaException {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
+        Session session = service.attr(ServiceAttributes.SESSION_KEY).get();
 
         UnregisterNodesRequest request = (UnregisterNodesRequest) service.getRequest();
 
@@ -151,7 +164,17 @@ public class DefaultViewServiceSet implements ViewServiceSet {
             throw new UaException(StatusCodes.Bad_TooManyOperations);
         }
 
-        service.setResponse(new UnregisterNodesResponse(service.createResponseHeader(StatusCode.GOOD)));
+        UnregisterNodesContext context = new UnregisterNodesContext(server, session);
+
+        server.getAddressSpaceManager().unregisterNodes(context, nodeIds);
+
+        context.getFuture().thenAccept(registeredNodeIds -> {
+            ResponseHeader header = service.createResponseHeader();
+
+            UnregisterNodesResponse response = new UnregisterNodesResponse(header);
+
+            service.setResponse(response);
+        });
     }
 
 }
