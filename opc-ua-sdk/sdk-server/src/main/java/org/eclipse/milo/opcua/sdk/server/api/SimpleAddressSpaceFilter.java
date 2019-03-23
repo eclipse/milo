@@ -66,6 +66,16 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
         return filter(nodeId);
     }
 
+    @Override
+    public boolean filterRegisterNode(OpcUaServer server, NodeId nodeId) {
+        return filter(nodeId);
+    }
+
+    @Override
+    public boolean filterUnregisterNode(OpcUaServer server, NodeId nodeId) {
+        return filter(nodeId);
+    }
+
     //endregion
 
     //region AttributeServices

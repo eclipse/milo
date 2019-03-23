@@ -244,7 +244,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
         CompletableFuture<List<NodeId>> registeredNodeIds = groupMapCollate(
             nodeIds,
-            this::getAddressSpace,
+            nodeId -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterRegisterNode(server, nodeId)
+            ),
             (AddressSpace asx) -> group -> {
                 RegisterNodesContext ctx = new RegisterNodesContext(
                     server,
@@ -265,7 +268,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
         CompletableFuture<List<Unit>> units = groupMapCollate(
             nodeIds,
-            this::getAddressSpace,
+            nodeId -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterUnregisterNode(server, nodeId)
+            ),
             (AddressSpace asx) -> group -> {
                 UnregisterNodesContext ctx = new UnregisterNodesContext(
                     server,
@@ -733,6 +739,18 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         public boolean filterBrowse(OpcUaServer server, NodeId nodeId) {
             return addressSpaces.stream()
                 .anyMatch(asx -> asx.getFilter().filterBrowse(server, nodeId));
+        }
+
+        @Override
+        public boolean filterRegisterNode(OpcUaServer server, NodeId nodeId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterRegisterNode(server, nodeId));
+        }
+
+        @Override
+        public boolean filterUnregisterNode(OpcUaServer server, NodeId nodeId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterUnregisterNode(server, nodeId));
         }
 
         @Override

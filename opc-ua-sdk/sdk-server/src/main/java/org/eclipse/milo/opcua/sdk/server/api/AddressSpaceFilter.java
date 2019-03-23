@@ -37,6 +37,28 @@ public interface AddressSpaceFilter {
      */
     boolean filterBrowse(OpcUaServer server, NodeId nodeId);
 
+    /**
+     * Return {@code true} if the register node operation for {@code nodeId} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server the {@link OpcUaServer}.
+     * @param nodeId the {@link NodeId} to register.
+     * @return {@code true} if the register node operation for {@code nodeId} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
+    boolean filterRegisterNode(OpcUaServer server, NodeId nodeId);
+
+    /**
+     * Return {@code true} if the unregister node operation for {@code nodeId} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     *
+     * @param server the {@link OpcUaServer}.
+     * @param nodeId the {@link NodeId} to unregister.
+     * @return {@code true} if the unregister node operation for {@code nodeId} should be handled by the
+     * {@link AddressSpace} this filter belongs to.
+     */
+    boolean filterUnregisterNode(OpcUaServer server, NodeId nodeId);
+
     //endregion
 
     //region AttributeServices
