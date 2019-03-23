@@ -26,6 +26,15 @@ public interface AddressSpaceFilter {
 
     //region ViewServices
 
+    /**
+     * Return {@code true} if the browse operation for {@code nodeId} should be handled the the {@link AddressSpace}
+     * this filter belongs to.
+     *
+     * @param server the {@link OpcUaServer}.
+     * @param nodeId the {@link NodeId} being browsed.
+     * @return {@code true} if the browse operation for {@code nodeId} should be handled the the {@link AddressSpace}
+     * this filter belongs to.
+     */
     boolean filterBrowse(OpcUaServer server, NodeId nodeId);
 
     //endregion

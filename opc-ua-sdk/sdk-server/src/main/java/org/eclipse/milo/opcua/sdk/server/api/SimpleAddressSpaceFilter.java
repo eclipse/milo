@@ -26,6 +26,10 @@ import org.eclipse.milo.opcua.stack.core.types.structured.HistoryUpdateDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 
+/**
+ * A simple {@link AddressSpaceFilter} that delegates each of the filter operations to a simple filter on {@link NodeId}
+ * using the most reasonable NodeId from that operation's request as the filter criteria.
+ */
 public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
 
     /**
@@ -44,13 +48,13 @@ public abstract class SimpleAddressSpaceFilter implements AddressSpaceFilter {
     }
 
     /**
-     * Return {@code true} if {@code nodeId} belongs to this {@link AddressSpace}.
+     * Return {@code true} if the operation {@code nodeId} belongs to should be handled this {@link AddressSpace}.
      * <p>
      * This is not an indication that a Node for {@code nodeId} exists, rather, it's an indication that this
      * AddressSpace would be responsible for the Node *if it did* exist.
      *
      * @param nodeId a {@link NodeId}.
-     * @return {@code true} if {@code nodeId} belongs to this {@link AddressSpace}.
+     * @return {@code true} if the operation {@code nodeId} belongs to should be handled this {@link AddressSpace}.
      */
     protected abstract boolean filter(NodeId nodeId);
 
