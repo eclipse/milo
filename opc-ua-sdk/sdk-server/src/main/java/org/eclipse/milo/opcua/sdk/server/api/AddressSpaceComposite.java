@@ -49,6 +49,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import org.eclipse.milo.opcua.stack.core.types.structured.ViewDescription;
 import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.util.FutureUtils;
+import org.eclipse.milo.opcua.stack.core.util.Unit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -253,6 +254,48 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         references
             .exceptionally(ex -> emptyList())
             .thenAccept(context::success);
+    }
+
+    @Override
+    public void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
+        CompletableFuture<List<NodeId>> registeredNodeIds = groupMapCollate(
+            nodeIds,
+            this::getAddressSpace,
+            (AddressSpace asx) -> group -> {
+                RegisterNodesContext ctx = new RegisterNodesContext(
+                    server,
+                    context.getSession().orElse(null),
+                    context.getDiagnosticsContext()
+                );
+
+                asx.registerNodes(ctx, group);
+
+                return ctx.getFuture();
+            }
+        );
+
+        registeredNodeIds.thenAccept(context::success);
+    }
+
+    @Override
+    public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
+        CompletableFuture<List<Unit>> units = groupMapCollate(
+            nodeIds,
+            this::getAddressSpace,
+            (AddressSpace asx) -> group -> {
+                UnregisterNodesContext ctx = new UnregisterNodesContext(
+                    server,
+                    context.getSession().orElse(null),
+                    context.getDiagnosticsContext()
+                );
+
+                asx.unregisterNodes(ctx, group);
+
+                return ctx.getFuture();
+            }
+        );
+
+        units.thenAccept(context::success);
     }
 
     //endregion
