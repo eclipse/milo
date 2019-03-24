@@ -66,14 +66,14 @@ public interface ViewServices {
     void browse(BrowseContext context, ViewDescription view, NodeId nodeId);
 
     /**
-     * References for which {@code sourceNodeId} is the source are being collected from all AddressSpace instances.
-     * Return any References where {@code sourceNodeId} is the source this AddressSpace may have to contribute.
+     * References for which {@code nodeId} is the source are being collected from all AddressSpace instances.
+     * Return any References where {@code nodeId} is the source this AddressSpace may have to contribute.
      * <p>
-     * The Node identified by {@code sourceNodeId} may be managed by another AddressSpace.
+     * The Node identified by {@code nodeId} may be managed by another AddressSpace.
      *
-     * @param context TODO
-     * @param view    TODO
-     * @param nodeId  TODO
+     * @param context the {@link BrowseContext}.
+     * @param view    the {@link ViewDescription}.
+     * @param nodeId  the {@link NodeId} to get references fo.
      */
     void getReferences(BrowseContext context, ViewDescription view, NodeId nodeId);
 
