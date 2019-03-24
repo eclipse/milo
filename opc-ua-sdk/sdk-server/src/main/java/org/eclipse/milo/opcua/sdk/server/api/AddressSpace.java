@@ -10,12 +10,9 @@
 
 package org.eclipse.milo.opcua.sdk.server.api;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-
 /**
  * An {@link AddressSpace} is an implementation of the services defined by {@link AddressSpaceServices} that can be
- * invoked for any operation targeting a {@link NodeId} that passes the {@link AddressSpaceFilter} obtained from
- * {@link #getFilter()}.
+ * invoked for any operation that passes the {@link AddressSpaceFilter} obtained from {@link #getFilter()}.
  */
 public interface AddressSpace extends AddressSpaceServices {
 
