@@ -79,10 +79,10 @@ public class GenericBsdParserTest extends BsdParserTest {
     @Test
     public void testArrayContainer() {
         Struct arrayContainer = Struct.builder("ArrayContainer")
-            .addMember("IntArrayLen", 3)
+            //.addMember("IntArrayLen", 3)
             .addMember("IntArray", new Integer[]{1, 2, 3})
             .addMember("BitField", 0b10001111)
-            .addMember("StringArrayLen", 2)
+            //.addMember("StringArrayLen", 2)
             .addMember("StringArray", new String[]{"hello", "world"})
             .build();
 
