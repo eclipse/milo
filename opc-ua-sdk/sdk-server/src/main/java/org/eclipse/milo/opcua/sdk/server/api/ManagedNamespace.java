@@ -27,6 +27,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
  */
 public abstract class ManagedNamespace extends ManagedAddressSpace implements Namespace {
 
+    private final AddressSpaceFilter filter;
+
     private final String namespaceUri;
     private final UShort namespaceIndex;
 
@@ -43,11 +45,18 @@ public abstract class ManagedNamespace extends ManagedAddressSpace implements Na
 
         this.namespaceUri = namespaceUri;
         this.namespaceIndex = server.getNamespaceTable().addUri(namespaceUri);
+
+        filter = new SimpleAddressSpaceFilter() {
+            @Override
+            protected boolean filter(NodeId nodeId) {
+                return nodeId.getNamespaceIndex().equals(namespaceIndex);
+            }
+        };
     }
 
     @Override
-    public final boolean filter(NodeId nodeId) {
-        return nodeId.getNamespaceIndex().equals(namespaceIndex);
+    public AddressSpaceFilter getFilter() {
+        return filter;
     }
 
     @Override

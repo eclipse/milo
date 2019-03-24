@@ -14,12 +14,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.eclipse.milo.opcua.sdk.core.Reference;
 import org.eclipse.milo.opcua.sdk.server.AbstractLifecycle;
@@ -28,7 +27,6 @@ import org.eclipse.milo.opcua.sdk.server.api.services.MonitoredItemServices;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -69,6 +67,8 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
     private final CopyOnWriteArrayList<AddressSpace> addressSpaces = new CopyOnWriteArrayList<>();
 
+    private final CompositeAddressSpaceFilter filter = new CompositeAddressSpaceFilter(addressSpaces);
+
     private final OpcUaServer server;
 
     public AddressSpaceComposite(OpcUaServer server) {
@@ -82,9 +82,8 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     protected void onShutdown() {}
 
     @Override
-    public boolean filter(NodeId nodeId) {
-        return addressSpaces.stream()
-            .anyMatch(asx -> asx.filter(nodeId));
+    public AddressSpaceFilter getFilter() {
+        return filter;
     }
 
     /**
@@ -154,26 +153,11 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         return new ArrayList<>(addressSpaces);
     }
 
-    private AddressSpace getAddressSpace(NodeId nodeId) {
-        Optional<AddressSpace> addressSpace = addressSpaces.stream()
-            .filter(asx -> asx.filter(nodeId))
-            .findFirst();
-
-        return addressSpace.orElse(new EmptyAddressSpace(server));
-    }
-
-    private AddressSpace getAddressSpace(ExpandedNodeId nodeId) {
-        return nodeId.local(getServer().getNamespaceTable())
-            .map(this::getAddressSpace)
+    private AddressSpace getAddressSpace(Predicate<AddressSpace> filter) {
+        return addressSpaces.stream()
+            .filter(filter)
+            .findFirst()
             .orElse(new EmptyAddressSpace(server));
-    }
-
-    private <T> Map<AddressSpace, List<T>> groupedBy(List<T> items, Function<T, NodeId> getNodeId) {
-        return items.stream().collect(groupingBy(item -> {
-            NodeId nodeId = getNodeId.apply(item);
-
-            return getAddressSpace(nodeId);
-        }));
     }
 
     //region ViewServices
@@ -185,7 +169,7 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         AddressSpace firstMatch;
         try {
             firstMatch = addressSpaces.stream()
-                .filter(asx -> asx.filter(nodeId))
+                .filter(asx -> asx.getFilter().filterBrowse(server, nodeId))
                 .findFirst()
                 .orElseThrow(() -> new UaException(StatusCodes.Bad_NodeIdUnknown));
 
@@ -260,7 +244,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void registerNodes(RegisterNodesContext context, List<NodeId> nodeIds) {
         CompletableFuture<List<NodeId>> registeredNodeIds = groupMapCollate(
             nodeIds,
-            this::getAddressSpace,
+            nodeId -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterRegisterNode(server, nodeId)
+            ),
             (AddressSpace asx) -> group -> {
                 RegisterNodesContext ctx = new RegisterNodesContext(
                     server,
@@ -281,7 +268,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void unregisterNodes(UnregisterNodesContext context, List<NodeId> nodeIds) {
         CompletableFuture<List<Unit>> units = groupMapCollate(
             nodeIds,
-            this::getAddressSpace,
+            nodeId -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterUnregisterNode(server, nodeId)
+            ),
             (AddressSpace asx) -> group -> {
                 UnregisterNodesContext ctx = new UnregisterNodesContext(
                     server,
@@ -312,7 +302,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
         CompletableFuture<List<DataValue>> values = groupMapCollate(
             readValueIds,
-            readValueId -> getAddressSpace(readValueId.getNodeId()),
+            readValueId -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterRead(server, readValueId)
+            ),
             (AddressSpace asx) -> group -> {
                 ReadContext ctx = new ReadContext(
                     server,
@@ -337,7 +330,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
         CompletableFuture<List<StatusCode>> results = groupMapCollate(
             writeValues,
-            writeValue -> getAddressSpace(writeValue.getNodeId()),
+            writeValue -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterWrite(server, writeValue)
+            ),
             (AddressSpace asx) -> group -> {
 
                 WriteContext ctx = new WriteContext(
@@ -369,7 +365,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
         CompletableFuture<List<HistoryReadResult>> results = groupMapCollate(
             readValueIds,
-            readValueId -> getAddressSpace(readValueId.getNodeId()),
+            readValueId -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterHistoryRead(server, readValueId)
+            ),
             (AddressSpace asx) -> group -> {
 
                 HistoryReadContext ctx = new HistoryReadContext(
@@ -400,7 +399,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
         CompletableFuture<List<HistoryUpdateResult>> results = groupMapCollate(
             updateDetailsList,
-            updateDetails -> getAddressSpace(updateDetails.getNodeId()),
+            updateDetails -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterHistoryUpdate(server, updateDetails)
+            ),
             (AddressSpace asx) -> group -> {
 
                 HistoryUpdateContext ctx = new HistoryUpdateContext(
@@ -430,7 +432,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
         CompletableFuture<List<CallMethodResult>> results = groupMapCollate(
             requests,
-            request -> getAddressSpace(request.getObjectId()),
+            request -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterCall(server, request)
+            ),
             (AddressSpace asx) -> group -> {
 
                 CallContext ctx = new CallContext(
@@ -460,7 +465,12 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         BiConsumer<Double, UInteger> revisionCallback
     ) {
 
-        getAddressSpace(itemToMonitor.getNodeId()).onCreateDataItem(
+        AddressSpace addressSpace = getAddressSpace(
+            asx ->
+                asx.getFilter().filterOnCreateDataItem(server, itemToMonitor)
+        );
+
+        addressSpace.onCreateDataItem(
             itemToMonitor,
             requestedSamplingInterval,
             requestedQueueSize,
@@ -476,7 +486,12 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         BiConsumer<Double, UInteger> revisionCallback
     ) {
 
-        getAddressSpace(itemToModify.getNodeId()).onModifyDataItem(
+        AddressSpace addressSpace = getAddressSpace(
+            asx ->
+                asx.getFilter().filterOnModifyDataItem(server, itemToModify)
+        );
+
+        addressSpace.onModifyDataItem(
             itemToModify,
             requestedSamplingInterval,
             requestedQueueSize,
@@ -491,7 +506,12 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         Consumer<UInteger> revisionCallback
     ) {
 
-        getAddressSpace(itemToMonitor.getNodeId()).onCreateEventItem(
+        AddressSpace addressSpace = getAddressSpace(
+            asx ->
+                asx.getFilter().filterOnCreateEventItem(server, itemToMonitor)
+        );
+
+        addressSpace.onCreateEventItem(
             itemToMonitor,
             requestedQueueSize,
             revisionCallback
@@ -505,7 +525,12 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         Consumer<UInteger> revisionCallback
     ) {
 
-        getAddressSpace(itemToModify.getNodeId()).onModifyEventItem(
+        AddressSpace addressSpace = getAddressSpace(
+            asx ->
+                asx.getFilter().filterOnModifyEventItem(server, itemToModify)
+        );
+
+        addressSpace.onModifyEventItem(
             itemToModify,
             requestedQueueSize,
             revisionCallback
@@ -514,70 +539,84 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
 
     @Override
     public void onDataItemsCreated(List<DataItem> dataItems) {
-        Map<AddressSpace, List<DataItem>> byAddressSpace = groupedBy(
-            dataItems,
-            dataItem -> dataItem.getReadValueId().getNodeId()
-        );
+        Map<AddressSpace, List<DataItem>> byAddressSpace = dataItems.stream().collect(groupingBy(item ->
+            getAddressSpace(
+                asx ->
+                    asx.getFilter().filterOnDataItemsCreated(server, item.getReadValueId())
+            )
+        ));
 
         byAddressSpace.forEach(MonitoredItemServices::onDataItemsCreated);
     }
 
     @Override
     public void onDataItemsModified(List<DataItem> dataItems) {
-        Map<AddressSpace, List<DataItem>> byAddressSpace = groupedBy(
-            dataItems,
-            dataItem -> dataItem.getReadValueId().getNodeId()
-        );
+        Map<AddressSpace, List<DataItem>> byAddressSpace = dataItems.stream().collect(groupingBy(item ->
+            getAddressSpace(
+                asx ->
+                    asx.getFilter().filterOnDataItemsModified(server, item.getReadValueId())
+            )
+        ));
 
         byAddressSpace.forEach(MonitoredItemServices::onDataItemsModified);
     }
 
     @Override
     public void onDataItemsDeleted(List<DataItem> dataItems) {
-        Map<AddressSpace, List<DataItem>> byAddressSpace = groupedBy(
-            dataItems,
-            dataItem -> dataItem.getReadValueId().getNodeId()
-        );
+        Map<AddressSpace, List<DataItem>> byAddressSpace = dataItems.stream().collect(groupingBy(item ->
+            getAddressSpace(
+                asx ->
+                    asx.getFilter().filterOnDataItemsDeleted(server, item.getReadValueId())
+            )
+        ));
 
         byAddressSpace.forEach(MonitoredItemServices::onDataItemsDeleted);
     }
 
     @Override
     public void onEventItemsCreated(List<EventItem> eventItems) {
-        Map<AddressSpace, List<EventItem>> byAddressSpace = groupedBy(
-            eventItems,
-            eventItem -> eventItem.getReadValueId().getNodeId()
-        );
+        Map<AddressSpace, List<EventItem>> byAddressSpace = eventItems.stream().collect(groupingBy(item ->
+            getAddressSpace(
+                asx ->
+                    asx.getFilter().filterOnEventItemsCreated(server, item.getReadValueId())
+            )
+        ));
 
         byAddressSpace.forEach(MonitoredItemServices::onEventItemsCreated);
     }
 
     @Override
     public void onEventItemsModified(List<EventItem> eventItems) {
-        Map<AddressSpace, List<EventItem>> byAddressSpace = groupedBy(
-            eventItems,
-            eventItem -> eventItem.getReadValueId().getNodeId()
-        );
+        Map<AddressSpace, List<EventItem>> byAddressSpace = eventItems.stream().collect(groupingBy(item ->
+            getAddressSpace(
+                asx ->
+                    asx.getFilter().filterOnEventItemsModified(server, item.getReadValueId())
+            )
+        ));
 
         byAddressSpace.forEach(MonitoredItemServices::onEventItemsModified);
     }
 
     @Override
     public void onEventItemsDeleted(List<EventItem> eventItems) {
-        Map<AddressSpace, List<EventItem>> byAddressSpace = groupedBy(
-            eventItems,
-            eventItem -> eventItem.getReadValueId().getNodeId()
-        );
+        Map<AddressSpace, List<EventItem>> byAddressSpace = eventItems.stream().collect(groupingBy(item ->
+            getAddressSpace(
+                asx ->
+                    asx.getFilter().filterOnEventItemsDeleted(server, item.getReadValueId())
+            )
+        ));
 
         byAddressSpace.forEach(MonitoredItemServices::onEventItemsDeleted);
     }
 
     @Override
     public void onMonitoringModeChanged(List<MonitoredItem> monitoredItems) {
-        Map<AddressSpace, List<MonitoredItem>> byAddressSpace = groupedBy(
-            monitoredItems,
-            monitoredItem -> monitoredItem.getReadValueId().getNodeId()
-        );
+        Map<AddressSpace, List<MonitoredItem>> byAddressSpace = monitoredItems.stream().collect(groupingBy(item ->
+            getAddressSpace(
+                asx ->
+                    asx.getFilter().filterOnMonitoringModeChanged(server, item.getReadValueId())
+            )
+        ));
 
         byAddressSpace.forEach(MonitoredItemServices::onMonitoringModeChanged);
     }
@@ -590,16 +629,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void addNodes(AddNodesContext context, List<AddNodesItem> nodesToAdd) {
         CompletableFuture<List<AddNodesResult>> results = groupMapCollate(
             nodesToAdd,
-            addNodesItem -> {
-                ExpandedNodeId requestedNewNodeId =
-                    addNodesItem.getRequestedNewNodeId();
-
-                if (requestedNewNodeId.isNotNull()) {
-                    return getAddressSpace(requestedNewNodeId);
-                } else {
-                    return getAddressSpace(addNodesItem.getParentNodeId());
-                }
-            },
+            addNodesItem -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterAddNodes(server, addNodesItem)
+            ),
             (AddressSpace asx) -> group -> {
 
                 AddNodesContext ctx = new AddNodesContext(
@@ -621,7 +654,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void deleteNodes(DeleteNodesContext context, List<DeleteNodesItem> nodesToDelete) {
         CompletableFuture<List<StatusCode>> results = groupMapCollate(
             nodesToDelete,
-            deleteNodesItem -> getAddressSpace(deleteNodesItem.getNodeId()),
+            deleteNodesItem -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterDeleteNodes(server, deleteNodesItem)
+            ),
             (AddressSpace asx) -> group -> {
 
                 DeleteNodesContext ctx = new DeleteNodesContext(
@@ -643,7 +679,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void addReferences(AddReferencesContext context, List<AddReferencesItem> referencesToAdd) {
         CompletableFuture<List<StatusCode>> results = groupMapCollate(
             referencesToAdd,
-            addReferencesItem -> getAddressSpace(addReferencesItem.getSourceNodeId()),
+            addReferencesItem -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterAddReferences(server, addReferencesItem)
+            ),
             (AddressSpace asx) -> group -> {
 
                 AddReferencesContext ctx = new AddReferencesContext(
@@ -665,7 +704,10 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     public void deleteReferences(DeleteReferencesContext context, List<DeleteReferencesItem> referencesToDelete) {
         CompletableFuture<List<StatusCode>> results = groupMapCollate(
             referencesToDelete,
-            deleteReferencesItem -> getAddressSpace(deleteReferencesItem.getSourceNodeId()),
+            deleteReferencesItem -> getAddressSpace(
+                asx ->
+                    asx.getFilter().filterDeleteReferences(server, deleteReferencesItem)
+            ),
             (AddressSpace asx) -> group -> {
 
                 DeleteReferencesContext ctx = new DeleteReferencesContext(
@@ -684,6 +726,154 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
     }
 
     //endregion
+
+    private static class CompositeAddressSpaceFilter implements AddressSpaceFilter {
+
+        private final List<AddressSpace> addressSpaces;
+
+        CompositeAddressSpaceFilter(List<AddressSpace> addressSpaces) {
+            this.addressSpaces = addressSpaces;
+        }
+
+        @Override
+        public boolean filterBrowse(OpcUaServer server, NodeId nodeId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterBrowse(server, nodeId));
+        }
+
+        @Override
+        public boolean filterRegisterNode(OpcUaServer server, NodeId nodeId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterRegisterNode(server, nodeId));
+        }
+
+        @Override
+        public boolean filterUnregisterNode(OpcUaServer server, NodeId nodeId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterUnregisterNode(server, nodeId));
+        }
+
+        @Override
+        public boolean filterRead(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterRead(server, readValueId));
+        }
+
+        @Override
+        public boolean filterWrite(OpcUaServer server, WriteValue writeValue) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterWrite(server, writeValue));
+        }
+
+        @Override
+        public boolean filterHistoryRead(OpcUaServer server, HistoryReadValueId historyReadValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterHistoryRead(server, historyReadValueId));
+        }
+
+        @Override
+        public boolean filterHistoryUpdate(OpcUaServer server, HistoryUpdateDetails historyUpdateDetails) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterHistoryUpdate(server, historyUpdateDetails));
+        }
+
+        @Override
+        public boolean filterCall(OpcUaServer server, CallMethodRequest callMethodRequest) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterCall(server, callMethodRequest));
+        }
+
+        @Override
+        public boolean filterOnCreateDataItem(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnCreateDataItem(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnModifyDataItem(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnModifyDataItem(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnCreateEventItem(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnCreateEventItem(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnModifyEventItem(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnModifyEventItem(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnDataItemsCreated(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnDataItemsCreated(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnDataItemsModified(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnDataItemsModified(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnDataItemsDeleted(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnDataItemsDeleted(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnEventItemsCreated(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnEventItemsCreated(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnEventItemsModified(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnEventItemsModified(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnEventItemsDeleted(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnEventItemsDeleted(server, readValueId));
+        }
+
+        @Override
+        public boolean filterOnMonitoringModeChanged(OpcUaServer server, ReadValueId readValueId) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterOnMonitoringModeChanged(server, readValueId));
+        }
+
+        @Override
+        public boolean filterAddNodes(OpcUaServer server, AddNodesItem addNodesItem) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterAddNodes(server, addNodesItem));
+        }
+
+        @Override
+        public boolean filterDeleteNodes(OpcUaServer server, DeleteNodesItem deleteNodesItem) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterDeleteNodes(server, deleteNodesItem));
+        }
+
+        @Override
+        public boolean filterAddReferences(OpcUaServer server, AddReferencesItem addReferencesItem) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterAddReferences(server, addReferencesItem));
+        }
+
+        @Override
+        public boolean filterDeleteReferences(OpcUaServer server, DeleteReferencesItem deleteReferencesItem) {
+            return addressSpaces.stream()
+                .anyMatch(asx -> asx.getFilter().filterDeleteReferences(server, deleteReferencesItem));
+        }
+
+    }
 
     private static class EmptyAddressSpace extends ManagedAddressSpace {
 
@@ -704,8 +894,13 @@ public abstract class AddressSpaceComposite extends AbstractLifecycle implements
         }
 
         @Override
-        public boolean filter(NodeId nodeId) {
-            return true;
+        public AddressSpaceFilter getFilter() {
+            return new SimpleAddressSpaceFilter() {
+                @Override
+                protected boolean filter(NodeId nodeId) {
+                    return true;
+                }
+            };
         }
 
         @Override
