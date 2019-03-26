@@ -79,8 +79,6 @@ public class JsonBsdParserTest extends BsdParserTest {
     public void testArrayContainer() {
         JsonObject arrayContainer = new JsonObject();
 
-        //arrayContainer.add("IntArrayLen", new JsonPrimitive(3));
-
         JsonArray intArray = new JsonArray();
         intArray.add(1);
         intArray.add(2);
@@ -88,8 +86,6 @@ public class JsonBsdParserTest extends BsdParserTest {
         arrayContainer.add("IntArray", intArray);
 
         arrayContainer.add("BitField", new JsonPrimitive(0b10001111));
-
-        //arrayContainer.add("StringArrayLen", new JsonPrimitive(2));
 
         JsonArray stringArray = new JsonArray();
         stringArray.add("hello");
