@@ -76,6 +76,7 @@ public class ServerChannelManager {
 
                 return bootstrap.whenComplete((channel, ex) -> {
                     if (channel != null) {
+                        addresses.add(bindAddress);
                         channels.put(bindAddress, channel);
                         future.complete(Unit.VALUE);
                     } else {
