@@ -40,6 +40,8 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      */
     void registerStructCodec(T codec, String description, NodeId encodingId);
 
+    void registerStructCodec(T codec, NodeId dataTypeId);
+
     /**
      * Get a {@link DataTypeCodec} registered with this dictionary.
      *
@@ -51,10 +53,10 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
     /**
      * Get a {@link DataTypeCodec} registered with this dictionary.
      *
-     * @param encodingId the {@link NodeId} of the DataTypeEncoding Node for the DataType serialized by the codec.
-     * @return a {@link DataTypeCodec} for {@code encodingId}, or {@code null} if none is found.
+     * @param dataTypeId the {@link NodeId} of the DataType Node for the DataType serialized by the codec.
+     * @return a {@link DataTypeCodec} for {@code dataTypeId}, or {@code null} if none is found.
      */
-    T getCodec(NodeId encodingId);
+    T getCodec(NodeId dataTypeId);
 
     /**
      * @return a Map of all codecs registered with this dictionary, keyed by description.
@@ -65,5 +67,10 @@ public interface DataTypeDictionary<T extends DataTypeCodec> {
      * @return a Map of all codecs registered with this dictionary, keyed by encoding id.
      */
     Map<NodeId, T> getCodecsByEncodingId();
+
+    /**
+     * @return a Map of all codecs registered with this dictionary, keyed by datatype id.
+     */
+    Map<NodeId, T> getCodecsByDataTypeId();
 
 }

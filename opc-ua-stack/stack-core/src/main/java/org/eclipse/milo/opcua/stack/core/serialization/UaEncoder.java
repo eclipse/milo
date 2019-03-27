@@ -97,9 +97,9 @@ public interface UaEncoder {
         Class<T> clazz
     ) throws UaSerializationException;
 
-    void writeStruct(String field, Object value, NodeId encodingId) throws UaSerializationException;
+    void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException;
 
-    void writeStructArray(String field, Object[] value, NodeId encodingId) throws UaSerializationException;
+    void writeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException;
 
     void writeMessage(String field, UaMessage message) throws UaSerializationException;
 

@@ -17,6 +17,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -87,6 +88,8 @@ public class CustomDataType {
             String foo = decoder.readString("Foo");
             UInteger bar = decoder.readUInt32("Bar");
             boolean baz = decoder.readBoolean("Baz");
+
+            decoder.readStruct("struct", NodeId.NULL_VALUE);
 
             return new CustomDataType(foo, bar, baz);
         }

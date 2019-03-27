@@ -92,9 +92,9 @@ public interface UaDecoder {
         Class<T> clazz
     ) throws UaSerializationException;
 
-    Object readStruct(String field, NodeId encodingId) throws UaSerializationException;
+    Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
 
-    Object[] readStructArray(String field, NodeId encodingId) throws UaSerializationException;
+    Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;
 
     UaMessage readMessage(String field) throws UaSerializationException;
 

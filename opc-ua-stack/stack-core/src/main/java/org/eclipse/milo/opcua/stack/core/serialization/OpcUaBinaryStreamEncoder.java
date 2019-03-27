@@ -959,17 +959,18 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStruct(String field, Object value, NodeId encodingId) throws UaSerializationException {
-
+    public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
         try {
             @SuppressWarnings("unchecked")
-            OpcUaBinaryDataTypeCodec<Object> codec =
-                (OpcUaBinaryDataTypeCodec<Object>) OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
+            OpcUaBinaryDataTypeCodec<Object> codec = (OpcUaBinaryDataTypeCodec<Object>)
+                OpcUaDataTypeManager
+                    .getInstance()
+                    .getBinaryCodecByDataTypeId(dataTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingError,
-                    "no codec registered: " + encodingId
+                    "no codec registered: " + dataTypeId
                 );
             }
 
@@ -981,9 +982,9 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
     @Override
     public void writeStructArray(
-        String field, Object[] values, NodeId encodingId) throws UaSerializationException {
+        String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
 
-        writeArray(values, o -> writeStruct(field, o, encodingId));
+        writeArray(values, o -> writeStruct(field, o, dataTypeId));
     }
 
     @Override
@@ -991,8 +992,9 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         NodeId encodingId = message.getBinaryEncodingId();
 
         @SuppressWarnings("unchecked")
-        OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec =
-            (OpcUaBinaryDataTypeCodec<UaMessage>) OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
+        OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec = (OpcUaBinaryDataTypeCodec<UaMessage>)
+            OpcUaDataTypeManager.getInstance()
+                .getBinaryCodecByEncodingId(encodingId);
 
         if (binaryCodec == null) {
             throw new UaSerializationException(

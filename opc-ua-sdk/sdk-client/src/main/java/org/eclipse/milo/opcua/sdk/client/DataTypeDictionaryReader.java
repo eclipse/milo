@@ -284,33 +284,48 @@ public class DataTypeDictionaryReader {
                 }
             }
 
-            CompletableFuture<List<NodeId>> encodingIds =
+            CompletableFuture<List<NodeId>> encodingIdsFuture =
                 descriptionNodeIds.thenCompose(this::browseDataTypeEncodingNodeIds);
 
-            return descriptionValues.thenCombine(encodingIds, (descriptions, nodeIds) -> {
-                Map<String, NodeId> descriptionMap = new HashMap<>();
+            return encodingIdsFuture.thenCompose(encodingIds ->
+                browseDataTypeIds(encodingIds).thenCompose(dataTypeIds ->
+                    descriptionValues.thenApply(descriptions -> {
+                            Map<String, NodeId> encodingIdMap = new HashMap<>();
+                            Map<String, NodeId> dataTypeIdMap = new HashMap<>();
 
-                Iterator<String> di = descriptions.iterator();
-                Iterator<NodeId> ni = nodeIds.iterator();
+                            Iterator<String> descriptionIter = descriptions.iterator();
+                            Iterator<NodeId> encodingIdIter = encodingIds.iterator();
+                            Iterator<NodeId> dataTypeIdIter = dataTypeIds.iterator();
 
-                while (di.hasNext() && ni.hasNext()) {
-                    descriptionMap.put(di.next(), ni.next());
-                }
+                            while (descriptionIter.hasNext() && encodingIdIter.hasNext() && dataTypeIdIter.hasNext()) {
+                                String description = descriptionIter.next();
+                                encodingIdMap.put(description, encodingIdIter.next());
+                                dataTypeIdMap.put(description, dataTypeIdIter.next());
+                            }
 
-                structCodecs.forEach(cd -> {
-                    String description = cd.getDescription();
-                    NodeId encodingId = descriptionMap.get(description);
+                            structCodecs.forEach(cd -> {
+                                String description = cd.getDescription();
+                                NodeId encodingId = encodingIdMap.get(description);
+                                NodeId dataTypeId = dataTypeIdMap.get(description);
 
-                    if (encodingId != null && encodingId.isNotNull()) {
-                        dictionary.registerStructCodec(cd.getCodec(), description, encodingId);
-                        logger.debug("Registered codec description={} encodingId={}", description, encodingId);
-                    } else {
-                        logger.warn("encodingId is null for description={}", description);
-                    }
-                });
+                                if (encodingId != null && encodingId.isNotNull()) {
+                                    dictionary.registerStructCodec(cd.getCodec(), dataTypeId);
+                                    dictionary.registerStructCodec(cd.getCodec(), description, encodingId);
 
-                return dictionary;
-            });
+                                    logger.debug(
+                                        "Registered codec description={} encodingId={}",
+                                        description, encodingId
+                                    );
+                                } else {
+                                    logger.warn("encodingId is null for description={}", description);
+                                }
+                            });
+
+                            return dictionary;
+                        }
+                    )
+                )
+            );
         } catch (JAXBException e) {
             return failedFuture(e);
         }
@@ -393,6 +408,27 @@ public class DataTypeDictionaryReader {
                     .filter(r -> QN_DEFAULT_BINARY.equals(r.getBrowseName()) &&
                         Identifiers.DataTypeEncodingType.expanded().equals(r.getTypeDefinition()))
                     .findFirst();
+
+                return ref.map(r -> r.getNodeId().local().orElse(NodeId.NULL_VALUE)).orElse(NodeId.NULL_VALUE);
+            });
+        });
+
+        return FutureUtils.sequence(futures);
+    }
+
+    private CompletableFuture<List<NodeId>> browseDataTypeIds(List<NodeId> dataTypeEncodingIds) {
+        Stream<CompletableFuture<NodeId>> futures = dataTypeEncodingIds.stream().map(nodeId -> {
+            CompletableFuture<List<ReferenceDescription>> browse = browseNode(new BrowseDescription(
+                nodeId,
+                BrowseDirection.Inverse,
+                Identifiers.HasEncoding,
+                false,
+                uint(NodeClass.DataType.getValue()),
+                uint(BrowseResultMask.All.getValue())
+            ));
+
+            return browse.thenApply(references -> {
+                Optional<ReferenceDescription> ref = references.stream().findFirst();
 
                 return ref.map(r -> r.getNodeId().local().orElse(NodeId.NULL_VALUE)).orElse(NodeId.NULL_VALUE);
             });

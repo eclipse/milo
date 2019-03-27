@@ -876,15 +876,17 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
-    public Object readStruct(String field, NodeId encodingId) throws UaSerializationException {
+    public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         Node node = currentNode(field);
 
-        OpcUaXmlDataTypeCodec<?> codec = OpcUaDataTypeManager.getInstance().getXmlCodec(encodingId);
+        OpcUaXmlDataTypeCodec<?> codec =
+            OpcUaDataTypeManager.getInstance()
+                .getXmlCodecByDataTypeId(dataTypeId);
 
         if (codec == null) {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "no codec registered: " + encodingId
+                "no codec registered: " + dataTypeId
             );
         }
 
@@ -897,15 +899,17 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
-    public Object[] readStructArray(String field, NodeId encodingId) throws UaSerializationException {
+    public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
         Node node = currentNode(field);
 
-        OpcUaXmlDataTypeCodec<?> codec = OpcUaDataTypeManager.getInstance().getXmlCodec(encodingId);
+        OpcUaXmlDataTypeCodec<?> codec =
+            OpcUaDataTypeManager.getInstance()
+                .getXmlCodecByDataTypeId(dataTypeId);
 
         if (codec == null) {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "no codec registered: " + encodingId
+                "no codec registered: " + dataTypeId
             );
         }
 
@@ -917,7 +921,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
             currentNode = children.item(i);
 
             if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                values.add(readStruct(currentNode.getLocalName(), encodingId));
+                values.add(readStruct(currentNode.getLocalName(), dataTypeId));
             }
         }
 

@@ -246,12 +246,12 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStruct(String field, Object value, NodeId encodingId) throws UaSerializationException {
+    public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
 
     }
 
     @Override
-    public void writeStructArray(String field, Object[] value, NodeId encodingId) throws UaSerializationException {
+    public void writeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException {
 
     }
 

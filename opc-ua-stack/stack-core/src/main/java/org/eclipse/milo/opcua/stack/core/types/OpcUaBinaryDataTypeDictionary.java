@@ -22,18 +22,22 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
 
     private final Map<String, OpcUaBinaryDataTypeCodec<?>> codecsByDescription;
     private final Map<NodeId, OpcUaBinaryDataTypeCodec<?>> codecsByEncodingId;
+    private final Map<NodeId, OpcUaBinaryDataTypeCodec<?>> codecsByDataTypeId;
 
     public OpcUaBinaryDataTypeDictionary(String namespaceUri) {
         this.namespaceUri = namespaceUri;
 
         codecsByDescription = Maps.newConcurrentMap();
         codecsByEncodingId = Maps.newConcurrentMap();
+        codecsByDataTypeId = Maps.newConcurrentMap();
     }
 
     public OpcUaBinaryDataTypeDictionary(
         String namespaceUri,
         Map<String, OpcUaBinaryDataTypeCodec<?>> byDescription,
-        Map<NodeId, OpcUaBinaryDataTypeCodec<?>> byEncodingId) {
+        Map<NodeId, OpcUaBinaryDataTypeCodec<?>> byEncodingId,
+        Map<NodeId, OpcUaBinaryDataTypeCodec<?>> byDataTypeId
+    ) {
 
         this.namespaceUri = namespaceUri;
 
@@ -42,6 +46,9 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
 
         codecsByEncodingId = Maps.newConcurrentMap();
         codecsByEncodingId.putAll(byEncodingId);
+
+        codecsByDataTypeId = Maps.newConcurrentMap();
+        codecsByDataTypeId.putAll(byDataTypeId);
     }
 
     @Override
@@ -55,13 +62,18 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     }
 
     @Override
-    public OpcUaBinaryDataTypeCodec<?> getCodec(NodeId encodingId) {
-        return codecsByEncodingId.get(encodingId);
+    public OpcUaBinaryDataTypeCodec<?> getCodec(NodeId dataTypeId) {
+        return codecsByDataTypeId.get(dataTypeId);
     }
 
     @Override
     public void registerEnumCodec(OpcUaBinaryDataTypeCodec<?> codec, String description) {
         codecsByDescription.put(description, codec);
+    }
+
+    @Override
+    public void registerStructCodec(OpcUaBinaryDataTypeCodec<?> codec, NodeId dataTypeId) {
+        codecsByDataTypeId.put(dataTypeId, codec);
     }
 
     @Override
@@ -78,6 +90,11 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     @Override
     public Map<NodeId, OpcUaBinaryDataTypeCodec<?>> getCodecsByEncodingId() {
         return codecsByEncodingId;
+    }
+
+    @Override
+    public Map<NodeId, OpcUaBinaryDataTypeCodec<?>> getCodecsByDataTypeId() {
+        return codecsByDataTypeId;
     }
 
 }

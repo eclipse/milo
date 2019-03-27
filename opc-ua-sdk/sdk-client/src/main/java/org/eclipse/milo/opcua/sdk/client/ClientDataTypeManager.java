@@ -25,7 +25,9 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 public class ClientDataTypeManager implements DataTypeManager {
 
     private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = Maps.newConcurrentMap();
-    private final ConcurrentMap<NodeId, DataTypeCodec> codecs = Maps.newConcurrentMap();
+    private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = Maps.newConcurrentMap();
+    private final ConcurrentMap<NodeId, DataTypeCodec> codecsByDataTypeId = Maps.newConcurrentMap();
+
 
     public ClientDataTypeManager() {
         registerTypeDictionary(BuiltinDataTypeDictionary.getBinaryInstance());
@@ -36,7 +38,8 @@ public class ClientDataTypeManager implements DataTypeManager {
     public void registerTypeDictionary(DataTypeDictionary<?> dataTypeDictionary) {
         dictionaries.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
 
-        this.codecs.putAll(dataTypeDictionary.getCodecsByEncodingId());
+        this.codecsByEncodingId.putAll(dataTypeDictionary.getCodecsByEncodingId());
+        this.codecsByDataTypeId.putAll(dataTypeDictionary.getCodecsByDataTypeId());
     }
 
     @Nullable
@@ -47,8 +50,8 @@ public class ClientDataTypeManager implements DataTypeManager {
 
     @Nullable
     @Override
-    public OpcUaBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId) {
-        DataTypeCodec codec = codecs.get(encodingId);
+    public OpcUaBinaryDataTypeCodec<?> getBinaryCodecByDataTypeId(NodeId dataTypeId) {
+        DataTypeCodec codec = codecsByDataTypeId.get(dataTypeId);
 
         if (codec instanceof OpcUaBinaryDataTypeCodec) {
             return (OpcUaBinaryDataTypeCodec) codec;
@@ -59,8 +62,32 @@ public class ClientDataTypeManager implements DataTypeManager {
 
     @Nullable
     @Override
-    public OpcUaXmlDataTypeCodec<?> getXmlCodec(NodeId encodingId) {
-        DataTypeCodec codec = codecs.get(encodingId);
+    public OpcUaBinaryDataTypeCodec<?> getBinaryCodecByEncodingId(NodeId encodingId) {
+        DataTypeCodec codec = codecsByEncodingId.get(encodingId);
+
+        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+            return (OpcUaBinaryDataTypeCodec) codec;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public OpcUaXmlDataTypeCodec<?> getXmlCodecByDataTypeId(NodeId dataTypeId) {
+        DataTypeCodec codec = codecsByDataTypeId.get(dataTypeId);
+
+        if (codec instanceof OpcUaXmlDataTypeCodec) {
+            return (OpcUaXmlDataTypeCodec) codec;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    @Override
+    public OpcUaXmlDataTypeCodec<?> getXmlCodecByEncodingId(NodeId encodingId) {
+        DataTypeCodec codec = codecsByEncodingId.get(encodingId);
 
         if (codec instanceof OpcUaXmlDataTypeCodec) {
             return (OpcUaXmlDataTypeCodec) codec;

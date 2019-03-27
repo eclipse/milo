@@ -37,6 +37,9 @@ public interface DataTypeManager {
     @Nullable
     DataTypeDictionary getTypeDictionary(String namespaceUri);
 
+    @Nullable
+    OpcUaBinaryDataTypeCodec<?> getBinaryCodecByDataTypeId(NodeId dataTypeId);
+
     /**
      * Get the {@link OpcUaBinaryDataTypeCodec} identified by {@code encodingId}.
      *
@@ -44,7 +47,10 @@ public interface DataTypeManager {
      * @return an {@link OpcUaBinaryDataTypeCodec}, or {@code null} if none was found.
      */
     @Nullable
-    OpcUaBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId);
+    OpcUaBinaryDataTypeCodec<?> getBinaryCodecByEncodingId(NodeId encodingId);
+
+    @Nullable
+    OpcUaXmlDataTypeCodec<?> getXmlCodecByDataTypeId(NodeId dataTypeId);
 
     /**
      * Get the {@link OpcUaXmlDataTypeCodec} identified by {@code encodingId}.
@@ -53,7 +59,7 @@ public interface DataTypeManager {
      * @return an {@link OpcUaXmlDataTypeCodec}, or {@code null} if none was found.
      */
     @Nullable
-    OpcUaXmlDataTypeCodec<?> getXmlCodec(NodeId encodingId);
+    OpcUaXmlDataTypeCodec<?> getXmlCodecByEncodingId(NodeId encodingId);
 
     /**
      * Get the {@link DataTypeCodec} in the dictionary identified by {@code namespaceUri} using {@code description} to
