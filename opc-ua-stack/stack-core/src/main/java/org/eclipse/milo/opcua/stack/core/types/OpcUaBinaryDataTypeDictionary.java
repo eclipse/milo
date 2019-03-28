@@ -15,6 +15,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> {
 
@@ -57,6 +58,11 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     }
 
     @Override
+    public QualifiedName getEncodingName() {
+        return OpcUaDefaultBinaryEncoding.ENCODING_NAME;
+    }
+
+    @Override
     public OpcUaBinaryDataTypeCodec<?> getCodec(String description) {
         return codecsByDescription.get(description);
     }
@@ -72,13 +78,15 @@ public class OpcUaBinaryDataTypeDictionary implements DataTypeDictionary<OpcUaBi
     }
 
     @Override
-    public void registerStructCodec(OpcUaBinaryDataTypeCodec<?> codec, NodeId dataTypeId) {
-        codecsByDataTypeId.put(dataTypeId, codec);
-    }
+    public void registerStructCodec(
+        OpcUaBinaryDataTypeCodec<?> codec,
+        String description,
+        NodeId dataTypeId,
+        NodeId encodingId
+    ) {
 
-    @Override
-    public void registerStructCodec(OpcUaBinaryDataTypeCodec<?> codec, String description, NodeId encodingId) {
         codecsByDescription.put(description, codec);
+        codecsByDataTypeId.put(dataTypeId, codec);
         codecsByEncodingId.put(encodingId, codec);
     }
 

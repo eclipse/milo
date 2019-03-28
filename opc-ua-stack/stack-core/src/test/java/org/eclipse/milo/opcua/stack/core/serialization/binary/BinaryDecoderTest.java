@@ -36,7 +36,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
 
         @SuppressWarnings("unchecked")
         OpcUaBinaryDataTypeCodec<Argument> codec = (OpcUaBinaryDataTypeCodec<Argument>)
-            OpcUaDataTypeManager.getInstance().getBinaryCodecByEncodingId(Argument.BinaryEncodingId);
+            OpcUaDataTypeManager.getInstance().getCodec(Argument.BinaryEncodingId);
 
         assertNotNull(codec);
 

@@ -15,6 +15,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class OpcUaXmlDataTypeDictionary implements DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> {
 
@@ -57,6 +58,11 @@ public class OpcUaXmlDataTypeDictionary implements DataTypeDictionary<OpcUaXmlDa
     }
 
     @Override
+    public QualifiedName getEncodingName() {
+        return OpcUaDefaultXmlEncoding.ENCODING_NAME;
+    }
+
+    @Override
     public OpcUaXmlDataTypeCodec<?> getCodec(String description) {
         return codecsByDescription.get(description);
     }
@@ -72,13 +78,15 @@ public class OpcUaXmlDataTypeDictionary implements DataTypeDictionary<OpcUaXmlDa
     }
 
     @Override
-    public void registerStructCodec(OpcUaXmlDataTypeCodec<?> codec, NodeId dataTypeId) {
-        codecsByDataTypeId.put(dataTypeId, codec);
-    }
+    public void registerStructCodec(
+        OpcUaXmlDataTypeCodec<?> codec,
+        String description,
+        NodeId dataTypeId,
+        NodeId encodingId
+    ) {
 
-    @Override
-    public void registerStructCodec(OpcUaXmlDataTypeCodec<?> codec, String description, NodeId encodingId) {
         codecsByDescription.put(description, codec);
+        codecsByDataTypeId.put(dataTypeId, codec);
         codecsByEncodingId.put(encodingId, codec);
     }
 
@@ -96,5 +104,5 @@ public class OpcUaXmlDataTypeDictionary implements DataTypeDictionary<OpcUaXmlDa
     public Map<NodeId, OpcUaXmlDataTypeCodec<?>> getCodecsByDataTypeId() {
         return codecsByDataTypeId;
     }
-    
+
 }

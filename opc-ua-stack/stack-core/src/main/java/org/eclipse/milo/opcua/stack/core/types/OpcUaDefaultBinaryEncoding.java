@@ -61,7 +61,7 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
         try {
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> codec =
-                (OpcUaBinaryDataTypeCodec<Object>) dataTypeManager.getBinaryCodecByEncodingId(encodingId);
+                (OpcUaBinaryDataTypeCodec<Object>) dataTypeManager.getCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -95,7 +95,7 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
         try {
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> codec =
-                (OpcUaBinaryDataTypeCodec<Object>) dataTypeManager.getBinaryCodecByEncodingId(encodingId);
+                (OpcUaBinaryDataTypeCodec<Object>) dataTypeManager.getCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(

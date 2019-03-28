@@ -28,6 +28,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTyp
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -735,9 +736,10 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     @Override
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
-        OpcUaBinaryDataTypeCodec<?> binaryCodec =
-            OpcUaDataTypeManager.getInstance()
-                .getBinaryCodecByDataTypeId(dataTypeId);
+        OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
+            OpcUaDataTypeManager
+                .getInstance()
+                .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
         if (binaryCodec == null) {
             throw new UaSerializationException(
@@ -764,9 +766,10 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
                 );
             }
 
-            OpcUaBinaryDataTypeCodec<?> binaryCodec =
-                OpcUaDataTypeManager.getInstance()
-                    .getBinaryCodecByDataTypeId(dataTypeId);
+            OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
+                OpcUaDataTypeManager
+                    .getInstance()
+                    .getCodec(OpcUaDefaultBinaryEncoding.ENCODING_NAME, dataTypeId);
 
             if (binaryCodec == null) {
                 throw new UaSerializationException(
@@ -792,9 +795,10 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     public UaMessage readMessage(String field) throws UaSerializationException {
         NodeId encodingId = readNodeId();
 
-        OpcUaBinaryDataTypeCodec<?> binaryCodec =
-            OpcUaDataTypeManager.getInstance()
-                .getBinaryCodecByEncodingId(encodingId);
+        OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
+            OpcUaDataTypeManager
+                .getInstance()
+                .getCodec(encodingId);
 
         if (binaryCodec == null) {
             throw new UaSerializationException(

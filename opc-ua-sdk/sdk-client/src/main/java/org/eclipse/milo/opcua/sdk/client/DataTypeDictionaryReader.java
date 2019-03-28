@@ -308,16 +308,17 @@ public class DataTypeDictionaryReader {
                                 NodeId encodingId = encodingIdMap.get(description);
                                 NodeId dataTypeId = dataTypeIdMap.get(description);
 
-                                if (encodingId != null && encodingId.isNotNull()) {
-                                    dictionary.registerStructCodec(cd.getCodec(), dataTypeId);
-                                    dictionary.registerStructCodec(cd.getCodec(), description, encodingId);
+                                if (encodingId == null || encodingId.isNull()) {
+                                    logger.warn("encodingId is null for description={}", description);
+                                } else if (dataTypeId == null || dataTypeId.isNull()) {
+                                    logger.warn("dataTypeId is null for description={}", description);
+                                } else {
+                                    dictionary.registerStructCodec(cd.getCodec(), description, dataTypeId, encodingId);
 
                                     logger.debug(
-                                        "Registered codec description={} encodingId={}",
-                                        description, encodingId
+                                        "Registered codec description={} dataTypeId={} encodingId={}",
+                                        description, dataTypeId, encodingId
                                     );
-                                } else {
-                                    logger.warn("encodingId is null for description={}", description);
                                 }
                             });
 

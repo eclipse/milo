@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTyp
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -965,7 +966,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             OpcUaBinaryDataTypeCodec<Object> codec = (OpcUaBinaryDataTypeCodec<Object>)
                 OpcUaDataTypeManager
                     .getInstance()
-                    .getBinaryCodecByDataTypeId(dataTypeId);
+                    .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -993,8 +994,9 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
         @SuppressWarnings("unchecked")
         OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec = (OpcUaBinaryDataTypeCodec<UaMessage>)
-            OpcUaDataTypeManager.getInstance()
-                .getBinaryCodecByEncodingId(encodingId);
+            OpcUaDataTypeManager
+                .getInstance()
+                .getCodec(encodingId);
 
         if (binaryCodec == null) {
             throw new UaSerializationException(

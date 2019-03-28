@@ -13,25 +13,37 @@ package org.eclipse.milo.opcua.sdk.client;
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nullable;
 
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Table;
+import com.google.common.collect.Tables;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public class ClientDataTypeManager implements DataTypeManager {
 
     private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = Maps.newConcurrentMap();
     private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = Maps.newConcurrentMap();
-    private final ConcurrentMap<NodeId, DataTypeCodec> codecsByDataTypeId = Maps.newConcurrentMap();
+    private final Table<QualifiedName, NodeId, DataTypeCodec> codecsByDataTypeId =
+        Tables.synchronizedTable(HashBasedTable.create());
 
-
-    public ClientDataTypeManager() {
+    ClientDataTypeManager() {
         registerTypeDictionary(BuiltinDataTypeDictionary.getBinaryInstance());
         registerTypeDictionary(BuiltinDataTypeDictionary.getXmlInstance());
+    }
+
+    @Override
+    public void registerCodec(NodeId encodingId, DataTypeCodec codec) {
+        codecsByEncodingId.put(encodingId, codec);
+    }
+
+    @Override
+    public void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec) {
+        codecsByDataTypeId.put(encodingName, dataTypeId, codec);
     }
 
     @Override
@@ -39,61 +51,31 @@ public class ClientDataTypeManager implements DataTypeManager {
         dictionaries.put(dataTypeDictionary.getNamespaceUri(), dataTypeDictionary);
 
         this.codecsByEncodingId.putAll(dataTypeDictionary.getCodecsByEncodingId());
-        this.codecsByDataTypeId.putAll(dataTypeDictionary.getCodecsByDataTypeId());
+
+        dataTypeDictionary.getCodecsByDataTypeId().forEach(
+            (dataTypeId, codec) ->
+                codecsByDataTypeId.put(dataTypeDictionary.getEncodingName(), dataTypeId, codec)
+        );
     }
 
     @Nullable
     @Override
-    public DataTypeDictionary getTypeDictionary(String namespaceUri) {
-        return dictionaries.get(namespaceUri);
+    public DataTypeCodec getCodec(NodeId encodingId) {
+        return codecsByEncodingId.get(encodingId);
     }
 
     @Nullable
     @Override
-    public OpcUaBinaryDataTypeCodec<?> getBinaryCodecByDataTypeId(NodeId dataTypeId) {
-        DataTypeCodec codec = codecsByDataTypeId.get(dataTypeId);
-
-        if (codec instanceof OpcUaBinaryDataTypeCodec) {
-            return (OpcUaBinaryDataTypeCodec) codec;
-        } else {
-            return null;
-        }
+    public DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId) {
+        return codecsByDataTypeId.get(encodingName, dataTypeId);
     }
 
     @Nullable
     @Override
-    public OpcUaBinaryDataTypeCodec<?> getBinaryCodecByEncodingId(NodeId encodingId) {
-        DataTypeCodec codec = codecsByEncodingId.get(encodingId);
+    public DataTypeCodec getCodec(String namespaceUri, String description) {
+        DataTypeDictionary<?> dataTypeDictionary = dictionaries.get(namespaceUri);
 
-        if (codec instanceof OpcUaBinaryDataTypeCodec) {
-            return (OpcUaBinaryDataTypeCodec) codec;
-        } else {
-            return null;
-        }
-    }
-
-    @Nullable
-    @Override
-    public OpcUaXmlDataTypeCodec<?> getXmlCodecByDataTypeId(NodeId dataTypeId) {
-        DataTypeCodec codec = codecsByDataTypeId.get(dataTypeId);
-
-        if (codec instanceof OpcUaXmlDataTypeCodec) {
-            return (OpcUaXmlDataTypeCodec) codec;
-        } else {
-            return null;
-        }
-    }
-
-    @Nullable
-    @Override
-    public OpcUaXmlDataTypeCodec<?> getXmlCodecByEncodingId(NodeId encodingId) {
-        DataTypeCodec codec = codecsByEncodingId.get(encodingId);
-
-        if (codec instanceof OpcUaXmlDataTypeCodec) {
-            return (OpcUaXmlDataTypeCodec) codec;
-        } else {
-            return null;
-        }
+        return dataTypeDictionary != null ? dataTypeDictionary.getCodec(description) : null;
     }
 
 }

@@ -44,7 +44,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -716,22 +715,14 @@ public class ExampleNamespace extends ManagedNamespace {
             ))
         );
 
-        // Create a dictionary, binaryEncodingId, and register the codec under that id
-        OpcUaBinaryDataTypeDictionary dictionary = new OpcUaBinaryDataTypeDictionary(
-            "urn:eclipse:milo:example:custom-data-type"
-        );
-
+        // TODO this should probably get a node and a HasEncoding reference from dataTypeNode...
         NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
 
-        dictionary.registerStructCodec(
-            new CustomDataType.Codec().asBinaryCodec(),
-            "CustomDataType",
-            binaryEncodingId
+        // Register codec with the shared DataTypeManager instance
+        OpcUaDataTypeManager.getInstance().registerCodec(
+            binaryEncodingId,
+            new CustomDataType.Codec().asBinaryCodec()
         );
-
-        // Register dictionary with the shared DataTypeManager instance
-        OpcUaDataTypeManager.getInstance().registerTypeDictionary(dictionary);
-
 
         UaVariableNode customDataTypeVariable = UaVariableNode.builder(getNodeContext())
             .setNodeId(newNodeId("HelloWorld/CustomDataTypeVariable"))

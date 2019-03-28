@@ -59,7 +59,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
         try {
             @SuppressWarnings("unchecked")
             OpcUaXmlDataTypeCodec<Object> codec =
-                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodecByEncodingId(encodingId);
+                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -87,7 +87,7 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
         try {
             @SuppressWarnings("unchecked")
             OpcUaXmlDataTypeCodec<Object> codec =
-                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodecByEncodingId(encodingId);
+                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(

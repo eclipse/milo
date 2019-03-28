@@ -33,9 +33,12 @@ public interface SerializationContext {
         String description,
         OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
 
-        OpcUaBinaryDataTypeCodec<?> codec = getTypeManager().getBinaryCodec(namespaceUri, description);
+        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
 
-        if (codec == null) {
+        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+            //noinspection unchecked
+            return codec.decode(this, decoder);
+        } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
                 String.format(
@@ -43,8 +46,6 @@ public interface SerializationContext {
                     description, namespaceUri)
             );
         }
-
-        return codec.decode(this, decoder);
     }
 
     default Object decode(
@@ -52,9 +53,12 @@ public interface SerializationContext {
         String description,
         OpcUaXmlStreamDecoder decoder) throws UaSerializationException {
 
-        OpcUaXmlDataTypeCodec<?> codec = getTypeManager().getXmlCodec(namespaceUri, description);
+        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
 
-        if (codec == null) {
+        if (codec instanceof OpcUaXmlDataTypeCodec) {
+            //noinspection unchecked
+            return codec.decode(this, decoder);
+        } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
                 String.format(
@@ -62,8 +66,6 @@ public interface SerializationContext {
                     description, namespaceUri)
             );
         }
-
-        return codec.decode(this, decoder);
     }
 
 
@@ -73,11 +75,12 @@ public interface SerializationContext {
         Object value,
         OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
 
-        @SuppressWarnings("unchecked")
-        OpcUaBinaryDataTypeCodec<Object> codec =
-            (OpcUaBinaryDataTypeCodec<Object>) getTypeManager().getBinaryCodec(namespaceUri, description);
+        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
 
-        if (codec == null) {
+        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+            //noinspection unchecked
+            codec.encode(this, value, encoder);
+        } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 String.format(
@@ -85,8 +88,6 @@ public interface SerializationContext {
                     description, namespaceUri)
             );
         }
-
-        codec.encode(this, value, encoder);
     }
 
     default void encode(
@@ -95,11 +96,12 @@ public interface SerializationContext {
         Object value,
         OpcUaXmlStreamEncoder encoder) throws UaSerializationException {
 
-        @SuppressWarnings("unchecked")
-        OpcUaXmlDataTypeCodec<Object> codec =
-            (OpcUaXmlDataTypeCodec<Object>) getTypeManager().getXmlCodec(namespaceUri, description);
+        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
 
-        if (codec == null) {
+        if (codec instanceof OpcUaXmlDataTypeCodec) {
+            //noinspection unchecked
+            codec.encode(this, value, encoder);
+        } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
                 String.format(
@@ -107,8 +109,6 @@ public interface SerializationContext {
                     description, namespaceUri)
             );
         }
-
-        codec.encode(this, value, encoder);
     }
 
 }

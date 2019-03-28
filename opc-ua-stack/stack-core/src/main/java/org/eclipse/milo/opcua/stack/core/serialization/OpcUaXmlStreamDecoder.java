@@ -41,6 +41,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCo
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -879,9 +880,10 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     public Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException {
         Node node = currentNode(field);
 
-        OpcUaXmlDataTypeCodec<?> codec =
-            OpcUaDataTypeManager.getInstance()
-                .getXmlCodecByDataTypeId(dataTypeId);
+        OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
+            OpcUaDataTypeManager
+                .getInstance()
+                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec == null) {
             throw new UaSerializationException(
@@ -902,9 +904,10 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     public Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException {
         Node node = currentNode(field);
 
-        OpcUaXmlDataTypeCodec<?> codec =
-            OpcUaDataTypeManager.getInstance()
-                .getXmlCodecByDataTypeId(dataTypeId);
+        OpcUaXmlDataTypeCodec<?> codec = (OpcUaXmlDataTypeCodec<?>)
+            OpcUaDataTypeManager
+                .getInstance()
+                .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
 
         if (codec == null) {
             throw new UaSerializationException(
