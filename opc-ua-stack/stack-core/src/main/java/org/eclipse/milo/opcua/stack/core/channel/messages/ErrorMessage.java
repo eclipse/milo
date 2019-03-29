@@ -10,10 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.channel.messages;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
 public class ErrorMessage {
@@ -51,15 +50,28 @@ public class ErrorMessage {
     public static ErrorMessage decode(ByteBuf buffer) {
         return new ErrorMessage(
             buffer.readUnsignedIntLE(),
-            decodeString(buffer));
+            decodeString(buffer)
+        );
     }
 
     private static void encodeString(String s, ByteBuf buffer) {
-        new OpcUaBinaryStreamEncoder(buffer).writeString(s);
+        if (s == null) {
+            buffer.writeIntLE(-1);
+        } else {
+            buffer.writeIntLE(s.length());
+            buffer.writeBytes(s.getBytes(Charsets.UTF_8));
+        }
     }
 
     private static String decodeString(ByteBuf buffer) {
-        return new OpcUaBinaryStreamDecoder(buffer).readString();
+        int length = buffer.readIntLE();
+        if (length == -1) {
+            return null;
+        } else {
+            byte[] bs = new byte[length];
+            buffer.readBytes(bs);
+            return new String(bs, Charsets.UTF_8);
+        }
     }
 
 }

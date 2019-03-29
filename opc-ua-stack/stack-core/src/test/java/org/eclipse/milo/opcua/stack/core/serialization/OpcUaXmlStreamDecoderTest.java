@@ -29,7 +29,8 @@ public class OpcUaXmlStreamDecoderTest {
                 "        </ExtensionObject>\n" +
                 "      </ListOfExtensionObject>\n";
 
-        OpcUaXmlStreamDecoder decoder = new OpcUaXmlStreamDecoder(new StringReader(xml));
+        OpcUaXmlStreamDecoder decoder = new OpcUaXmlStreamDecoder(new TestSerializationContext())
+            .setInput(new StringReader(xml));
 
         assertNotNull(decoder.readVariantValue());
     }

@@ -183,7 +183,7 @@ public class UascServerHelloHandler extends ByteToMessageDecoder implements Head
         SerializationQueue serializationQueue = new SerializationQueue(
             stackServer.getConfig().getExecutor(),
             parameters,
-            stackServer.getConfig().getEncodingLimits()
+            stackServer.getSerializationContext()
         );
 
         ctx.pipeline().addLast(new UascServerAsymmetricHandler(stackServer, transportProfile, serializationQueue));

@@ -55,8 +55,6 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
-    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
-
     private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
     private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
 
@@ -67,23 +65,10 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
     private final AtomicInteger depth = new AtomicInteger(0);
 
-    private final EncodingLimits encodingLimits;
+    private final SerializationContext context;
 
-    public OpcUaBinaryStreamDecoder() {
-        this(EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaBinaryStreamDecoder(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
-    }
-
-    public OpcUaBinaryStreamDecoder(ByteBuf buffer) {
-        this(buffer, EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaBinaryStreamDecoder(ByteBuf buffer, EncodingLimits encodingLimits) {
-        this.buffer = buffer;
-        this.encodingLimits = encodingLimits;
+    public OpcUaBinaryStreamDecoder(SerializationContext context) {
+        this.context = context;
     }
 
     public OpcUaBinaryStreamDecoder setBuffer(ByteBuf buffer) {
@@ -97,10 +82,13 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         if (length == -1) {
             return null;
         } else {
-            if (length > encodingLimits.getMaxArrayLength()) {
-                throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
-                    String.format("max array length exceeded (length=%s, max=%s)",
-                        length, encodingLimits.getMaxArrayLength()));
+            if (length > context.getEncodingLimits().getMaxArrayLength()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingLimitsExceeded,
+                    String.format(
+                        "max array length exceeded (length=%s, max=%s)",
+                        length, context.getEncodingLimits().getMaxArrayLength())
+                );
             }
 
             @SuppressWarnings("unchecked")
@@ -203,11 +191,12 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
         if (length == -1) {
             return ByteString.NULL_VALUE;
-        } else if (length > encodingLimits.getMaxArrayLength()) {
+        } else if (length > context.getEncodingLimits().getMaxArrayLength()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                String.format("max array length exceeded (length=%s, max=%s)",
-                    length, encodingLimits.getMaxArrayLength())
+                String.format(
+                    "max array length exceeded (length=%s, max=%s)",
+                    length, context.getEncodingLimits().getMaxArrayLength())
             );
         } else {
             byte[] bs = new byte[length];
@@ -257,10 +246,11 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     public DiagnosticInfo readDiagnosticInfo() throws UaSerializationException {
-        if (depth.get() >= encodingLimits.getMaxRecursionDepth()) {
+        if (depth.get() >= context.getEncodingLimits().getMaxRecursionDepth()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max recursion depth exceeded: " + encodingLimits.getMaxRecursionDepth()
+                "max recursion depth exceeded: " +
+                    context.getEncodingLimits().getMaxRecursionDepth()
             );
         }
 
@@ -393,10 +383,11 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     public Variant readVariant() throws UaSerializationException {
-        if (depth.get() >= encodingLimits.getMaxRecursionDepth()) {
+        if (depth.get() >= context.getEncodingLimits().getMaxRecursionDepth()) {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingLimitsExceeded,
-                "max recursion depth exceeded: " + encodingLimits.getMaxRecursionDepth()
+                "max recursion depth exceeded: " +
+                    context.getEncodingLimits().getMaxRecursionDepth()
             );
         }
 
@@ -418,10 +409,13 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
                     if (length == -1) {
                         return new Variant(null);
                     } else {
-                        if (length > encodingLimits.getMaxArrayLength()) {
-                            throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
-                                String.format("max array length exceeded (length=%s, max=%s)",
-                                    length, encodingLimits.getMaxArrayLength()));
+                        if (length > context.getEncodingLimits().getMaxArrayLength()) {
+                            throw new UaSerializationException(
+                                StatusCodes.Bad_EncodingLimitsExceeded,
+                                String.format(
+                                    "max array length exceeded (length=%s, max=%s)",
+                                    length, context.getEncodingLimits().getMaxArrayLength())
+                            );
                         }
 
                         Object flatArray = Array.newInstance(backingClass, length);
@@ -455,10 +449,13 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         if (length == -1) {
             return null;
         } else {
-            if (length > encodingLimits.getMaxStringLength()) {
-                throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
-                    String.format("max string length exceeded (length=%s, max=%s)",
-                        length, encodingLimits.getMaxStringLength()));
+            if (length > context.getEncodingLimits().getMaxStringLength()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingLimitsExceeded,
+                    String.format(
+                        "max string length exceeded (length=%s, max=%s)",
+                        length, context.getEncodingLimits().getMaxStringLength())
+                );
             }
 
             String str = buffer.toString(buffer.readerIndex(), length, charset);
@@ -688,11 +685,12 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         if (length == -1) {
             return null;
         } else {
-            if (length > encodingLimits.getMaxArrayLength()) {
+            if (length > context.getEncodingLimits().getMaxArrayLength()) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingLimitsExceeded,
-                    String.format("max array length exceeded (length=%s, max=%s)",
-                        length, encodingLimits.getMaxArrayLength())
+                    String.format(
+                        "max array length exceeded (length=%s, max=%s)",
+                        length, context.getEncodingLimits().getMaxArrayLength())
                 );
             }
 
@@ -718,7 +716,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
                 throw new UaSerializationException(StatusCodes.Bad_DecodingError, "No codec registered:" + clazz);
             } else {
                 @SuppressWarnings("unchecked")
-                T value = (T) codec.decode(SERIALIZATION_CONTEXT, this);
+                T value = (T) codec.decode(context, this);
 
                 return value;
             }
@@ -748,7 +746,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             );
         }
 
-        return binaryCodec.decode(SERIALIZATION_CONTEXT, this);
+        return binaryCodec.decode(context, this);
     }
 
     @Override
@@ -758,11 +756,12 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         if (length == -1) {
             return null;
         } else {
-            if (length > encodingLimits.getMaxArrayLength()) {
+            if (length > context.getEncodingLimits().getMaxArrayLength()) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingLimitsExceeded,
-                    String.format("max array length exceeded (length=%s, max=%s)",
-                        length, encodingLimits.getMaxArrayLength())
+                    String.format(
+                        "max array length exceeded (length=%s, max=%s)",
+                        length, context.getEncodingLimits().getMaxArrayLength())
                 );
             }
 
@@ -782,7 +781,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             Object array = Array.newInstance(clazz, length);
 
             for (int i = 0; i < length; i++) {
-                Object value = binaryCodec.decode(SERIALIZATION_CONTEXT, this);
+                Object value = binaryCodec.decode(context, this);
 
                 Array.set(array, i, value);
             }
@@ -807,7 +806,7 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
             );
         }
 
-        return (UaMessage) binaryCodec.decode(SERIALIZATION_CONTEXT, this);
+        return (UaMessage) binaryCodec.decode(context, this);
     }
 
 }

@@ -10,30 +10,45 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 
 public interface SerializationContext {
 
-    SerializationContext INTERNAL = OpcUaDataTypeManager::getInstance;
+    /**
+     * Get the {@link EncodingLimits}.
+     *
+     * @return the {@link EncodingLimits}.
+     */
+    EncodingLimits getEncodingLimits();
 
     /**
+     * Get the {@link NamespaceTable}.
+     *
+     * @return the {@link NamespaceTable}.
+     */
+    NamespaceTable getNamespaceTable();
+
+    /**
+     * Get the {@link DataTypeManager}.
+     *
      * @return the {@link DataTypeManager}.
      */
-    DataTypeManager getTypeManager();
+    DataTypeManager getDataTypeManager();
 
     default Object decode(
         String namespaceUri,
         String description,
         OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
 
-        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
+        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
         if (codec instanceof OpcUaBinaryDataTypeCodec) {
             //noinspection unchecked
@@ -53,7 +68,7 @@ public interface SerializationContext {
         String description,
         OpcUaXmlStreamDecoder decoder) throws UaSerializationException {
 
-        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
+        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
         if (codec instanceof OpcUaXmlDataTypeCodec) {
             //noinspection unchecked
@@ -75,7 +90,7 @@ public interface SerializationContext {
         Object value,
         OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
 
-        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
+        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
         if (codec instanceof OpcUaBinaryDataTypeCodec) {
             //noinspection unchecked
@@ -96,7 +111,7 @@ public interface SerializationContext {
         Object value,
         OpcUaXmlStreamEncoder encoder) throws UaSerializationException {
 
-        DataTypeCodec codec = getTypeManager().getCodec(namespaceUri, description);
+        DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
         if (codec instanceof OpcUaXmlDataTypeCodec) {
             //noinspection unchecked

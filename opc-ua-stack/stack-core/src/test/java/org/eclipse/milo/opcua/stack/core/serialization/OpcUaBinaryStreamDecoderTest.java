@@ -29,7 +29,11 @@ public class OpcUaBinaryStreamDecoderTest {
         buffer.writeByte(0x00);
 
         assertThrows(UaSerializationException.class,
-            () -> new OpcUaBinaryStreamDecoder(buffer).readDiagnosticInfo());
+            () ->
+                new OpcUaBinaryStreamDecoder(new TestSerializationContext())
+                    .setBuffer(buffer)
+                    .readDiagnosticInfo()
+        );
     }
 
     @Test
@@ -48,7 +52,11 @@ public class OpcUaBinaryStreamDecoderTest {
         buffer.writeByte(0);
 
         assertThrows(UaSerializationException.class,
-            () -> new OpcUaBinaryStreamDecoder(buffer).readVariant());
+            () ->
+                new OpcUaBinaryStreamDecoder(new TestSerializationContext())
+                    .setBuffer(buffer)
+                    .readVariant()
+        );
     }
 
     @Test
@@ -64,7 +72,11 @@ public class OpcUaBinaryStreamDecoderTest {
         buffer.writeByte(0);
 
         assertThrows(UaSerializationException.class,
-            () -> new OpcUaBinaryStreamDecoder(buffer).readVariant());
+            () ->
+                new OpcUaBinaryStreamDecoder(new TestSerializationContext())
+                    .setBuffer(buffer)
+                    .readVariant()
+        );
     }
 
 }

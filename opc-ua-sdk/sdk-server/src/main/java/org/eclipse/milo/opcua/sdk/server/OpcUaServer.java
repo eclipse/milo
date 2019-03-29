@@ -75,7 +75,6 @@ public class OpcUaServer {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
-    private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
 
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
@@ -114,7 +113,7 @@ public class OpcUaServer {
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        ObjectTypeManagerInitializer.initialize(namespaceTable, objectTypeManager);
+        ObjectTypeManagerInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
 
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
@@ -173,7 +172,7 @@ public class OpcUaServer {
     }
 
     public NamespaceTable getNamespaceTable() {
-        return namespaceTable;
+        return stackServer.getNamespaceTable();
     }
 
     public ServerTable getServerTable() {

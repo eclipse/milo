@@ -78,8 +78,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
         );
 
         HistoryReadDetails details = (HistoryReadDetails) request.getHistoryReadDetails().decode(
-            server.getConfig().getEncodingLimits(),
-            OpcUaDataTypeManager.getInstance()
+            OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
         );
 
         server.getAddressSpaceManager().historyRead(
@@ -116,8 +115,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
         List<HistoryUpdateDetails> historyUpdateDetailsList = l(request.getHistoryUpdateDetails())
             .stream().map(e -> (HistoryUpdateDetails) e.decode(
-                server.getConfig().getEncodingLimits(),
-                OpcUaDataTypeManager.getInstance()
+                OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
             ))
             .collect(Collectors.toList());
 

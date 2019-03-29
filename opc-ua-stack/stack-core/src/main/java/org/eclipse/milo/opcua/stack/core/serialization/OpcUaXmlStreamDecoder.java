@@ -73,17 +73,15 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaXmlStreamDecoder implements UaDecoder {
 
-    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
-
     private final DocumentBuilder builder;
 
     private Document document;
     private Node currentNode;
 
-    private final EncodingLimits encodingLimits;
+    private final SerializationContext context;
 
-    public OpcUaXmlStreamDecoder(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
+    public OpcUaXmlStreamDecoder(SerializationContext context) {
+        this.context = context;
 
         try {
             builder = DocumentBuilderUtil.SHARED_FACTORY.newDocumentBuilder();
@@ -92,46 +90,19 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         }
     }
 
-    public OpcUaXmlStreamDecoder() {
-        this(EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaXmlStreamDecoder(Document document) {
-        this();
-
-        setInput(document);
-    }
-
-    public OpcUaXmlStreamDecoder(Reader reader) throws IOException, SAXException {
-        this();
-
-        setInput(reader);
-    }
-
-    public OpcUaXmlStreamDecoder(InputStream inputStream) throws IOException, SAXException {
-        this();
-
-        setInput(inputStream);
-    }
-
     public OpcUaXmlStreamDecoder setInput(Document document) {
         this.document = document;
-        currentNode = document.getFirstChild();
+        this.currentNode = document.getFirstChild();
 
         return this;
     }
 
     public OpcUaXmlStreamDecoder setInput(Reader reader) throws IOException, SAXException {
-        String s = CharStreams.toString(reader);
-
-        return setInput(new ByteArrayInputStream(s.getBytes()));
+        return setInput(new ByteArrayInputStream(CharStreams.toString(reader).getBytes()));
     }
 
     public OpcUaXmlStreamDecoder setInput(InputStream inputStream) throws IOException, SAXException {
-        document = builder.parse(inputStream);
-        currentNode = document.getFirstChild();
-
-        return this;
+        return setInput(builder.parse(inputStream));
     }
 
     private Node currentNode(String field) throws UaSerializationException {
@@ -862,7 +833,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         }
 
         try {
-            return (T) codec.decode(SERIALIZATION_CONTEXT, this);
+            return (T) codec.decode(context, this);
         } finally {
             currentNode = node.getNextSibling();
         }
@@ -894,7 +865,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
 
         try {
             currentNode = node.getFirstChild();
-            return codec.decode(SERIALIZATION_CONTEXT, this);
+            return codec.decode(context, this);
         } finally {
             currentNode = node.getNextSibling();
         }
@@ -958,7 +929,7 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         currentNode = node.getFirstChild();
 
         try {
-            return (UaMessage) codec.decode(SERIALIZATION_CONTEXT, this);
+            return (UaMessage) codec.decode(context, this);
         } finally {
             currentNode = node.getNextSibling();
         }

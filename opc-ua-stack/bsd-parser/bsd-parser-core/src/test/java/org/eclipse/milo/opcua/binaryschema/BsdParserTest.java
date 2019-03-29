@@ -17,7 +17,9 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
@@ -36,8 +38,19 @@ public abstract class BsdParserTest {
     private final Table<String, String, OpcUaBinaryDataTypeCodec<?>> codecTable = HashBasedTable.create();
 
     private final SerializationContext context = new SerializationContext() {
+
         @Override
-        public DataTypeManager getTypeManager() {
+        public DataTypeManager getDataTypeManager() {
+            return null;
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return null;
+        }
+
+        @Override
+        public NamespaceTable getNamespaceTable() {
             return null;
         }
 
@@ -108,12 +121,12 @@ public abstract class BsdParserTest {
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(buffer));
+        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer));
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
-        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(buffer));
+        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
         assertEquals(decodedValue, originalValue);
         System.out.println("decodedValue:\t" + decodedValue);
     }
@@ -130,12 +143,12 @@ public abstract class BsdParserTest {
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(buffer));
+        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer));
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
-        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(buffer));
+        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
         assertEquals(decodedValue.toString(), originalValue.toString());
         System.out.println("decodedValue:\t" + decodedValue);
     }

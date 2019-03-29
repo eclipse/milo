@@ -21,7 +21,6 @@ import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -45,21 +44,15 @@ import org.w3c.dom.Node;
 
 public class OpcUaXmlStreamEncoder implements UaEncoder {
 
-    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
-
     private final DocumentBuilder builder;
 
     private Document document;
     private Node currentNode;
 
-    private final EncodingLimits encodingLimits;
+    private final SerializationContext context;
 
-    public OpcUaXmlStreamEncoder() {
-        this(EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaXmlStreamEncoder(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
+    public OpcUaXmlStreamEncoder(SerializationContext context) {
+        this.context = context;
 
         try {
             builder = DocumentBuilderUtil.SHARED_FACTORY.newDocumentBuilder();
@@ -232,7 +225,7 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
         }
 
         currentNode = document.createElementNS(Namespaces.OPC_UA_XSD, field);
-        codec.encode(SERIALIZATION_CONTEXT, value, this);
+        codec.encode(context, value, this);
 
         currentNode = node;
     }

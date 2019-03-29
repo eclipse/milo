@@ -12,9 +12,9 @@ package org.eclipse.milo.opcua.stack.core.channel;
 
 import java.util.concurrent.ExecutorService;
 
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SerializationQueue {
@@ -33,7 +33,7 @@ public class SerializationQueue {
     public SerializationQueue(
         ExecutorService executor,
         ChannelParameters parameters,
-        EncodingLimits encodingLimits
+        SerializationContext context
     ) {
 
         this.parameters = parameters;
@@ -42,12 +42,12 @@ public class SerializationQueue {
 
         chunkDecoder = new ChunkDecoder(
             parameters,
-            encodingLimits.getMaxArrayLength(),
-            encodingLimits.getMaxStringLength()
+            context.getEncodingLimits().getMaxArrayLength(),
+            context.getEncodingLimits().getMaxStringLength()
         );
 
-        binaryEncoder = new OpcUaBinaryStreamEncoder(encodingLimits);
-        binaryDecoder = new OpcUaBinaryStreamDecoder(encodingLimits);
+        binaryEncoder = new OpcUaBinaryStreamEncoder(context);
+        binaryDecoder = new OpcUaBinaryStreamDecoder(context);
 
         encodingQueue = new ExecutionQueue(executor);
         decodingQueue = new ExecutionQueue(executor);

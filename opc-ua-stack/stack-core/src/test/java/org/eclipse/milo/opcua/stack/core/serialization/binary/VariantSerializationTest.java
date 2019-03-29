@@ -14,6 +14,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.BuiltinDataType;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
+import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -62,7 +63,7 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         Variant decoded = reader.readVariant();
 
         ExtensionObject extensionObject = (ExtensionObject) decoded.getValue();
-        ServiceCounterDataType sc2 = (ServiceCounterDataType) extensionObject.decode();
+        ServiceCounterDataType sc2 = (ServiceCounterDataType) extensionObject.decode(new TestSerializationContext());
 
         Assert.assertEquals(sc1.getTotalCount(), sc2.getTotalCount());
         Assert.assertEquals(sc1.getErrorCount(), sc2.getErrorCount());
@@ -101,7 +102,8 @@ public class VariantSerializationTest extends BinarySerializationFixture {
         buffer.writeByte(BuiltinDataType.Int16.getTypeId() | (1 << 7));
         buffer.writeIntLE(-1);
 
-        OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(buffer);
+        OpcUaBinaryStreamDecoder reader = new OpcUaBinaryStreamDecoder(new TestSerializationContext());
+        reader.setBuffer(buffer);
 
         Variant v = reader.readVariant();
 

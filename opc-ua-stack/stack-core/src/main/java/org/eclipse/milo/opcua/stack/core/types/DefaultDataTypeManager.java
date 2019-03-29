@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.sdk.client;
+package org.eclipse.milo.opcua.stack.core.types;
 
 import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nullable;
@@ -18,20 +18,17 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeDictionary;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
-public class ClientDataTypeManager implements DataTypeManager {
+public class DefaultDataTypeManager implements DataTypeManager {
 
     private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = Maps.newConcurrentMap();
     private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = Maps.newConcurrentMap();
     private final Table<QualifiedName, NodeId, DataTypeCodec> codecsByDataTypeId =
         Tables.synchronizedTable(HashBasedTable.create());
 
-    ClientDataTypeManager() {
+    public DefaultDataTypeManager() {
         registerTypeDictionary(BuiltinDataTypeDictionary.getBinaryInstance());
         registerTypeDictionary(BuiltinDataTypeDictionary.getXmlInstance());
     }

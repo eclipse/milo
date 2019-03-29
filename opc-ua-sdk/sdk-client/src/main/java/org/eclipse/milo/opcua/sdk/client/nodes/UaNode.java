@@ -359,10 +359,8 @@ public abstract class UaNode implements Node {
                 return null;
             }
         } else if (o instanceof ExtensionObject) {
-            Object decoded = ((ExtensionObject) o).decode(
-                client.getConfig().getEncodingLimits(),
-                client.getDataTypeManager()
-            );
+            ExtensionObject xo = (ExtensionObject) o;
+            Object decoded = xo.decode(client.getSerializationContext());
             return clazz.cast(decoded);
         } else if (o instanceof ExtensionObject[]) {
             ExtensionObject[] xos = (ExtensionObject[]) o;
@@ -373,10 +371,7 @@ public abstract class UaNode implements Node {
             for (int i = 0; i < xos.length; i++) {
                 ExtensionObject xo = xos[i];
 
-                Object decoded = xo.decode(
-                    client.getConfig().getEncodingLimits(),
-                    client.getDataTypeManager()
-                );
+                Object decoded = xo.decode(client.getSerializationContext());
 
                 Array.set(array, i, componentType.cast(decoded));
             }

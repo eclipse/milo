@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.serialization.binary;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -26,7 +27,7 @@ public class OpcUaBinaryStreamEncoderTest {
     @BeforeTest
     public void initializeTest() {
         buffer = Unpooled.buffer();
-        writer = new OpcUaBinaryStreamEncoder(buffer);
+        writer = new OpcUaBinaryStreamEncoder(new TestSerializationContext()).setBuffer(buffer);
     }
 
     @Test

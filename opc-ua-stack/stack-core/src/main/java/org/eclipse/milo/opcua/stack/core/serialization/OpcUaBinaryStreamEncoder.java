@@ -52,8 +52,6 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
-    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
-
     private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
     private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
 
@@ -62,23 +60,10 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     private volatile int currentByte;
     private volatile int bitCount;
 
-    private final EncodingLimits encodingLimits;
+    private final SerializationContext context;
 
-    public OpcUaBinaryStreamEncoder() {
-        this(EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaBinaryStreamEncoder(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
-    }
-
-    public OpcUaBinaryStreamEncoder(ByteBuf buffer) {
-        this(buffer, EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaBinaryStreamEncoder(ByteBuf buffer, EncodingLimits encodingLimits) {
-        this.buffer = buffer;
-        this.encodingLimits = encodingLimits;
+    public OpcUaBinaryStreamEncoder(SerializationContext context) {
+        this.context = context;
     }
 
     public OpcUaBinaryStreamEncoder setBuffer(ByteBuf buffer) {
@@ -90,10 +75,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         if (values == null) {
             buffer.writeIntLE(-1);
         } else {
-            if (values.length > encodingLimits.getMaxArrayLength()) {
+            if (values.length > context.getEncodingLimits().getMaxArrayLength()) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingLimitsExceeded,
-                    "max array length exceeded");
+                    "max array length exceeded"
+                );
             }
 
             writeInt32(values.length);
@@ -668,7 +654,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         if (structure) {
             UaStructure struct = (UaStructure) value;
 
-            ExtensionObject extensionObject = ExtensionObject.encode(struct);
+            ExtensionObject extensionObject = ExtensionObject.encode(context, struct);
 
             writeBuiltinType(typeId, extensionObject);
         } else if (enumeration) {
@@ -774,10 +760,13 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         byte[] bytes = value.getBytes(charset);
         int length = bytes.length;
 
-        if (length > encodingLimits.getMaxStringLength()) {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
-                String.format("max string length exceeded (length=%s, max=%s)",
-                    length, encodingLimits.getMaxStringLength()));
+        if (length > context.getEncodingLimits().getMaxStringLength()) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                String.format(
+                    "max string length exceeded (length=%s, max=%s)",
+                    length, context.getEncodingLimits().getMaxStringLength())
+            );
         }
 
         writeInt32(length);
@@ -916,10 +905,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         if (values == null) {
             buffer.writeIntLE(-1);
         } else {
-            if (values.length > encodingLimits.getMaxArrayLength()) {
+            if (values.length > context.getEncodingLimits().getMaxArrayLength()) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingLimitsExceeded,
-                    "max array length exceeded");
+                    "max array length exceeded"
+                );
             }
 
             writeInt32(values.length);
@@ -946,7 +936,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 );
             }
 
-            codec.encode(SERIALIZATION_CONTEXT, value, this);
+            codec.encode(context, value, this);
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
@@ -975,7 +965,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 );
             }
 
-            codec.encode(SERIALIZATION_CONTEXT, value, this);
+            codec.encode(context, value, this);
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
@@ -1007,7 +997,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
         writeNodeId(encodingId);
 
-        binaryCodec.encode(SERIALIZATION_CONTEXT, message, this);
+        binaryCodec.encode(context, message, this);
     }
 
 }

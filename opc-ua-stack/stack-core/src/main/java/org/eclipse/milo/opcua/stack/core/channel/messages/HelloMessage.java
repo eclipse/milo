@@ -12,11 +12,10 @@ package org.eclipse.milo.opcua.stack.core.channel.messages;
 
 import javax.annotation.Nonnull;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.util.annotations.UInt32Primitive;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -171,11 +170,23 @@ public class HelloMessage {
     }
 
     private static void encodeString(String s, ByteBuf buffer) {
-        new OpcUaBinaryStreamEncoder(buffer, ENCODING_LIMITS).writeString(s);
+        if (s == null) {
+            buffer.writeIntLE(-1);
+        } else {
+            buffer.writeIntLE(s.length());
+            buffer.writeBytes(s.getBytes(Charsets.UTF_8));
+        }
     }
 
     private static String decodeString(ByteBuf buffer) {
-        return new OpcUaBinaryStreamDecoder(buffer, ENCODING_LIMITS).readString();
+        int length = buffer.readIntLE();
+        if (length == -1) {
+            return null;
+        } else {
+            byte[] bs = new byte[length];
+            buffer.readBytes(bs);
+            return new String(bs, Charsets.UTF_8);
+        }
     }
 
 }

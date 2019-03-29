@@ -12,18 +12,24 @@ package org.eclipse.milo.opcua.stack.client;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 import com.google.common.collect.Maps;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.client.transport.http.OpcHttpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcTcpTransport;
 import org.eclipse.milo.opcua.stack.client.transport.websocket.OpcWebSocketTransport;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.transport.TransportProfile;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -45,17 +51,42 @@ public class UaStackClient {
 
     private final Map<UInteger, CompletableFuture<UaResponseMessage>> pending = Maps.newConcurrentMap();
 
+    private final DataTypeManager dataTypeManager = new DefaultDataTypeManager();
+    private final NamespaceTable namespaceTable = new NamespaceTable();
+
+    private final UaTransport transport;
     private final ExecutionQueue deliveryQueue;
+    private final SerializationContext serializationContext;
 
     private final UaStackClientConfig config;
-    private final UaTransport transport;
 
-    public UaStackClient(UaStackClientConfig config, UaTransport transport) {
+    public UaStackClient(
+        UaStackClientConfig config,
+        Function<UaStackClient, UaTransport> transportFactory
+    ) {
+
         this.config = config;
-        this.transport = transport;
-
 
         deliveryQueue = new ExecutionQueue(config.getExecutor());
+
+        serializationContext = new SerializationContext() {
+            @Override
+            public EncodingLimits getEncodingLimits() {
+                return config.getEncodingLimits();
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return namespaceTable;
+            }
+
+            @Override
+            public DataTypeManager getDataTypeManager() {
+                return dataTypeManager;
+            }
+        };
+
+        transport = transportFactory.apply(this);
     }
 
     /**
@@ -94,6 +125,23 @@ public class UaStackClient {
                 pending.clear();
             })
             .thenApply(t -> UaStackClient.this);
+    }
+
+    public DataTypeManager getDataTypeManager() {
+        return dataTypeManager;
+    }
+
+    /**
+     * Get the client {@link NamespaceTable}.
+     *
+     * @return the client {@link NamespaceTable}.
+     */
+    public NamespaceTable getNamespaceTable() {
+        return namespaceTable;
+    }
+
+    public SerializationContext getSerializationContext() {
+        return serializationContext;
     }
 
     /**
@@ -275,7 +323,7 @@ public class UaStackClient {
                     "unsupported transport: " + transportProfileUri);
         }
 
-        return new UaStackClient(config, transport);
+        return new UaStackClient(config, client -> transport);
     }
 
 }

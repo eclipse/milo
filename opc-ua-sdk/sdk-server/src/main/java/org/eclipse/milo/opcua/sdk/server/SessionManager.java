@@ -384,8 +384,7 @@ public class SessionManager implements
                      * Identity change
                      */
                     Object tokenObject = request.getUserIdentityToken().decode(
-                        server.getConfig().getEncodingLimits(),
-                        OpcUaDataTypeManager.getInstance()
+                        OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
                     );
 
                     Object identityObject = validateIdentityToken(
@@ -423,8 +422,7 @@ public class SessionManager implements
                     }
 
                     Object tokenObject = request.getUserIdentityToken().decode(
-                        server.getConfig().getEncodingLimits(),
-                        OpcUaDataTypeManager.getInstance()
+                        OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
                     );
 
                     Object identityObject = validateIdentityToken(
@@ -490,8 +488,7 @@ public class SessionManager implements
             verifyClientSignature(session, request);
 
             Object tokenObject = request.getUserIdentityToken().decode(
-                server.getConfig().getEncodingLimits(),
-                OpcUaDataTypeManager.getInstance()
+                OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
             );
 
             Object identityObject = validateIdentityToken(
