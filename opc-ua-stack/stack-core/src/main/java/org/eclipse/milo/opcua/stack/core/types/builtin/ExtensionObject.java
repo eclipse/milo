@@ -90,16 +90,16 @@ public final class ExtensionObject {
         }
     }
 
-//    public Object decode() throws UaSerializationException {
-//        switch (bodyType) {
-//            case ByteString:
-//                return decode(OpcUaDefaultBinaryEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
-//            case XmlElement:
-//                return decode(OpcUaDefaultXmlEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
-//            default:
-//                throw new IllegalStateException("BodyType: " + bodyType);
-//        }
-//    }
+    //    public Object decode() throws UaSerializationException {
+    //        switch (bodyType) {
+    //            case ByteString:
+    //                return decode(OpcUaDefaultBinaryEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
+    //            case XmlElement:
+    //                return decode(OpcUaDefaultXmlEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
+    //            default:
+    //                throw new IllegalStateException("BodyType: " + bodyType);
+    //        }
+    //    }
 
     public Object decode(SerializationContext context) throws UaSerializationException {
         switch (bodyType) {
@@ -116,14 +116,14 @@ public final class ExtensionObject {
         return decoded.getOrCompute(() -> encoding.decode(context, body, encodingId));
     }
 
-//    @Nullable
-//    public Object decodeOrNull() {
-//        try {
-//            return decode();
-//        } catch (UaSerializationException e) {
-//            return null;
-//        }
-//    }
+    //    @Nullable
+    //    public Object decodeOrNull() {
+    //        try {
+    //            return decode();
+    //        } catch (UaSerializationException e) {
+    //            return null;
+    //        }
+    //    }
 
     @Nullable
     public Object decodeOrNull(SerializationContext context) {
@@ -194,13 +194,13 @@ public final class ExtensionObject {
         );
     }
 
-//    public static ExtensionObject encode(
-//        Object object,
-//        NodeId encodingId,
-//        DataTypeEncoding encoding) throws UaSerializationException {
-//
-//        return encode(object, encodingId, encoding, EncodingLimits.DEFAULT, OpcUaDataTypeManager.getInstance());
-//    }
+    //    public static ExtensionObject encode(
+    //        Object object,
+    //        NodeId encodingId,
+    //        DataTypeEncoding encoding) throws UaSerializationException {
+    //
+    //        return encode(object, encodingId, encoding, EncodingLimits.DEFAULT, OpcUaDataTypeManager.getInstance());
+    //    }
 
     public static ExtensionObject encode(
         SerializationContext context,

@@ -27,7 +27,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -36,24 +36,24 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 
 public class OpcClientWebSocketChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final UaStackClientConfig config;
+    private final UaStackClient client;
     private final CompletableFuture<ClientSecureChannel> handshake;
 
     public OpcClientWebSocketChannelInitializer(
-        UaStackClientConfig config,
+        UaStackClient client,
         CompletableFuture<ClientSecureChannel> handshake) {
 
-        this.config = config;
+        this.client = client;
         this.handshake = handshake;
     }
 
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
-        String endpointUrl = config.getEndpoint().getEndpointUrl();
+        String endpointUrl = client.getConfig().getEndpoint().getEndpointUrl();
         String scheme = EndpointUtil.getScheme(endpointUrl);
 
         TransportProfile transportProfile = TransportProfile
-            .fromUri(config.getEndpoint().getTransportProfileUri());
+            .fromUri(client.getConfig().getEndpoint().getTransportProfileUri());
 
         String subprotocol;
         if (transportProfile == TransportProfile.WSS_UASC_UABINARY) {
@@ -74,7 +74,7 @@ public class OpcClientWebSocketChannelInitializer extends ChannelInitializer<Soc
             channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
         }
 
-        int maxMessageSize = config.getMessageLimits().getMaxMessageSize();
+        int maxMessageSize = client.getConfig().getMessageLimits().getMaxMessageSize();
 
         channel.pipeline().addLast(new LoggingHandler(LogLevel.INFO));
         channel.pipeline().addLast(new HttpClientCodec());
@@ -88,15 +88,18 @@ public class OpcClientWebSocketChannelInitializer extends ChannelInitializer<Soc
                     subprotocol,
                     true,
                     new DefaultHttpHeaders(),
-                    config.getMessageLimits().getMaxChunkSize()
+                    client.getConfig().getMessageLimits().getMaxChunkSize()
                 )
             )
         );
 
-        channel.pipeline().addLast(new WebSocketFrameAggregator(config.getMessageLimits().getMaxMessageSize()));
+        channel.pipeline().addLast(
+            new WebSocketFrameAggregator(
+                client.getConfig().getMessageLimits().getMaxMessageSize())
+        );
 
         // OpcClientWebSocketFrameCodec adds UascClientAcknowledgeHandler when the WS upgrade is done.
-        channel.pipeline().addLast(new OpcClientWebSocketBinaryFrameCodec(config, handshake));
+        channel.pipeline().addLast(new OpcClientWebSocketBinaryFrameCodec(client, handshake));
     }
 
 }

@@ -90,6 +90,13 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         }
     }
 
+    @Deprecated
+    public OpcUaXmlStreamDecoder(SerializationContext context, Reader reader) throws IOException, SAXException {
+        this(context);
+
+        setInput(reader);
+    }
+
     public OpcUaXmlStreamDecoder setInput(Document document) {
         this.document = document;
         this.currentNode = document.getFirstChild();

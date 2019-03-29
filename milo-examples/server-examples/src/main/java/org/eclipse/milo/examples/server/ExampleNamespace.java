@@ -743,7 +743,10 @@ public class ExampleNamespace extends ManagedNamespace {
         );
 
         ExtensionObject xo = ExtensionObject.encodeDefaultBinary(
-            OpcUaDataTypeManager.getInstance(), value, binaryEncodingId);
+            getServer().getSerializationContext(),
+            value,
+            binaryEncodingId
+        );
 
         customDataTypeVariable.setValue(new DataValue(new Variant(xo)));
 

@@ -35,7 +35,6 @@ import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.security.CertificateValidator;
 import org.eclipse.milo.opcua.stack.core.security.SecurityAlgorithm;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -384,7 +383,7 @@ public class SessionManager implements
                      * Identity change
                      */
                     Object tokenObject = request.getUserIdentityToken().decode(
-                        OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
+                        server.getSerializationContext()
                     );
 
                     Object identityObject = validateIdentityToken(
@@ -417,12 +416,14 @@ public class SessionManager implements
                      */
                     ByteString clientCertificateBytes = serviceRequest.getClientCertificateBytes();
 
-                    if (request.getUserIdentityToken() == null || request.getUserIdentityToken().decode() == null) {
+                    if (request.getUserIdentityToken() == null ||
+                        request.getUserIdentityToken().decode(server.getSerializationContext()) == null) {
+
                         throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
                     }
 
                     Object tokenObject = request.getUserIdentityToken().decode(
-                        OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
+                        server.getSerializationContext()
                     );
 
                     Object identityObject = validateIdentityToken(
@@ -481,14 +482,16 @@ public class SessionManager implements
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed);
             }
 
-            if (request.getUserIdentityToken() == null || request.getUserIdentityToken().decode() == null) {
+            if (request.getUserIdentityToken() == null ||
+                request.getUserIdentityToken().decode(server.getSerializationContext()) == null) {
+
                 throw new UaException(StatusCodes.Bad_IdentityTokenInvalid, "identity token not provided");
             }
 
             verifyClientSignature(session, request);
 
             Object tokenObject = request.getUserIdentityToken().decode(
-                OpcUaDataTypeManager.getInstance(), server.getConfig().getEncodingLimits()
+                server.getSerializationContext()
             );
 
             Object identityObject = validateIdentityToken(
@@ -496,7 +499,7 @@ public class SessionManager implements
                 tokenObject,
                 request.getUserTokenSignature()
             );
-            
+
             createdSessions.remove(authToken);
             activeSessions.put(authToken, session);
 

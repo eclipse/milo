@@ -26,7 +26,7 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.util.concurrent.FutureListener;
-import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
@@ -41,14 +41,18 @@ public class OpcHttpTransport extends AbstractTransport {
 
     private ChannelPool channelPool = null;
 
-    public OpcHttpTransport(UaStackClientConfig config) {
-        super(config);
+    private final UaStackClient client;
+
+    public OpcHttpTransport(UaStackClient client) {
+        super(client.getConfig());
+
+        this.client = client;
     }
 
     @Override
     public synchronized CompletableFuture<UaTransport> connect() {
         if (channelPool == null) {
-            channelPool = createChannelPool(getConfig());
+            channelPool = createChannelPool(client);
         }
 
         return CompletableFuture.completedFuture(OpcHttpTransport.this);
@@ -81,7 +85,7 @@ public class OpcHttpTransport extends AbstractTransport {
 
     private synchronized CompletableFuture<Channel> acquireChannel() {
         if (channelPool == null) {
-            channelPool = createChannelPool(getConfig());
+            channelPool = createChannelPool(client);
         }
 
         CompletableFuture<Channel> future = new CompletableFuture<>();
@@ -103,8 +107,8 @@ public class OpcHttpTransport extends AbstractTransport {
         }
     }
 
-    private static ChannelPool createChannelPool(UaStackClientConfig config) {
-        final String endpointUrl = config.getEndpoint().getEndpointUrl();
+    private static ChannelPool createChannelPool(UaStackClient client) {
+        final String endpointUrl = client.getConfig().getEndpoint().getEndpointUrl();
 
         String host = EndpointUtil.getHost(endpointUrl);
         if (host == null) host = "";
@@ -115,7 +119,7 @@ public class OpcHttpTransport extends AbstractTransport {
 
         Bootstrap bootstrap = new Bootstrap()
             .channelFactory(NioSocketChannel::new)
-            .group(config.getEventLoop())
+            .group(client.getConfig().getEventLoop())
             .remoteAddress(host, port);
 
         return new SimpleChannelPool(
@@ -133,12 +137,12 @@ public class OpcHttpTransport extends AbstractTransport {
                         channel.pipeline().addLast(sslContext.newHandler(channel.alloc()));
                     }
 
-                    int maxMessageSize = config.getMessageLimits().getMaxMessageSize();
+                    int maxMessageSize = client.getConfig().getMessageLimits().getMaxMessageSize();
 
                     channel.pipeline().addLast(new LoggingHandler(LogLevel.TRACE));
                     channel.pipeline().addLast(new HttpClientCodec());
                     channel.pipeline().addLast(new HttpObjectAggregator(maxMessageSize));
-                    channel.pipeline().addLast(new OpcClientHttpCodec(config));
+                    channel.pipeline().addLast(new OpcClientHttpCodec(client));
 
                     LOGGER.debug("channelCreated(): " + channel);
                 }

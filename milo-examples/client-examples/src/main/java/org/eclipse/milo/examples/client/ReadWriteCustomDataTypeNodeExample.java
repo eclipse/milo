@@ -56,7 +56,9 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         Variant variant = value.getValue();
         ExtensionObject xo = (ExtensionObject) variant.getValue();
 
-        CustomDataType decoded = (CustomDataType) xo.decode();
+        CustomDataType decoded = (CustomDataType) xo.decode(
+            client.getSerializationContext()
+        );
         logger.info("Decoded={}", decoded);
 
         // Write a modified value
@@ -66,6 +68,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             !decoded.isBaz()
         );
         ExtensionObject modifiedXo = ExtensionObject.encode(
+            client.getSerializationContext(),
             modified,
             xo.getEncodingId(),
             OpcUaDefaultBinaryEncoding.getInstance()
@@ -82,7 +85,9 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         variant = value.getValue();
         xo = (ExtensionObject) variant.getValue();
 
-        decoded = (CustomDataType) xo.decode();
+        decoded = (CustomDataType) xo.decode(
+            client.getSerializationContext()
+        );
         logger.info("Decoded={}", decoded);
 
         future.complete(client);

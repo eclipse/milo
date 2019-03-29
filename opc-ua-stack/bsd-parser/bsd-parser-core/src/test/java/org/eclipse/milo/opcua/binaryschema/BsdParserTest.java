@@ -26,6 +26,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTyp
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.testng.annotations.BeforeSuite;
 
 import static org.testng.Assert.assertEquals;
@@ -39,19 +40,21 @@ public abstract class BsdParserTest {
 
     private final SerializationContext context = new SerializationContext() {
 
+        private final NamespaceTable namespaceTable = new NamespaceTable();
+
         @Override
         public DataTypeManager getDataTypeManager() {
-            return null;
+            return OpcUaDataTypeManager.getInstance();
         }
 
         @Override
         public EncodingLimits getEncodingLimits() {
-            return null;
+            return EncodingLimits.DEFAULT;
         }
 
         @Override
         public NamespaceTable getNamespaceTable() {
-            return null;
+            return namespaceTable;
         }
 
         @Override
@@ -76,6 +79,7 @@ public abstract class BsdParserTest {
 
             codec.encode(context, encodable, encoder);
         }
+
     };
 
     public BsdParserTest() {

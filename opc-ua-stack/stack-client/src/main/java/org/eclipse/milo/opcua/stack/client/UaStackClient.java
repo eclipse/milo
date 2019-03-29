@@ -127,6 +127,11 @@ public class UaStackClient {
             .thenApply(t -> UaStackClient.this);
     }
 
+    /**
+     * Get the client {@link DataTypeManager}.
+     *
+     * @return the client {@link DataTypeManager}.
+     */
     public DataTypeManager getDataTypeManager() {
         return dataTypeManager;
     }
@@ -140,6 +145,11 @@ public class UaStackClient {
         return namespaceTable;
     }
 
+    /**
+     * Get the client {@link SerializationContext}.
+     *
+     * @return the client {@link SerializationContext}.
+     */
     public SerializationContext getSerializationContext() {
         return serializationContext;
     }
@@ -299,19 +309,19 @@ public class UaStackClient {
         TransportProfile transportProfile =
             TransportProfile.fromUri(transportProfileUri);
 
-        UaTransport transport;
+        Function<UaStackClient, UaTransport> transportFactory;
 
         switch (transportProfile) {
             case TCP_UASC_UABINARY:
-                transport = new OpcTcpTransport(config);
+                transportFactory = OpcTcpTransport::new;
                 break;
 
             case HTTPS_UABINARY:
-                transport = new OpcHttpTransport(config);
+                transportFactory = OpcHttpTransport::new;
                 break;
 
             case WSS_UASC_UABINARY:
-                transport = new OpcWebSocketTransport(config);
+                transportFactory = OpcWebSocketTransport::new;
                 break;
 
             case HTTPS_UAXML:
@@ -323,7 +333,7 @@ public class UaStackClient {
                     "unsupported transport: " + transportProfileUri);
         }
 
-        return new UaStackClient(config, client -> transport);
+        return new UaStackClient(config, transportFactory);
     }
 
 }

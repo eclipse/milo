@@ -52,7 +52,7 @@ public class UnifiedAutomationReadCustomDataTypeExample implements ClientExample
         // that has the codec registered with it. OpcUaClient automatically
         // reads any DataTypeDictionary nodes present in the server upon
         // connecting and dynamically generates codecs for custom structures.
-        Object value = xo.decode(client.getDataTypeManager());
+        Object value = xo.decode(client.getSerializationContext());
 
         logger.info("value: {}", value);
 

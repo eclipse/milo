@@ -26,6 +26,7 @@ import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.util.AttributeKey;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -49,14 +50,16 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final UaStackClientConfig config;
     private final EndpointDescription endpoint;
     private final TransportProfile transportProfile;
 
-    private final UaStackClientConfig config;
+    private final UaStackClient client;
 
-    OpcClientHttpCodec(UaStackClientConfig config) {
-        this.config = config;
+    OpcClientHttpCodec(UaStackClient client) {
+        this.client = client;
 
+        config = client.getConfig();
         endpoint = config.getEndpoint();
         transportProfile = TransportProfile.fromUri(endpoint.getTransportProfileUri());
     }
@@ -75,7 +78,8 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
 
         switch (transportProfile) {
             case HTTPS_UABINARY: {
-                OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(content);
+                OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(client.getSerializationContext());
+                encoder.setBuffer(content);
                 encoder.writeMessage(null, transportRequest.getRequest());
                 break;
             }
@@ -136,7 +140,8 @@ public class OpcClientHttpCodec extends MessageToMessageCodec<HttpResponse, UaTr
                             "unexpected content-type: " + contentType);
                     }
 
-                    OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(content);
+                    OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(client.getSerializationContext());
+                    decoder.setBuffer(content);
                     responseMessage = (UaResponseMessage) decoder.readMessage(null);
                     break;
                 }

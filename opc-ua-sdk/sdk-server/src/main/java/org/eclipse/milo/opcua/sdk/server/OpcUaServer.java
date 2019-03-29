@@ -36,6 +36,8 @@ import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -171,12 +173,20 @@ public class OpcUaServer {
         return serverNamespace;
     }
 
+    public ServerTable getServerTable() {
+        return serverTable;
+    }
+
+    public DataTypeManager getDataTypeManager() {
+        return stackServer.getDataTypeManager();
+    }
+
     public NamespaceTable getNamespaceTable() {
         return stackServer.getNamespaceTable();
     }
 
-    public ServerTable getServerTable() {
-        return serverTable;
+    public SerializationContext getSerializationContext() {
+        return stackServer.getSerializationContext();
     }
 
     /**

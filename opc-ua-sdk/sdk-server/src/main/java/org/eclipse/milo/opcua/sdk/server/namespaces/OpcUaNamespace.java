@@ -216,7 +216,7 @@ public class OpcUaNamespace extends ManagedNamespace {
                 );
 
                 try {
-                    ExtensionObject xo = ExtensionObject.encode(serverStatus);
+                    ExtensionObject xo = ExtensionObject.encode(server.getSerializationContext(), serverStatus);
 
                     DataValue value = new DataValue(new Variant(xo));
 
