@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.binaryschema;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -163,10 +164,26 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
             .build();
     }
 
+    private final Map<String, FieldType> fields = new HashMap<>();
+    private final Map<String, FieldType> lengthFields = new HashMap<>();
+
     private final StructuredType structuredType;
 
     protected AbstractCodec(StructuredType structuredType) {
         this.structuredType = structuredType;
+
+        structuredType.getField().forEach(
+            field ->
+                fields.put(field.getName(), field)
+        );
+
+        structuredType.getField().forEach(field -> {
+            String lengthField = field.getLengthField();
+
+            if (lengthField != null) {
+                lengthFields.put(lengthField, fields.get(lengthField));
+            }
+        });
     }
 
     @Override
@@ -244,6 +261,10 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
             }
         }
 
+        for (String lengthField : lengthFields.keySet()) {
+            members.remove(lengthField);
+        }
+
         return createStructure(structuredType.getName(), members);
     }
 
@@ -265,55 +286,81 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
                 continue;
             }
 
-            String typeName = field.getTypeName().getLocalPart();
-            String typeNamespace = field.getTypeName().getNamespaceURI();
+            if (lengthFields.containsKey(field.getName())) {
+                // let arrays encode their own length field so the
+                // structure representation isn't required to include it
+                continue;
+            }
 
-            MemberT member = members.get(field.getName());
+            encodeField(context, encoder, members, field);
+        }
+    }
 
-            boolean typeNamespaceIsUa =
-                Namespaces.OPC_UA.equals(typeNamespace) ||
-                    Namespaces.OPC_UA_BSD.equals(typeNamespace);
+    private void encodeField(
+        SerializationContext context,
+        OpcUaBinaryStreamEncoder encoder,
+        LinkedHashMap<String, MemberT> members,
+        FieldType field
+    ) {
 
-            if (fieldIsScalar(field)) {
-                Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
+        String typeName = field.getTypeName().getLocalPart();
+        String typeNamespace = field.getTypeName().getNamespaceURI();
 
-                if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
-                    WRITERS.get(typeName).accept(encoder, scalarValue);
-                } else {
-                    context.encode(typeNamespace, typeName, scalarValue, encoder);
-                }
+        MemberT member = members.get(field.getName());
+
+        boolean typeNamespaceIsUa =
+            Namespaces.OPC_UA.equals(typeNamespace) ||
+                Namespaces.OPC_UA_BSD.equals(typeNamespace);
+
+        if (fieldIsScalar(field)) {
+            Object scalarValue = memberTypeToOpcUaScalar(member, typeName);
+
+            if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
+                WRITERS.get(typeName).accept(encoder, scalarValue);
             } else {
-                if (field.isIsLengthInBytes()) {
-                    throw new UaSerializationException(
-                        StatusCodes.Bad_EncodingError,
-                        "IsLengthInBytes=true not supported");
-                }
+                context.encode(typeNamespace, typeName, scalarValue, encoder);
+            }
+        } else {
+            if (field.isIsLengthInBytes()) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "IsLengthInBytes=true not supported");
+            }
 
+            if ("Bit".equals(typeName) && typeNamespaceIsUa) {
                 int length = fieldLength(field, members);
 
-                if ("Bit".equals(typeName) && typeNamespaceIsUa) {
-                    Number number = (Number) memberTypeToOpcUaArray(member, typeName);
-                    BigInteger bi = BigInteger.valueOf(number.longValue());
+                Number number = (Number) memberTypeToOpcUaArray(member, typeName);
+                BigInteger bi = BigInteger.valueOf(number.longValue());
 
-                    for (int i = 0; i < length; i++) {
-                        encoder.writeBit(bi.shiftRight(i).and(BigInteger.ONE).intValue());
-                    }
-                } else {
-                    Object[] valueArray = (Object[]) memberTypeToOpcUaArray(member, typeName);
+                for (int i = 0; i < length; i++) {
+                    encoder.writeBit(bi.shiftRight(i).and(BigInteger.ONE).intValue());
+                }
+            } else {
+                Object[] valueArray = (Object[]) memberTypeToOpcUaArray(member, typeName);
 
-                    if (valueArray != null) {
-                        if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
-                            for (int i = 0; i < length; i++) {
-                                Object value = valueArray[i];
+                FieldType lengthField = fields.get(field.getLengthField());
 
-                                WRITERS.get(typeName).accept(encoder, value);
-                            }
-                        } else {
-                            for (int i = 0; i < length; i++) {
-                                Object value = valueArray[i];
+                if (lengthField != null) {
+                    int length = valueArray.length;
 
-                                context.encode(typeNamespace, typeName, value, encoder);
-                            }
+                    members.put(lengthField.getName(), opcUaToMemberTypeScalar(
+                        lengthField.getName(),
+                        length,
+                        lengthField.getTypeName().getLocalPart()
+                    ));
+
+                    encodeField(context, encoder, members, lengthField);
+                }
+
+                if (valueArray != null) {
+                    if (typeNamespaceIsUa && WRITERS.containsKey(typeName)) {
+                        for (Object value : valueArray) {
+                            WRITERS.get(typeName).accept(encoder, value);
+                        }
+                    } else {
+                        for (Object value : valueArray) {
+                            context.encode(typeNamespace, typeName, value, encoder);
                         }
                     }
                 }
