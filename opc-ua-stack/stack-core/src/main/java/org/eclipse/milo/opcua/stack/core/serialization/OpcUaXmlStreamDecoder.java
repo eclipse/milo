@@ -787,71 +787,27 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public <T> T[] readArray(
-        String field,
-        Function<String, T> decoder,
-        Class<T> clazz) throws UaSerializationException {
-
+    public UaMessage readMessage(String field) throws UaSerializationException {
         Node node = currentNode(field);
 
-        List<Object> values = new ArrayList<>();
-        Node listNode = node.getFirstChild();
+        String typeName = node.getLocalName();
 
-        if (listNode != null) {
-            NodeList children = listNode.getChildNodes();
-
-            for (int i = 0; i < children.getLength(); i++) {
-                currentNode = children.item(i);
-
-                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
-                    values.add(decoder.apply(currentNode.getLocalName()));
-                }
-            }
-        }
-
-        try {
-            Object array = Array.newInstance(clazz, values.size());
-            for (int i = 0; i < values.size(); i++) {
-                Array.set(array, i, values.get(i));
-            }
-
-            return (T[]) array;
-        } finally {
-            currentNode = node.getNextSibling();
-        }
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T extends UaStructure> T readBuiltinStruct(
-        String field,
-        Class<T> typeClass) throws UaSerializationException {
-
-        Node node = currentNode(field);
-
-        BuiltinDataTypeCodec<?> codec = BuiltinDataTypeDictionary.getBuiltinCodec(typeClass);
+        BuiltinDataTypeCodec<?> codec = BuiltinDataTypeDictionary.getBuiltinCodec(typeName);
 
         if (codec == null) {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "no codec registered: " + typeClass
+                "no codec registered: " + typeName
             );
         }
 
+        currentNode = node.getFirstChild();
+
         try {
-            return (T) codec.decode(context, this);
+            return (UaMessage) codec.decode(context, this);
         } finally {
             currentNode = node.getNextSibling();
         }
-    }
-
-    @Override
-    public <T extends UaStructure> T[] readBuiltinStructArray(
-        String field,
-        Class<T> clazz) throws UaSerializationException {
-
-        return readArray(field, f -> readBuiltinStruct(null, clazz), clazz);
     }
 
     @Override
@@ -876,6 +832,171 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         } finally {
             currentNode = node.getNextSibling();
         }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T[] readArray(
+        String field,
+        Function<String, T> decoder,
+        Class<T> clazz) throws UaSerializationException {
+
+        Node node = currentNode(field);
+
+        List<Object> values = new ArrayList<>();
+        Node listNode = node.getFirstChild();
+
+        if (listNode != null) {
+            NodeList children = listNode.getChildNodes();
+
+            for (int i = 0; i < children.getLength(); i++) {
+                currentNode = children.item(i);
+
+                if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                    values.add(decoder.apply(currentNode.getLocalName()));
+                }
+            }
+        }
+
+        try {
+            checkArrayLength(values.size());
+
+            Object array = Array.newInstance(clazz, values.size());
+            for (int i = 0; i < values.size(); i++) {
+                Array.set(array, i, values.get(i));
+            }
+
+            return (T[]) array;
+        } finally {
+            currentNode = node.getNextSibling();
+        }
+    }
+
+
+    @Override
+    public Boolean[] readBooleanArray(String field) throws UaSerializationException {
+        return readArray(field, this::readBoolean, Boolean.class);
+    }
+
+    @Override
+    public Byte[] readSByteArray(String field) throws UaSerializationException {
+        return readArray(field, this::readSByte, Byte.class);
+    }
+
+    @Override
+    public Short[] readInt16Array(String field) throws UaSerializationException {
+        return readArray(field, this::readInt16, Short.class);
+    }
+
+    @Override
+    public Integer[] readInt32Array(String field) throws UaSerializationException {
+        return readArray(field, this::readInt32, Integer.class);
+    }
+
+    @Override
+    public Long[] readInt64Array(String field) throws UaSerializationException {
+        return readArray(field, this::readInt64, Long.class);
+    }
+
+    @Override
+    public UByte[] readByteArray(String field) throws UaSerializationException {
+        return readArray(field, this::readByte, UByte.class);
+    }
+
+    @Override
+    public UShort[] readUInt16Array(String field) throws UaSerializationException {
+        return readArray(field, this::readUInt16, UShort.class);
+    }
+
+    @Override
+    public UInteger[] readUInt32Array(String field) throws UaSerializationException {
+        return readArray(field, this::readUInt32, UInteger.class);
+    }
+
+    @Override
+    public ULong[] readUInt64Array(String field) throws UaSerializationException {
+        return readArray(field, this::readUInt64, ULong.class);
+    }
+
+    @Override
+    public Float[] readFloatArray(String field) throws UaSerializationException {
+        return readArray(field, this::readFloat, Float.class);
+    }
+
+    @Override
+    public Double[] readDoubleArray(String field) throws UaSerializationException {
+        return readArray(field, this::readDouble, Double.class);
+    }
+
+    @Override
+    public String[] readStringArray(String field) throws UaSerializationException {
+        return readArray(field, this::readString, String.class);
+    }
+
+    @Override
+    public DateTime[] readDateTimeArray(String field) throws UaSerializationException {
+        return readArray(field, this::readDateTime, DateTime.class);
+    }
+
+    @Override
+    public UUID[] readGuidArray(String field) throws UaSerializationException {
+        return readArray(field, this::readGuid, UUID.class);
+    }
+
+    @Override
+    public ByteString[] readByteStringArray(String field) throws UaSerializationException {
+        return readArray(field, this::readByteString, ByteString.class);
+    }
+
+    @Override
+    public XmlElement[] readXmlElementArray(String field) throws UaSerializationException {
+        return readArray(field, this::readXmlElement, XmlElement.class);
+    }
+
+    @Override
+    public NodeId[] readNodeIdArray(String field) throws UaSerializationException {
+        return readArray(field, this::readNodeId, NodeId.class);
+    }
+
+    @Override
+    public ExpandedNodeId[] readExpandedNodeIdArray(String field) throws UaSerializationException {
+        return readArray(field, this::readExpandedNodeId, ExpandedNodeId.class);
+    }
+
+    @Override
+    public StatusCode[] readStatusCodeArray(String field) throws UaSerializationException {
+        return readArray(field, this::readStatusCode, StatusCode.class);
+    }
+
+    @Override
+    public QualifiedName[] readQualifiedNameArray(String field) throws UaSerializationException {
+        return readArray(field, this::readQualifiedName, QualifiedName.class);
+    }
+
+    @Override
+    public LocalizedText[] readLocalizedTextArray(String field) throws UaSerializationException {
+        return readArray(field, this::readLocalizedText, LocalizedText.class);
+
+    }
+
+    @Override
+    public ExtensionObject[] readExtensionObjectArray(String field) throws UaSerializationException {
+        return readArray(field, this::readExtensionObject, ExtensionObject.class);
+    }
+
+    @Override
+    public DataValue[] readDataValueArray(String field) throws UaSerializationException {
+        return readArray(field, this::readDataValue, DataValue.class);
+    }
+
+    @Override
+    public Variant[] readVariantArray(String field) throws UaSerializationException {
+        return readArray(field, this::readVariant, Variant.class);
+    }
+
+    @Override
+    public DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException {
+        return readArray(field, this::readDiagnosticInfo, DiagnosticInfo.class);
     }
 
     @Override
@@ -918,28 +1039,47 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         }
     }
 
+    private void checkArrayLength(int length) throws UaSerializationException {
+        if (length > context.getEncodingLimits().getMaxArrayLength()) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                String.format(
+                    "max array length exceeded (length=%s, max=%s)",
+                    length, context.getEncodingLimits().getMaxArrayLength())
+            );
+        }
+    }
+
     @Override
-    public UaMessage readMessage(String field) throws UaSerializationException {
+    @SuppressWarnings("unchecked")
+    public <T extends UaStructure> T readBuiltinStruct(
+        String field,
+        Class<T> typeClass) throws UaSerializationException {
+
         Node node = currentNode(field);
 
-        String typeName = node.getLocalName();
-
-        BuiltinDataTypeCodec<?> codec = BuiltinDataTypeDictionary.getBuiltinCodec(typeName);
+        BuiltinDataTypeCodec<?> codec = BuiltinDataTypeDictionary.getBuiltinCodec(typeClass);
 
         if (codec == null) {
             throw new UaSerializationException(
                 StatusCodes.Bad_DecodingError,
-                "no codec registered: " + typeName
+                "no codec registered: " + typeClass
             );
         }
 
-        currentNode = node.getFirstChild();
-
         try {
-            return (UaMessage) codec.decode(context, this);
+            return (T) codec.decode(context, this);
         } finally {
             currentNode = node.getNextSibling();
         }
+    }
+
+    @Override
+    public <T extends UaStructure> T[] readBuiltinStructArray(
+        String field,
+        Class<T> clazz) throws UaSerializationException {
+
+        return readArray(field, f -> readBuiltinStruct(null, clazz), clazz);
     }
 
     private static XmlElement nodeToXmlElement(Node node) throws UaSerializationException {
