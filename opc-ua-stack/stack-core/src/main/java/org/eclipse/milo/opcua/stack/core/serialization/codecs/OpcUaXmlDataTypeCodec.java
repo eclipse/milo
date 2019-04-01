@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 
 public interface OpcUaXmlDataTypeCodec<T> extends
     DataTypeCodec<T, OpcUaXmlStreamDecoder, OpcUaXmlStreamEncoder> {

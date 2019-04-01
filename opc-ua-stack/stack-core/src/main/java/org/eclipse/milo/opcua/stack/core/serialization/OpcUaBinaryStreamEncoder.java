@@ -23,7 +23,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
@@ -1087,7 +1086,12 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public void writeStructArray(
+        String field,
+        Object[] value,
+        ExpandedNodeId dataTypeId
+    ) throws UaSerializationException {
+
         NodeId localDateTypeId = dataTypeId
             .local(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(

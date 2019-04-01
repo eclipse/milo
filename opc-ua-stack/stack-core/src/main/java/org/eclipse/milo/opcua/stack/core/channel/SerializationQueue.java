@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.util.ExecutionQueue;
 
 public class SerializationQueue {

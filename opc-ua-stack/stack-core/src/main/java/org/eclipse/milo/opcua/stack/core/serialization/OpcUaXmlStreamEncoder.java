@@ -19,7 +19,6 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -356,7 +355,12 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
-    public void writeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+    public void writeStructArray(
+        String field,
+        Object[] value,
+        ExpandedNodeId dataTypeId
+    ) throws UaSerializationException {
+
         NodeId localDateTypeId = dataTypeId
             .local(context.getNamespaceTable())
             .orElseThrow(() -> new UaSerializationException(

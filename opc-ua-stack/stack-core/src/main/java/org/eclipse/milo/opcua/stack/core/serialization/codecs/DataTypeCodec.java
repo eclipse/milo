@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 
 public interface DataTypeCodec<T, R, W> {
 

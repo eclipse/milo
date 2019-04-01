@@ -13,8 +13,8 @@ package org.eclipse.milo.opcua.binaryschema;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.opcfoundation.opcua.binaryschema.EnumeratedType;
 
 public class GenericEnumCodec implements OpcUaBinaryDataTypeCodec<Number> {

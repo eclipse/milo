@@ -8,16 +8,14 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.eclipse.milo.opcua.stack.core.serialization.codecs;
+package org.eclipse.milo.opcua.stack.core.serialization;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
-import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 
 public interface SerializationContext {

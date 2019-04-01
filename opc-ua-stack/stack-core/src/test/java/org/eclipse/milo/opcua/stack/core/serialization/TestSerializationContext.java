@@ -11,7 +11,6 @@
 package org.eclipse.milo.opcua.stack.core.serialization;
 
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 

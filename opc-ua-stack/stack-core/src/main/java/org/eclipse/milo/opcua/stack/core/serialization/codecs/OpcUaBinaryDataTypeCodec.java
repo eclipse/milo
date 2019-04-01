@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 
 public interface OpcUaBinaryDataTypeCodec<T> extends
     DataTypeCodec<T, OpcUaBinaryStreamDecoder, OpcUaBinaryStreamEncoder> {
