@@ -86,6 +86,8 @@ public interface UaDecoder {
     UaMessage readMessage(String field) throws UaSerializationException;
 
     Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
+
+    Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
     
     Boolean[] readBooleanArray(String field) throws UaSerializationException;
 
@@ -138,6 +140,8 @@ public interface UaDecoder {
     DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException;
 
     Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;
+
+    Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     <T> T[] readArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
 

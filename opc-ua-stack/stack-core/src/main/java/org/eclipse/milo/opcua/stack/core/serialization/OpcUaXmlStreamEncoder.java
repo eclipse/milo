@@ -212,6 +212,18 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
+    public void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDateTypeId = dataTypeId
+            .local(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered: " + dataTypeId
+            ));
+
+        writeStruct(field, value, localDateTypeId);
+    }
+
+    @Override
     public void writeBooleanArray(String field, Boolean[] value) throws UaSerializationException {
         writeArray(field, value, this::writeBoolean);
     }
@@ -341,6 +353,18 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
         String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
 
         writeArray(field, values, (s, o) -> writeStruct(s, o, dataTypeId));
+    }
+
+    @Override
+    public void writeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDateTypeId = dataTypeId
+            .local(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered: " + dataTypeId
+            ));
+
+        writeStructArray(field, value, localDateTypeId);
     }
 
     @Override

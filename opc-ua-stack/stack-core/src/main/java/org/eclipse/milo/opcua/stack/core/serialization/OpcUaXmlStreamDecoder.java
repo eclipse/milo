@@ -835,6 +835,17 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        return dataTypeId
+            .local(context.getNamespaceTable())
+            .map(id -> readStruct(field, id))
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + dataTypeId
+            ));
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T[] readArray(
         String field,
@@ -1037,6 +1048,17 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
         } finally {
             currentNode = node.getNextSibling();
         }
+    }
+
+    @Override
+    public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        return dataTypeId
+            .local(context.getNamespaceTable())
+            .map(id -> readStructArray(field, id))
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + dataTypeId
+            ));
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {

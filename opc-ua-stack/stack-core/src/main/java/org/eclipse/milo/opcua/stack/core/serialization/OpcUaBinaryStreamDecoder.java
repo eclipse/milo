@@ -694,6 +694,17 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
     }
 
     @Override
+    public Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        return dataTypeId
+            .local(context.getNamespaceTable())
+            .map(id -> readStruct(field, id))
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + dataTypeId
+            ));
+    }
+
+    @Override
     public Boolean[] readBooleanArray(String field) throws UaSerializationException {
         int length = readInt32();
 
@@ -1150,6 +1161,17 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
 
             return (Object[]) array;
         }
+    }
+
+    @Override
+    public Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        return dataTypeId
+            .local(context.getNamespaceTable())
+            .map(id -> readStructArray(field, id))
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + dataTypeId
+            ));
     }
 
     private void checkArrayLength(int length) throws UaSerializationException {

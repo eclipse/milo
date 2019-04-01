@@ -87,6 +87,8 @@ public interface UaEncoder {
 
     void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException;
 
+    void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException;
+
     void writeBooleanArray(String field, Boolean[] value) throws UaSerializationException;
 
     void writeSByteArray(String field, Byte[] value) throws UaSerializationException;
@@ -138,6 +140,8 @@ public interface UaEncoder {
     void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException;
 
     void writeStructArray(String field, Object[] value, NodeId dataTypeId) throws UaSerializationException;
+
+    void writeStructArray(String field, Object[] value, ExpandedNodeId dataTypeId) throws UaSerializationException;
 
     <T> void writeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException;
 
