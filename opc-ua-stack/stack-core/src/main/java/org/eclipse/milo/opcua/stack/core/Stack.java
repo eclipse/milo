@@ -245,7 +245,7 @@ public final class Stack {
         /**
          * Maximum number of connect attempts per {@link #RATE_LIMIT_WINDOW_MS}.
          */
-        public static int RATE_LIMIT_MAX_ATTEMPTS = 3;
+        public static int RATE_LIMIT_MAX_ATTEMPTS = 4;
 
         /**
          * The window of time over which connect attempts will be counted for rate limiting.
