@@ -1,6 +1,6 @@
 # How to use the client examples
 
-To run the client examples., perform the following steps:
+To run the client examples., do the following steps:
 
 1. Import the project into your favorite IDE (IntelliJ or Eclipse)
 
