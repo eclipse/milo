@@ -263,7 +263,7 @@ public class OpcUaClient implements UaClient {
     public NamespaceTable getNamespaceTable() {
         return stackClient.getNamespaceTable();
     }
-    
+
     public SerializationContext getSerializationContext() {
         return stackClient.getSerializationContext();
     }
@@ -369,7 +369,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             HistoryReadRequest request = new HistoryReadRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                ExtensionObject.encode(stackClient.getSerializationContext(), historyReadDetails),
+                ExtensionObject.encode(getSerializationContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
                 a(nodesToRead, HistoryReadValueId.class));
@@ -382,7 +382,7 @@ public class OpcUaClient implements UaClient {
     public CompletableFuture<HistoryUpdateResponse> historyUpdate(List<HistoryUpdateDetails> historyUpdateDetails) {
         return getSession().thenCompose(session -> {
             ExtensionObject[] details = historyUpdateDetails.stream()
-                .map(hud -> ExtensionObject.encode(stackClient.getSerializationContext(), hud))
+                .map(hud -> ExtensionObject.encode(getSerializationContext(), hud))
                 .toArray(ExtensionObject[]::new);
 
             HistoryUpdateRequest request = new HistoryUpdateRequest(

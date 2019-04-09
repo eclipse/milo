@@ -35,7 +35,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
@@ -113,10 +113,8 @@ public class UaStackServer {
 
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
+    private final DataTypeManager dataTypeManager = new DefaultDataTypeManager();
     private final NamespaceTable namespaceTable = new NamespaceTable();
-
-    // TODO don't used shared instance
-    private final DataTypeManager dataTypeManager = OpcUaDataTypeManager.getInstance();
 
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();

@@ -26,7 +26,9 @@ public class JsonEnumCodec implements OpcUaBinaryDataTypeCodec<Number> {
     @Override
     public void encode(
         SerializationContext context,
-        OpcUaBinaryStreamEncoder encoder, Number value) throws UaSerializationException {
+        OpcUaBinaryStreamEncoder encoder,
+        Number value
+    ) throws UaSerializationException {
 
         encoder.writeInt32(value.intValue());
     }
@@ -34,7 +36,8 @@ public class JsonEnumCodec implements OpcUaBinaryDataTypeCodec<Number> {
     @Override
     public Number decode(
         SerializationContext context,
-        OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
+        OpcUaBinaryStreamDecoder decoder
+    ) throws UaSerializationException {
 
         return decoder.readInt32();
     }
