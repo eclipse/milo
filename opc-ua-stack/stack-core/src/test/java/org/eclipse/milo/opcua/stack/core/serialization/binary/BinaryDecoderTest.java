@@ -40,7 +40,7 @@ public class BinaryDecoderTest extends BinarySerializationFixture {
 
         assertNotNull(codec);
 
-        codec.encode(new TestSerializationContext(), argument, writer);
+        codec.encode(new TestSerializationContext(), writer, argument);
         Argument decoded = codec.decode(new TestSerializationContext(), reader);
 
         assertEquals(decoded.getName(), argument.getName());

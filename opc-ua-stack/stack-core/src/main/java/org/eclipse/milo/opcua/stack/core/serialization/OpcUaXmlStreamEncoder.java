@@ -225,7 +225,7 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
 
     @Override
     public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
-        
+
     }
 
     @Override
@@ -401,7 +401,7 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
         }
 
         currentNode = document.createElementNS(Namespaces.OPC_UA_XSD, field);
-        codec.encode(context, value, this);
+        codec.encode(context, this, value);
 
         currentNode = node;
     }

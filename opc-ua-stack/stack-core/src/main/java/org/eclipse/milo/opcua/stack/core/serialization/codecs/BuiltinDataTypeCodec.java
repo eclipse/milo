@@ -24,8 +24,8 @@ public abstract class BuiltinDataTypeCodec<T extends UaStructure> extends Generi
     }
 
     @Override
-    public final void encode(SerializationContext context, T t, UaEncoder encoder) throws UaSerializationException {
-        encode(t, encoder);
+    public final void encode(SerializationContext context, UaEncoder encoder, T value) throws UaSerializationException {
+        encode(value, encoder);
     }
 
     protected abstract T decode(UaDecoder decoder) throws UaSerializationException;

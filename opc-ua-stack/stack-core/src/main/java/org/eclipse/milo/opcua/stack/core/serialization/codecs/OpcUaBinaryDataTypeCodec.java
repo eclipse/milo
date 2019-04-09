@@ -31,9 +31,9 @@ public interface OpcUaBinaryDataTypeCodec<T> extends
      * Encode a {@link T} using the provided {@link OpcUaBinaryStreamEncoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param value   the {@link T} to encode.
      * @param writer  the {@link OpcUaBinaryStreamEncoder} to encode to.
+     * @param value   the {@link T} to encode.
      */
-    void encode(SerializationContext context, T value, OpcUaBinaryStreamEncoder writer) throws UaSerializationException;
+    void encode(SerializationContext context, OpcUaBinaryStreamEncoder writer, T value) throws UaSerializationException;
 
 }

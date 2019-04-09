@@ -10,9 +10,9 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -211,12 +211,8 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
         if (bs == null) {
             return new XmlElement(null);
         } else {
-            try {
-                String fragment = new String(bs, "UTF-8");
-                return new XmlElement(fragment);
-            } catch (UnsupportedEncodingException e) {
-                throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
-            }
+            String fragment = new String(bs, StandardCharsets.UTF_8);
+            return new XmlElement(fragment);
         }
     }
 
