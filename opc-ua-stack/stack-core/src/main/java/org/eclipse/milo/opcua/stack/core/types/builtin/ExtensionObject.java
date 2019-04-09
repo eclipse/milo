@@ -176,7 +176,8 @@ public final class ExtensionObject {
     ) throws UaSerializationException {
 
         return encode(
-            context, object,
+            context,
+            object,
             encodingId,
             OpcUaDefaultBinaryEncoding.getInstance()
         );
@@ -189,7 +190,8 @@ public final class ExtensionObject {
     ) throws UaSerializationException {
 
         return encode(
-            context, object,
+            context,
+            object,
             encodingId,
             OpcUaDefaultXmlEncoding.getInstance()
         );
@@ -199,7 +201,8 @@ public final class ExtensionObject {
     public static ExtensionObject encode(
         Object object,
         NodeId encodingId,
-        DataTypeEncoding encoding) throws UaSerializationException {
+        DataTypeEncoding encoding
+    ) throws UaSerializationException {
 
         SerializationContext context = newDefaultSerializationContext();
 
