@@ -74,7 +74,7 @@ public class OpcUaDefaultBinaryEncoding implements DataTypeEncoding {
 
             OpcUaBinaryStreamEncoder writer = new OpcUaBinaryStreamEncoder(context).setBuffer(buffer);
 
-            codec.encode(context, decodedBody, writer);
+            codec.encode(context, writer, decodedBody);
 
             byte[] bs = new byte[buffer.readableBytes()];
             buffer.readBytes(bs);

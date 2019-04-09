@@ -917,7 +917,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
         writeNodeId(encodingId);
 
-        binaryCodec.encode(context, message, this);
+        binaryCodec.encode(context, this, message);
     }
 
     @Override
@@ -936,7 +936,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 );
             }
 
-            codec.encode(context, value, this);
+            codec.encode(context, this, value);
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
@@ -957,9 +957,10 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     @Override
     public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
         if (codec instanceof OpcUaBinaryDataTypeCodec) {
-            OpcUaBinaryDataTypeCodec binaryCodec = (OpcUaBinaryDataTypeCodec) codec;
+            @SuppressWarnings("unchecked")
+            OpcUaBinaryDataTypeCodec<Object> binaryCodec = (OpcUaBinaryDataTypeCodec<Object>) codec;
 
-            binaryCodec.encode(context, value, this);
+            binaryCodec.encode(context, this, value);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
@@ -1155,7 +1156,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 );
             }
 
-            codec.encode(context, value, this);
+            codec.encode(context, this, value);
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }

@@ -61,7 +61,8 @@ public abstract class BsdParserTest {
         public Object decode(
             String namespaceUri,
             String typeName,
-            OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
+            OpcUaBinaryStreamDecoder decoder
+        ) throws UaSerializationException {
 
             return codecTable.get(namespaceUri, typeName).decode(context, decoder);
         }
@@ -71,13 +72,14 @@ public abstract class BsdParserTest {
             String namespaceUri,
             String typeName,
             Object encodable,
-            OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
+            OpcUaBinaryStreamEncoder encoder
+        ) throws UaSerializationException {
 
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> codec =
                 (OpcUaBinaryDataTypeCodec<Object>) codecTable.get(namespaceUri, typeName);
 
-            codec.encode(context, encodable, encoder);
+            codec.encode(context, encoder, encodable);
         }
 
     };
@@ -125,7 +127,7 @@ public abstract class BsdParserTest {
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer));
+        codec.encode(context, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer), originalValue);
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
@@ -142,12 +144,17 @@ public abstract class BsdParserTest {
      * Relies on toString() values to be implemented at all levels instead... not great, but since the built-in structs
      * don't implement equals/hashcode it's what we have.
      */
-    protected void assertRoundTripUsingToString(String type, Object originalValue, OpcUaBinaryDataTypeCodec<Object> codec) {
+    protected void assertRoundTripUsingToString(
+        String type,
+        Object originalValue,
+        OpcUaBinaryDataTypeCodec<Object> codec
+    ) {
+
         System.out.printf("--- assertRoundTrip Type: %s ---\n", type);
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer));
+        codec.encode(context, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer), originalValue);
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));

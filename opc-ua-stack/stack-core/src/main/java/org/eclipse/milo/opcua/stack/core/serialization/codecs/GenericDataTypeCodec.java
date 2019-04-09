@@ -49,9 +49,9 @@ public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDeco
 
         @Override
         public void encode(
-            SerializationContext context, T value, OpcUaBinaryStreamEncoder writer) throws UaSerializationException {
+            SerializationContext context, OpcUaBinaryStreamEncoder writer, T value) throws UaSerializationException {
 
-            codec.encode(context, value, writer);
+            codec.encode(context, writer, value);
         }
 
     }
@@ -76,9 +76,9 @@ public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDeco
 
         @Override
         public void encode(
-            SerializationContext context, T value, OpcUaXmlStreamEncoder writer) throws UaSerializationException {
+            SerializationContext context, OpcUaXmlStreamEncoder writer, T value) throws UaSerializationException {
 
-            codec.encode(context, value, writer);
+            codec.encode(context, writer, value);
         }
 
     }

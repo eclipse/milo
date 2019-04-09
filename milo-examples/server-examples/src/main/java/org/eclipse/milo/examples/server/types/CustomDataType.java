@@ -94,12 +94,11 @@ public class CustomDataType {
         @Override
         public void encode(
             SerializationContext context,
-            CustomDataType customDataType,
-            UaEncoder encoder) throws UaSerializationException {
+            UaEncoder encoder, CustomDataType value) throws UaSerializationException {
 
-            encoder.writeString("Foo", customDataType.foo);
-            encoder.writeUInt32("Bar", customDataType.bar);
-            encoder.writeBoolean("Baz", customDataType.baz);
+            encoder.writeString("Foo", value.foo);
+            encoder.writeUInt32("Bar", value.bar);
+            encoder.writeBoolean("Baz", value.baz);
         }
     }
 

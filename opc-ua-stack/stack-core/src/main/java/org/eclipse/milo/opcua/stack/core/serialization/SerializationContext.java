@@ -44,7 +44,8 @@ public interface SerializationContext {
     default Object decode(
         String namespaceUri,
         String description,
-        OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
+        OpcUaBinaryStreamDecoder decoder
+    ) throws UaSerializationException {
 
         DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
@@ -64,7 +65,8 @@ public interface SerializationContext {
     default Object decode(
         String namespaceUri,
         String description,
-        OpcUaXmlStreamDecoder decoder) throws UaSerializationException {
+        OpcUaXmlStreamDecoder decoder
+    ) throws UaSerializationException {
 
         DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
@@ -86,13 +88,14 @@ public interface SerializationContext {
         String namespaceUri,
         String description,
         Object value,
-        OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
+        OpcUaBinaryStreamEncoder encoder
+    ) throws UaSerializationException {
 
         DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
         if (codec instanceof OpcUaBinaryDataTypeCodec) {
             //noinspection unchecked
-            codec.encode(this, value, encoder);
+            codec.encode(this, encoder, value);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
@@ -107,13 +110,14 @@ public interface SerializationContext {
         String namespaceUri,
         String description,
         Object value,
-        OpcUaXmlStreamEncoder encoder) throws UaSerializationException {
+        OpcUaXmlStreamEncoder encoder
+    ) throws UaSerializationException {
 
         DataTypeCodec codec = getDataTypeManager().getCodec(namespaceUri, description);
 
         if (codec instanceof OpcUaXmlDataTypeCodec) {
             //noinspection unchecked
-            codec.encode(this, value, encoder);
+            codec.encode(this, encoder, value);
         } else {
             throw new UaSerializationException(
                 StatusCodes.Bad_EncodingError,
