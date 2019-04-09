@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -842,6 +843,28 @@ public class OpcUaXmlStreamDecoder implements UaDecoder {
                 StatusCodes.Bad_DecodingError,
                 "no codec registered: " + dataTypeId
             ));
+    }
+
+    @Override
+    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
+        if (codec instanceof OpcUaXmlDataTypeCodec) {
+            OpcUaXmlDataTypeCodec xmlCodec = (OpcUaXmlDataTypeCodec) codec;
+
+            Node node = currentNode(field);
+
+            try {
+                currentNode = node.getFirstChild();
+
+                return xmlCodec.decode(context, this);
+            } finally {
+                currentNode = node.getNextSibling();
+            }
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                new IllegalArgumentException("codec: " + codec)
+            );
+        }
     }
 
     @Override

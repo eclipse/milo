@@ -68,9 +68,11 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
                     "no codec registered for encodingId=" + encodingId);
             }
 
-            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder(context);
+            // We have to use writer.writeStruct() instead of codec.decode() because
+            // XML-encoded structs are wrapped in a container element with the struct name.
 
-            codec.encode(context, struct, writer);
+            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder(context);
+            writer.writeStruct(null, struct, codec);
 
             return new XmlElement(writer.getDocumentXml());
         } catch (ClassCastException e) {
@@ -103,7 +105,10 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
             OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder(context);
             reader.setInput(new ByteArrayInputStream(xml.getBytes(Charsets.UTF_8)));
 
-            return reader.readStruct(null, encodingId);
+            // We have to use reader.readStruct() instead of codec.encode() because
+            // XML-encoded structs are wrapped in a container element with the struct name.
+
+            return reader.readStruct(null, codec);
         } catch (IOException | SAXException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }

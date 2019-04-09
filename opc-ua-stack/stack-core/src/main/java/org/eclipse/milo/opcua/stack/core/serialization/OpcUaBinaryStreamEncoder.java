@@ -22,6 +22,7 @@ import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -951,6 +952,20 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
             ));
 
         writeStruct(field, value, localDateTypeId);
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
+        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+            OpcUaBinaryDataTypeCodec binaryCodec = (OpcUaBinaryDataTypeCodec) codec;
+
+            binaryCodec.encode(context, value, this);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                new IllegalArgumentException("codec: " + codec)
+            );
+        }
     }
 
     @Override

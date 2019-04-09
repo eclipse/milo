@@ -24,6 +24,7 @@ import io.netty.util.ByteProcessor;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
@@ -701,6 +702,20 @@ public class OpcUaBinaryStreamDecoder implements UaDecoder {
                 StatusCodes.Bad_DecodingError,
                 "no codec registered: " + dataTypeId
             ));
+    }
+
+    @Override
+    public Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException {
+        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+            OpcUaBinaryDataTypeCodec binaryCodec = (OpcUaBinaryDataTypeCodec) codec;
+
+            return binaryCodec.decode(context, this);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                new IllegalArgumentException("codec: " + codec)
+            );
+        }
     }
 
     @Override

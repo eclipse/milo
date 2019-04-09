@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -88,6 +89,8 @@ public interface UaDecoder {
     Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
 
     Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
+
+    Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException;
     
     Boolean[] readBooleanArray(String field) throws UaSerializationException;
 
