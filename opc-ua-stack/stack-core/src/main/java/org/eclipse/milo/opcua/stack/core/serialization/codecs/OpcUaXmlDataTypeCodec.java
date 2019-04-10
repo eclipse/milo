@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 
 public interface OpcUaXmlDataTypeCodec<T> extends
     DataTypeCodec<T, OpcUaXmlStreamDecoder, OpcUaXmlStreamEncoder> {
@@ -30,9 +31,9 @@ public interface OpcUaXmlDataTypeCodec<T> extends
      * Encode a {@link T} using the provided {@link OpcUaXmlStreamEncoder}.
      *
      * @param context the {@link SerializationContext}.
-     * @param value   the value {@link T} to encode.
      * @param writer  the {@link OpcUaXmlStreamEncoder} to encode to.
+     * @param value   the value {@link T} to encode.
      */
-    void encode(SerializationContext context, T value, OpcUaXmlStreamEncoder writer) throws UaSerializationException;
+    void encode(SerializationContext context, OpcUaXmlStreamEncoder writer, T value) throws UaSerializationException;
 
 }

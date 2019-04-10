@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -83,19 +84,77 @@ public interface UaDecoder {
 
     DiagnosticInfo readDiagnosticInfo(String field) throws UaSerializationException;
 
+    UaMessage readMessage(String field) throws UaSerializationException;
+
+    Object readStruct(String field, NodeId dataTypeId) throws UaSerializationException;
+
+    Object readStruct(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
+
+    Object readStruct(String field, DataTypeCodec codec) throws UaSerializationException;
+    
+    Boolean[] readBooleanArray(String field) throws UaSerializationException;
+
+    Byte[] readSByteArray(String field) throws UaSerializationException;
+
+    Short[] readInt16Array(String field) throws UaSerializationException;
+
+    Integer[] readInt32Array(String field) throws UaSerializationException;
+
+    Long[] readInt64Array(String field) throws UaSerializationException;
+
+    UByte[] readByteArray(String field) throws UaSerializationException;
+
+    UShort[] readUInt16Array(String field) throws UaSerializationException;
+
+    UInteger[] readUInt32Array(String field) throws UaSerializationException;
+
+    ULong[] readUInt64Array(String field) throws UaSerializationException;
+
+    Float[] readFloatArray(String field) throws UaSerializationException;
+
+    Double[] readDoubleArray(String field) throws UaSerializationException;
+
+    String[] readStringArray(String field) throws UaSerializationException;
+
+    DateTime[] readDateTimeArray(String field) throws UaSerializationException;
+
+    UUID[] readGuidArray(String field) throws UaSerializationException;
+
+    ByteString[] readByteStringArray(String field) throws UaSerializationException;
+
+    XmlElement[] readXmlElementArray(String field) throws UaSerializationException;
+
+    NodeId[] readNodeIdArray(String field) throws UaSerializationException;
+
+    ExpandedNodeId[] readExpandedNodeIdArray(String field) throws UaSerializationException;
+
+    StatusCode[] readStatusCodeArray(String field) throws UaSerializationException;
+
+    QualifiedName[] readQualifiedNameArray(String field) throws UaSerializationException;
+
+    LocalizedText[] readLocalizedTextArray(String field) throws UaSerializationException;
+
+    ExtensionObject[] readExtensionObjectArray(String field) throws UaSerializationException;
+
+    DataValue[] readDataValueArray(String field) throws UaSerializationException;
+
+    Variant[] readVariantArray(String field) throws UaSerializationException;
+
+    DiagnosticInfo[] readDiagnosticInfoArray(String field) throws UaSerializationException;
+
+    Object[] readStructArray(String field, NodeId dataTypeId) throws UaSerializationException;
+
+    Object[] readStructArray(String field, ExpandedNodeId dataTypeId) throws UaSerializationException;
+
     <T> T[] readArray(String field, Function<String, T> decoder, Class<T> clazz) throws UaSerializationException;
 
+    @Deprecated
     <T extends UaStructure> T readBuiltinStruct(String field, Class<T> typeClass) throws UaSerializationException;
 
+    @Deprecated
     <T extends UaStructure> T[] readBuiltinStructArray(
         String field,
         Class<T> clazz
     ) throws UaSerializationException;
-
-    Object readStruct(String field, NodeId encodingId) throws UaSerializationException;
-
-    Object[] readStructArray(String field, NodeId encodingId) throws UaSerializationException;
-
-    UaMessage readMessage(String field) throws UaSerializationException;
 
 }

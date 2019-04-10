@@ -10,6 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -74,7 +75,8 @@ public class BuiltinDataTypeDictionary {
                 new OpcUaBinaryDataTypeDictionary(
                     BINARY_NAMESPACE_URI,
                     BINARY_CODECS_BY_DESC,
-                    BINARY_CODECS_BY_ID
+                    BINARY_CODECS_BY_ENCODING_ID,
+                    BINARY_CODECS_BY_DATA_TYPE_ID
                 )
             );
 
@@ -91,7 +93,8 @@ public class BuiltinDataTypeDictionary {
                 new OpcUaXmlDataTypeDictionary(
                     XML_NAMESPACE_URI,
                     XML_CODECS_BY_DESC,
-                    XML_CODECS_BY_ID
+                    XML_CODECS_BY_ENCODING_ID,
+                    XML_CODECS_BY_DATA_TYPE_ID
                 )
             );
 
@@ -105,12 +108,17 @@ public class BuiltinDataTypeDictionary {
     private static final ConcurrentMap<String,
         BuiltinDataTypeCodec<? extends UaStructure>> BUILTIN_CODECS_BY_NAME = Maps.newConcurrentMap();
 
-    private static final ConcurrentMap<NodeId, OpcUaBinaryDataTypeCodec<?>> BINARY_CODECS_BY_ID
+    private static final ConcurrentMap<NodeId, OpcUaBinaryDataTypeCodec<?>> BINARY_CODECS_BY_DATA_TYPE_ID
+        = Maps.newConcurrentMap();
+    private static final ConcurrentMap<NodeId, OpcUaBinaryDataTypeCodec<?>> BINARY_CODECS_BY_ENCODING_ID
         = Maps.newConcurrentMap();
     private static final ConcurrentMap<String, OpcUaBinaryDataTypeCodec<?>> BINARY_CODECS_BY_DESC
         = Maps.newConcurrentMap();
 
-    private static final ConcurrentMap<NodeId, OpcUaXmlDataTypeCodec<?>> XML_CODECS_BY_ID
+
+    private static final ConcurrentMap<NodeId, OpcUaXmlDataTypeCodec<?>> XML_CODECS_BY_DATA_TYPE_ID
+        = Maps.newConcurrentMap();
+    private static final ConcurrentMap<NodeId, OpcUaXmlDataTypeCodec<?>> XML_CODECS_BY_ENCODING_ID
         = Maps.newConcurrentMap();
     private static final ConcurrentMap<String, OpcUaXmlDataTypeCodec<?>> XML_CODECS_BY_DESC
         = Maps.newConcurrentMap();
@@ -131,25 +139,45 @@ public class BuiltinDataTypeDictionary {
         // it looks like...
         String xmlDescription = String.format("//xs:element[@name='%s']", typeName);
 
-        registerBinaryCodec(codec.asBinaryCodec(), binaryEncodingId, typeName);
-        registerXmlCodec(codec.asXmlCodec(), xmlEncodingId, xmlDescription);
+        registerBinaryCodec(codec.asBinaryCodec(), typeClazz, binaryEncodingId, typeName);
+        registerXmlCodec(codec.asXmlCodec(), typeClazz, xmlEncodingId, xmlDescription);
 
         BUILTIN_CODECS.put(typeClazz, codec);
         BUILTIN_CODECS_BY_NAME.put(typeName, codec);
     }
 
     static synchronized <T> void registerBinaryCodec(
-        OpcUaBinaryDataTypeCodec<T> codec, NodeId encodingId, String description) {
+        OpcUaBinaryDataTypeCodec<T> codec,
+        Class<T> typeClazz,
+        NodeId encodingId,
+        String description
+    ) {
 
-        BINARY_CODECS_BY_ID.put(encodingId, codec);
+        BINARY_CODECS_BY_DATA_TYPE_ID.put(getDataTypeId(typeClazz), codec);
+        BINARY_CODECS_BY_ENCODING_ID.put(encodingId, codec);
         BINARY_CODECS_BY_DESC.put(description, codec);
     }
 
     static synchronized <T> void registerXmlCodec(
-        OpcUaXmlDataTypeCodec<T> codec, NodeId encodingId, String description) {
+        OpcUaXmlDataTypeCodec<T> codec,
+        Class<T> typeClazz,
+        NodeId encodingId,
+        String description
+    ) {
 
-        XML_CODECS_BY_ID.put(encodingId, codec);
+        XML_CODECS_BY_DATA_TYPE_ID.put(getDataTypeId(typeClazz), codec);
+        XML_CODECS_BY_ENCODING_ID.put(encodingId, codec);
         XML_CODECS_BY_DESC.put(description, codec);
+    }
+
+    private static NodeId getDataTypeId(Class<?> typeClazz) {
+        try {
+            Field f = typeClazz.getDeclaredField("TypeId");
+            Object o = f.get(typeClazz);
+            return (NodeId) o;
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

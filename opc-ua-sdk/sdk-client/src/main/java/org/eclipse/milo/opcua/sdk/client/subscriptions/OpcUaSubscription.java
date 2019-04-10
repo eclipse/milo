@@ -151,7 +151,7 @@ public class OpcUaSubscription implements UaSubscription {
                         for (int i = 0; i < items.size(); i++) {
                             UaMonitoredItem item = items.get(i);
 
-                            itemCreationCallback.onItemCreated(client.getDataTypeManager(), item, i);
+                            itemCreationCallback.onItemCreated(client.getSerializationContext(), item, i);
                         }
                     }
                 } finally {

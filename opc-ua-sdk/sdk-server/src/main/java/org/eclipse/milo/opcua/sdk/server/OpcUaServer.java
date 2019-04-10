@@ -36,6 +36,8 @@ import org.eclipse.milo.opcua.stack.core.BuiltinReferenceType;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.ReferenceType;
 import org.eclipse.milo.opcua.stack.core.Stack;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
@@ -75,7 +77,6 @@ public class OpcUaServer {
 
     private final Map<UInteger, Subscription> subscriptions = Maps.newConcurrentMap();
 
-    private final NamespaceTable namespaceTable = new NamespaceTable();
     private final ServerTable serverTable = new ServerTable();
 
     private final AddressSpaceManager addressSpaceManager = new AddressSpaceManager(this);
@@ -114,7 +115,7 @@ public class OpcUaServer {
             stackServer.addServiceSet(path, (ViewServiceSet) sessionManager);
         });
 
-        ObjectTypeManagerInitializer.initialize(namespaceTable, objectTypeManager);
+        ObjectTypeManagerInitializer.initialize(stackServer.getNamespaceTable(), objectTypeManager);
 
         VariableTypeManagerInitializer.initialize(variableTypeManager);
 
@@ -172,12 +173,20 @@ public class OpcUaServer {
         return serverNamespace;
     }
 
-    public NamespaceTable getNamespaceTable() {
-        return namespaceTable;
-    }
-
     public ServerTable getServerTable() {
         return serverTable;
+    }
+
+    public DataTypeManager getDataTypeManager() {
+        return stackServer.getDataTypeManager();
+    }
+
+    public NamespaceTable getNamespaceTable() {
+        return stackServer.getNamespaceTable();
+    }
+
+    public SerializationContext getSerializationContext() {
+        return stackServer.getSerializationContext();
     }
 
     /**

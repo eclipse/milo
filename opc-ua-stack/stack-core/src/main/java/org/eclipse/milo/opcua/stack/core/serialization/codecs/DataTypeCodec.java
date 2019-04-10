@@ -11,6 +11,7 @@
 package org.eclipse.milo.opcua.stack.core.serialization.codecs;
 
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 
 public interface DataTypeCodec<T, R, W> {
 
@@ -32,9 +33,9 @@ public interface DataTypeCodec<T, R, W> {
      * Encode a {@link T} using the provided writer {@link W}.
      *
      * @param context the {@link SerializationContext}.
-     * @param t       the {@link T} to encode.
      * @param writer  the writer {@link W} to encode to.
+     * @param value   the {@link T} to encode.
      */
-    void encode(SerializationContext context, T t, W writer) throws UaSerializationException;
+    void encode(SerializationContext context, W writer, T value) throws UaSerializationException;
 
 }

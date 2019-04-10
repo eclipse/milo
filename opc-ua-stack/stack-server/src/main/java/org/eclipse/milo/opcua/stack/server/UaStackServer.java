@@ -27,10 +27,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import io.netty.channel.Channel;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.security.SecurityPolicy;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
+import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
@@ -108,12 +113,16 @@ public class UaStackServer {
 
     private final Lazy<ApplicationDescription> applicationDescription = new Lazy<>();
 
+    private final DataTypeManager dataTypeManager = new DefaultDataTypeManager();
+    private final NamespaceTable namespaceTable = new NamespaceTable();
+
     private final AtomicLong channelIds = new AtomicLong();
     private final AtomicLong tokenIds = new AtomicLong();
 
     private final List<Channel> channels = new CopyOnWriteArrayList<>();
 
     private final ServerChannelManager channelManager;
+    private final SerializationContext serializationContext;
 
     private final UaStackServerConfig config;
 
@@ -121,6 +130,23 @@ public class UaStackServer {
         this.config = config;
 
         channelManager = new ServerChannelManager(this);
+
+        serializationContext = new SerializationContext() {
+            @Override
+            public EncodingLimits getEncodingLimits() {
+                return config.getEncodingLimits();
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return namespaceTable;
+            }
+
+            @Override
+            public DataTypeManager getDataTypeManager() {
+                return dataTypeManager;
+            }
+        };
 
         config.getEndpoints().forEach(endpoint -> {
             String path = EndpointUtil.getPath(endpoint.getEndpointUrl());
@@ -179,6 +205,18 @@ public class UaStackServer {
 
         return FutureUtils.sequence(futures)
             .thenApply(u -> UaStackServer.this);
+    }
+
+    public NamespaceTable getNamespaceTable() {
+        return namespaceTable;
+    }
+
+    public DataTypeManager getDataTypeManager() {
+        return dataTypeManager;
+    }
+
+    public SerializationContext getSerializationContext() {
+        return serializationContext;
     }
 
     public void registerConnectedChannel(Channel channel) {

@@ -29,7 +29,6 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
@@ -172,24 +171,23 @@ public class AttributeReader {
             encodingName = OpcUaDefaultBinaryEncoding.ENCODING_NAME;
         }
 
-        DataTypeEncoding encoding;
+        DataTypeEncoding newEncoding;
         if (OpcUaDefaultBinaryEncoding.ENCODING_NAME.equals(encodingName)) {
-            encoding = OpcUaDefaultBinaryEncoding.getInstance();
+            newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
         } else if (OpcUaDefaultXmlEncoding.ENCODING_NAME.equals(encodingName)) {
-            encoding = OpcUaDefaultXmlEncoding.getInstance();
+            newEncoding = OpcUaDefaultXmlEncoding.getInstance();
         } else {
             // TODO look up registered alternate encodings
-            encoding = OpcUaDefaultBinaryEncoding.getInstance();
+            newEncoding = OpcUaDefaultBinaryEncoding.getInstance();
         }
 
         NodeId newEncodingId = getEncodingId(context, node, encodingName);
 
         if (newEncodingId != null) {
             return xo.transcode(
+                context.getServer().getSerializationContext(),
                 newEncodingId,
-                encoding,
-                context.getServer().getConfig().getEncodingLimits(),
-                OpcUaDataTypeManager.getInstance()
+                newEncoding
             );
         } else {
             return xo;

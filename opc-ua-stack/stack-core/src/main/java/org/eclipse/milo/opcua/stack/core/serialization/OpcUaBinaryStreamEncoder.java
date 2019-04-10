@@ -22,10 +22,11 @@ import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultXmlEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -51,8 +52,6 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class OpcUaBinaryStreamEncoder implements UaEncoder {
 
-    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
-
     private static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
     private static final Charset CHARSET_UTF16 = Charset.forName("UTF-16");
 
@@ -61,23 +60,10 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     private volatile int currentByte;
     private volatile int bitCount;
 
-    private final EncodingLimits encodingLimits;
+    private final SerializationContext context;
 
-    public OpcUaBinaryStreamEncoder() {
-        this(EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaBinaryStreamEncoder(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
-    }
-
-    public OpcUaBinaryStreamEncoder(ByteBuf buffer) {
-        this(buffer, EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaBinaryStreamEncoder(ByteBuf buffer, EncodingLimits encodingLimits) {
-        this.buffer = buffer;
-        this.encodingLimits = encodingLimits;
+    public OpcUaBinaryStreamEncoder(SerializationContext context) {
+        this.context = context;
     }
 
     public OpcUaBinaryStreamEncoder setBuffer(ByteBuf buffer) {
@@ -89,10 +75,11 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         if (values == null) {
             buffer.writeIntLE(-1);
         } else {
-            if (values.length > encodingLimits.getMaxArrayLength()) {
+            if (values.length > context.getEncodingLimits().getMaxArrayLength()) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingLimitsExceeded,
-                    "max array length exceeded");
+                    "max array length exceeded"
+                );
             }
 
             writeInt32(values.length);
@@ -667,7 +654,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         if (structure) {
             UaStructure struct = (UaStructure) value;
 
-            ExtensionObject extensionObject = ExtensionObject.encode(struct);
+            ExtensionObject extensionObject = ExtensionObject.encode(context, struct);
 
             writeBuiltinType(typeId, extensionObject);
         } else if (enumeration) {
@@ -773,10 +760,13 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         byte[] bytes = value.getBytes(charset);
         int length = bytes.length;
 
-        if (length > encodingLimits.getMaxStringLength()) {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingLimitsExceeded,
-                String.format("max string length exceeded (length=%s, max=%s)",
-                    length, encodingLimits.getMaxStringLength()));
+        if (length > context.getEncodingLimits().getMaxStringLength()) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingLimitsExceeded,
+                String.format(
+                    "max string length exceeded (length=%s, max=%s)",
+                    length, context.getEncodingLimits().getMaxStringLength())
+            );
         }
 
         writeInt32(length);
@@ -909,16 +899,237 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
     }
 
     @Override
+    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
+        NodeId encodingId = message.getBinaryEncodingId();
+
+        @SuppressWarnings("unchecked")
+        OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec = (OpcUaBinaryDataTypeCodec<UaMessage>)
+            OpcUaDataTypeManager
+                .getInstance()
+                .getCodec(encodingId);
+
+        if (binaryCodec == null) {
+            throw new UaSerializationException(
+                StatusCodes.Bad_DecodingError,
+                "no codec registered: " + encodingId
+            );
+        }
+
+        writeNodeId(encodingId);
+
+        binaryCodec.encode(context, this, message);
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
+        try {
+            @SuppressWarnings("unchecked")
+            OpcUaBinaryDataTypeCodec<Object> codec = (OpcUaBinaryDataTypeCodec<Object>)
+                OpcUaDataTypeManager
+                    .getInstance()
+                    .getCodec(OpcUaDefaultXmlEncoding.ENCODING_NAME, dataTypeId);
+
+            if (codec == null) {
+                throw new UaSerializationException(
+                    StatusCodes.Bad_EncodingError,
+                    "no codec registered: " + dataTypeId
+                );
+            }
+
+            codec.encode(context, this, value);
+        } catch (ClassCastException e) {
+            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
+        }
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDateTypeId = dataTypeId
+            .local(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered: " + dataTypeId
+            ));
+
+        writeStruct(field, value, localDateTypeId);
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
+        if (codec instanceof OpcUaBinaryDataTypeCodec) {
+            @SuppressWarnings("unchecked")
+            OpcUaBinaryDataTypeCodec<Object> binaryCodec = (OpcUaBinaryDataTypeCodec<Object>) codec;
+
+            binaryCodec.encode(context, this, value);
+        } else {
+            throw new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                new IllegalArgumentException("codec: " + codec)
+            );
+        }
+    }
+
+    @Override
+    public void writeBooleanArray(String field, Boolean[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeBoolean);
+    }
+
+    @Override
+    public void writeSByteArray(String field, Byte[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeSByte);
+    }
+
+    @Override
+    public void writeInt16Array(String field, Short[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeInt16);
+    }
+
+    @Override
+    public void writeInt32Array(String field, Integer[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeInt32);
+    }
+
+    @Override
+    public void writeInt64Array(String field, Long[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeInt64);
+    }
+
+    @Override
+    public void writeByteArray(String field, UByte[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeByte);
+    }
+
+    @Override
+    public void writeUInt16Array(String field, UShort[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeUInt16);
+    }
+
+    @Override
+    public void writeUInt32Array(String field, UInteger[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeUInt32);
+    }
+
+    @Override
+    public void writeUInt64Array(String field, ULong[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeUInt64);
+    }
+
+    @Override
+    public void writeFloatArray(String field, Float[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeFloat);
+    }
+
+    @Override
+    public void writeDoubleArray(String field, Double[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDouble);
+    }
+
+    @Override
+    public void writeStringArray(String field, String[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeString);
+    }
+
+    @Override
+    public void writeDateTimeArray(String field, DateTime[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDateTime);
+    }
+
+    @Override
+    public void writeGuidArray(String field, UUID[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeGuid);
+    }
+
+    @Override
+    public void writeByteStringArray(String field, ByteString[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeByteString);
+    }
+
+    @Override
+    public void writeXmlElementArray(String field, XmlElement[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeXmlElement);
+    }
+
+    @Override
+    public void writeNodeIdArray(String field, NodeId[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeNodeId);
+    }
+
+    @Override
+    public void writeExpandedNodeIdArray(String field, ExpandedNodeId[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeExpandedNodeId);
+    }
+
+    @Override
+    public void writeStatusCodeArray(String field, StatusCode[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeStatusCode);
+    }
+
+    @Override
+    public void writeQualifiedNameArray(String field, QualifiedName[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeQualifiedName);
+    }
+
+    @Override
+    public void writeLocalizedTextArray(String field, LocalizedText[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeLocalizedText);
+    }
+
+    @Override
+    public void writeExtensionObjectArray(String field, ExtensionObject[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeExtensionObject);
+    }
+
+    @Override
+    public void writeDataValueArray(String field, DataValue[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDataValue);
+    }
+
+    @Override
+    public void writeVariantArray(String field, Variant[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeVariant);
+    }
+
+    @Override
+    public void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDiagnosticInfo);
+    }
+
+    @Override
+    public void writeStructArray(
+        String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
+
+        writeArray(values, o -> writeStruct(field, o, dataTypeId));
+    }
+
+    @Override
+    public void writeStructArray(
+        String field,
+        Object[] value,
+        ExpandedNodeId dataTypeId
+    ) throws UaSerializationException {
+
+        NodeId localDateTypeId = dataTypeId
+            .local(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered: " + dataTypeId
+            ));
+
+        writeStructArray(field, value, localDateTypeId);
+    }
+
+    @Override
     public <T> void writeArray(
         String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException {
 
         if (values == null) {
             buffer.writeIntLE(-1);
         } else {
-            if (values.length > encodingLimits.getMaxArrayLength()) {
+            if (values.length > context.getEncodingLimits().getMaxArrayLength()) {
                 throw new UaSerializationException(
                     StatusCodes.Bad_EncodingLimitsExceeded,
-                    "max array length exceeded");
+                    "max array length exceeded"
+                );
             }
 
             writeInt32(values.length);
@@ -945,7 +1156,7 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
                 );
             }
 
-            codec.encode(SERIALIZATION_CONTEXT, value, this);
+            codec.encode(context, this, value);
         } catch (ClassCastException e) {
             throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
         }
@@ -956,54 +1167,6 @@ public class OpcUaBinaryStreamEncoder implements UaEncoder {
         String field, T[] values, Class<T> clazz) throws UaSerializationException {
 
         writeArray(values, v -> writeBuiltinStruct(field, v, clazz));
-    }
-
-    @Override
-    public void writeStruct(String field, Object value, NodeId encodingId) throws UaSerializationException {
-
-        try {
-            @SuppressWarnings("unchecked")
-            OpcUaBinaryDataTypeCodec<Object> codec =
-                (OpcUaBinaryDataTypeCodec<Object>) OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
-
-            if (codec == null) {
-                throw new UaSerializationException(
-                    StatusCodes.Bad_EncodingError,
-                    "no codec registered: " + encodingId
-                );
-            }
-
-            codec.encode(SERIALIZATION_CONTEXT, value, this);
-        } catch (ClassCastException e) {
-            throw new UaSerializationException(StatusCodes.Bad_EncodingError, e);
-        }
-    }
-
-    @Override
-    public void writeStructArray(
-        String field, Object[] values, NodeId encodingId) throws UaSerializationException {
-
-        writeArray(values, o -> writeStruct(field, o, encodingId));
-    }
-
-    @Override
-    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
-        NodeId encodingId = message.getBinaryEncodingId();
-
-        @SuppressWarnings("unchecked")
-        OpcUaBinaryDataTypeCodec<UaMessage> binaryCodec =
-            (OpcUaBinaryDataTypeCodec<UaMessage>) OpcUaDataTypeManager.getInstance().getBinaryCodec(encodingId);
-
-        if (binaryCodec == null) {
-            throw new UaSerializationException(
-                StatusCodes.Bad_DecodingError,
-                "no codec registered: " + encodingId
-            );
-        }
-
-        writeNodeId(encodingId);
-
-        binaryCodec.encode(SERIALIZATION_CONTEXT, message, this);
     }
 
 }

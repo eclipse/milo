@@ -16,9 +16,9 @@ import java.io.IOException;
 import com.google.common.base.Charsets;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
@@ -51,15 +51,16 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
 
     @Override
     public Object encode(
+        SerializationContext context,
         Object struct,
-        NodeId encodingId,
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager) {
+        NodeId encodingId
+    ) {
 
         try {
             @SuppressWarnings("unchecked")
             OpcUaXmlDataTypeCodec<Object> codec =
-                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodec(encodingId);
+                (OpcUaXmlDataTypeCodec<Object>)
+                    context.getDataTypeManager().getCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -67,9 +68,11 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
                     "no codec registered for encodingId=" + encodingId);
             }
 
-            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder(encodingLimits);
+            // We have to use writer.writeStruct() instead of codec.decode() because
+            // XML-encoded structs are wrapped in a container element with the struct name.
 
-            codec.encode(() -> dataTypeManager, struct, writer);
+            OpcUaXmlStreamEncoder writer = new OpcUaXmlStreamEncoder(context);
+            writer.writeStruct(null, struct, codec);
 
             return new XmlElement(writer.getDocumentXml());
         } catch (ClassCastException e) {
@@ -79,15 +82,16 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
 
     @Override
     public Object decode(
+        SerializationContext context,
         Object body,
-        NodeId encodingId,
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager) {
+        NodeId encodingId
+    ) {
 
         try {
             @SuppressWarnings("unchecked")
             OpcUaXmlDataTypeCodec<Object> codec =
-                (OpcUaXmlDataTypeCodec<Object>) dataTypeManager.getXmlCodec(encodingId);
+                (OpcUaXmlDataTypeCodec<Object>)
+                    context.getDataTypeManager().getCodec(encodingId);
 
             if (codec == null) {
                 throw new UaSerializationException(
@@ -98,10 +102,13 @@ public class OpcUaDefaultXmlEncoding implements DataTypeEncoding {
             XmlElement xmlBody = (XmlElement) body;
             String xml = xmlBody.getFragmentOrEmpty();
 
-            OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder(encodingLimits);
+            OpcUaXmlStreamDecoder reader = new OpcUaXmlStreamDecoder(context);
             reader.setInput(new ByteArrayInputStream(xml.getBytes(Charsets.UTF_8)));
 
-            return reader.readStruct(null, encodingId);
+            // We have to use reader.readStruct() instead of codec.encode() because
+            // XML-encoded structs are wrapped in a container element with the struct name.
+
+            return reader.readStruct(null, codec);
         } catch (IOException | SAXException e) {
             throw new UaSerializationException(StatusCodes.Bad_DecodingError, e);
         }

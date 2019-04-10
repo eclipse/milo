@@ -10,7 +10,7 @@
 
 package org.eclipse.milo.opcua.stack.core.types;
 
-import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
@@ -22,15 +22,15 @@ public interface DataTypeEncoding {
     ExtensionObject.BodyType getBodyType();
 
     Object encode(
+        SerializationContext context,
         Object decodedBody,
-        NodeId encodingId,
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager);
+        NodeId encodingId
+    );
 
     Object decode(
+        SerializationContext context,
         Object encodedBody,
-        NodeId encodingId,
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager);
+        NodeId encodingId
+    );
 
 }

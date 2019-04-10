@@ -17,13 +17,16 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.binaryschema.parser.BsdParser;
 import org.eclipse.milo.opcua.binaryschema.parser.DictionaryDescription;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.testng.annotations.BeforeSuite;
 
 import static org.testng.Assert.assertEquals;
@@ -36,16 +39,30 @@ public abstract class BsdParserTest {
     private final Table<String, String, OpcUaBinaryDataTypeCodec<?>> codecTable = HashBasedTable.create();
 
     private final SerializationContext context = new SerializationContext() {
+
+        private final NamespaceTable namespaceTable = new NamespaceTable();
+
         @Override
-        public DataTypeManager getTypeManager() {
-            return null;
+        public DataTypeManager getDataTypeManager() {
+            return OpcUaDataTypeManager.getInstance();
+        }
+
+        @Override
+        public EncodingLimits getEncodingLimits() {
+            return EncodingLimits.DEFAULT;
+        }
+
+        @Override
+        public NamespaceTable getNamespaceTable() {
+            return namespaceTable;
         }
 
         @Override
         public Object decode(
             String namespaceUri,
             String typeName,
-            OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
+            OpcUaBinaryStreamDecoder decoder
+        ) throws UaSerializationException {
 
             return codecTable.get(namespaceUri, typeName).decode(context, decoder);
         }
@@ -55,14 +72,16 @@ public abstract class BsdParserTest {
             String namespaceUri,
             String typeName,
             Object encodable,
-            OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
+            OpcUaBinaryStreamEncoder encoder
+        ) throws UaSerializationException {
 
             @SuppressWarnings("unchecked")
             OpcUaBinaryDataTypeCodec<Object> codec =
                 (OpcUaBinaryDataTypeCodec<Object>) codecTable.get(namespaceUri, typeName);
 
-            codec.encode(context, encodable, encoder);
+            codec.encode(context, encoder, encodable);
         }
+
     };
 
     public BsdParserTest() {
@@ -108,12 +127,12 @@ public abstract class BsdParserTest {
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(buffer));
+        codec.encode(context, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer), originalValue);
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
-        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(buffer));
+        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
         assertEquals(decodedValue, originalValue);
         System.out.println("decodedValue:\t" + decodedValue);
     }
@@ -125,17 +144,22 @@ public abstract class BsdParserTest {
      * Relies on toString() values to be implemented at all levels instead... not great, but since the built-in structs
      * don't implement equals/hashcode it's what we have.
      */
-    protected void assertRoundTripUsingToString(String type, Object originalValue, OpcUaBinaryDataTypeCodec<Object> codec) {
+    protected void assertRoundTripUsingToString(
+        String type,
+        Object originalValue,
+        OpcUaBinaryDataTypeCodec<Object> codec
+    ) {
+
         System.out.printf("--- assertRoundTrip Type: %s ---\n", type);
 
         System.out.println("originalValue:\t" + originalValue);
         ByteBuf buffer = Unpooled.buffer();
-        codec.encode(context, originalValue, new OpcUaBinaryStreamEncoder(buffer));
+        codec.encode(context, new OpcUaBinaryStreamEncoder(context).setBuffer(buffer), originalValue);
 
         ByteBuf encodedValue = buffer.copy();
         System.out.println("encodedValue:\t" + ByteBufUtil.hexDump(encodedValue));
 
-        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(buffer));
+        Object decodedValue = codec.decode(context, new OpcUaBinaryStreamDecoder(context).setBuffer(buffer));
         assertEquals(decodedValue.toString(), originalValue.toString());
         System.out.println("decodedValue:\t" + decodedValue);
     }

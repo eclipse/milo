@@ -21,25 +21,14 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
-public class OpcUaDataTypeManager implements DataTypeManager {
-
-    public static final String BINARY_NAMESPACE_URI = "http://opcfoundation.org/UA/";
-    public static final String XML_NAMESPACE_URI = "http://opcfoundation.org/UA/2008/02/Types.xsd";
-
-    public static OpcUaDataTypeManager getInstance() {
-        return InstanceHolder.INSTANCE;
-    }
-
-    private static class InstanceHolder {
-        private static final OpcUaDataTypeManager INSTANCE = new OpcUaDataTypeManager();
-    }
+public class DefaultDataTypeManager implements DataTypeManager {
 
     private final ConcurrentMap<String, DataTypeDictionary<?>> dictionaries = Maps.newConcurrentMap();
     private final ConcurrentMap<NodeId, DataTypeCodec> codecsByEncodingId = Maps.newConcurrentMap();
     private final Table<QualifiedName, NodeId, DataTypeCodec> codecsByDataTypeId =
         Tables.synchronizedTable(HashBasedTable.create());
 
-    private OpcUaDataTypeManager() {
+    public DefaultDataTypeManager() {
         registerTypeDictionary(BuiltinDataTypeDictionary.getBinaryInstance());
         registerTypeDictionary(BuiltinDataTypeDictionary.getXmlInstance());
     }

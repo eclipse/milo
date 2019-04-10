@@ -19,9 +19,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaRuntimeException;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -45,21 +44,15 @@ import org.w3c.dom.Node;
 
 public class OpcUaXmlStreamEncoder implements UaEncoder {
 
-    private static final SerializationContext SERIALIZATION_CONTEXT = OpcUaDataTypeManager::getInstance;
-
     private final DocumentBuilder builder;
 
     private Document document;
     private Node currentNode;
 
-    private final EncodingLimits encodingLimits;
+    private final SerializationContext context;
 
-    public OpcUaXmlStreamEncoder() {
-        this(EncodingLimits.DEFAULT);
-    }
-
-    public OpcUaXmlStreamEncoder(EncodingLimits encodingLimits) {
-        this.encodingLimits = encodingLimits;
+    public OpcUaXmlStreamEncoder(SerializationContext context) {
+        this.context = context;
 
         try {
             builder = DocumentBuilderUtil.SHARED_FACTORY.newDocumentBuilder();
@@ -209,6 +202,182 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
     }
 
     @Override
+    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
+
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, NodeId dataTypeId) throws UaSerializationException {
+
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, ExpandedNodeId dataTypeId) throws UaSerializationException {
+        NodeId localDateTypeId = dataTypeId
+            .local(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered: " + dataTypeId
+            ));
+
+        writeStruct(field, value, localDateTypeId);
+    }
+
+    @Override
+    public void writeStruct(String field, Object value, DataTypeCodec codec) throws UaSerializationException {
+
+    }
+
+    @Override
+    public void writeBooleanArray(String field, Boolean[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeBoolean);
+    }
+
+    @Override
+    public void writeSByteArray(String field, Byte[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeSByte);
+    }
+
+    @Override
+    public void writeInt16Array(String field, Short[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeInt16);
+    }
+
+    @Override
+    public void writeInt32Array(String field, Integer[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeInt32);
+    }
+
+    @Override
+    public void writeInt64Array(String field, Long[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeInt64);
+    }
+
+    @Override
+    public void writeByteArray(String field, UByte[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeByte);
+    }
+
+    @Override
+    public void writeUInt16Array(String field, UShort[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeUInt16);
+    }
+
+    @Override
+    public void writeUInt32Array(String field, UInteger[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeUInt32);
+    }
+
+    @Override
+    public void writeUInt64Array(String field, ULong[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeUInt64);
+    }
+
+    @Override
+    public void writeFloatArray(String field, Float[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeFloat);
+    }
+
+    @Override
+    public void writeDoubleArray(String field, Double[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDouble);
+    }
+
+    @Override
+    public void writeStringArray(String field, String[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeString);
+    }
+
+    @Override
+    public void writeDateTimeArray(String field, DateTime[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDateTime);
+    }
+
+    @Override
+    public void writeGuidArray(String field, UUID[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeGuid);
+    }
+
+    @Override
+    public void writeByteStringArray(String field, ByteString[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeByteString);
+    }
+
+    @Override
+    public void writeXmlElementArray(String field, XmlElement[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeXmlElement);
+    }
+
+    @Override
+    public void writeNodeIdArray(String field, NodeId[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeNodeId);
+    }
+
+    @Override
+    public void writeExpandedNodeIdArray(String field, ExpandedNodeId[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeExpandedNodeId);
+    }
+
+    @Override
+    public void writeStatusCodeArray(String field, StatusCode[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeStatusCode);
+    }
+
+    @Override
+    public void writeQualifiedNameArray(String field, QualifiedName[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeQualifiedName);
+    }
+
+    @Override
+    public void writeLocalizedTextArray(String field, LocalizedText[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeLocalizedText);
+    }
+
+    @Override
+    public void writeExtensionObjectArray(String field, ExtensionObject[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeExtensionObject);
+    }
+
+    @Override
+    public void writeDataValueArray(String field, DataValue[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDataValue);
+    }
+
+    @Override
+    public void writeVariantArray(String field, Variant[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeVariant);
+    }
+
+    @Override
+    public void writeDiagnosticInfoArray(String field, DiagnosticInfo[] value) throws UaSerializationException {
+        writeArray(field, value, this::writeDiagnosticInfo);
+    }
+
+    @Override
+    public void writeStructArray(
+        String field, Object[] values, NodeId dataTypeId) throws UaSerializationException {
+
+        writeArray(field, values, (s, o) -> writeStruct(s, o, dataTypeId));
+    }
+
+    @Override
+    public void writeStructArray(
+        String field,
+        Object[] value,
+        ExpandedNodeId dataTypeId
+    ) throws UaSerializationException {
+
+        NodeId localDateTypeId = dataTypeId
+            .local(context.getNamespaceTable())
+            .orElseThrow(() -> new UaSerializationException(
+                StatusCodes.Bad_EncodingError,
+                "no codec registered: " + dataTypeId
+            ));
+
+        writeStructArray(field, value, localDateTypeId);
+    }
+
+    @Override
     public <T> void writeArray(
         String field,
         T[] values,
@@ -232,7 +401,7 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
         }
 
         currentNode = document.createElementNS(Namespaces.OPC_UA_XSD, field);
-        codec.encode(SERIALIZATION_CONTEXT, value, this);
+        codec.encode(context, this, value);
 
         currentNode = node;
     }
@@ -242,21 +411,6 @@ public class OpcUaXmlStreamEncoder implements UaEncoder {
         String field,
         T[] values,
         Class<T> clazz) throws UaSerializationException {
-
-    }
-
-    @Override
-    public void writeStruct(String field, Object value, NodeId encodingId) throws UaSerializationException {
-
-    }
-
-    @Override
-    public void writeStructArray(String field, Object[] value, NodeId encodingId) throws UaSerializationException {
-
-    }
-
-    @Override
-    public void writeMessage(String field, UaMessage message) throws UaSerializationException {
 
     }
 

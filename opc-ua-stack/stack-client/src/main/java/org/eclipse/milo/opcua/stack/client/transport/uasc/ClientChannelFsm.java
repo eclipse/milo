@@ -35,6 +35,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.tcp.OpcClientTcpChannelInitializer;
 import org.eclipse.milo.opcua.stack.client.transport.websocket.OpcClientWebSocketChannelInitializer;
@@ -56,13 +57,13 @@ public class ClientChannelFsm {
 
     private static final String CHANNEL_FSM_LOGGER_NAME = "org.eclipse.milo.opcua.stack.client.ChannelFsm";
 
-    public static ChannelFsm newChannelFsm(UaStackClientConfig config) {
+    public static ChannelFsm newChannelFsm(UaStackClient client) {
         ChannelFsmConfig fsmConfig = ChannelFsmConfig.newBuilder()
             .setLazy(false) // reconnect immediately
             .setMaxIdleSeconds(0) // keep alive handled by SessionFsm
             .setMaxReconnectDelaySeconds(16)
             .setPersistent(true)
-            .setChannelActions(new ClientChannelActions(config))
+            .setChannelActions(new ClientChannelActions(client))
             .setExecutor(Stack.sharedExecutor())
             .setScheduler(Stack.sharedScheduledExecutor())
             .setLoggerName(CHANNEL_FSM_LOGGER_NAME)
@@ -78,9 +79,11 @@ public class ClientChannelFsm {
         private static final Logger LOGGER = LoggerFactory.getLogger(CHANNEL_FSM_LOGGER_NAME);
 
         private final UaStackClientConfig config;
+        private final UaStackClient client;
 
-        ClientChannelActions(UaStackClientConfig config) {
-            this.config = config;
+        ClientChannelActions(UaStackClient client) {
+            this.client = client;
+            this.config = client.getConfig();
         }
 
         @Override
@@ -93,9 +96,9 @@ public class ClientChannelFsm {
             ChannelInitializer<SocketChannel> initializer;
 
             if (transportProfile == TransportProfile.TCP_UASC_UABINARY) {
-                initializer = new OpcClientTcpChannelInitializer(config, handshake);
+                initializer = new OpcClientTcpChannelInitializer(client, handshake);
             } else {
-                initializer = new OpcClientWebSocketChannelInitializer(config, handshake);
+                initializer = new OpcClientWebSocketChannelInitializer(client, handshake);
             }
 
             Bootstrap bootstrap = new Bootstrap();

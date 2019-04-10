@@ -143,7 +143,7 @@ public class MonitoredDataItem extends BaseMonitoredItem<DataValue> implements D
         if (filterXo == null || filterXo.isNull()) {
             this.filter = DEFAULT_FILTER;
         } else {
-            Object filterObject = filterXo.decode();
+            Object filterObject = filterXo.decode(server.getSerializationContext());
 
             if (filterObject instanceof MonitoringFilter) {
                 if (filterObject instanceof DataChangeFilter) {

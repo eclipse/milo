@@ -15,7 +15,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import com.google.common.collect.ImmutableList;
-import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -127,7 +127,7 @@ public interface UaSubscription {
         return createMonitoredItems(
             timestampsToReturn,
             itemsToCreate,
-            (dataTypeManager, item, index) ->
+            (serializationContext, item, index) ->
                 itemCreationCallback.accept(item, index)
         );
     }
@@ -207,7 +207,7 @@ public interface UaSubscription {
 
     interface ItemCreationCallback {
 
-        void onItemCreated(DataTypeManager dataTypeManager, UaMonitoredItem item, int index);
+        void onItemCreated(SerializationContext serializationContext, UaMonitoredItem item, int index);
 
     }
 

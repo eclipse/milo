@@ -13,10 +13,10 @@ package org.eclipse.milo.examples.server.types;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.uint;
@@ -94,12 +94,11 @@ public class CustomDataType {
         @Override
         public void encode(
             SerializationContext context,
-            CustomDataType customDataType,
-            UaEncoder encoder) throws UaSerializationException {
+            UaEncoder encoder, CustomDataType value) throws UaSerializationException {
 
-            encoder.writeString("Foo", customDataType.foo);
-            encoder.writeUInt32("Bar", customDataType.bar);
-            encoder.writeBoolean("Baz", customDataType.baz);
+            encoder.writeString("Foo", value.foo);
+            encoder.writeUInt32("Bar", value.bar);
+            encoder.writeBoolean("Baz", value.baz);
         }
     }
 

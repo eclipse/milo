@@ -15,6 +15,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaXmlStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 
@@ -48,9 +49,9 @@ public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDeco
 
         @Override
         public void encode(
-            SerializationContext context, T value, OpcUaBinaryStreamEncoder writer) throws UaSerializationException {
+            SerializationContext context, OpcUaBinaryStreamEncoder writer, T value) throws UaSerializationException {
 
-            codec.encode(context, value, writer);
+            codec.encode(context, writer, value);
         }
 
     }
@@ -75,9 +76,9 @@ public abstract class GenericDataTypeCodec<T> implements DataTypeCodec<T, UaDeco
 
         @Override
         public void encode(
-            SerializationContext context, T value, OpcUaXmlStreamEncoder writer) throws UaSerializationException {
+            SerializationContext context, OpcUaXmlStreamEncoder writer, T value) throws UaSerializationException {
 
-            codec.encode(context, value, writer);
+            codec.encode(context, writer, value);
         }
 
     }

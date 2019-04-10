@@ -13,100 +13,62 @@ package org.eclipse.milo.opcua.stack.core.types;
 import javax.annotation.Nullable;
 
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.DataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaXmlDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 
 public interface DataTypeManager {
 
     /**
-     * Register a {@link DataTypeDictionary} with this {@link DataTypeManager}.
-     * <p>
-     * If the available codecs in a dictionary change it should be re-registered with this {@link DataTypeManager}.
+     * Get a registered {@link DataTypeCodec} by its encoding id.
      *
-     * @param dataTypeDictionary the {@link DataTypeDictionary}.
+     * @param encodingId the encoding id.
+     * @return the {@link DataTypeCodec} registered for {@code encodingId}.
+     */
+    @Nullable
+    DataTypeCodec getCodec(NodeId encodingId);
+
+    /**
+     * Get a registered {@link DataTypeCodec} by its encoding name and datatype id.
+     *
+     * @param encodingName the {@link QualifiedName} of the datatype encoding.
+     * @param dataTypeId   the datatype id.
+     * @return the {@link DataTypeCodec} registered for {@code encodingName} and {@code dataTypeId}.
+     */
+    @Nullable
+    DataTypeCodec getCodec(QualifiedName encodingName, NodeId dataTypeId);
+
+    /**
+     * Get a registered {@link DataTypeCodec} by its datatype dictionary namespace URI and description.
+     *
+     * @param namespaceUri the namespace URI of the datatype dictionary the codec is from.
+     * @param description  the datatype description in the dictionary.
+     * @return the {@link DataTypeCodec} registered for {@code namespaceUri} and {@code description}.
+     */
+    @Nullable
+    DataTypeCodec getCodec(String namespaceUri, String description);
+
+    /**
+     * Register a {@link DataTypeCodec} by its encoding id.
+     *
+     * @param encodingId the encoding id.
+     * @param codec      the {@link DataTypeCodec} to register.
+     */
+    void registerCodec(NodeId encodingId, DataTypeCodec codec);
+
+    /**
+     * Register a {@link DataTypeCodec} by its encoding name and datatype id.
+     *
+     * @param encodingName the {@link QualifiedName} of the datatype encoding.
+     * @param dataTypeId   the datatype id.
+     * @param codec        the {@link DataTypeCodec} to register.
+     */
+    void registerCodec(QualifiedName encodingName, NodeId dataTypeId, DataTypeCodec codec);
+
+    /**
+     * Register a {@link DataTypeDictionary} and all the {@link DataTypeCodec}s it contains.
+     *
+     * @param dataTypeDictionary the {@link DataTypeDictionary} to register.
      */
     void registerTypeDictionary(DataTypeDictionary<?> dataTypeDictionary);
-
-    /**
-     * Get the {@link DataTypeDictionary} registered under {@code namespaceUri}.
-     *
-     * @param namespaceUri the namespace URI of the {@link DataTypeDictionary}.
-     * @return the {@link DataTypeDictionary} registered under {@code namespaceUri}, or {@code null} if none was found.
-     */
-    @Nullable
-    DataTypeDictionary getTypeDictionary(String namespaceUri);
-
-    /**
-     * Get the {@link OpcUaBinaryDataTypeCodec} identified by {@code encodingId}.
-     *
-     * @param encodingId the {@link NodeId} of the DataTypeEncoding node for the DataType of the requested codec.
-     * @return an {@link OpcUaBinaryDataTypeCodec}, or {@code null} if none was found.
-     */
-    @Nullable
-    OpcUaBinaryDataTypeCodec<?> getBinaryCodec(NodeId encodingId);
-
-    /**
-     * Get the {@link OpcUaXmlDataTypeCodec} identified by {@code encodingId}.
-     *
-     * @param encodingId the {@link NodeId} of the DataTypeEncoding node for the DataType of the requested codec.
-     * @return an {@link OpcUaXmlDataTypeCodec}, or {@code null} if none was found.
-     */
-    @Nullable
-    OpcUaXmlDataTypeCodec<?> getXmlCodec(NodeId encodingId);
-
-    /**
-     * Get the {@link DataTypeCodec} in the dictionary identified by {@code namespaceUri} using {@code description} to
-     * look up the codec.
-     *
-     * @param namespaceUri the namespace URI of the {@link DataTypeDictionary}.
-     * @param description  the description to use when looking up the codec.
-     * @return the {@link DataTypeCodec} in the dictionary identified by {@code namespaceUri} using {@code description}
-     * to look up the codec, or {@code null} if none was found.
-     */
-    @Nullable
-    default DataTypeCodec getCodec(String namespaceUri, String description) {
-        DataTypeDictionary dictionary = getTypeDictionary(namespaceUri);
-
-        return dictionary != null ? dictionary.getCodec(description) : null;
-    }
-
-    /**
-     * Get the {@link OpcUaBinaryDataTypeCodec} identified by {@code description} from the dictionary identified by
-     * {@code namespaceUri}.
-     *
-     * @param namespaceUri the namespace URI of the dictionary.
-     * @param description  the value of the DataTypeDescription that identifies the codec in the dictionary.
-     * @return an {@link OpcUaBinaryDataTypeCodec}, or {@code null} if none was found.
-     */
-    @Nullable
-    default OpcUaBinaryDataTypeCodec<?> getBinaryCodec(String namespaceUri, String description) {
-        DataTypeCodec codec = getCodec(namespaceUri, description);
-
-        if (codec instanceof OpcUaBinaryDataTypeCodec) {
-            return (OpcUaBinaryDataTypeCodec) codec;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Get the {@link OpcUaXmlDataTypeCodec} identified by {@code description} from the dictionary identified by
-     * {@code namespaceUri}.
-     *
-     * @param namespaceUri the namespace URI of the dictionary.
-     * @param description  the value of the DataTypeDescription that identifies the codec in the dictionary.
-     * @return an {@link OpcUaXmlDataTypeCodec}, or {@code null} if none was found.
-     */
-    @Nullable
-    default OpcUaXmlDataTypeCodec<?> getXmlCodec(String namespaceUri, String description) {
-        DataTypeCodec codec = getCodec(namespaceUri, description);
-
-        if (codec instanceof OpcUaXmlDataTypeCodec) {
-            return (OpcUaXmlDataTypeCodec<?>) codec;
-        } else {
-            return null;
-        }
-    }
 
 }

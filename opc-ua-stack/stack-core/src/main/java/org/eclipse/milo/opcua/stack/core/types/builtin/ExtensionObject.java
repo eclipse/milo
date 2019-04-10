@@ -15,8 +15,10 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.EncodingLimits;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeEncoding;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
@@ -92,57 +94,14 @@ public final class ExtensionObject {
         }
     }
 
+    @Deprecated
     public Object decode() throws UaSerializationException {
-        switch (bodyType) {
-            case ByteString:
-                return decode(OpcUaDefaultBinaryEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
-            case XmlElement:
-                return decode(OpcUaDefaultXmlEncoding.getInstance(), OpcUaDataTypeManager.getInstance());
-            default:
-                throw new IllegalStateException("BodyType: " + bodyType);
-        }
+        SerializationContext context = newDefaultSerializationContext();
+
+        return decode(context);
     }
 
-    public Object decode(DataTypeManager dataTypeManager) throws UaSerializationException {
-        switch (bodyType) {
-            case ByteString:
-                return decode(OpcUaDefaultBinaryEncoding.getInstance(), dataTypeManager);
-            case XmlElement:
-                return decode(OpcUaDefaultXmlEncoding.getInstance(), dataTypeManager);
-            default:
-                throw new IllegalStateException("BodyType: " + bodyType);
-        }
-    }
-
-    public Object decode(
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager) throws UaSerializationException {
-
-        switch (bodyType) {
-            case ByteString:
-                return decode(OpcUaDefaultBinaryEncoding.getInstance(), encodingLimits, dataTypeManager);
-            case XmlElement:
-                return decode(OpcUaDefaultXmlEncoding.getInstance(), encodingLimits, dataTypeManager);
-            default:
-                throw new IllegalStateException("BodyType: " + bodyType);
-        }
-    }
-
-    public Object decode(
-        DataTypeEncoding encoding,
-        DataTypeManager dataTypeManager) throws UaSerializationException {
-
-        return decode(encoding, EncodingLimits.DEFAULT, dataTypeManager);
-    }
-
-    public Object decode(
-        DataTypeEncoding encoding,
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager) throws UaSerializationException {
-
-        return decoded.getOrCompute(() -> encoding.decode(body, encodingId, encodingLimits, dataTypeManager));
-    }
-
+    @Deprecated
     @Nullable
     public Object decodeOrNull() {
         try {
@@ -152,39 +111,45 @@ public final class ExtensionObject {
         }
     }
 
-    @Nullable
-    public Object decodeOrNull(DataTypeManager dataTypeManager) {
-        try {
-            return decode(dataTypeManager);
-        } catch (UaSerializationException e) {
-            return null;
+    public Object decode(SerializationContext context) throws UaSerializationException {
+        switch (bodyType) {
+            case ByteString:
+                return decode(context, OpcUaDefaultBinaryEncoding.getInstance());
+            case XmlElement:
+                return decode(context, OpcUaDefaultXmlEncoding.getInstance());
+            default:
+                throw new IllegalStateException("BodyType: " + bodyType);
         }
     }
 
+    public Object decode(SerializationContext context, DataTypeEncoding encoding) throws UaSerializationException {
+        return decoded.getOrCompute(() -> encoding.decode(context, body, encodingId));
+    }
+
     @Nullable
-    public Object decodeOrNull(EncodingLimits encodingLimits, DataTypeManager dataTypeManager) {
+    public Object decodeOrNull(SerializationContext context) {
         try {
-            return decode(encodingLimits, dataTypeManager);
+            return decode(context);
         } catch (UaSerializationException e) {
             return null;
         }
     }
 
     public ExtensionObject transcode(
+        SerializationContext context,
         NodeId newEncodingId,
-        DataTypeEncoding newEncoding,
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager) {
+        DataTypeEncoding newEncoding
+    ) {
 
         if (this.encodingId.equals(newEncodingId)) {
             return this;
         } else {
             // The "fast" path: body is a encoded in Default Binary or Default XML.
             // No need to look up the DataTypeEncoding.
-            Object struct = decodeOrNull(encodingLimits, dataTypeManager);
+            Object struct = decodeOrNull(context);
 
             if (struct != null) {
-                Object encoded = newEncoding.encode(struct, newEncodingId, encodingLimits, dataTypeManager);
+                Object encoded = newEncoding.encode(context, struct, newEncodingId);
 
                 return new ExtensionObject(encoded, newEncodingId);
             } else {
@@ -194,56 +159,64 @@ public final class ExtensionObject {
         }
     }
 
-    public static ExtensionObject encode(UaStructure struct) throws UaSerializationException {
+    public static ExtensionObject encode(
+        SerializationContext context,
+        UaStructure struct
+    ) throws UaSerializationException {
+
         NodeId encodingId = struct.getBinaryEncodingId();
 
-        return encodeDefaultBinary(struct, encodingId, OpcUaDataTypeManager.getInstance());
+        return encodeDefaultBinary(context, struct, encodingId);
     }
 
     public static ExtensionObject encodeDefaultBinary(
+        SerializationContext context,
         Object object,
-        NodeId encodingId,
-        DataTypeManager dataTypeManager) throws UaSerializationException {
+        NodeId encodingId
+    ) throws UaSerializationException {
 
         return encode(
+            context,
             object,
             encodingId,
-            OpcUaDefaultBinaryEncoding.getInstance(),
-            EncodingLimits.DEFAULT,
-            dataTypeManager
+            OpcUaDefaultBinaryEncoding.getInstance()
         );
     }
 
     public static ExtensionObject encodeDefaultXml(
+        SerializationContext context,
         Object object,
-        NodeId encodingId,
-        DataTypeManager dataTypeManager) throws UaSerializationException {
+        NodeId encodingId
+    ) throws UaSerializationException {
 
         return encode(
+            context,
             object,
             encodingId,
-            OpcUaDefaultXmlEncoding.getInstance(),
-            EncodingLimits.DEFAULT,
-            dataTypeManager
+            OpcUaDefaultXmlEncoding.getInstance()
         );
     }
 
+    @Deprecated
     public static ExtensionObject encode(
         Object object,
         NodeId encodingId,
-        DataTypeEncoding encoding) throws UaSerializationException {
+        DataTypeEncoding encoding
+    ) throws UaSerializationException {
 
-        return encode(object, encodingId, encoding, EncodingLimits.DEFAULT, OpcUaDataTypeManager.getInstance());
+        SerializationContext context = newDefaultSerializationContext();
+
+        return encode(context, object, encodingId, encoding);
     }
 
     public static ExtensionObject encode(
+        SerializationContext context,
         Object object,
         NodeId encodingId,
-        DataTypeEncoding encoding,
-        EncodingLimits encodingLimits,
-        DataTypeManager dataTypeManager) throws UaSerializationException {
+        DataTypeEncoding encoding
+    ) throws UaSerializationException {
 
-        Object body = encoding.encode(object, encodingId, encodingLimits, dataTypeManager);
+        Object body = encoding.encode(context, object, encodingId);
 
         return new ExtensionObject(body, encodingId);
     }
@@ -270,6 +243,29 @@ public final class ExtensionObject {
             .add("encoded", body)
             .add("encodingId", encodingId)
             .toString();
+    }
+
+    private static SerializationContext newDefaultSerializationContext() {
+        return new SerializationContext() {
+
+            private final NamespaceTable namespaceTable = new NamespaceTable();
+
+            @Override
+            public EncodingLimits getEncodingLimits() {
+                return EncodingLimits.DEFAULT;
+            }
+
+            @Override
+            public NamespaceTable getNamespaceTable() {
+                return namespaceTable;
+            }
+
+            @Override
+            public DataTypeManager getDataTypeManager() {
+                return OpcUaDataTypeManager.getInstance();
+            }
+
+        };
     }
 
 }

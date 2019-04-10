@@ -30,6 +30,7 @@ import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.Stack;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.UaServiceFaultException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
@@ -144,12 +145,9 @@ public class OpcUaClient implements UaClient {
     private final List<ServiceFaultListener> faultListeners = newCopyOnWriteArrayList();
     private final ExecutionQueue faultNotificationQueue;
 
-    private final NamespaceTable namespaceTable = new NamespaceTable();
-
     private final AddressSpace addressSpace;
     private final NodeCache nodeCache = new DefaultNodeCache();
 
-    private final DataTypeManager dataTypeManager = new ClientDataTypeManager();
     private final TypeRegistry typeRegistry = new TypeRegistry();
 
     private final OpcUaSubscriptionManager subscriptionManager;
@@ -177,7 +175,7 @@ public class OpcUaClient implements UaClient {
             return reader.readDataTypeDictionaries()
                 .thenAccept(dictionaries ->
                     dictionaries.forEach(
-                        dataTypeManager::registerTypeDictionary))
+                        stackClient.getDataTypeManager()::registerTypeDictionary))
                 .thenApply(v -> Unit.VALUE)
                 .exceptionally(ex -> {
                     logger.warn("SessionInitializer: DataTypeDictionary", ex);
@@ -208,7 +206,7 @@ public class OpcUaClient implements UaClient {
                 .thenApply(results -> (String[]) results[0].getValue().getValue());
 
             return namespaceArray
-                .thenAccept(uris -> namespaceTable.update(uriTable -> {
+                .thenAccept(uris -> getNamespaceTable().update(uriTable -> {
                     uriTable.clear();
 
                     for (int i = 0; i < uris.length; i++) {
@@ -255,7 +253,7 @@ public class OpcUaClient implements UaClient {
     }
 
     public DataTypeManager getDataTypeManager() {
-        return dataTypeManager;
+        return stackClient.getDataTypeManager();
     }
 
     public TypeRegistry getTypeRegistry() {
@@ -263,7 +261,11 @@ public class OpcUaClient implements UaClient {
     }
 
     public NamespaceTable getNamespaceTable() {
-        return namespaceTable;
+        return stackClient.getNamespaceTable();
+    }
+
+    public SerializationContext getSerializationContext() {
+        return stackClient.getSerializationContext();
     }
 
     /**
@@ -367,7 +369,7 @@ public class OpcUaClient implements UaClient {
         return getSession().thenCompose(session -> {
             HistoryReadRequest request = new HistoryReadRequest(
                 newRequestHeader(session.getAuthenticationToken()),
-                ExtensionObject.encode(historyReadDetails),
+                ExtensionObject.encode(getSerializationContext(), historyReadDetails),
                 timestampsToReturn,
                 releaseContinuationPoints,
                 a(nodesToRead, HistoryReadValueId.class));
@@ -380,7 +382,7 @@ public class OpcUaClient implements UaClient {
     public CompletableFuture<HistoryUpdateResponse> historyUpdate(List<HistoryUpdateDetails> historyUpdateDetails) {
         return getSession().thenCompose(session -> {
             ExtensionObject[] details = historyUpdateDetails.stream()
-                .map(ExtensionObject::encode)
+                .map(hud -> ExtensionObject.encode(getSerializationContext(), hud))
                 .toArray(ExtensionObject[]::new);
 
             HistoryUpdateRequest request = new HistoryUpdateRequest(

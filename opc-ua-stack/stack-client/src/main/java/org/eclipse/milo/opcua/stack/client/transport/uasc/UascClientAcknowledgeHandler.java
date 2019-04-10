@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageCodec;
 import io.netty.util.AttributeKey;
 import io.netty.util.Timeout;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransportRequest;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
@@ -52,18 +53,20 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
     private final AtomicBoolean helloSent = new AtomicBoolean(false);
     private Timeout helloTimeout;
 
+    private final UaStackClientConfig config;
     private final ClientSecureChannel secureChannel;
 
-    private final UaStackClientConfig config;
+    private final UaStackClient client;
     private final CompletableFuture<ClientSecureChannel> handshakeFuture;
 
     public UascClientAcknowledgeHandler(
-        UaStackClientConfig config,
+        UaStackClient client,
         CompletableFuture<ClientSecureChannel> handshakeFuture) throws UaException {
 
-        this.config = config;
+        this.client = client;
         this.handshakeFuture = handshakeFuture;
 
+        config = client.getConfig();
         secureChannel = ClientSecureChannel.fromConfig(config);
     }
 
@@ -229,7 +232,7 @@ public class UascClientAcknowledgeHandler extends ByteToMessageCodec<UaTransport
             SerializationQueue serializationQueue = new SerializationQueue(
                 config.getExecutor(),
                 parameters,
-                config.getEncodingLimits()
+                client.getSerializationContext()
             );
 
             UascClientMessageHandler handler = new UascClientMessageHandler(

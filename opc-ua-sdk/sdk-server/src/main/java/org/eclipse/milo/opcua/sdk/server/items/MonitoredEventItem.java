@@ -214,12 +214,12 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Override
     public ExtensionObject getFilterResult() {
-        return ExtensionObject.encode(filterResult);
+        return ExtensionObject.encode(server.getSerializationContext(), filterResult);
     }
 
     @Override
     protected void installFilter(ExtensionObject filterXo) throws UaException {
-        Object filterObject = filterXo != null ? filterXo.decode() : null;
+        Object filterObject = filterXo != null ? filterXo.decode(server.getSerializationContext()) : null;
 
         if (filterObject instanceof EventFilter) {
             this.filter = (EventFilter) filterObject;

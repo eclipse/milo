@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.digitalpetri.netty.fsm.ChannelFsm;
 import io.netty.channel.Channel;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
 import org.eclipse.milo.opcua.stack.client.transport.AbstractTransport;
 import org.eclipse.milo.opcua.stack.client.transport.UaTransport;
@@ -23,18 +24,18 @@ public class OpcTcpTransport extends AbstractTransport implements UaTransport {
 
     private final ChannelFsm channelFsm;
 
-    private final UaStackClientConfig config;
+    private final UaStackClient client;
 
-    public OpcTcpTransport(UaStackClientConfig config) {
-        super(config);
+    public OpcTcpTransport(UaStackClient client) {
+        super(client.getConfig());
 
-        this.config = config;
-
-        channelFsm = ClientChannelFsm.newChannelFsm(config);
+        this.client = client;
+        
+        channelFsm = ClientChannelFsm.newChannelFsm(client);
     }
 
     public UaStackClientConfig getConfig() {
-        return config;
+        return client.getConfig();
     }
 
     @Override

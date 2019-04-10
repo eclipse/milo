@@ -26,8 +26,8 @@ import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaSerializationException;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -189,7 +189,8 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
     @Override
     public StructureT decode(
         SerializationContext context,
-        OpcUaBinaryStreamDecoder decoder) throws UaSerializationException {
+        OpcUaBinaryStreamDecoder decoder
+    ) throws UaSerializationException {
 
         LinkedHashMap<String, MemberT> members = new LinkedHashMap<>();
 
@@ -271,8 +272,9 @@ public abstract class AbstractCodec<StructureT, MemberT> implements OpcUaBinaryD
     @Override
     public void encode(
         SerializationContext context,
-        StructureT structure,
-        OpcUaBinaryStreamEncoder encoder) throws UaSerializationException {
+        OpcUaBinaryStreamEncoder encoder,
+        StructureT structure
+    ) throws UaSerializationException {
 
         LinkedHashMap<String, MemberT> members = new LinkedHashMap<>(getMembers(structure));
 

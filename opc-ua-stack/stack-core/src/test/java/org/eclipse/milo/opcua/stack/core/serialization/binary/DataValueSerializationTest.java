@@ -13,6 +13,7 @@ package org.eclipse.milo.opcua.stack.core.serialization.binary;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -26,8 +27,8 @@ import static org.testng.Assert.assertEquals;
 
 public class DataValueSerializationTest {
 
-    private final OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder();
-    private final OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder();
+    private final OpcUaBinaryStreamEncoder encoder = new OpcUaBinaryStreamEncoder(new TestSerializationContext());
+    private final OpcUaBinaryStreamDecoder decoder = new OpcUaBinaryStreamDecoder(new TestSerializationContext());
 
     @Test(dataProvider = "getValues")
     public void testDataValueRoundTrip(DataValue value) {

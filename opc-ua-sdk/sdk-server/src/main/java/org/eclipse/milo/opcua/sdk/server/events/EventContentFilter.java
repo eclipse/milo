@@ -39,6 +39,7 @@ import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.NamespaceTable;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -243,7 +244,7 @@ public class EventContentFilter {
         StatusCode[] operandStatusCodes = new StatusCode[xos.length];
 
         for (int i = 0; i < xos.length; i++) {
-            Object operand = xos[i].decodeOrNull();
+            Object operand = xos[i].decodeOrNull(context.getServer().getSerializationContext());
 
             if (operand instanceof FilterOperand) {
                 operands[i] = (FilterOperand) operand;
@@ -334,7 +335,10 @@ public class EventContentFilter {
             throw new UaException(StatusCodes.Bad_FilterOperatorInvalid);
         }
 
-        FilterOperand[] filterOperands = decodeOperands(element.getFilterOperands());
+        FilterOperand[] filterOperands = decodeOperands(
+            context.getServer().getSerializationContext(),
+            element.getFilterOperands()
+        );
 
         Operator<?> operator = getOperator(filterOperator);
 
@@ -342,12 +346,16 @@ public class EventContentFilter {
     }
 
     @Nonnull
-    private static FilterOperand[] decodeOperands(@Nullable ExtensionObject[] operandXos) {
+    private static FilterOperand[] decodeOperands(
+        SerializationContext context,
+        @Nullable ExtensionObject[] operandXos
+    ) {
+
         if (operandXos == null) {
             return new FilterOperand[0];
         } else {
             return Arrays.stream(operandXos)
-                .map(xo -> (FilterOperand) xo.decode())
+                .map(xo -> (FilterOperand) xo.decode(context))
                 .toArray(FilterOperand[]::new);
         }
     }

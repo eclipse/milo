@@ -14,6 +14,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.OpcUaBinaryStreamEncoder;
+import org.eclipse.milo.opcua.stack.core.serialization.TestSerializationContext;
 import org.testng.annotations.BeforeMethod;
 
 public abstract class BinarySerializationFixture {
@@ -26,8 +27,8 @@ public abstract class BinarySerializationFixture {
     public void setUp() {
         buffer = Unpooled.buffer();
 
-        writer = new OpcUaBinaryStreamEncoder(buffer);
-        reader = new OpcUaBinaryStreamDecoder(buffer);
+        writer = new OpcUaBinaryStreamEncoder(new TestSerializationContext()).setBuffer(buffer);
+        reader = new OpcUaBinaryStreamDecoder(new TestSerializationContext()).setBuffer(buffer);
     }
 
 }

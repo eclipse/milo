@@ -36,17 +36,19 @@ public class BuiltinDataTypeDictionaryInitializerTest {
         for (ClassPath.ClassInfo classInfo : structures) {
             Class<?> clazz = classInfo.load();
 
-            OpcUaBinaryDataTypeCodec<?> binaryCodec = OpcUaDataTypeManager.getInstance().getBinaryCodec(
-                OpcUaDataTypeManager.BINARY_NAMESPACE_URI,
-                clazz.getSimpleName()
-            );
+            OpcUaBinaryDataTypeCodec<?> binaryCodec = (OpcUaBinaryDataTypeCodec<?>)
+                OpcUaDataTypeManager.getInstance().getCodec(
+                    OpcUaDataTypeManager.BINARY_NAMESPACE_URI,
+                    clazz.getSimpleName()
+                );
 
             assertNotNull(binaryCodec, "no binary codec found for " + clazz.getSimpleName());
 
-            OpcUaXmlDataTypeCodec<?> xmlCodec = OpcUaDataTypeManager.getInstance().getXmlCodec(
-                OpcUaDataTypeManager.XML_NAMESPACE_URI,
-                xpathify(clazz.getSimpleName())
-            );
+            OpcUaXmlDataTypeCodec<?> xmlCodec = (OpcUaXmlDataTypeCodec<?>)
+                OpcUaDataTypeManager.getInstance().getCodec(
+                    OpcUaDataTypeManager.XML_NAMESPACE_URI,
+                    xpathify(clazz.getSimpleName())
+                );
 
             assertNotNull(xmlCodec, "no xml codec found for " + clazz.getSimpleName());
         }

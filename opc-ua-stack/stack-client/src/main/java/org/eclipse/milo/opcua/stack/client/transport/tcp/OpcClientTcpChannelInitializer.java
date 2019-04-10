@@ -14,26 +14,26 @@ import java.util.concurrent.CompletableFuture;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
-import org.eclipse.milo.opcua.stack.client.UaStackClientConfig;
+import org.eclipse.milo.opcua.stack.client.UaStackClient;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.ClientSecureChannel;
 import org.eclipse.milo.opcua.stack.client.transport.uasc.UascClientAcknowledgeHandler;
 
 public class OpcClientTcpChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    private final UaStackClientConfig config;
+    private final UaStackClient client;
     private final CompletableFuture<ClientSecureChannel> handshake;
 
     public OpcClientTcpChannelInitializer(
-        UaStackClientConfig config,
+        UaStackClient client,
         CompletableFuture<ClientSecureChannel> handshake) {
 
-        this.config = config;
+        this.client = client;
         this.handshake = handshake;
     }
 
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
-        channel.pipeline().addLast(new UascClientAcknowledgeHandler(config, handshake));
+        channel.pipeline().addLast(new UascClientAcknowledgeHandler(client, handshake));
     }
 
 }

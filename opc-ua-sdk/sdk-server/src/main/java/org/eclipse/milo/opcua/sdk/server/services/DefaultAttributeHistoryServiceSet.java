@@ -20,7 +20,6 @@ import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.H
 import org.eclipse.milo.opcua.sdk.server.api.services.AttributeHistoryServices.HistoryUpdateContext;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadDetails;
 import org.eclipse.milo.opcua.stack.core.types.structured.HistoryReadRequest;
@@ -78,8 +77,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
         );
 
         HistoryReadDetails details = (HistoryReadDetails) request.getHistoryReadDetails().decode(
-            server.getConfig().getEncodingLimits(),
-            OpcUaDataTypeManager.getInstance()
+            server.getSerializationContext()
         );
 
         server.getAddressSpaceManager().historyRead(
@@ -116,8 +114,7 @@ public class DefaultAttributeHistoryServiceSet implements AttributeHistoryServic
 
         List<HistoryUpdateDetails> historyUpdateDetailsList = l(request.getHistoryUpdateDetails())
             .stream().map(e -> (HistoryUpdateDetails) e.decode(
-                server.getConfig().getEncodingLimits(),
-                OpcUaDataTypeManager.getInstance()
+                server.getSerializationContext()
             ))
             .collect(Collectors.toList());
 

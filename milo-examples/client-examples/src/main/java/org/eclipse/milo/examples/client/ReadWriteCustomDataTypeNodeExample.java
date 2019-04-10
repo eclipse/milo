@@ -15,8 +15,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.milo.examples.server.types.CustomDataType;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.nodes.VariableNode;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaBinaryDataTypeDictionary;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDefaultBinaryEncoding;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
@@ -40,7 +38,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
 
     @Override
     public void run(OpcUaClient client, CompletableFuture<OpcUaClient> future) throws Exception {
-        registerCustomCodec();
+        registerCustomCodec(client);
 
         // synchronous connect
         client.connect().get();
@@ -58,7 +56,9 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         Variant variant = value.getValue();
         ExtensionObject xo = (ExtensionObject) variant.getValue();
 
-        CustomDataType decoded = (CustomDataType) xo.decode();
+        CustomDataType decoded = (CustomDataType) xo.decode(
+            client.getSerializationContext()
+        );
         logger.info("Decoded={}", decoded);
 
         // Write a modified value
@@ -68,6 +68,7 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
             !decoded.isBaz()
         );
         ExtensionObject modifiedXo = ExtensionObject.encode(
+            client.getSerializationContext(),
             modified,
             xo.getEncodingId(),
             OpcUaDefaultBinaryEncoding.getInstance()
@@ -84,28 +85,22 @@ public class ReadWriteCustomDataTypeNodeExample implements ClientExample {
         variant = value.getValue();
         xo = (ExtensionObject) variant.getValue();
 
-        decoded = (CustomDataType) xo.decode();
+        decoded = (CustomDataType) xo.decode(
+            client.getSerializationContext()
+        );
         logger.info("Decoded={}", decoded);
 
         future.complete(client);
     }
 
-    private void registerCustomCodec() {
-        // Create a dictionary, binaryEncodingId, and register the codec under that id
-        OpcUaBinaryDataTypeDictionary dictionary = new OpcUaBinaryDataTypeDictionary(
-            "urn:eclipse:milo:example:custom-data-type"
-        );
-
+    private void registerCustomCodec(OpcUaClient client) {
         NodeId binaryEncodingId = new NodeId(2, "DataType.CustomDataType.BinaryEncoding");
 
-        dictionary.registerStructCodec(
-            new CustomDataType.Codec().asBinaryCodec(),
-            "CustomDataType",
-            binaryEncodingId
+        // Register codec with the client DataTypeManager instance
+        client.getDataTypeManager().registerCodec(
+            binaryEncodingId,
+            new CustomDataType.Codec().asBinaryCodec()
         );
-
-        // Register dictionary with the shared DataTypeManager instance
-        OpcUaDataTypeManager.getInstance().registerTypeDictionary(dictionary);
     }
 
 }
