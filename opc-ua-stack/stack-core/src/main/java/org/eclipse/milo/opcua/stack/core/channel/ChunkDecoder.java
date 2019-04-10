@@ -14,10 +14,10 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.util.Arrays;
 import java.util.List;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -425,7 +425,7 @@ public final class ChunkDecoder {
             ((Buffer) chunkNioBuffer).limit(chunkNioBuffer.position() + signatureSize);
             chunkNioBuffer.get(signatureBytes);
 
-            if (!Arrays.equals(signature, signatureBytes)) {
+            if (!MessageDigest.isEqual(signature, signatureBytes)) {
                 throw new UaException(StatusCodes.Bad_SecurityChecksFailed, "could not verify signature");
             }
         }
