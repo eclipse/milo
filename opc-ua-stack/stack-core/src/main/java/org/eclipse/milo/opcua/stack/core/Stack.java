@@ -50,7 +50,7 @@ public final class Stack {
         "http://opcfoundation.org/UA-Profile/Transport/wss-uajson";
 
     public static final String WSS_PROTOCOL_BINARY = "opcua+uacp";
-    
+
     public static final String WSS_PROTOCOL_JSON = "opcua+uajson";
 
     public static final int DEFAULT_TCP_PORT = 12685;
@@ -97,6 +97,11 @@ public final class Stack {
                 public Thread newThread(@Nonnull Runnable r) {
                     Thread thread = new Thread(r, "milo-shared-thread-pool-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
+                    thread.setUncaughtExceptionHandler(
+                        (t, e) ->
+                            LoggerFactory.getLogger(Stack.class)
+                                .warn("Uncaught Exception on shared stack ExecutorService thread!", e)
+                    );
                     return thread;
                 }
             };
@@ -119,6 +124,11 @@ public final class Stack {
                 public Thread newThread(@Nonnull Runnable r) {
                     Thread thread = new Thread(r, "milo-shared-scheduled-executor-" + threadNumber.getAndIncrement());
                     thread.setDaemon(true);
+                    thread.setUncaughtExceptionHandler(
+                        (t, e) ->
+                            LoggerFactory.getLogger(Stack.class)
+                                .warn("Uncaught Exception on shared stack ScheduledExecutorService thread!", e)
+                    );
                     return thread;
                 }
             };
