@@ -810,7 +810,9 @@ public class Subscription {
         private void whenLate() {
             /* Subscription State Table Row 12 */
 
-            // NO-OP; publishing timer will be started after this method returns.
+            // Ensure this subscription is in the PublishQueue wait list.
+            // Publishing timer will be started after this method returns.
+            publishQueue().addSubscription(Subscription.this);
         }
 
         private void whenKeepAlive() {
