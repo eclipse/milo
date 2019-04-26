@@ -44,7 +44,6 @@ import org.eclipse.milo.opcua.sdk.server.nodes.delegates.AttributeDelegateChain;
 import org.eclipse.milo.opcua.sdk.server.util.SubscriptionModel;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
@@ -718,8 +717,8 @@ public class ExampleNamespace extends ManagedNamespace {
         // TODO this should probably get a node and a HasEncoding reference from dataTypeNode...
         NodeId binaryEncodingId = newNodeId("DataType.CustomDataType.BinaryEncoding");
 
-        // Register codec with the shared DataTypeManager instance
-        OpcUaDataTypeManager.getInstance().registerCodec(
+        // Register codec with the server DataTypeManager instance
+        getServer().getDataTypeManager().registerCodec(
             binaryEncodingId,
             new CustomDataType.Codec().asBinaryCodec()
         );
