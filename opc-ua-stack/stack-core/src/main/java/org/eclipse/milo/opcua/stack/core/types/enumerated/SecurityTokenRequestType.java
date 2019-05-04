@@ -10,15 +10,18 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum SecurityTokenRequestType implements UaEnumeration {
-
     Issue(0),
+
     Renew(1);
 
     private final int value;
@@ -32,29 +35,37 @@ public enum SecurityTokenRequestType implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, SecurityTokenRequestType> VALUES;
-
-    static {
-        Builder<Integer, SecurityTokenRequestType> builder = ImmutableMap.builder();
-        for (SecurityTokenRequestType e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static SecurityTokenRequestType from(int value) {
+        switch (value) {
+            case 0:
+                return Issue;
+            case 1:
+                return Renew;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static SecurityTokenRequestType from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=315");
     }
 
-    public static void encode(SecurityTokenRequestType securityTokenRequestType, UaEncoder encoder) {
-        encoder.writeInt32(null, securityTokenRequestType.getValue());
+    public static class Codec extends GenericDataTypeCodec<SecurityTokenRequestType> {
+        @Override
+        public Class<SecurityTokenRequestType> getType() {
+            return SecurityTokenRequestType.class;
+        }
+
+        @Override
+        public SecurityTokenRequestType decode(SerializationContext context, UaDecoder decoder) {
+            return SecurityTokenRequestType.from(decoder.readInt32(null));
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           SecurityTokenRequestType value) {
+            encoder.writeInt32(null, value.getValue());
+        }
     }
-
-    public static SecurityTokenRequestType decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

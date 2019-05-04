@@ -10,96 +10,103 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 
-public class SetMonitoringModeRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class SetMonitoringModeRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=767");
 
-    public static final NodeId TypeId = Identifiers.SetMonitoringModeRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.SetMonitoringModeRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.SetMonitoringModeRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=769");
 
-    protected final RequestHeader requestHeader;
-    protected final UInteger subscriptionId;
-    protected final MonitoringMode monitoringMode;
-    protected final UInteger[] monitoredItemIds;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=768");
 
-    public SetMonitoringModeRequest() {
-        this.requestHeader = null;
-        this.subscriptionId = null;
-        this.monitoringMode = null;
-        this.monitoredItemIds = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15329");
 
-    public SetMonitoringModeRequest(RequestHeader requestHeader, UInteger subscriptionId, MonitoringMode monitoringMode, UInteger[] monitoredItemIds) {
+    private final RequestHeader requestHeader;
+
+    private final UInteger subscriptionId;
+
+    private final MonitoringMode monitoringMode;
+
+    private final UInteger[] monitoredItemIds;
+
+    public SetMonitoringModeRequest(RequestHeader requestHeader, UInteger subscriptionId,
+                                    MonitoringMode monitoringMode, UInteger[] monitoredItemIds) {
         this.requestHeader = requestHeader;
         this.subscriptionId = subscriptionId;
         this.monitoringMode = monitoringMode;
         this.monitoredItemIds = monitoredItemIds;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public UInteger getSubscriptionId() { return subscriptionId; }
-
-    public MonitoringMode getMonitoringMode() { return monitoringMode; }
-
-    @Nullable
-    public UInteger[] getMonitoredItemIds() { return monitoredItemIds; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("SubscriptionId", subscriptionId)
-            .add("MonitoringMode", monitoringMode)
-            .add("MonitoredItemIds", monitoredItemIds)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<SetMonitoringModeRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public UInteger getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public MonitoringMode getMonitoringMode() {
+        return monitoringMode;
+    }
+
+    public UInteger[] getMonitoredItemIds() {
+        return monitoredItemIds;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<SetMonitoringModeRequest> {
         @Override
         public Class<SetMonitoringModeRequest> getType() {
             return SetMonitoringModeRequest.class;
         }
 
         @Override
-        public SetMonitoringModeRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public SetMonitoringModeRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             MonitoringMode monitoringMode = MonitoringMode.from(decoder.readInt32("MonitoringMode"));
-            UInteger[] monitoredItemIds = decoder.readArray("MonitoredItemIds", decoder::readUInt32, UInteger.class);
-
+            UInteger[] monitoredItemIds = decoder.readUInt32Array("MonitoredItemIds");
             return new SetMonitoringModeRequest(requestHeader, subscriptionId, monitoringMode, monitoredItemIds);
         }
 
         @Override
-        public void encode(SetMonitoringModeRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
-            encoder.writeInt32("MonitoringMode", value.monitoringMode != null ? value.monitoringMode.getValue() : 0);
-            encoder.writeArray("MonitoredItemIds", value.monitoredItemIds, encoder::writeUInt32);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           SetMonitoringModeRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.writeInt32("MonitoringMode", value.getMonitoringMode().getValue());
+            encoder.writeUInt32Array("MonitoredItemIds", value.getMonitoredItemIds());
         }
     }
-
 }

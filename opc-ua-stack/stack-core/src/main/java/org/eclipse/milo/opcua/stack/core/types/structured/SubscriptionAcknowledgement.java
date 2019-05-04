@@ -10,76 +10,83 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class SubscriptionAcknowledgement implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class SubscriptionAcknowledgement extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=821");
 
-    public static final NodeId TypeId = Identifiers.SubscriptionAcknowledgement;
-    public static final NodeId BinaryEncodingId = Identifiers.SubscriptionAcknowledgement_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.SubscriptionAcknowledgement_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=823");
 
-    protected final UInteger subscriptionId;
-    protected final UInteger sequenceNumber;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=822");
 
-    public SubscriptionAcknowledgement() {
-        this.subscriptionId = null;
-        this.sequenceNumber = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15351");
+
+    private final UInteger subscriptionId;
+
+    private final UInteger sequenceNumber;
 
     public SubscriptionAcknowledgement(UInteger subscriptionId, UInteger sequenceNumber) {
         this.subscriptionId = subscriptionId;
         this.sequenceNumber = sequenceNumber;
     }
 
-    public UInteger getSubscriptionId() { return subscriptionId; }
-
-    public UInteger getSequenceNumber() { return sequenceNumber; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("SubscriptionId", subscriptionId)
-            .add("SequenceNumber", sequenceNumber)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<SubscriptionAcknowledgement> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public UInteger getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public UInteger getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<SubscriptionAcknowledgement> {
         @Override
         public Class<SubscriptionAcknowledgement> getType() {
             return SubscriptionAcknowledgement.class;
         }
 
         @Override
-        public SubscriptionAcknowledgement decode(UaDecoder decoder) throws UaSerializationException {
+        public SubscriptionAcknowledgement decode(SerializationContext context, UaDecoder decoder) {
             UInteger subscriptionId = decoder.readUInt32("SubscriptionId");
             UInteger sequenceNumber = decoder.readUInt32("SequenceNumber");
-
             return new SubscriptionAcknowledgement(subscriptionId, sequenceNumber);
         }
 
         @Override
-        public void encode(SubscriptionAcknowledgement value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeUInt32("SubscriptionId", value.subscriptionId);
-            encoder.writeUInt32("SequenceNumber", value.sequenceNumber);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           SubscriptionAcknowledgement value) {
+            encoder.writeUInt32("SubscriptionId", value.getSubscriptionId());
+            encoder.writeUInt32("SequenceNumber", value.getSequenceNumber());
         }
     }
-
 }

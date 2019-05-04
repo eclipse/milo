@@ -10,33 +10,38 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
-public class CallMethodRequest implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class CallMethodRequest extends Structure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=704");
 
-    public static final NodeId TypeId = Identifiers.CallMethodRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.CallMethodRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.CallMethodRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=706");
 
-    protected final NodeId objectId;
-    protected final NodeId methodId;
-    protected final Variant[] inputArguments;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=705");
 
-    public CallMethodRequest() {
-        this.objectId = null;
-        this.methodId = null;
-        this.inputArguments = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15289");
+
+    private final NodeId objectId;
+
+    private final NodeId methodId;
+
+    private final Variant[] inputArguments;
 
     public CallMethodRequest(NodeId objectId, NodeId methodId, Variant[] inputArguments) {
         this.objectId = objectId;
@@ -44,53 +49,52 @@ public class CallMethodRequest implements UaStructure {
         this.inputArguments = inputArguments;
     }
 
-    public NodeId getObjectId() { return objectId; }
-
-    public NodeId getMethodId() { return methodId; }
-
-    @Nullable
-    public Variant[] getInputArguments() { return inputArguments; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ObjectId", objectId)
-            .add("MethodId", methodId)
-            .add("InputArguments", inputArguments)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<CallMethodRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public NodeId getObjectId() {
+        return objectId;
+    }
+
+    public NodeId getMethodId() {
+        return methodId;
+    }
+
+    public Variant[] getInputArguments() {
+        return inputArguments;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<CallMethodRequest> {
         @Override
         public Class<CallMethodRequest> getType() {
             return CallMethodRequest.class;
         }
 
         @Override
-        public CallMethodRequest decode(UaDecoder decoder) throws UaSerializationException {
+        public CallMethodRequest decode(SerializationContext context, UaDecoder decoder) {
             NodeId objectId = decoder.readNodeId("ObjectId");
             NodeId methodId = decoder.readNodeId("MethodId");
-            Variant[] inputArguments = decoder.readArray("InputArguments", decoder::readVariant, Variant.class);
-
+            Variant[] inputArguments = decoder.readVariantArray("InputArguments");
             return new CallMethodRequest(objectId, methodId, inputArguments);
         }
 
         @Override
-        public void encode(CallMethodRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("ObjectId", value.objectId);
-            encoder.writeNodeId("MethodId", value.methodId);
-            encoder.writeArray("InputArguments", value.inputArguments, encoder::writeVariant);
+        public void encode(SerializationContext context, UaEncoder encoder, CallMethodRequest value) {
+            encoder.writeNodeId("ObjectId", value.getObjectId());
+            encoder.writeNodeId("MethodId", value.getMethodId());
+            encoder.writeVariantArray("InputArguments", value.getInputArguments());
         }
     }
-
 }

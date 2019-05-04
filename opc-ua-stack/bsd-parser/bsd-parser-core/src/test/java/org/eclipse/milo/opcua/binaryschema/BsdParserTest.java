@@ -27,6 +27,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.OpcUaBinaryDataTyp
 import org.eclipse.milo.opcua.stack.core.types.BuiltinDataTypeDictionary;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.OpcUaDataTypeManager;
+import org.eclipse.milo.opcua.stack.core.util.Namespaces;
 import org.testng.annotations.BeforeSuite;
 
 import static org.testng.Assert.assertEquals;
@@ -86,7 +87,7 @@ public abstract class BsdParserTest {
 
     public BsdParserTest() {
         BuiltinDataTypeDictionary.getBinaryInstance().getCodecsByDescription().forEach((d, c) ->
-            codecTable.put(BuiltinDataTypeDictionary.BINARY_NAMESPACE_URI, d, c)
+            codecTable.put(Namespaces.OPC_UA, d, c)
         );
     }
 

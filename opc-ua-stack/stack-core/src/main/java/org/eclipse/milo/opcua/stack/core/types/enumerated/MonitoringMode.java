@@ -10,16 +10,20 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum MonitoringMode implements UaEnumeration {
-
     Disabled(0),
+
     Sampling(1),
+
     Reporting(2);
 
     private final int value;
@@ -33,29 +37,38 @@ public enum MonitoringMode implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, MonitoringMode> VALUES;
-
-    static {
-        Builder<Integer, MonitoringMode> builder = ImmutableMap.builder();
-        for (MonitoringMode e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static MonitoringMode from(int value) {
+        switch (value) {
+            case 0:
+                return Disabled;
+            case 1:
+                return Sampling;
+            case 2:
+                return Reporting;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static MonitoringMode from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=716");
     }
 
-    public static void encode(MonitoringMode monitoringMode, UaEncoder encoder) {
-        encoder.writeInt32(null, monitoringMode.getValue());
+    public static class Codec extends GenericDataTypeCodec<MonitoringMode> {
+        @Override
+        public Class<MonitoringMode> getType() {
+            return MonitoringMode.class;
+        }
+
+        @Override
+        public MonitoringMode decode(SerializationContext context, UaDecoder decoder) {
+            return MonitoringMode.from(decoder.readInt32(null));
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, MonitoringMode value) {
+            encoder.writeInt32(null, value.getValue());
+        }
     }
-
-    public static MonitoringMode decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

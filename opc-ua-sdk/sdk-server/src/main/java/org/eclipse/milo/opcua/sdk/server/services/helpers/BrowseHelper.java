@@ -78,7 +78,8 @@ public class BrowseHelper {
 
     private static final BrowseResult NODE_ID_UNKNOWN_RESULT = new BrowseResult(
         new StatusCode(StatusCodes.Bad_NodeIdUnknown),
-        ByteString.NULL_VALUE, new ReferenceDescription[0]);
+        ByteString.NULL_VALUE, new ReferenceDescription[0]
+    );
 
     public void browseNext(ServiceRequest service) {
         OpcUaServer server = service.attr(ServiceAttributes.SERVER_KEY).get();
@@ -420,7 +421,8 @@ public class BrowseHelper {
 
             ResponseHeader header = service.createResponseHeader();
             BrowseNextResponse response = new BrowseNextResponse(
-                header, results.toArray(new BrowseResult[0]), new DiagnosticInfo[0]);
+                header, results.toArray(new BrowseResult[0]), new DiagnosticInfo[0]
+            );
 
             service.setResponse(response);
         }

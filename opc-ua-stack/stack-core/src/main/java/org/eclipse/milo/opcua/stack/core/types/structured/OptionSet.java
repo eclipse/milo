@@ -1,85 +1,81 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class OptionSet implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class OptionSet extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12755");
 
-    public static final NodeId TypeId = Identifiers.OptionSet;
-    public static final NodeId BinaryEncodingId = Identifiers.OptionSet_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.OptionSet_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12757");
 
-    protected final ByteString value;
-    protected final ByteString validBits;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12765");
 
-    public OptionSet() {
-        this.value = null;
-        this.validBits = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15084");
+
+    private final ByteString value;
+
+    private final ByteString validBits;
 
     public OptionSet(ByteString value, ByteString validBits) {
         this.value = value;
         this.validBits = validBits;
     }
 
-    public ByteString getValue() { return value; }
-
-    public ByteString getValidBits() { return validBits; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Value", value)
-            .add("ValidBits", validBits)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<OptionSet> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public ByteString getValue() {
+        return value;
+    }
+
+    public ByteString getValidBits() {
+        return validBits;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<OptionSet> {
         @Override
         public Class<OptionSet> getType() {
             return OptionSet.class;
         }
 
         @Override
-        public OptionSet decode(UaDecoder decoder) throws UaSerializationException {
+        public OptionSet decode(SerializationContext context, UaDecoder decoder) {
             ByteString value = decoder.readByteString("Value");
             ByteString validBits = decoder.readByteString("ValidBits");
-
             return new OptionSet(value, validBits);
         }
 
         @Override
-        public void encode(OptionSet value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeByteString("Value", value.value);
-            encoder.writeByteString("ValidBits", value.validBits);
+        public void encode(SerializationContext context, UaEncoder encoder, OptionSet value) {
+            encoder.writeByteString("Value", value.getValue());
+            encoder.writeByteString("ValidBits", value.getValidBits());
         }
     }
-
 }

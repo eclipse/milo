@@ -10,19 +10,26 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum TrustListMasks implements UaEnumeration {
-
     None(0),
+
     TrustedCertificates(1),
+
     TrustedCrls(2),
+
     IssuerCertificates(4),
+
     IssuerCrls(8),
+
     All(15);
 
     private final int value;
@@ -36,29 +43,44 @@ public enum TrustListMasks implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, TrustListMasks> VALUES;
-
-    static {
-        Builder<Integer, TrustListMasks> builder = ImmutableMap.builder();
-        for (TrustListMasks e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static TrustListMasks from(int value) {
+        switch (value) {
+            case 0:
+                return None;
+            case 1:
+                return TrustedCertificates;
+            case 2:
+                return TrustedCrls;
+            case 4:
+                return IssuerCertificates;
+            case 8:
+                return IssuerCrls;
+            case 15:
+                return All;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static TrustListMasks from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12552");
     }
 
-    public static void encode(TrustListMasks trustListMasks, UaEncoder encoder) {
-        encoder.writeInt32(null, trustListMasks.getValue());
+    public static class Codec extends GenericDataTypeCodec<TrustListMasks> {
+        @Override
+        public Class<TrustListMasks> getType() {
+            return TrustListMasks.class;
+        }
+
+        @Override
+        public TrustListMasks decode(SerializationContext context, UaDecoder decoder) {
+            return TrustListMasks.from(decoder.readInt32(null));
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, TrustListMasks value) {
+            encoder.writeInt32(null, value.getValue());
+        }
     }
-
-    public static TrustListMasks decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

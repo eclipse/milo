@@ -183,9 +183,10 @@
                         **/org/eclipse/milo/opcua/sdk/server/model/nodes/variables/*,
                         **/org/eclipse/milo/opcua/sdk/server/model/types/objects/*,
                         **/org/eclipse/milo/opcua/sdk/server/model/types/variables/*,
-                        **/org/eclipse/milo/opcua/stack/core/Identifiers.java,
                         **/org/eclipse/milo/opcua/stack/core/types/builtin/unsigned/*,
+                        **/org/eclipse/milo/opcua/stack/core/Identifiers.java,
                         **/org/eclipse/milo/opcua/stack/core/StatusCodes.java,
+                        **/org/eclipse/milo/opcua/stack/core/types/TypeInitializer.java,
                         **/org/opcfoundation/opcua/binaryschema/*
                     </excludes>
                 </configuration>
@@ -231,9 +232,10 @@
                                 **/org/eclipse/milo/opcua/sdk/server/model/nodes/variables/*,
                                 **/org/eclipse/milo/opcua/sdk/server/model/types/objects/*,
                                 **/org/eclipse/milo/opcua/sdk/server/model/types/variables/*,
-                                **/org/eclipse/milo/opcua/stack/core/Identifiers.java,
                                 **/org/eclipse/milo/opcua/stack/core/types/builtin/unsigned/*,
+                                **/org/eclipse/milo/opcua/stack/core/Identifiers.java,
                                 **/org/eclipse/milo/opcua/stack/core/StatusCodes.java,
+                                **/org/eclipse/milo/opcua/stack/core/types/TypeInitializer.java,
                                 **/org/opcfoundation/opcua/binaryschema/*
                             </excludes>
                             <encoding>UTF-8</encoding>

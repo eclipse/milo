@@ -1,80 +1,70 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class HistoryData implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class HistoryData extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=656");
 
-    public static final NodeId TypeId = Identifiers.HistoryData;
-    public static final NodeId BinaryEncodingId = Identifiers.HistoryData_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.HistoryData_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=658");
 
-    protected final DataValue[] dataValues;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=657");
 
-    public HistoryData() {
-        this.dataValues = null;
-    }
+    private final DataValue[] dataValues;
 
     public HistoryData(DataValue[] dataValues) {
         this.dataValues = dataValues;
     }
 
-    @Nullable
-    public DataValue[] getDataValues() { return dataValues; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("DataValues", dataValues)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<HistoryData> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public DataValue[] getDataValues() {
+        return dataValues;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<HistoryData> {
         @Override
         public Class<HistoryData> getType() {
             return HistoryData.class;
         }
 
         @Override
-        public HistoryData decode(UaDecoder decoder) throws UaSerializationException {
-            DataValue[] dataValues = decoder.readArray("DataValues", decoder::readDataValue, DataValue.class);
-
+        public HistoryData decode(SerializationContext context, UaDecoder decoder) {
+            DataValue[] dataValues = decoder.readDataValueArray("DataValues");
             return new HistoryData(dataValues);
         }
 
         @Override
-        public void encode(HistoryData value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeArray("DataValues", value.dataValues, encoder::writeDataValue);
+        public void encode(SerializationContext context, UaEncoder encoder, HistoryData value) {
+            encoder.writeDataValueArray("DataValues", value.getDataValues());
         }
     }
-
 }

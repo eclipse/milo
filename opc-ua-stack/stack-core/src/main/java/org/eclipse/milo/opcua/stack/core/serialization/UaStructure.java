@@ -10,23 +10,21 @@
 
 package org.eclipse.milo.opcua.stack.core.serialization;
 
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 /**
- * Identifies a structured type as one of the built-in structured types.
- * <p>
- * Built-in structures can be serialized and de-serialized by any of the transport encodings regardless of whether or
- * not they have a registered DataTypeCodec belonging to a DataTypeDictionary because the stack has special knowledge
- * of these types.
- * <p>
- * This implies that custom user-defined structures should not implement this interface.
+ * Identifies an OPC UA structured type.
  */
 public interface UaStructure extends UaSerializable {
 
-    NodeId getTypeId();
+    ExpandedNodeId getTypeId();
 
-    NodeId getBinaryEncodingId();
+    default ExpandedNodeId getBinaryEncodingId() {
+        return ExpandedNodeId.NULL_VALUE;
+    }
 
-    NodeId getXmlEncodingId();
+    default ExpandedNodeId getXmlEncodingId() {
+        return ExpandedNodeId.NULL_VALUE;
+    }
 
 }

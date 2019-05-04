@@ -10,76 +10,83 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 
-public class AddNodesResult implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class AddNodesResult extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=483");
 
-    public static final NodeId TypeId = Identifiers.AddNodesResult;
-    public static final NodeId BinaryEncodingId = Identifiers.AddNodesResult_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.AddNodesResult_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=485");
 
-    protected final StatusCode statusCode;
-    protected final NodeId addedNodeId;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=484");
 
-    public AddNodesResult() {
-        this.statusCode = null;
-        this.addedNodeId = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15166");
+
+    private final StatusCode statusCode;
+
+    private final NodeId addedNodeId;
 
     public AddNodesResult(StatusCode statusCode, NodeId addedNodeId) {
         this.statusCode = statusCode;
         this.addedNodeId = addedNodeId;
     }
 
-    public StatusCode getStatusCode() { return statusCode; }
-
-    public NodeId getAddedNodeId() { return addedNodeId; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("StatusCode", statusCode)
-            .add("AddedNodeId", addedNodeId)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<AddNodesResult> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public StatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public NodeId getAddedNodeId() {
+        return addedNodeId;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<AddNodesResult> {
         @Override
         public Class<AddNodesResult> getType() {
             return AddNodesResult.class;
         }
 
         @Override
-        public AddNodesResult decode(UaDecoder decoder) throws UaSerializationException {
+        public AddNodesResult decode(SerializationContext context, UaDecoder decoder) {
             StatusCode statusCode = decoder.readStatusCode("StatusCode");
             NodeId addedNodeId = decoder.readNodeId("AddedNodeId");
-
             return new AddNodesResult(statusCode, addedNodeId);
         }
 
         @Override
-        public void encode(AddNodesResult value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeStatusCode("StatusCode", value.statusCode);
-            encoder.writeNodeId("AddedNodeId", value.addedNodeId);
+        public void encode(SerializationContext context, UaEncoder encoder, AddNodesResult value) {
+            encoder.writeStatusCode("StatusCode", value.getStatusCode());
+            encoder.writeNodeId("AddedNodeId", value.getAddedNodeId());
         }
     }
-
 }

@@ -10,43 +10,53 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExtensionObject;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class RequestHeader implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class RequestHeader extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=389");
 
-    public static final NodeId TypeId = Identifiers.RequestHeader;
-    public static final NodeId BinaryEncodingId = Identifiers.RequestHeader_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.RequestHeader_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=391");
 
-    protected final NodeId authenticationToken;
-    protected final DateTime timestamp;
-    protected final UInteger requestHandle;
-    protected final UInteger returnDiagnostics;
-    protected final String auditEntryId;
-    protected final UInteger timeoutHint;
-    protected final ExtensionObject additionalHeader;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=390");
 
-    public RequestHeader() {
-        this.authenticationToken = null;
-        this.timestamp = null;
-        this.requestHandle = null;
-        this.returnDiagnostics = null;
-        this.auditEntryId = null;
-        this.timeoutHint = null;
-        this.additionalHeader = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15088");
 
-    public RequestHeader(NodeId authenticationToken, DateTime timestamp, UInteger requestHandle, UInteger returnDiagnostics, String auditEntryId, UInteger timeoutHint, ExtensionObject additionalHeader) {
+    private final NodeId authenticationToken;
+
+    private final DateTime timestamp;
+
+    private final UInteger requestHandle;
+
+    private final UInteger returnDiagnostics;
+
+    private final String auditEntryId;
+
+    private final UInteger timeoutHint;
+
+    private final ExtensionObject additionalHeader;
+
+    public RequestHeader(NodeId authenticationToken, DateTime timestamp, UInteger requestHandle,
+                         UInteger returnDiagnostics, String auditEntryId, UInteger timeoutHint,
+                         ExtensionObject additionalHeader) {
         this.authenticationToken = authenticationToken;
         this.timestamp = timestamp;
         this.requestHandle = requestHandle;
@@ -56,51 +66,57 @@ public class RequestHeader implements UaStructure {
         this.additionalHeader = additionalHeader;
     }
 
-    public NodeId getAuthenticationToken() { return authenticationToken; }
-
-    public DateTime getTimestamp() { return timestamp; }
-
-    public UInteger getRequestHandle() { return requestHandle; }
-
-    public UInteger getReturnDiagnostics() { return returnDiagnostics; }
-
-    public String getAuditEntryId() { return auditEntryId; }
-
-    public UInteger getTimeoutHint() { return timeoutHint; }
-
-    public ExtensionObject getAdditionalHeader() { return additionalHeader; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("AuthenticationToken", authenticationToken)
-            .add("Timestamp", timestamp)
-            .add("RequestHandle", requestHandle)
-            .add("ReturnDiagnostics", returnDiagnostics)
-            .add("AuditEntryId", auditEntryId)
-            .add("TimeoutHint", timeoutHint)
-            .add("AdditionalHeader", additionalHeader)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<RequestHeader> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public NodeId getAuthenticationToken() {
+        return authenticationToken;
+    }
+
+    public DateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public UInteger getRequestHandle() {
+        return requestHandle;
+    }
+
+    public UInteger getReturnDiagnostics() {
+        return returnDiagnostics;
+    }
+
+    public String getAuditEntryId() {
+        return auditEntryId;
+    }
+
+    public UInteger getTimeoutHint() {
+        return timeoutHint;
+    }
+
+    public ExtensionObject getAdditionalHeader() {
+        return additionalHeader;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<RequestHeader> {
         @Override
         public Class<RequestHeader> getType() {
             return RequestHeader.class;
         }
 
         @Override
-        public RequestHeader decode(UaDecoder decoder) throws UaSerializationException {
+        public RequestHeader decode(SerializationContext context, UaDecoder decoder) {
             NodeId authenticationToken = decoder.readNodeId("AuthenticationToken");
             DateTime timestamp = decoder.readDateTime("Timestamp");
             UInteger requestHandle = decoder.readUInt32("RequestHandle");
@@ -108,20 +124,18 @@ public class RequestHeader implements UaStructure {
             String auditEntryId = decoder.readString("AuditEntryId");
             UInteger timeoutHint = decoder.readUInt32("TimeoutHint");
             ExtensionObject additionalHeader = decoder.readExtensionObject("AdditionalHeader");
-
             return new RequestHeader(authenticationToken, timestamp, requestHandle, returnDiagnostics, auditEntryId, timeoutHint, additionalHeader);
         }
 
         @Override
-        public void encode(RequestHeader value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("AuthenticationToken", value.authenticationToken);
-            encoder.writeDateTime("Timestamp", value.timestamp);
-            encoder.writeUInt32("RequestHandle", value.requestHandle);
-            encoder.writeUInt32("ReturnDiagnostics", value.returnDiagnostics);
-            encoder.writeString("AuditEntryId", value.auditEntryId);
-            encoder.writeUInt32("TimeoutHint", value.timeoutHint);
-            encoder.writeExtensionObject("AdditionalHeader", value.additionalHeader);
+        public void encode(SerializationContext context, UaEncoder encoder, RequestHeader value) {
+            encoder.writeNodeId("AuthenticationToken", value.getAuthenticationToken());
+            encoder.writeDateTime("Timestamp", value.getTimestamp());
+            encoder.writeUInt32("RequestHandle", value.getRequestHandle());
+            encoder.writeUInt32("ReturnDiagnostics", value.getReturnDiagnostics());
+            encoder.writeString("AuditEntryId", value.getAuditEntryId());
+            encoder.writeUInt32("TimeoutHint", value.getTimeoutHint());
+            encoder.writeExtensionObject("AdditionalHeader", value.getAdditionalHeader());
         }
     }
-
 }

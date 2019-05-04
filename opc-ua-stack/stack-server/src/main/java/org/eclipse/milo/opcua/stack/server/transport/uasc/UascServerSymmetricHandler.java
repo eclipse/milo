@@ -163,7 +163,7 @@ public class UascServerSymmetricHandler extends ByteToMessageDecoder implements 
                             UaRequestMessage request = (UaRequestMessage) binaryDecoder
                                 .setBuffer(message)
                                 .readMessage(null);
-                            
+
                             stackServer.getConfig().getExecutor().execute(() -> {
                                 try {
                                     String endpointUrl = ctx

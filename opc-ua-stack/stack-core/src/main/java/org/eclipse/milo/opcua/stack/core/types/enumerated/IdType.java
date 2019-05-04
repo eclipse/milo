@@ -10,17 +10,22 @@
 
 package org.eclipse.milo.opcua.stack.core.types.enumerated;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
+import javax.annotation.Nullable;
+
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEnumeration;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 public enum IdType implements UaEnumeration {
-
     Numeric(0),
+
     String(1),
+
     Guid(2),
+
     Opaque(3);
 
     private final int value;
@@ -34,29 +39,40 @@ public enum IdType implements UaEnumeration {
         return value;
     }
 
-    private static final ImmutableMap<Integer, IdType> VALUES;
-
-    static {
-        Builder<Integer, IdType> builder = ImmutableMap.builder();
-        for (IdType e : values()) {
-            builder.put(e.getValue(), e);
+    @Nullable
+    public static IdType from(int value) {
+        switch (value) {
+            case 0:
+                return Numeric;
+            case 1:
+                return String;
+            case 2:
+                return Guid;
+            case 3:
+                return Opaque;
+            default:
+                return null;
         }
-        VALUES = builder.build();
     }
 
-    public static IdType from(Integer value) {
-        if (value == null) return null;
-        return VALUES.getOrDefault(value, null);
+    public static ExpandedNodeId getTypeId() {
+        return ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=256");
     }
 
-    public static void encode(IdType idType, UaEncoder encoder) {
-        encoder.writeInt32(null, idType.getValue());
+    public static class Codec extends GenericDataTypeCodec<IdType> {
+        @Override
+        public Class<IdType> getType() {
+            return IdType.class;
+        }
+
+        @Override
+        public IdType decode(SerializationContext context, UaDecoder decoder) {
+            return IdType.from(decoder.readInt32(null));
+        }
+
+        @Override
+        public void encode(SerializationContext context, UaEncoder encoder, IdType value) {
+            encoder.writeInt32(null, value.getValue());
+        }
     }
-
-    public static IdType decode(UaDecoder decoder) {
-        int value = decoder.readInt32(null);
-
-        return VALUES.getOrDefault(value, null);
-    }
-
 }

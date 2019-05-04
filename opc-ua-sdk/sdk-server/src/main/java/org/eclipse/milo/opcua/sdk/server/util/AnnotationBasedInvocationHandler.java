@@ -36,6 +36,7 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DiagnosticInfo;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
@@ -121,6 +122,7 @@ public class AnnotationBasedInvocationHandler implements MethodInvocationHandler
             Variant variant = inputVariants.get(i);
 
             boolean dataTypeMatch = variant.getDataType()
+                .flatMap(ExpandedNodeId::local)
                 .map(type -> type.equals(argument.getDataType()))
                 .orElse(false);
 

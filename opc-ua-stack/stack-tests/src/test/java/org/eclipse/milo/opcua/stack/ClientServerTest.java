@@ -147,7 +147,7 @@ public class ClientServerTest extends SecurityFixture {
     }
 
     private void setReadRequestHandler(Variant variant) {
-        server.addServiceHandler("/test", ReadRequest.class, service -> {
+        server.addServiceHandler("/test", ReadRequest.TYPE_ID, service -> {
             ReadRequest request = (ReadRequest) service.getRequest();
 
             ResponseHeader header = new ResponseHeader(
@@ -454,7 +454,7 @@ public class ClientServerTest extends SecurityFixture {
         UaStackClient client = UaStackClient.create(config);
         client.connect().get();
 
-        server.addServiceHandler("/test", ReadRequest.class, service -> {
+        server.addServiceHandler("/test", ReadRequest.TYPE_ID, service -> {
             // intentionally do nothing so the request can timeout
             logger.info("received {}; ignoring...", service.getRequest());
         });

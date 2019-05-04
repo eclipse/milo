@@ -211,7 +211,7 @@ public class UsernameProvider implements IdentityProvider {
             encryptionAlgorithm
         );
 
-        return new SignedIdentityToken(token, new SignatureData());
+        return new SignedIdentityToken(token, new SignatureData(null, null));
     }
 
     private Cipher getAndInitializeCipher(X509Certificate serverCertificate,

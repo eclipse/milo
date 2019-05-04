@@ -148,18 +148,4 @@ public interface UaEncoder {
 
     <T> void writeArray(String field, T[] values, BiConsumer<String, T> encoder) throws UaSerializationException;
 
-    @Deprecated
-    <T extends UaStructure> void writeBuiltinStruct(
-        String field,
-        T value,
-        Class<T> clazz
-    ) throws UaSerializationException;
-
-    @Deprecated
-    <T extends UaStructure> void writeBuiltinStructArray(
-        String field,
-        T[] values,
-        Class<T> clazz
-    ) throws UaSerializationException;
-
 }

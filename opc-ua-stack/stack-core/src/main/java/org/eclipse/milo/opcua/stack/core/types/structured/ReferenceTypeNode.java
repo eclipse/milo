@@ -10,91 +10,88 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.NodeClass;
 
-public class ReferenceTypeNode extends TypeNode {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ReferenceTypeNode extends TypeNode implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=273");
 
-    public static final NodeId TypeId = Identifiers.ReferenceTypeNode;
-    public static final NodeId BinaryEncodingId = Identifiers.ReferenceTypeNode_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ReferenceTypeNode_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=275");
 
-    protected final ReferenceNode[] references;
-    protected final Boolean isAbstract;
-    protected final Boolean symmetric;
-    protected final LocalizedText inverseName;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=274");
 
-    public ReferenceTypeNode() {
-        super(null, null, null, null, null, null, null, null);
-        this.references = null;
-        this.isAbstract = null;
-        this.symmetric = null;
-        this.inverseName = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15076");
 
-    public ReferenceTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName, LocalizedText displayName, LocalizedText description, UInteger writeMask, UInteger userWriteMask, ReferenceNode[] references, Boolean isAbstract, Boolean symmetric, LocalizedText inverseName) {
+    private final Boolean isAbstract;
+
+    private final Boolean symmetric;
+
+    private final LocalizedText inverseName;
+
+    public ReferenceTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,
+                             LocalizedText displayName, LocalizedText description, UInteger writeMask,
+                             UInteger userWriteMask, ReferenceNode[] references, Boolean isAbstract, Boolean symmetric,
+                             LocalizedText inverseName) {
         super(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references);
-        this.references = references;
         this.isAbstract = isAbstract;
         this.symmetric = symmetric;
         this.inverseName = inverseName;
     }
 
-    @Nullable
-    public ReferenceNode[] getReferences() { return references; }
-
-    public Boolean getIsAbstract() { return isAbstract; }
-
-    public Boolean getSymmetric() { return symmetric; }
-
-    public LocalizedText getInverseName() { return inverseName; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("NodeClass", nodeClass)
-            .add("BrowseName", browseName)
-            .add("DisplayName", displayName)
-            .add("Description", description)
-            .add("WriteMask", writeMask)
-            .add("UserWriteMask", userWriteMask)
-            .add("References", references)
-            .add("IsAbstract", isAbstract)
-            .add("Symmetric", symmetric)
-            .add("InverseName", inverseName)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ReferenceTypeNode> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public Boolean getIsAbstract() {
+        return isAbstract;
+    }
+
+    public Boolean getSymmetric() {
+        return symmetric;
+    }
+
+    public LocalizedText getInverseName() {
+        return inverseName;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ReferenceTypeNode> {
         @Override
         public Class<ReferenceTypeNode> getType() {
             return ReferenceTypeNode.class;
         }
 
         @Override
-        public ReferenceTypeNode decode(UaDecoder decoder) throws UaSerializationException {
+        public ReferenceTypeNode decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeClass nodeClass = NodeClass.from(decoder.readInt32("NodeClass"));
             QualifiedName browseName = decoder.readQualifiedName("BrowseName");
@@ -102,36 +99,26 @@ public class ReferenceTypeNode extends TypeNode {
             LocalizedText description = decoder.readLocalizedText("Description");
             UInteger writeMask = decoder.readUInt32("WriteMask");
             UInteger userWriteMask = decoder.readUInt32("UserWriteMask");
-            ReferenceNode[] references =
-                decoder.readBuiltinStructArray(
-                    "References",
-                    ReferenceNode.class
-                );
+            ReferenceNode[] references = (ReferenceNode[]) decoder.readStructArray("References", ReferenceNode.TYPE_ID);
             Boolean isAbstract = decoder.readBoolean("IsAbstract");
             Boolean symmetric = decoder.readBoolean("Symmetric");
             LocalizedText inverseName = decoder.readLocalizedText("InverseName");
-
             return new ReferenceTypeNode(nodeId, nodeClass, browseName, displayName, description, writeMask, userWriteMask, references, isAbstract, symmetric, inverseName);
         }
 
         @Override
-        public void encode(ReferenceTypeNode value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeInt32("NodeClass", value.nodeClass != null ? value.nodeClass.getValue() : 0);
-            encoder.writeQualifiedName("BrowseName", value.browseName);
-            encoder.writeLocalizedText("DisplayName", value.displayName);
-            encoder.writeLocalizedText("Description", value.description);
-            encoder.writeUInt32("WriteMask", value.writeMask);
-            encoder.writeUInt32("UserWriteMask", value.userWriteMask);
-            encoder.writeBuiltinStructArray(
-                "References",
-                value.references,
-                ReferenceNode.class
-            );
-            encoder.writeBoolean("IsAbstract", value.isAbstract);
-            encoder.writeBoolean("Symmetric", value.symmetric);
-            encoder.writeLocalizedText("InverseName", value.inverseName);
+        public void encode(SerializationContext context, UaEncoder encoder, ReferenceTypeNode value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeInt32("NodeClass", value.getNodeClass().getValue());
+            encoder.writeQualifiedName("BrowseName", value.getBrowseName());
+            encoder.writeLocalizedText("DisplayName", value.getDisplayName());
+            encoder.writeLocalizedText("Description", value.getDescription());
+            encoder.writeUInt32("WriteMask", value.getWriteMask());
+            encoder.writeUInt32("UserWriteMask", value.getUserWriteMask());
+            encoder.writeStructArray("References", value.getReferences(), ReferenceNode.TYPE_ID);
+            encoder.writeBoolean("IsAbstract", value.getIsAbstract());
+            encoder.writeBoolean("Symmetric", value.getSymmetric());
+            encoder.writeLocalizedText("InverseName", value.getInverseName());
         }
     }
-
 }

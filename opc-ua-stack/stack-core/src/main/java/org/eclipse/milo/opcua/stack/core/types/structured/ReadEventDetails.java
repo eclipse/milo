@@ -10,94 +10,102 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class ReadEventDetails extends HistoryReadDetails {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ReadEventDetails extends HistoryReadDetails implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=644");
 
-    public static final NodeId TypeId = Identifiers.ReadEventDetails;
-    public static final NodeId BinaryEncodingId = Identifiers.ReadEventDetails_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ReadEventDetails_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=646");
 
-    protected final UInteger numValuesPerNode;
-    protected final DateTime startTime;
-    protected final DateTime endTime;
-    protected final EventFilter filter;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=645");
 
-    public ReadEventDetails() {
-        super();
-        this.numValuesPerNode = null;
-        this.startTime = null;
-        this.endTime = null;
-        this.filter = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15262");
 
-    public ReadEventDetails(UInteger numValuesPerNode, DateTime startTime, DateTime endTime, EventFilter filter) {
-        super();
+    private final UInteger numValuesPerNode;
+
+    private final DateTime startTime;
+
+    private final DateTime endTime;
+
+    private final EventFilter filter;
+
+    public ReadEventDetails(UInteger numValuesPerNode, DateTime startTime, DateTime endTime,
+                            EventFilter filter) {
         this.numValuesPerNode = numValuesPerNode;
         this.startTime = startTime;
         this.endTime = endTime;
         this.filter = filter;
     }
 
-    public UInteger getNumValuesPerNode() { return numValuesPerNode; }
-
-    public DateTime getStartTime() { return startTime; }
-
-    public DateTime getEndTime() { return endTime; }
-
-    public EventFilter getFilter() { return filter; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NumValuesPerNode", numValuesPerNode)
-            .add("StartTime", startTime)
-            .add("EndTime", endTime)
-            .add("Filter", filter)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ReadEventDetails> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public UInteger getNumValuesPerNode() {
+        return numValuesPerNode;
+    }
+
+    public DateTime getStartTime() {
+        return startTime;
+    }
+
+    public DateTime getEndTime() {
+        return endTime;
+    }
+
+    public EventFilter getFilter() {
+        return filter;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ReadEventDetails> {
         @Override
         public Class<ReadEventDetails> getType() {
             return ReadEventDetails.class;
         }
 
         @Override
-        public ReadEventDetails decode(UaDecoder decoder) throws UaSerializationException {
+        public ReadEventDetails decode(SerializationContext context, UaDecoder decoder) {
             UInteger numValuesPerNode = decoder.readUInt32("NumValuesPerNode");
             DateTime startTime = decoder.readDateTime("StartTime");
             DateTime endTime = decoder.readDateTime("EndTime");
-            EventFilter filter = (EventFilter) decoder.readBuiltinStruct("Filter", EventFilter.class);
-
+            EventFilter filter = (EventFilter) decoder.readStruct("Filter", EventFilter.TYPE_ID);
             return new ReadEventDetails(numValuesPerNode, startTime, endTime, filter);
         }
 
         @Override
-        public void encode(ReadEventDetails value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeUInt32("NumValuesPerNode", value.numValuesPerNode);
-            encoder.writeDateTime("StartTime", value.startTime);
-            encoder.writeDateTime("EndTime", value.endTime);
-            encoder.writeBuiltinStruct("Filter", value.filter, EventFilter.class);
+        public void encode(SerializationContext context, UaEncoder encoder, ReadEventDetails value) {
+            encoder.writeUInt32("NumValuesPerNode", value.getNumValuesPerNode());
+            encoder.writeDateTime("StartTime", value.getStartTime());
+            encoder.writeDateTime("EndTime", value.getEndTime());
+            encoder.writeStruct("Filter", value.getFilter(), EventFilter.TYPE_ID);
         }
     }
-
 }

@@ -10,94 +10,101 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
-public class NodeReference implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class NodeReference extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=580");
 
-    public static final NodeId TypeId = Identifiers.NodeReference;
-    public static final NodeId BinaryEncodingId = Identifiers.NodeReference_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.NodeReference_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=582");
 
-    protected final NodeId nodeId;
-    protected final NodeId referenceTypeId;
-    protected final Boolean isForward;
-    protected final NodeId[] referencedNodeIds;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=581");
 
-    public NodeReference() {
-        this.nodeId = null;
-        this.referenceTypeId = null;
-        this.isForward = null;
-        this.referencedNodeIds = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15203");
 
-    public NodeReference(NodeId nodeId, NodeId referenceTypeId, Boolean isForward, NodeId[] referencedNodeIds) {
+    private final NodeId nodeId;
+
+    private final NodeId referenceTypeId;
+
+    private final Boolean isForward;
+
+    private final NodeId[] referencedNodeIds;
+
+    public NodeReference(NodeId nodeId, NodeId referenceTypeId, Boolean isForward,
+                         NodeId[] referencedNodeIds) {
         this.nodeId = nodeId;
         this.referenceTypeId = referenceTypeId;
         this.isForward = isForward;
         this.referencedNodeIds = referencedNodeIds;
     }
 
-    public NodeId getNodeId() { return nodeId; }
-
-    public NodeId getReferenceTypeId() { return referenceTypeId; }
-
-    public Boolean getIsForward() { return isForward; }
-
-    @Nullable
-    public NodeId[] getReferencedNodeIds() { return referencedNodeIds; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("NodeId", nodeId)
-            .add("ReferenceTypeId", referenceTypeId)
-            .add("IsForward", isForward)
-            .add("ReferencedNodeIds", referencedNodeIds)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<NodeReference> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public NodeId getNodeId() {
+        return nodeId;
+    }
+
+    public NodeId getReferenceTypeId() {
+        return referenceTypeId;
+    }
+
+    public Boolean getIsForward() {
+        return isForward;
+    }
+
+    public NodeId[] getReferencedNodeIds() {
+        return referencedNodeIds;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<NodeReference> {
         @Override
         public Class<NodeReference> getType() {
             return NodeReference.class;
         }
 
         @Override
-        public NodeReference decode(UaDecoder decoder) throws UaSerializationException {
+        public NodeReference decode(SerializationContext context, UaDecoder decoder) {
             NodeId nodeId = decoder.readNodeId("NodeId");
             NodeId referenceTypeId = decoder.readNodeId("ReferenceTypeId");
             Boolean isForward = decoder.readBoolean("IsForward");
-            NodeId[] referencedNodeIds = decoder.readArray("ReferencedNodeIds", decoder::readNodeId, NodeId.class);
-
+            NodeId[] referencedNodeIds = decoder.readNodeIdArray("ReferencedNodeIds");
             return new NodeReference(nodeId, referenceTypeId, isForward, referencedNodeIds);
         }
 
         @Override
-        public void encode(NodeReference value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeNodeId("NodeId", value.nodeId);
-            encoder.writeNodeId("ReferenceTypeId", value.referenceTypeId);
-            encoder.writeBoolean("IsForward", value.isForward);
-            encoder.writeArray("ReferencedNodeIds", value.referencedNodeIds, encoder::writeNodeId);
+        public void encode(SerializationContext context, UaEncoder encoder, NodeReference value) {
+            encoder.writeNodeId("NodeId", value.getNodeId());
+            encoder.writeNodeId("ReferenceTypeId", value.getReferenceTypeId());
+            encoder.writeBoolean("IsForward", value.getIsForward());
+            encoder.writeNodeIdArray("ReferencedNodeIds", value.getReferencedNodeIds());
         }
     }
-
 }

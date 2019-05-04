@@ -82,8 +82,12 @@ public class BrowsePathsHelper {
 
             sequence(futures).thenAcceptAsync(results -> {
                 ResponseHeader header = service.createResponseHeader();
+
                 TranslateBrowsePathsToNodeIdsResponse response = new TranslateBrowsePathsToNodeIdsResponse(
-                    header, a(results, BrowsePathResult.class), new DiagnosticInfo[0]);
+                    header,
+                    a(results, BrowsePathResult.class),
+                    new DiagnosticInfo[0]
+                );
 
                 service.setResponse(response);
             }, server.getExecutorService());
@@ -102,10 +106,14 @@ public class BrowsePathsHelper {
 
                 if (!targets.isEmpty()) {
                     result = new BrowsePathResult(
-                        StatusCode.GOOD, a(targets, BrowsePathTarget.class));
+                        StatusCode.GOOD,
+                        a(targets, BrowsePathTarget.class)
+                    );
                 } else {
                     result = new BrowsePathResult(
-                        new StatusCode(StatusCodes.Bad_NoMatch), new BrowsePathTarget[0]);
+                        new StatusCode(StatusCodes.Bad_NoMatch),
+                        new BrowsePathTarget[0]
+                    );
                 }
 
                 future.complete(result);
@@ -151,7 +159,8 @@ public class BrowsePathsHelper {
                         UInteger.MAX : uint(nextElements.size());
 
                     List<BrowsePathTarget> targets = newArrayList(
-                        new BrowsePathTarget(nextExId, remaining));
+                        new BrowsePathTarget(nextExId, remaining)
+                    );
 
                     return completedFuture(targets);
                 }

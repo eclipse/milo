@@ -1,112 +1,98 @@
-/*
- * Copyright (c) 2019 the Eclipse Milo Authors
- *
- * This program and the accompanying materials are made
- * available under the terms of the Eclipse Public License 2.0
- * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
- */
-
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 
-public class ReadRequest implements UaRequestMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ReadRequest extends Structure implements UaRequestMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=629");
 
-    public static final NodeId TypeId = Identifiers.ReadRequest;
-    public static final NodeId BinaryEncodingId = Identifiers.ReadRequest_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ReadRequest_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=631");
 
-    protected final RequestHeader requestHeader;
-    protected final Double maxAge;
-    protected final TimestampsToReturn timestampsToReturn;
-    protected final ReadValueId[] nodesToRead;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=630");
 
-    public ReadRequest() {
-        this.requestHeader = null;
-        this.maxAge = null;
-        this.timestampsToReturn = null;
-        this.nodesToRead = null;
-    }
+    private final RequestHeader requestHeader;
 
-    public ReadRequest(RequestHeader requestHeader, Double maxAge, TimestampsToReturn timestampsToReturn, ReadValueId[] nodesToRead) {
+    private final Double maxAge;
+
+    private final TimestampsToReturn timestampsToReturn;
+
+    private final ReadValueId[] nodesToRead;
+
+    public ReadRequest(RequestHeader requestHeader, Double maxAge,
+                       TimestampsToReturn timestampsToReturn, ReadValueId[] nodesToRead) {
         this.requestHeader = requestHeader;
         this.maxAge = maxAge;
         this.timestampsToReturn = timestampsToReturn;
         this.nodesToRead = nodesToRead;
     }
 
-    public RequestHeader getRequestHeader() { return requestHeader; }
-
-    public Double getMaxAge() { return maxAge; }
-
-    public TimestampsToReturn getTimestampsToReturn() { return timestampsToReturn; }
-
-    @Nullable
-    public ReadValueId[] getNodesToRead() { return nodesToRead; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("RequestHeader", requestHeader)
-            .add("MaxAge", maxAge)
-            .add("TimestampsToReturn", timestampsToReturn)
-            .add("NodesToRead", nodesToRead)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ReadRequest> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public RequestHeader getRequestHeader() {
+        return requestHeader;
+    }
+
+    public Double getMaxAge() {
+        return maxAge;
+    }
+
+    public TimestampsToReturn getTimestampsToReturn() {
+        return timestampsToReturn;
+    }
+
+    public ReadValueId[] getNodesToRead() {
+        return nodesToRead;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ReadRequest> {
         @Override
         public Class<ReadRequest> getType() {
             return ReadRequest.class;
         }
 
         @Override
-        public ReadRequest decode(UaDecoder decoder) throws UaSerializationException {
-            RequestHeader requestHeader = (RequestHeader) decoder.readBuiltinStruct("RequestHeader", RequestHeader.class);
+        public ReadRequest decode(SerializationContext context, UaDecoder decoder) {
+            RequestHeader requestHeader = (RequestHeader) decoder.readStruct("RequestHeader", RequestHeader.TYPE_ID);
             Double maxAge = decoder.readDouble("MaxAge");
             TimestampsToReturn timestampsToReturn = TimestampsToReturn.from(decoder.readInt32("TimestampsToReturn"));
-            ReadValueId[] nodesToRead =
-                decoder.readBuiltinStructArray(
-                    "NodesToRead",
-                    ReadValueId.class
-                );
-
+            ReadValueId[] nodesToRead = (ReadValueId[]) decoder.readStructArray("NodesToRead", ReadValueId.TYPE_ID);
             return new ReadRequest(requestHeader, maxAge, timestampsToReturn, nodesToRead);
         }
 
         @Override
-        public void encode(ReadRequest value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("RequestHeader", value.requestHeader, RequestHeader.class);
-            encoder.writeDouble("MaxAge", value.maxAge);
-            encoder.writeInt32("TimestampsToReturn", value.timestampsToReturn != null ? value.timestampsToReturn.getValue() : 0);
-            encoder.writeBuiltinStructArray(
-                "NodesToRead",
-                value.nodesToRead,
-                ReadValueId.class
-            );
+        public void encode(SerializationContext context, UaEncoder encoder, ReadRequest value) {
+            encoder.writeStruct("RequestHeader", value.getRequestHeader(), RequestHeader.TYPE_ID);
+            encoder.writeDouble("MaxAge", value.getMaxAge());
+            encoder.writeInt32("TimestampsToReturn", value.getTimestampsToReturn().getValue());
+            encoder.writeStructArray("NodesToRead", value.getNodesToRead(), ReadValueId.TYPE_ID);
         }
     }
-
 }

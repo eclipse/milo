@@ -70,7 +70,8 @@ public class DefaultAddressSpace implements AddressSpace {
     @Override
     public CompletableFuture<UaNode> createNode(NodeId nodeId) {
         ReadValueId readValueId = new ReadValueId(
-            nodeId, AttributeId.NodeClass.uid(), null, QualifiedName.NULL_VALUE);
+            nodeId, AttributeId.NodeClass.uid(), null, QualifiedName.NULL_VALUE
+        );
 
         CompletableFuture<ReadResponse> future =
             client.read(0.0, TimestampsToReturn.Neither, newArrayList(readValueId));

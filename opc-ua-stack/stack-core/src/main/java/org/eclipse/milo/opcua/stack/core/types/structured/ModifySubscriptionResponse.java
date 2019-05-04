@@ -10,92 +10,102 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaResponseMessage;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
-public class ModifySubscriptionResponse implements UaResponseMessage {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class ModifySubscriptionResponse extends Structure implements UaResponseMessage {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=794");
 
-    public static final NodeId TypeId = Identifiers.ModifySubscriptionResponse;
-    public static final NodeId BinaryEncodingId = Identifiers.ModifySubscriptionResponse_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.ModifySubscriptionResponse_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=796");
 
-    protected final ResponseHeader responseHeader;
-    protected final Double revisedPublishingInterval;
-    protected final UInteger revisedLifetimeCount;
-    protected final UInteger revisedMaxKeepAliveCount;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=795");
 
-    public ModifySubscriptionResponse() {
-        this.responseHeader = null;
-        this.revisedPublishingInterval = null;
-        this.revisedLifetimeCount = null;
-        this.revisedMaxKeepAliveCount = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15340");
 
-    public ModifySubscriptionResponse(ResponseHeader responseHeader, Double revisedPublishingInterval, UInteger revisedLifetimeCount, UInteger revisedMaxKeepAliveCount) {
+    private final ResponseHeader responseHeader;
+
+    private final Double revisedPublishingInterval;
+
+    private final UInteger revisedLifetimeCount;
+
+    private final UInteger revisedMaxKeepAliveCount;
+
+    public ModifySubscriptionResponse(ResponseHeader responseHeader, Double revisedPublishingInterval,
+                                      UInteger revisedLifetimeCount, UInteger revisedMaxKeepAliveCount) {
         this.responseHeader = responseHeader;
         this.revisedPublishingInterval = revisedPublishingInterval;
         this.revisedLifetimeCount = revisedLifetimeCount;
         this.revisedMaxKeepAliveCount = revisedMaxKeepAliveCount;
     }
 
-    public ResponseHeader getResponseHeader() { return responseHeader; }
-
-    public Double getRevisedPublishingInterval() { return revisedPublishingInterval; }
-
-    public UInteger getRevisedLifetimeCount() { return revisedLifetimeCount; }
-
-    public UInteger getRevisedMaxKeepAliveCount() { return revisedMaxKeepAliveCount; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ResponseHeader", responseHeader)
-            .add("RevisedPublishingInterval", revisedPublishingInterval)
-            .add("RevisedLifetimeCount", revisedLifetimeCount)
-            .add("RevisedMaxKeepAliveCount", revisedMaxKeepAliveCount)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<ModifySubscriptionResponse> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public ResponseHeader getResponseHeader() {
+        return responseHeader;
+    }
+
+    public Double getRevisedPublishingInterval() {
+        return revisedPublishingInterval;
+    }
+
+    public UInteger getRevisedLifetimeCount() {
+        return revisedLifetimeCount;
+    }
+
+    public UInteger getRevisedMaxKeepAliveCount() {
+        return revisedMaxKeepAliveCount;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<ModifySubscriptionResponse> {
         @Override
         public Class<ModifySubscriptionResponse> getType() {
             return ModifySubscriptionResponse.class;
         }
 
         @Override
-        public ModifySubscriptionResponse decode(UaDecoder decoder) throws UaSerializationException {
-            ResponseHeader responseHeader = (ResponseHeader) decoder.readBuiltinStruct("ResponseHeader", ResponseHeader.class);
+        public ModifySubscriptionResponse decode(SerializationContext context, UaDecoder decoder) {
+            ResponseHeader responseHeader = (ResponseHeader) decoder.readStruct("ResponseHeader", ResponseHeader.TYPE_ID);
             Double revisedPublishingInterval = decoder.readDouble("RevisedPublishingInterval");
             UInteger revisedLifetimeCount = decoder.readUInt32("RevisedLifetimeCount");
             UInteger revisedMaxKeepAliveCount = decoder.readUInt32("RevisedMaxKeepAliveCount");
-
             return new ModifySubscriptionResponse(responseHeader, revisedPublishingInterval, revisedLifetimeCount, revisedMaxKeepAliveCount);
         }
 
         @Override
-        public void encode(ModifySubscriptionResponse value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeBuiltinStruct("ResponseHeader", value.responseHeader, ResponseHeader.class);
-            encoder.writeDouble("RevisedPublishingInterval", value.revisedPublishingInterval);
-            encoder.writeUInt32("RevisedLifetimeCount", value.revisedLifetimeCount);
-            encoder.writeUInt32("RevisedMaxKeepAliveCount", value.revisedMaxKeepAliveCount);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           ModifySubscriptionResponse value) {
+            encoder.writeStruct("ResponseHeader", value.getResponseHeader(), ResponseHeader.TYPE_ID);
+            encoder.writeDouble("RevisedPublishingInterval", value.getRevisedPublishingInterval());
+            encoder.writeUInt32("RevisedLifetimeCount", value.getRevisedLifetimeCount());
+            encoder.writeUInt32("RevisedMaxKeepAliveCount", value.getRevisedMaxKeepAliveCount());
         }
     }
-
 }

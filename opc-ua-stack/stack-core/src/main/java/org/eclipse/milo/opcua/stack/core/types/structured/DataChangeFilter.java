@@ -10,86 +10,92 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.DataChangeTrigger;
 
-public class DataChangeFilter extends MonitoringFilter {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class DataChangeFilter extends MonitoringFilter implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=722");
 
-    public static final NodeId TypeId = Identifiers.DataChangeFilter;
-    public static final NodeId BinaryEncodingId = Identifiers.DataChangeFilter_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.DataChangeFilter_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=724");
 
-    protected final DataChangeTrigger trigger;
-    protected final UInteger deadbandType;
-    protected final Double deadbandValue;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=723");
 
-    public DataChangeFilter() {
-        super();
-        this.trigger = null;
-        this.deadbandType = null;
-        this.deadbandValue = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15294");
+
+    private final DataChangeTrigger trigger;
+
+    private final UInteger deadbandType;
+
+    private final Double deadbandValue;
 
     public DataChangeFilter(DataChangeTrigger trigger, UInteger deadbandType, Double deadbandValue) {
-        super();
         this.trigger = trigger;
         this.deadbandType = deadbandType;
         this.deadbandValue = deadbandValue;
     }
 
-    public DataChangeTrigger getTrigger() { return trigger; }
-
-    public UInteger getDeadbandType() { return deadbandType; }
-
-    public Double getDeadbandValue() { return deadbandValue; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Trigger", trigger)
-            .add("DeadbandType", deadbandType)
-            .add("DeadbandValue", deadbandValue)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<DataChangeFilter> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public DataChangeTrigger getTrigger() {
+        return trigger;
+    }
+
+    public UInteger getDeadbandType() {
+        return deadbandType;
+    }
+
+    public Double getDeadbandValue() {
+        return deadbandValue;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<DataChangeFilter> {
         @Override
         public Class<DataChangeFilter> getType() {
             return DataChangeFilter.class;
         }
 
         @Override
-        public DataChangeFilter decode(UaDecoder decoder) throws UaSerializationException {
+        public DataChangeFilter decode(SerializationContext context, UaDecoder decoder) {
             DataChangeTrigger trigger = DataChangeTrigger.from(decoder.readInt32("Trigger"));
             UInteger deadbandType = decoder.readUInt32("DeadbandType");
             Double deadbandValue = decoder.readDouble("DeadbandValue");
-
             return new DataChangeFilter(trigger, deadbandType, deadbandValue);
         }
 
         @Override
-        public void encode(DataChangeFilter value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeInt32("Trigger", value.trigger != null ? value.trigger.getValue() : 0);
-            encoder.writeUInt32("DeadbandType", value.deadbandType);
-            encoder.writeDouble("DeadbandValue", value.deadbandValue);
+        public void encode(SerializationContext context, UaEncoder encoder, DataChangeFilter value) {
+            encoder.writeInt32("Trigger", value.getTrigger().getValue());
+            encoder.writeUInt32("DeadbandType", value.getDeadbandType());
+            encoder.writeDouble("DeadbandValue", value.getDeadbandValue());
         }
     }
-
 }

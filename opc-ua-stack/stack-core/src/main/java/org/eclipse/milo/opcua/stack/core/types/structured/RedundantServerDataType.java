@@ -10,32 +10,39 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ServerState;
 
-public class RedundantServerDataType implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class RedundantServerDataType extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=853");
 
-    public static final NodeId TypeId = Identifiers.RedundantServerDataType;
-    public static final NodeId BinaryEncodingId = Identifiers.RedundantServerDataType_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.RedundantServerDataType_Encoding_DefaultXml;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=854");
 
-    protected final String serverId;
-    protected final UByte serviceLevel;
-    protected final ServerState serverState;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=855");
 
-    public RedundantServerDataType() {
-        this.serverId = null;
-        this.serviceLevel = null;
-        this.serverState = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15362");
+
+    private final String serverId;
+
+    private final UByte serviceLevel;
+
+    private final ServerState serverState;
 
     public RedundantServerDataType(String serverId, UByte serviceLevel, ServerState serverState) {
         this.serverId = serverId;
@@ -43,52 +50,53 @@ public class RedundantServerDataType implements UaStructure {
         this.serverState = serverState;
     }
 
-    public String getServerId() { return serverId; }
-
-    public UByte getServiceLevel() { return serviceLevel; }
-
-    public ServerState getServerState() { return serverState; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("ServerId", serverId)
-            .add("ServiceLevel", serviceLevel)
-            .add("ServerState", serverState)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<RedundantServerDataType> {
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public UByte getServiceLevel() {
+        return serviceLevel;
+    }
+
+    public ServerState getServerState() {
+        return serverState;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<RedundantServerDataType> {
         @Override
         public Class<RedundantServerDataType> getType() {
             return RedundantServerDataType.class;
         }
 
         @Override
-        public RedundantServerDataType decode(UaDecoder decoder) throws UaSerializationException {
+        public RedundantServerDataType decode(SerializationContext context, UaDecoder decoder) {
             String serverId = decoder.readString("ServerId");
             UByte serviceLevel = decoder.readByte("ServiceLevel");
             ServerState serverState = ServerState.from(decoder.readInt32("ServerState"));
-
             return new RedundantServerDataType(serverId, serviceLevel, serverState);
         }
 
         @Override
-        public void encode(RedundantServerDataType value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("ServerId", value.serverId);
-            encoder.writeByte("ServiceLevel", value.serviceLevel);
-            encoder.writeInt32("ServerState", value.serverState != null ? value.serverState.getValue() : 0);
+        public void encode(SerializationContext context, UaEncoder encoder,
+                           RedundantServerDataType value) {
+            encoder.writeString("ServerId", value.getServerId());
+            encoder.writeByte("ServiceLevel", value.getServiceLevel());
+            encoder.writeInt32("ServerState", value.getServerState().getValue());
         }
     }
-
 }

@@ -37,6 +37,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.UaRequestMessage;
 import org.eclipse.milo.opcua.stack.core.types.DataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.DefaultDataTypeManager;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ApplicationType;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.structured.ActivateSessionRequest;
@@ -236,7 +237,7 @@ public class UaStackServer {
 
         Class<? extends UaRequestMessage> requestClass = serviceRequest.getRequest().getClass();
 
-        ServiceRequestHandler serviceHandler = serviceHandlerTable.get(path, requestClass);
+        ServiceRequestHandler serviceHandler = serviceHandlerTable.get(path, serviceRequest.getRequest().getTypeId());
 
         try {
             if (serviceHandler != null) {
@@ -361,83 +362,83 @@ public class UaStackServer {
 
     public <T extends UaRequestMessage> void addServiceHandler(
         String path,
-        Class<T> requestClass,
+        ExpandedNodeId dataTypeId,
         ServiceRequestHandler serviceHandler) {
 
-        logger.debug("Adding ServiceHandler for {} at {}", requestClass.getSimpleName(), path);
+        logger.debug("Adding ServiceHandler for {} at {}", dataTypeId, path);
 
-        serviceHandlerTable.put(path, requestClass, serviceHandler);
+        serviceHandlerTable.put(path, dataTypeId, serviceHandler);
     }
 
-    public <T extends UaRequestMessage> void removeServiceHandler(String path, Class<T> requestClass) {
-        logger.debug("Removing ServiceHandler for {} at {}", requestClass.getSimpleName(), path);
+    public <T extends UaRequestMessage> void removeServiceHandler(String path, ExpandedNodeId dataTypeId) {
+        logger.debug("Removing ServiceHandler for {} at {}", dataTypeId, path);
 
-        serviceHandlerTable.remove(path, requestClass);
+        serviceHandlerTable.remove(path, dataTypeId);
     }
 
     public void addServiceSet(String path, AttributeServiceSet serviceSet) {
-        addServiceHandler(path, ReadRequest.class, serviceSet::onRead);
-        addServiceHandler(path, WriteRequest.class, serviceSet::onWrite);
+        addServiceHandler(path, ReadRequest.TYPE_ID, serviceSet::onRead);
+        addServiceHandler(path, WriteRequest.TYPE_ID, serviceSet::onWrite);
     }
 
     public void addServiceSet(String path, AttributeHistoryServiceSet serviceSet) {
-        addServiceHandler(path, HistoryReadRequest.class, serviceSet::onHistoryRead);
-        addServiceHandler(path, HistoryUpdateRequest.class, serviceSet::onHistoryUpdate);
+        addServiceHandler(path, HistoryReadRequest.TYPE_ID, serviceSet::onHistoryRead);
+        addServiceHandler(path, HistoryUpdateRequest.TYPE_ID, serviceSet::onHistoryUpdate);
     }
 
     public void addServiceSet(String path, DiscoveryServiceSet serviceSet) {
-        addServiceHandler(path, GetEndpointsRequest.class, serviceSet::onGetEndpoints);
-        addServiceHandler(path, FindServersRequest.class, serviceSet::onFindServers);
-        addServiceHandler(path, RegisterServerRequest.class, serviceSet::onRegisterServer);
+        addServiceHandler(path, GetEndpointsRequest.TYPE_ID, serviceSet::onGetEndpoints);
+        addServiceHandler(path, FindServersRequest.TYPE_ID, serviceSet::onFindServers);
+        addServiceHandler(path, RegisterServerRequest.TYPE_ID, serviceSet::onRegisterServer);
     }
 
     public void addServiceSet(String path, QueryServiceSet serviceSet) {
-        addServiceHandler(path, QueryFirstRequest.class, serviceSet::onQueryFirst);
-        addServiceHandler(path, QueryNextRequest.class, serviceSet::onQueryNext);
+        addServiceHandler(path, QueryFirstRequest.TYPE_ID, serviceSet::onQueryFirst);
+        addServiceHandler(path, QueryNextRequest.TYPE_ID, serviceSet::onQueryNext);
     }
 
     public void addServiceSet(String path, MethodServiceSet serviceSet) {
-        addServiceHandler(path, CallRequest.class, serviceSet::onCall);
+        addServiceHandler(path, CallRequest.TYPE_ID, serviceSet::onCall);
     }
 
     public void addServiceSet(String path, MonitoredItemServiceSet serviceSet) {
-        addServiceHandler(path, CreateMonitoredItemsRequest.class, serviceSet::onCreateMonitoredItems);
-        addServiceHandler(path, ModifyMonitoredItemsRequest.class, serviceSet::onModifyMonitoredItems);
-        addServiceHandler(path, DeleteMonitoredItemsRequest.class, serviceSet::onDeleteMonitoredItems);
-        addServiceHandler(path, SetMonitoringModeRequest.class, serviceSet::onSetMonitoringMode);
-        addServiceHandler(path, SetTriggeringRequest.class, serviceSet::onSetTriggering);
+        addServiceHandler(path, CreateMonitoredItemsRequest.TYPE_ID, serviceSet::onCreateMonitoredItems);
+        addServiceHandler(path, ModifyMonitoredItemsRequest.TYPE_ID, serviceSet::onModifyMonitoredItems);
+        addServiceHandler(path, DeleteMonitoredItemsRequest.TYPE_ID, serviceSet::onDeleteMonitoredItems);
+        addServiceHandler(path, SetMonitoringModeRequest.TYPE_ID, serviceSet::onSetMonitoringMode);
+        addServiceHandler(path, SetTriggeringRequest.TYPE_ID, serviceSet::onSetTriggering);
     }
 
     public void addServiceSet(String path, NodeManagementServiceSet serviceSet) {
-        addServiceHandler(path, AddNodesRequest.class, serviceSet::onAddNodes);
-        addServiceHandler(path, DeleteNodesRequest.class, serviceSet::onDeleteNodes);
-        addServiceHandler(path, AddReferencesRequest.class, serviceSet::onAddReferences);
-        addServiceHandler(path, DeleteReferencesRequest.class, serviceSet::onDeleteReferences);
+        addServiceHandler(path, AddNodesRequest.TYPE_ID, serviceSet::onAddNodes);
+        addServiceHandler(path, DeleteNodesRequest.TYPE_ID, serviceSet::onDeleteNodes);
+        addServiceHandler(path, AddReferencesRequest.TYPE_ID, serviceSet::onAddReferences);
+        addServiceHandler(path, DeleteReferencesRequest.TYPE_ID, serviceSet::onDeleteReferences);
     }
 
     public void addServiceSet(String path, SessionServiceSet serviceSet) {
-        addServiceHandler(path, CreateSessionRequest.class, serviceSet::onCreateSession);
-        addServiceHandler(path, ActivateSessionRequest.class, serviceSet::onActivateSession);
-        addServiceHandler(path, CloseSessionRequest.class, serviceSet::onCloseSession);
-        addServiceHandler(path, CancelRequest.class, serviceSet::onCancel);
+        addServiceHandler(path, CreateSessionRequest.TYPE_ID, serviceSet::onCreateSession);
+        addServiceHandler(path, ActivateSessionRequest.TYPE_ID, serviceSet::onActivateSession);
+        addServiceHandler(path, CloseSessionRequest.TYPE_ID, serviceSet::onCloseSession);
+        addServiceHandler(path, CancelRequest.TYPE_ID, serviceSet::onCancel);
     }
 
     public void addServiceSet(String path, SubscriptionServiceSet serviceSet) {
-        addServiceHandler(path, CreateSubscriptionRequest.class, serviceSet::onCreateSubscription);
-        addServiceHandler(path, ModifySubscriptionRequest.class, serviceSet::onModifySubscription);
-        addServiceHandler(path, DeleteSubscriptionsRequest.class, serviceSet::onDeleteSubscriptions);
-        addServiceHandler(path, TransferSubscriptionsRequest.class, serviceSet::onTransferSubscriptions);
-        addServiceHandler(path, SetPublishingModeRequest.class, serviceSet::onSetPublishingMode);
-        addServiceHandler(path, PublishRequest.class, serviceSet::onPublish);
-        addServiceHandler(path, RepublishRequest.class, serviceSet::onRepublish);
+        addServiceHandler(path, CreateSubscriptionRequest.TYPE_ID, serviceSet::onCreateSubscription);
+        addServiceHandler(path, ModifySubscriptionRequest.TYPE_ID, serviceSet::onModifySubscription);
+        addServiceHandler(path, DeleteSubscriptionsRequest.TYPE_ID, serviceSet::onDeleteSubscriptions);
+        addServiceHandler(path, TransferSubscriptionsRequest.TYPE_ID, serviceSet::onTransferSubscriptions);
+        addServiceHandler(path, SetPublishingModeRequest.TYPE_ID, serviceSet::onSetPublishingMode);
+        addServiceHandler(path, PublishRequest.TYPE_ID, serviceSet::onPublish);
+        addServiceHandler(path, RepublishRequest.TYPE_ID, serviceSet::onRepublish);
     }
 
     public void addServiceSet(String path, ViewServiceSet serviceSet) {
-        addServiceHandler(path, BrowseRequest.class, serviceSet::onBrowse);
-        addServiceHandler(path, BrowseNextRequest.class, serviceSet::onBrowseNext);
-        addServiceHandler(path, TranslateBrowsePathsToNodeIdsRequest.class, serviceSet::onTranslateBrowsePaths);
-        addServiceHandler(path, RegisterNodesRequest.class, serviceSet::onRegisterNodes);
-        addServiceHandler(path, UnregisterNodesRequest.class, serviceSet::onUnregisterNodes);
+        addServiceHandler(path, BrowseRequest.TYPE_ID, serviceSet::onBrowse);
+        addServiceHandler(path, BrowseNextRequest.TYPE_ID, serviceSet::onBrowseNext);
+        addServiceHandler(path, TranslateBrowsePathsToNodeIdsRequest.TYPE_ID, serviceSet::onTranslateBrowsePaths);
+        addServiceHandler(path, RegisterNodesRequest.TYPE_ID, serviceSet::onRegisterNodes);
+        addServiceHandler(path, UnregisterNodesRequest.TYPE_ID, serviceSet::onUnregisterNodes);
     }
 
     private class DefaultDiscoveryServiceSet implements DiscoveryServiceSet {
@@ -584,13 +585,13 @@ public class UaStackServer {
     }
 
     private static class ServiceHandlerTable extends
-        ForwardingTable<String, Class<? extends UaRequestMessage>, ServiceRequestHandler> {
+        ForwardingTable<String, ExpandedNodeId, ServiceRequestHandler> {
 
-        private final Table<String, Class<? extends UaRequestMessage>, ServiceRequestHandler> delegate =
+        private final Table<String, ExpandedNodeId, ServiceRequestHandler> delegate =
             Tables.synchronizedTable(HashBasedTable.create());
 
         @Override
-        protected Table<String, Class<? extends UaRequestMessage>, ServiceRequestHandler> delegate() {
+        protected Table<String, ExpandedNodeId, ServiceRequestHandler> delegate() {
             return delegate;
         }
 

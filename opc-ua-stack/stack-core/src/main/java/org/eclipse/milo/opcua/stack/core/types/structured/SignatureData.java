@@ -10,76 +10,82 @@
 
 package org.eclipse.milo.opcua.stack.core.types.structured;
 
-import com.google.common.base.MoreObjects;
-import org.eclipse.milo.opcua.stack.core.Identifiers;
-import org.eclipse.milo.opcua.stack.core.UaSerializationException;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+import org.eclipse.milo.opcua.stack.core.serialization.SerializationContext;
 import org.eclipse.milo.opcua.stack.core.serialization.UaDecoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaEncoder;
 import org.eclipse.milo.opcua.stack.core.serialization.UaStructure;
-import org.eclipse.milo.opcua.stack.core.serialization.codecs.BuiltinDataTypeCodec;
+import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCodec;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
+import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
-public class SignatureData implements UaStructure {
+@EqualsAndHashCode(
+    callSuper = true
+)
+@SuperBuilder(
+    toBuilder = true
+)
+@ToString
+public class SignatureData extends Structure implements UaStructure {
+    public static final ExpandedNodeId TYPE_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=456");
 
-    public static final NodeId TypeId = Identifiers.SignatureData;
-    public static final NodeId BinaryEncodingId = Identifiers.SignatureData_Encoding_DefaultBinary;
-    public static final NodeId XmlEncodingId = Identifiers.SignatureData_Encoding_DefaultXml;
+    public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=458");
 
-    protected final String algorithm;
-    protected final ByteString signature;
+    public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=457");
 
-    public SignatureData() {
-        this.algorithm = null;
-        this.signature = null;
-    }
+    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15137");
+
+    private final String algorithm;
+
+    private final ByteString signature;
 
     public SignatureData(String algorithm, ByteString signature) {
         this.algorithm = algorithm;
         this.signature = signature;
     }
 
-    public String getAlgorithm() { return algorithm; }
-
-    public ByteString getSignature() { return signature; }
-
     @Override
-    public NodeId getTypeId() { return TypeId; }
-
-    @Override
-    public NodeId getBinaryEncodingId() { return BinaryEncodingId; }
-
-    @Override
-    public NodeId getXmlEncodingId() { return XmlEncodingId; }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("Algorithm", algorithm)
-            .add("Signature", signature)
-            .toString();
+    public ExpandedNodeId getTypeId() {
+        return TYPE_ID;
     }
 
-    public static class Codec extends BuiltinDataTypeCodec<SignatureData> {
+    @Override
+    public ExpandedNodeId getBinaryEncodingId() {
+        return BINARY_ENCODING_ID;
+    }
 
+    @Override
+    public ExpandedNodeId getXmlEncodingId() {
+        return XML_ENCODING_ID;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public ByteString getSignature() {
+        return signature;
+    }
+
+    public static final class Codec extends GenericDataTypeCodec<SignatureData> {
         @Override
         public Class<SignatureData> getType() {
             return SignatureData.class;
         }
 
         @Override
-        public SignatureData decode(UaDecoder decoder) throws UaSerializationException {
+        public SignatureData decode(SerializationContext context, UaDecoder decoder) {
             String algorithm = decoder.readString("Algorithm");
             ByteString signature = decoder.readByteString("Signature");
-
             return new SignatureData(algorithm, signature);
         }
 
         @Override
-        public void encode(SignatureData value, UaEncoder encoder) throws UaSerializationException {
-            encoder.writeString("Algorithm", value.algorithm);
-            encoder.writeByteString("Signature", value.signature);
+        public void encode(SerializationContext context, UaEncoder encoder, SignatureData value) {
+            encoder.writeString("Algorithm", value.getAlgorithm());
+            encoder.writeByteString("Signature", value.getSignature());
         }
     }
-
 }
