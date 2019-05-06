@@ -256,19 +256,19 @@ import org.eclipse.milo.opcua.stack.core.types.structured.WriteValue;
 import org.eclipse.milo.opcua.stack.core.types.structured.X509IdentityToken;
 import org.eclipse.milo.opcua.stack.core.types.structured.XVType;
 
-class TypeInitializer {
+class DataTypeDictionaryInitializer {
     private static final String NAMESPACE_URI = "http://opcfoundation.org/UA/";
 
-    public static final void initialize(NamespaceTable namespaceTable,
-                                        DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-                                        DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) {
+    public static void initialize(NamespaceTable namespaceTable,
+                                  DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
+                                  DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) {
         initializeStructs(namespaceTable, binaryDictionary, xmlDictionary);
         initializeEnums(namespaceTable, binaryDictionary, xmlDictionary);
     }
 
-    private static final void initializeStructs(NamespaceTable namespaceTable,
-                                                DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-                                                DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) {
+    private static void initializeStructs(NamespaceTable namespaceTable,
+                                          DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
+                                          DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) {
         binaryDictionary.registerStructCodec(
             new TrustListDataType.Codec().asBinaryCodec(),
             "TrustListDataType",
@@ -3759,9 +3759,9 @@ class TypeInitializer {
         );
     }
 
-    private static final void initializeEnums(NamespaceTable namespaceTable,
-                                              DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
-                                              DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) {
+    private static void initializeEnums(NamespaceTable namespaceTable,
+                                        DataTypeDictionary<OpcUaBinaryDataTypeCodec<?>> binaryDictionary,
+                                        DataTypeDictionary<OpcUaXmlDataTypeCodec<?>> xmlDictionary) {
         binaryDictionary.registerEnumCodec(
             new NamingRuleType.Codec().asBinaryCodec(),
             "NamingRuleType",

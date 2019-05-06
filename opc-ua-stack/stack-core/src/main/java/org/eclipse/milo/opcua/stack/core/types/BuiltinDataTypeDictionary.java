@@ -32,11 +32,7 @@ public class BuiltinDataTypeDictionary {
             new OpcUaXmlDataTypeDictionary(Namespaces.OPC_UA_XSD);
 
         static {
-            TypeInitializer.initialize(
-                new NamespaceTable(),
-                BINARY_INSTANCE,
-                XML_INSTANCE
-            );
+            DataTypeDictionaryInitializer.initialize(new NamespaceTable(), BINARY_INSTANCE, XML_INSTANCE);
         }
 
     }
