@@ -15,6 +15,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
@@ -103,6 +104,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Strings.nullToEmpty;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 import static org.eclipse.milo.opcua.stack.core.util.ConversionUtil.a;
 
@@ -450,13 +452,13 @@ public class UaStackServer {
                 newArrayList(request.getProfileUris()) :
                 new ArrayList<>();
 
-            List<EndpointDescription> allEndpoints = getEndpointDescriptions()
+            Set<EndpointDescription> allEndpoints = getEndpointDescriptions()
                 .stream()
                 .filter(ed -> !ed.getEndpointUrl().endsWith("/discovery"))
                 .filter(ed -> filterProfileUris(ed, profileUris))
-                .collect(toList());
+                .collect(toSet());
 
-            List<EndpointDescription> matchingEndpoints = allEndpoints.stream()
+            Set<EndpointDescription> matchingEndpoints = allEndpoints.stream()
                 .filter(endpoint -> filterEndpointUrls(endpoint, request.getEndpointUrl()))
                 .map(endpoint ->
                     replaceApplicationDescription(
@@ -464,14 +466,15 @@ public class UaStackServer {
                         getFilteredApplicationDescription(request.getEndpointUrl())
                     )
                 )
-                .distinct()
-                .collect(toList());
+                .collect(toSet());
+
+            matchingEndpoints.forEach(System.out::println);
 
             GetEndpointsResponse response = new GetEndpointsResponse(
                 serviceRequest.createResponseHeader(),
                 matchingEndpoints.isEmpty() ?
-                    a(allEndpoints, EndpointDescription.class) :
-                    a(matchingEndpoints, EndpointDescription.class)
+                    allEndpoints.toArray(new EndpointDescription[0]) :
+                    matchingEndpoints.toArray(new EndpointDescription[0])
             );
 
             serviceRequest.setResponse(response);
@@ -533,22 +536,20 @@ public class UaStackServer {
         }
 
         private ApplicationDescription getFilteredApplicationDescription(String endpointUrl) {
-            List<String> allDiscoveryUrls = config.getEndpoints()
+            Set<String> allDiscoveryUrls = config.getEndpoints()
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
-                .distinct()
-                .collect(Collectors.toList());
+                .collect(toSet());
 
             if (allDiscoveryUrls.isEmpty()) {
                 allDiscoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfiguration::getEndpointUrl)
-                    .distinct()
-                    .collect(Collectors.toList());
+                    .collect(toSet());
             }
 
-            List<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
+            Set<String> matchingDiscoveryUrls = allDiscoveryUrls.stream()
                 .filter(discoveryUrl -> {
                     try {
 
@@ -563,8 +564,7 @@ public class UaStackServer {
                         return false;
                     }
                 })
-                .distinct()
-                .collect(toList());
+                .collect(toSet());
 
 
             logger.debug("Matching discovery URLs: {}", matchingDiscoveryUrls);
@@ -577,8 +577,8 @@ public class UaStackServer {
                 null,
                 null,
                 matchingDiscoveryUrls.isEmpty() ?
-                    a(allDiscoveryUrls, String.class) :
-                    a(matchingDiscoveryUrls, String.class)
+                    allDiscoveryUrls.toArray(new String[0]) :
+                    matchingDiscoveryUrls.toArray(new String[0])
             );
         }
 
