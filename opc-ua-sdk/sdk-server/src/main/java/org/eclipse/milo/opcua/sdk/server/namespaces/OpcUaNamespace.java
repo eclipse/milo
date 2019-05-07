@@ -154,27 +154,27 @@ public class OpcUaNamespace extends ManagedNamespace {
     }
 
     private void configureServerObject() {
-        ServerTypeNode ServerTypeNode = (ServerTypeNode) getNodeManager().get(Identifiers.Server);
+        ServerTypeNode serverTypeNode = (ServerTypeNode) getNodeManager().get(Identifiers.Server);
 
-        assert ServerTypeNode != null;
+        assert serverTypeNode != null;
 
-        ServerTypeNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
+        serverTypeNode.getNamespaceArrayNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) {
                 return new DataValue(new Variant(server.getNamespaceTable().toArray()));
             }
         });
-        ServerTypeNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {
+        serverTypeNode.getServerArrayNode().setAttributeDelegate(new AttributeDelegate() {
             @Override
             public DataValue getValue(AttributeContext context, VariableNode node) {
                 return new DataValue(new Variant(server.getServerTable().toArray()));
             }
         });
-        ServerTypeNode.setAuditing(false);
-        ServerTypeNode.getServerDiagnosticsNode().setEnabledFlag(false);
-        ServerTypeNode.setServiceLevel(ubyte(255));
+        serverTypeNode.setAuditing(false);
+        serverTypeNode.getServerDiagnosticsNode().setEnabledFlag(false);
+        serverTypeNode.setServiceLevel(ubyte(255));
 
-        ServerStatusTypeNode serverStatus = ServerTypeNode.getServerStatusNode();
+        ServerStatusTypeNode serverStatus = serverTypeNode.getServerStatusNode();
 
         BuildInfo buildInfo = server.getConfig().getBuildInfo();
         serverStatus.setBuildInfo(buildInfo);
@@ -230,7 +230,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         });
 
         final OpcUaServerConfigLimits limits = server.getConfig().getLimits();
-        ServerCapabilitiesTypeNode serverCapabilities = ServerTypeNode.getServerCapabilitiesNode();
+        ServerCapabilitiesTypeNode serverCapabilities = serverTypeNode.getServerCapabilitiesNode();
         serverCapabilities.setLocaleIdArray(new String[]{Locale.ENGLISH.getLanguage()});
         serverCapabilities.setServerProfileArray(new String[]{});
         serverCapabilities.setMaxArrayLength(limits.getMaxArrayLength());
@@ -255,7 +255,7 @@ public class OpcUaNamespace extends ManagedNamespace {
         limitsNode.setMaxNodesPerTranslateBrowsePathsToNodeIds(limits.getMaxNodesPerTranslateBrowsePathsToNodeIds());
         limitsNode.setMaxNodesPerWrite(limits.getMaxNodesPerWrite());
 
-        ServerTypeNode.getServerRedundancyNode().setRedundancySupport(RedundancySupport.None);
+        serverTypeNode.getServerRedundancyNode().setRedundancySupport(RedundancySupport.None);
 
         configureGetMonitoredItems();
         configureResendData();
