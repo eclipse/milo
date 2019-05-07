@@ -62,7 +62,7 @@ public abstract class ReadMethod extends AbstractMethodInvocationHandler {
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         UInteger fileHandle = (UInteger) inputValues[0].getValue();
         Integer length = (Integer) inputValues[1].getValue();
@@ -71,6 +71,6 @@ public abstract class ReadMethod extends AbstractMethodInvocationHandler {
         return new Variant[]{new Variant(data.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    UInteger fileHandle, Integer length, Out<ByteString> data) throws UaException;
 }

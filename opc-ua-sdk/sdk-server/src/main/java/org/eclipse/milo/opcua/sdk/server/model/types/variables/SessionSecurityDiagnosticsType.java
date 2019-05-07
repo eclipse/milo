@@ -27,17 +27,35 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
 
     void setClientUserIdOfSession(String value);
 
-    BaseDataVariableType getClientUserIdHistoryNode();
+    BaseDataVariableType getClientCertificateNode();
 
-    String[] getClientUserIdHistory();
+    ByteString getClientCertificate();
 
-    void setClientUserIdHistory(String[] value);
+    void setClientCertificate(ByteString value);
+
+    BaseDataVariableType getSecurityModeNode();
+
+    MessageSecurityMode getSecurityMode();
+
+    void setSecurityMode(MessageSecurityMode value);
 
     BaseDataVariableType getAuthenticationMechanismNode();
 
     String getAuthenticationMechanism();
 
     void setAuthenticationMechanism(String value);
+
+    BaseDataVariableType getClientUserIdHistoryNode();
+
+    String[] getClientUserIdHistory();
+
+    void setClientUserIdHistory(String[] value);
+
+    BaseDataVariableType getSecurityPolicyUriNode();
+
+    String getSecurityPolicyUri();
+
+    void setSecurityPolicyUri(String value);
 
     BaseDataVariableType getEncodingNode();
 
@@ -50,22 +68,4 @@ public interface SessionSecurityDiagnosticsType extends BaseDataVariableType {
     String getTransportProtocol();
 
     void setTransportProtocol(String value);
-
-    BaseDataVariableType getSecurityModeNode();
-
-    MessageSecurityMode getSecurityMode();
-
-    void setSecurityMode(MessageSecurityMode value);
-
-    BaseDataVariableType getSecurityPolicyUriNode();
-
-    String getSecurityPolicyUri();
-
-    void setSecurityPolicyUri(String value);
-
-    BaseDataVariableType getClientCertificateNode();
-
-    ByteString getClientCertificate();
-
-    void setClientCertificate(ByteString value);
 }

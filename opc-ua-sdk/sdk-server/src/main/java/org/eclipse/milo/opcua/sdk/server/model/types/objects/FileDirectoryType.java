@@ -13,11 +13,11 @@ package org.eclipse.milo.opcua.sdk.server.model.types.objects;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 
 public interface FileDirectoryType extends FolderType {
-    UaMethodNode getDeleteMethodNode();
-
-    UaMethodNode getMoveOrCopyMethodNode();
-
     UaMethodNode getCreateDirectoryMethodNode();
 
     UaMethodNode getCreateFileMethodNode();
+
+    UaMethodNode getDeleteMethodNode();
+
+    UaMethodNode getMoveOrCopyMethodNode();
 }

@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.sdk.server.Session;
 import org.eclipse.milo.opcua.sdk.server.api.EventItem;
 import org.eclipse.milo.opcua.sdk.server.events.EventContentFilter;
 import org.eclipse.milo.opcua.sdk.server.events.FilterContext;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
 import org.eclipse.milo.opcua.stack.core.StatusCodes;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -97,7 +97,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
     }
 
     @Override
-    public void onEvent(BaseEventNode eventNode) {
+    public void onEvent(BaseEventTypeNode eventNode) {
         try {
             if (filterResultGood) {
                 ContentFilter whereClause = filter.getWhereClause();
@@ -119,7 +119,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
 
     @Nonnull
-    private Variant[] selectEventFields(BaseEventNode eventNode) {
+    private Variant[] selectEventFields(BaseEventTypeNode eventNode) {
         SimpleAttributeOperand[] selectClauses = filter.getSelectClauses();
 
         if (selectClauses != null) {
@@ -174,7 +174,7 @@ public class MonitoredEventItem extends BaseMonitoredItem<Variant[]> implements 
 
     @Nonnull
     private Variant[] generateOverflowEventFields() {
-        BaseEventNode overflowEvent = null;
+        BaseEventTypeNode overflowEvent = null;
 
         try {
             UUID eventId = UUID.randomUUID();

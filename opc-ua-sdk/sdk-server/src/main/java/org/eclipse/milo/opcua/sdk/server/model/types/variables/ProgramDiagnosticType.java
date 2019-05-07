@@ -18,17 +18,17 @@ import org.eclipse.milo.opcua.stack.core.types.structured.Argument;
 import org.eclipse.milo.opcua.stack.core.types.structured.StatusResult;
 
 public interface ProgramDiagnosticType extends BaseDataVariableType {
-    QualifiedProperty<NodeId> CREATE_SESSION_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "CreateSessionId",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
     QualifiedProperty<String> CREATE_CLIENT_NAME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "CreateClientName",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
+
+    QualifiedProperty<String> LAST_METHOD_CALL = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodCall",
         NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
         String.class
@@ -48,14 +48,6 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
         NodeId.parse("ns=0;i=294"),
         ValueRanks.Scalar,
         DateTime.class
-    );
-
-    QualifiedProperty<String> LAST_METHOD_CALL = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "LastMethodCall",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
     );
 
     QualifiedProperty<NodeId> LAST_METHOD_SESSION_ID = new QualifiedProperty<>(
@@ -82,14 +74,6 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
         Argument[].class
     );
 
-    QualifiedProperty<DateTime> LAST_METHOD_CALL_TIME = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "LastMethodCallTime",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
     QualifiedProperty<StatusResult> LAST_METHOD_RETURN_STATUS = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "LastMethodReturnStatus",
@@ -98,17 +82,33 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
         StatusResult.class
     );
 
-    PropertyType getCreateSessionIdNode();
+    QualifiedProperty<DateTime> LAST_METHOD_CALL_TIME = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "LastMethodCallTime",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
 
-    NodeId getCreateSessionId();
-
-    void setCreateSessionId(NodeId value);
+    QualifiedProperty<NodeId> CREATE_SESSION_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "CreateSessionId",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        NodeId.class
+    );
 
     PropertyType getCreateClientNameNode();
 
     String getCreateClientName();
 
     void setCreateClientName(String value);
+
+    PropertyType getLastMethodCallNode();
+
+    String getLastMethodCall();
+
+    void setLastMethodCall(String value);
 
     PropertyType getInvocationCreationTimeNode();
 
@@ -121,12 +121,6 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
     DateTime getLastTransitionTime();
 
     void setLastTransitionTime(DateTime value);
-
-    PropertyType getLastMethodCallNode();
-
-    String getLastMethodCall();
-
-    void setLastMethodCall(String value);
 
     PropertyType getLastMethodSessionIdNode();
 
@@ -146,15 +140,21 @@ public interface ProgramDiagnosticType extends BaseDataVariableType {
 
     void setLastMethodOutputArguments(Argument[] value);
 
+    PropertyType getLastMethodReturnStatusNode();
+
+    StatusResult getLastMethodReturnStatus();
+
+    void setLastMethodReturnStatus(StatusResult value);
+
     PropertyType getLastMethodCallTimeNode();
 
     DateTime getLastMethodCallTime();
 
     void setLastMethodCallTime(DateTime value);
 
-    PropertyType getLastMethodReturnStatusNode();
+    PropertyType getCreateSessionIdNode();
 
-    StatusResult getLastMethodReturnStatus();
+    NodeId getCreateSessionId();
 
-    void setLastMethodReturnStatus(StatusResult value);
+    void setCreateSessionId(NodeId value);
 }

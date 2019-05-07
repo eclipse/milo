@@ -24,15 +24,15 @@ public interface SessionDiagnosticsObjectType extends BaseObjectType {
 
     void setSessionSecurityDiagnostics(SessionSecurityDiagnosticsDataType value);
 
-    SubscriptionDiagnosticsArrayType getSubscriptionDiagnosticsArrayNode();
-
-    SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray();
-
-    void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value);
-
     SessionDiagnosticsVariableType getSessionDiagnosticsNode();
 
     SessionDiagnosticsDataType getSessionDiagnostics();
 
     void setSessionDiagnostics(SessionDiagnosticsDataType value);
+
+    SubscriptionDiagnosticsArrayType getSubscriptionDiagnosticsArrayNode();
+
+    SubscriptionDiagnosticsDataType[] getSubscriptionDiagnosticsArray();
+
+    void setSubscriptionDiagnosticsArray(SubscriptionDiagnosticsDataType[] value);
 }

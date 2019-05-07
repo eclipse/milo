@@ -19,12 +19,20 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.ULong;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface FileType extends BaseObjectType {
-    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
+    QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "UserWritable",
-        NodeId.parse("ns=0;i=1"),
+        "OpenCount",
+        NodeId.parse("ns=0;i=5"),
         ValueRanks.Scalar,
-        Boolean.class
+        UShort.class
+    );
+
+    QualifiedProperty<String> MIME_TYPE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MimeType",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
     );
 
     QualifiedProperty<Boolean> WRITABLE = new QualifiedProperty<>(
@@ -43,27 +51,25 @@ public interface FileType extends BaseObjectType {
         ULong.class
     );
 
-    QualifiedProperty<String> MIME_TYPE = new QualifiedProperty<>(
+    QualifiedProperty<Boolean> USER_WRITABLE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "MimeType",
-        NodeId.parse("ns=0;i=12"),
+        "UserWritable",
+        NodeId.parse("ns=0;i=1"),
         ValueRanks.Scalar,
-        String.class
+        Boolean.class
     );
 
-    QualifiedProperty<UShort> OPEN_COUNT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "OpenCount",
-        NodeId.parse("ns=0;i=5"),
-        ValueRanks.Scalar,
-        UShort.class
-    );
+    PropertyType getOpenCountNode();
 
-    PropertyType getUserWritableNode();
+    UShort getOpenCount();
 
-    Boolean getUserWritable();
+    void setOpenCount(UShort value);
 
-    void setUserWritable(Boolean value);
+    PropertyType getMimeTypeNode();
+
+    String getMimeType();
+
+    void setMimeType(String value);
 
     PropertyType getWritableNode();
 
@@ -77,27 +83,21 @@ public interface FileType extends BaseObjectType {
 
     void setSize(ULong value);
 
-    PropertyType getMimeTypeNode();
+    PropertyType getUserWritableNode();
 
-    String getMimeType();
+    Boolean getUserWritable();
 
-    void setMimeType(String value);
-
-    PropertyType getOpenCountNode();
-
-    UShort getOpenCount();
-
-    void setOpenCount(UShort value);
-
-    UaMethodNode getReadMethodNode();
-
-    UaMethodNode getWriteMethodNode();
-
-    UaMethodNode getGetPositionMethodNode();
-
-    UaMethodNode getCloseMethodNode();
+    void setUserWritable(Boolean value);
 
     UaMethodNode getOpenMethodNode();
 
+    UaMethodNode getCloseMethodNode();
+
+    UaMethodNode getWriteMethodNode();
+
     UaMethodNode getSetPositionMethodNode();
+
+    UaMethodNode getGetPositionMethodNode();
+
+    UaMethodNode getReadMethodNode();
 }

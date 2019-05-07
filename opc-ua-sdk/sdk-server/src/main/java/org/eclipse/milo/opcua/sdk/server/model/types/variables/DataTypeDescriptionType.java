@@ -16,14 +16,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface DataTypeDescriptionType extends BaseDataVariableType {
-    QualifiedProperty<String> DATA_TYPE_VERSION = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "DataTypeVersion",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<ByteString> DICTIONARY_FRAGMENT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "DictionaryFragment",
@@ -32,15 +24,23 @@ public interface DataTypeDescriptionType extends BaseDataVariableType {
         ByteString.class
     );
 
-    PropertyType getDataTypeVersionNode();
-
-    String getDataTypeVersion();
-
-    void setDataTypeVersion(String value);
+    QualifiedProperty<String> DATA_TYPE_VERSION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "DataTypeVersion",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
+    );
 
     PropertyType getDictionaryFragmentNode();
 
     ByteString getDictionaryFragment();
 
     void setDictionaryFragment(ByteString value);
+
+    PropertyType getDataTypeVersionNode();
+
+    String getDataTypeVersion();
+
+    void setDataTypeVersion(String value);
 }

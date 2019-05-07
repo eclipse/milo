@@ -19,14 +19,6 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EUInformation;
 import org.eclipse.milo.opcua.stack.core.types.structured.Range;
 
 public interface ArrayItemType extends DataItemType {
-    QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "InstrumentRange",
-        NodeId.parse("ns=0;i=884"),
-        ValueRanks.Scalar,
-        Range.class
-    );
-
     QualifiedProperty<Range> E_U_RANGE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EURange",
@@ -43,14 +35,6 @@ public interface ArrayItemType extends DataItemType {
         EUInformation.class
     );
 
-    QualifiedProperty<LocalizedText> TITLE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Title",
-        NodeId.parse("ns=0;i=21"),
-        ValueRanks.Scalar,
-        LocalizedText.class
-    );
-
     QualifiedProperty<AxisScaleEnumeration> AXIS_SCALE_TYPE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "AxisScaleType",
@@ -59,11 +43,21 @@ public interface ArrayItemType extends DataItemType {
         AxisScaleEnumeration.class
     );
 
-    PropertyType getInstrumentRangeNode();
+    QualifiedProperty<LocalizedText> TITLE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Title",
+        NodeId.parse("ns=0;i=21"),
+        ValueRanks.Scalar,
+        LocalizedText.class
+    );
 
-    Range getInstrumentRange();
-
-    void setInstrumentRange(Range value);
+    QualifiedProperty<Range> INSTRUMENT_RANGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "InstrumentRange",
+        NodeId.parse("ns=0;i=884"),
+        ValueRanks.Scalar,
+        Range.class
+    );
 
     PropertyType getEURangeNode();
 
@@ -77,15 +71,21 @@ public interface ArrayItemType extends DataItemType {
 
     void setEngineeringUnits(EUInformation value);
 
+    PropertyType getAxisScaleTypeNode();
+
+    AxisScaleEnumeration getAxisScaleType();
+
+    void setAxisScaleType(AxisScaleEnumeration value);
+
     PropertyType getTitleNode();
 
     LocalizedText getTitle();
 
     void setTitle(LocalizedText value);
 
-    PropertyType getAxisScaleTypeNode();
+    PropertyType getInstrumentRangeNode();
 
-    AxisScaleEnumeration getAxisScaleType();
+    Range getInstrumentRange();
 
-    void setAxisScaleType(AxisScaleEnumeration value);
+    void setInstrumentRange(Range value);
 }

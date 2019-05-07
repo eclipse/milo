@@ -18,7 +18,7 @@ import org.eclipse.milo.opcua.sdk.server.VariableTypeManager;
 import org.eclipse.milo.opcua.sdk.server.api.NodeManager;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectNode;
 import org.eclipse.milo.opcua.sdk.server.api.nodes.ObjectTypeNode;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
 import org.eclipse.milo.opcua.sdk.server.nodes.UaNodeContext;
 import org.eclipse.milo.opcua.stack.core.UaException;
@@ -27,7 +27,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 public class EventFactory extends AbstractLifecycle {
 
     private final NodeManager<UaNode> nodeManager = new UaNodeManager();
-    
+
     private final OpcUaServer server;
     private final NodeFactory nodeFactory;
 
@@ -75,8 +75,8 @@ public class EventFactory extends AbstractLifecycle {
      * @return an Event {@link ObjectNode} instance.
      * @throws UaException if an error occurs creating the Event instance.
      */
-    public BaseEventNode createEvent(NodeId nodeId, NodeId typeDefinitionId) throws UaException {
-        return (BaseEventNode) nodeFactory.createNode(
+    public BaseEventTypeNode createEvent(NodeId nodeId, NodeId typeDefinitionId) throws UaException {
+        return (BaseEventTypeNode) nodeFactory.createNode(
             nodeId,
             typeDefinitionId,
             true

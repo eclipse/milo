@@ -17,9 +17,25 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 
 public interface AggregateConfigurationType extends BaseObjectType {
+    QualifiedProperty<Boolean> TREAT_UNCERTAIN_AS_BAD = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "TreatUncertainAsBad",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
+
     QualifiedProperty<UByte> PERCENT_DATA_GOOD = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "PercentDataGood",
+        NodeId.parse("ns=0;i=3"),
+        ValueRanks.Scalar,
+        UByte.class
+    );
+
+    QualifiedProperty<UByte> PERCENT_DATA_BAD = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "PercentDataBad",
         NodeId.parse("ns=0;i=3"),
         ValueRanks.Scalar,
         UByte.class
@@ -33,21 +49,11 @@ public interface AggregateConfigurationType extends BaseObjectType {
         Boolean.class
     );
 
-    QualifiedProperty<Boolean> TREAT_UNCERTAIN_AS_BAD = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "TreatUncertainAsBad",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
+    PropertyType getTreatUncertainAsBadNode();
 
-    QualifiedProperty<UByte> PERCENT_DATA_BAD = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "PercentDataBad",
-        NodeId.parse("ns=0;i=3"),
-        ValueRanks.Scalar,
-        UByte.class
-    );
+    Boolean getTreatUncertainAsBad();
+
+    void setTreatUncertainAsBad(Boolean value);
 
     PropertyType getPercentDataGoodNode();
 
@@ -55,21 +61,15 @@ public interface AggregateConfigurationType extends BaseObjectType {
 
     void setPercentDataGood(UByte value);
 
-    PropertyType getUseSlopedExtrapolationNode();
-
-    Boolean getUseSlopedExtrapolation();
-
-    void setUseSlopedExtrapolation(Boolean value);
-
-    PropertyType getTreatUncertainAsBadNode();
-
-    Boolean getTreatUncertainAsBad();
-
-    void setTreatUncertainAsBad(Boolean value);
-
     PropertyType getPercentDataBadNode();
 
     UByte getPercentDataBad();
 
     void setPercentDataBad(UByte value);
+
+    PropertyType getUseSlopedExtrapolationNode();
+
+    Boolean getUseSlopedExtrapolation();
+
+    void setUseSlopedExtrapolation(Boolean value);
 }

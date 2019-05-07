@@ -17,14 +17,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditCreateSessionEventType extends AuditSessionEventType {
-    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ClientCertificateThumbprint",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<String> SECURE_CHANNEL_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SecureChannelId",
@@ -33,12 +25,12 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
         String.class
     );
 
-    QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
+    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ClientCertificate",
-        NodeId.parse("ns=0;i=15"),
+        "ClientCertificateThumbprint",
+        NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
-        ByteString.class
+        String.class
     );
 
     QualifiedProperty<Double> REVISED_SESSION_TIMEOUT = new QualifiedProperty<>(
@@ -49,11 +41,13 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
         Double.class
     );
 
-    PropertyType getClientCertificateThumbprintNode();
-
-    String getClientCertificateThumbprint();
-
-    void setClientCertificateThumbprint(String value);
+    QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ClientCertificate",
+        NodeId.parse("ns=0;i=15"),
+        ValueRanks.Scalar,
+        ByteString.class
+    );
 
     PropertyType getSecureChannelIdNode();
 
@@ -61,15 +55,21 @@ public interface AuditCreateSessionEventType extends AuditSessionEventType {
 
     void setSecureChannelId(String value);
 
-    PropertyType getClientCertificateNode();
+    PropertyType getClientCertificateThumbprintNode();
 
-    ByteString getClientCertificate();
+    String getClientCertificateThumbprint();
 
-    void setClientCertificate(ByteString value);
+    void setClientCertificateThumbprint(String value);
 
     PropertyType getRevisedSessionTimeoutNode();
 
     Double getRevisedSessionTimeout();
 
     void setRevisedSessionTimeout(Double value);
+
+    PropertyType getClientCertificateNode();
+
+    ByteString getClientCertificate();
+
+    void setClientCertificate(ByteString value);
 }

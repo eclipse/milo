@@ -19,12 +19,20 @@ import org.eclipse.milo.opcua.stack.core.types.enumerated.MessageSecurityMode;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.SecurityTokenRequestType;
 
 public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
-    QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
+    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ClientCertificate",
-        NodeId.parse("ns=0;i=15"),
+        "ClientCertificateThumbprint",
+        NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
-        ByteString.class
+        String.class
+    );
+
+    QualifiedProperty<String> SECURITY_POLICY_URI = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "SecurityPolicyUri",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.Scalar,
+        String.class
     );
 
     QualifiedProperty<SecurityTokenRequestType> REQUEST_TYPE = new QualifiedProperty<>(
@@ -33,14 +41,6 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
         NodeId.parse("ns=0;i=315"),
         ValueRanks.Scalar,
         SecurityTokenRequestType.class
-    );
-
-    QualifiedProperty<String> CLIENT_CERTIFICATE_THUMBPRINT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ClientCertificateThumbprint",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.Scalar,
-        String.class
     );
 
     QualifiedProperty<MessageSecurityMode> SECURITY_MODE = new QualifiedProperty<>(
@@ -59,31 +59,31 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
         Double.class
     );
 
-    QualifiedProperty<String> SECURITY_POLICY_URI = new QualifiedProperty<>(
+    QualifiedProperty<ByteString> CLIENT_CERTIFICATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "SecurityPolicyUri",
-        NodeId.parse("ns=0;i=12"),
+        "ClientCertificate",
+        NodeId.parse("ns=0;i=15"),
         ValueRanks.Scalar,
-        String.class
+        ByteString.class
     );
-
-    PropertyType getClientCertificateNode();
-
-    ByteString getClientCertificate();
-
-    void setClientCertificate(ByteString value);
-
-    PropertyType getRequestTypeNode();
-
-    SecurityTokenRequestType getRequestType();
-
-    void setRequestType(SecurityTokenRequestType value);
 
     PropertyType getClientCertificateThumbprintNode();
 
     String getClientCertificateThumbprint();
 
     void setClientCertificateThumbprint(String value);
+
+    PropertyType getSecurityPolicyUriNode();
+
+    String getSecurityPolicyUri();
+
+    void setSecurityPolicyUri(String value);
+
+    PropertyType getRequestTypeNode();
+
+    SecurityTokenRequestType getRequestType();
+
+    void setRequestType(SecurityTokenRequestType value);
 
     PropertyType getSecurityModeNode();
 
@@ -97,9 +97,9 @@ public interface AuditOpenSecureChannelEventType extends AuditChannelEventType {
 
     void setRequestedLifetime(Double value);
 
-    PropertyType getSecurityPolicyUriNode();
+    PropertyType getClientCertificateNode();
 
-    String getSecurityPolicyUri();
+    ByteString getClientCertificate();
 
-    void setSecurityPolicyUri(String value);
+    void setClientCertificate(ByteString value);
 }

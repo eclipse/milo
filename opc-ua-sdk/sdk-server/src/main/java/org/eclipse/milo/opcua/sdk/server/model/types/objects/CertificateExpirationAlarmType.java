@@ -18,6 +18,14 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType {
+    QualifiedProperty<Double> EXPIRATION_LIMIT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ExpirationLimit",
+        NodeId.parse("ns=0;i=290"),
+        ValueRanks.Scalar,
+        Double.class
+    );
+
     QualifiedProperty<DateTime> EXPIRATION_DATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ExpirationDate",
@@ -42,13 +50,11 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
         ByteString.class
     );
 
-    QualifiedProperty<Double> EXPIRATION_LIMIT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ExpirationLimit",
-        NodeId.parse("ns=0;i=290"),
-        ValueRanks.Scalar,
-        Double.class
-    );
+    PropertyType getExpirationLimitNode();
+
+    Double getExpirationLimit();
+
+    void setExpirationLimit(Double value);
 
     PropertyType getExpirationDateNode();
 
@@ -67,10 +73,4 @@ public interface CertificateExpirationAlarmType extends SystemOffNormalAlarmType
     ByteString getCertificate();
 
     void setCertificate(ByteString value);
-
-    PropertyType getExpirationLimitNode();
-
-    Double getExpirationLimit();
-
-    void setExpirationLimit(Double value);
 }

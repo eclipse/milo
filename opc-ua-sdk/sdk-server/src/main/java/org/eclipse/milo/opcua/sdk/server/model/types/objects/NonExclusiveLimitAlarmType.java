@@ -20,17 +20,17 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
 
     void setLowState(LocalizedText value);
 
-    TwoStateVariableType getLowLowStateNode();
-
-    LocalizedText getLowLowState();
-
-    void setLowLowState(LocalizedText value);
-
     TwoStateVariableType getHighStateNode();
 
     LocalizedText getHighState();
 
     void setHighState(LocalizedText value);
+
+    TwoStateVariableType getActiveStateNode();
+
+    LocalizedText getActiveState();
+
+    void setActiveState(LocalizedText value);
 
     TwoStateVariableType getHighHighStateNode();
 
@@ -38,9 +38,9 @@ public interface NonExclusiveLimitAlarmType extends LimitAlarmType {
 
     void setHighHighState(LocalizedText value);
 
-    TwoStateVariableType getActiveStateNode();
+    TwoStateVariableType getLowLowStateNode();
 
-    LocalizedText getActiveState();
+    LocalizedText getLowLowState();
 
-    void setActiveState(LocalizedText value);
+    void setLowLowState(LocalizedText value);
 }

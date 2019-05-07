@@ -11,11 +11,11 @@
 package org.eclipse.milo.opcua.sdk.server.api;
 
 import com.google.common.eventbus.Subscribe;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 
 public interface EventItem extends MonitoredItem {
 
     @Subscribe
-    void onEvent(BaseEventNode eventNode);
+    void onEvent(BaseEventTypeNode eventNode);
 
 }

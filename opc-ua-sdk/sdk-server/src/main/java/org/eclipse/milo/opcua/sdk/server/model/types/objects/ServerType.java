@@ -21,36 +21,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UByte;
 import org.eclipse.milo.opcua.stack.core.types.structured.ServerStatusDataType;
 
 public interface ServerType extends BaseObjectType {
-    QualifiedProperty<Boolean> AUDITING = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Auditing",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
-
     QualifiedProperty<DateTime> ESTIMATED_RETURN_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "EstimatedReturnTime",
         NodeId.parse("ns=0;i=13"),
         ValueRanks.Scalar,
         DateTime.class
-    );
-
-    QualifiedProperty<String[]> NAMESPACE_ARRAY = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "NamespaceArray",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.OneDimension,
-        String[].class
-    );
-
-    QualifiedProperty<String[]> SERVER_ARRAY = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ServerArray",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.OneDimension,
-        String[].class
     );
 
     QualifiedProperty<UByte> SERVICE_LEVEL = new QualifiedProperty<>(
@@ -61,11 +37,29 @@ public interface ServerType extends BaseObjectType {
         UByte.class
     );
 
-    PropertyType getAuditingNode();
+    QualifiedProperty<Boolean> AUDITING = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Auditing",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
 
-    Boolean getAuditing();
+    QualifiedProperty<String[]> SERVER_ARRAY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ServerArray",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.OneDimension,
+        String[].class
+    );
 
-    void setAuditing(Boolean value);
+    QualifiedProperty<String[]> NAMESPACE_ARRAY = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NamespaceArray",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.OneDimension,
+        String[].class
+    );
 
     PropertyType getEstimatedReturnTimeNode();
 
@@ -73,11 +67,17 @@ public interface ServerType extends BaseObjectType {
 
     void setEstimatedReturnTime(DateTime value);
 
-    PropertyType getNamespaceArrayNode();
+    PropertyType getServiceLevelNode();
 
-    String[] getNamespaceArray();
+    UByte getServiceLevel();
 
-    void setNamespaceArray(String[] value);
+    void setServiceLevel(UByte value);
+
+    PropertyType getAuditingNode();
+
+    Boolean getAuditing();
+
+    void setAuditing(Boolean value);
 
     PropertyType getServerArrayNode();
 
@@ -85,19 +85,27 @@ public interface ServerType extends BaseObjectType {
 
     void setServerArray(String[] value);
 
-    PropertyType getServiceLevelNode();
+    PropertyType getNamespaceArrayNode();
 
-    UByte getServiceLevel();
+    String[] getNamespaceArray();
 
-    void setServiceLevel(UByte value);
+    void setNamespaceArray(String[] value);
 
     ServerRedundancyType getServerRedundancyNode();
 
-    NamespacesType getNamespacesNode();
-
-    UaMethodNode getResendDataMethodNode();
+    VendorServerInfoType getVendorServerInfoNode();
 
     UaMethodNode getRequestServerStateChangeMethodNode();
+
+    ServerCapabilitiesType getServerCapabilitiesNode();
+
+    ServerDiagnosticsType getServerDiagnosticsNode();
+
+    UaMethodNode getSetSubscriptionDurableMethodNode();
+
+    UaMethodNode getGetMonitoredItemsMethodNode();
+
+    NamespacesType getNamespacesNode();
 
     ServerStatusType getServerStatusNode();
 
@@ -105,13 +113,5 @@ public interface ServerType extends BaseObjectType {
 
     void setServerStatus(ServerStatusDataType value);
 
-    UaMethodNode getGetMonitoredItemsMethodNode();
-
-    ServerCapabilitiesType getServerCapabilitiesNode();
-
-    VendorServerInfoType getVendorServerInfoNode();
-
-    ServerDiagnosticsType getServerDiagnosticsNode();
-
-    UaMethodNode getSetSubscriptionDurableMethodNode();
+    UaMethodNode getResendDataMethodNode();
 }

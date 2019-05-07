@@ -78,7 +78,7 @@ public abstract class RequestServerStateChangeMethod extends AbstractMethodInvoc
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         ServerState state = (ServerState) inputValues[0].getValue();
         DateTime estimatedReturnTime = (DateTime) inputValues[1].getValue();
@@ -89,7 +89,7 @@ public abstract class RequestServerStateChangeMethod extends AbstractMethodInvoc
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    ServerState state, DateTime estimatedReturnTime, UInteger secondsTillShutdown,
                                    LocalizedText reason, Boolean restart) throws UaException;
 }

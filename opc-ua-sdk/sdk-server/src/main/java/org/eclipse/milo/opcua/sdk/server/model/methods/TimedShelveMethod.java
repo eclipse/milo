@@ -43,13 +43,13 @@ public abstract class TimedShelveMethod extends AbstractMethodInvocationHandler 
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         Double shelvingTime = (Double) inputValues[0].getValue();
         invoke(context, shelvingTime);
         return new Variant[]{};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Double shelvingTime) throws UaException;
 }

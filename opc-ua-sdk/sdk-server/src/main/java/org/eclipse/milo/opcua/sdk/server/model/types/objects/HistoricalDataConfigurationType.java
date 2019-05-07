@@ -18,54 +18,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.ExceptionDeviationFormat;
 
 public interface HistoricalDataConfigurationType extends BaseObjectType {
-    QualifiedProperty<DateTime> START_OF_ARCHIVE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "StartOfArchive",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
-    QualifiedProperty<DateTime> START_OF_ONLINE_ARCHIVE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "StartOfOnlineArchive",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
-
-    QualifiedProperty<Double> EXCEPTION_DEVIATION = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ExceptionDeviation",
-        NodeId.parse("ns=0;i=11"),
-        ValueRanks.Scalar,
-        Double.class
-    );
-
-    QualifiedProperty<ExceptionDeviationFormat> EXCEPTION_DEVIATION_FORMAT = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ExceptionDeviationFormat",
-        NodeId.parse("ns=0;i=890"),
-        ValueRanks.Scalar,
-        ExceptionDeviationFormat.class
-    );
-
-    QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Stepped",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
-
-    QualifiedProperty<Double> MIN_TIME_INTERVAL = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "MinTimeInterval",
-        NodeId.parse("ns=0;i=290"),
-        ValueRanks.Scalar,
-        Double.class
-    );
-
     QualifiedProperty<String> DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "Definition",
@@ -82,41 +34,53 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
         Double.class
     );
 
-    PropertyType getStartOfArchiveNode();
+    QualifiedProperty<DateTime> START_OF_ARCHIVE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StartOfArchive",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
 
-    DateTime getStartOfArchive();
+    QualifiedProperty<Double> MIN_TIME_INTERVAL = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "MinTimeInterval",
+        NodeId.parse("ns=0;i=290"),
+        ValueRanks.Scalar,
+        Double.class
+    );
 
-    void setStartOfArchive(DateTime value);
+    QualifiedProperty<ExceptionDeviationFormat> EXCEPTION_DEVIATION_FORMAT = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ExceptionDeviationFormat",
+        NodeId.parse("ns=0;i=890"),
+        ValueRanks.Scalar,
+        ExceptionDeviationFormat.class
+    );
 
-    PropertyType getStartOfOnlineArchiveNode();
+    QualifiedProperty<Double> EXCEPTION_DEVIATION = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ExceptionDeviation",
+        NodeId.parse("ns=0;i=11"),
+        ValueRanks.Scalar,
+        Double.class
+    );
 
-    DateTime getStartOfOnlineArchive();
+    QualifiedProperty<Boolean> STEPPED = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Stepped",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
+    );
 
-    void setStartOfOnlineArchive(DateTime value);
-
-    PropertyType getExceptionDeviationNode();
-
-    Double getExceptionDeviation();
-
-    void setExceptionDeviation(Double value);
-
-    PropertyType getExceptionDeviationFormatNode();
-
-    ExceptionDeviationFormat getExceptionDeviationFormat();
-
-    void setExceptionDeviationFormat(ExceptionDeviationFormat value);
-
-    PropertyType getSteppedNode();
-
-    Boolean getStepped();
-
-    void setStepped(Boolean value);
-
-    PropertyType getMinTimeIntervalNode();
-
-    Double getMinTimeInterval();
-
-    void setMinTimeInterval(Double value);
+    QualifiedProperty<DateTime> START_OF_ONLINE_ARCHIVE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "StartOfOnlineArchive",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
 
     PropertyType getDefinitionNode();
 
@@ -129,6 +93,42 @@ public interface HistoricalDataConfigurationType extends BaseObjectType {
     Double getMaxTimeInterval();
 
     void setMaxTimeInterval(Double value);
+
+    PropertyType getStartOfArchiveNode();
+
+    DateTime getStartOfArchive();
+
+    void setStartOfArchive(DateTime value);
+
+    PropertyType getMinTimeIntervalNode();
+
+    Double getMinTimeInterval();
+
+    void setMinTimeInterval(Double value);
+
+    PropertyType getExceptionDeviationFormatNode();
+
+    ExceptionDeviationFormat getExceptionDeviationFormat();
+
+    void setExceptionDeviationFormat(ExceptionDeviationFormat value);
+
+    PropertyType getExceptionDeviationNode();
+
+    Double getExceptionDeviation();
+
+    void setExceptionDeviation(Double value);
+
+    PropertyType getSteppedNode();
+
+    Boolean getStepped();
+
+    void setStepped(Boolean value);
+
+    PropertyType getStartOfOnlineArchiveNode();
+
+    DateTime getStartOfOnlineArchive();
+
+    void setStartOfOnlineArchive(DateTime value);
 
     FolderType getAggregateFunctionsNode();
 

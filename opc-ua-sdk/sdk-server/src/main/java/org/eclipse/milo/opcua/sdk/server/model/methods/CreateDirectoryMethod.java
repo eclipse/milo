@@ -52,7 +52,7 @@ public abstract class CreateDirectoryMethod extends AbstractMethodInvocationHand
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         String directoryName = (String) inputValues[0].getValue();
         Out<NodeId> directoryNodeId = new Out<NodeId>();
@@ -60,6 +60,6 @@ public abstract class CreateDirectoryMethod extends AbstractMethodInvocationHand
         return new Variant[]{new Variant(directoryNodeId.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    String directoryName, Out<NodeId> directoryNodeId) throws UaException;
 }

@@ -16,14 +16,6 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.PropertyType;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
-    QualifiedProperty<Object> NEW_STATE_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "NewStateId",
-        NodeId.parse("ns=0;i=24"),
-        ValueRanks.Scalar,
-        Object.class
-    );
-
     QualifiedProperty<Object> OLD_STATE_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OldStateId",
@@ -32,15 +24,23 @@ public interface AuditUpdateStateEventType extends AuditUpdateMethodEventType {
         Object.class
     );
 
-    PropertyType getNewStateIdNode();
-
-    Object getNewStateId();
-
-    void setNewStateId(Object value);
+    QualifiedProperty<Object> NEW_STATE_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "NewStateId",
+        NodeId.parse("ns=0;i=24"),
+        ValueRanks.Scalar,
+        Object.class
+    );
 
     PropertyType getOldStateIdNode();
 
     Object getOldStateId();
 
     void setOldStateId(Object value);
+
+    PropertyType getNewStateIdNode();
+
+    Object getNewStateId();
+
+    void setNewStateId(Object value);
 }

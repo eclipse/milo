@@ -16,14 +16,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface OptionSetType extends BaseDataVariableType {
-    QualifiedProperty<LocalizedText[]> OPTION_SET_VALUES = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "OptionSetValues",
-        NodeId.parse("ns=0;i=21"),
-        ValueRanks.OneDimension,
-        LocalizedText[].class
-    );
-
     QualifiedProperty<Boolean[]> BIT_MASK = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "BitMask",
@@ -32,15 +24,23 @@ public interface OptionSetType extends BaseDataVariableType {
         Boolean[].class
     );
 
-    PropertyType getOptionSetValuesNode();
-
-    LocalizedText[] getOptionSetValues();
-
-    void setOptionSetValues(LocalizedText[] value);
+    QualifiedProperty<LocalizedText[]> OPTION_SET_VALUES = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "OptionSetValues",
+        NodeId.parse("ns=0;i=21"),
+        ValueRanks.OneDimension,
+        LocalizedText[].class
+    );
 
     PropertyType getBitMaskNode();
 
     Boolean[] getBitMask();
 
     void setBitMask(Boolean[] value);
+
+    PropertyType getOptionSetValuesNode();
+
+    LocalizedText[] getOptionSetValues();
+
+    void setOptionSetValues(LocalizedText[] value);
 }

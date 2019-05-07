@@ -17,22 +17,6 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
-    QualifiedProperty<UInteger> ATTRIBUTE_ID = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "AttributeId",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        UInteger.class
-    );
-
-    QualifiedProperty<String> INDEX_RANGE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "IndexRange",
-        NodeId.parse("ns=0;i=291"),
-        ValueRanks.Scalar,
-        String.class
-    );
-
     QualifiedProperty<Object> OLD_VALUE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "OldValue",
@@ -49,17 +33,21 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
         Object.class
     );
 
-    PropertyType getAttributeIdNode();
+    QualifiedProperty<UInteger> ATTRIBUTE_ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "AttributeId",
+        NodeId.parse("ns=0;i=7"),
+        ValueRanks.Scalar,
+        UInteger.class
+    );
 
-    UInteger getAttributeId();
-
-    void setAttributeId(UInteger value);
-
-    PropertyType getIndexRangeNode();
-
-    String getIndexRange();
-
-    void setIndexRange(String value);
+    QualifiedProperty<String> INDEX_RANGE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "IndexRange",
+        NodeId.parse("ns=0;i=291"),
+        ValueRanks.Scalar,
+        String.class
+    );
 
     PropertyType getOldValueNode();
 
@@ -72,4 +60,16 @@ public interface AuditWriteUpdateEventType extends AuditUpdateEventType {
     Object getNewValue();
 
     void setNewValue(Object value);
+
+    PropertyType getAttributeIdNode();
+
+    UInteger getAttributeId();
+
+    void setAttributeId(UInteger value);
+
+    PropertyType getIndexRangeNode();
+
+    String getIndexRange();
+
+    void setIndexRange(String value);
 }

@@ -47,13 +47,13 @@ public abstract class GetRejectedListMethod extends AbstractMethodInvocationHand
     }
 
     @Override
-    protected Variant[] invoke(InvocationContext context,
+    protected Variant[] invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                Variant[] inputValues) throws UaException {
         Out<ByteString[]> certificates = new Out<ByteString[]>();
         invoke(context, certificates);
         return new Variant[]{new Variant(certificates.get())};
     }
 
-    protected abstract void invoke(InvocationContext context,
+    protected abstract void invoke(AbstractMethodInvocationHandler.InvocationContext context,
                                    Out<ByteString[]> certificates) throws UaException;
 }

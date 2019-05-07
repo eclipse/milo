@@ -26,14 +26,6 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
         SignedSoftwareCertificate[].class
     );
 
-    QualifiedProperty<UserIdentityToken> USER_IDENTITY_TOKEN = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "UserIdentityToken",
-        NodeId.parse("ns=0;i=316"),
-        ValueRanks.Scalar,
-        UserIdentityToken.class
-    );
-
     QualifiedProperty<String> SECURE_CHANNEL_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "SecureChannelId",
@@ -42,21 +34,29 @@ public interface AuditActivateSessionEventType extends AuditSessionEventType {
         String.class
     );
 
+    QualifiedProperty<UserIdentityToken> USER_IDENTITY_TOKEN = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UserIdentityToken",
+        NodeId.parse("ns=0;i=316"),
+        ValueRanks.Scalar,
+        UserIdentityToken.class
+    );
+
     PropertyType getClientSoftwareCertificatesNode();
 
     SignedSoftwareCertificate[] getClientSoftwareCertificates();
 
     void setClientSoftwareCertificates(SignedSoftwareCertificate[] value);
 
-    PropertyType getUserIdentityTokenNode();
-
-    UserIdentityToken getUserIdentityToken();
-
-    void setUserIdentityToken(UserIdentityToken value);
-
     PropertyType getSecureChannelIdNode();
 
     String getSecureChannelId();
 
     void setSecureChannelId(String value);
+
+    PropertyType getUserIdentityTokenNode();
+
+    UserIdentityToken getUserIdentityToken();
+
+    void setUserIdentityToken(UserIdentityToken value);
 }

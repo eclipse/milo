@@ -18,12 +18,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 
 public interface ServerConfigurationType extends BaseObjectType {
-    QualifiedProperty<UInteger> MAX_TRUST_LIST_SIZE = new QualifiedProperty<>(
+    QualifiedProperty<String[]> SERVER_CAPABILITIES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "MaxTrustListSize",
-        NodeId.parse("ns=0;i=7"),
-        ValueRanks.Scalar,
-        UInteger.class
+        "ServerCapabilities",
+        NodeId.parse("ns=0;i=12"),
+        ValueRanks.OneDimension,
+        String[].class
     );
 
     QualifiedProperty<Boolean> MULTICAST_DNS_ENABLED = new QualifiedProperty<>(
@@ -42,19 +42,19 @@ public interface ServerConfigurationType extends BaseObjectType {
         String[].class
     );
 
-    QualifiedProperty<String[]> SERVER_CAPABILITIES = new QualifiedProperty<>(
+    QualifiedProperty<UInteger> MAX_TRUST_LIST_SIZE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ServerCapabilities",
-        NodeId.parse("ns=0;i=12"),
-        ValueRanks.OneDimension,
-        String[].class
+        "MaxTrustListSize",
+        NodeId.parse("ns=0;i=7"),
+        ValueRanks.Scalar,
+        UInteger.class
     );
 
-    PropertyType getMaxTrustListSizeNode();
+    PropertyType getServerCapabilitiesNode();
 
-    UInteger getMaxTrustListSize();
+    String[] getServerCapabilities();
 
-    void setMaxTrustListSize(UInteger value);
+    void setServerCapabilities(String[] value);
 
     PropertyType getMulticastDnsEnabledNode();
 
@@ -68,19 +68,19 @@ public interface ServerConfigurationType extends BaseObjectType {
 
     void setSupportedPrivateKeyFormats(String[] value);
 
-    PropertyType getServerCapabilitiesNode();
+    PropertyType getMaxTrustListSizeNode();
 
-    String[] getServerCapabilities();
+    UInteger getMaxTrustListSize();
 
-    void setServerCapabilities(String[] value);
+    void setMaxTrustListSize(UInteger value);
+
+    UaMethodNode getCreateSigningRequestMethodNode();
+
+    UaMethodNode getGetRejectedListMethodNode();
+
+    CertificateGroupFolderType getCertificateGroupsNode();
 
     UaMethodNode getUpdateCertificateMethodNode();
 
     UaMethodNode getApplyChangesMethodNode();
-
-    UaMethodNode getCreateSigningRequestMethodNode();
-
-    CertificateGroupFolderType getCertificateGroupsNode();
-
-    UaMethodNode getGetRejectedListMethodNode();
 }

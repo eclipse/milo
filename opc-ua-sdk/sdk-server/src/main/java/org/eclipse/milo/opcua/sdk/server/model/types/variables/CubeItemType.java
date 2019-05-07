@@ -16,17 +16,17 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.structured.AxisInformation;
 
 public interface CubeItemType extends ArrayItemType {
-    QualifiedProperty<AxisInformation> X_AXIS_DEFINITION = new QualifiedProperty<>(
+    QualifiedProperty<AxisInformation> Y_AXIS_DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "XAxisDefinition",
+        "YAxisDefinition",
         NodeId.parse("ns=0;i=12079"),
         ValueRanks.Scalar,
         AxisInformation.class
     );
 
-    QualifiedProperty<AxisInformation> Y_AXIS_DEFINITION = new QualifiedProperty<>(
+    QualifiedProperty<AxisInformation> X_AXIS_DEFINITION = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "YAxisDefinition",
+        "XAxisDefinition",
         NodeId.parse("ns=0;i=12079"),
         ValueRanks.Scalar,
         AxisInformation.class
@@ -40,17 +40,17 @@ public interface CubeItemType extends ArrayItemType {
         AxisInformation.class
     );
 
-    PropertyType getXAxisDefinitionNode();
-
-    AxisInformation getXAxisDefinition();
-
-    void setXAxisDefinition(AxisInformation value);
-
     PropertyType getYAxisDefinitionNode();
 
     AxisInformation getYAxisDefinition();
 
     void setYAxisDefinition(AxisInformation value);
+
+    PropertyType getXAxisDefinitionNode();
+
+    AxisInformation getXAxisDefinition();
+
+    void setXAxisDefinition(AxisInformation value);
 
     PropertyType getZAxisDefinitionNode();
 

@@ -17,12 +17,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface TwoStateVariableType extends StateVariableType {
-    QualifiedProperty<Boolean> ID = new QualifiedProperty<>(
+    QualifiedProperty<DateTime> EFFECTIVE_TRANSITION_TIME = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Id",
-        NodeId.parse("ns=0;i=1"),
+        "EffectiveTransitionTime",
+        NodeId.parse("ns=0;i=294"),
         ValueRanks.Scalar,
-        Boolean.class
+        DateTime.class
     );
 
     QualifiedProperty<DateTime> TRANSITION_TIME = new QualifiedProperty<>(
@@ -33,12 +33,20 @@ public interface TwoStateVariableType extends StateVariableType {
         DateTime.class
     );
 
-    QualifiedProperty<DateTime> EFFECTIVE_TRANSITION_TIME = new QualifiedProperty<>(
+    QualifiedProperty<LocalizedText> FALSE_STATE = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "EffectiveTransitionTime",
-        NodeId.parse("ns=0;i=294"),
+        "FalseState",
+        NodeId.parse("ns=0;i=21"),
         ValueRanks.Scalar,
-        DateTime.class
+        LocalizedText.class
+    );
+
+    QualifiedProperty<Boolean> ID = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Id",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
     );
 
     QualifiedProperty<LocalizedText> TRUE_STATE = new QualifiedProperty<>(
@@ -49,19 +57,11 @@ public interface TwoStateVariableType extends StateVariableType {
         LocalizedText.class
     );
 
-    QualifiedProperty<LocalizedText> FALSE_STATE = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "FalseState",
-        NodeId.parse("ns=0;i=21"),
-        ValueRanks.Scalar,
-        LocalizedText.class
-    );
+    PropertyType getEffectiveTransitionTimeNode();
 
-    PropertyType getIdNode();
+    DateTime getEffectiveTransitionTime();
 
-    Boolean getId();
-
-    void setId(Boolean value);
+    void setEffectiveTransitionTime(DateTime value);
 
     PropertyType getTransitionTimeNode();
 
@@ -69,21 +69,21 @@ public interface TwoStateVariableType extends StateVariableType {
 
     void setTransitionTime(DateTime value);
 
-    PropertyType getEffectiveTransitionTimeNode();
+    PropertyType getFalseStateNode();
 
-    DateTime getEffectiveTransitionTime();
+    LocalizedText getFalseState();
 
-    void setEffectiveTransitionTime(DateTime value);
+    void setFalseState(LocalizedText value);
+
+    PropertyType getIdNode();
+
+    Boolean getId();
+
+    void setId(Boolean value);
 
     PropertyType getTrueStateNode();
 
     LocalizedText getTrueState();
 
     void setTrueState(LocalizedText value);
-
-    PropertyType getFalseStateNode();
-
-    LocalizedText getFalseState();
-
-    void setFalseState(LocalizedText value);
 }

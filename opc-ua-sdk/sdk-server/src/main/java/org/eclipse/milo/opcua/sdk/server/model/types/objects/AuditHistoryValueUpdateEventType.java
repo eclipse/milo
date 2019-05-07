@@ -18,25 +18,17 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.PerformUpdateType;
 
 public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEventType {
-    QualifiedProperty<DataValue[]> OLD_VALUES = new QualifiedProperty<>(
+    QualifiedProperty<DataValue[]> NEW_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "OldValues",
+        "NewValues",
         NodeId.parse("ns=0;i=23"),
         ValueRanks.OneDimension,
         DataValue[].class
     );
 
-    QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
+    QualifiedProperty<DataValue[]> OLD_VALUES = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "UpdatedNode",
-        NodeId.parse("ns=0;i=17"),
-        ValueRanks.Scalar,
-        NodeId.class
-    );
-
-    QualifiedProperty<DataValue[]> NEW_VALUES = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "NewValues",
+        "OldValues",
         NodeId.parse("ns=0;i=23"),
         ValueRanks.OneDimension,
         DataValue[].class
@@ -50,17 +42,13 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
         PerformUpdateType.class
     );
 
-    PropertyType getOldValuesNode();
-
-    DataValue[] getOldValues();
-
-    void setOldValues(DataValue[] value);
-
-    PropertyType getUpdatedNodeNode();
-
-    NodeId getUpdatedNode();
-
-    void setUpdatedNode(NodeId value);
+    QualifiedProperty<NodeId> UPDATED_NODE = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "UpdatedNode",
+        NodeId.parse("ns=0;i=17"),
+        ValueRanks.Scalar,
+        NodeId.class
+    );
 
     PropertyType getNewValuesNode();
 
@@ -68,9 +56,21 @@ public interface AuditHistoryValueUpdateEventType extends AuditHistoryUpdateEven
 
     void setNewValues(DataValue[] value);
 
+    PropertyType getOldValuesNode();
+
+    DataValue[] getOldValues();
+
+    void setOldValues(DataValue[] value);
+
     PropertyType getPerformInsertReplaceNode();
 
     PerformUpdateType getPerformInsertReplace();
 
     void setPerformInsertReplace(PerformUpdateType value);
+
+    PropertyType getUpdatedNodeNode();
+
+    NodeId getUpdatedNode();
+
+    void setUpdatedNode(NodeId value);
 }

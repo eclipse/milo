@@ -24,17 +24,17 @@ public interface LimitAlarmType extends AlarmConditionType {
         Double.class
     );
 
-    QualifiedProperty<Double> HIGH_HIGH_LIMIT = new QualifiedProperty<>(
+    QualifiedProperty<Double> LOW_LIMIT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "HighHighLimit",
+        "LowLimit",
         NodeId.parse("ns=0;i=11"),
         ValueRanks.Scalar,
         Double.class
     );
 
-    QualifiedProperty<Double> LOW_LIMIT = new QualifiedProperty<>(
+    QualifiedProperty<Double> HIGH_HIGH_LIMIT = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "LowLimit",
+        "HighHighLimit",
         NodeId.parse("ns=0;i=11"),
         ValueRanks.Scalar,
         Double.class
@@ -54,17 +54,17 @@ public interface LimitAlarmType extends AlarmConditionType {
 
     void setHighLimit(Double value);
 
-    PropertyType getHighHighLimitNode();
-
-    Double getHighHighLimit();
-
-    void setHighHighLimit(Double value);
-
     PropertyType getLowLimitNode();
 
     Double getLowLimit();
 
     void setLowLimit(Double value);
+
+    PropertyType getHighHighLimitNode();
+
+    Double getHighHighLimit();
+
+    void setHighHighLimit(Double value);
 
     PropertyType getLowLowLimitNode();
 

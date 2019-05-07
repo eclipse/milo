@@ -15,11 +15,15 @@ import org.eclipse.milo.opcua.sdk.server.nodes.UaMethodNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 public interface AcknowledgeableConditionType extends ConditionType {
-    TwoStateVariableType getAckedStateNode();
+    UaMethodNode getAcknowledgeMethodNode();
 
-    LocalizedText getAckedState();
+    TwoStateVariableType getConfirmedStateNode();
 
-    void setAckedState(LocalizedText value);
+    LocalizedText getConfirmedState();
+
+    void setConfirmedState(LocalizedText value);
+
+    UaMethodNode getConfirmMethodNode();
 
     TwoStateVariableType getEnabledStateNode();
 
@@ -27,13 +31,9 @@ public interface AcknowledgeableConditionType extends ConditionType {
 
     void setEnabledState(LocalizedText value);
 
-    UaMethodNode getAcknowledgeMethodNode();
+    TwoStateVariableType getAckedStateNode();
 
-    UaMethodNode getConfirmMethodNode();
+    LocalizedText getAckedState();
 
-    TwoStateVariableType getConfirmedStateNode();
-
-    LocalizedText getConfirmedState();
-
-    void setConfirmedState(LocalizedText value);
+    void setAckedState(LocalizedText value);
 }

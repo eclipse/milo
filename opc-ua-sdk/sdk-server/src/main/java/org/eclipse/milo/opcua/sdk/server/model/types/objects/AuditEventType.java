@@ -17,12 +17,28 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DateTime;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 public interface AuditEventType extends BaseEventType {
+    QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "ActionTimeStamp",
+        NodeId.parse("ns=0;i=294"),
+        ValueRanks.Scalar,
+        DateTime.class
+    );
+
     QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
         "ClientUserId",
         NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
         String.class
+    );
+
+    QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
+        "http://opcfoundation.org/UA/",
+        "Status",
+        NodeId.parse("ns=0;i=1"),
+        ValueRanks.Scalar,
+        Boolean.class
     );
 
     QualifiedProperty<String> SERVER_ID = new QualifiedProperty<>(
@@ -41,27 +57,23 @@ public interface AuditEventType extends BaseEventType {
         String.class
     );
 
-    QualifiedProperty<Boolean> STATUS = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "Status",
-        NodeId.parse("ns=0;i=1"),
-        ValueRanks.Scalar,
-        Boolean.class
-    );
+    PropertyType getActionTimeStampNode();
 
-    QualifiedProperty<DateTime> ACTION_TIME_STAMP = new QualifiedProperty<>(
-        "http://opcfoundation.org/UA/",
-        "ActionTimeStamp",
-        NodeId.parse("ns=0;i=294"),
-        ValueRanks.Scalar,
-        DateTime.class
-    );
+    DateTime getActionTimeStamp();
+
+    void setActionTimeStamp(DateTime value);
 
     PropertyType getClientUserIdNode();
 
     String getClientUserId();
 
     void setClientUserId(String value);
+
+    PropertyType getStatusNode();
+
+    Boolean getStatus();
+
+    void setStatus(Boolean value);
 
     PropertyType getServerIdNode();
 
@@ -74,16 +86,4 @@ public interface AuditEventType extends BaseEventType {
     String getClientAuditEntryId();
 
     void setClientAuditEntryId(String value);
-
-    PropertyType getStatusNode();
-
-    Boolean getStatus();
-
-    void setStatus(Boolean value);
-
-    PropertyType getActionTimeStampNode();
-
-    DateTime getActionTimeStamp();
-
-    void setActionTimeStamp(DateTime value);
 }

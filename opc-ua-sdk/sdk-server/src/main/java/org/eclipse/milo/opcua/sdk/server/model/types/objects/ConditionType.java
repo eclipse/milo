@@ -22,12 +22,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 
 public interface ConditionType extends BaseEventType {
-    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
+    QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "ClientUserId",
-        NodeId.parse("ns=0;i=12"),
+        "Retain",
+        NodeId.parse("ns=0;i=1"),
         ValueRanks.Scalar,
-        String.class
+        Boolean.class
     );
 
     QualifiedProperty<LocalizedText> CONDITION_CLASS_NAME = new QualifiedProperty<>(
@@ -46,12 +46,12 @@ public interface ConditionType extends BaseEventType {
         NodeId.class
     );
 
-    QualifiedProperty<Boolean> RETAIN = new QualifiedProperty<>(
+    QualifiedProperty<String> CLIENT_USER_ID = new QualifiedProperty<>(
         "http://opcfoundation.org/UA/",
-        "Retain",
-        NodeId.parse("ns=0;i=1"),
+        "ClientUserId",
+        NodeId.parse("ns=0;i=12"),
         ValueRanks.Scalar,
-        Boolean.class
+        String.class
     );
 
     QualifiedProperty<NodeId> BRANCH_ID = new QualifiedProperty<>(
@@ -70,11 +70,11 @@ public interface ConditionType extends BaseEventType {
         String.class
     );
 
-    PropertyType getClientUserIdNode();
+    PropertyType getRetainNode();
 
-    String getClientUserId();
+    Boolean getRetain();
 
-    void setClientUserId(String value);
+    void setRetain(Boolean value);
 
     PropertyType getConditionClassNameNode();
 
@@ -88,11 +88,11 @@ public interface ConditionType extends BaseEventType {
 
     void setConditionClassId(NodeId value);
 
-    PropertyType getRetainNode();
+    PropertyType getClientUserIdNode();
 
-    Boolean getRetain();
+    String getClientUserId();
 
-    void setRetain(Boolean value);
+    void setClientUserId(String value);
 
     PropertyType getBranchIdNode();
 
@@ -106,22 +106,6 @@ public interface ConditionType extends BaseEventType {
 
     void setConditionName(String value);
 
-    UaMethodNode getAddCommentMethodNode();
-
-    UaMethodNode getDisableMethodNode();
-
-    UaMethodNode getEnableMethodNode();
-
-    UaMethodNode getConditionRefreshMethodNode();
-
-    UaMethodNode getConditionRefresh2MethodNode();
-
-    TwoStateVariableType getEnabledStateNode();
-
-    LocalizedText getEnabledState();
-
-    void setEnabledState(LocalizedText value);
-
     ConditionVariableType getLastSeverityNode();
 
     UShort getLastSeverity();
@@ -134,9 +118,25 @@ public interface ConditionType extends BaseEventType {
 
     void setComment(LocalizedText value);
 
+    UaMethodNode getConditionRefreshMethodNode();
+
+    UaMethodNode getDisableMethodNode();
+
+    UaMethodNode getEnableMethodNode();
+
     ConditionVariableType getQualityNode();
 
     StatusCode getQuality();
 
     void setQuality(StatusCode value);
+
+    TwoStateVariableType getEnabledStateNode();
+
+    LocalizedText getEnabledState();
+
+    void setEnabledState(LocalizedText value);
+
+    UaMethodNode getAddCommentMethodNode();
+
+    UaMethodNode getConditionRefresh2MethodNode();
 }

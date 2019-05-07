@@ -60,17 +60,13 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
 
     void setInputNode(NodeId value);
 
-    TwoStateVariableType getActiveStateNode();
-
-    LocalizedText getActiveState();
-
-    void setActiveState(LocalizedText value);
-
     TwoStateVariableType getSuppressedStateNode();
 
     LocalizedText getSuppressedState();
 
     void setSuppressedState(LocalizedText value);
+
+    ShelvedStateMachineType getShelvingStateNode();
 
     TwoStateVariableType getEnabledStateNode();
 
@@ -78,5 +74,9 @@ public interface AlarmConditionType extends AcknowledgeableConditionType {
 
     void setEnabledState(LocalizedText value);
 
-    ShelvedStateMachineType getShelvingStateNode();
+    TwoStateVariableType getActiveStateNode();
+
+    LocalizedText getActiveState();
+
+    void setActiveState(LocalizedText value);
 }

@@ -15,17 +15,17 @@ import org.eclipse.milo.opcua.sdk.server.model.types.variables.TransitionVariabl
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 public interface TransitionEventType extends BaseEventType {
-    StateVariableType getFromStateNode();
-
-    LocalizedText getFromState();
-
-    void setFromState(LocalizedText value);
-
     StateVariableType getToStateNode();
 
     LocalizedText getToState();
 
     void setToState(LocalizedText value);
+
+    StateVariableType getFromStateNode();
+
+    LocalizedText getFromState();
+
+    void setFromState(LocalizedText value);
 
     TransitionVariableType getTransitionNode();
 

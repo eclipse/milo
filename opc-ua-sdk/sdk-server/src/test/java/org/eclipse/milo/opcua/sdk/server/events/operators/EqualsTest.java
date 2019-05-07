@@ -11,7 +11,7 @@
 package org.eclipse.milo.opcua.sdk.server.events.operators;
 
 import org.eclipse.milo.opcua.sdk.server.events.OperatorContext;
-import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventNode;
+import org.eclipse.milo.opcua.sdk.server.model.nodes.objects.BaseEventTypeNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.eclipse.milo.opcua.stack.core.types.structured.FilterOperand;
 import org.eclipse.milo.opcua.stack.core.types.structured.LiteralOperand;
@@ -28,7 +28,7 @@ public class EqualsTest {
     @Test
     public void testArray() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(new int[]{1, 2, 3}));
         FilterOperand op1 = new LiteralOperand(new Variant(new int[]{1, 2, 3}));
@@ -52,7 +52,7 @@ public class EqualsTest {
     @Test
     public void testScalar() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(42));
         FilterOperand op1 = new LiteralOperand(new Variant(42));
@@ -76,7 +76,7 @@ public class EqualsTest {
     @Test
     public void testArrayWithImplicitConversion() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(new int[]{1, 2, 3}));
         FilterOperand op1 = new LiteralOperand(new Variant(new long[]{1L, 2L, 3L}));
@@ -100,7 +100,7 @@ public class EqualsTest {
     @Test
     public void testScalarWithImplicitConversion() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(42));
         FilterOperand op1 = new LiteralOperand(new Variant(42L));
@@ -123,7 +123,7 @@ public class EqualsTest {
     @Test
     public void testArrayNotEqual() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(new int[]{1, 2, 3}));
         FilterOperand op1 = new LiteralOperand(new Variant(new int[]{3, 2, 1}));
@@ -147,7 +147,7 @@ public class EqualsTest {
     @Test
     public void testScalarNotEqual() throws Exception {
         OperatorContext context = mock(OperatorContext.class);
-        BaseEventNode eventNode = mock(BaseEventNode.class);
+        BaseEventTypeNode eventNode = mock(BaseEventTypeNode.class);
 
         FilterOperand op0 = new LiteralOperand(new Variant(1));
         FilterOperand op1 = new LiteralOperand(new Variant(2));
