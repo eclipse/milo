@@ -267,12 +267,14 @@ public class UaStackServer {
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
+                .distinct()
                 .collect(toList());
 
             if (discoveryUrls.isEmpty()) {
                 discoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfiguration::getEndpointUrl)
+                    .distinct()
                     .collect(toList());
             }
 
