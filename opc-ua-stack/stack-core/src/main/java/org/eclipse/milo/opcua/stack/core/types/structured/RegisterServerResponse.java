@@ -21,7 +21,7 @@ import org.eclipse.milo.opcua.stack.core.serialization.codecs.GenericDataTypeCod
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 @EqualsAndHashCode(
-    callSuper = true
+    callSuper = false
 )
 @SuperBuilder(
     toBuilder = true
@@ -33,8 +33,6 @@ public class RegisterServerResponse extends Structure implements UaResponseMessa
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=440");
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=439");
-
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15104");
 
     private final ResponseHeader responseHeader;
 

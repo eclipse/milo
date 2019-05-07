@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 
 @EqualsAndHashCode(
-    callSuper = true
+    callSuper = false
 )
 @SuperBuilder(
     toBuilder = true
@@ -34,8 +34,6 @@ public class SemanticChangeStructureDataType extends Structure implements UaStru
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=898");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=899");
-
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15374");
 
     private final NodeId affected;
 

@@ -34,8 +34,6 @@ public class EventNotificationList extends NotificationData implements UaStructu
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=915");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15347");
-
     private final EventFieldList[] events;
 
     public EventNotificationList(EventFieldList[] events) {

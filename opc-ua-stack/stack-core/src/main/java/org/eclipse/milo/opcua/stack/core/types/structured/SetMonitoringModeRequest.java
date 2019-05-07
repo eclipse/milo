@@ -23,7 +23,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UInteger;
 import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
 
 @EqualsAndHashCode(
-    callSuper = true
+    callSuper = false
 )
 @SuperBuilder(
     toBuilder = true
@@ -35,8 +35,6 @@ public class SetMonitoringModeRequest extends Structure implements UaRequestMess
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=769");
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=768");
-
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15329");
 
     private final RequestHeader requestHeader;
 

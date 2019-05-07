@@ -37,8 +37,6 @@ public class UpdateStructureDataDetails extends HistoryUpdateDetails implements 
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11296");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15281");
-
     private final PerformUpdateType performInsertReplace;
 
     private final DataValue[] updateValues;

@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.LocalizedText;
 
 @EqualsAndHashCode(
-    callSuper = true
+    callSuper = false
 )
 @SuperBuilder(
     toBuilder = true
@@ -34,8 +34,6 @@ public class EnumValueType extends Structure implements UaStructure {
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=7616");
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=8251");
-
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15082");
 
     private final Long value;
 

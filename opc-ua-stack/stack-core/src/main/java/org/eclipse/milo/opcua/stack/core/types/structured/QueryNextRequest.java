@@ -22,7 +22,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.ByteString;
 import org.eclipse.milo.opcua.stack.core.types.builtin.ExpandedNodeId;
 
 @EqualsAndHashCode(
-    callSuper = true
+    callSuper = false
 )
 @SuperBuilder(
     toBuilder = true
@@ -34,8 +34,6 @@ public class QueryNextRequest extends Structure implements UaRequestMessage {
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=621");
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=620");
-
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15254");
 
     private final RequestHeader requestHeader;
 

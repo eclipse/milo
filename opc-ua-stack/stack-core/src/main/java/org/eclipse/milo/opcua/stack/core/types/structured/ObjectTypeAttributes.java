@@ -36,8 +36,6 @@ public class ObjectTypeAttributes extends NodeAttributes implements UaStructure 
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=362");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15158");
-
     private final Boolean isAbstract;
 
     public ObjectTypeAttributes(UInteger specifiedAttributes, LocalizedText displayName,

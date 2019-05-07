@@ -36,8 +36,6 @@ public class DeleteRawModifiedDetails extends HistoryUpdateDetails implements Ua
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=687");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15283");
-
     private final Boolean isDeleteModified;
 
     private final DateTime startTime;

@@ -40,8 +40,6 @@ public class VariableTypeNode extends TypeNode implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=271");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15075");
-
     private final Variant value;
 
     private final NodeId dataType;

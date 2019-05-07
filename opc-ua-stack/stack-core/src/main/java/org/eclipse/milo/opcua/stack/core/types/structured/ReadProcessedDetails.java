@@ -36,8 +36,6 @@ public class ReadProcessedDetails extends HistoryReadDetails implements UaStruct
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=651");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15264");
-
     private final DateTime startTime;
 
     private final DateTime endTime;

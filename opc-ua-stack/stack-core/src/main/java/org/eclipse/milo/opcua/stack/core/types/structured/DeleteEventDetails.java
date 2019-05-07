@@ -36,8 +36,6 @@ public class DeleteEventDetails extends HistoryUpdateDetails implements UaStruct
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=693");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15285");
-
     private final ByteString[] eventIds;
 
     public DeleteEventDetails(NodeId nodeId, ByteString[] eventIds) {

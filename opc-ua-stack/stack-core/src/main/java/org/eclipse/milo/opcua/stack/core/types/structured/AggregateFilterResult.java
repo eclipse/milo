@@ -35,8 +35,6 @@ public class AggregateFilterResult extends MonitoringFilterResult implements UaS
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=738");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15315");
-
     private final DateTime revisedStartTime;
 
     private final Double revisedProcessingInterval;

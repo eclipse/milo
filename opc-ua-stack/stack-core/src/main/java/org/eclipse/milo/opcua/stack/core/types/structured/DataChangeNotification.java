@@ -35,8 +35,6 @@ public class DataChangeNotification extends NotificationData implements UaStruct
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=810");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15345");
-
     private final MonitoredItemNotification[] monitoredItems;
 
     private final DiagnosticInfo[] diagnosticInfos;

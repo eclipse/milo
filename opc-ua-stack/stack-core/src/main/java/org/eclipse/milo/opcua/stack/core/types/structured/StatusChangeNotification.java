@@ -36,8 +36,6 @@ public class StatusChangeNotification extends NotificationData implements UaStru
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=819");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15350");
-
     private final StatusCode status;
 
     private final DiagnosticInfo diagnosticInfo;

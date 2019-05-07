@@ -36,8 +36,6 @@ public class MethodAttributes extends NodeAttributes implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=359");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15157");
-
     private final Boolean executable;
 
     private final Boolean userExecutable;

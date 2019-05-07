@@ -35,8 +35,6 @@ public class HistoryModifiedData extends HistoryData implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=11219");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15272");
-
     private final ModificationInfo[] modificationInfos;
 
     public HistoryModifiedData(DataValue[] dataValues, ModificationInfo[] modificationInfos) {

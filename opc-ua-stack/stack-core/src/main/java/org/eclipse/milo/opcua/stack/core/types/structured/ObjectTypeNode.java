@@ -39,8 +39,6 @@ public class ObjectTypeNode extends TypeNode implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=265");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15073");
-
     private final Boolean isAbstract;
 
     public ObjectTypeNode(NodeId nodeId, NodeClass nodeClass, QualifiedName browseName,

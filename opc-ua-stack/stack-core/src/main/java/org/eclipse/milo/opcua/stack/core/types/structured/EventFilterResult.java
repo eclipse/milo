@@ -36,8 +36,6 @@ public class EventFilterResult extends MonitoringFilterResult implements UaStruc
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=735");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15314");
-
     private final StatusCode[] selectClauseResults;
 
     private final DiagnosticInfo[] selectClauseDiagnosticInfos;

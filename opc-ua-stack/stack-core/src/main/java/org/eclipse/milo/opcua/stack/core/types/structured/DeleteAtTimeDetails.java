@@ -36,8 +36,6 @@ public class DeleteAtTimeDetails extends HistoryUpdateDetails implements UaStruc
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=690");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15284");
-
     private final DateTime[] reqTimes;
 
     public DeleteAtTimeDetails(NodeId nodeId, DateTime[] reqTimes) {

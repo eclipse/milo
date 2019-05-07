@@ -36,8 +36,6 @@ public class ReadEventDetails extends HistoryReadDetails implements UaStructure 
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=645");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15262");
-
     private final UInteger numValuesPerNode;
 
     private final DateTime startTime;

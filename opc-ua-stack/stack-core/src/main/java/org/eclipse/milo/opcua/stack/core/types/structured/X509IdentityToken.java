@@ -35,8 +35,6 @@ public class X509IdentityToken extends UserIdentityToken implements UaStructure 
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=327");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15143");
-
     private final ByteString certificateData;
 
     public X509IdentityToken(String policyId, ByteString certificateData) {

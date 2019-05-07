@@ -35,8 +35,6 @@ public class IssuedIdentityToken extends UserIdentityToken implements UaStructur
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=940");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15144");
-
     private final ByteString tokenData;
 
     private final String encryptionAlgorithm;

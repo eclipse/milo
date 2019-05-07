@@ -41,8 +41,6 @@ public class VariableNode extends InstanceNode implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=268");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15074");
-
     private final Variant value;
 
     private final NodeId dataType;

@@ -36,8 +36,6 @@ public class ReferenceTypeAttributes extends NodeAttributes implements UaStructu
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=368");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15160");
-
     private final Boolean isAbstract;
 
     private final Boolean symmetric;

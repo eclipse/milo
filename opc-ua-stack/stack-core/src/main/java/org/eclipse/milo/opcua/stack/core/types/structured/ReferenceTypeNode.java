@@ -39,8 +39,6 @@ public class ReferenceTypeNode extends TypeNode implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=274");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15076");
-
     private final Boolean isAbstract;
 
     private final Boolean symmetric;

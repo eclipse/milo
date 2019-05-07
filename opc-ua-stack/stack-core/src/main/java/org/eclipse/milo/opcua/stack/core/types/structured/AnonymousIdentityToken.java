@@ -34,8 +34,6 @@ public class AnonymousIdentityToken extends UserIdentityToken implements UaStruc
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=321");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15141");
-
     public AnonymousIdentityToken(String policyId) {
         super(policyId);
     }

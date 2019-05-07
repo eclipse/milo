@@ -36,8 +36,6 @@ public class DataChangeFilter extends MonitoringFilter implements UaStructure {
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=723");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15294");
-
     private final DataChangeTrigger trigger;
 
     private final UInteger deadbandType;

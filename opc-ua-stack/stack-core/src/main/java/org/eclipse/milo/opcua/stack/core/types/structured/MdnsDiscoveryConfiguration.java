@@ -34,8 +34,6 @@ public class MdnsDiscoveryConfiguration extends DiscoveryConfiguration implement
 
     public static final ExpandedNodeId BINARY_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=12901");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15106");
-
     private final String mdnsServerName;
 
     private final String[] serverCapabilities;

@@ -35,8 +35,6 @@ public class ReadAtTimeDetails extends HistoryReadDetails implements UaStructure
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=654");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15269");
-
     private final DateTime[] reqTimes;
 
     private final Boolean useSimpleBounds;

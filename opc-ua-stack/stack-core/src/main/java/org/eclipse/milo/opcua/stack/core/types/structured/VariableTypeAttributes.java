@@ -38,8 +38,6 @@ public class VariableTypeAttributes extends NodeAttributes implements UaStructur
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=365");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15159");
-
     private final Variant value;
 
     private final NodeId dataType;

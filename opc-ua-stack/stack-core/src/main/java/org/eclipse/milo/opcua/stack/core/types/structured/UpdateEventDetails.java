@@ -36,8 +36,6 @@ public class UpdateEventDetails extends HistoryUpdateDetails implements UaStruct
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=684");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15282");
-
     private final PerformUpdateType performInsertReplace;
 
     private final EventFilter filter;

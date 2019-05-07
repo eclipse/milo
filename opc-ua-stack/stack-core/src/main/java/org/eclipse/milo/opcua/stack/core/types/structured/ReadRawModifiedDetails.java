@@ -36,8 +36,6 @@ public class ReadRawModifiedDetails extends HistoryReadDetails implements UaStru
 
     public static final ExpandedNodeId XML_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=648");
 
-    public static final ExpandedNodeId JSON_ENCODING_ID = ExpandedNodeId.parse("nsu=http://opcfoundation.org/UA/;i=15263");
-
     private final Boolean isReadModified;
 
     private final DateTime startTime;
